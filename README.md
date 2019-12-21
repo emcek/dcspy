@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/emcek/specelUFC.svg?branch=master)](https://travis-ci.org/emcek/specelUFC)
+[![Coverage Status](https://coveralls.io/repos/github/emcek/specelUFC/badge.svg?branch=master)](https://coveralls.io/github/emcek/specelUFC?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f60c2eb170f4158a5df3880ea8ca836)](https://app.codacy.com/app/mplichta/specelUFC?utm_source=github.com&utm_medium=referral&utm_content=emcek/specelUFC&utm_campaign=Badge_Grade_Dashboard)
+[![BCH compliance](https://bettercodehub.com/edge/badge/emcek/specelUFC?branch=master)](https://bettercodehub.com/)
+
 # specelUFC
 This is a software designed to put information from DCS:FA18C Hornet's Up Front Controller (UFC) and F-16C DED display to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monchrome display, like G15 and G510.
 
