@@ -1,0 +1,20 @@
+dist: xenial
+language: python
+python:
+  - "3.6"
+  - "3.7"
+  - "3.8"
+install:
+  - pip install -U pip setuptools
+  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint
+before_script:
+  - pip install -Ur requirements.txt
+  - python3 -V
+script:
+  - python3 -m pytest --mccabe -v specelUFC
+  - coverage run --source=specelUFC -m pytest -v --random
+  - pycodestyle --statistics --count specelUFC
+  - pydocstyle --count specelUFC
+#  - pylint specelUFC
+after_success:
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == "linux" ]]; then coveralls; fi
