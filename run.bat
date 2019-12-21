@@ -1,1 +1,0 @@
-python .\specelUFC.py
