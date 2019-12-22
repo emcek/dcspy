@@ -12,9 +12,9 @@ before_script:
   - python3 -V
 script:
   - python3 -m pytest --mccabe -v .
-  - coverage run --source=specelUFC -m pytest -v --random
+#  - coverage run --source=specelUFC -m pytest -v --random
   - pycodestyle --statistics --count .
   - pydocstyle --count .
 #  - pylint specelUFC
-after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == "linux" ]]; then coveralls; fi
+#after_success:
+#  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == "linux" ]]; then coveralls; fi
