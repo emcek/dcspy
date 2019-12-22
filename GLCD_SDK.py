@@ -34,10 +34,6 @@ COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
 
-# dll_path = 'C:\\Program Files\\Logitech Gaming Software\\LCDSDK\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\x86\\LogitechLcdEnginesWrapper.dll'
-# _dll = CDLL(dll_path)
-# https://docs.python.org/2/library/ctypes.html#fundamental-data-types
-
 def chkDLL():
     try:
         _dll
@@ -53,6 +49,7 @@ def initDLL(dll_path):
 
     _dll = CDLL(dll_path)
 
+    # https://docs.python.org/2/library/ctypes.html#fundamental-data-types
     # Generic Functions
     LogiLcdInit = _dll['LogiLcdInit']
     LogiLcdInit.restype = c_bool
