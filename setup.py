@@ -4,7 +4,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from pyerge import __version__
+from specelUFC import __version__
 
 here = abspath(dirname(__file__))
 
