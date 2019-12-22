@@ -3,9 +3,6 @@ from itertools import chain
 from platform import system
 from sys import exit
 
-NAME = "GLCD SDK.py"
-VERSION = "0.0.1"
-
 # LCD types
 TYPE_MONO = 1
 TYPE_COLOR = 2
@@ -33,19 +30,20 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-
-def chkDLL():
-    try:
-        _dll
-    except NameError() as e:
-        if str(e).split("'")[1] == "_dll":
-            raise Exception('initDLL!!!!!!!!')
-        else:
-            raise Exception(e)
+LogiLcdInit = None
+LogiLcdIsConnected = None
+LogiLcdIsButtonPressed = None
+LogiLcdUpdate = None
+LogiLcdShutdown = None
+LogiLcdMonoSetBackground = None
+LogiLcdMonoSetText = None
+LogiLcdColorSetBackground = None
+LogiLcdColorSetTitle = None
+LogiLcdColorSetText = None
 
 
 def initDLL(dll_path):
-    global _dll, LogiLcdInit, LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground, LogiLcdMonoSetText, LogiLcdColorSetBackground, LogiLcdColorSetTitle, LogiLcdColorSetText, ColorBGPIL
+    global LogiLcdInit, LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground, LogiLcdMonoSetText, LogiLcdColorSetBackground, LogiLcdColorSetTitle, LogiLcdColorSetText
 
     _dll = CDLL(dll_path)
 
@@ -93,18 +91,13 @@ def initDLL(dll_path):
     LogiLcdColorSetText.restype = c_bool
     LogiLcdColorSetText.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
 
-    def ColorBGPIL(im):
-        LogiLcdColorSetBackground((c_ubyte * 307200)(*list(chain(*list(im.getdata())))))
+
+def ColorBGPIL(im):
+    global LogiLcdColorSetBackground
+
+    LogiLcdColorSetBackground((c_ubyte * 307200)(*list(chain(*list(im.getdata())))))
 
 
 def flatten(listOfLists):
     # Flatten one level of nesting
     return chain.from_iterable(listOfLists)
-
-
-if __name__ == "__main__":
-    if system() != "Windows":
-        print("Host is not Windows. This module can't work")
-        exit(0)
-    else:
-        print("Host is Windows. This module can work")
