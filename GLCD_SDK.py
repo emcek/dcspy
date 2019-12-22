@@ -1,7 +1,5 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte
 from itertools import chain
-from platform import system
-from sys import exit
 
 # LCD types
 TYPE_MONO = 1
