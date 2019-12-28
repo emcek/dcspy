@@ -42,6 +42,7 @@ LogiLcdColorSetText = None
 
 def initDLL(dll_path):
     """
+    Initialization od dynamic linking library.
 
     :param dll_path:
     """
@@ -97,6 +98,7 @@ def initDLL(dll_path):
 
 def ColorBGPIL(im):
     """
+    Set color background picture.
 
     :param im:
     """
@@ -107,6 +109,7 @@ def ColorBGPIL(im):
 
 def flatten(listOfLists):
     """
+    Flatten list of lists.
 
     :param listOfLists:
     :return:
