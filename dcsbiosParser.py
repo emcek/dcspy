@@ -2,6 +2,12 @@ import struct
 
 
 def byte2int(b):
+    """
+    Convert byte to intiger.
+
+    :param b:
+    :return:
+    """
     return b[0]
 
 
