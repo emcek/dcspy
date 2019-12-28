@@ -41,6 +41,10 @@ LogiLcdColorSetText = None
 
 
 def initDLL(dll_path):
+    """
+
+    :param dll_path:
+    """
     global LogiLcdInit, LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground
     global LogiLcdMonoSetText, LogiLcdColorSetBackground, LogiLcdColorSetTitle, LogiLcdColorSetText
 
@@ -92,11 +96,20 @@ def initDLL(dll_path):
 
 
 def ColorBGPIL(im):
+    """
+
+    :param im:
+    """
     global LogiLcdColorSetBackground
 
     LogiLcdColorSetBackground((c_ubyte * 307200)(*list(chain(*list(im.getdata())))))
 
 
 def flatten(listOfLists):
+    """
+
+    :param listOfLists:
+    :return:
+    """
     # Flatten one level of nesting
     return chain.from_iterable(listOfLists)

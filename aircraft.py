@@ -5,6 +5,11 @@ from PIL import Image, ImageFont, ImageDraw
 
 class AircraftHandler:
     def __init__(self, displayHandler, parser):
+        """
+
+        :param displayHandler:
+        :param parser:
+        """
         self.g13 = displayHandler
         self.parser = parser
         self.width = 160
@@ -15,6 +20,11 @@ class AircraftHandler:
         self.font2 = ImageFont.truetype("consola.ttf", 16)
 
     def buttonHandleSpecificAC(self, buttonPressed):
+        """
+
+        :param buttonPressed:
+        :return:
+        """
         if buttonPressed == 1:
             return "UFC_COMM1_CHANNEL_SELECT -3200\n"
         elif buttonPressed == 2:
@@ -26,8 +36,14 @@ class AircraftHandler:
 
     @abstractmethod
     def updateDisplay(self):
+        """
+
+        """
         pass
 
     @abstractmethod
     def setData(self):
+        """
+
+        """
         pass

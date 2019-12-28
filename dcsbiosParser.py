@@ -7,6 +7,9 @@ def byte2int(b):
 
 class ProtocolParser:
     def __init__(self):
+        """
+
+        """
         self.__state = "WAIT_FOR_SYNC"
         self.__sync_byte_count = 0
         self.__address = 0
@@ -16,6 +19,10 @@ class ProtocolParser:
         self.frame_sync_callbacks = set()
 
     def processByte(self, c):
+        """
+
+        :param c:
+        """
         c = byte2int(c)
         if self.__state == "ADDRESS_LOW":
             self.__address = c
@@ -61,6 +68,13 @@ class ProtocolParser:
 
 class StringBuffer:
     def __init__(self, parser, address, length, callback):
+        """
+
+        :param parser:
+        :param address:
+        :param length:
+        :param callback:
+        """
         self.__address = address
         self.__length = length
         self.__dirty = False
@@ -71,11 +85,21 @@ class StringBuffer:
         parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
 
     def set_char(self, i, c):
+        """
+
+        :param i:
+        :param c:
+        """
         if self.buffer[i] != c:
             self.buffer[i] = c
             self.__dirty = True
 
     def on_dcsbios_write(self, address, data):
+        """
+
+        :param address:
+        :param data:
+        """
         if address >= self.__address and self.__address + self.__length > address:
             data_bytes = struct.pack("<H", data)
             self.set_char(address - self.__address, data_bytes[0])
@@ -91,6 +115,14 @@ class StringBuffer:
 
 class IntegerBuffer:
     def __init__(self, parser, address, mask, shift_by, callback):
+        """
+
+        :param parser:
+        :param address:
+        :param mask:
+        :param shift_by:
+        :param callback:
+        """
         self.__address = address
         self.__mask = mask
         self.__shift_by = shift_by
@@ -101,6 +133,11 @@ class IntegerBuffer:
         parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
 
     def on_dcsbios_write(self, address, data):
+        """
+
+        :param address:
+        :param data:
+        """
         if address == self.__address:
             value = (data & self.__mask) >> self.__shift_by
             if self.__value != value:
