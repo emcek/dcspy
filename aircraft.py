@@ -42,6 +42,12 @@ class AircraftHandler:
         pass
 
     @abstractmethod
-    def setData(self):
-        """Set new data."""
+    def setData(self, selector, value, update=True):
+        """
+        Set new data.
+
+        :param selector:
+        :param value:
+        :param update:
+        """
         pass
