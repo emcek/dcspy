@@ -6,6 +6,7 @@ from PIL import Image, ImageFont, ImageDraw
 class AircraftHandler:
     def __init__(self, displayHandler, parser):
         """
+        Basic constructor.
 
         :param displayHandler:
         :param parser:
@@ -21,6 +22,7 @@ class AircraftHandler:
 
     def buttonHandleSpecificAC(self, buttonPressed):
         """
+        Button handler for spacific aircraft.
 
         :param buttonPressed:
         :return:
@@ -36,14 +38,10 @@ class AircraftHandler:
 
     @abstractmethod
     def updateDisplay(self):
-        """
-
-        """
+        """Update display."""
         pass
 
     @abstractmethod
     def setData(self):
-        """
-
-        """
+        """Set new data."""
         pass

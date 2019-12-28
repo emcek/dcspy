@@ -7,9 +7,7 @@ def byte2int(b):
 
 class ProtocolParser:
     def __init__(self):
-        """
-
-        """
+        """Basic constructor."""
         self.__state = "WAIT_FOR_SYNC"
         self.__sync_byte_count = 0
         self.__address = 0
@@ -20,6 +18,7 @@ class ProtocolParser:
 
     def processByte(self, c):
         """
+        Precess byte.
 
         :param c:
         """
@@ -69,6 +68,7 @@ class ProtocolParser:
 class StringBuffer:
     def __init__(self, parser, address, length, callback):
         """
+        Basic constructor.
 
         :param parser:
         :param address:
@@ -86,6 +86,7 @@ class StringBuffer:
 
     def set_char(self, i, c):
         """
+        Set char.
 
         :param i:
         :param c:
@@ -96,6 +97,7 @@ class StringBuffer:
 
     def on_dcsbios_write(self, address, data):
         """
+        Callback function.
 
         :param address:
         :param data:
@@ -116,6 +118,7 @@ class StringBuffer:
 class IntegerBuffer:
     def __init__(self, parser, address, mask, shift_by, callback):
         """
+        Basic constructor.
 
         :param parser:
         :param address:
@@ -134,6 +137,7 @@ class IntegerBuffer:
 
     def on_dcsbios_write(self, address, data):
         """
+        Callback function.
 
         :param address:
         :param data:
