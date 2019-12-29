@@ -15,7 +15,7 @@ def byte2int(b: bytes) -> int:
 class ProtocolParser:
     def __init__(self) -> None:
         """Basic constructor."""
-        self.__state = "WAIT_FOR_SYNC"
+        self.__state = 'WAIT_FOR_SYNC'
         self.__sync_byte_count = 0
         self.__address = 0
         self.__count = 0
@@ -30,35 +30,35 @@ class ProtocolParser:
         :param c:
         """
         c = byte2int(c)
-        if self.__state == "ADDRESS_LOW":
+        if self.__state == 'ADDRESS_LOW':
             self.__address = c
-            self.__state = "ADDRESS_HIGH"
-        elif self.__state == "ADDRESS_HIGH":
+            self.__state = 'ADDRESS_HIGH'
+        elif self.__state == 'ADDRESS_HIGH':
             self.__address += c * 256
             if self.__address != 0x5555:
-                self.__state = "COUNT_LOW"
+                self.__state = 'COUNT_LOW'
             else:
-                self.__state = "WAIT_FOR_SYNC"
-        elif self.__state == "COUNT_LOW":
+                self.__state = 'WAIT_FOR_SYNC'
+        elif self.__state == 'COUNT_LOW':
             self.__count = c
-            self.__state = "COUNT_HIGH"
-        elif self.__state == "COUNT_HIGH":
+            self.__state = 'COUNT_HIGH'
+        elif self.__state == 'COUNT_HIGH':
             self.__count += 256 * c
-            self.__state = "DATA_LOW"
-        elif self.__state == "DATA_LOW":
+            self.__state = 'DATA_LOW'
+        elif self.__state == 'DATA_LOW':
             self.__data = c
             self.__count -= 1
-            self.__state = "DATA_HIGH"
-        elif self.__state == "DATA_HIGH":
+            self.__state = 'DATA_HIGH'
+        elif self.__state == 'DATA_HIGH':
             self.__data += 256 * c
             self.__count -= 1
             for callback in self.write_callbacks:
                 callback(self.__address, self.__data)
             self.__address += 2
             if self.__count == 0:
-                self.__state = "ADDRESS_LOW"
+                self.__state = 'ADDRESS_LOW'
             else:
-                self.__state = "DATA_LOW"
+                self.__state = 'DATA_LOW'
 
         if c == 0x55:
             self.__sync_byte_count += 1
@@ -66,7 +66,7 @@ class ProtocolParser:
             self.__sync_byte_count = 0
 
         if self.__sync_byte_count == 4:
-            self.__state = "ADDRESS_LOW"
+            self.__state = 'ADDRESS_LOW'
             self.__sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
@@ -117,7 +117,7 @@ class StringBuffer:
 
         if address == 0xfffe and self.__dirty:
             self.__dirty = False
-            s = self.buffer.split(b"\x00")[0].decode("latin-1")
+            s = self.buffer.split(b"\x00")[0].decode('latin-1')
             for callback in self.callbacks:
                 callback(s)
 
