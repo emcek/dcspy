@@ -4,7 +4,7 @@ from PIL import Image, ImageFont, ImageDraw
 
 
 class AircraftHandler:
-    def __init__(self, display_handler, parser):
+    def __init__(self, display_handler, parser) -> None:
         """
         Basic constructor.
 
@@ -20,7 +20,7 @@ class AircraftHandler:
         self.font1 = ImageFont.truetype("consola.ttf", 11)
         self.font2 = ImageFont.truetype("consola.ttf", 16)
 
-    def button_handle_specific_ac(self, button_pressed):
+    def button_handle_specific_ac(self, button_pressed) -> str:
         """
         Button handler for spacific aircraft.
 
@@ -36,12 +36,12 @@ class AircraftHandler:
         elif button_pressed == 4:
             return "UFC_COMM2_CHANNEL_SELECT +3200\n"
 
-    def update_display(self):
+    def update_display(self) -> None:
         """Update display."""
         self.draw.rectangle((0, 0, self.width, self.height), 0, 0)  # clear bitmap
 
     @abstractmethod
-    def set_data(self, selector, value, update=True):
+    def set_data(self, selector, value, update=True) -> None:
         """
         Set new data.
 

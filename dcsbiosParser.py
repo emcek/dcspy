@@ -1,7 +1,8 @@
 from struct import pack
+from typing import Callable
 
 
-def byte2int(b):
+def byte2int(b: bytes) -> int:
     """
     Convert byte to intiger.
 
@@ -12,7 +13,7 @@ def byte2int(b):
 
 
 class ProtocolParser:
-    def __init__(self):
+    def __init__(self) -> None:
         """Basic constructor."""
         self.__state = "WAIT_FOR_SYNC"
         self.__sync_byte_count = 0
@@ -22,7 +23,7 @@ class ProtocolParser:
         self.write_callbacks = set()
         self.frame_sync_callbacks = set()
 
-    def process_byte(self, c):
+    def process_byte(self, c: bytes) -> None:
         """
         Precess byte.
 
@@ -72,7 +73,7 @@ class ProtocolParser:
 
 
 class StringBuffer:
-    def __init__(self, parser, address, length, callback):
+    def __init__(self, parser: ProtocolParser, address: int, length: int, callback: Callable) -> None:
         """
         Basic constructor.
 
@@ -90,7 +91,7 @@ class StringBuffer:
             self.callbacks.add(callback)
         parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
 
-    def set_char(self, i, c):
+    def set_char(self, i, c) -> None:
         """
         Set char.
 
@@ -101,7 +102,7 @@ class StringBuffer:
             self.buffer[i] = c
             self.__dirty = True
 
-    def on_dcsbios_write(self, address, data):
+    def on_dcsbios_write(self, address, data) -> None:
         """
         Callback function.
 
@@ -122,7 +123,7 @@ class StringBuffer:
 
 
 class IntegerBuffer:
-    def __init__(self, parser, address, mask, shift_by, callback):
+    def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable) -> None:
         """
         Basic constructor.
 
@@ -141,7 +142,7 @@ class IntegerBuffer:
             self.callbacks.add(callback)
         parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
 
-    def on_dcsbios_write(self, address, data):
+    def on_dcsbios_write(self, address: int, data: int) -> None:
         """
         Callback function.
 

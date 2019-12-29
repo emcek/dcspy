@@ -1,6 +1,8 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte
 from itertools import chain
 
+from PIL import Image
+
 # LCD types
 TYPE_MONO = 1
 TYPE_COLOR = 2
@@ -40,7 +42,7 @@ LogiLcdColorSetTitle = None
 LogiLcdColorSetText = None
 
 
-def init_dll(dll_path):
+def init_dll(dll_path: str) -> None:
     """
     Initialization od dynamic linking library.
 
@@ -96,7 +98,7 @@ def init_dll(dll_path):
     LogiLcdColorSetText.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
 
 
-def color_gb_picture(im):
+def color_gb_picture(im: Image) -> None:
     """
     Set color background picture.
 
