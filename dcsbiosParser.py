@@ -22,7 +22,7 @@ class ProtocolParser:
         self.write_callbacks = set()
         self.frame_sync_callbacks = set()
 
-    def processByte(self, c):
+    def process_byte(self, c):
         """
         Precess byte.
 
@@ -108,7 +108,7 @@ class StringBuffer:
         :param address:
         :param data:
         """
-        if address >= self.__address and self.__address + self.__length > address:
+        if self.__address <= address < self.__address + self.__length:
             data_bytes = pack("<H", data)
             self.set_char(address - self.__address, data_bytes[0])
             if self.__address + self.__length > (address + 1):
