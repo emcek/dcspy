@@ -1,8 +1,11 @@
 from abc import abstractmethod
+from logging import basicConfig, DEBUG, debug
 
 from PIL import Image, ImageFont, ImageDraw
 
 from dcsbiosParser import ProtocolParser
+
+basicConfig(format='%(asctime)s | %(levelname)-6s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
 class AircraftHandler:
@@ -40,6 +43,7 @@ class AircraftHandler:
             request = 'UFC_COMM2_CHANNEL_SELECT -3200\n'
         elif button_pressed == 4:
             request = 'UFC_COMM2_CHANNEL_SELECT +3200\n'
+        debug(f'Buttopn: {button_pressed} Request: {request}')
         return request
 
     def update_display(self) -> None:
