@@ -31,14 +31,16 @@ class AircraftHandler:
         :param button_pressed:
         :return:
         """
+        request = ''
         if button_pressed == 1:
-            return 'UFC_COMM1_CHANNEL_SELECT -3200\n'
+            request = 'UFC_COMM1_CHANNEL_SELECT -3200\n'
         elif button_pressed == 2:
-            return 'UFC_COMM1_CHANNEL_SELECT +3200\n'
+            request = 'UFC_COMM1_CHANNEL_SELECT +3200\n'
         elif button_pressed == 3:
-            return 'UFC_COMM2_CHANNEL_SELECT -3200\n'
+            request = 'UFC_COMM2_CHANNEL_SELECT -3200\n'
         elif button_pressed == 4:
-            return 'UFC_COMM2_CHANNEL_SELECT +3200\n'
+            request = 'UFC_COMM2_CHANNEL_SELECT +3200\n'
+        return request
 
     def update_display(self) -> None:
         """Update display."""
