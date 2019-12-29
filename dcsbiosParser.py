@@ -1,4 +1,4 @@
-import struct
+from struct import pack
 
 
 def byte2int(b):
@@ -109,7 +109,7 @@ class StringBuffer:
         :param data:
         """
         if address >= self.__address and self.__address + self.__length > address:
-            data_bytes = struct.pack("<H", data)
+            data_bytes = pack("<H", data)
             self.set_char(address - self.__address, data_bytes[0])
             if self.__address + self.__length > (address + 1):
                 self.set_char(address - self.__address + 1, data_bytes[1])
