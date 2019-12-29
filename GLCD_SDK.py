@@ -105,14 +105,3 @@ def ColorBGPIL(im):
     global LogiLcdColorSetBackground
 
     LogiLcdColorSetBackground((c_ubyte * 307200)(*list(chain(*list(im.getdata())))))
-
-
-def flatten(listOfLists):
-    """
-    Flatten list of lists.
-
-    :param listOfLists:
-    :return:
-    """
-    # Flatten one level of nesting
-    return chain.from_iterable(listOfLists)
