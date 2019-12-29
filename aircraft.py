@@ -4,14 +4,14 @@ from PIL import Image, ImageFont, ImageDraw
 
 
 class AircraftHandler:
-    def __init__(self, displayHandler, parser):
+    def __init__(self, display_handler, parser):
         """
         Basic constructor.
 
-        :param displayHandler:
+        :param display_handler:
         :param parser:
         """
-        self.g13 = displayHandler
+        self.g13 = display_handler
         self.parser = parser
         self.width = 160
         self.height = 43
@@ -20,28 +20,28 @@ class AircraftHandler:
         self.font1 = ImageFont.truetype("consola.ttf", 11)
         self.font2 = ImageFont.truetype("consola.ttf", 16)
 
-    def buttonHandleSpecificAC(self, buttonPressed):
+    def button_handle_specific_ac(self, button_pressed):
         """
         Button handler for spacific aircraft.
 
-        :param buttonPressed:
+        :param button_pressed:
         :return:
         """
-        if buttonPressed == 1:
+        if button_pressed == 1:
             return "UFC_COMM1_CHANNEL_SELECT -3200\n"
-        elif buttonPressed == 2:
+        elif button_pressed == 2:
             return "UFC_COMM1_CHANNEL_SELECT +3200\n"
-        elif buttonPressed == 3:
+        elif button_pressed == 3:
             return "UFC_COMM2_CHANNEL_SELECT -3200\n"
-        elif buttonPressed == 4:
+        elif button_pressed == 4:
             return "UFC_COMM2_CHANNEL_SELECT +3200\n"
 
-    def updateDisplay(self):
+    def update_display(self):
         """Update display."""
         self.draw.rectangle((0, 0, self.width, self.height), 0, 0)  # clear bitmap
 
     @abstractmethod
-    def setData(self, selector, value, update=True):
+    def set_data(self, selector, value, update=True):
         """
         Set new data.
 
