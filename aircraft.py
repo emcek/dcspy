@@ -3,6 +3,7 @@ from logging import basicConfig, DEBUG, debug
 
 from PIL import Image, ImageFont, ImageDraw
 
+import GLCD_SDK
 from dcsbiosParser import ProtocolParser
 
 basicConfig(format='%(asctime)s | %(levelname)-6s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
@@ -20,8 +21,8 @@ class AircraftHandler:
         """
         self.g13 = display_handler
         self.parser = parser
-        self.width = 160
-        self.height = 43
+        self.width = GLCD_SDK.MONO_WIDTH
+        self.height = GLCD_SDK.MONO_WIDTH
         self.img = Image.new('1', (self.width, self.height), 0)
         self.draw = ImageDraw.Draw(self.img)
         self.font1 = ImageFont.truetype('consola.ttf', 11)
