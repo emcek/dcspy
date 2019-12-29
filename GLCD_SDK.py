@@ -40,7 +40,7 @@ LogiLcdColorSetTitle = None
 LogiLcdColorSetText = None
 
 
-def initDLL(dll_path):
+def init_dll(dll_path):
     """
     Initialization od dynamic linking library.
 
@@ -96,7 +96,7 @@ def initDLL(dll_path):
     LogiLcdColorSetText.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
 
 
-def ColorBGPIL(im):
+def color_gb_picture(im):
     """
     Set color background picture.
 
