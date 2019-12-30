@@ -1,5 +1,5 @@
 from struct import pack
-from typing import Callable
+from typing import Callable, Set
 
 
 def byte2int(b: bytes) -> int:
@@ -86,7 +86,7 @@ class StringBuffer:
         self.__length = length
         self.__dirty = False
         self.buffer = bytearray(length)
-        self.callbacks = set()
+        self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
         parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
@@ -137,7 +137,7 @@ class IntegerBuffer:
         self.__mask = mask
         self.__shift_by = shift_by
         self.__value = None
-        self.callbacks = set()
+        self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
         parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
