@@ -20,8 +20,8 @@ class ProtocolParser:
         self.__address = 0
         self.__count = 0
         self.__data = 0
-        self.write_callbacks = set()
-        self.frame_sync_callbacks = set()
+        self.write_callbacks: Set[Callable] = set()
+        self.frame_sync_callbacks: Set[Callable] = set()
 
     def process_byte(self, c: bytes) -> None:
         """
