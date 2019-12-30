@@ -18,7 +18,7 @@ This is a software designed to put information from DCS:FA18C Hornet's Up Front 
 
 ## Credits
 This software uses:
-* <https://github.com/DCSFlightpanels/dcs-bios> DCS-BIOS fork by DCSFlightpanels for exporting data from DCS to local network (version required 0.7.31)
+* <https://github.com/DCSFlightpanels/dcs-bios> DCS-BIOS fork by DCSFlightpanels for exporting data from DCS to local network
 * <https://github.com/jboecker/python-dcs-bios-example> jboecker's parser to read data stream from DCS-BIOS
 * <https://github.com/50thomatoes50/GLCD_SDK.py> A Python wrapper for Logitech's LCD SDK
 
@@ -59,6 +59,6 @@ which calls back function in G13Handler `set_data(...)` with apropriate paramter
 
 * You can also use 4 button below display, just checktheir state with `g13.checkButtons()` which one is pressed and send TCP packet with command you wish to use. Again, look it up in `control-reference.html`, for example:
 ```python
-s.send(bytes("UFC_COMM1_CHANNEL_SELECT INC\n","utf-8"))
+s.send(bytes('UFC_COMM1_CHANNEL_SELECT INC\n','utf-8'))
 ```
 to rotate COMM1 knob right
