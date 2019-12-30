@@ -1,6 +1,5 @@
 from abc import abstractmethod
 from logging import basicConfig, DEBUG, debug, warning
-from typing import Any
 
 from dcsbios import StringBuffer
 
@@ -17,7 +16,8 @@ class AircraftHandler:
         """
         self.g13 = display_handler
 
-    def button_handle_specific_ac(self, button_pressed: int) -> str:
+    @staticmethod
+    def button_handle_specific_ac(button_pressed: int) -> str:
         """
         Button handler for spacific aircraft.
 
@@ -127,7 +127,7 @@ class FA18Handler(AircraftHandler):
 
         self.g13.update_display(self.g13.img)
 
-    def set_data(self, selector: int, value: Any, update=True) -> None:
+    def set_data(self, selector: int, value: str, update=True) -> None:
         """
         Set new data.
 
@@ -208,7 +208,7 @@ class F16Handler(AircraftHandler):
 
         self.g13.update_display(self.g13.img)
 
-    def set_data(self, selector: str, value: Any, update=True) -> None:
+    def set_data(self, selector: str, value: str, update=True) -> None:
         """
         Set new data.
 
