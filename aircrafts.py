@@ -4,8 +4,8 @@ from typing import Any
 
 from PIL import Image, ImageFont, ImageDraw
 
-from GLCD_SDK import MONO_HEIGHT, MONO_WIDTH
-from dcsbiosParser import ProtocolParser, StringBuffer
+from lcd_sdk import MONO_HEIGHT, MONO_WIDTH
+from dcsbios import ProtocolParser, StringBuffer
 
 basicConfig(format='%(asctime)s | %(levelname)-6s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
