@@ -145,12 +145,7 @@ class FA18Handler(AircraftHandler):
         # Fuel Totaliser
         self.draw.text((36, 29), self.FuelTotal, 1, self.font2)
 
-        # make it array and set proper values
-        pixels = list(self.img.getdata())
-        for i, _ in enumerate(pixels):
-            pixels[i] *= 128
-
-        self.g13.update_display(pixels)
+        self.g13.update_display(self.img)
 
     def set_data(self, selector: int, value: Any, update=True) -> None:
         """
@@ -253,12 +248,7 @@ class F16Handler(AircraftHandler):
         pos = pos + offsetpos
         self.draw.text((0, pos), self.DEDLine5, 1, self.font1)
 
-        # make it array and set proper values
-        pixels = list(self.img.getdata())
-        for i, _ in enumerate(pixels):
-            pixels[i] *= 128
-
-        self.g13.update_display(pixels)
+        self.g13.update_display(self.img)
 
     def set_data(self, selector: str, value: Any, update=True) -> None:
         """
