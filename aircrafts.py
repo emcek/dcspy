@@ -2,7 +2,7 @@ from logging import basicConfig, DEBUG, debug
 
 from dcsbios import StringBuffer
 
-basicConfig(format='%(asctime)s | %(levelname)-6s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
+basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
 class AircraftHandler:
