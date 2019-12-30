@@ -13,7 +13,7 @@ This is a software designed to put information from DCS:FA18C Hornet's Up Front 
 * Installed Python 3.x <https://www.python.org/downloads/>
 * Installed Logitech Gaming Software <https://support.logitech.com/software/lgs>
 * Installed Logitech LCD SDK_8.57.148 in `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148` <http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip>
- * DCS-BIOS <https://github.com/DCSFlightpanels/dcs-bios> (version required 0.7.31)copied into `C:\Users\XXX\Saved Games\DCS.openbeta\Scripts`. You also need to add ```dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])``` line to your `C:\Users\XXX\Saved Games\DCS.openbeta\Scripts\Export.lua` file
+* DCS-BIOS <https://github.com/DCSFlightpanels/dcs-bios> (version required 0.7.31)copied into `C:\Users\XXX\Saved Games\DCS.openbeta\Scripts`. You also need to add ```dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])``` line to your `C:\Users\XXX\Saved Games\DCS.openbeta\Scripts\Export.lua` file
 
 ## Credits
 This software uses:
@@ -45,16 +45,20 @@ You can use it straight away, by running `./dist/specelUFC.exe` (or, if you pref
 If you want to modify or write something by yourself, here's a quick walkthrough:
 
 * First, you need to "subscribe" data you want and pass it to G13Handler:
-```
-ScratchpadNumberDisplay = StringBuffer(parser, 0x543e, 8, lambda s: g13.setData(3,s))
+```python
+ScratchpadNumberDisplay = StringBuffer(parser, 0x543e, 8, lambda s: g13.set_data(3,s))
 ```
 For required adress and data length, look up in `C:\Users\XXX\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 
 * Then, receive byte and use parser
-```
+```python
 c = s.recv(1)
 parser.processByte(c)
 ```
-which calls back function in G13Handler `setData(...)` with apropriate paramteres and update display content, by creating bitmap and passing it through LCD SDK to device display
+which calls back function in G13Handler `set_data(...)` with apropriate paramteres and update display content, by creating bitmap and passing it through LCD SDK to device display
 
-* You can also use 4 button below display, just checktheir state with `g13.checkButtons()` which one is pressed and send TCP packet with command you wish to use. Again, look it up in `control-reference.html`, for example `s.send(bytes("UFC_COMM1_CHANNEL_SELECT -3200\n","utf-8"))` to rotate COMM1 knob left
+* You can also use 4 button below display, just checktheir state with `g13.checkButtons()` which one is pressed and send TCP packet with command you wish to use. Again, look it up in `control-reference.html`, for example:
+```python
+s.send(bytes("UFC_COMM1_CHANNEL_SELECT INC\n","utf-8"))
+```
+to rotate COMM1 knob right
