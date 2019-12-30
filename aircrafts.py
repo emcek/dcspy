@@ -184,7 +184,7 @@ class FA18Handler(AircraftHandler):
         elif selector == 15:
             self.OptionDisplay5 = value
         elif selector == 21:
-            # for unknown reason dcs_bios returns symbols instead '1' and '2' 
+            # for unknown reason dcs_bios returns symbols instead '1' and '2'
             # from comm channel display, so here we can correct this
             modified_string = value
             modified_string = modified_string.replace('`', '1')
