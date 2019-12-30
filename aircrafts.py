@@ -115,6 +115,7 @@ class FA18Handler(AircraftHandler):
         self.g13.draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
         self.g13.draw.text((140 - offset_comm2, 29), self.COMM2Display, 1, self.g13.font2)
 
+        # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
             self.g13.draw.text((120, offset),
@@ -136,15 +137,9 @@ class FA18Handler(AircraftHandler):
         """
         # programming noob here, but it's pretty clear how to use this monster
         if selector == 1:
-            modified_string = value
-            modified_string = modified_string.replace('`', '1')
-            modified_string = modified_string.replace('~', '2')
-            self.ScratchpadString1Display = modified_string
+            self.ScratchpadString1Display = value.replace('`', '1').replace('~', '2')
         elif selector == 2:
-            modified_string = value
-            modified_string = modified_string.replace('`', '1')
-            modified_string = modified_string.replace('~', '2')
-            self.ScratchpadString2Display = modified_string
+            self.ScratchpadString2Display = value.replace('`', '1').replace('~', '2')
         elif selector == 3:
             self.ScratchpadNumberDisplay = value
         elif selector == 11:
@@ -160,15 +155,9 @@ class FA18Handler(AircraftHandler):
         elif selector == 21:
             # for unknown reason dcs_bios returns symbols instead '1' and '2'
             # from comm channel display, so here we can correct this
-            modified_string = value
-            modified_string = modified_string.replace('`', '1')
-            modified_string = modified_string.replace('~', '2')
-            self.COMM1Display = modified_string
+            self.COMM1Display = value.replace('`', '1').replace('~', '2')
         elif selector == 22:
-            modified_string = value
-            modified_string = modified_string.replace('`', '1')
-            modified_string = modified_string.replace('~', '2')
-            self.COMM2Display = modified_string
+            self.COMM2Display = value.replace('`', '1').replace('~', '2')
         elif selector == 31:
             self.OptionCueing1 = value
         elif selector == 32:
