@@ -248,8 +248,8 @@ class Ka50Handler(AircraftHandler):
         self.l1_point = ''
         self.l1_sign = ''
         self.l1_text = ''
-        self.l2_apostrophe1 = ''
-        self.l2_apostrophe2 = ''
+        self.l2_apostr1 = ''
+        self.l2_apostr2 = ''
         self.l2_point = ''
         self.l2_sign = ''
         self.l2_text = ''
@@ -259,8 +259,8 @@ class Ka50Handler(AircraftHandler):
         self.buffer_l1_point = StringBuffer(self.g13.parser, 0x1930, 1, lambda s: self.set_data('l1_point', s))
         self.buffer_l1_sign = StringBuffer(self.g13.parser, 0x1920, 1, lambda s: self.set_data('l1_sign', s))
         self.buffer_l1_text = StringBuffer(self.g13.parser, 0x1924, 6, lambda s: self.set_data('l1_text', s))
-        self.buffer_l2_apostrophe1 = StringBuffer(self.g13.parser, 0x1938, 1, lambda s: self.set_data('l2_apostrophe1', s))
-        self.buffer_l2_apostrophe2 = StringBuffer(self.g13.parser, 0x193a, 1, lambda s: self.set_data('l2_apostrophe2', s))
+        self.buffer_l2_apostr1 = StringBuffer(self.g13.parser, 0x1938, 1, lambda s: self.set_data('l2_apostr1', s))
+        self.buffer_l2_apostr2 = StringBuffer(self.g13.parser, 0x193a, 1, lambda s: self.set_data('l2_apostr2', s))
         self.buffer_l2_point = StringBuffer(self.g13.parser, 0x1932, 1, lambda s: self.set_data('l2_point', s))
         self.buffer_l2_sign = StringBuffer(self.g13.parser, 0x1922, 1, lambda s: self.set_data('l2_sign', s))
         self.buffer_l2_text = StringBuffer(self.g13.parser, 0x192a, 6, lambda s: self.set_data('l2_text', s))
@@ -283,28 +283,7 @@ class Ka50Handler(AircraftHandler):
         :param value:
         :param update:
         """
-        if selector == 'l1_apostr1':
-            self.l1_apostr1 = value
-        elif selector == 'l1_apostr2':
-            self.l1_apostr2 = value
-        elif selector == 'l1_point':
-            self.l1_point = value
-        elif selector == 'l1_sign':
-            self.l1_sign = value
-        elif selector == 'l1_text':
-            self.l1_text = value
-        elif selector == 'l2_apostrophe1':
-            self.l2_apostrophe1 = value
-        elif selector == 'l2_apostrophe2':
-            self.l2_apostrophe2 = value
-        elif selector == 'l2_point':
-            self.l2_point = value
-        elif selector == 'l2_sign':
-            self.l2_sign = value
-        elif selector == 'l2_text':
-            self.l2_text = value
-        else:
-            warning(f'No such selector: {selector}')
+        setattr(self, selector, value)
         debug(f'value: {value}')
         if update:
             self.update_display()
@@ -316,7 +295,7 @@ class Ka50Handler(AircraftHandler):
         if self.l1_text:
             text1 = f' {self.l1_text[-5:-3]}{self.l1_apostr1}{self.l1_text[-3:-1]}{self.l1_apostr2}{self.l1_text[-1]}'
         if self.l2_text:
-            text2 = f'{self.l2_text[-6:-3]}{self.l2_apostrophe1}{self.l2_text[-3:-1]}{self.l2_apostrophe2}{self.l2_text[-1]}'
+            text2 = f'{self.l2_text[-6:-3]}{self.l2_apostr1}{self.l2_text[-3:-1]}{self.l2_apostr2}{self.l2_text[-1]}'
         line1 = self.l1_sign + text1 + self.l1_point
         line2 = self.l2_sign + text2 + self.l2_point
         self.g13.draw.text((0, 0), line1, 1, self.g13.font1)
