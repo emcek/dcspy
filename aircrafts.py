@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from logging import basicConfig, DEBUG, debug, warning
 
 from dcsbios import StringBuffer
@@ -40,7 +39,6 @@ class AircraftHandler:
         """Update display."""
         self.g13.draw.rectangle((0, 0, self.g13.width, self.g13.height), 0, 0)  # clear bitmap
 
-    @abstractmethod
     def set_data(self, selector, value, update=True) -> None:
         """
         Set new data.
@@ -49,7 +47,10 @@ class AircraftHandler:
         :param value:
         :param update:
         """
-        pass
+        setattr(self, selector, value)
+        debug(f'value: {value}')
+        if update:
+            self.update_display()
 
 
 class FA18Handler(AircraftHandler):
@@ -208,31 +209,6 @@ class F16Handler(AircraftHandler):
 
         self.g13.update_display(self.g13.img)
 
-    def set_data(self, selector: str, value: str, update=True) -> None:
-        """
-        Set new data.
-
-        :param selector:
-        :param value:
-        :param update:
-        """
-        # programming noob here, but it's pretty clear how to use this monster
-        if selector == 'DEDLine1':
-            self.DEDLine1 = value
-        elif selector == 'DEDLine2':
-            self.DEDLine2 = value
-        elif selector == 'DEDLine3':
-            self.DEDLine3 = value
-        elif selector == 'DEDLine4':
-            self.DEDLine4 = value
-        elif selector == 'DEDLine5':
-            self.DEDLine5 = value
-        else:
-            warning(f'No such selector: {selector}')
-        debug(f'value: {value}')
-        if update:
-            self.update_display()
-
 
 class Ka50Handler(AircraftHandler):
     def __init__(self, display_handler):
@@ -275,19 +251,6 @@ class Ka50Handler(AircraftHandler):
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
         return '\n'
 
-    def set_data(self, selector, value, update=True) -> None:
-        """
-        Set new data.
-
-        :param selector:
-        :param value:
-        :param update:
-        """
-        setattr(self, selector, value)
-        debug(f'value: {value}')
-        if update:
-            self.update_display()
-
     def update_display(self) -> None:
         """Update display."""
         super().update_display()
@@ -296,8 +259,8 @@ class Ka50Handler(AircraftHandler):
             text1 = f' {self.l1_text[-5:-3]}{self.l1_apostr1}{self.l1_text[-3:-1]}{self.l1_apostr2}{self.l1_text[-1]}'
         if self.l2_text:
             text2 = f'{self.l2_text[-6:-3]}{self.l2_apostr1}{self.l2_text[-3:-1]}{self.l2_apostr2}{self.l2_text[-1]}'
-        line1 = self.l1_sign + text1 + self.l1_point
-        line2 = self.l2_sign + text2 + self.l2_point
+        line1 = f'{self.l1_sign} {text1} {self.l1_point}'
+        line2 = f'{self.l2_sign} {text2} {self.l2_point}'
         self.g13.draw.text((0, 0), line1, 1, self.g13.font1)
         self.g13.draw.text((0, 8), line2, 1, self.g13.font1)
         self.g13.update_display(self.g13.img)
