@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/emcek/specelUFC.svg?branch=master)](https://travis-ci.org/emcek/specelUFC)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2f60c2eb170f4158a5df3880ea8ca836)](https://app.codacy.com/app/mplichta/specelUFC?utm_source=github.com&utm_medium=referral&utm_content=emcek/specelUFC&utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/028d23a12d5345b7bbeece49860a7992)](https://www.codacy.com/manual/mplichta/specelUFC?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/specelUFC&amp;utm_campaign=Badge_Grade)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/specelUFC?branch=master)](https://bettercodehub.com/)
 
 # specelUFC
