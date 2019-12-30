@@ -266,10 +266,23 @@ class Ka50Handler(AircraftHandler):
         self.buffer_l2_text = StringBuffer(self.g13.parser, 0x192a, 6, lambda s: self.set_data('l2_text', s))
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
+        """
+        Button handler for spacific aircraft.
+
+        :param button_pressed:
+        :return:
+        """
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
         return '\n'
 
     def set_data(self, selector, value, update=True) -> None:
+        """
+        Set new data.
+
+        :param selector:
+        :param value:
+        :param update:
+        """
         if selector == 'l1_apostr1':
             self.l1_apostr1 = value
         elif selector == 'l1_apostr2':
