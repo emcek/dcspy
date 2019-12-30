@@ -132,15 +132,15 @@ class FA18Handler(AircraftHandler):
         # option display 1..5 with cueing
         pos = 0
         offset = 8
-        self.draw.text((120, pos), '1' + self.OptionCueing1 + self.OptionDisplay1, 1, self.font1)
+        self.draw.text((120, pos), f'1{self.OptionCueing1}{self.OptionDisplay1}', 1, self.font1)
         pos += offset
-        self.draw.text((120, pos), '2' + self.OptionCueing2 + self.OptionDisplay2, 1, self.font1)
+        self.draw.text((120, pos), f'2{self.OptionCueing2}{self.OptionDisplay2}', 1, self.font1)
         pos += offset
-        self.draw.text((120, pos), '3' + self.OptionCueing3 + self.OptionDisplay3, 1, self.font1)
+        self.draw.text((120, pos), f'3{self.OptionCueing3}{self.OptionDisplay3}', 1, self.font1)
         pos += offset
-        self.draw.text((120, pos), '4' + self.OptionCueing4 + self.OptionDisplay4, 1, self.font1)
+        self.draw.text((120, pos), f'4{self.OptionCueing4}{self.OptionDisplay4}', 1, self.font1)
         pos += offset
-        self.draw.text((120, pos), '5' + self.OptionCueing5 + self.OptionDisplay5, 1, self.font1)
+        self.draw.text((120, pos), f'5{self.OptionCueing5}{self.OptionDisplay5}', 1, self.font1)
 
         # Fuel Totaliser
         self.draw.text((36, 29), self.FuelTotal, 1, self.font2)
