@@ -2,16 +2,6 @@ from struct import pack
 from typing import Callable, Set
 
 
-def byte2int(b: bytes) -> int:
-    """
-    Convert byte to intiger.
-
-    :param b:
-    :return:
-    """
-    return b[0]
-
-
 class ProtocolParser:
     def __init__(self) -> None:
         """Basic constructor."""
@@ -23,13 +13,13 @@ class ProtocolParser:
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
 
-    def process_byte(self, c: bytes) -> None:
+    def process_byte(self, b: bytes) -> None:
         """
-        Precess byte.
+        Process byte.
 
-        :param c:
+        :param b:
         """
-        c = byte2int(c)
+        c = ord(b)
         if self.__state == 'ADDRESS_LOW':
             self.__address = c
             self.__state = 'ADDRESS_HIGH'
@@ -89,7 +79,7 @@ class StringBuffer:
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
-        parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
+        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(addr, data))
 
     def set_char(self, i, c) -> None:
         """
@@ -110,14 +100,14 @@ class StringBuffer:
         :param data:
         """
         if self.__address <= address < self.__address + self.__length:
-            data_bytes = pack("<H", data)
+            data_bytes = pack('<H', data)
             self.set_char(address - self.__address, data_bytes[0])
             if self.__address + self.__length > (address + 1):
                 self.set_char(address - self.__address + 1, data_bytes[1])
 
         if address == 0xfffe and self.__dirty:
             self.__dirty = False
-            s = self.buffer.split(b"\x00")[0].decode('latin-1')
+            s = self.buffer.split(b'\x00')[0].decode('latin-1')
             for callback in self.callbacks:
                 callback(s)
 
@@ -140,7 +130,7 @@ class IntegerBuffer:
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
-        parser.write_callbacks.add(lambda address, data: self.on_dcsbios_write(address, data))
+        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(addr, data))
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
