@@ -38,15 +38,15 @@ class AircraftHandler:
         """
         request = ''
         if button_pressed == 1:
-            request = 'UFC_COMM1_CHANNEL_SELECT -3200\n'
+            request = 'UFC_COMM1_CHANNEL_SELECT DEC'
         elif button_pressed == 2:
-            request = 'UFC_COMM1_CHANNEL_SELECT +3200\n'
+            request = 'UFC_COMM1_CHANNEL_SELECT INC'
         elif button_pressed == 3:
-            request = 'UFC_COMM2_CHANNEL_SELECT -3200\n'
+            request = 'UFC_COMM2_CHANNEL_SELECT DEC'
         elif button_pressed == 4:
-            request = 'UFC_COMM2_CHANNEL_SELECT +3200\n'
+            request = 'UFC_COMM2_CHANNEL_SELECT INC'
         debug(f'Button: {button_pressed} Request: {request}')
-        return request
+        return f'{request}\n'
 
     def update_display(self) -> None:
         """Update display."""
