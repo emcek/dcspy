@@ -16,8 +16,7 @@ class AircraftHandler:
         """
         self.g13 = display_handler
 
-    @staticmethod
-    def button_handle_specific_ac(button_pressed: int) -> str:
+    def button_handle_specific_ac(self, button_pressed: int) -> str:
         """
         Button handler for spacific aircraft.
 
@@ -33,7 +32,8 @@ class AircraftHandler:
             request = 'UFC_COMM2_CHANNEL_SELECT DEC'
         elif button_pressed == 4:
             request = 'UFC_COMM2_CHANNEL_SELECT INC'
-        debug(f'Button: {button_pressed} Request: {request}')
+        debug(f'{self.__class__.__name__} Button: {button_pressed}')
+        debug(f'Request: {request}')
         return f'{request}\n'
 
     def update_display(self) -> None:
@@ -232,3 +232,80 @@ class F16Handler(AircraftHandler):
         debug(f'value: {value}')
         if update:
             self.update_display()
+
+
+class Ka50Handler(AircraftHandler):
+    def __init__(self, display_handler):
+        """
+        Basic constructor.
+
+        :param display_handler:
+        :type display_handler: G13Handler
+        """
+        super().__init__(display_handler)
+        self.l1_apostr1 = ''
+        self.l1_apostr2 = ''
+        self.l1_point = ''
+        self.l1_sign = ''
+        self.l1_text = ''
+        self.l2_apostrophe1 = ''
+        self.l2_apostrophe2 = ''
+        self.l2_point = ''
+        self.l2_sign = ''
+        self.l2_text = ''
+
+        self.buffer_l1_apostr1 = StringBuffer(self.g13.parser, 0x1934, 1, lambda s: self.set_data('l1_apostr1', s))
+        self.buffer_l1_apostr2 = StringBuffer(self.g13.parser, 0x1936, 1, lambda s: self.set_data('l1_apostr2', s))
+        self.buffer_l1_point = StringBuffer(self.g13.parser, 0x1930, 1, lambda s: self.set_data('l1_point', s))
+        self.buffer_l1_sign = StringBuffer(self.g13.parser, 0x1920, 1, lambda s: self.set_data('l1_sign', s))
+        self.buffer_l1_text = StringBuffer(self.g13.parser, 0x1924, 6, lambda s: self.set_data('l1_text', s))
+        self.buffer_l2_apostrophe1 = StringBuffer(self.g13.parser, 0x1938, 1, lambda s: self.set_data('l2_apostrophe1', s))
+        self.buffer_l2_apostrophe2 = StringBuffer(self.g13.parser, 0x193a, 1, lambda s: self.set_data('l2_apostrophe2', s))
+        self.buffer_l2_point = StringBuffer(self.g13.parser, 0x1932, 1, lambda s: self.set_data('l2_point', s))
+        self.buffer_l2_sign = StringBuffer(self.g13.parser, 0x1922, 1, lambda s: self.set_data('l2_sign', s))
+        self.buffer_l2_text = StringBuffer(self.g13.parser, 0x192a, 6, lambda s: self.set_data('l2_text', s))
+
+    def button_handle_specific_ac(self, button_pressed: int) -> str:
+        debug(f'{self.__class__.__name__} Button: {button_pressed}')
+        return '\n'
+
+    def set_data(self, selector, value, update=True) -> None:
+        if selector == 'l1_apostr1':
+            self.l1_apostr1 = value
+        elif selector == 'l1_apostr2':
+            self.l1_apostr2 = value
+        elif selector == 'l1_point':
+            self.l1_point = value
+        elif selector == 'l1_sign':
+            self.l1_sign = value
+        elif selector == 'l1_text':
+            self.l1_text = value
+        elif selector == 'l2_apostrophe1':
+            self.l2_apostrophe1 = value
+        elif selector == 'l2_apostrophe2':
+            self.l2_apostrophe2 = value
+        elif selector == 'l2_point':
+            self.l2_point = value
+        elif selector == 'l2_sign':
+            self.l2_sign = value
+        elif selector == 'l2_text':
+            self.l2_text = value
+        else:
+            warning(f'No such selector: {selector}')
+        debug(f'value: {value}')
+        if update:
+            self.update_display()
+
+    def update_display(self) -> None:
+        """Update display."""
+        super().update_display()
+        text1, text2 = '', ''
+        if self.l1_text:
+            text1 = f' {self.l1_text[-5:-3]}{self.l1_apostr1}{self.l1_text[-3:-1]}{self.l1_apostr2}{self.l1_text[-1]}'
+        if self.l2_text:
+            text2 = f'{self.l2_text[-6:-3]}{self.l2_apostrophe1}{self.l2_text[-3:-1]}{self.l2_apostrophe2}{self.l2_text[-1]}'
+        line1 = self.l1_sign + text1 + self.l1_point
+        line2 = self.l2_sign + text2 + self.l2_point
+        self.g13.draw.text((0, 0), line1, 1, self.g13.font1)
+        self.g13.draw.text((0, 8), line2, 1, self.g13.font1)
+        self.g13.update_display(self.g13.img)
