@@ -115,7 +115,7 @@ class FA18Handler(AircraftHandler):
 
         # Scrachpad
         self.draw.text((0, 0),
-                       (self.ScratchpadString1Display + '' + self.ScratchpadString2Display + '' + self.ScratchpadNumberDisplay),
+                       self.ScratchpadString1Display + self.ScratchpadString2Display + self.ScratchpadNumberDisplay,
                        1,
                        self.font2)
         self.draw.line((0, 20, 115, 20), 1, 1)
@@ -184,7 +184,8 @@ class FA18Handler(AircraftHandler):
         elif selector == 15:
             self.OptionDisplay5 = value
         elif selector == 21:
-            # for unknown reason dcs_bios returns symbols instead '1' and '2' from comm channel display, so here we can correct this
+            # for unknown reason dcs_bios returns symbols instead '1' and '2' 
+            # from comm channel display, so here we can correct this
             modified_string = value
             modified_string = modified_string.replace('`', '1')
             modified_string = modified_string.replace('~', '2')
