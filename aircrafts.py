@@ -255,7 +255,7 @@ class F16Handler(AircraftHandler):
 
         # make it array and set proper values
         pixels = list(self.img.getdata())
-        for i in range(0, len(pixels)):
+        for i, _ in enumerate(pixels):
             pixels[i] *= 128
 
         self.g13.update_display(pixels)
