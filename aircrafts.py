@@ -22,18 +22,13 @@ class AircraftHandler:
         :param button_pressed:
         :return:
         """
-        request = ''
-        if button_pressed == 1:
-            request = 'UFC_COMM1_CHANNEL_SELECT DEC'
-        elif button_pressed == 2:
-            request = 'UFC_COMM1_CHANNEL_SELECT INC'
-        elif button_pressed == 3:
-            request = 'UFC_COMM2_CHANNEL_SELECT DEC'
-        elif button_pressed == 4:
-            request = 'UFC_COMM2_CHANNEL_SELECT INC'
+        action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC',
+                  2: 'UFC_COMM1_CHANNEL_SELECT INC',
+                  3: 'UFC_COMM2_CHANNEL_SELECT DEC',
+                  4: 'UFC_COMM2_CHANNEL_SELECT INC'}
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
-        debug(f'Request: {request}')
-        return f'{request}\n'
+        debug(f'Request: {action[button_pressed]}')
+        return f'{action[button_pressed]}\n'
 
     def update_display(self) -> None:
         """Update display."""
