@@ -115,18 +115,11 @@ class FA18Handler(AircraftHandler):
         self.g13.draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
         self.g13.draw.text((140 - offset_comm2, 29), self.COMM2Display, 1, self.g13.font2)
 
-        # option display 1..5 with cueing
-        pos = 0
-        offset = 8
-        self.g13.draw.text((120, pos), f'1{self.OptionCueing1}{self.OptionDisplay1}', 1, self.g13.font1)
-        pos += offset
-        self.g13.draw.text((120, pos), f'2{self.OptionCueing2}{self.OptionDisplay2}', 1, self.g13.font1)
-        pos += offset
-        self.g13.draw.text((120, pos), f'3{self.OptionCueing3}{self.OptionDisplay3}', 1, self.g13.font1)
-        pos += offset
-        self.g13.draw.text((120, pos), f'4{self.OptionCueing4}{self.OptionDisplay4}', 1, self.g13.font1)
-        pos += offset
-        self.g13.draw.text((120, pos), f'5{self.OptionCueing5}{self.OptionDisplay5}', 1, self.g13.font1)
+        for i in range(1, 6):
+            offset = (i - 1) * 8
+            self.g13.draw.text((120, offset),
+                               f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
+                               1, self.g13.font1)
 
         # Fuel Totaliser
         self.g13.draw.text((36, 29), self.FuelTotal, 1, self.g13.font2)
@@ -204,11 +197,11 @@ class F16Handler(AircraftHandler):
         :type display_handler: G13Handler
         """
         super().__init__(display_handler)
-        self.DEDLine1 = ""
-        self.DEDLine2 = ""
-        self.DEDLine3 = ""
-        self.DEDLine4 = ""
-        self.DEDLine5 = ""
+        self.DEDLine1 = ''
+        self.DEDLine2 = ''
+        self.DEDLine3 = ''
+        self.DEDLine4 = ''
+        self.DEDLine5 = ''
 
         self.bufferDEDLine1 = StringBuffer(self.g13.parser, 0x44fc, 50, lambda s: self.set_data('DEDLine1', s))
         self.bufferDEDLine2 = StringBuffer(self.g13.parser, 0x452e, 50, lambda s: self.set_data('DEDLine2', s))
@@ -220,17 +213,9 @@ class F16Handler(AircraftHandler):
         """Update display."""
         super().update_display()
 
-        pos = 0
-        offsetpos = 8
-        self.g13.draw.text((0, pos), self.DEDLine1, 1, self.g13.font1)
-        pos = pos + offsetpos
-        self.g13.draw.text((0, pos), self.DEDLine2, 1, self.g13.font1)
-        pos = pos + offsetpos
-        self.g13.draw.text((0, pos), self.DEDLine3, 1, self.g13.font1)
-        pos = pos + offsetpos
-        self.g13.draw.text((0, pos), self.DEDLine4, 1, self.g13.font1)
-        pos = pos + offsetpos
-        self.g13.draw.text((0, pos), self.DEDLine5, 1, self.g13.font1)
+        for i in range(1, 6):
+            offset = (i - 1) * 8
+            self.g13.draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, self.g13.font1)
 
         self.g13.update_display(self.g13.img)
 
