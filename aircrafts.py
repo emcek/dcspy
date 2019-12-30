@@ -136,12 +136,8 @@ class FA18Handler(AircraftHandler):
         :param update:
         """
         if selector in ('ScratchpadStr1', 'ScratchpadStr2', 'COMM1', 'COMM2'):
-            setattr(self, selector, value.replace('`', '1').replace('~', '2'))
-        else:
-            super().set_data(selector, value, update)
-        debug(f'value: {value}')
-        if update:
-            self.update_display()
+            value = value.replace('`', '1').replace('~', '2')
+        super().set_data(selector, value, update)
 
 
 class F16Handler(AircraftHandler):
