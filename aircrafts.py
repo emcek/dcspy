@@ -48,7 +48,7 @@ class AircraftHandler:
             self.update_display()
 
 
-class FA18Handler(AircraftHandler):
+class FA18Chornet(AircraftHandler):
     def __init__(self, display_handler) -> None:
         """
         Basic constructor.
@@ -135,7 +135,7 @@ class FA18Handler(AircraftHandler):
         super().set_data(selector, value, update)
 
 
-class F16Handler(AircraftHandler):
+class F16C50(AircraftHandler):
     def __init__(self, display_handler) -> None:
         """
         Basic constructor.
@@ -166,7 +166,7 @@ class F16Handler(AircraftHandler):
         self.g13.update_display(self.g13.img)
 
 
-class Ka50Handler(AircraftHandler):
+class Ka50(AircraftHandler):
     def __init__(self, display_handler):
         """
         Basic constructor.
