@@ -22,13 +22,8 @@ class AircraftHandler:
         :param button_pressed:
         :return:
         """
-        action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC',
-                  2: 'UFC_COMM1_CHANNEL_SELECT INC',
-                  3: 'UFC_COMM2_CHANNEL_SELECT DEC',
-                  4: 'UFC_COMM2_CHANNEL_SELECT INC'}
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
-        debug(f'Request: {action[button_pressed]}')
-        return f'{action[button_pressed]}\n'
+        return '\n'
 
     def update_display(self) -> None:
         """Update display."""
@@ -133,6 +128,21 @@ class FA18Chornet(AircraftHandler):
         if selector in ('ScratchpadStr1', 'ScratchpadStr2', 'COMM1', 'COMM2'):
             value = value.replace('`', '1').replace('~', '2')
         super().set_data(selector, value, update)
+
+    def button_handle_specific_ac(self, button_pressed: int) -> str:
+        """
+        Button handler for spacific aircraft.
+
+        :param button_pressed:
+        :return:
+        """
+        action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC',
+                  2: 'UFC_COMM1_CHANNEL_SELECT INC',
+                  3: 'UFC_COMM2_CHANNEL_SELECT DEC',
+                  4: 'UFC_COMM2_CHANNEL_SELECT INC'}
+        debug(f'{self.__class__.__name__} Button: {button_pressed}')
+        debug(f'Request: {action[button_pressed]}')
+        return f'{action[button_pressed]}\n'
 
 
 class F16C50(AircraftHandler):
