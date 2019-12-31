@@ -79,7 +79,7 @@ class StringBuffer:
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
-        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(addr, data))
+        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(address=addr, data=data))
 
     def set_char(self, i, c) -> None:
         """
@@ -92,7 +92,7 @@ class StringBuffer:
             self.buffer[i] = c
             self.__dirty = True
 
-    def on_dcsbios_write(self, address, data) -> None:
+    def on_dcsbios_write(self, address: int, data: int) -> None:
         """
         Callback function.
 
@@ -130,7 +130,7 @@ class IntegerBuffer:
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
-        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(addr, data))
+        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(address=addr, data=data))
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
