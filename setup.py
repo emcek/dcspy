@@ -20,8 +20,10 @@ setup(name='pydcs',  # Required
       long_description_content_type='text/markdown',  # Optional (see note above)
       url='https://github.com/emcek/specelUFC',  # Optional
       author='Michal Plichta',  # Optional
-      license='MIT',
+      author_email='mplichta@gmail.com',
+      license='MIT License',
       entry_points={'console_scripts': ['dcs_g13 = pydcs.dcs_g13:run']},
+      data_files=[('', ['images/pydcs.ico'])],
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'License :: OSI Approved :: MIT License',
@@ -39,6 +41,7 @@ setup(name='pydcs',  # Required
       # packages=find_packages(exclude=['tests']),  # Required
       packages=find_packages(),  # Required
       install_requires=requires,  # Optional
+      platforms=['win32', 'nt', 'Windows'],
       # extras_require={'testing': ['pytest']},
       project_urls={'Bug Reports': 'https://github.com/emcek/specelUFC/issues',
                     'Source': 'https://github.com/emcek/specelUFC'})
