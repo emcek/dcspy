@@ -18,7 +18,7 @@ setup(name='pydcs',  # Required
       description='Software for integrating DCS: F/A-18C, F-16C and Ka-50 with Logitech G13',  # Required
       long_description=long_description,  # Optional
       long_description_content_type='text/markdown',  # Optional (see note above)
-      url='https://github.com/emcek/specelUFC',  # Optional
+      url='https://github.com/emcek/pydcs',  # Optional
       author='Michal Plichta',  # Optional
       license='MIT License',
       entry_points={'console_scripts': ['dcs_g13 = pydcs.dcs_g13:run']},
@@ -42,5 +42,5 @@ setup(name='pydcs',  # Required
       install_requires=requires,  # Optional
       platforms=['win32', 'nt', 'Windows'],
       # extras_require={'testing': ['pytest']},
-      project_urls={'Bug Reports': 'https://github.com/emcek/specelUFC/issues',
-                    'Source': 'https://github.com/emcek/specelUFC'})
+      project_urls={'Bug Reports': 'https://github.com/emcek/pydcs/issues',
+                    'Source': 'https://github.com/emcek/pydcs'})

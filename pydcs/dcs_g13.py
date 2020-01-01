@@ -8,7 +8,7 @@ from requests import get
 from pydcs.dcsbios import ProtocolParser
 from pydcs.specelG13Handler import G13Handler
 
-__version__ = 'v1.12.1'
+__version__ = '0.9.0'
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
@@ -32,7 +32,7 @@ def attempt_connect(sock: socket.socket) -> None:
 def check_current_version() -> None:
     """Check if version is current."""
     try:
-        url = 'https://api.github.com/repos/specel/specelUFC/releases/latest'
+        url = 'https://api.github.com/repos/emcek/pydcs/releases'
         response = get(url)
         if response.status_code == 200:
             json_response = response.json()
