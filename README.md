@@ -18,17 +18,14 @@ This is a software designed to put information from DCS aircraft to Logitech G-s
 * DCS-BIOS 0.7.31 (or newer) <https://github.com/DCSFlightpanels/dcs-bios>
 
 ## Credits
-This software is inspired by:
-* <https://github.com/specel/specelUFC> initial idea and working example
-
-This software uses:
+This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
 * <https://github.com/DCSFlightpanels/dcs-bios> DCS-BIOS fork by DCSFlightpanels for exporting data from DCS to local network
 * <https://github.com/jboecker/python-dcs-bios-example> jboecker's parser to read data stream from DCS-BIOS
 * <https://github.com/50thomatoes50/GLCD_SDK.py> A Python wrapper for Logitech's LCD SDK (with my minor modifications)
 
 ## Changelog
 ### 0.9.0
-* loosely based on version [1.12.1](https://github.com/specel/specelUFC/releases/tag/v1.12.1)
+* based on version [specelUFC v1.12.1](https://github.com/specel/specelUFC/releases/tag/v1.12.1)
 * added basic handling for Ka-50 PVI-800 data are received but not formatted properly
 * F-16C DED should working but not 4 buttons under LCD  - I don't have it so it is hard to test
 * G13 handler detect 32/64 bit of Python and load correct version of LCD Logitech C library
