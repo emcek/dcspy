@@ -22,7 +22,7 @@ setup(name='pydcs',  # Required
       author='Michal Plichta',  # Optional
       license='MIT License',
       entry_points={'console_scripts': ['dcs_g13 = pydcs.dcs_g13:run']},
-      data_files=[('', ['images/pydcs.ico'])],
+      data_files=[('pydcs_data', ['images/pydcs.ico'])],
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
                    'License :: OSI Approved :: MIT License',
