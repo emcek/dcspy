@@ -20,7 +20,6 @@ setup(name='pydcs',  # Required
       long_description_content_type='text/markdown',  # Optional (see note above)
       url='https://github.com/emcek/specelUFC',  # Optional
       author='Michal Plichta',  # Optional
-      author_email='mplichta@gmail.com',
       license='MIT License',
       entry_points={'console_scripts': ['dcs_g13 = pydcs.dcs_g13:run']},
       data_files=[('', ['images/pydcs.ico'])],
