@@ -1,12 +1,12 @@
 [![Build Status](https://travis-ci.org/emcek/specelUFC.svg?branch=master)](https://travis-ci.org/emcek/specelUFC)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/65de87932d0e46ae8a8b867f77951453)](https://www.codacy.com/manual/mplichta/pydcs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/pydcs&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4be48a777921491896a0ed8de9a73e05)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
 [![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://github.com/emcek/dcspy)
 
 # dcspy
-This is a software designed to put information from DCS aircraft to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monchrome display, like G15 and G510.
-* FA-18C Hornet's Up Front Controller (UFC)
-* F-16C DED display - some parts are mising
+This is a software designed to put information from DCS aircraft to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monochrome display, like G15 and G510.
+* F/A-18C Hornet's Up Front Controller (UFC)
+* F-16C DED display - some parts are missing
 * Ka-50 PVI-800 - under development
 
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
@@ -29,7 +29,7 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * added basic handling for Ka-50 PVI-800 data are received but not formatted properly
 * F-16C DED should working but not 4 buttons under LCD  - I don't have it so it is hard to test
 * G13 handler detect 32/64 bit of Python and load correct version of LCD Logitech C library
-* adding basic logging for debuging - prints on console 
+* adding basic logging for debugging - prints on console 
 * all defined aircraft are detected and loaded on-the-fly during operation
 * define new plane should be easy just use `AircraftHandle` as base class
 * Python LCD SDK was clean-up
@@ -48,18 +48,19 @@ If you want to modify or write something by yourself, here's a quick walkthrough
 ```python
 bufferScratchpadStr1 = StringBuffer(self.g13.parser, 0x744e, 2, lambda s: self.set_data('ScratchpadStr1', s))
 ```
-For required adress and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
+For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 
-* Then, receive byte and use parser
+* Then, receive byte and use parser:
 ```python
 c = s.recv(1)
 parser.processByte(c)
 ```
-which calls back function in G13Handler `set_data(...)` with apropriate paramteres and update display content, by creating bitmap and passing it through LCD SDK to device display
+which calls back function in G13Handler `set_data(...)` with appropriate parameters and update display content, by creating bitmap and passing it through LCD SDK to device display
 
-* You can also use 4 button below display, just checktheir state with `g13.check_buttons()` which one is pressed and send packet with command you wish to use. Again, look it up in `control-reference.html`, for example, to rotate COMM1 knob right in FA-18C:
+* You can also use 4 button below display, just check their state with `g13.check_buttons()` which one is pressed and send packet with command you wish to use. Again, look it up in `control-reference.html`, for example, to rotate COMM1 knob right in F/A-18C:
 ```python
 s.send(bytes('UFC_COMM1_CHANNEL_SELECT INC\n', 'utf-8'))
 ```
-## Ideas?
-I have lots of plans and new ideas how to imrove it internaly and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea. 
+
+## New ideas
+I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea. 
