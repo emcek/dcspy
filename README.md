@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/emcek/pydcs.svg?branch=master)](https://travis-ci.org/emcek/pydcs)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/028d23a12d5345b7bbeece49860a7992)](https://www.codacy.com/manual/mplichta/pydcs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/pydcs&amp;utm_campaign=Badge_Grade)
+[![Build Status](https://travis-ci.org/emcek/specelUFC.svg?branch=master)](https://travis-ci.org/emcek/specelUFC)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/65de87932d0e46ae8a8b867f77951453)](https://www.codacy.com/manual/mplichta/pydcs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/pydcs&amp;utm_campaign=Badge_Grade)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/pydcs?branch=master)](https://bettercodehub.com/)
 [![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://github.com/emcek/pydcs)
 
