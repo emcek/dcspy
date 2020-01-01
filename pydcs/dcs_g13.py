@@ -38,7 +38,7 @@ def check_current_version() -> None:
             json_response = response.json()
             online_version = json_response['tag_name']
             if version.parse(online_version) > version.parse(__version__):
-                info(f'There is new version of specelUFC: {online_version}')
+                info(f'There is new version of pydcs: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
                 info('This is up-to-date version')
             else:
@@ -51,7 +51,7 @@ def check_current_version() -> None:
 
 def run() -> None:
     """Main of running function."""
-    info(f'specelUFC {__version__} https://github.com/specel/specelUFC')
+    info(f'pydcs {__version__} https://github.com/emcek/pydcs')
     check_current_version()
     while True:
         parser = ProtocolParser()
