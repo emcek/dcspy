@@ -1,6 +1,6 @@
 from logging import basicConfig, DEBUG, debug
 
-from pydcs.dcsbios import StringBuffer
+from dcspy.dcsbios import StringBuffer
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 

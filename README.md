@@ -1,15 +1,15 @@
 [![Build Status](https://travis-ci.org/emcek/specelUFC.svg?branch=master)](https://travis-ci.org/emcek/specelUFC)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/65de87932d0e46ae8a8b867f77951453)](https://www.codacy.com/manual/mplichta/pydcs?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/pydcs&amp;utm_campaign=Badge_Grade)
-[![BCH compliance](https://bettercodehub.com/edge/badge/emcek/pydcs?branch=master)](https://bettercodehub.com/)
-[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://github.com/emcek/pydcs)
+[![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
+[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://github.com/emcek/dcspy)
 
-# pydcs
+# dcspy
 This is a software designed to put information from DCS aircraft to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monchrome display, like G15 and G510.
 * FA-18C Hornet's Up Front Controller (UFC)
 * F-16C DED display - some parts are mising
 * Ka-50 PVI-800 - under development
 
-![pydcslogo](https://i.imgur.com/eqqrPB8.jpg)
+![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
 
 ## Requirements
 * Installed Python 3.8 (but 3.6 should be fine) <https://www.python.org/downloads/>

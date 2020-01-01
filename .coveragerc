@@ -1,5 +1,5 @@
 [run]
-source = pydcs
+source = dcspy
 
 [report]
 omit = tests/*

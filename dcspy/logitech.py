@@ -8,8 +8,8 @@ from sys import maxsize
 
 from PIL import Image, ImageFont, ImageDraw
 
-from pydcs.sdk import lcd_sdk
-from pydcs.dcsbios import StringBuffer, ProtocolParser
+from dcspy.sdk import lcd_sdk
+from dcspy.dcsbios import StringBuffer, ProtocolParser
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
@@ -65,7 +65,7 @@ class G13:
         """Actiate new aircraft."""
         self.shouldActivateNewAC = False
         plane_name = self.currentAC.replace('-', '').replace('_', '')
-        plane_class = getattr(import_module('pydcs.aircrafts'), plane_name)
+        plane_class = getattr(import_module('dcspy.aircrafts'), plane_name)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane_class(self)
 

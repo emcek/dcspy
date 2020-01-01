@@ -5,8 +5,8 @@ from time import sleep
 from packaging import version
 from requests import get
 
-from pydcs.dcsbios import ProtocolParser
-from pydcs.logitech import G13
+from dcspy.dcsbios import ProtocolParser
+from dcspy.logitech import G13
 
 __version__ = '0.9.0'
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
@@ -32,13 +32,13 @@ def attempt_connect(sock: socket.socket) -> None:
 def check_current_version() -> None:
     """Check if version is current."""
     try:
-        url = 'https://api.github.com/repos/emcek/pydcs/releases'
+        url = 'https://api.github.com/repos/emcek/dcspy/releases'
         response = get(url)
         if response.status_code == 200:
             json_response = response.json()
             online_version = json_response['tag_name']
             if version.parse(online_version) > version.parse(__version__):
-                info(f'There is new version of pydcs: {online_version}')
+                info(f'There is new version of dcspy: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
                 info('This is up-to-date version')
             else:
@@ -51,12 +51,12 @@ def check_current_version() -> None:
 
 def run() -> None:
     """Main of running function."""
-    info(f'pydcs {__version__} https://github.com/emcek/pydcs')
+    info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     check_current_version()
     while True:
         parser = ProtocolParser()
         g13 = G13(parser)
-        g13.info_display(('G13 initialised OK', 'Waiting for DCS', '', f'pydcs: {__version__}'))
+        g13.info_display(('G13 initialised OK', 'Waiting for DCS', '', f'dcspy: {__version__}'))
 
         sock = socket.socket()
         sock.settimeout(None)
