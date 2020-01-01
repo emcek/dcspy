@@ -6,9 +6,7 @@
 # specelUFC
 This is a software designed to put information from DCS:FA18C Hornet's Up Front Controller (UFC) and F-16C DED display to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monchrome display, like G15 and G510.
 
-<p align="center">
-  <img src="https://i.imgur.com/PK8qdG4.jpg" width="350" title="hover text">
-</p>
+![pydcslogo](https://i.imgur.com/eqqrPB8.jpg)
 
 ## Requirements
 * Installed Python 3.6 (or newer) <https://www.python.org/downloads/>
