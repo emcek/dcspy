@@ -6,7 +6,7 @@ from packaging import version
 from requests import get
 
 from pydcs.dcsbios import ProtocolParser
-from pydcs.specelG13Handler import G13Handler
+from pydcs.logitech import G13
 
 __version__ = '0.9.0'
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
@@ -55,8 +55,8 @@ def run() -> None:
     check_current_version()
     while True:
         parser = ProtocolParser()
-        g13 = G13Handler(parser)
-        g13.info_display(('G13 initialised OK', 'Waiting for DCS', '', f'specel UFC {__version__}'))
+        g13 = G13(parser)
+        g13.info_display(('G13 initialised OK', 'Waiting for DCS', '', f'pydcs: {__version__}'))
 
         sock = socket.socket()
         sock.settimeout(None)

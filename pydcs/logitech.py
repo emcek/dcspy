@@ -14,7 +14,7 @@ from pydcs.dcsbios import StringBuffer, ProtocolParser
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
-class G13Handler:
+class G13:
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
         Basic constructor.
