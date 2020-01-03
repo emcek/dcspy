@@ -6,18 +6,21 @@ python:
   - '3.8'
 install:
   - pip install -U pip setuptools
-  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint
+  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage
 before_script:
   - pip install -Ur requirements.txt
   - python3 -V
 script:
   - python3 -m pytest --mccabe -v .
-#  - coverage run --source=dcspy -m pytest -v --random
   - pycodestyle --statistics --count .
   - pydocstyle --count .
 #  - pylint dcspy
+#  - coverage run --source=dcspy -m pytest -v --random
+#  - coverage xml
+#  - export CODACY_PROJECT_TOKEN=%Project_Token%
 #after_success:
-#  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == "linux" ]]; then coveralls; fi
+#  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
+#  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; python-codacy-coverage -r coverage.xml; fi
 deploy:
   provider: pypi
   distributions: 'sdist bdist_wheel'
