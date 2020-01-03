@@ -1,9 +1,9 @@
 dist: xenial
 language: python
 python:
-  - "3.6"
-  - "3.7"
-  - "3.8"
+  - '3.6'
+  - '3.7'
+  - '3.8'
 install:
   - pip install -U pip setuptools
   - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint
@@ -18,3 +18,12 @@ script:
 #  - pylint dcspy
 #after_success:
 #  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == "linux" ]]; then coveralls; fi
+deploy:
+  provider: pypi
+  distributions: 'sdist bdist_wheel'
+  user: '__token__'
+  password:
+    secure: kUXrlC3dJK3STax7erAwsD6CGJSZTl6FUmh57H6fez4jf7Q/GwAEcQoSbV/IGXXvUZqR+Ac1sNUOxx4eRCceG6blx25rmojrIUBBi+r3MaNSsFHvEvmLoYawiLZZS2YdzzJE/b8GCWqpJPGjKy1sSvGfb4AWuYxbpbzNIItTFVNzJFp+tOhm8ZwxuOg9dKVLogUwybjiWBCV5NabVBnASffpClWcFA1jCVo5fswNZ9XWj5X7Pw2FWB35BI4LajRYVfCzIpzx6M0FA8vjphZfZxvIqKdgFFcT1AIdG7VeVMN06ilHYInorNIwp3+vXA2ylofTe0RWC3Rc0AhRJ6VRbCw6UStxJFsK4s0Nt6MHP7LAm+Jlj5z1qvIk+Q2HupzIGJuEC7S4Y68qf7j7LSkvYpNv6V8Dp3DA0WmQkQir8gXRNR9KgHkkC0AULGs2qgeA+NMNwYjflIkeCT6lnRfi5aPwCHcY9uyvBsHuoW9e2rFGqIXo1NGgRgQFiEhyiHKBi7fvOMx/VLPYXEx4vdAtQ7Igl7UWRlx67/IV2lwyDFS2u8m2ykJw6uu03HOK5obe0Wdrn5IZeusiTvOaVFhdEz/ltrSw0mZwHq6KGzWWYAC1/P/tUR7SYFJCKi9Ccy06ikyWHHNncD8nwV3Un9PYJywsy8QYWyrhQ2yGqPvaQhA=
+  on:
+    tags: true
+  skip_existing: true
