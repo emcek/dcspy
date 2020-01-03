@@ -7,6 +7,7 @@ python:
 install:
   - pip install -U pip setuptools
   - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage
+  - pip install -U six
 before_script:
   - pip install -Ur requirements.txt
   - python3 -V
