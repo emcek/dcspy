@@ -6,8 +6,8 @@ python:
   - '3.8'
 install:
   - pip install -U pip setuptools
-  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage
   - pip install -U six
+  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage
 before_script:
   - pip install -Ur requirements.txt
   - python3 -V
