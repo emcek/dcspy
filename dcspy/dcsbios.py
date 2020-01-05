@@ -13,34 +13,34 @@ class ProtocolParser:
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
 
-    def process_byte(self, b: bytes) -> None:
+    def process_byte(self, byte: bytes) -> None:
         """
         Process byte.
 
-        :param b:
+        :param byte:
         """
-        c = ord(b)
+        int_byte = ord(byte)
         if self.__state == 'ADDRESS_LOW':
-            self.__address = c
+            self.__address = int_byte
             self.__state = 'ADDRESS_HIGH'
         elif self.__state == 'ADDRESS_HIGH':
-            self.__address += c * 256
+            self.__address += int_byte * 256
             if self.__address != 0x5555:
                 self.__state = 'COUNT_LOW'
             else:
                 self.__state = 'WAIT_FOR_SYNC'
         elif self.__state == 'COUNT_LOW':
-            self.__count = c
+            self.__count = int_byte
             self.__state = 'COUNT_HIGH'
         elif self.__state == 'COUNT_HIGH':
-            self.__count += 256 * c
+            self.__count += 256 * int_byte
             self.__state = 'DATA_LOW'
         elif self.__state == 'DATA_LOW':
-            self.__data = c
+            self.__data = int_byte
             self.__count -= 1
             self.__state = 'DATA_HIGH'
         elif self.__state == 'DATA_HIGH':
-            self.__data += 256 * c
+            self.__data += 256 * int_byte
             self.__count -= 1
             for callback in self.write_callbacks:
                 callback(self.__address, self.__data)
@@ -50,7 +50,7 @@ class ProtocolParser:
             else:
                 self.__state = 'DATA_LOW'
 
-        if c == 0x55:
+        if int_byte == 0x55:
             self.__sync_byte_count += 1
         else:
             self.__sync_byte_count = 0
@@ -81,15 +81,15 @@ class StringBuffer:
             self.callbacks.add(callback)
         parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(address=addr, data=data))
 
-    def set_char(self, i, c) -> None:
+    def set_char(self, index, char) -> None:
         """
         Set char.
 
-        :param i:
-        :param c:
+        :param index:
+        :param char:
         """
-        if self.buffer[i] != c:
-            self.buffer[i] = c
+        if self.buffer[index] != char:
+            self.buffer[index] = char
             self.__dirty = True
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
@@ -107,9 +107,9 @@ class StringBuffer:
 
         if address == 0xfffe and self.__dirty:
             self.__dirty = False
-            s = self.buffer.split(b'\x00')[0].decode('latin-1')
+            str_buff = self.buffer.split(b'\x00')[0].decode('latin-1')
             for callback in self.callbacks:
-                callback(s)
+                callback(str_buff)
 
 
 class IntegerBuffer:
