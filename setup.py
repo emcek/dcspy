@@ -21,7 +21,7 @@ setup(name='dcspy',  # Required
       url='https://github.com/emcek/dcspy',  # Optional
       author='Michal Plichta',  # Optional
       license='MIT License',
-      entry_points={'console_scripts': ['dcs_g13 = dcspy.dcs_g13:run']},
+      entry_points={'console_scripts': ['dcspy = dcspy.dcspy:run']},
       data_files=[('dcspy_data', ['images/dcspy.ico'])],
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Console',
