@@ -5,11 +5,12 @@ from math import log2
 from platform import architecture
 from socket import socket
 from sys import maxsize
+from typing import List
 
 from PIL import Image, ImageFont, ImageDraw
 
-from dcspy.sdk import lcd_sdk
 from dcspy.dcsbios import StringBuffer, ProtocolParser
+from dcspy.sdk import lcd_sdk
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
@@ -54,12 +55,11 @@ class G13:
             self.currentAC = value
             if value in ('FA-18C_hornet', 'Ka-50', 'F-16C_50'):
                 info(f'Detected AC: {value}')
-                self.info_display()
+                self.info_display([self.currentAC])
                 self.shouldActivateNewAC = True
             else:
-                # FIXME a może tylko tyo zostawić, żeby po prostu zaczynał aktywaować nowy moduł, a weryfikację zostawić w metodzie poniżej?
-                warning(f'Unknown AC data: {value}')
-                self.info_display(('Unknown AC data:', self.currentAC))
+                warning(f'Not supported aircraft: {value}')
+                self.info_display(['Not supported aircraft:', self.currentAC])
 
     def activate_new_ac(self) -> None:
         """Actiate new aircraft."""
@@ -69,24 +69,21 @@ class G13:
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane_class(self)
 
-    def info_display(self, message=('', '')) -> None:
+    def info_display(self, message: List[str, ...]) -> None:
         """
-        Send message to display.
+        Display message at LCD.
 
-        :param message:
+        :param message: List of strings to display, row by row. G13 support 4 rows.
+        :type message: List[str, ...]
         """
         # clear bitmap
         self.draw.rectangle((0, 0, self.width, self.height), 0, 0)
         # self.ClearDisplay()
 
-        if message == ('', ''):
-            self.draw.text((0, 0), self.currentAC, 1, self.font1)
-        else:
-            y_coord = 0
-            # self.draw.text((0,0), message, 1, self.font1)
-            for line in message:
-                self.draw.text((0, y_coord), line, 1, self.font1)
-                y_coord = y_coord + 10
+        message.extend(['' for _ in range(4 - len(message))])
+
+        for line_no, line in enumerate(message):
+            self.draw.text((0, 10 * line_no), line, 1, self.font1)
 
         self.update_display(self.img)
 

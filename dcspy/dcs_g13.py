@@ -52,7 +52,7 @@ def run() -> None:
     while True:
         parser = ProtocolParser()
         g13 = G13(parser)
-        g13.info_display(('G13 initialised OK', 'Waiting for DCS', '', f'dcspy: {__version__}'))
+        g13.info_display(['G13 initialised OK', 'Waiting for DCS', '', f'dcspy: {__version__}'])
 
         sock = socket.socket()
         sock.settimeout(None)
