@@ -45,8 +45,8 @@ def check_current_version() -> None:
                 debug(f'Something goes wrong: local version: {__version__} a online_version: {online_version}')
         else:
             warning(f'Unable to check version online. Try again later. Status={response.status_code}')
-    except Exception as e:
-        warning(f'Unable to check version online: {e}')
+    except Exception as exc:
+        warning(f'Unable to check version online: {exc}')
 
 
 def run() -> None:
@@ -64,8 +64,8 @@ def run() -> None:
         attempt_connect(sock)
         while True:
             try:
-                c = sock.recv(1)
-                parser.process_byte(c)
+                dcs_bios_resp = sock.recv(1)
+                parser.process_byte(dcs_bios_resp)
                 if g13.shouldActivateNewAC:
                     g13.activate_new_ac()
                 g13.button_handle(sock)

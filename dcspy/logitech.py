@@ -82,11 +82,11 @@ class G13:
         if message == ('', ''):
             self.draw.text((0, 0), self.currentAC, 1, self.font1)
         else:
-            y = 0
+            y_coord = 0
             # self.draw.text((0,0), message, 1, self.font1)
             for line in message:
-                self.draw.text((0, y), line, 1, self.font1)
-                y = y + 10
+                self.draw.text((0, y_coord), line, 1, self.font1)
+                y_coord = y_coord + 10
 
         self.update_display(self.img)
 
@@ -134,12 +134,12 @@ class G13:
         self.isAlreadyPressed = False
         return 0
 
-    def button_handle(self, s: socket) -> None:
+    def button_handle(self, sock: socket) -> None:
         """
         Button handler.
 
-        :param s:
+        :param sock:
         """
         button = self.check_buttons()
         if button:
-            s.send(bytes(self.currentACHook.button_handle_specific_ac(button), 'utf-8'))
+            sock.send(bytes(self.currentACHook.button_handle_specific_ac(button), 'utf-8'))
