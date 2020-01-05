@@ -42,14 +42,14 @@ For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.o
 
 * Then, receive byte and use parser:
 ```python
-c = s.recv(1)
-parser.processByte(c)
+dcs_bios_resp = sock.recv(1)
+parser.process_byte(dcs_bios_resp)
 ```
 which calls back function in G13Handler `set_data(...)` with appropriate parameters and update display content, by creating bitmap and passing it through LCD SDK to device display
 
 * You can also use 4 button below display, just check their state with `g13.check_buttons()` which one is pressed and send packet with command you wish to use. Again, look it up in `control-reference.html`, for example, to rotate COMM1 knob right in F/A-18C:
 ```python
-s.send(bytes('UFC_COMM1_CHANNEL_SELECT INC\n', 'utf-8'))
+sock.send(bytes('UFC_COMM1_CHANNEL_SELECT INC\n', 'utf-8'))
 ```
 
 ## New ideas
