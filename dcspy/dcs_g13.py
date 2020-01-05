@@ -32,17 +32,13 @@ def attempt_connect(sock: socket.socket) -> None:
 def check_current_version() -> None:
     """Check if version is current."""
     try:
-        url = 'https://api.github.com/repos/emcek/dcspy/releases'
-        response = get(url)
+        response = get('https://api.github.com/repos/emcek/dcspy/releases/latest')
         if response.status_code == 200:
-            json_response = response.json()
-            online_version = json_response['tag_name']
+            online_version = response.json()['tag_name']
             if version.parse(online_version) > version.parse(__version__):
                 info(f'There is new version of dcspy: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
                 info('This is up-to-date version')
-            else:
-                debug(f'Something goes wrong: local version: {__version__} a online_version: {online_version}')
         else:
             warning(f'Unable to check version online. Try again later. Status={response.status_code}')
     except Exception as exc:
