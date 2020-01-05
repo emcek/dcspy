@@ -69,7 +69,7 @@ class G13:
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane_class(self)
 
-    def info_display(self, message: List[str, ...]) -> None:
+    def info_display(self, message: List[str]) -> None:
         """
         Display message at LCD.
 
