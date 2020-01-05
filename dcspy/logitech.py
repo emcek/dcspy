@@ -9,7 +9,7 @@ from typing import List
 
 from PIL import Image, ImageFont, ImageDraw
 
-from dcspy import supported_crafts
+from dcspy import SUPPORTED_CRAFTS
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
 
@@ -81,7 +81,7 @@ class G13:
         """
         if not value == self.currentAC:
             self.currentAC = value
-            if value in supported_crafts:
+            if value in SUPPORTED_CRAFTS:
                 info(f'Detected AC: {value}')
                 self.display = [self.currentAC]
                 self.shouldActivateNewAC = True
