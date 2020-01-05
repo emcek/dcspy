@@ -46,7 +46,13 @@ class G13:
         self.font2 = ImageFont.truetype('consola.ttf', 16)
 
     @property
-    def display(self):
+    def display(self) -> List[str]:
+        """
+        Get latest set text at LCD.
+
+        :return: list with 4 strings row by row
+        :rtype: List[str]
+        """
         return self._display
 
     @display.setter
@@ -61,6 +67,7 @@ class G13:
         self.draw.rectangle((0, 0, self.width, self.height), 0, 0)
         # self.ClearDisplay()
         message.extend(['' for _ in range(4 - len(message))])
+        self._display = message
         for line_no, line in enumerate(message):
             self.draw.text((0, 10 * line_no), line, 1, self.font1)
         self.update_display(self.img)
