@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from dcspy.dcs_g13 import __version__
+from dcspy import __version__
 
 here = abspath(dirname(__file__))
 

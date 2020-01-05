@@ -5,10 +5,10 @@ from time import sleep
 from packaging import version
 from requests import get
 
+from dcspy import __version__
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import G13
 
-__version__ = '0.9.0'
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
