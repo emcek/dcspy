@@ -27,8 +27,8 @@ class G13:
         self.currentAC = ''
         self.currentACHook = None
         self.shouldActivateNewAC = False
-
         self.isAlreadyPressed = False
+        self._display = list()
 
         # display parameters
         self.width = lcd_sdk.MONO_WIDTH
@@ -45,6 +45,26 @@ class G13:
         self.font1 = ImageFont.truetype('consola.ttf', 11)
         self.font2 = ImageFont.truetype('consola.ttf', 16)
 
+    @property
+    def display(self):
+        return self._display
+
+    @display.setter
+    def display(self, message: List[str]) -> None:
+        """
+        Display message at LCD.
+
+        :param message: List of strings to display, row by row. G13 support 4 rows.
+        :type message: List[str, ...]
+        """
+        # clear bitmap
+        self.draw.rectangle((0, 0, self.width, self.height), 0, 0)
+        # self.ClearDisplay()
+        message.extend(['' for _ in range(4 - len(message))])
+        for line_no, line in enumerate(message):
+            self.draw.text((0, 10 * line_no), line, 1, self.font1)
+        self.update_display(self.img)
+
     def set_ac(self, value: str) -> None:
         """
         Set aircraft.
@@ -55,11 +75,11 @@ class G13:
             self.currentAC = value
             if value in ('FA-18C_hornet', 'Ka-50', 'F-16C_50'):
                 info(f'Detected AC: {value}')
-                self.info_display([self.currentAC])
+                self.display = [self.currentAC]
                 self.shouldActivateNewAC = True
             else:
                 warning(f'Not supported aircraft: {value}')
-                self.info_display(['Not supported aircraft:', self.currentAC])
+                self.display = ['Not supported aircraft:', self.currentAC]
 
     def activate_new_ac(self) -> None:
         """Actiate new aircraft."""
@@ -68,24 +88,6 @@ class G13:
         plane_class = getattr(import_module('dcspy.aircrafts'), plane_name)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane_class(self)
-
-    def info_display(self, message: List[str]) -> None:
-        """
-        Display message at LCD.
-
-        :param message: List of strings to display, row by row. G13 support 4 rows.
-        :type message: List[str, ...]
-        """
-        # clear bitmap
-        self.draw.rectangle((0, 0, self.width, self.height), 0, 0)
-        # self.ClearDisplay()
-
-        message.extend(['' for _ in range(4 - len(message))])
-
-        for line_no, line in enumerate(message):
-            self.draw.text((0, 10 * line_no), line, 1, self.font1)
-
-        self.update_display(self.img)
 
     def update_display(self, img: Image) -> None:
         """
