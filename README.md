@@ -25,18 +25,6 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * <https://github.com/jboecker/python-dcs-bios-example> jboecker's parser to read data stream from DCS-BIOS
 * <https://github.com/50thomatoes50/GLCD_SDK.py> A Python wrapper for Logitech's LCD SDK (with my minor modifications)
 
-## Changelog
-### 0.9.0
-* based on version [specelUFC v1.12.1](https://github.com/specel/specelUFC/releases/tag/v1.12.1)
-* added basic handling for Ka-50 PVI-800 data are received but not formatted properly
-* F-16C DED should working but not 4 buttons under LCD  - I don't have it so it is hard to test
-* G13 handler detect 32/64 bit of Python and load correct version of LCD Logitech C library
-* adding basic logging for debugging - prints on console 
-* all defined aircraft are detected and loaded on-the-fly during operation
-* define new plane should be easy just use `AircraftHandler` as base class
-* Python LCD SDK was clean-up
-* other refactorings and code duplication removal 
-
 ## Usage
 You can use it straight away, by running `dcs_g13.py`, it can be run before DCS, as well as after. After successful connect attempt, G13 display should update. 
 
