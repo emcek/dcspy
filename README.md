@@ -33,7 +33,7 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * G13 handler detect 32/64 bit of Python and load correct version of LCD Logitech C library
 * adding basic logging for debugging - prints on console 
 * all defined aircraft are detected and loaded on-the-fly during operation
-* define new plane should be easy just use `AircraftHandle` as base class
+* define new plane should be easy just use `AircraftHandler` as base class
 * Python LCD SDK was clean-up
 * other refactorings and code duplication removal 
 
