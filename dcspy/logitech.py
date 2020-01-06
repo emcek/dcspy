@@ -10,6 +10,7 @@ from typing import List
 from PIL import Image, ImageFont, ImageDraw
 
 from dcspy import SUPPORTED_CRAFTS
+from dcspy.aircrafts import AircraftHandler
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
 
@@ -93,9 +94,72 @@ class G13:
         """Actiate new aircraft."""
         self.shouldActivateNewAC = False
         plane_name = self.currentAC.replace('-', '').replace('_', '')
-        plane_class = getattr(import_module('dcspy.aircrafts'), plane_name)
+        plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)(self)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
-        self.currentACHook = plane_class(self)
+        self.currentACHook = plane
+        from copy import deepcopy
+        # for field_name, add_data in plane.bios_data.items():
+        #     debug(f'{field_name} {add_data["addr"]} {add_data["length"]}')
+        #     field_val = StringBuffer(self.parser, add_data['addr'], add_data['length'], lambda s: plane.set_data(field_name, s))
+        #     debug(f'{plane} buffer{field_name} {field_val}')
+        #     setattr(plane, f'buffer{deepcopy(field_name)}', field_val)
+        #     del field_val
+
+        # bufferScratchpadStr1 = StringBuffer(self.parser, 0x744e, 2, lambda s: plane.set_data('ScratchpadStr1', s))
+        # bufferScratchpadStr2 = StringBuffer(self.parser, 0x7450, 2, lambda s: plane.set_data('ScratchpadStr2', s))
+        # bufferScratchpadNum = StringBuffer(self.parser, 0x7446, 8, lambda s: plane.set_data('ScratchpadNum', s))
+        # bufferCOMM1 = StringBuffer(self.parser, 0x7424, 2, lambda s: plane.set_data('COMM1', s))
+        # bufferCOMM2 = StringBuffer(self.parser, 0x7426, 2, lambda s: plane.set_data('COMM2', s))
+        # bufferFuelTotal = StringBuffer(self.parser, 0x748a, 6, lambda s: plane.set_data('FuelTotal', s))
+        # bufferOptionDisplay1 = StringBuffer(self.parser, 0x7432, 4, lambda s: plane.set_data('OptionDisplay1', s))
+        # bufferOptionDisplay2 = StringBuffer(self.parser, 0x7436, 4, lambda s: plane.set_data('OptionDisplay2', s))
+        # bufferOptionDisplay3 = StringBuffer(self.parser, 0x743a, 4, lambda s: plane.set_data('OptionDisplay3', s))
+        # bufferOptionDisplay4 = StringBuffer(self.parser, 0x743e, 4, lambda s: plane.set_data('OptionDisplay4', s))
+        # bufferOptionDisplay5 = StringBuffer(self.parser, 0x7442, 4, lambda s: plane.set_data('OptionDisplay5', s))
+        # bufferOptionCueing1 = StringBuffer(self.parser, 0x7428, 1, lambda s: plane.set_data('OptionCueing1', s))
+        # bufferOptionCueing2 = StringBuffer(self.parser, 0x742a, 1, lambda s: plane.set_data('OptionCueing2', s))
+        # bufferOptionCueing3 = StringBuffer(self.parser, 0x742c, 1, lambda s: plane.set_data('OptionCueing3', s))
+        # bufferOptionCueing4 = StringBuffer(self.parser, 0x742e, 1, lambda s: plane.set_data('OptionCueing4', s))
+        # bufferOptionCueing5 = StringBuffer(self.parser, 0x7430, 1, lambda s: plane.set_data('OptionCueing5', s))
+        # setattr(plane, 'bufferOptionDisplay1', bufferOptionDisplay1)
+        # setattr(plane, 'bufferOptionDisplay2', bufferOptionDisplay2)
+        # setattr(plane, 'bufferOptionDisplay3', bufferOptionDisplay3)
+        # setattr(plane, 'bufferOptionDisplay4', bufferOptionDisplay4)
+        # setattr(plane, 'bufferOptionDisplay5', bufferOptionDisplay5)
+        # setattr(plane, 'bufferOptionCueing1', bufferOptionCueing1)
+        # setattr(plane, 'bufferOptionCueing2', bufferOptionCueing2)
+        # setattr(plane, 'bufferOptionCueing3', bufferOptionCueing3)
+        # setattr(plane, 'bufferOptionCueing4', bufferOptionCueing4)
+        # setattr(plane, 'bufferOptionCueing5', bufferOptionCueing5)
+        # setattr(plane, 'bufferScratchpadStr1', bufferScratchpadStr1)
+        # setattr(plane, 'bufferScratchpadStr2', bufferScratchpadStr2)
+        # setattr(plane, 'bufferScratchpadNum', bufferScratchpadNum)
+        # setattr(plane, 'bufferCOMM1', bufferCOMM1)
+        # setattr(plane, 'bufferCOMM2', bufferCOMM2)
+        # setattr(plane, 'bufferFuelTotal', bufferFuelTotal)
+
+        bios_data = {
+            'ScratchpadStr1': {'addr': 0x744e, 'length': 2},
+            'ScratchpadStr2': {'addr': 0x7450, 'length': 2},
+            'ScratchpadNum': {'addr': 0x7446, 'length': 8},
+            'OptionDisplay1': {'addr': 0x7432, 'length': 4},
+            'OptionDisplay2': {'addr': 0x7436, 'length': 4},
+            'OptionDisplay3': {'addr': 0x743a, 'length': 4},
+            'OptionDisplay4': {'addr': 0x743e, 'length': 4},
+            'OptionDisplay5': {'addr': 0x7442, 'length': 4},
+            'COMM1': {'addr': 0x7424, 'length': 2},
+            'COMM2': {'addr': 0x7426, 'length': 2},
+            'OptionCueing1': {'addr': 0x7428, 'length': 1},
+            'OptionCueing2': {'addr': 0x742a, 'length': 1},
+            'OptionCueing3': {'addr': 0x742c, 'length': 1},
+            'OptionCueing4': {'addr': 0x742e, 'length': 1},
+            'OptionCueing5': {'addr': 0x7430, 'length': 1},
+            'FuelTotal': {'addr': 0x748a, 'length': 6}}
+        for field_name, add_data in bios_data.items():
+            field_val = StringBuffer(self.parser, add_data['addr'], add_data['length'], lambda s: plane.set_data(field_name, s))
+            setattr(plane, f'buffer{field_name}', deepcopy(field_val))
+            del field_val
+        # debug(dir(plane))
 
     def update_display(self, img: Image) -> None:
         """
