@@ -27,16 +27,14 @@ class G13:
         :param parser_hook:
         """
         StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
-        self.parser = parser_hook
-        self.currentAC = ''
-        self.currentACHook: Aircraft
-        self.shouldActivateNewAC = False
-        self.isAlreadyPressed = False
         self._display = list()
-
-        # display parameters
         self.width = lcd_sdk.MONO_WIDTH
         self.height = lcd_sdk.MONO_HEIGHT
+        self.parser = parser_hook
+        self.currentAC = ''
+        self.currentACHook = Aircraft(self.width, self.height)
+        self.shouldActivateNewAC = False
+        self.isAlreadyPressed = False
 
         # GLCD Init
         arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
