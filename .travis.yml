@@ -12,6 +12,7 @@ before_script:
   - pip install -Ur requirements.txt
   - python3 -V
 script:
+  - fc-list
   - python3 -m pytest --mccabe -v .
   - pycodestyle --statistics --count .
   - pydocstyle --count .
