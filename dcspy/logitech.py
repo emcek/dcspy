@@ -1,4 +1,5 @@
 from ctypes import c_ubyte, sizeof, c_void_p
+from functools import partial
 from importlib import import_module
 from logging import basicConfig, DEBUG, info, debug, warning
 from math import log2
@@ -98,12 +99,13 @@ class G13:
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
         from copy import deepcopy
-        # for field_name, add_data in plane.bios_data.items():
-        #     debug(f'{field_name} {add_data["addr"]} {add_data["length"]}')
-        #     field_val = StringBuffer(self.parser, add_data['addr'], add_data['length'], lambda s: plane.set_data(field_name, s))
-        #     debug(f'{plane} buffer{field_name} {field_val}')
-        #     setattr(plane, f'buffer{deepcopy(field_name)}', field_val)
-        #     del field_val
+        for field_name, add_data in plane.bios_data.items():
+            debug(f'{field_name} {add_data["addr"]} {add_data["length"]}')
+            # field_val = StringBuffer(self.parser, add_data['addr'], add_data['length'], lambda s: plane.set_data(field_name, s))
+            field_val = StringBuffer(self.parser, add_data['addr'], add_data['length'], partial(plane.set_data, field_name))
+            debug(f'{plane} buffer{field_name} {field_val}')
+            setattr(plane, f'buffer{deepcopy(field_name)}', field_val)
+            del field_val
 
         # bufferScratchpadStr1 = StringBuffer(self.parser, 0x744e, 2, lambda s: plane.set_data('ScratchpadStr1', s))
         # bufferScratchpadStr2 = StringBuffer(self.parser, 0x7450, 2, lambda s: plane.set_data('ScratchpadStr2', s))
