@@ -10,7 +10,7 @@ consolas_11 = ImageFont.truetype('consola.ttf', 11)
 consolas_16 = ImageFont.truetype('consola.ttf', 16)
 
 
-class AircraftHandler:
+class Aircraft:
     def __init__(self, width: int, height: int) -> None:
         """
         Basic constructor.
@@ -54,7 +54,7 @@ class AircraftHandler:
         return self.bios_data[selector]['val']
 
 
-class FA18Chornet(AircraftHandler):
+class FA18Chornet(Aircraft):
     def __init__(self, width: int, height: int) -> None:
         """
         Basic constructor.
@@ -139,7 +139,7 @@ class FA18Chornet(AircraftHandler):
         return f'{action[button_pressed]}\n'
 
 
-class F16C50(AircraftHandler):
+class F16C50(Aircraft):
     def __init__(self, width: int, height: int) -> None:
         """
         Basic constructor.
@@ -165,7 +165,7 @@ class F16C50(AircraftHandler):
         lcd_sdk.update_display(img)
 
 
-class Ka50(AircraftHandler):
+class Ka50(Aircraft):
     def __init__(self, width: int, height: int) -> None:
         """
         Basic constructor.

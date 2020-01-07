@@ -11,7 +11,7 @@ from typing import List
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import SUPPORTED_CRAFTS
-from dcspy.aircrafts import AircraftHandler
+from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
 
@@ -29,7 +29,7 @@ class G13:
         StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
         self.parser = parser_hook
         self.currentAC = ''
-        self.currentACHook = None
+        self.currentACHook: Aircraft
         self.shouldActivateNewAC = False
         self.isAlreadyPressed = False
         self._display = list()
@@ -94,7 +94,7 @@ class G13:
         """Actiate new aircraft."""
         self.shouldActivateNewAC = False
         plane_name = self.currentAC.replace('-', '').replace('_', '')
-        plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
+        plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
         for field_name, proto_data in plane.bios_data.items():
