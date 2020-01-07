@@ -27,7 +27,7 @@ class G13:
 
         :param parser_hook:
         """
-        self.bufferAC = StringBuffer(parser_hook, 0x0000, 16, lambda val: self.set_ac(value=val))
+        StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
         self.parser = parser_hook
         self.currentAC = ''
         self.currentACHook = None
@@ -99,8 +99,7 @@ class G13:
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
         for field_name, add_data in plane.bios_data.items():
-            setattr(plane, f'buffer{field_name}', StringBuffer(self.parser, add_data['addr'], add_data['length'],
-                                                               partial(plane.set_data, field_name)))
+            StringBuffer(self.parser, add_data['addr'], add_data['length'], partial(plane.set_data, field_name))
 
     def check_buttons(self) -> int:
         """
