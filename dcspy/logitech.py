@@ -1,4 +1,5 @@
-from ctypes import c_ubyte, sizeof, c_void_p
+from ctypes import sizeof, c_void_p
+from functools import partial
 from importlib import import_module
 from logging import basicConfig, DEBUG, info, debug, warning
 from math import log2
@@ -7,13 +8,15 @@ from socket import socket
 from sys import maxsize
 from typing import List
 
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import SUPPORTED_CRAFTS
+from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
+consolas_11 = ImageFont.truetype('consola.ttf', 11)
 
 
 class G13:
@@ -23,17 +26,15 @@ class G13:
 
         :param parser_hook:
         """
-        self.bufferAC = StringBuffer(parser_hook, 0x0000, 16, lambda val: self.set_ac(value=val))
-        self.parser = parser_hook
-        self.currentAC = ''
-        self.currentACHook = None
-        self.shouldActivateNewAC = False
-        self.isAlreadyPressed = False
+        StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
         self._display = list()
-
-        # display parameters
         self.width = lcd_sdk.MONO_WIDTH
         self.height = lcd_sdk.MONO_HEIGHT
+        self.parser = parser_hook
+        self.currentAC = ''
+        self.currentACHook = Aircraft(self.width, self.height)
+        self.shouldActivateNewAC = False
+        self.isAlreadyPressed = False
 
         # GLCD Init
         arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
@@ -43,8 +44,6 @@ class G13:
 
         self.img = Image.new('1', (self.width, self.height), 0)
         self.draw = ImageDraw.Draw(self.img)
-        self.font1 = ImageFont.truetype('consola.ttf', 11)
-        self.font2 = ImageFont.truetype('consola.ttf', 16)
 
     @property
     def display(self) -> List[str]:
@@ -70,8 +69,8 @@ class G13:
         message.extend(['' for _ in range(4 - len(message))])
         self._display = message
         for line_no, line in enumerate(message):
-            self.draw.text((0, 10 * line_no), line, 1, self.font1)
-        self.update_display(self.img)
+            self.draw.text((0, 10 * line_no), line, 1, consolas_11)
+        lcd_sdk.update_display(self.img)
 
     def set_ac(self, value: str) -> None:
         """
@@ -93,38 +92,11 @@ class G13:
         """Actiate new aircraft."""
         self.shouldActivateNewAC = False
         plane_name = self.currentAC.replace('-', '').replace('_', '')
-        plane_class = getattr(import_module('dcspy.aircrafts'), plane_name)
+        plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
-        self.currentACHook = plane_class(self)
-
-    def update_display(self, img: Image) -> None:
-        """
-        Update display.
-
-        :param img:
-        """
-        pixels = list(img.getdata())
-        for i, _ in enumerate(pixels):
-            pixels[i] *= 128
-
-        # put bitmap array into display
-        if lcd_sdk.LogiLcdIsConnected(lcd_sdk.TYPE_MONO):
-            lcd_sdk.LogiLcdMonoSetBackground((c_ubyte * (self.width * self.height))(*pixels))
-            lcd_sdk.LogiLcdUpdate()
-        else:
-            warning('LCD is not connected')
-
-    def clear_display(self, true_clear=False) -> None:
-        """
-        Clear display.
-
-        :param true_clear:
-        """
-        lcd_sdk.LogiLcdMonoSetBackground((c_ubyte * (self.width * self.height))(*[0] * (self.width * self.height)))
-        if true_clear:
-            for i in range(4):
-                lcd_sdk.LogiLcdMonoSetText(i, '')
-        lcd_sdk.LogiLcdUpdate()
+        self.currentACHook = plane
+        for field_name, proto_data in plane.bios_data.items():
+            StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(plane.set_bios, field_name))
 
     def check_buttons(self) -> int:
         """

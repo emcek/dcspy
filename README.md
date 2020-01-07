@@ -26,9 +26,9 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * <https://github.com/50thomatoes50/GLCD_SDK.py> A Python wrapper for Logitech's LCD SDK (with my minor modifications)
 
 ## Usage
-You can use it straight away, by running `dcs_g13.py`, it can be run before DCS, as well as after. After successful connect attempt, G13 display should update. 
+You can use it straight away, by running `dcspy.py`, it can be run before DCS, as well as after. After successful connect attempt, G13 display should update. 
 
-* `dcs_g13.py` is responsible for initialise parser, G13 handler, as well as running connection with DCS.
+* `dcspy.py` is responsible for initialise parser, G13 handler, as well as running connection with DCS.
 * `logitech.py` is responsible for initialise aircraft specific file and handling G13 display and buttons
 * `aircrafts.py` are define all supported aircrafts with details how to handle and display data from DCS, draws bitmap that will be passed to G13 handler and returns input data for buttons under G13 display
 
