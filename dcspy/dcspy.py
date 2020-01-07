@@ -1,4 +1,5 @@
 import socket
+import sys
 from logging import basicConfig, DEBUG, info, debug, warning, error
 from time import sleep, time
 
@@ -67,7 +68,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
             info('Waiting for DCS connection...')
         except KeyboardInterrupt:
             info('Exit due to Ctrl-C')
-            exit(0)
+            sys.exit(0)
         except Exception as exp:
             error(f'Unexpected error: resetting... {exp.__class__.__name__}', exc_info=True)
             info('Waiting for DCS connection...')
