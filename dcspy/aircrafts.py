@@ -1,23 +1,24 @@
+from abc import abstractmethod
 from logging import basicConfig, DEBUG, debug
 
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageDraw
 
 import dcspy.sdk.lcd_sdk
+from dcspy import FONT1, FONT2
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
 class AircraftHandler:
-    def __init__(self) -> None:
-        """Basic constructor."""
-        # @todo: remove hardcode
-        self.width = 160
-        self.height = 43
-        # @todo:do we really need it mayby use local variables
-        self.img = Image.new('1', (self.width, self.height), 0)
-        self.draw = ImageDraw.Draw(self.img)
-        self.font1 = ImageFont.truetype('consola.ttf', 11)
-        self.font2 = ImageFont.truetype('consola.ttf', 16)
+    def __init__(self, width: int, height: int) -> None:
+        """
+        Basic constructor.
+
+        :param width: LCD width
+        :param height: LCD height
+        """
+        self.width = width
+        self.height = height
 
         self.bios_data = {}
 
@@ -31,9 +32,10 @@ class AircraftHandler:
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
         return '\n'
 
+    @abstractmethod
     def update_display(self) -> None:
         """Update display."""
-        self.draw.rectangle((0, 0, self.width, self.height), 0, 0)  # clear bitmap
+        pass
 
     def set_data(self, selector: str, value: str, update=True) -> None:
         """
@@ -50,9 +52,14 @@ class AircraftHandler:
 
 
 class FA18Chornet(AircraftHandler):
-    def __init__(self) -> None:
-        """Basic constructor."""
-        super().__init__()
+    def __init__(self, width: int, height: int) -> None:
+        """
+        Basic constructor.
+
+        :param width: LCD width
+        :param height: LCD height
+        """
+        super().__init__(width, height)
         self.ScratchpadStr1 = ''
         self.ScratchpadStr2 = ''
         self.ScratchpadNum = ''
@@ -90,32 +97,33 @@ class FA18Chornet(AircraftHandler):
 
     def update_display(self) -> None:
         """Update display."""
-        super().update_display()
+        img = Image.new('1', (self.width, self.height), 0)
+        draw = ImageDraw.Draw(img)
         # Scrachpad
-        self.draw.text((0, 0),
-                       self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
-                       1, self.font2)
-        self.draw.line((0, 20, 115, 20), 1, 1)
+        draw.text((0, 0),
+                  self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
+                  1, FONT2)
+        draw.line((0, 20, 115, 20), 1, 1)
 
         # comm1
-        self.draw.rectangle((0, 29, 20, 42), 0, 1)
-        self.draw.text((2, 29), self.COMM1, 1, self.font2)
+        draw.rectangle((0, 29, 20, 42), 0, 1)
+        draw.text((2, 29), self.COMM1, 1, FONT2)
 
         # comm2
         offset_comm2 = 44
-        self.draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
-        self.draw.text((140 - offset_comm2, 29), self.COMM2, 1, self.font2)
+        draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
+        draw.text((140 - offset_comm2, 29), self.COMM2, 1, FONT2)
 
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
-            self.draw.text((120, offset),
-                           f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
-                           1, self.font1)
+            draw.text((120, offset),
+                      f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
+                      1, FONT1)
 
         # Fuel Totaliser
-        self.draw.text((36, 29), self.FuelTotal, 1, self.font2)
-        dcspy.sdk.lcd_sdk.update_display(self.img)
+        draw.text((36, 29), self.FuelTotal, 1, FONT2)
+        dcspy.sdk.lcd_sdk.update_display(img)
 
     def set_data(self, selector: str, value: str, update=True) -> None:
         """
@@ -146,9 +154,14 @@ class FA18Chornet(AircraftHandler):
 
 
 class F16C50(AircraftHandler):
-    def __init__(self) -> None:
-        """Basic constructor."""
-        super().__init__()
+    def __init__(self, width: int, height: int) -> None:
+        """
+        Basic constructor.
+
+        :param width: LCD width
+        :param height: LCD height
+        """
+        super().__init__(width, height)
         self.DEDLine1 = ''
         self.DEDLine2 = ''
         self.DEDLine3 = ''
@@ -163,18 +176,23 @@ class F16C50(AircraftHandler):
 
     def update_display(self) -> None:
         """Update display."""
-        super().update_display()
-
+        img = Image.new('1', (self.width, self.height), 0)
+        draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            self.draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, self.font1)
-        dcspy.sdk.lcd_sdk.update_display(self.img)
+            draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, FONT1)
+        dcspy.sdk.lcd_sdk.update_display(img)
 
 
 class Ka50(AircraftHandler):
-    def __init__(self):
-        """Basic constructor."""
-        super().__init__()
+    def __init__(self, width: int, height: int) -> None:
+        """
+        Basic constructor.
+
+        :param width: LCD width
+        :param height: LCD height
+        """
+        super().__init__(width, height)
         self.l1_apostr1 = ''
         self.l1_apostr2 = ''
         self.l1_point = ''
@@ -209,7 +227,8 @@ class Ka50(AircraftHandler):
 
     def update_display(self) -> None:
         """Update display."""
-        super().update_display()
+        img = Image.new('1', (self.width, self.height), 0)
+        draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
         if self.l1_text:
             text1 = f' {self.l1_text[-5:-3]}{self.l1_apostr1}{self.l1_text[-3:-1]}{self.l1_apostr2}{self.l1_text[-1]}'
@@ -217,6 +236,6 @@ class Ka50(AircraftHandler):
             text2 = f'{self.l2_text[-6:-3]}{self.l2_apostr1}{self.l2_text[-3:-1]}{self.l2_apostr2}{self.l2_text[-1]}'
         line1 = f'{self.l1_sign} {text1} {self.l1_point}'
         line2 = f'{self.l2_sign} {text2} {self.l2_point}'
-        self.draw.text((0, 0), line1, 1, self.font1)
-        self.draw.text((0, 8), line2, 1, self.font1)
-        dcspy.sdk.lcd_sdk.update_display(self.img)
+        draw.text((0, 0), line1, 1, FONT1)
+        draw.text((0, 8), line2, 1, FONT1)
+        dcspy.sdk.lcd_sdk.update_display(img)

@@ -8,9 +8,9 @@ from socket import socket
 from sys import maxsize
 from typing import List
 
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS
+from dcspy import SUPPORTED_CRAFTS, FONT1
 from dcspy.aircrafts import AircraftHandler
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
@@ -46,8 +46,6 @@ class G13:
 
         self.img = Image.new('1', (self.width, self.height), 0)
         self.draw = ImageDraw.Draw(self.img)
-        self.font1 = ImageFont.truetype('consola.ttf', 11)
-        self.font2 = ImageFont.truetype('consola.ttf', 16)
 
     @property
     def display(self) -> List[str]:
@@ -73,7 +71,7 @@ class G13:
         message.extend(['' for _ in range(4 - len(message))])
         self._display = message
         for line_no, line in enumerate(message):
-            self.draw.text((0, 10 * line_no), line, 1, self.font1)
+            self.draw.text((0, 10 * line_no), line, 1, FONT1)
         update_display(self.img)
 
     def set_ac(self, value: str) -> None:
@@ -96,7 +94,7 @@ class G13:
         """Actiate new aircraft."""
         self.shouldActivateNewAC = False
         plane_name = self.currentAC.replace('-', '').replace('_', '')
-        plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)()
+        plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
         for field_name, add_data in plane.bios_data.items():
