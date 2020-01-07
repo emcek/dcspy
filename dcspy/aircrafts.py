@@ -1,7 +1,5 @@
 from logging import basicConfig, DEBUG, debug
 
-from dcspy.dcsbios import StringBuffer
-
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
@@ -159,12 +157,12 @@ class F16C50(AircraftHandler):
         self.DEDLine3 = ''
         self.DEDLine4 = ''
         self.DEDLine5 = ''
-
-        self.bufferDEDLine1 = StringBuffer(self.g13.parser, 0x44fc, 50, lambda s: self.set_data('DEDLine1', s))
-        self.bufferDEDLine2 = StringBuffer(self.g13.parser, 0x452e, 50, lambda s: self.set_data('DEDLine2', s))
-        self.bufferDEDLine3 = StringBuffer(self.g13.parser, 0x4560, 50, lambda s: self.set_data('DEDLine3', s))
-        self.bufferDEDLine4 = StringBuffer(self.g13.parser, 0x4592, 50, lambda s: self.set_data('DEDLine4', s))
-        self.bufferDEDLine5 = StringBuffer(self.g13.parser, 0x45c4, 50, lambda s: self.set_data('DEDLine5', s))
+        self.bios_data = {
+            'DEDLine1': {'addr': 0x44fc, 'length': 50},
+            'DEDLine2': {'addr': 0x452e, 'length': 50},
+            'DEDLine3': {'addr': 0x4560, 'length': 50},
+            'DEDLine4': {'addr': 0x4592, 'length': 50},
+            'DEDLine5': {'addr': 0x45c4, 'length': 50}}
 
     def update_display(self) -> None:
         """Update display."""
@@ -195,17 +193,17 @@ class Ka50(AircraftHandler):
         self.l2_point = ''
         self.l2_sign = ''
         self.l2_text = ''
-
-        self.buffer_l1_apostr1 = StringBuffer(self.g13.parser, 0x1934, 1, lambda s: self.set_data('l1_apostr1', s))
-        self.buffer_l1_apostr2 = StringBuffer(self.g13.parser, 0x1936, 1, lambda s: self.set_data('l1_apostr2', s))
-        self.buffer_l1_point = StringBuffer(self.g13.parser, 0x1930, 1, lambda s: self.set_data('l1_point', s))
-        self.buffer_l1_sign = StringBuffer(self.g13.parser, 0x1920, 1, lambda s: self.set_data('l1_sign', s))
-        self.buffer_l1_text = StringBuffer(self.g13.parser, 0x1924, 6, lambda s: self.set_data('l1_text', s))
-        self.buffer_l2_apostr1 = StringBuffer(self.g13.parser, 0x1938, 1, lambda s: self.set_data('l2_apostr1', s))
-        self.buffer_l2_apostr2 = StringBuffer(self.g13.parser, 0x193a, 1, lambda s: self.set_data('l2_apostr2', s))
-        self.buffer_l2_point = StringBuffer(self.g13.parser, 0x1932, 1, lambda s: self.set_data('l2_point', s))
-        self.buffer_l2_sign = StringBuffer(self.g13.parser, 0x1922, 1, lambda s: self.set_data('l2_sign', s))
-        self.buffer_l2_text = StringBuffer(self.g13.parser, 0x192a, 6, lambda s: self.set_data('l2_text', s))
+        self.bios_data = {
+            'l1_apostr1': {'addr': 0x1934, 'length': 1},
+            'l1_apostr2': {'addr': 0x1936, 'length': 1},
+            'l1_point': {'addr': 0x1930, 'length': 1},
+            'l1_sign': {'addr': 0x1920, 'length': 1},
+            'l1_text': {'addr': 0x1924, 'length': 6},
+            'l2_apostr1': {'addr': 0x1938, 'length': 1},
+            'l2_apostr2': {'addr': 0x193a, 'length': 1},
+            'l2_point': {'addr': 0x1932, 'length': 1},
+            'l2_sign': {'addr': 0x1922, 'length': 1},
+            'l2_text': {'addr': 0x192a, 'length': 6}}
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
         """
