@@ -20,7 +20,7 @@ class AircraftHandler:
         """
         self.width = width
         self.height = height
-
+        # @todo: turn it into property to easier set and get value - then remove all member from aircrafts
         self.bios_data = {}
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
@@ -77,7 +77,6 @@ class FA18Chornet(AircraftHandler):
         self.OptionCueing4 = ''
         self.OptionCueing5 = ''
         self.FuelTotal = ''
-
         self.bios_data = {
             'ScratchpadStr1': {'addr': 0x744e, 'length': 2},
             'ScratchpadStr2': {'addr': 0x7450, 'length': 2},
