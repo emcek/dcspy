@@ -1,5 +1,6 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte
 from itertools import chain
+from logging import warning
 
 from PIL import Image
 
@@ -107,3 +108,36 @@ def color_gb_picture(im: Image) -> None:
     global LogiLcdColorSetBackground
 
     LogiLcdColorSetBackground((c_ubyte * 307200)(*list(chain(*list(im.getdata())))))
+
+
+def update_display(img: Image) -> None:
+    """
+    Update display.
+
+    :param img:
+    """
+    global LogiLcdIsConnected, LogiLcdMonoSetBackground, LogiLcdUpdate
+    pixels = list(img.getdata())
+    for i, _ in enumerate(pixels):
+        pixels[i] *= 128
+
+    # put bitmap array into display
+    if LogiLcdIsConnected(TYPE_MONO):
+        LogiLcdMonoSetBackground((c_ubyte * (160 * 43))(*pixels))
+        LogiLcdUpdate()
+    else:
+        warning('LCD is not connected')
+
+
+def clear_display(true_clear=False) -> None:
+    """
+    Clear display.
+
+    :param true_clear:
+    """
+    global LogiLcdMonoSetBackground, LogiLcdMonoSetText, LogiLcdUpdate
+    LogiLcdMonoSetBackground((c_ubyte * (160 * 43))(*[0] * (160 * 43)))
+    if true_clear:
+        for i in range(4):
+            LogiLcdMonoSetText(i, '')
+    LogiLcdUpdate()

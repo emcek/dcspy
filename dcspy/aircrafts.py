@@ -1,5 +1,7 @@
 from logging import basicConfig, DEBUG, debug
 
+import dcspy.sdk.lcd_sdk
+
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
@@ -113,7 +115,7 @@ class FA18Chornet(AircraftHandler):
 
         # Fuel Totaliser
         self.g13.draw.text((36, 29), self.FuelTotal, 1, self.g13.font2)
-        self.g13.update_display(self.g13.img)
+        dcspy.sdk.lcd_sdk.update_display(self.g13.img)
 
     def set_data(self, selector: str, value: str, update=True) -> None:
         """
@@ -171,7 +173,7 @@ class F16C50(AircraftHandler):
         for i in range(1, 6):
             offset = (i - 1) * 8
             self.g13.draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, self.g13.font1)
-        self.g13.update_display(self.g13.img)
+        dcspy.sdk.lcd_sdk.update_display(self.g13.img)
 
 
 class Ka50(AircraftHandler):
@@ -227,4 +229,4 @@ class Ka50(AircraftHandler):
         line2 = f'{self.l2_sign} {text2} {self.l2_point}'
         self.g13.draw.text((0, 0), line1, 1, self.g13.font1)
         self.g13.draw.text((0, 8), line2, 1, self.g13.font1)
-        self.g13.update_display(self.g13.img)
+        dcspy.sdk.lcd_sdk.update_display(self.g13.img)

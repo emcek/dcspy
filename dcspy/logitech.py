@@ -1,4 +1,4 @@
-from ctypes import c_ubyte, sizeof, c_void_p
+from ctypes import sizeof, c_void_p
 from functools import partial
 from importlib import import_module
 from logging import basicConfig, DEBUG, info, debug, warning
@@ -14,6 +14,7 @@ from dcspy import SUPPORTED_CRAFTS
 from dcspy.aircrafts import AircraftHandler
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
+from dcspy.sdk.lcd_sdk import update_display
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
@@ -73,7 +74,7 @@ class G13:
         self._display = message
         for line_no, line in enumerate(message):
             self.draw.text((0, 10 * line_no), line, 1, self.font1)
-        self.update_display(self.img)
+        update_display(self.img)
 
     def set_ac(self, value: str) -> None:
         """
@@ -101,35 +102,6 @@ class G13:
         for field_name, add_data in plane.bios_data.items():
             setattr(plane, f'buffer{field_name}', StringBuffer(self.parser, add_data['addr'], add_data['length'],
                                                                partial(plane.set_data, field_name)))
-
-    def update_display(self, img: Image) -> None:
-        """
-        Update display.
-
-        :param img:
-        """
-        pixels = list(img.getdata())
-        for i, _ in enumerate(pixels):
-            pixels[i] *= 128
-
-        # put bitmap array into display
-        if lcd_sdk.LogiLcdIsConnected(lcd_sdk.TYPE_MONO):
-            lcd_sdk.LogiLcdMonoSetBackground((c_ubyte * (self.width * self.height))(*pixels))
-            lcd_sdk.LogiLcdUpdate()
-        else:
-            warning('LCD is not connected')
-
-    def clear_display(self, true_clear=False) -> None:
-        """
-        Clear display.
-
-        :param true_clear:
-        """
-        lcd_sdk.LogiLcdMonoSetBackground((c_ubyte * (self.width * self.height))(*[0] * (self.width * self.height)))
-        if true_clear:
-            for i in range(4):
-                lcd_sdk.LogiLcdMonoSetText(i, '')
-        lcd_sdk.LogiLcdUpdate()
 
     def check_buttons(self) -> int:
         """
