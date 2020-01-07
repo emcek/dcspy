@@ -93,8 +93,8 @@ class FA18Chornet(AircraftHandler):
         super().update_display()
         # Scrachpad
         self.draw.text((0, 0),
-                           self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
-                           1, self.font2)
+                       self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
+                       1, self.font2)
         self.draw.line((0, 20, 115, 20), 1, 1)
 
         # comm1
@@ -110,8 +110,8 @@ class FA18Chornet(AircraftHandler):
         for i in range(1, 6):
             offset = (i - 1) * 8
             self.draw.text((120, offset),
-                               f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
-                               1, self.font1)
+                           f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
+                           1, self.font1)
 
         # Fuel Totaliser
         self.draw.text((36, 29), self.FuelTotal, 1, self.font2)
