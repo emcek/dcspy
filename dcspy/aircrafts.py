@@ -29,7 +29,6 @@ class AircraftHandler:
     def update_display(self) -> None:
         """Update display."""
         self.g13.draw.rectangle((0, 0, self.g13.width, self.g13.height), 0, 0)  # clear bitmap
-        debug('super update')
 
     def set_data(self, selector: str, value: str, update=True) -> None:
         """
@@ -40,10 +39,9 @@ class AircraftHandler:
         :param update:
         """
         setattr(self, selector, value)
-        debug(f'value: {value}')
+        debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         if update:
             self.update_display()
-            debug('set_dat update')
 
 
 class FA18Chornet(AircraftHandler):
@@ -90,29 +88,9 @@ class FA18Chornet(AircraftHandler):
             'OptionCueing5': {'addr': 0x7430, 'length': 1},
             'FuelTotal': {'addr': 0x748a, 'length': 6}}
 
-        # self.bufferScratchpadStr1 = StringBuffer(self.g13.parser, 0x744e, 2, lambda s: self.set_data('ScratchpadStr1', s))
-        # self.bufferScratchpadStr2 = StringBuffer(self.g13.parser, 0x7450, 2, lambda s: self.set_data('ScratchpadStr2', s))
-        # self.bufferScratchpadNum = StringBuffer(self.g13.parser, 0x7446, 8, lambda s: self.set_data('ScratchpadNum', s))
-        # self.bufferOptionDisplay1 = StringBuffer(self.g13.parser, 0x7432, 4, lambda s: self.set_data('OptionDisplay1', s))
-        # self.bufferOptionDisplay2 = StringBuffer(self.g13.parser, 0x7436, 4, lambda s: self.set_data('OptionDisplay2', s))
-        # self.bufferOptionDisplay3 = StringBuffer(self.g13.parser, 0x743a, 4, lambda s: self.set_data('OptionDisplay3', s))
-        # self.bufferOptionDisplay4 = StringBuffer(self.g13.parser, 0x743e, 4, lambda s: self.set_data('OptionDisplay4', s))
-        # self.bufferOptionDisplay5 = StringBuffer(self.g13.parser, 0x7442, 4, lambda s: self.set_data('OptionDisplay5', s))
-        # self.bufferCOMM1 = StringBuffer(self.g13.parser, 0x7424, 2, lambda s: self.set_data('COMM1', s))
-        # self.bufferCOMM2 = StringBuffer(self.g13.parser, 0x7426, 2, lambda s: self.set_data('COMM2', s))
-        # self.bufferOptionCueing1 = StringBuffer(self.g13.parser, 0x7428, 1, lambda s: self.set_data('OptionCueing1', s))
-        # self.bufferOptionCueing2 = StringBuffer(self.g13.parser, 0x742a, 1, lambda s: self.set_data('OptionCueing2', s))
-        # self.bufferOptionCueing3 = StringBuffer(self.g13.parser, 0x742c, 1, lambda s: self.set_data('OptionCueing3', s))
-        # self.bufferOptionCueing4 = StringBuffer(self.g13.parser, 0x742e, 1, lambda s: self.set_data('OptionCueing4', s))
-        # self.bufferOptionCueing5 = StringBuffer(self.g13.parser, 0x7430, 1, lambda s: self.set_data('OptionCueing5', s))
-        # self.bufferFuelTotal = StringBuffer(self.g13.parser, 0x748a, 6, lambda s: self.set_data('FuelTotal', s))
-
     def update_display(self) -> None:
         """Update display."""
         super().update_display()
-        # debug(f'{self.bufferOptionCueing1} {id(self.bufferOptionCueing1)}')
-        # debug(f'{self.bufferOptionCueing2} {id(self.bufferOptionCueing2)}')
-        # debug(f'{self.bufferFuelTotal} {id(self.bufferFuelTotal)}')
         # Scrachpad
         self.g13.draw.text((0, 0),
                            self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
@@ -137,7 +115,6 @@ class FA18Chornet(AircraftHandler):
 
         # Fuel Totaliser
         self.g13.draw.text((36, 29), self.FuelTotal, 1, self.g13.font2)
-        debug('f18 update')
         self.g13.update_display(self.g13.img)
 
     def set_data(self, selector: str, value: str, update=True) -> None:
@@ -148,10 +125,8 @@ class FA18Chornet(AircraftHandler):
         :param value:
         :param update:
         """
-        debug(f'{selector} {value}')
         if selector in ('ScratchpadStr1', 'ScratchpadStr2', 'COMM1', 'COMM2'):
             value = value.replace('`', '1').replace('~', '2')
-            debug('22222222222222222')
         super().set_data(selector, value, update)
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
