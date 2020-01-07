@@ -99,8 +99,8 @@ class G13:
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
         for field_name, add_data in plane.bios_data.items():
-            field_val = StringBuffer(self.parser, add_data['addr'], add_data['length'], partial(plane.set_data, field_name))
-            setattr(plane, f'buffer{field_name}', field_val)
+            setattr(plane, f'buffer{field_name}', StringBuffer(self.parser, add_data['addr'], add_data['length'],
+                                                               partial(plane.set_data, field_name)))
 
     def update_display(self, img: Image) -> None:
         """
