@@ -97,8 +97,8 @@ class G13:
         plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
-        for field_name, add_data in plane.bios_data.items():
-            StringBuffer(self.parser, add_data['addr'], add_data['length'], partial(plane.set_data, field_name))
+        for field_name, proto_data in plane.bios_data.items():
+            StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(plane.set_bios, field_name))
 
     def check_buttons(self) -> int:
         """

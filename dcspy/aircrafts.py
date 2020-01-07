@@ -20,7 +20,6 @@ class AircraftHandler:
         """
         self.width = width
         self.height = height
-        # @todo: turn it into property to easier set and get value - then remove all member from aircrafts
         self.bios_data = {}
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
@@ -38,7 +37,7 @@ class AircraftHandler:
         """Update display."""
         pass
 
-    def set_data(self, selector: str, value: str, update=True) -> None:
+    def set_bios(self, selector: str, value: str, update=True) -> None:
         """
         Set new data.
 
@@ -46,10 +45,13 @@ class AircraftHandler:
         :param value:
         :param update:
         """
-        setattr(self, selector, value)
+        self.bios_data[selector]['val'] = value
         debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         if update:
             self.update_display()
+
+    def get_bios(self, selector):
+        return self.bios_data[selector]['val']
 
 
 class FA18Chornet(AircraftHandler):
@@ -61,39 +63,23 @@ class FA18Chornet(AircraftHandler):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.ScratchpadStr1 = ''
-        self.ScratchpadStr2 = ''
-        self.ScratchpadNum = ''
-        self.OptionDisplay1 = ''
-        self.OptionDisplay2 = ''
-        self.OptionDisplay3 = ''
-        self.OptionDisplay4 = ''
-        self.OptionDisplay5 = ''
-        self.COMM1 = ''
-        self.COMM2 = ''
-        self.OptionCueing1 = ''
-        self.OptionCueing2 = ''
-        self.OptionCueing3 = ''
-        self.OptionCueing4 = ''
-        self.OptionCueing5 = ''
-        self.FuelTotal = ''
         self.bios_data = {
-            'ScratchpadStr1': {'addr': 0x744e, 'length': 2},
-            'ScratchpadStr2': {'addr': 0x7450, 'length': 2},
-            'ScratchpadNum': {'addr': 0x7446, 'length': 8},
-            'OptionDisplay1': {'addr': 0x7432, 'length': 4},
-            'OptionDisplay2': {'addr': 0x7436, 'length': 4},
-            'OptionDisplay3': {'addr': 0x743a, 'length': 4},
-            'OptionDisplay4': {'addr': 0x743e, 'length': 4},
-            'OptionDisplay5': {'addr': 0x7442, 'length': 4},
-            'COMM1': {'addr': 0x7424, 'length': 2},
-            'COMM2': {'addr': 0x7426, 'length': 2},
-            'OptionCueing1': {'addr': 0x7428, 'length': 1},
-            'OptionCueing2': {'addr': 0x742a, 'length': 1},
-            'OptionCueing3': {'addr': 0x742c, 'length': 1},
-            'OptionCueing4': {'addr': 0x742e, 'length': 1},
-            'OptionCueing5': {'addr': 0x7430, 'length': 1},
-            'FuelTotal': {'addr': 0x748a, 'length': 6}}
+            'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': ''},
+            'ScratchpadStr2': {'addr': 0x7450, 'len': 2, 'val': ''},
+            'ScratchpadNum': {'addr': 0x7446, 'len': 8, 'val': ''},
+            'OptionDisplay1': {'addr': 0x7432, 'len': 4, 'val': ''},
+            'OptionDisplay2': {'addr': 0x7436, 'len': 4, 'val': ''},
+            'OptionDisplay3': {'addr': 0x743a, 'len': 4, 'val': ''},
+            'OptionDisplay4': {'addr': 0x743e, 'len': 4, 'val': ''},
+            'OptionDisplay5': {'addr': 0x7442, 'len': 4, 'val': ''},
+            'COMM1': {'addr': 0x7424, 'len': 2, 'val': ''},
+            'COMM2': {'addr': 0x7426, 'len': 2, 'val': ''},
+            'OptionCueing1': {'addr': 0x7428, 'len': 1, 'val': ''},
+            'OptionCueing2': {'addr': 0x742a, 'len': 1, 'val': ''},
+            'OptionCueing3': {'addr': 0x742c, 'len': 1, 'val': ''},
+            'OptionCueing4': {'addr': 0x742e, 'len': 1, 'val': ''},
+            'OptionCueing5': {'addr': 0x7430, 'len': 1, 'val': ''},
+            'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
 
     def update_display(self) -> None:
         """Update display."""
@@ -101,31 +87,31 @@ class FA18Chornet(AircraftHandler):
         draw = ImageDraw.Draw(img)
         # Scrachpad
         draw.text((0, 0),
-                  self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
+                  f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}',
                   1, consolas_16)
         draw.line((0, 20, 115, 20), 1, 1)
 
         # comm1
         draw.rectangle((0, 29, 20, 42), 0, 1)
-        draw.text((2, 29), self.COMM1, 1, consolas_16)
+        draw.text((2, 29), self.get_bios('COMM1'), 1, consolas_16)
 
         # comm2
         offset_comm2 = 44
         draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
-        draw.text((140 - offset_comm2, 29), self.COMM2, 1, consolas_16)
+        draw.text((140 - offset_comm2, 29), self.get_bios('COMM2'), 1, consolas_16)
 
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
             draw.text((120, offset),
-                      f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
+                      f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}',
                       1, consolas_11)
 
         # Fuel Totaliser
-        draw.text((36, 29), self.FuelTotal, 1, consolas_16)
+        draw.text((36, 29), self.get_bios('FuelTotal'), 1, consolas_16)
         lcd_sdk.update_display(img)
 
-    def set_data(self, selector: str, value: str, update=True) -> None:
+    def set_bios(self, selector: str, value: str, update=True) -> None:
         """
         Set new data.
 
@@ -135,7 +121,7 @@ class FA18Chornet(AircraftHandler):
         """
         if selector in ('ScratchpadStr1', 'ScratchpadStr2', 'COMM1', 'COMM2'):
             value = value.replace('`', '1').replace('~', '2')
-        super().set_data(selector, value, update)
+        super().set_bios(selector, value, update)
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
         """
@@ -162,17 +148,12 @@ class F16C50(AircraftHandler):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.DEDLine1 = ''
-        self.DEDLine2 = ''
-        self.DEDLine3 = ''
-        self.DEDLine4 = ''
-        self.DEDLine5 = ''
         self.bios_data = {
-            'DEDLine1': {'addr': 0x44fc, 'length': 50},
-            'DEDLine2': {'addr': 0x452e, 'length': 50},
-            'DEDLine3': {'addr': 0x4560, 'length': 50},
-            'DEDLine4': {'addr': 0x4592, 'length': 50},
-            'DEDLine5': {'addr': 0x45c4, 'length': 50}}
+            'DEDLine1': {'addr': 0x44fc, 'len': 50, 'val': ''},
+            'DEDLine2': {'addr': 0x452e, 'len': 50, 'val': ''},
+            'DEDLine3': {'addr': 0x4560, 'len': 50, 'val': ''},
+            'DEDLine4': {'addr': 0x4592, 'len': 50, 'val': ''},
+            'DEDLine5': {'addr': 0x45c4, 'len': 50, 'val': ''}}
 
     def update_display(self) -> None:
         """Update display."""
@@ -180,7 +161,7 @@ class F16C50(AircraftHandler):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, consolas_11)
+            draw.text((0, offset), self.get_bios(f'DEDLine{i}'), 1, consolas_11)
         lcd_sdk.update_display(img)
 
 
@@ -193,27 +174,17 @@ class Ka50(AircraftHandler):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.l1_apostr1 = ''
-        self.l1_apostr2 = ''
-        self.l1_point = ''
-        self.l1_sign = ''
-        self.l1_text = ''
-        self.l2_apostr1 = ''
-        self.l2_apostr2 = ''
-        self.l2_point = ''
-        self.l2_sign = ''
-        self.l2_text = ''
         self.bios_data = {
-            'l1_apostr1': {'addr': 0x1934, 'length': 1},
-            'l1_apostr2': {'addr': 0x1936, 'length': 1},
-            'l1_point': {'addr': 0x1930, 'length': 1},
-            'l1_sign': {'addr': 0x1920, 'length': 1},
-            'l1_text': {'addr': 0x1924, 'length': 6},
-            'l2_apostr1': {'addr': 0x1938, 'length': 1},
-            'l2_apostr2': {'addr': 0x193a, 'length': 1},
-            'l2_point': {'addr': 0x1932, 'length': 1},
-            'l2_sign': {'addr': 0x1922, 'length': 1},
-            'l2_text': {'addr': 0x192a, 'length': 6}}
+            'l1_apostr1': {'addr': 0x1934, 'len': 1, 'val': ''},
+            'l1_apostr2': {'addr': 0x1936, 'len': 1, 'val': ''},
+            'l1_point': {'addr': 0x1930, 'len': 1, 'val': ''},
+            'l1_sign': {'addr': 0x1920, 'len': 1, 'val': ''},
+            'l1_text': {'addr': 0x1924, 'len': 6, 'val': ''},
+            'l2_apostr1': {'addr': 0x1938, 'len': 1, 'val': ''},
+            'l2_apostr2': {'addr': 0x193a, 'len': 1, 'val': ''},
+            'l2_point': {'addr': 0x1932, 'len': 1, 'val': ''},
+            'l2_sign': {'addr': 0x1922, 'len': 1, 'val': ''},
+            'l2_text': {'addr': 0x192a, 'len': 6, 'val': ''}}
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
         """
@@ -230,12 +201,14 @@ class Ka50(AircraftHandler):
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
-        if self.l1_text:
-            text1 = f' {self.l1_text[-5:-3]}{self.l1_apostr1}{self.l1_text[-3:-1]}{self.l1_apostr2}{self.l1_text[-1]}'
-        if self.l2_text:
-            text2 = f'{self.l2_text[-6:-3]}{self.l2_apostr1}{self.l2_text[-3:-1]}{self.l2_apostr2}{self.l2_text[-1]}'
-        line1 = f'{self.l1_sign} {text1} {self.l1_point}'
-        line2 = f'{self.l2_sign} {text2} {self.l2_point}'
+        l1_text = self.get_bios('l1_text')
+        l2_text = self.get_bios('l2_text')
+        if l1_text:
+            text1 = f' {l1_text[-5:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
+        if l2_text:
+            text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
+        line1 = f'{self.get_bios("l1_sign")} {text1} {self.get_bios("l1_point")}'
+        line2 = f'{self.get_bios("l2_sign")} {text2} {self.get_bios("l2_point")}'
         draw.text((0, 0), line1, 1, consolas_11)
         draw.text((0, 8), line2, 1, consolas_11)
         lcd_sdk.update_display(img)
