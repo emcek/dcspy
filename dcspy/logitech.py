@@ -1,4 +1,3 @@
-from copy import deepcopy
 from ctypes import c_ubyte, sizeof, c_void_p
 from functools import partial
 from importlib import import_module
@@ -7,7 +6,7 @@ from math import log2
 from platform import architecture
 from socket import socket
 from sys import maxsize
-from typing import List, Callable, Any
+from typing import List
 
 from PIL import Image, ImageFont, ImageDraw
 
@@ -156,26 +155,3 @@ class G13:
         button = self.check_buttons()
         if button:
             sock.send(bytes(self.currentACHook.button_handle_specific_ac(button), 'utf-8'))
-
-
-def rpartial(func: Callable, *args: Any, **keywords: Any) -> Callable:
-    """
-    Right side copy of functools.partial.
-
-    :param func: function be called
-    :type func: Callable
-    :param args: arguments to be added to the function as last args call (at right side)
-    :type args: Any
-    :param keywords: keyword arguments to be added to the function call
-    :type keywords: Any
-    :return: partial object which when called will behave like func called with args and kwargs,
-             but args will be appended to the right side
-    """
-    def _newfunc(*fargs, **fkeywords):
-        newkeywords = deepcopy(keywords)
-        newkeywords.update(fkeywords)
-        return func(*(fargs + args), **newkeywords)
-    _newfunc.func = func
-    _newfunc.args = args
-    _newfunc.keywords = keywords
-    return _newfunc
