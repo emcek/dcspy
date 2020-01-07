@@ -96,7 +96,7 @@ class G13:
         """Actiate new aircraft."""
         self.shouldActivateNewAC = False
         plane_name = self.currentAC.replace('-', '').replace('_', '')
-        plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)(self)
+        plane: AircraftHandler = getattr(import_module('dcspy.aircrafts'), plane_name)()
         debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
         self.currentACHook = plane
         for field_name, add_data in plane.bios_data.items():
