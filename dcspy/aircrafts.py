@@ -39,7 +39,7 @@ class Aircraft:
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
         """
-        Set new data.
+        Set value for DCS-BIOS selector.
 
         :param selector:
         :param value:
@@ -50,7 +50,12 @@ class Aircraft:
         if update:
             self.update_display()
 
-    def get_bios(self, selector):
+    def get_bios(self, selector: str) -> str:
+        """
+        Get value for DCS-BIOS selector.
+
+        :param selector:
+        """
         return self.bios_data[selector]['val']
 
 
