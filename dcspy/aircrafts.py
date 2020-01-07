@@ -1,12 +1,13 @@
 from abc import abstractmethod
 from logging import basicConfig, DEBUG, debug
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 import dcspy.sdk.lcd_sdk
-from dcspy import FONT1, FONT2
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
+consolas_11 = ImageFont.truetype('consola.ttf', 11)
+consolas_16 = ImageFont.truetype('consola.ttf', 16)
 
 
 class AircraftHandler:
@@ -102,27 +103,27 @@ class FA18Chornet(AircraftHandler):
         # Scrachpad
         draw.text((0, 0),
                   self.ScratchpadStr1 + self.ScratchpadStr2 + self.ScratchpadNum,
-                  1, FONT2)
+                  1, consolas_16)
         draw.line((0, 20, 115, 20), 1, 1)
 
         # comm1
         draw.rectangle((0, 29, 20, 42), 0, 1)
-        draw.text((2, 29), self.COMM1, 1, FONT2)
+        draw.text((2, 29), self.COMM1, 1, consolas_16)
 
         # comm2
         offset_comm2 = 44
         draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
-        draw.text((140 - offset_comm2, 29), self.COMM2, 1, FONT2)
+        draw.text((140 - offset_comm2, 29), self.COMM2, 1, consolas_16)
 
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
             draw.text((120, offset),
                       f'{i}{getattr(self, f"OptionCueing{i}")}{getattr(self, f"OptionDisplay{i}")}',
-                      1, FONT1)
+                      1, consolas_11)
 
         # Fuel Totaliser
-        draw.text((36, 29), self.FuelTotal, 1, FONT2)
+        draw.text((36, 29), self.FuelTotal, 1, consolas_16)
         dcspy.sdk.lcd_sdk.update_display(img)
 
     def set_data(self, selector: str, value: str, update=True) -> None:
@@ -180,7 +181,7 @@ class F16C50(AircraftHandler):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, FONT1)
+            draw.text((0, offset), getattr(self, f'DEDLine{i}'), 1, consolas_11)
         dcspy.sdk.lcd_sdk.update_display(img)
 
 
@@ -236,6 +237,6 @@ class Ka50(AircraftHandler):
             text2 = f'{self.l2_text[-6:-3]}{self.l2_apostr1}{self.l2_text[-3:-1]}{self.l2_apostr2}{self.l2_text[-1]}'
         line1 = f'{self.l1_sign} {text1} {self.l1_point}'
         line2 = f'{self.l2_sign} {text2} {self.l2_point}'
-        draw.text((0, 0), line1, 1, FONT1)
-        draw.text((0, 8), line2, 1, FONT1)
+        draw.text((0, 0), line1, 1, consolas_11)
+        draw.text((0, 8), line2, 1, consolas_11)
         dcspy.sdk.lcd_sdk.update_display(img)

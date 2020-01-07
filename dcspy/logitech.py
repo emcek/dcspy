@@ -8,15 +8,16 @@ from socket import socket
 from sys import maxsize
 from typing import List
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import SUPPORTED_CRAFTS, FONT1
+from dcspy import SUPPORTED_CRAFTS
 from dcspy.aircrafts import AircraftHandler
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
 from dcspy.sdk.lcd_sdk import update_display
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
+consolas_11 = ImageFont.truetype('consola.ttf', 11)
 
 
 class G13:
@@ -71,7 +72,7 @@ class G13:
         message.extend(['' for _ in range(4 - len(message))])
         self._display = message
         for line_no, line in enumerate(message):
-            self.draw.text((0, 10 * line_no), line, 1, FONT1)
+            self.draw.text((0, 10 * line_no), line, 1, consolas_11)
         update_display(self.img)
 
     def set_ac(self, value: str) -> None:
