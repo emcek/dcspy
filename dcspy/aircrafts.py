@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from logging import basicConfig, DEBUG, debug
+from logging import basicConfig, DEBUG, debug, warning
 
 from PIL import Image, ImageDraw
 
@@ -139,8 +139,12 @@ class FA18Chornet(Aircraft):
                   3: 'UFC_COMM2_CHANNEL_SELECT DEC',
                   4: 'UFC_COMM2_CHANNEL_SELECT INC'}
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
-        debug(f'Request: {action[button_pressed]}')
-        return f'{action[button_pressed]}\n'
+        try:
+            debug(f'Request: {action[button_pressed]}')
+            return f'{action[button_pressed]}\n'
+        except KeyError:
+            warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
+            return f'\n'
 
 
 class F16C50(Aircraft):
