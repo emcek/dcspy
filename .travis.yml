@@ -19,7 +19,7 @@ script:
   - coverage run --source=dcspy -m pytest -v --random
   - ls -la
   - coverage xml
-  - la -la
+  - ls -la
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; python-codacy-coverage -r coverage.xml; fi
