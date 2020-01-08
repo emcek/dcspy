@@ -42,9 +42,6 @@ class G13:
         lcd_sdk.init_dll(dll)
         lcd_sdk.LogiLcdInit('DCS World', lcd_sdk.TYPE_MONO)
 
-        self.img = Image.new('1', (self.width, self.height), 0)
-        self.draw = ImageDraw.Draw(self.img)
-
     @property
     def display(self) -> List[str]:
         """
@@ -63,14 +60,13 @@ class G13:
         :param message: List of strings to display, row by row. G13 support 4 rows.
         :type message: List[str, ...]
         """
-        # clear bitmap
-        self.draw.rectangle((0, 0, self.width, self.height), 0, 0)
-        # self.ClearDisplay()
+        img = Image.new('1', (self.width, self.height), 0)
+        draw = ImageDraw.Draw(img)
         message.extend(['' for _ in range(4 - len(message))])
         self._display = message
         for line_no, line in enumerate(message):
-            self.draw.text((0, 10 * line_no), line, 1, consolas_11)
-        lcd_sdk.update_display(self.img)
+            draw.text((0, 10 * line_no), line, 1, consolas_11)
+        lcd_sdk.update_display(img)
 
     def set_ac(self, value: str) -> None:
         """
