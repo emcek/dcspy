@@ -12,9 +12,9 @@ before_script:
   - pip install -Ur requirements.txt
   - python3 -V
 script:
-  - python3 -m pytest --mccabe -v .
-  - pycodestyle --statistics --count .
-  - pydocstyle --count .
+  - python3 -m pytest --mccabe -v dcspy
+  - pycodestyle --statistics --count dcspy
+  - pydocstyle --count dcspy
 #  - pylint dcspy
   - coverage run --source=dcspy -m pytest -v --random
 #  - coverage xml
