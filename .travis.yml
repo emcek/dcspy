@@ -15,7 +15,6 @@ script:
   - python3 -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
-#  - pylint dcspy
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
 after_success:
@@ -23,10 +22,10 @@ after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; then python-codacy-coverage -r coverage.xml; fi
 deploy:
   provider: pypi
-  distributions: 'sdist bdist_wheel'
-  user: '__token__'
+  distributions: sdist bdist_wheel
+  user: __token__
   password:
-    secure: kUXrlC3dJK3STax7erAwsD6CGJSZTl6FUmh57H6fez4jf7Q/GwAEcQoSbV/IGXXvUZqR+Ac1sNUOxx4eRCceG6blx25rmojrIUBBi+r3MaNSsFHvEvmLoYawiLZZS2YdzzJE/b8GCWqpJPGjKy1sSvGfb4AWuYxbpbzNIItTFVNzJFp+tOhm8ZwxuOg9dKVLogUwybjiWBCV5NabVBnASffpClWcFA1jCVo5fswNZ9XWj5X7Pw2FWB35BI4LajRYVfCzIpzx6M0FA8vjphZfZxvIqKdgFFcT1AIdG7VeVMN06ilHYInorNIwp3+vXA2ylofTe0RWC3Rc0AhRJ6VRbCw6UStxJFsK4s0Nt6MHP7LAm+Jlj5z1qvIk+Q2HupzIGJuEC7S4Y68qf7j7LSkvYpNv6V8Dp3DA0WmQkQir8gXRNR9KgHkkC0AULGs2qgeA+NMNwYjflIkeCT6lnRfi5aPwCHcY9uyvBsHuoW9e2rFGqIXo1NGgRgQFiEhyiHKBi7fvOMx/VLPYXEx4vdAtQ7Igl7UWRlx67/IV2lwyDFS2u8m2ykJw6uu03HOK5obe0Wdrn5IZeusiTvOaVFhdEz/ltrSw0mZwHq6KGzWWYAC1/P/tUR7SYFJCKi9Ccy06ikyWHHNncD8nwV3Un9PYJywsy8QYWyrhQ2yGqPvaQhA=
+    secure: LMQ9dVx3fKArgAK3KH4M1OyoiVW8gQKTBYOSD62sYyTKk78vFnFftlPjNifDKLFjaJXVD9ZEoOe9XYKDLHa95lFZrWAD61ObfHSVDg2Ww4NKLKdW/VRjC3xQCoh6dDkyeWlqpRUuE37yz/JQrechcJRgiMYnKoj0SkKzo9q52GI/pRQbECuP3wVsFnNSKc4+vBfFBtWSXe1hy9sgKRkeoWN9AR7bwT/fa3YM+HI//1/WW+j81kY+9TP7UqgdeHhAa36Ba0eVRDf78gNExqawYki9HtOZEHX8DvAOhhG8/XNceAUOMQqDSaZxqv0u2udPm766JGDf8EFU8QekkFHJObbdXr381riNwUlx1EYoyV8wGk5aglhQJy4CJlXXHSOxhcO256HK6kArrH/jhQ6yWfdGo5jljzIs3J9HT4QgdY//3aMRi34Iow3kg6K4+DwFjhkD3vCnt2FZPRQpZHBIbOLWKUwwIwnyhrmilfiaeu1b5f/YiwCovF86DME0k73yzqAYx1+20ohKBPdPZEYI3rTKM/wUGgq+bssibHMtvtyt1jA47E3h1HX047SdX+Cr/kY0yYvzJdLmjdIluFEFH1L0QexqJIGjk8s2f577bwQvcLjRLY99Y3hVmW8VUA+F1DLtuUIGBXiCvNRbZXPaUjdb4oFeY3zGZGgQsbtxo6I=
   on:
     tags: true
   skip_existing: true
