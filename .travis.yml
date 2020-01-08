@@ -22,7 +22,7 @@ script:
   - ls -la
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; python-codacy-coverage -r coverage.xml; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; then python-codacy-coverage -r coverage.xml; fi
 deploy:
   provider: pypi
   distributions: 'sdist bdist_wheel'
