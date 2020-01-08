@@ -16,12 +16,12 @@ script:
   - pycodestyle --statistics --count .
   - pydocstyle --count .
 #  - pylint dcspy
-#  - coverage run --source=dcspy -m pytest -v --random
+  - coverage run --source=dcspy -m pytest -v --random
 #  - coverage xml
 #  - export CODACY_PROJECT_TOKEN=%Project_Token%
-#after_success:
-#  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
-#  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; python-codacy-coverage -r coverage.xml; fi
+after_success:
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; python-codacy-coverage -r coverage.xml; fi
 deploy:
   provider: pypi
   distributions: 'sdist bdist_wheel'
