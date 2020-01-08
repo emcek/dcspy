@@ -1,13 +1,12 @@
 from abc import abstractmethod
 from logging import basicConfig, DEBUG, debug
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
+from dcspy import FONT_11, FONT_16
 from dcspy.sdk import lcd_sdk
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
-consolas_11 = ImageFont.truetype('consola.ttf', 11)
-consolas_16 = ImageFont.truetype('consola.ttf', 16)
 
 
 class Aircraft:
@@ -93,27 +92,27 @@ class FA18Chornet(Aircraft):
         # Scrachpad
         draw.text((0, 0),
                   f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}',
-                  1, consolas_16)
+                  1, FONT_16)
         draw.line((0, 20, 115, 20), 1, 1)
 
         # comm1
         draw.rectangle((0, 29, 20, 42), 0, 1)
-        draw.text((2, 29), self.get_bios('COMM1'), 1, consolas_16)
+        draw.text((2, 29), self.get_bios('COMM1'), 1, FONT_16)
 
         # comm2
         offset_comm2 = 44
         draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
-        draw.text((140 - offset_comm2, 29), self.get_bios('COMM2'), 1, consolas_16)
+        draw.text((140 - offset_comm2, 29), self.get_bios('COMM2'), 1, FONT_16)
 
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
             draw.text((120, offset),
                       f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}',
-                      1, consolas_11)
+                      1, FONT_11)
 
         # Fuel Totaliser
-        draw.text((36, 29), self.get_bios('FuelTotal'), 1, consolas_16)
+        draw.text((36, 29), self.get_bios('FuelTotal'), 1, FONT_16)
         lcd_sdk.update_display(img)
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
@@ -166,7 +165,7 @@ class F16C50(Aircraft):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text((0, offset), self.get_bios(f'DEDLine{i}'), 1, consolas_11)
+            draw.text((0, offset), self.get_bios(f'DEDLine{i}'), 1, FONT_11)
         lcd_sdk.update_display(img)
 
 
@@ -214,6 +213,6 @@ class Ka50(Aircraft):
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")} {text1} {self.get_bios("l1_point")}'
         line2 = f'{self.get_bios("l2_sign")} {text2} {self.get_bios("l2_point")}'
-        draw.text((0, 0), line1, 1, consolas_11)
-        draw.text((0, 8), line2, 1, consolas_11)
+        draw.text((0, 0), line1, 1, FONT_11)
+        draw.text((0, 8), line2, 1, FONT_11)
         lcd_sdk.update_display(img)
