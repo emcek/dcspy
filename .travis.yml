@@ -17,7 +17,7 @@ script:
   - pydocstyle --count dcspy
 #  - pylint dcspy
   - coverage run --source=dcspy -m pytest -v --random
-#  - coverage xml
+  - coverage xml
 #  - export CODACY_PROJECT_TOKEN=%Project_Token%
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
