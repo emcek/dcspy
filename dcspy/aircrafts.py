@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from logging import basicConfig, DEBUG, debug, warning
 
 from PIL import Image, ImageDraw
@@ -31,10 +30,9 @@ class Aircraft:
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
         return '\n'
 
-    @abstractmethod
     def update_display(self) -> None:
         """Update display."""
-        pass
+        raise NotImplementedError
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
         """
