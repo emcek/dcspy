@@ -1,4 +1,4 @@
-from pytest import mark
+from pytest import mark, raises
 
 width = 160
 height = 43
@@ -22,3 +22,20 @@ def test_button_pressed_for_hornet(button, result):
     from dcspy import aircrafts
     aircraft = aircrafts.FA18Chornet(width, height)
     assert aircraft.button_handle_specific_ac(button) == result
+
+
+def test_aircraft_base_class():
+    from dcspy import aircrafts
+    aircraft = aircrafts.Aircraft(width, height)
+    aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
+
+    assert aircraft.button_handle_specific_ac(1) == '\n'
+
+    with raises(NotImplementedError):
+        aircraft.update_display()
+
+    with raises(NotImplementedError):
+        aircraft.set_bios('abstract_field', 'deadbeef', True)
+
+    assert aircraft.get_bios('abstract_field') == 'deadbeef'
+    assert aircraft.get_bios('none') == ''
