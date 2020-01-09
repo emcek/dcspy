@@ -39,3 +39,13 @@ def test_aircraft_base_class():
 
     assert aircraft.get_bios('abstract_field') == 'deadbeef'
     assert aircraft.get_bios('none') == ''
+
+
+@mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
+                                              ('COMM1', '``', '11'),
+                                              ('FuelTotal', '104T', '104T')])
+def test_set_bios_for_hornet(selector, value, result):
+    from dcspy import aircrafts
+    aircraft = aircrafts.FA18Chornet(width, height)
+    aircraft.set_bios(selector, value, False)
+    assert aircraft.bios_data[selector]['val'] == result
