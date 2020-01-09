@@ -13,13 +13,13 @@ with io.open(join(here, 'README.md'), encoding='utf-8') as f:
 with io.open(join(here, 'requirements.txt'), encoding='utf-8') as f:
     requires = f.read().splitlines()
 
-setup(name='dcspy',  # Required
-      version=__version__,  # Required
-      description='Software for integrating DCS: F/A-18C, F-16C and Ka-50 with Logitech G13',  # Required
-      long_description=long_description,  # Optional
-      long_description_content_type='text/markdown',  # Optional (see note above)
-      url='https://github.com/emcek/dcspy',  # Optional
-      author='Michal Plichta',  # Optional
+setup(name='dcspy',
+      version=__version__,
+      description='Software for integrating DCS: F/A-18C, F-16C and Ka-50 with Logitech G13',
+      long_description=long_description,
+      long_description_content_type='text/markdown',
+      url='https://github.com/emcek/dcspy',
+      author='Michal Plichta',
       license='MIT License',
       entry_points={'console_scripts': ['dcspy = dcspy.dcspy:run']},
       data_files=[('dcspy_data', ['images/dcspy.ico'])],
@@ -37,10 +37,9 @@ setup(name='dcspy',  # Required
                    'Topic :: System :: Hardware',
                    'Topic :: Utilities'],
       keywords='logitech logitech-sdk logitech-keyboards logitech-gaming logitech-gaming-keyboard dcs-world dcs g13',
-      # packages=find_packages(exclude=['tests']),  # Required
-      packages=find_packages(),  # Required
-      install_requires=requires,  # Optional
+      packages=find_packages(exclude=['tests']),
+      install_requires=requires,
       platforms=['win32', 'nt', 'Windows'],
-      # extras_require={'testing': ['pytest']},
+      extras_require={'testing': ['pytest']},
       project_urls={'Bug Reports': 'https://github.com/emcek/dcspy/issues',
                     'Source': 'https://github.com/emcek/dcspy'})
