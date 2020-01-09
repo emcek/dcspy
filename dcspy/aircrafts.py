@@ -53,7 +53,10 @@ class Aircraft:
 
         :param selector:
         """
-        return self.bios_data[selector]['val']
+        try:
+            return self.bios_data[selector]['val']
+        except KeyError:
+            return ''
 
 
 class FA18Chornet(Aircraft):
