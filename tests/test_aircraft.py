@@ -13,17 +13,6 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model):
     assert issubclass(aircraft, aircrafts.Aircraft)
 
 
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (5, '\n'),
-                                     ('a', '\n'),
-                                     (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                     (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
-def test_button_pressed_for_hornet(button, result):
-    from dcspy import aircrafts
-    aircraft = aircrafts.FA18Chornet(width, height)
-    assert aircraft.button_handle_specific_ac(button) == result
-
-
 def test_aircraft_base_class():
     from dcspy import aircrafts
     aircraft = aircrafts.Aircraft(width, height)
@@ -39,6 +28,17 @@ def test_aircraft_base_class():
 
     assert aircraft.get_bios('abstract_field') == 'deadbeef'
     assert aircraft.get_bios('none') == ''
+
+
+@mark.parametrize('button, result', [(0, '\n'),
+                                     (5, '\n'),
+                                     ('a', '\n'),
+                                     (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                     (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
+def test_button_pressed_for_hornet(button, result):
+    from dcspy import aircrafts
+    aircraft = aircrafts.FA18Chornet(width, height)
+    assert aircraft.button_handle_specific_ac(button) == result
 
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
