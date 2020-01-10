@@ -51,10 +51,12 @@ def test_set_bios_for_hornet(selector, value, result):
     assert aircraft.bios_data[selector]['val'] == result
 
 
-def test_prepare_image_for_hornet():
-    from dcspy.aircrafts import FA18Chornet
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50'])
+def test_prepare_image_for_all_palnes(model):
     from PIL.Image import Image
-    aircraft = FA18Chornet(width, height)
-    img = aircraft.prepare_image()
+    from dcspy import aircrafts
+    aircraft = getattr(aircrafts, model)
+    aircraft_model = aircraft(width, height)
+    img = aircraft_model.prepare_image()
     assert img.size == (width, height)
     assert isinstance(img, Image)
