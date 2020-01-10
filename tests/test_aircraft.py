@@ -70,3 +70,13 @@ def test_prepare_image_for_all_palnes(model):
     img = aircraft_model.prepare_image()
     assert img.size == (width, height)
     assert isinstance(img, Image)
+
+
+@mark.parametrize('button, result', [(1, '\n'),
+                                     (2, '\n'),
+                                     (3, '\n'),
+                                     (4, '\n')])
+def test_button_pressed_for_shark(button, result):
+    from dcspy.aircrafts import Ka50
+    aircraft = Ka50(width, height)
+    assert aircraft.button_handle_specific_ac(button) == result
