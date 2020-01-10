@@ -1,3 +1,5 @@
+from unittest import mock
+
 from pytest import mark, raises
 
 width = 160
@@ -14,20 +16,25 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model):
 
 
 def test_aircraft_base_class():
-    from dcspy.aircrafts import Aircraft
-    aircraft = Aircraft(width, height)
-    aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
+    from dcspy import aircrafts
+    from PIL import Image
+    with mock.patch.object(aircrafts, 'lcd_sdk', return_value=None) as lcd_sdk_mock:
+        aircraft = aircrafts.Aircraft(width, height)
+        aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
 
-    assert aircraft.button_handle_specific_ac(1) == '\n'
+        assert aircraft.button_handle_specific_ac(1) == '\n'
 
-    with raises(NotImplementedError):
-        aircraft.prepare_image()
+        with raises(NotImplementedError):
+            aircraft.prepare_image()
 
-    with raises(NotImplementedError):
-        aircraft.set_bios('abstract_field', 'deadbeef', True)
+        with raises(NotImplementedError):
+            aircraft.set_bios('abstract_field', 'deadbeef', True)
 
-    assert aircraft.get_bios('abstract_field') == 'deadbeef'
-    assert aircraft.get_bios('none') == ''
+        assert aircraft.get_bios('abstract_field') == 'deadbeef'
+        assert aircraft.get_bios('none') == ''
+        img = Image.new('1', (width, height), 0)
+        assert aircraft.update_display(img) is None
+        lcd_sdk_mock.update_display.assert_called_once_with(img)
 
 
 @mark.parametrize('button, result', [(0, '\n'),
