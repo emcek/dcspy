@@ -36,7 +36,12 @@ class Aircraft:
         lcd_sdk.update_display(image)
 
     def prepare_image(self) -> Image.Image:
-        """Prepare image to bo send to LCD"""
+        """
+        Prepare image to bo send to LCD.
+
+        :return: image instance ready display on LCD
+        :rtype: Image.Image
+        """
         raise NotImplementedError
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
@@ -93,7 +98,12 @@ class FA18Chornet(Aircraft):
             'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
 
     def prepare_image(self) -> Image.Image:
-        """Prepare image to bo send to LCD"""
+        """
+        Prepare image to bo send to LCD.
+
+        :return: image instance ready display on LCD
+        :rtype: Image.Image
+        """
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         # Scrachpad
@@ -171,7 +181,12 @@ class F16C50(Aircraft):
             'DEDLine5': {'addr': 0x45c4, 'len': 50, 'val': ''}}
 
     def prepare_image(self) -> Image.Image:
-        """Prepare image to bo send to LCD"""
+        """
+        Prepare image to bo send to LCD.
+
+        :return: image instance ready display on LCD
+        :rtype: Image.Image
+        """
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
@@ -212,7 +227,12 @@ class Ka50(Aircraft):
         return '\n'
 
     def prepare_image(self) -> Image.Image:
-        """Prepare image to bo send to LCD"""
+        """
+        Prepare image to bo send to LCD.
+
+        :return: image instance ready display on LCD
+        :rtype: Image.Image
+        """
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
