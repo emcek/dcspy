@@ -32,7 +32,7 @@ def test_aircraft_base_class():
     assert aircraft.button_handle_specific_ac(1) == '\n'
 
     with raises(NotImplementedError):
-        aircraft.update_display()
+        aircraft.prepare_image()
 
     with raises(NotImplementedError):
         aircraft.set_bios('abstract_field', 'deadbeef', True)

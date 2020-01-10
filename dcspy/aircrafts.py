@@ -30,8 +30,13 @@ class Aircraft:
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
         return '\n'
 
-    def update_display(self) -> None:
+    @staticmethod
+    def update_display(image: Image.Image) -> None:
         """Update display."""
+        lcd_sdk.update_display(image)
+
+    def prepare_image(self) -> Image.Image:
+        """Prepare image to bo send to LCD"""
         raise NotImplementedError
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
@@ -44,8 +49,9 @@ class Aircraft:
         """
         self.bios_data[selector]['val'] = value
         debug(f'{self.__class__.__name__} {selector} value: "{value}"')
+        lcd_image = self.prepare_image()
         if update:
-            self.update_display()
+            self.update_display(lcd_image)
 
     def get_bios(self, selector: str) -> str:
         """
@@ -86,8 +92,8 @@ class FA18Chornet(Aircraft):
             'OptionCueing5': {'addr': 0x7430, 'len': 1, 'val': ''},
             'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
 
-    def update_display(self) -> None:
-        """Update display."""
+    def prepare_image(self) -> Image.Image:
+        """Prepare image to bo send to LCD"""
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         # Scrachpad
@@ -114,7 +120,7 @@ class FA18Chornet(Aircraft):
 
         # Fuel Totaliser
         draw.text((36, 29), self.get_bios('FuelTotal'), 1, FONT_16)
-        lcd_sdk.update_display(img)
+        return img
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
         """
@@ -164,14 +170,14 @@ class F16C50(Aircraft):
             'DEDLine4': {'addr': 0x4592, 'len': 50, 'val': ''},
             'DEDLine5': {'addr': 0x45c4, 'len': 50, 'val': ''}}
 
-    def update_display(self) -> None:
-        """Update display."""
+    def prepare_image(self) -> Image.Image:
+        """Prepare image to bo send to LCD"""
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
             draw.text((0, offset), self.get_bios(f'DEDLine{i}'), 1, FONT_11)
-        lcd_sdk.update_display(img)
+        return img
 
 
 class Ka50(Aircraft):
@@ -205,8 +211,8 @@ class Ka50(Aircraft):
         debug(f'{self.__class__.__name__} Button: {button_pressed}')
         return '\n'
 
-    def update_display(self) -> None:
-        """Update display."""
+    def prepare_image(self) -> Image.Image:
+        """Prepare image to bo send to LCD"""
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
@@ -220,4 +226,4 @@ class Ka50(Aircraft):
         line2 = f'{self.get_bios("l2_sign")} {text2} {self.get_bios("l2_point")}'
         draw.text((0, 0), line1, 1, FONT_11)
         draw.text((0, 8), line2, 1, FONT_11)
-        lcd_sdk.update_display(img)
+        return img
