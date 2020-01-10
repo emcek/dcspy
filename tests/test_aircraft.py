@@ -57,6 +57,9 @@ def test_prepare_image_for_all_palnes(model):
     from dcspy import aircrafts
     aircraft = getattr(aircrafts, model)
     aircraft_model = aircraft(width, height)
+    if model == 'Ka50':
+        aircraft_model.set_bios('l1_text', '123456789', False)
+        aircraft_model.set_bios('l2_text', '987654321', False)
     img = aircraft_model.prepare_image()
     assert img.size == (width, height)
     assert isinstance(img, Image)
