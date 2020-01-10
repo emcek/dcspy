@@ -14,8 +14,8 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model):
 
 
 def test_aircraft_base_class():
-    from dcspy import aircrafts
-    aircraft = aircrafts.Aircraft(width, height)
+    from dcspy.aircrafts import Aircraft
+    aircraft = Aircraft(width, height)
     aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
 
     assert aircraft.button_handle_specific_ac(1) == '\n'
@@ -36,8 +36,8 @@ def test_aircraft_base_class():
                                      (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
                                      (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
 def test_button_pressed_for_hornet(button, result):
-    from dcspy import aircrafts
-    aircraft = aircrafts.FA18Chornet(width, height)
+    from dcspy.aircrafts import FA18Chornet
+    aircraft = FA18Chornet(width, height)
     assert aircraft.button_handle_specific_ac(button) == result
 
 
@@ -45,7 +45,16 @@ def test_button_pressed_for_hornet(button, result):
                                               ('COMM1', '``', '11'),
                                               ('FuelTotal', '104T', '104T')])
 def test_set_bios_for_hornet(selector, value, result):
-    from dcspy import aircrafts
-    aircraft = aircrafts.FA18Chornet(width, height)
+    from dcspy.aircrafts import FA18Chornet
+    aircraft = FA18Chornet(width, height)
     aircraft.set_bios(selector, value, False)
     assert aircraft.bios_data[selector]['val'] == result
+
+
+def test_prepare_image_for_hornet():
+    from dcspy.aircrafts import FA18Chornet
+    from PIL.Image import Image
+    aircraft = FA18Chornet(width, height)
+    img = aircraft.prepare_image()
+    assert img.size == (width, height)
+    assert isinstance(img, Image)
