@@ -6,7 +6,7 @@ from sys import platform
 from PIL import ImageFont
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
-__version__ = '0.9.1'
+__version__ = '0.9.2'
 SUPPORTED_CRAFTS = ('FA-18C_hornet', 'Ka-50', 'F-16C_50')
 
 debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
