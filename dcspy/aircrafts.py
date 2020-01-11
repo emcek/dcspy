@@ -1,11 +1,9 @@
-from logging import basicConfig, DEBUG, debug, warning
+from logging import debug, warning
 
 from PIL import Image, ImageDraw
 
 from dcspy import FONT_11, FONT_16
 from dcspy.sdk import lcd_sdk
-
-basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
 class Aircraft:

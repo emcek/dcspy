@@ -1,6 +1,6 @@
 import socket
 import sys
-from logging import basicConfig, DEBUG, info, debug, warning, error
+from logging import info, debug, warning, error
 from time import sleep, time
 
 from packaging import version
@@ -9,8 +9,6 @@ from requests import get
 from dcspy import __version__
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import G13
-
-basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
 def check_current_version() -> None:

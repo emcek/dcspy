@@ -1,7 +1,7 @@
 from ctypes import sizeof, c_void_p
 from functools import partial
 from importlib import import_module
-from logging import basicConfig, DEBUG, info, debug, warning
+from logging import info, debug, warning
 from math import log2
 from platform import architecture
 from socket import socket
@@ -14,8 +14,6 @@ from dcspy import SUPPORTED_CRAFTS, FONT_11
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
-
-basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 
 
 class G13:
