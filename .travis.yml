@@ -15,6 +15,7 @@ script:
   - python3 -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
+  - pylint dcspy || echo $(($? % 4))
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
 after_success:
