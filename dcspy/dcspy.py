@@ -20,7 +20,7 @@ def check_current_version() -> None:
             if version.parse(online_version) > version.parse(__version__):
                 info(f'There is new version of dcspy: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
-                info('This is up-to-date version')
+                info(f'This is up-to-date version: {__version__}')
         else:
             warning(f'Unable to check version online. Try again later. Status={response.status_code}')
     except Exception as exc:
