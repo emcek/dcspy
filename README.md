@@ -26,32 +26,57 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * <https://github.com/jboecker/python-dcs-bios-example> jboecker's parser to read data stream from DCS-BIOS
 * <https://github.com/50thomatoes50/GLCD_SDK.py> A Python wrapper for Logitech's LCD SDK (with my minor modifications)
 
-## Usage
-You can use it straight away, by running `dcspy.py`, it can be run before DCS, as well as after. After successful connect attempt, G13 display should update. 
+## Installation
+Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
+```shell script
+pip install dcspy
+```
+or use attached wheel file:
+```shell script
+pip install dcspy-0.9.2-py3-none-any.whl
+```
 
+## Usage
+pip should install into you python installation directory: i.e.:
+* `d:\python38\dcspy_data\dcspy.ico`
+* `d:\python38\scripts\dcspy.exe`
+
+You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon).
+After successful connect attempt, G13 display should update. 
+
+## New ideas
+I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea. 
+
+## Development
 * `dcspy.py` is responsible for initialise parser, G13 handler, as well as running connection with DCS.
 * `logitech.py` is responsible for initialise aircraft specific file and handling G13 display and buttons
 * `aircrafts.py` are define all supported aircrafts with details how to handle and display data from DCS, draws bitmap that will be passed to G13 handler and returns input data for buttons under G13 display
 
 If you want to modify or write something by yourself, here's a quick walkthrough:
-
-* First, you need to "subscribe" data you want and pass it to G13Handler:
+* Each plan has special dict:
 ```python
-bufferScratchpadStr1 = StringBuffer(self.g13.parser, 0x744e, 2, lambda s: self.set_data('ScratchpadStr1', s))
+self.bios_data = {
+    'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': ''},
+    'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
 ```
-For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
-
+which describe data to be fetch from DCS-BIOS. For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
+* Then after detecting current plane G13 will load instance of aircraft as `plane`
+```python
+plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
+```
+* and "subscribe" for changes with callback for all fields define in 'plane' instance
+```python
+for field_name, proto_data in plane.bios_data.items():
+    StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(plane.set_bios, field_name))
+```
 * Then, receive byte and use parser:
 ```python
 dcs_bios_resp = sock.recv(1)
 parser.process_byte(dcs_bios_resp)
 ```
-which calls back function in G13Handler `set_data(...)` with appropriate parameters and update display content, by creating bitmap and passing it through LCD SDK to device display
+which calls back function in G13Handler `set_bios()` with appropriate parameters and update display content, by creating bitmap and passing it through LCD SDK to device display
 
 * You can also use 4 button below display, just check their state with `g13.check_buttons()` which one is pressed and send packet with command you wish to use. Again, look it up in `control-reference.html`, for example, to rotate COMM1 knob right in F/A-18C:
 ```python
 sock.send(bytes('UFC_COMM1_CHANNEL_SELECT INC\n', 'utf-8'))
 ```
-
-## New ideas
-I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea. 
