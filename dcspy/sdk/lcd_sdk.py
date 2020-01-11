@@ -70,11 +70,9 @@ def init_dll(dll_path: str) -> None:
 
     LogiLcdUpdate = _dll['LogiLcdUpdate']
     LogiLcdUpdate.restype = None
-    # LogiLcdUpdate.argtypes = [None]
 
     LogiLcdShutdown = _dll['LogiLcdShutdown']
     LogiLcdShutdown.restype = None
-    # LogiLcdShutdown.argtypes = [None]
 
     # Monochrome Lcd Functions
     LogiLcdMonoSetBackground = _dll['LogiLcdMonoSetBackground']
