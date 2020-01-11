@@ -28,10 +28,10 @@ class G13:
         self.width = lcd_sdk.MONO_WIDTH
         self.height = lcd_sdk.MONO_HEIGHT
         self.parser = parser_hook
-        self.currentAC = ''
-        self.currentACHook = Aircraft(self.width, self.height)
-        self.shouldActivateNewAC = False
-        self.isAlreadyPressed = False
+        self.current_ac = ''
+        self.ac_hook = Aircraft(self.width, self.height)
+        self.should_activate_new_ac = False
+        self.already_pressed = False
 
         # GLCD Init
         arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
@@ -71,23 +71,23 @@ class G13:
 
         :param value:
         """
-        if not value == self.currentAC:
-            self.currentAC = value
+        if not value == self.current_ac:
+            self.current_ac = value
             if value in SUPPORTED_CRAFTS:
                 info(f'Detected AC: {value}')
-                self.display = [self.currentAC]
-                self.shouldActivateNewAC = True
+                self.display = [self.current_ac]
+                self.should_activate_new_ac = True
             else:
                 warning(f'Not supported aircraft: {value}')
-                self.display = ['Not supported aircraft:', self.currentAC]
+                self.display = ['Not supported aircraft:', self.current_ac]
 
     def activate_new_ac(self) -> None:
         """Actiate new aircraft."""
-        self.shouldActivateNewAC = False
-        plane_name = self.currentAC.replace('-', '').replace('_', '')
+        self.should_activate_new_ac = False
+        plane_name = self.current_ac.replace('-', '').replace('_', '')
         plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
-        debug(f'Dynamic load of: {plane_name} as {self.currentAC}')
-        self.currentACHook = plane
+        debug(f'Dynamic load of: {plane_name} as {self.current_ac}')
+        self.ac_hook = plane
         for field_name, proto_data in plane.bios_data.items():
             StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(plane.set_bios, field_name))
 
@@ -99,11 +99,11 @@ class G13:
         """
         for btn in (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3):
             if lcd_sdk.LogiLcdIsButtonPressed(btn):
-                if not self.isAlreadyPressed:
-                    self.isAlreadyPressed = True
+                if not self.already_pressed:
+                    self.already_pressed = True
                     return int(log2(btn)) + 1
                 return 0
-        self.isAlreadyPressed = False
+        self.already_pressed = False
         return 0
 
     def button_handle(self, sock: socket) -> None:
@@ -114,4 +114,4 @@ class G13:
         """
         button = self.check_buttons()
         if button:
-            sock.send(bytes(self.currentACHook.button_handle_specific_ac(button), 'utf-8'))
+            sock.send(bytes(self.ac_hook.button_handle_specific_ac(button), 'utf-8'))
