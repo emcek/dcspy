@@ -31,11 +31,8 @@ class G13:
         self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
         self.plane_detected = False
         self.already_pressed = False
-
-        # GLCD Init
         arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
-        dll = f"C:\\Program Files\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
-        lcd_sdk.init_dll(dll)
+        lcd_sdk.init_dll(f"C:\\Program Files\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll")
         lcd_sdk.LogiLcdInit('DCS World', lcd_sdk.TYPE_MONO)
 
     @property
