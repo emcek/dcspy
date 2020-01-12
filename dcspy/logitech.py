@@ -10,7 +10,7 @@ from typing import List
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LCD_SIZE
+from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
@@ -25,7 +25,7 @@ class G13:
         """
         StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
         self._display = list()
-        self.g13_lcd = LCD_SIZE(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
+        self.g13_lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
         self.parser = parser_hook
         self.plane_name = ''
         self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
