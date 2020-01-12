@@ -1,10 +1,16 @@
 from logging import debug, warning
-from typing import TypedDict, Dict
+from typing import Dict
 
 from PIL import Image, ImageDraw
 
 from dcspy import FONT_11, FONT_16
 from dcspy.sdk import lcd_sdk
+
+try:
+    from typing_extensions import TypedDict
+except ImportError:
+    from typing import TypedDict
+
 
 bios = TypedDict('bios', {'addr': int, 'len': int, 'val': str})
 
