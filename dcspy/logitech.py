@@ -10,7 +10,7 @@ from typing import List
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11
+from dcspy import SUPPORTED_CRAFTS, FONT_11, LCD_SIZE
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import StringBuffer, ProtocolParser
 from dcspy.sdk import lcd_sdk
@@ -25,11 +25,10 @@ class G13:
         """
         StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
         self._display = list()
-        self.width = lcd_sdk.MONO_WIDTH
-        self.height = lcd_sdk.MONO_HEIGHT
+        self.g13_lcd = LCD_SIZE(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
         self.parser = parser_hook
         self.current_ac = ''
-        self.plane = Aircraft(self.width, self.height)
+        self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
         self.should_activate_new_ac = False
         self.already_pressed = False
 
@@ -57,7 +56,7 @@ class G13:
         :param message: List of strings to display, row by row. G13 support 4 rows.
         :type message: List[str, ...]
         """
-        img = Image.new('1', (self.width, self.height), 0)
+        img = Image.new('1', (self.g13_lcd.width, self.g13_lcd.height), 0)
         draw = ImageDraw.Draw(img)
         message.extend(['' for _ in range(4 - len(message))])
         self._display = message
@@ -85,7 +84,7 @@ class G13:
         """Actiate new aircraft."""
         self.should_activate_new_ac = False
         plane_name = self.current_ac.replace('-', '').replace('_', '')
-        self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
+        self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.g13_lcd.width, self.g13_lcd.height)
         debug(f'Dynamic load of: {plane_name} as {self.current_ac}')
         for field_name, proto_data in self.plane.bios_data.items():
             StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(self.plane.set_bios, field_name))
