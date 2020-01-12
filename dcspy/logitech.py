@@ -27,9 +27,9 @@ class G13:
         self._display = list()
         self.g13_lcd = LCD_SIZE(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
         self.parser = parser_hook
-        self.current_ac = ''
+        self.plane_name = ''
         self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
-        self.should_activate_new_ac = False
+        self.plane_detected = False
         self.already_pressed = False
 
         # GLCD Init
@@ -70,22 +70,23 @@ class G13:
 
         :param value:
         """
-        if not value == self.current_ac:
-            self.current_ac = value
-            if value in SUPPORTED_CRAFTS:
-                info(f'Detected AC: {value}')
-                self.display = [self.current_ac]
-                self.should_activate_new_ac = True
+        value = value.replace('-', '').replace('_', '')
+        if self.plane_name != value:
+            self.plane_name = value
+            if self.plane_name in SUPPORTED_CRAFTS:
+                self.plane_name = value
+                info(f'Detected Aircraft: {value}')
+                self.display = ['Detected aircraft:', self.plane_name]
+                self.plane_detected = True
             else:
                 warning(f'Not supported aircraft: {value}')
-                self.display = ['Not supported aircraft:', self.current_ac]
+                self.display = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
 
-    def activate_new_ac(self) -> None:
-        """Actiate new aircraft."""
-        self.should_activate_new_ac = False
-        plane_name = self.current_ac.replace('-', '').replace('_', '')
-        self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.g13_lcd.width, self.g13_lcd.height)
-        debug(f'Dynamic load of: {plane_name} as {self.current_ac}')
+    def load_new_plane(self) -> None:
+        """Load new detected aircraft."""
+        self.plane_detected = False
+        self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
+        debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
             StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(self.plane.set_bios, field_name))
 

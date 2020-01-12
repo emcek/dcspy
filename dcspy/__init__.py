@@ -8,7 +8,7 @@ from PIL import ImageFont
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 __version__ = '0.9.2'
-SUPPORTED_CRAFTS = ('FA-18C_hornet', 'Ka-50', 'F-16C_50')
+SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50'}
 LCD_SIZE = namedtuple('lcd_size', ['width', 'height'])
 
 debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')

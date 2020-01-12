@@ -58,8 +58,8 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
         try:
             dcs_bios_resp = sock.recv(1)
             parser.process_byte(dcs_bios_resp)
-            if g13.should_activate_new_ac:
-                g13.activate_new_ac()
+            if g13.plane_detected:
+                g13.load_new_plane()
             g13.button_handle(sock)
         except socket.error as exp:
             debug(f'Main loop socket error: {exp}')
