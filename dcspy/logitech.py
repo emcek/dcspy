@@ -23,7 +23,7 @@ class G13:
 
         :param parser_hook:
         """
-        StringBuffer(parser_hook, 0x0000, 16, partial(self.set_ac))
+        StringBuffer(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self._display = list()
         self.g13_lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
         self.parser = parser_hook
@@ -61,11 +61,12 @@ class G13:
             draw.text((0, 10 * line_no), line, 1, FONT_11)
         lcd_sdk.update_display(img)
 
-    def set_ac(self, value: str) -> None:
+    def detecting_plane(self, value: str) -> None:
         """
-        Set aircraft.
+        Try detect airplane base on value received from DCS-BIOS.
 
-        :param value:
+        :param value: data from DCS-BIOS
+        :type value: str
         """
         value = value.replace('-', '').replace('_', '')
         if self.plane_name != value:
