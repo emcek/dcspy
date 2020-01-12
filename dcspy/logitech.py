@@ -29,7 +29,7 @@ class G13:
         self.height = lcd_sdk.MONO_HEIGHT
         self.parser = parser_hook
         self.current_ac = ''
-        self.ac_hook = Aircraft(self.width, self.height)
+        self.plane = Aircraft(self.width, self.height)
         self.should_activate_new_ac = False
         self.already_pressed = False
 
@@ -85,11 +85,10 @@ class G13:
         """Actiate new aircraft."""
         self.should_activate_new_ac = False
         plane_name = self.current_ac.replace('-', '').replace('_', '')
-        plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
+        self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
         debug(f'Dynamic load of: {plane_name} as {self.current_ac}')
-        self.ac_hook = plane
-        for field_name, proto_data in plane.bios_data.items():
-            StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(plane.set_bios, field_name))
+        for field_name, proto_data in self.plane.bios_data.items():
+            StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(self.plane.set_bios, field_name))
 
     def check_buttons(self) -> int:
         """
@@ -114,4 +113,4 @@ class G13:
         """
         button = self.check_buttons()
         if button:
-            sock.send(bytes(self.ac_hook.button_handle_specific_ac(button), 'utf-8'))
+            sock.send(bytes(self.plane.button_handle_specific_ac(button), 'utf-8'))
