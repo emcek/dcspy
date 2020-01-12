@@ -55,19 +55,20 @@ I have lots of plans and new ideas how to improve it internally and form user's 
 If you want to modify or write something by yourself, here's a quick walkthrough:
 * Each plan has special dict:
 ```python
-self.bios_data = {
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'addr': int, 'len': int, 'val': str})
+self.bios_data: Dict[str, BIOS_VALUE] = {
     'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': ''},
     'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
 ```
 which describe data to be fetch from DCS-BIOS. For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 * Then after detecting current plane G13 will load instance of aircraft as `plane`
 ```python
-plane: Aircraft = getattr(import_module('dcspy.aircrafts'), plane_name)(self.width, self.height)
+self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
 ```
 * and "subscribe" for changes with callback for all fields define in 'plane' instance
 ```python
-for field_name, proto_data in plane.bios_data.items():
-    StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(plane.set_bios, field_name))
+for field_name, proto_data in self.plane.bios_data.items():
+    StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(self.plane.set_bios, field_name))
 ```
 * Then, receive byte and use parser:
 ```python
