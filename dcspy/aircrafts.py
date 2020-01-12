@@ -12,7 +12,7 @@ except ImportError:
     from typing import TypedDict
 
 
-bios = TypedDict('bios', {'addr': int, 'len': int, 'val': str})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'addr': int, 'len': int, 'val': str})
 
 
 class Aircraft:
@@ -25,7 +25,7 @@ class Aircraft:
         """
         self.width = width
         self.height = height
-        self.bios_data: Dict[str, bios] = {}
+        self.bios_data: Dict[str, BIOS_VALUE] = {}
 
     def button_handle_specific_ac(self, button_pressed: int) -> str:
         """
@@ -86,7 +86,7 @@ class FA18Chornet(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, bios] = {
+        self.bios_data: Dict[str, BIOS_VALUE] = {
             'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': ''},
             'ScratchpadStr2': {'addr': 0x7450, 'len': 2, 'val': ''},
             'ScratchpadNum': {'addr': 0x7446, 'len': 8, 'val': ''},
@@ -180,7 +180,7 @@ class F16C50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, bios] = {
+        self.bios_data: Dict[str, BIOS_VALUE] = {
             'DEDLine1': {'addr': 0x44fc, 'len': 50, 'val': ''},
             'DEDLine2': {'addr': 0x452e, 'len': 50, 'val': ''},
             'DEDLine3': {'addr': 0x4560, 'len': 50, 'val': ''},
@@ -211,7 +211,7 @@ class Ka50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, bios] = {
+        self.bios_data: Dict[str, BIOS_VALUE] = {
             'l1_apostr1': {'addr': 0x1934, 'len': 1, 'val': ''},
             'l1_apostr2': {'addr': 0x1936, 'len': 1, 'val': ''},
             'l1_point': {'addr': 0x1930, 'len': 1, 'val': ''},
