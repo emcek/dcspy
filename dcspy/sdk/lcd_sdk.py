@@ -53,6 +53,7 @@ lcd_dll = _init_dll()
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
     """
     Function makes necessary initializations.
+
     You must call this function prior to any other function in the library.
 
     :param name: the name of your applet, you cant change it after initialization
@@ -119,6 +120,7 @@ def logi_lcd_shutdown():
 def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     """
     The array of pixels is organized as a rectangular area, 160 bytes wide and 43 bytes high.
+
     Despite the display being monochrome, 8 bits per pixel are used here for simple
     manipulation of individual pixels.
 
@@ -159,6 +161,7 @@ def logi_lcd_mono_set_text(line_no: int, text: str):
 def logi_lcd_color_set_background(pixels: List[int]) -> bool:
     """
     The array of pixels is organized as a rectangular area, 320 bytes wide and 240 bytes high.
+
     Since the color lcd can display the full RGB gamma, 32 bits per pixel (4 bytes) are used.
     The size of the colorBitmap array has to be 320x240x4 = 307200 therefore.
 
@@ -180,6 +183,7 @@ def logi_lcd_color_set_background(pixels: List[int]) -> bool:
 def logi_lcd_color_set_title(text: str, red=255, green=255, blue=255):
     """
     Function sets the specified text in the first line on the color lcd device connected.
+
     The font size that will be displayed is bigger than the one used in the other lines,
     so you can use this function to set the title of your applet/page.
     If you dont specify any color, your title will be white.
@@ -202,6 +206,7 @@ def logi_lcd_color_set_title(text: str, red=255, green=255, blue=255):
 def logi_lcd_color_set_text(line_no: int, text: str, red: int, green: int, blue: int):
     """
     Function sets the specified text in the requested line on the color lcd device connected.
+
     If you dont specify any color, your title will be white.
 
     :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
