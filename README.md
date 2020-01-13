@@ -20,7 +20,7 @@ This is a software designed to put information from DCS aircraft to Logitech G-s
 * [Development](#development)
 
 ## Requirements
-* Installed Python 3.8 (but 3.6 should be fine) <https://www.python.org/downloads/>
+* Installed Python 3.8 (but 3.6+ should be fine) <https://www.python.org/downloads/>
 * Installed Logitech Gaming Software 9.02.65 <https://support.logitech.com/software/lgs>
 * Installed Logitech LCD SDK 8.57.148 in `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148` <http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip>
 * DCS-BIOS 0.7.31 (or newer) <https://github.com/DCSFlightpanels/dcs-bios>
@@ -29,7 +29,6 @@ This is a software designed to put information from DCS aircraft to Logitech G-s
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
 * <https://github.com/DCSFlightpanels/dcs-bios> DCS-BIOS fork by DCSFlightpanels for exporting data from DCS to local network
 * <https://github.com/jboecker/python-dcs-bios-example> jboecker's parser to read data stream from DCS-BIOS
-* <https://github.com/50thomatoes50/GLCD_SDK.py> A Python wrapper for Logitech's LCD SDK (with my minor modifications)
 
 ## Installation
 Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
