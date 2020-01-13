@@ -6,10 +6,14 @@
 [![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://github.com/emcek/dcspy)
 [![License](https://img.shields.io/badge/Licence-MIT-blue.svg)](./LICENSE.md)  
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)  
-This is a software designed to put information from DCS aircraft to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monochrome display, like G15 and G510.
-* F/A-18C Hornet's Up Front Controller (UFC)
-* F-16C DED display - some parts are missing
-* Ka-50 PVI-800 - under development
+# dcspy
+DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD. Developed for **Logitech G13**.
+Should also work with any other Logitech device with 160x43 px monochrome display, like G15 (v1 and v2) and G510. 
+There is possibility to modify this package to use full RGBA LCD of Logitech G19 (size 320x240) - please open issue.  
+Currently supported devices and aircrafts:
+* F/A-18C Hornet UFC - Up Front Controller
+* F-16C Viper DED - Data Entry Display (some parts are missing)
+* Ka-50 Black Shark PVI-800 (under development)
 
 # Table of Contents
 * [Requirements](#requirements)
