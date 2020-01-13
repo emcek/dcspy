@@ -1,7 +1,7 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
 from itertools import chain
-from logging import warning
-from os import environ
+from logging import warning, error
+from os import environ, path
 from platform import architecture
 from sys import maxsize
 
@@ -34,7 +34,7 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-LogiLcdInit = None
+# LogiLcdInit = None
 LogiLcdIsConnected = None
 LogiLcdIsButtonPressed = None
 LogiLcdUpdate = None
@@ -46,9 +46,9 @@ LogiLcdColorSetTitle = None
 LogiLcdColorSetText = None
 
 
-def init_dll() -> None:
+def init_dll() -> callable:
     """Initialization od dynamic linking library."""
-    global LogiLcdInit, LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground
+    global LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground
     global LogiLcdMonoSetText, LogiLcdColorSetBackground, LogiLcdColorSetTitle, LogiLcdColorSetText
 
     arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
@@ -58,47 +58,69 @@ def init_dll() -> None:
         prog_files = environ['PROGRAMFILES']
     dll_path = f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
 
-    _dll = CDLL(dll_path)
+    if path.exists(dll_path):
+        return CDLL(dll_path)
+    else:
+        raise FileNotFoundError(dll_path)
 
+
+try:
+    lcd_dll = init_dll()
+except FileNotFoundError as err:
+    error(err)
+    lcd_dll = None
+
+
+def logi_lcd_init(name: str, lcd_type: int) -> bool:
+    """ initializes the sdk for the current thread. """
+    if lcd_dll:
+        LogiLcdInit = lcd_dll['LogiLcdInit']
+        LogiLcdInit.restype = c_bool
+        LogiLcdInit.argtypes = (c_wchar_p, c_int)
+        return bool(lcd_dll.LogiLcdInit(name, lcd_type))
+    return False
+
+
+def test():
     # https://docs.python.org/2/library/ctypes.html#fundamental-data-types
     # Generic Functions
-    LogiLcdInit = _dll['LogiLcdInit']
+    LogiLcdInit = lcd_dll['LogiLcdInit']
     LogiLcdInit.restype = c_bool
     LogiLcdInit.argtypes = (c_wchar_p, c_int)
 
-    LogiLcdIsConnected = _dll['LogiLcdIsConnected']
+    LogiLcdIsConnected = lcd_dll['LogiLcdIsConnected']
     LogiLcdIsConnected.restype = c_bool
     LogiLcdIsConnected.argtypes = [c_int]
 
-    LogiLcdIsButtonPressed = _dll['LogiLcdIsButtonPressed']
+    LogiLcdIsButtonPressed = lcd_dll['LogiLcdIsButtonPressed']
     LogiLcdIsButtonPressed.restype = c_bool
     LogiLcdIsButtonPressed.argtypes = [c_int]
 
-    LogiLcdUpdate = _dll['LogiLcdUpdate']
+    LogiLcdUpdate = lcd_dll['LogiLcdUpdate']
     LogiLcdUpdate.restype = None
 
-    LogiLcdShutdown = _dll['LogiLcdShutdown']
+    LogiLcdShutdown = lcd_dll['LogiLcdShutdown']
     LogiLcdShutdown.restype = None
 
     # Monochrome Lcd Functions
-    LogiLcdMonoSetBackground = _dll['LogiLcdMonoSetBackground']
+    LogiLcdMonoSetBackground = lcd_dll['LogiLcdMonoSetBackground']
     LogiLcdMonoSetBackground.restype = c_bool
     LogiLcdMonoSetBackground.argtypes = [c_ubyte * 6880]
 
-    LogiLcdMonoSetText = _dll['LogiLcdMonoSetText']
+    LogiLcdMonoSetText = lcd_dll['LogiLcdMonoSetText']
     LogiLcdMonoSetText.restype = c_bool
     LogiLcdMonoSetText.argtypes = (c_int, c_wchar_p)
 
     # Color LCD Functions
-    LogiLcdColorSetBackground = _dll['LogiLcdColorSetBackground']
+    LogiLcdColorSetBackground = lcd_dll['LogiLcdColorSetBackground']
     LogiLcdColorSetBackground.restype = c_bool
     LogiLcdColorSetBackground.argtypes = [c_ubyte * 307200]
 
-    LogiLcdColorSetTitle = _dll['LogiLcdColorSetTitle']
+    LogiLcdColorSetTitle = lcd_dll['LogiLcdColorSetTitle']
     LogiLcdColorSetTitle.restype = c_bool
     LogiLcdColorSetTitle.argtypes = (c_wchar_p, c_int, c_int, c_int)
 
-    LogiLcdColorSetText = _dll['LogiLcdColorSetText']
+    LogiLcdColorSetText = lcd_dll['LogiLcdColorSetText']
     LogiLcdColorSetText.restype = c_bool
     LogiLcdColorSetText.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
 
