@@ -1,6 +1,6 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
 from itertools import chain
-from logging import warning
+from logging import warning, error
 from os import environ
 from platform import architecture
 from sys import maxsize
@@ -47,7 +47,11 @@ def _init_dll() -> CDLL:
     return CDLL(dll_path)
 
 
-lcd_dll = _init_dll()
+try:
+    lcd_dll = _init_dll()
+except (KeyError, FileNotFoundError) as err:
+    error(f'Loading of LCD SDK failed: {err}', exc_info=True)
+    lcd_dll = None
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
