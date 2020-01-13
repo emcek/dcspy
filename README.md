@@ -15,7 +15,7 @@ Currently supported devices and aircrafts:
 * F-16C Viper DED - Data Entry Display (some parts are missing)
 * Ka-50 Black Shark PVI-800 (under development)
 
-# Table of Contents
+## Table of Contents
 * [Requirements](#requirements)
 * [Credits](#credits)
 * [Installation](#installation)
