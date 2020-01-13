@@ -4,15 +4,20 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
 [![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8-blue.svg)](https://github.com/emcek/dcspy)
-[![License](https://img.shields.io/badge/Licence-MIT-blue.svg)](./LICENSE.md)
-
-# dcspy
+[![License](https://img.shields.io/badge/Licence-MIT-blue.svg)](./LICENSE.md)  
+![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
 This is a software designed to put information from DCS aircraft to Logitech G-series keyboards. Developed for **Logitech G13**, but should also work with any other Logitech device with 160x43 px monochrome display, like G15 and G510.
 * F/A-18C Hornet's Up Front Controller (UFC)
 * F-16C DED display - some parts are missing
 * Ka-50 PVI-800 - under development
 
-![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
+# Table of Contents
+* [Requirements](#requirements)
+* [Credits](#credits)
+* [Installation](#installation)
+* [Usage](#usage)
+* [New ideas](#new-ideas)
+* [Development](#development)
 
 ## Requirements
 * Installed Python 3.8 (but 3.6 should be fine) <https://www.python.org/downloads/>
