@@ -1,11 +1,8 @@
-from ctypes import sizeof, c_void_p
 from functools import partial
 from importlib import import_module
 from logging import info, debug, warning
 from math import log2
-from platform import architecture
 from socket import socket
-from sys import maxsize
 from typing import List
 
 from PIL import Image, ImageDraw
@@ -31,9 +28,7 @@ class G13:
         self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
         self.plane_detected = False
         self.already_pressed = False
-        arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
-        lcd_sdk.init_dll(f"C:\\Program Files\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll")
-        lcd_sdk.LogiLcdInit('DCS World', lcd_sdk.TYPE_MONO)
+        lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
 
     @property
     def display(self) -> List[str]:
@@ -95,7 +90,7 @@ class G13:
         :return:
         """
         for btn in (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3):
-            if lcd_sdk.LogiLcdIsButtonPressed(btn):
+            if lcd_sdk.logi_lcd_is_button_pressed(btn):
                 if not self.already_pressed:
                     self.already_pressed = True
                     return int(log2(btn)) + 1
