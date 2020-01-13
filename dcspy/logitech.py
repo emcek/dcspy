@@ -28,8 +28,7 @@ class G13:
         self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
         self.plane_detected = False
         self.already_pressed = False
-        lcd_sdk.init_dll()
-        lcd_sdk.LogiLcdInit('DCS World', lcd_sdk.TYPE_MONO)
+        lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
 
     @property
     def display(self) -> List[str]:
@@ -91,7 +90,7 @@ class G13:
         :return:
         """
         for btn in (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3):
-            if lcd_sdk.LogiLcdIsButtonPressed(btn):
+            if lcd_sdk.logi_lcd_is_button_pressed(btn):
                 if not self.already_pressed:
                     self.already_pressed = True
                     return int(log2(btn)) + 1
