@@ -1,9 +1,10 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
 from itertools import chain
-from logging import warning, error
-from os import environ, path
+from logging import warning
+from os import environ
 from platform import architecture
 from sys import maxsize
+from typing import List
 
 from PIL import Image
 
@@ -34,123 +35,213 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-# LogiLcdInit = None
-LogiLcdIsConnected = None
-LogiLcdIsButtonPressed = None
-LogiLcdUpdate = None
-LogiLcdShutdown = None
-LogiLcdMonoSetBackground = None
-LogiLcdMonoSetText = None
-LogiLcdColorSetBackground = None
-LogiLcdColorSetTitle = None
-LogiLcdColorSetText = None
 
-
-def init_dll() -> callable:
+def _init_dll() -> CDLL:
     """Initialization od dynamic linking library."""
-    global LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground
-    global LogiLcdMonoSetText, LogiLcdColorSetBackground, LogiLcdColorSetTitle, LogiLcdColorSetText
-
     arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
     try:
         prog_files = environ['PROGRAMW6432']
     except KeyError:
         prog_files = environ['PROGRAMFILES']
     dll_path = f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
-
-    if path.exists(dll_path):
-        return CDLL(dll_path)
-    else:
-        raise FileNotFoundError(dll_path)
+    return CDLL(dll_path)
 
 
-try:
-    lcd_dll = init_dll()
-except FileNotFoundError as err:
-    error(err)
-    lcd_dll = None
+lcd_dll = _init_dll()
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
-    """ initializes the sdk for the current thread. """
+    """
+    Function makes necessary initializations.
+    You must call this function prior to any other function in the library.
+
+    :param name: the name of your applet, you cant change it after initialization
+    :param lcd_type: defines the type of your applet lcd target
+    :return: result
+    :rtype: bool
+    """
     if lcd_dll:
-        LogiLcdInit = lcd_dll['LogiLcdInit']
-        LogiLcdInit.restype = c_bool
-        LogiLcdInit.argtypes = (c_wchar_p, c_int)
-        return bool(lcd_dll.LogiLcdInit(name, lcd_type))
+        logilcdinit = lcd_dll['LogiLcdInit']
+        logilcdinit.restype = c_bool
+        logilcdinit.argtypes = (c_wchar_p, c_int)
+        return logilcdinit(name, lcd_type)
     return False
 
 
-def test():
-    # https://docs.python.org/2/library/ctypes.html#fundamental-data-types
-    # Generic Functions
-    LogiLcdInit = lcd_dll['LogiLcdInit']
-    LogiLcdInit.restype = c_bool
-    LogiLcdInit.argtypes = (c_wchar_p, c_int)
+def logi_lcd_is_connected(lcd_type: int) -> bool:
+    """
+    Function checks if a device of the type specified by the parameter is connected.
 
-    LogiLcdIsConnected = lcd_dll['LogiLcdIsConnected']
-    LogiLcdIsConnected.restype = c_bool
-    LogiLcdIsConnected.argtypes = [c_int]
-
-    LogiLcdIsButtonPressed = lcd_dll['LogiLcdIsButtonPressed']
-    LogiLcdIsButtonPressed.restype = c_bool
-    LogiLcdIsButtonPressed.argtypes = [c_int]
-
-    LogiLcdUpdate = lcd_dll['LogiLcdUpdate']
-    LogiLcdUpdate.restype = None
-
-    LogiLcdShutdown = lcd_dll['LogiLcdShutdown']
-    LogiLcdShutdown.restype = None
-
-    # Monochrome Lcd Functions
-    LogiLcdMonoSetBackground = lcd_dll['LogiLcdMonoSetBackground']
-    LogiLcdMonoSetBackground.restype = c_bool
-    LogiLcdMonoSetBackground.argtypes = [c_ubyte * 6880]
-
-    LogiLcdMonoSetText = lcd_dll['LogiLcdMonoSetText']
-    LogiLcdMonoSetText.restype = c_bool
-    LogiLcdMonoSetText.argtypes = (c_int, c_wchar_p)
-
-    # Color LCD Functions
-    LogiLcdColorSetBackground = lcd_dll['LogiLcdColorSetBackground']
-    LogiLcdColorSetBackground.restype = c_bool
-    LogiLcdColorSetBackground.argtypes = [c_ubyte * 307200]
-
-    LogiLcdColorSetTitle = lcd_dll['LogiLcdColorSetTitle']
-    LogiLcdColorSetTitle.restype = c_bool
-    LogiLcdColorSetTitle.argtypes = (c_wchar_p, c_int, c_int, c_int)
-
-    LogiLcdColorSetText = lcd_dll['LogiLcdColorSetText']
-    LogiLcdColorSetText.restype = c_bool
-    LogiLcdColorSetText.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
+    :param lcd_type: defines the type of your applet lcd target
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdisconnected = lcd_dll['LogiLcdIsConnected']
+        logilcdisconnected.restype = c_bool
+        logilcdisconnected.argtypes = [c_int]
+        return logilcdisconnected(lcd_type)
+    return False
 
 
-def color_gb_picture(im: Image) -> None:
+def logi_lcd_is_button_pressed(button: int) -> bool:
+    """
+    Function checks if the button specified by the parameter is being pressed.
+
+    :param button: defines the button to check on
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdisbuttonpressed = lcd_dll['LogiLcdIsButtonPressed']
+        logilcdisbuttonpressed.restype = c_bool
+        logilcdisbuttonpressed.argtypes = [c_int]
+        return logilcdisbuttonpressed(button)
+    return False
+
+
+def logi_lcd_update() -> None:
+    """Function updates the LCD display."""
+    if lcd_dll:
+        logilcdupdate = lcd_dll['LogiLcdUpdate']
+        logilcdupdate.restype = None
+        logilcdupdate()
+
+
+def logi_lcd_shutdown():
+    """Function kills the applet and frees memory used by the SDK."""
+    if lcd_dll:
+        logilcdshutdown = lcd_dll['LogiLcdShutdown']
+        logilcdshutdown.restype = None
+        logilcdshutdown()
+
+
+def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
+    """
+    The array of pixels is organized as a rectangular area, 160 bytes wide and 43 bytes high.
+    Despite the display being monochrome, 8 bits per pixel are used here for simple
+    manipulation of individual pixels.
+
+    Note: The image size must be 160x43 in order to use this function. The SDK will turn on
+    the pixel on the screen if the value assigned to that byte is >= 128, it will remain off
+    if the  value is < 128.
+
+    :param pixels: list of 6880 (160x43) pixels as int
+    :type pixels: List[int]
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdmonosetbackground = lcd_dll['LogiLcdMonoSetBackground']
+        logilcdmonosetbackground.restype = c_bool
+        logilcdmonosetbackground.argtypes = [c_ubyte * (MONO_WIDTH * MONO_HEIGHT)]
+        return logilcdmonosetbackground((c_ubyte * (MONO_WIDTH * MONO_HEIGHT))(*[p * 128 for p in pixels]))
+    return False
+
+
+def logi_lcd_mono_set_text(line_no: int, text: str):
+    """
+    Function sets the specified text in the requested line on the monochrome lcd device connected.
+
+    :param line_no: The monochrome lcd display has 4 lines, so this parameter can be any number from 0 to 3
+    :param text: defines the text you want to display
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdmonosettext = lcd_dll['LogiLcdMonoSetText']
+        logilcdmonosettext.restype = c_bool
+        logilcdmonosettext.argtypes = (c_int, c_wchar_p)
+        return logilcdmonosettext(line_no, text)
+    return False
+
+
+def logi_lcd_color_set_background(pixels: List[int]) -> bool:
+    """
+    The array of pixels is organized as a rectangular area, 320 bytes wide and 240 bytes high.
+    Since the color lcd can display the full RGB gamma, 32 bits per pixel (4 bytes) are used.
+    The size of the colorBitmap array has to be 320x240x4 = 307200 therefore.
+
+    Note: The image size must be 320x240 in order to use this function.
+
+    :param pixels: list of 307200 (320x240x4) pixels as int
+    :type pixels: List[int]
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdcolorsetbackground = lcd_dll['LogiLcdColorSetBackground']
+        logilcdcolorsetbackground.restype = c_bool
+        logilcdcolorsetbackground.argtypes = [c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT)]
+        return logilcdcolorsetbackground((c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT))(*pixels))
+    return False
+
+
+def logi_lcd_color_set_title(text: str, red=255, green=255, blue=255):
+    """
+    Function sets the specified text in the first line on the color lcd device connected.
+    The font size that will be displayed is bigger than the one used in the other lines,
+    so you can use this function to set the title of your applet/page.
+    If you dont specify any color, your title will be white.
+
+    :param text: defines the text you want to display as title
+    :param red: Values between 0 and 255 are accepted
+    :param green: Values between 0 and 255 are accepted
+    :param blue: Values between 0 and 255 are accepted
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdcolorsettitle = lcd_dll['LogiLcdColorSetTitle']
+        logilcdcolorsettitle.restype = c_bool
+        logilcdcolorsettitle.argtypes = (c_wchar_p, c_int, c_int, c_int)
+        return logilcdcolorsettitle(text, red, green, blue)
+    return False
+
+
+def logi_lcd_color_set_text(line_no: int, text: str, red: int, green: int, blue: int):
+    """
+    Function sets the specified text in the requested line on the color lcd device connected.
+    If you dont specify any color, your title will be white.
+
+    :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
+    :param text: defines the text you want to display
+    :param red: Values between 0 and 255 are accepted
+    :param green: Values between 0 and 255 are accepted
+    :param blue: Values between 0 and 255 are accepted
+    :return: result
+    :rtype: bool
+    """
+    if lcd_dll:
+        logilcdcolorsettext = lcd_dll['LogiLcdColorSetText']
+        logilcdcolorsettext.restype = c_bool
+        logilcdcolorsettext.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
+        return logilcdcolorsettext(line_no, text, red, green, blue)
+    return False
+
+
+def color_bg_picture(image: Image) -> None:
     """
     Set color background picture.
 
-    :param im:
+    :param image: image object from pillow library
     """
-    global LogiLcdColorSetBackground
+    if logi_lcd_is_connected(TYPE_COLOR):
+        logi_lcd_mono_set_background(*list(chain(*list(image.getdata()))))
+        logi_lcd_update()
+    else:
+        warning('LCD is not connected')
 
-    LogiLcdColorSetBackground((c_ubyte * 307200)(*list(chain(*list(im.getdata())))))
 
-
-def update_display(img: Image) -> None:
+def update_display(image: Image) -> None:
     """
-    Update display.
+    Update display LCD with image.
 
-    :param img:
+    :param image: image object from pillow library
     """
-    global LogiLcdIsConnected, LogiLcdMonoSetBackground, LogiLcdUpdate
-    pixels = list(img.getdata())
-    for i, _ in enumerate(pixels):
-        pixels[i] *= 128
-
-    # put bitmap array into display
-    if LogiLcdIsConnected(TYPE_MONO):
-        LogiLcdMonoSetBackground((c_ubyte * (160 * 43))(*pixels))
-        LogiLcdUpdate()
+    if logi_lcd_is_connected(TYPE_MONO):
+        logi_lcd_mono_set_background(list(image.getdata()))
+        logi_lcd_update()
     else:
         warning('LCD is not connected')
 
@@ -161,9 +252,8 @@ def clear_display(true_clear=False) -> None:
 
     :param true_clear:
     """
-    global LogiLcdMonoSetBackground, LogiLcdMonoSetText, LogiLcdUpdate
-    LogiLcdMonoSetBackground((c_ubyte * (160 * 43))(*[0] * (160 * 43)))
+    logi_lcd_mono_set_background([0] * (MONO_WIDTH * MONO_HEIGHT))
     if true_clear:
         for i in range(4):
-            LogiLcdMonoSetText(i, '')
-    LogiLcdUpdate()
+            logi_lcd_mono_set_text(i, '')
+    logi_lcd_update()
