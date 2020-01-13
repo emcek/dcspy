@@ -1,6 +1,9 @@
-from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte
+from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
 from itertools import chain
 from logging import warning
+from os import environ
+from platform import architecture
+from sys import maxsize
 
 from PIL import Image
 
@@ -43,14 +46,17 @@ LogiLcdColorSetTitle = None
 LogiLcdColorSetText = None
 
 
-def init_dll(dll_path: str) -> None:
-    """
-    Initialization od dynamic linking library.
-
-    :param dll_path:
-    """
+def init_dll() -> None:
+    """Initialization od dynamic linking library."""
     global LogiLcdInit, LogiLcdIsConnected, LogiLcdIsButtonPressed, LogiLcdUpdate, LogiLcdShutdown, LogiLcdMonoSetBackground
     global LogiLcdMonoSetText, LogiLcdColorSetBackground, LogiLcdColorSetTitle, LogiLcdColorSetText
+
+    arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
+    try:
+        prog_files = environ['PROGRAMW6432']
+    except KeyError:
+        prog_files = environ['PROGRAMFILES']
+    dll_path = f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
 
     _dll = CDLL(dll_path)
 
