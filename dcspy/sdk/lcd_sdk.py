@@ -4,7 +4,7 @@ from logging import warning
 from os import environ
 from platform import architecture
 from sys import maxsize
-from typing import List
+from typing import List, Tuple
 
 from PIL import Image
 
@@ -180,7 +180,7 @@ def logi_lcd_color_set_background(pixels: List[int]) -> bool:
     return False
 
 
-def logi_lcd_color_set_title(text: str, red=255, green=255, blue=255):
+def logi_lcd_color_set_title(text: str, rgb: Tuple[int] = (255, 255, 255)):
     """
     Function sets the specified text in the first line on the color lcd device connected.
 
@@ -189,9 +189,7 @@ def logi_lcd_color_set_title(text: str, red=255, green=255, blue=255):
     If you dont specify any color, your title will be white.
 
     :param text: defines the text you want to display as title
-    :param red: Values between 0 and 255 are accepted
-    :param green: Values between 0 and 255 are accepted
-    :param blue: Values between 0 and 255 are accepted
+    :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
     :rtype: bool
     """
@@ -199,11 +197,11 @@ def logi_lcd_color_set_title(text: str, red=255, green=255, blue=255):
         logilcdcolorsettitle = lcd_dll['LogiLcdColorSetTitle']
         logilcdcolorsettitle.restype = c_bool
         logilcdcolorsettitle.argtypes = (c_wchar_p, c_int, c_int, c_int)
-        return logilcdcolorsettitle(text, red, green, blue)
+        return logilcdcolorsettitle(text, *rgb)
     return False
 
 
-def logi_lcd_color_set_text(line_no: int, text: str, red: int, green: int, blue: int):
+def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int] = (255, 255, 255)):
     """
     Function sets the specified text in the requested line on the color lcd device connected.
 
@@ -211,9 +209,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, red: int, green: int, blue:
 
     :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
     :param text: defines the text you want to display
-    :param red: Values between 0 and 255 are accepted
-    :param green: Values between 0 and 255 are accepted
-    :param blue: Values between 0 and 255 are accepted
+    :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
     :rtype: bool
     """
@@ -221,7 +217,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, red: int, green: int, blue:
         logilcdcolorsettext = lcd_dll['LogiLcdColorSetText']
         logilcdcolorsettext.restype = c_bool
         logilcdcolorsettext.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
-        return logilcdcolorsettext(line_no, text, red, green, blue)
+        return logilcdcolorsettext(line_no, text, *rgb)
     return False
 
 
