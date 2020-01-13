@@ -10,7 +10,8 @@
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD. Developed for **Logitech G13**.
 Should also work with any other Logitech device with 160x43 px monochrome display, like G15 (v1 and v2) and G510. 
 There is possibility to modify this package to use full RGBA LCD of Logitech G19 (size 320x240) - please open issue.  
-Currently supported devices and aircrafts:
+
+## Currently supported devices and aircrafts:
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display (some parts are missing)
 * Ka-50 Black Shark PVI-800 (under development)
@@ -69,21 +70,21 @@ self.bios_data: Dict[str, BIOS_VALUE] = {
     'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
 ```
 which describe data to be fetch from DCS-BIOS. For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
-* Then after detecting current plane G13 will load instance of aircraft as `plane`
+* Then after detecting current plane in DCS, G13 will load instance of aircraft as `plane`
 ```python
 self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
 ```
-* and "subscribe" for changes with callback for all fields define in 'plane' instance
+* and "subscribe" for changes with callback for all fields defined in `plane` instance
 ```python
 for field_name, proto_data in self.plane.bios_data.items():
     StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(self.plane.set_bios, field_name))
 ```
-* Then, receive byte and use parser:
+* when, receive byte, parser will process data:
 ```python
 dcs_bios_resp = sock.recv(1)
 parser.process_byte(dcs_bios_resp)
 ```
-which calls back function in G13Handler `set_bios()` with appropriate parameters and update display content, by creating bitmap and passing it through LCD SDK to device display
+and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through LCD SDK to device display.
 
 * You can also use 4 button below display, just check their state with `g13.check_buttons()` which one is pressed and send packet with command you wish to use. Again, look it up in `control-reference.html`, for example, to rotate COMM1 knob right in F/A-18C:
 ```python
