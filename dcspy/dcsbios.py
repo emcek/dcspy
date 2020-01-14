@@ -50,47 +50,6 @@ class ProtocolParser:
             self.__sync_byte_count = 0
         self._wait_for_sync()
 
-        # if self.__state == 'ADDRESS_LOW':
-        #     self.__address = int_byte
-        #     self.__state = 'ADDRESS_HIGH'
-        # elif self.__state == 'ADDRESS_HIGH':
-        #     self.__address += int_byte * 256
-        #     if self.__address != 0x5555:
-        #         self.__state = 'COUNT_LOW'
-        #     else:
-        #         self.__state = 'WAIT_FOR_SYNC'
-        # elif self.__state == 'COUNT_LOW':
-        #     self.__count = int_byte
-        #     self.__state = 'COUNT_HIGH'
-        # elif self.__state == 'COUNT_HIGH':
-        #     self.__count += 256 * int_byte
-        #     self.__state = 'DATA_LOW'
-        # elif self.__state == 'DATA_LOW':
-        #     self.__data = int_byte
-        #     self.__count -= 1
-        #     self.__state = 'DATA_HIGH'
-        # elif self.__state == 'DATA_HIGH':
-        #     self.__data += 256 * int_byte
-        #     self.__count -= 1
-        #     for callback in self.write_callbacks:
-        #         callback(self.__address, self.__data)
-        #     self.__address += 2
-        #     if self.__count == 0:
-        #         self.__state = 'ADDRESS_LOW'
-        #     else:
-        #         self.__state = 'DATA_LOW'
-        #
-        # if int_byte == 0x55:
-        #     self.__sync_byte_count += 1
-        # else:
-        #     self.__sync_byte_count = 0
-        #
-        # if self.__sync_byte_count == 4:
-        #     self.__state = 'ADDRESS_LOW'
-        #     self.__sync_byte_count = 0
-        #     for callback in self.frame_sync_callbacks:
-        #         callback()
-
     def _address_low(self, int_byte):
         self.__address = int_byte
         self.state = 'ADDRESS_HIGH'
