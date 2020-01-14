@@ -25,15 +25,15 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * [Development](#development)
 
 ## Requirements
-* Installed Python 3.8 (but 3.6+ should be fine) <https://www.python.org/downloads/>
-* Installed Logitech Gaming Software 9.02.65 <https://support.logitech.com/software/lgs>
-* Installed Logitech LCD SDK 8.57.148 in `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148` <http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip>
-* DCS-BIOS 0.7.31 (or newer) <https://github.com/DCSFlightpanels/dcs-bios>
+* [Python](https://www.python.org/downloads/) 3.8 (but 3.6+ should be fine)
+* [Logitech Gaming Software](https://support.logitech.com/software/lgs) 9.02.65
+* [Logitech LCD SDK](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) 8.57.148 in `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
+* [DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) 0.7.31 (or newer)
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
-* <https://github.com/DCSFlightpanels/dcs-bios> DCS-BIOS fork by DCSFlightpanels for exporting data from DCS to local network
-* <https://github.com/jboecker/python-dcs-bios-example> jboecker's parser to read data stream from DCS-BIOS
+* [DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios) fork by DCSFlightpanels for exporting data from DCS to local network
+* [jboecker's parser](https://github.com/DCSFlightpanels/dcs-bios) to read data stream from DCS-BIOS
 
 ## Installation
 Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
