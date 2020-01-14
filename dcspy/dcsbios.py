@@ -13,6 +13,29 @@ class ProtocolParser:
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
 
+    @property
+    def state(self) -> str:
+        """
+        Get current state.
+
+        :return: current state
+        :rtype: str
+        """
+        return self.__state
+
+    @state.setter
+    def state(self, new_state: str) -> None:
+        """
+        Set new state.
+
+        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
+
+
+        :param new_state: one of allowed state
+        :type new_state: str
+        """
+        self.__state = new_state
+
     def process_byte(self, byte: bytes) -> None:
         """
         Process byte.
