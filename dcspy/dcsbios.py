@@ -1,3 +1,4 @@
+from functools import partial
 from struct import pack
 from typing import Callable, Set, Dict
 
@@ -43,75 +44,105 @@ class ProtocolParser:
         :param byte:
         """
         int_byte = ord(byte)
-        state: Dict[str, Callable] = {
-            'ADDRESS_LOW': self.address_low,
-            'ADDRESS_HIGH': self.address_high,
-            'COUNT_LOW': self.count_low,
-            'COUNT_HIGH': self.count_high,
-            'DATA_LOW': self.data_low,
-            'DATA_HIGH': self.data_high,
-            'WAIT_FOR_SYNC': self.wait_for_sync}
-        if self.__state == 'ADDRESS_LOW':
-            self.__address = int_byte
-            self.__state = 'ADDRESS_HIGH'
-        elif self.__state == 'ADDRESS_HIGH':
-            self.__address += int_byte * 256
-            if self.__address != 0x5555:
-                self.__state = 'COUNT_LOW'
-            else:
-                self.__state = 'WAIT_FOR_SYNC'
-        elif self.__state == 'COUNT_LOW':
-            self.__count = int_byte
-            self.__state = 'COUNT_HIGH'
-        elif self.__state == 'COUNT_HIGH':
-            self.__count += 256 * int_byte
-            self.__state = 'DATA_LOW'
-        elif self.__state == 'DATA_LOW':
-            self.__data = int_byte
-            self.__count -= 1
-            self.__state = 'DATA_HIGH'
-        elif self.__state == 'DATA_HIGH':
-            self.__data += 256 * int_byte
-            self.__count -= 1
-            for callback in self.write_callbacks:
-                callback(self.__address, self.__data)
-            self.__address += 2
-            if self.__count == 0:
-                self.__state = 'ADDRESS_LOW'
-            else:
-                self.__state = 'DATA_LOW'
+        states: Dict[str, Callable] = {
+            'ADDRESS_LOW': partial(self.address_low, int_byte),
+            'ADDRESS_HIGH': partial(self.address_high, int_byte),
+            'COUNT_LOW': partial(self.count_low, int_byte),
+            'COUNT_HIGH': partial(self.count_high, int_byte),
+            'DATA_LOW': partial(self.data_low, int_byte),
+            'DATA_HIGH': partial(self.data_high, int_byte),
+            'WAIT_FOR_SYNC': partial(self.wait_for_sync, int_byte)}
 
+        states[self.state]()
+        self.wait_for_sync(int_byte)
+
+        # if self.__state == 'ADDRESS_LOW':
+        #     self.__address = int_byte
+        #     self.__state = 'ADDRESS_HIGH'
+        # elif self.__state == 'ADDRESS_HIGH':
+        #     self.__address += int_byte * 256
+        #     if self.__address != 0x5555:
+        #         self.__state = 'COUNT_LOW'
+        #     else:
+        #         self.__state = 'WAIT_FOR_SYNC'
+        # elif self.__state == 'COUNT_LOW':
+        #     self.__count = int_byte
+        #     self.__state = 'COUNT_HIGH'
+        # elif self.__state == 'COUNT_HIGH':
+        #     self.__count += 256 * int_byte
+        #     self.__state = 'DATA_LOW'
+        # elif self.__state == 'DATA_LOW':
+        #     self.__data = int_byte
+        #     self.__count -= 1
+        #     self.__state = 'DATA_HIGH'
+        # elif self.__state == 'DATA_HIGH':
+        #     self.__data += 256 * int_byte
+        #     self.__count -= 1
+        #     for callback in self.write_callbacks:
+        #         callback(self.__address, self.__data)
+        #     self.__address += 2
+        #     if self.__count == 0:
+        #         self.__state = 'ADDRESS_LOW'
+        #     else:
+        #         self.__state = 'DATA_LOW'
+        #
+        # if int_byte == 0x55:
+        #     self.__sync_byte_count += 1
+        # else:
+        #     self.__sync_byte_count = 0
+        #
+        # if self.__sync_byte_count == 4:
+        #     self.__state = 'ADDRESS_LOW'
+        #     self.__sync_byte_count = 0
+        #     for callback in self.frame_sync_callbacks:
+        #         callback()
+
+    def address_low(self, int_byte):
+        self.__address = int_byte
+        self.state = 'ADDRESS_HIGH'
+
+    def address_high(self, int_byte):
+        self.__address += int_byte * 256
+        if self.__address != 0x5555:
+            self.state = 'COUNT_LOW'
+        else:
+            self.state = 'WAIT_FOR_SYNC'
+
+    def count_low(self, int_byte):
+        self.__count = int_byte
+        self.__state = 'COUNT_HIGH'
+
+    def count_high(self, int_byte):
+        self.__count += 256 * int_byte
+        self.state = 'DATA_LOW'
+
+    def data_low(self, int_byte):
+        self.__data = int_byte
+        self.__count -= 1
+        self.state = 'DATA_HIGH'
+
+    def data_high(self, int_byte):
+        self.__data += 256 * int_byte
+        self.__count -= 1
+        for callback in self.write_callbacks:
+            callback(self.__address, self.__data)
+        self.__address += 2
+        if self.__count == 0:
+            self.state = 'ADDRESS_LOW'
+        else:
+            self.state = 'DATA_LOW'
+
+    def wait_for_sync(self, int_byte):
         if int_byte == 0x55:
             self.__sync_byte_count += 1
         else:
             self.__sync_byte_count = 0
 
         if self.__sync_byte_count == 4:
-            self.__state = 'ADDRESS_LOW'
+            self.state = 'ADDRESS_LOW'
             self.__sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
-
-    def address_low(self):
-        pass
-
-    def address_high(self):
-        pass
-
-    def count_low(self):
-        pass
-
-    def count_high(self):
-        pass
-
-    def data_low(self):
-        pass
-
-    def data_high(self):
-        pass
-
-    def wait_for_sync(self):
-        pass
 
 
 class StringBuffer:
