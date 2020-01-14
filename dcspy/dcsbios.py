@@ -45,16 +45,16 @@ class ProtocolParser:
         """
         int_byte = ord(byte)
         # states: Dict[str, Callable] = {
-        #     'ADDRESS_LOW': partial(self.address_low, int_byte),
-        #     'ADDRESS_HIGH': partial(self.address_high, int_byte),
-        #     'COUNT_LOW': partial(self.count_low, int_byte),
-        #     'COUNT_HIGH': partial(self.count_high, int_byte),
-        #     'DATA_LOW': partial(self.data_low, int_byte),
-        #     'DATA_HIGH': partial(self.data_high, int_byte),
-        #     'WAIT_FOR_SYNC': partial(self.wait_for_sync, int_byte)}
+        #     'ADDRESS_LOW': partial(self._address_low, int_byte),
+        #     'ADDRESS_HIGH': partial(self._address_high, int_byte),
+        #     'COUNT_LOW': partial(self._count_low, int_byte),
+        #     'COUNT_HIGH': partial(self._count_high, int_byte),
+        #     'DATA_LOW': partial(self._data_low, int_byte),
+        #     'DATA_HIGH': partial(self._data_high, int_byte),
+        #     'WAIT_FOR_SYNC': partial(self._wait_for_sync, int_byte)}
         # states[self.state]()
-        getattr(self, self.state.lower())(int_byte)
-        self.wait_for_sync(int_byte)
+        getattr(self, f'_{self.state.lower()}')(int_byte)
+        self._wait_for_sync(int_byte)
 
         # if self.__state == 'ADDRESS_LOW':
         #     self.__address = int_byte
@@ -97,31 +97,31 @@ class ProtocolParser:
         #     for callback in self.frame_sync_callbacks:
         #         callback()
 
-    def address_low(self, int_byte):
+    def _address_low(self, int_byte):
         self.__address = int_byte
         self.state = 'ADDRESS_HIGH'
 
-    def address_high(self, int_byte):
+    def _address_high(self, int_byte):
         self.__address += int_byte * 256
         if self.__address != 0x5555:
             self.state = 'COUNT_LOW'
         else:
             self.state = 'WAIT_FOR_SYNC'
 
-    def count_low(self, int_byte):
+    def _count_low(self, int_byte):
         self.__count = int_byte
         self.__state = 'COUNT_HIGH'
 
-    def count_high(self, int_byte):
+    def _count_high(self, int_byte):
         self.__count += 256 * int_byte
         self.state = 'DATA_LOW'
 
-    def data_low(self, int_byte):
+    def _data_low(self, int_byte):
         self.__data = int_byte
         self.__count -= 1
         self.state = 'DATA_HIGH'
 
-    def data_high(self, int_byte):
+    def _data_high(self, int_byte):
         self.__data += 256 * int_byte
         self.__count -= 1
         for callback in self.write_callbacks:
@@ -132,7 +132,7 @@ class ProtocolParser:
         else:
             self.state = 'DATA_LOW'
 
-    def wait_for_sync(self, int_byte):
+    def _wait_for_sync(self, int_byte):
         if int_byte == 0x55:
             self.__sync_byte_count += 1
         else:
