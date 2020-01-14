@@ -1,6 +1,6 @@
-from functools import partial
+# from functools import partial
 from struct import pack
-from typing import Callable, Set, Dict
+from typing import Callable, Set  # , Dict
 
 
 class ProtocolParser:
@@ -44,16 +44,16 @@ class ProtocolParser:
         :param byte:
         """
         int_byte = ord(byte)
-        states: Dict[str, Callable] = {
-            'ADDRESS_LOW': partial(self.address_low, int_byte),
-            'ADDRESS_HIGH': partial(self.address_high, int_byte),
-            'COUNT_LOW': partial(self.count_low, int_byte),
-            'COUNT_HIGH': partial(self.count_high, int_byte),
-            'DATA_LOW': partial(self.data_low, int_byte),
-            'DATA_HIGH': partial(self.data_high, int_byte),
-            'WAIT_FOR_SYNC': partial(self.wait_for_sync, int_byte)}
-
-        states[self.state]()
+        # states: Dict[str, Callable] = {
+        #     'ADDRESS_LOW': partial(self.address_low, int_byte),
+        #     'ADDRESS_HIGH': partial(self.address_high, int_byte),
+        #     'COUNT_LOW': partial(self.count_low, int_byte),
+        #     'COUNT_HIGH': partial(self.count_high, int_byte),
+        #     'DATA_LOW': partial(self.data_low, int_byte),
+        #     'DATA_HIGH': partial(self.data_high, int_byte),
+        #     'WAIT_FOR_SYNC': partial(self.wait_for_sync, int_byte)}
+        # states[self.state]()
+        getattr(self, self.state.lower())(int_byte)
         self.wait_for_sync(int_byte)
 
         # if self.__state == 'ADDRESS_LOW':
