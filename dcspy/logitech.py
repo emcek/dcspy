@@ -16,9 +16,10 @@ from dcspy.sdk import lcd_sdk
 class G13:
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        Basic constructor.
+        Setup G13 LCD and callback for current DCS aircraft in used.
 
-        :param parser_hook:
+        :param parser_hook: BSC-BIOS parser
+        :type parser_hook: ProtocolParser
         """
         StringBuffer(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self._display: List[str] = list()
@@ -76,7 +77,11 @@ class G13:
                 self.display = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
 
     def load_new_plane(self) -> None:
-        """Load new detected aircraft."""
+        """
+        Dynamic load of new detected aircraft.
+
+        Setup callbacks for detected plane inside DCS-BIOS parser.
+        """
         self.plane_detected = False
         self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
         debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
@@ -85,9 +90,10 @@ class G13:
 
     def check_buttons(self) -> int:
         """
-        Check button state.
+        Check if button was pressed and return its number.
 
-        :return:
+        :return: number of pressed button 1-4
+        :rtype: int
         """
         for btn in (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3):
             if lcd_sdk.logi_lcd_is_button_pressed(btn):
@@ -102,7 +108,12 @@ class G13:
         """
         Button handler.
 
-        :param sock:
+        * detect if button was pressed
+        * fetch BSD-BIOS request form plane
+        * sent it action to DCS-BIOS via. network socket
+
+        :param sock: network socket
+        :type sock: socket
         """
         button = self.check_buttons()
         if button:
