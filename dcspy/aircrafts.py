@@ -27,14 +27,18 @@ class Aircraft:
         self.height = height
         self.bios_data: Dict[str, BIOS_VALUE] = {}
 
-    def button_handle_specific_ac(self, button_pressed: int) -> str:
+    def button_request(self, button: int) -> str:
         """
-        Button handler for spacific aircraft.
+        Prepare specific DCS-BIOS request for button pressed.
 
-        :param button_pressed:
-        :return:
+        If button is out of scope new line is return.
+
+        :param button: possible values 1-4
+        :type: int
+        :return: ready to send DCS-BIOS request
+        :rtype: str
         """
-        debug(f'{self.__class__.__name__} Button: {button_pressed}')
+        debug(f'{self.__class__.__name__} Button: {button}')
         return '\n'
 
     @staticmethod
@@ -151,21 +155,25 @@ class FA18Chornet(Aircraft):
             value = value.replace('`', '1').replace('~', '2')
         super().set_bios(selector, value, update)
 
-    def button_handle_specific_ac(self, button_pressed: int) -> str:
+    def button_request(self, button: int) -> str:
         """
-        Button handler for spacific aircraft.
+        Prepare specific DCS-BIOS request for button pressed.
 
-        :param button_pressed:
-        :return:
+        If button is out of scope new line is return.
+
+        :param button: possible values 1-4
+        :type: int
+        :return: ready to send DCS-BIOS request
+        :rtype: str
         """
         action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC',
                   2: 'UFC_COMM1_CHANNEL_SELECT INC',
                   3: 'UFC_COMM2_CHANNEL_SELECT DEC',
                   4: 'UFC_COMM2_CHANNEL_SELECT INC'}
-        debug(f'{self.__class__.__name__} Button: {button_pressed}')
+        debug(f'{self.__class__.__name__} Button: {button}')
         try:
-            debug(f'Request: {action[button_pressed]}')
-            return f'{action[button_pressed]}\n'
+            debug(f'Request: {action[button]}')
+            return f'{action[button]}\n'
         except KeyError:
             warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
             return f'\n'
@@ -223,14 +231,18 @@ class Ka50(Aircraft):
             'l2_sign': {'addr': 0x1922, 'len': 1, 'val': ''},
             'l2_text': {'addr': 0x192a, 'len': 6, 'val': ''}}
 
-    def button_handle_specific_ac(self, button_pressed: int) -> str:
+    def button_request(self, button: int) -> str:
         """
-        Button handler for spacific aircraft.
+        Prepare specific DCS-BIOS request for button pressed.
 
-        :param button_pressed:
-        :return:
+        If button is out of scope new line is return.
+
+        :param button: possible values 1-4
+        :type: int
+        :return: ready to send DCS-BIOS request
+        :rtype: str
         """
-        debug(f'{self.__class__.__name__} Button: {button_pressed}')
+        debug(f'{self.__class__.__name__} Button: {button}')
         return '\n'
 
     def prepare_image(self) -> Image.Image:

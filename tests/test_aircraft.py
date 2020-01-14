@@ -22,7 +22,7 @@ def test_aircraft_base_class():
         aircraft = aircrafts.Aircraft(width, height)
         aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
 
-        assert aircraft.button_handle_specific_ac(1) == '\n'
+        assert aircraft.button_request(1) == '\n'
 
         with raises(NotImplementedError):
             aircraft.prepare_image()
@@ -45,7 +45,7 @@ def test_aircraft_base_class():
 def test_button_pressed_for_hornet(button, result):
     from dcspy.aircrafts import FA18Chornet
     aircraft = FA18Chornet(width, height)
-    assert aircraft.button_handle_specific_ac(button) == result
+    assert aircraft.button_request(button) == result
 
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
@@ -79,4 +79,4 @@ def test_prepare_image_for_all_palnes(model):
 def test_button_pressed_for_shark(button, result):
     from dcspy.aircrafts import Ka50
     aircraft = Ka50(width, height)
-    assert aircraft.button_handle_specific_ac(button) == result
+    assert aircraft.button_request(button) == result

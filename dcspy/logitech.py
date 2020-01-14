@@ -106,4 +106,4 @@ class G13:
         """
         button = self.check_buttons()
         if button:
-            sock.send(bytes(self.plane.button_handle_specific_ac(button), 'utf-8'))
+            sock.send(bytes(self.plane.button_request(button), 'utf-8'))
