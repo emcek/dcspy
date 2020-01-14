@@ -242,6 +242,7 @@ class Ka50(Aircraft):
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
+        # todo: which buttons of pvi-800 for handling - most useful
         debug(f'{self.__class__.__name__} Button: {button}')
         return '\n'
 
@@ -252,6 +253,7 @@ class Ka50(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
+        # todo: format LCD in nice way, test all possible outputs
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
