@@ -13,37 +13,16 @@ class ProtocolParser:
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
 
-    @property
-    def state(self) -> str:
-        """
-        Get current state.
-
-        :return: current state
-        :rtype: str
-        """
-        return self.__state
-
-    @state.setter
-    def state(self, new_state: str) -> None:
-        """
-        Set new state.
-
-        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
-
-
-        :param new_state: one of allowed state
-        :type new_state: str
-        """
-        self.__state = new_state
-
     def process_byte(self, byte: bytes) -> None:
         """
         Process byte.
 
+        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
+
         :param byte:
         """
         int_byte = ord(byte)
-        getattr(self, f'_{self.state.lower()}')(int_byte)
+        getattr(self, f'_{self.__state.lower()}')(int_byte)
         if int_byte == 0x55:
             self.__sync_byte_count += 1
         else:
@@ -52,14 +31,14 @@ class ProtocolParser:
 
     def _address_low(self, int_byte):
         self.__address = int_byte
-        self.state = 'ADDRESS_HIGH'
+        self.__state = 'ADDRESS_HIGH'
 
     def _address_high(self, int_byte):
         self.__address += int_byte * 256
         if self.__address != 0x5555:
-            self.state = 'COUNT_LOW'
+            self.__state = 'COUNT_LOW'
         else:
-            self.state = 'WAIT_FOR_SYNC'
+            self.__state = 'WAIT_FOR_SYNC'
 
     def _count_low(self, int_byte):
         self.__count = int_byte
@@ -67,12 +46,12 @@ class ProtocolParser:
 
     def _count_high(self, int_byte):
         self.__count += 256 * int_byte
-        self.state = 'DATA_LOW'
+        self.__state = 'DATA_LOW'
 
     def _data_low(self, int_byte):
         self.__data = int_byte
         self.__count -= 1
-        self.state = 'DATA_HIGH'
+        self.__state = 'DATA_HIGH'
 
     def _data_high(self, int_byte):
         self.__data += 256 * int_byte
@@ -81,13 +60,13 @@ class ProtocolParser:
             callback(self.__address, self.__data)
         self.__address += 2
         if self.__count == 0:
-            self.state = 'ADDRESS_LOW'
+            self.__state = 'ADDRESS_LOW'
         else:
-            self.state = 'DATA_LOW'
+            self.__state = 'DATA_LOW'
 
     def _wait_for_sync(self):
         if self.__sync_byte_count == 4:
-            self.state = 'ADDRESS_LOW'
+            self.__state = 'ADDRESS_LOW'
             self.__sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
