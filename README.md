@@ -86,7 +86,16 @@ parser.process_byte(dcs_bios_resp)
 ```
 and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through LCD SDK to device display.
 
-* You can also use 4 button below display, just check their state with `g13.check_buttons()` which one is pressed and send packet with command you wish to use. Again, look it up in `control-reference.html`, for example, to rotate COMM1 knob right in F/A-18C:
+* You can also use 4 button below LCD display, just check their state with `g13.check_buttons()` which one is pressed and send request do DCS-BIOS.
 ```python
-sock.send(bytes('UFC_COMM1_CHANNEL_SELECT INC\n', 'utf-8'))
+sock.send(bytes(self.plane.button_request(button), 'utf-8'))
 ```
+* Correct action is define in aircraft instance `button_request()` method:
+```python
+action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC',
+          2: 'UFC_COMM1_CHANNEL_SELECT INC',
+          3: 'UFC_COMM2_CHANNEL_SELECT DEC',
+          4: 'UFC_COMM2_CHANNEL_SELECT INC'}
+return f'{action[button]}\n'
+```
+Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
