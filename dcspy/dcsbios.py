@@ -1,5 +1,5 @@
 from struct import pack
-from typing import Callable, Set
+from typing import Callable, Set, Dict
 
 
 class ProtocolParser:
@@ -20,6 +20,13 @@ class ProtocolParser:
         :param byte:
         """
         int_byte = ord(byte)
+        state: Dict[str, Callable] = {'ADDRESS_LOW': lambda a: a,
+                                      'ADDRESS_HIGH': lambda a: a,
+                                      'COUNT_LOW': lambda a: a,
+                                      'COUNT_HIGH': lambda a: a,
+                                      'DATA_LOW': lambda a: a,
+                                      'DATA_HIGH': lambda a: a,
+                                      'WAIT_FOR_SYNC': lambda a: a}
         if self.__state == 'ADDRESS_LOW':
             self.__address = int_byte
             self.__state = 'ADDRESS_HIGH'
