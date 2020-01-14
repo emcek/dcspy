@@ -20,13 +20,14 @@ class ProtocolParser:
         :param byte:
         """
         int_byte = ord(byte)
-        state: Dict[str, Callable] = {'ADDRESS_LOW': lambda a: a,
-                                      'ADDRESS_HIGH': lambda a: a,
-                                      'COUNT_LOW': lambda a: a,
-                                      'COUNT_HIGH': lambda a: a,
-                                      'DATA_LOW': lambda a: a,
-                                      'DATA_HIGH': lambda a: a,
-                                      'WAIT_FOR_SYNC': lambda a: a}
+        state: Dict[str, Callable] = {
+            'ADDRESS_LOW': self.address_low,
+            'ADDRESS_HIGH': self.address_high,
+            'COUNT_LOW': self.count_low,
+            'COUNT_HIGH': self.count_high,
+            'DATA_LOW': self.data_low,
+            'DATA_HIGH': self.data_high,
+            'WAIT_FOR_SYNC': self.wait_for_sync}
         if self.__state == 'ADDRESS_LOW':
             self.__address = int_byte
             self.__state = 'ADDRESS_HIGH'
@@ -67,6 +68,27 @@ class ProtocolParser:
             self.__sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
+
+    def address_low(self):
+        pass
+
+    def address_high(self):
+        pass
+
+    def count_low(self):
+        pass
+
+    def count_high(self):
+        pass
+
+    def data_low(self):
+        pass
+
+    def data_high(self):
+        pass
+
+    def wait_for_sync(self):
+        pass
 
 
 class StringBuffer:
