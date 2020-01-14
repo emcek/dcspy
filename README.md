@@ -26,10 +26,10 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * Ka-50 Black Shark PVI-800 (under development)
 
 ## Requirements
-* [Python](https://www.python.org/downloads/) 3.8 (but 3.6+ should be fine)
-* [Logitech Gaming Software](https://support.logitech.com/software/lgs) 9.02.65
-* [Logitech LCD SDK](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) 8.57.148 in `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
-* [DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) 0.7.31 (or newer)
+* [Python 3.8](https://www.python.org/downloads/) (but 3.6+ should be fine)
+* [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
+* [Logitech LCD SDK 8.57.148](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
+* [DCS-BIOS 0.7.31](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
