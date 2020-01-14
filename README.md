@@ -11,7 +11,7 @@ DCSpy is able to pull information from DCS aircraft and display on Logitech G-se
 Should also work with any other Logitech device with 160x43 px monochrome display, like G15 (v1 and v2) and G510. 
 There is possibility to modify this package to use full RGBA LCD of Logitech G19 (size 320x240) - please open issue.  
 
-## Currently supported devices and aircrafts:
+## Currently supported devices and aircrafts
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display (some parts are missing)
 * Ka-50 Black Shark PVI-800 (under development)
