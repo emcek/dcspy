@@ -15,7 +15,7 @@ class ProtocolParser:
 
     def process_byte(self, byte: bytes) -> None:
         """
-        Process byte.
+        State machine - processing of byte.
 
         Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
 
@@ -29,31 +29,61 @@ class ProtocolParser:
             self.__sync_byte_count = 0
         self._wait_for_sync()
 
-    def _address_low(self, int_byte):
+    def _address_low(self, int_byte: int) -> None:
+        """
+        Handling of ADDRESS_LOW state.
+
+        :param int_byte: data to process
+        """
         self.__address = int_byte
         self.__state = 'ADDRESS_HIGH'
 
-    def _address_high(self, int_byte):
+    def _address_high(self, int_byte: int) -> None:
+        """
+        Handling of ADDRESS_HIGH state.
+
+        :param int_byte: data to process
+        """
         self.__address += int_byte * 256
         if self.__address != 0x5555:
             self.__state = 'COUNT_LOW'
         else:
             self.__state = 'WAIT_FOR_SYNC'
 
-    def _count_low(self, int_byte):
+    def _count_low(self, int_byte: int) -> None:
+        """
+        Handling of COUNT_LOW state.
+
+        :param int_byte: data to process
+        """
         self.__count = int_byte
         self.__state = 'COUNT_HIGH'
 
-    def _count_high(self, int_byte):
+    def _count_high(self, int_byte: int) -> None:
+        """
+        Handling of COUNT_HIGH state.
+
+        :param int_byte: data to process
+        """
         self.__count += 256 * int_byte
         self.__state = 'DATA_LOW'
 
-    def _data_low(self, int_byte):
+    def _data_low(self, int_byte: int) -> None:
+        """
+        Handling of DATA_LOW state.
+
+        :param int_byte: data to process
+        """
         self.__data = int_byte
         self.__count -= 1
         self.__state = 'DATA_HIGH'
 
-    def _data_high(self, int_byte):
+    def _data_high(self, int_byte: int) -> None:
+        """
+        Handling of DATA_HIGH state.
+
+        :param int_byte: data to process
+        """
         self.__data += 256 * int_byte
         self.__count -= 1
         for callback in self.write_callbacks:
@@ -64,7 +94,12 @@ class ProtocolParser:
         else:
             self.__state = 'DATA_LOW'
 
-    def _wait_for_sync(self):
+    def _wait_for_sync(self, *args: int) -> None:
+        """
+        Handling of WAIT_FOR_SYNC state.
+
+        :param args: dumb, just to be similar to other state handling method.
+        """
         if self.__sync_byte_count == 4:
             self.__state = 'ADDRESS_LOW'
             self.__sync_byte_count = 0
