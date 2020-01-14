@@ -243,8 +243,17 @@ class Ka50(Aircraft):
         :rtype: str
         """
         # todo: which buttons of pvi-800 for handling - most useful
+        action = {1: '',
+                  2: '',
+                  3: '',
+                  4: ''}
         debug(f'{self.__class__.__name__} Button: {button}')
-        return '\n'
+        try:
+            debug(f'Request: {action[button]}')
+            return f'{action[button]}\n'
+        except KeyError:
+            warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
+            return f'\n'
 
     def prepare_image(self) -> Image.Image:
         """
