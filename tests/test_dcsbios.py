@@ -117,5 +117,5 @@ def test_process_byte_wait_for_sync_callback():
 
     p = ProtocolParser()
     p.frame_sync_callbacks.add(partial(_callback))
-    for _ in range(4):
-        p.process_byte(bytes([0x55]))
+    p.sync_byte_count = 3
+    p.process_byte(bytes([0x55]))

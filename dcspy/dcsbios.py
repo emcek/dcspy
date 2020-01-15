@@ -6,7 +6,7 @@ class ProtocolParser:
     def __init__(self) -> None:
         """Basic constructor."""
         self.state = 'WAIT_FOR_SYNC'
-        self.__sync_byte_count = 0
+        self.sync_byte_count = 0
         self.address = 0
         self.count = 0
         self.data = 0
@@ -29,9 +29,9 @@ class ProtocolParser:
             state_handling(int_byte)
 
         if int_byte == 0x55:
-            self.__sync_byte_count += 1
+            self.sync_byte_count += 1
         else:
-            self.__sync_byte_count = 0
+            self.sync_byte_count = 0
 
         self._wait_for_sync()
 
@@ -102,9 +102,9 @@ class ProtocolParser:
 
     def _wait_for_sync(self) -> None:
         """Handling of WAIT_FOR_SYNC state."""
-        if self.__sync_byte_count == 4:
+        if self.sync_byte_count == 4:
             self.state = 'ADDRESS_LOW'
-            self.__sync_byte_count = 0
+            self.sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
 
