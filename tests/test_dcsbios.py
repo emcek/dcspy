@@ -90,3 +90,32 @@ def test_process_byte_data_high_to_address_low():
     assert p.count == 0
     assert p.data == 0xf00
     assert p.address == 2
+
+
+def test_process_byte_data_high_callback():
+    from dcspy.dcsbios import ProtocolParser
+    from functools import partial
+
+    def _callback(addr, data):
+        assert addr == 2
+        assert data == 0x100
+
+    p = ProtocolParser()
+    p.write_callbacks.add(partial(_callback))
+    p.state = 'DATA_HIGH'
+    p.address = 2
+    p.process_byte(bytes([0x0a]))
+
+
+def test_process_byte_wait_for_sync_callback():
+    from dcspy.dcsbios import ProtocolParser
+    from functools import partial
+
+    def _callback(*args, **kwargs):
+        assert args == tuple()
+        assert kwargs == dict()
+
+    p = ProtocolParser()
+    p.frame_sync_callbacks.add(partial(_callback))
+    for _ in range(4):
+        p.process_byte(bytes([0x55]))
