@@ -77,3 +77,16 @@ def test_process_byte_data_high_to_data_low():
     assert p.state == 'DATA_LOW'
     assert p.count == 2
     assert p.data == 0xf00
+
+
+def test_process_byte_data_high_to_address_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'DATA_HIGH'
+    p.count = 1
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'ADDRESS_LOW'
+    assert p.count == 0
+    assert p.data == 0xf00
+    assert p.address == 2
