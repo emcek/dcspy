@@ -22,11 +22,17 @@ class ProtocolParser:
         :param byte:
         """
         int_byte = ord(byte)
-        getattr(self, f'_{self.__state.lower()}')(int_byte)
+        state_handling = getattr(self, f'_{self.__state.lower()}')
+        if self.__state == 'WAIT_FOR_SYNC':
+            state_handling()
+        else:
+            state_handling(int_byte)
+
         if int_byte == 0x55:
             self.__sync_byte_count += 1
         else:
             self.__sync_byte_count = 0
+
         self._wait_for_sync()
 
     def _address_low(self, int_byte: int) -> None:
@@ -94,12 +100,8 @@ class ProtocolParser:
         else:
             self.__state = 'DATA_LOW'
 
-    def _wait_for_sync(self, *args: int) -> None:
-        """
-        Handling of WAIT_FOR_SYNC state.
-
-        :param args: dumb, just to be similar to other state handling method.
-        """
+    def _wait_for_sync(self) -> None:
+        """Handling of WAIT_FOR_SYNC state."""
         if self.__sync_byte_count == 4:
             self.__state = 'ADDRESS_LOW'
             self.__sync_byte_count = 0
