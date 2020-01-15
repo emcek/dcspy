@@ -5,35 +5,13 @@ from typing import Callable, Set
 class ProtocolParser:
     def __init__(self) -> None:
         """Basic constructor."""
-        self.__state = 'WAIT_FOR_SYNC'
+        self.state = 'WAIT_FOR_SYNC'
         self.__sync_byte_count = 0
-        self.__address = 0
+        self.address = 0
         self.__count = 0
         self.__data = 0
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
-
-    @property
-    def state(self) -> str:
-        """
-        Get current state.
-
-        :return: current state
-        :rtype: str
-        """
-        return self.__state
-
-    @state.setter
-    def state(self, new_state: str) -> None:
-        """
-        Set new state.
-
-        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
-
-        :param new_state: one of allowed state
-        :type new_state: str
-        """
-        self.__state = new_state
 
     def process_byte(self, byte: bytes) -> None:
         """
@@ -63,7 +41,7 @@ class ProtocolParser:
 
         :param int_byte: data to process
         """
-        self.__address = int_byte
+        self.address = int_byte
         self.state = 'ADDRESS_HIGH'
 
     def _address_high(self, int_byte: int) -> None:
@@ -72,8 +50,8 @@ class ProtocolParser:
 
         :param int_byte: data to process
         """
-        self.__address += int_byte * 256
-        if self.__address != 0x5555:
+        self.address += int_byte * 256
+        if self.address != 0x5555:
             self.state = 'COUNT_LOW'
         else:
             self.state = 'WAIT_FOR_SYNC'
@@ -115,8 +93,8 @@ class ProtocolParser:
         self.__data += 256 * int_byte
         self.__count -= 1
         for callback in self.write_callbacks:
-            callback(self.__address, self.__data)
-        self.__address += 2
+            callback(self.address, self.__data)
+        self.address += 2
         if self.__count == 0:
             self.state = 'ADDRESS_LOW'
         else:
