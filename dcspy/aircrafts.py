@@ -162,14 +162,15 @@ class FA18Chornet(Aircraft):
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
-        action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC',
-                  2: 'UFC_COMM1_CHANNEL_SELECT INC',
-                  3: 'UFC_COMM2_CHANNEL_SELECT DEC',
-                  4: 'UFC_COMM2_CHANNEL_SELECT INC'}
+        action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+                  2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+                  3: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+                  4: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
         debug(f'{self.__class__.__name__} Button: {button}')
         try:
-            debug(f'Request: {action[button]}')
-            return f'{action[button]}\n'
+            request = action[button].replace('\n', '')
+            debug(f'Request: {request}')
+            return f'{action[button]}'
         except KeyError:
             warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
             return f'\n'
