@@ -34,7 +34,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
 * [DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios) fork by DCSFlightpanels for exporting data from DCS to local network
-* [jboecker's parser](https://github.com/DCSFlightpanels/dcs-bios) to read data stream from DCS-BIOS
+* [jboecker's parser](https://github.com/jboecker/python-dcs-bios-example) to read data stream from DCS-BIOS
 
 ## Installation
 Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
