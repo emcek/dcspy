@@ -118,9 +118,7 @@ class FA18Chornet(Aircraft):
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         # Scrachpad
-        draw.text((0, 0),
-                  f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}',
-                  1, FONT_16)
+        draw.text((0, 0), f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', 1, FONT_16)
         draw.line((0, 20, 115, 20), 1, 1)
 
         # comm1
@@ -135,9 +133,7 @@ class FA18Chornet(Aircraft):
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text((120, offset),
-                      f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}',
-                      1, FONT_11)
+            draw.text((120, offset), f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', 1, FONT_11)
 
         # Fuel Totaliser
         draw.text((36, 29), self.get_bios('FuelTotal'), 1, FONT_16)
