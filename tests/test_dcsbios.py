@@ -34,3 +34,13 @@ def test_process_byte_address_high_to_wait_to_count_low():
     p.process_byte(bytes([0x02]))
     assert p.address != 0x5555
     assert p.state == 'COUNT_LOW'
+
+
+def test_process_byte_count_low_to_count_high():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'COUNT_LOW'
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'COUNT_HIGH'
+    assert p.count == data_sent

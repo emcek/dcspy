@@ -8,7 +8,7 @@ class ProtocolParser:
         self.state = 'WAIT_FOR_SYNC'
         self.__sync_byte_count = 0
         self.address = 0
-        self.__count = 0
+        self.count = 0
         self.__data = 0
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
@@ -62,7 +62,7 @@ class ProtocolParser:
 
         :param int_byte: data to process
         """
-        self.__count = int_byte
+        self.count = int_byte
         self.state = 'COUNT_HIGH'
 
     def _count_high(self, int_byte: int) -> None:
@@ -71,7 +71,7 @@ class ProtocolParser:
 
         :param int_byte: data to process
         """
-        self.__count += 256 * int_byte
+        self.count += 256 * int_byte
         self.state = 'DATA_LOW'
 
     def _data_low(self, int_byte: int) -> None:
@@ -81,7 +81,7 @@ class ProtocolParser:
         :param int_byte: data to process
         """
         self.__data = int_byte
-        self.__count -= 1
+        self.count -= 1
         self.state = 'DATA_HIGH'
 
     def _data_high(self, int_byte: int) -> None:
@@ -91,11 +91,11 @@ class ProtocolParser:
         :param int_byte: data to process
         """
         self.__data += 256 * int_byte
-        self.__count -= 1
+        self.count -= 1
         for callback in self.write_callbacks:
             callback(self.address, self.__data)
         self.address += 2
-        if self.__count == 0:
+        if self.count == 0:
             self.state = 'ADDRESS_LOW'
         else:
             self.state = 'DATA_LOW'
