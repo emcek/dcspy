@@ -258,18 +258,21 @@ class Ka50(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        # todo: format LCD in nice way, test all possible outputs
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
+        draw.rectangle((0, 1, 85, 18), 0, 1)
+        draw.rectangle((0, 22, 85, 39), 0, 1)
+        draw.rectangle((88, 1, 103, 18), 0, 1)
+        draw.rectangle((88, 22, 103, 39), 0, 1)
         l1_text = self.get_bios('l1_text')
         l2_text = self.get_bios('l2_text')
         if l1_text:
-            text1 = f' {l1_text[-5:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
+            text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
         if l2_text:
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
-        line1 = f'{self.get_bios("l1_sign")} {text1} {self.get_bios("l1_point")}'
-        line2 = f'{self.get_bios("l2_sign")} {text2} {self.get_bios("l2_point")}'
-        draw.text((0, 0), line1, 1, FONT_11)
-        draw.text((0, 8), line2, 1, FONT_11)
+        line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
+        line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
+        draw.text((2, 3), line1, 1, FONT_16)
+        draw.text((2, 24), line2, 1, FONT_16)
         return img
