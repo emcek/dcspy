@@ -15,3 +15,22 @@ def test_process_byte_address_low_to_address_high():
     p.process_byte(bytes([data_sent]))
     assert p.state == 'ADDRESS_HIGH'
     assert p.address == data_sent
+
+
+def test_process_byte_address_high_to_wait_to_sync():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'ADDRESS_HIGH'
+    p.address = 0x5355
+    p.process_byte(bytes([0x02]))
+    assert p.address == 0x5555
+    assert p.state == 'WAIT_FOR_SYNC'
+
+
+def test_process_byte_address_high_to_wait_to_count_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'ADDRESS_HIGH'
+    p.process_byte(bytes([0x02]))
+    assert p.address != 0x5555
+    assert p.state == 'COUNT_LOW'
