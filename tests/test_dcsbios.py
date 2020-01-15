@@ -98,7 +98,7 @@ def test_process_byte_data_high_callback():
 
     def _callback(addr, data):
         assert addr == 2
-        assert data == 0x100
+        assert data == 0xa00
 
     p = ProtocolParser()
     p.write_callbacks.add(partial(_callback))
