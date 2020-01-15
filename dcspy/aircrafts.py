@@ -244,15 +244,15 @@ class Ka50(Aircraft):
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
-        # todo: which buttons of pvi-800 for handling - most useful
-        action = {1: '',
-                  2: '',
-                  3: '',
-                  4: ''}
+        action = {1: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
+                  2: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
+                  3: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
+                  4: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
         debug(f'{self.__class__.__name__} Button: {button}')
         try:
-            debug(f'Request: {action[button]}')
-            return f'{action[button]}\n'
+            request = action[button].replace('\n', ' ')
+            debug(f'Request: {request}')
+            return f'{action[button]}'
         except KeyError:
             warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
             return f'\n'
