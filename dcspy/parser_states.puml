@@ -1,0 +1,27 @@
+@startuml
+hide empty description
+
+WAIT_FOR_SYNC : 4 int_byte with 0x55
+ADDRESS_LOW : address = int_byte
+ADDRESS_HIGH : address += int_byte * 256
+COUNT_LOW : count = int_byte
+COUNT_HIGH : count += 256 * int_byte
+DATA_LOW : data = int_byte
+DATA_LOW : count -= 1
+DATA_HIGH : data += 256 * int_byte
+DATA_HIGH : count -= 1
+DATA_HIGH : callback(address, data)
+DATA_HIGH : address += 2
+
+[*] -> WAIT_FOR_SYNC
+WAIT_FOR_SYNC --> ADDRESS_LOW
+ADDRESS_LOW -> ADDRESS_HIGH
+ADDRESS_HIGH --> WAIT_FOR_SYNC : address == 0x5555
+ADDRESS_HIGH --> COUNT_LOW : address != 0x5555
+COUNT_LOW -> COUNT_HIGH
+COUNT_HIGH --> DATA_LOW
+DATA_LOW ---> DATA_HIGH
+DATA_HIGH --> ADDRESS_LOW : count == 0
+DATA_HIGH --> DATA_LOW : count != 0
+
+@enduml
