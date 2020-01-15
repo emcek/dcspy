@@ -5,59 +5,106 @@ from typing import Callable, Set
 class ProtocolParser:
     def __init__(self) -> None:
         """Basic constructor."""
-        self.__state = 'WAIT_FOR_SYNC'
-        self.__sync_byte_count = 0
-        self.__address = 0
-        self.__count = 0
-        self.__data = 0
+        self.state = 'WAIT_FOR_SYNC'
+        self.sync_byte_count = 0
+        self.address = 0
+        self.count = 0
+        self.data = 0
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
 
     def process_byte(self, byte: bytes) -> None:
         """
-        Process byte.
+        State machine - processing of byte.
+
+        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
 
         :param byte:
         """
         int_byte = ord(byte)
-        if self.__state == 'ADDRESS_LOW':
-            self.__address = int_byte
-            self.__state = 'ADDRESS_HIGH'
-        elif self.__state == 'ADDRESS_HIGH':
-            self.__address += int_byte * 256
-            if self.__address != 0x5555:
-                self.__state = 'COUNT_LOW'
-            else:
-                self.__state = 'WAIT_FOR_SYNC'
-        elif self.__state == 'COUNT_LOW':
-            self.__count = int_byte
-            self.__state = 'COUNT_HIGH'
-        elif self.__state == 'COUNT_HIGH':
-            self.__count += 256 * int_byte
-            self.__state = 'DATA_LOW'
-        elif self.__state == 'DATA_LOW':
-            self.__data = int_byte
-            self.__count -= 1
-            self.__state = 'DATA_HIGH'
-        elif self.__state == 'DATA_HIGH':
-            self.__data += 256 * int_byte
-            self.__count -= 1
-            for callback in self.write_callbacks:
-                callback(self.__address, self.__data)
-            self.__address += 2
-            if self.__count == 0:
-                self.__state = 'ADDRESS_LOW'
-            else:
-                self.__state = 'DATA_LOW'
+        state_handling = getattr(self, f'_{self.state.lower()}')
+        if self.state == 'WAIT_FOR_SYNC':
+            state_handling()
+        else:
+            state_handling(int_byte)
 
         if int_byte == 0x55:
-            self.__sync_byte_count += 1
+            self.sync_byte_count += 1
         else:
-            self.__sync_byte_count = 0
+            self.sync_byte_count = 0
 
-        if self.__sync_byte_count == 4:
-            self.__state = 'ADDRESS_LOW'
-            self.__sync_byte_count = 0
+        self._wait_for_sync()
+
+    def _address_low(self, int_byte: int) -> None:
+        """
+        Handling of ADDRESS_LOW state.
+
+        :param int_byte: data to process
+        """
+        self.address = int_byte
+        self.state = 'ADDRESS_HIGH'
+
+    def _address_high(self, int_byte: int) -> None:
+        """
+        Handling of ADDRESS_HIGH state.
+
+        :param int_byte: data to process
+        """
+        self.address += int_byte * 256
+        if self.address != 0x5555:
+            self.state = 'COUNT_LOW'
+        else:
+            self.state = 'WAIT_FOR_SYNC'
+
+    def _count_low(self, int_byte: int) -> None:
+        """
+        Handling of COUNT_LOW state.
+
+        :param int_byte: data to process
+        """
+        self.count = int_byte
+        self.state = 'COUNT_HIGH'
+
+    def _count_high(self, int_byte: int) -> None:
+        """
+        Handling of COUNT_HIGH state.
+
+        :param int_byte: data to process
+        """
+        self.count += 256 * int_byte
+        self.state = 'DATA_LOW'
+
+    def _data_low(self, int_byte: int) -> None:
+        """
+        Handling of DATA_LOW state.
+
+        :param int_byte: data to process
+        """
+        self.data = int_byte
+        self.count -= 1
+        self.state = 'DATA_HIGH'
+
+    def _data_high(self, int_byte: int) -> None:
+        """
+        Handling of DATA_HIGH state.
+
+        :param int_byte: data to process
+        """
+        self.data += 256 * int_byte
+        self.count -= 1
+        for callback in self.write_callbacks:
+            callback(self.address, self.data)
+        self.address += 2
+        if self.count == 0:
+            self.state = 'ADDRESS_LOW'
+        else:
+            self.state = 'DATA_LOW'
+
+    def _wait_for_sync(self) -> None:
+        """Handling of WAIT_FOR_SYNC state."""
+        if self.sync_byte_count == 4:
+            self.state = 'ADDRESS_LOW'
+            self.sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
 

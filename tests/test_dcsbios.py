@@ -1,0 +1,121 @@
+def test_process_byte_wait_for_sync_to_address_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    assert p.state == 'WAIT_FOR_SYNC'
+    for _ in range(4):
+        p.process_byte(bytes([0x55]))
+    assert p.state == 'ADDRESS_LOW'
+
+
+def test_process_byte_address_low_to_address_high():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'ADDRESS_LOW'
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'ADDRESS_HIGH'
+    assert p.address == data_sent
+
+
+def test_process_byte_address_high_to_wait_to_sync():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'ADDRESS_HIGH'
+    p.address = 0x5355
+    p.process_byte(bytes([0x02]))
+    assert p.address == 0x5555
+    assert p.state == 'WAIT_FOR_SYNC'
+
+
+def test_process_byte_address_high_to_wait_to_count_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'ADDRESS_HIGH'
+    p.process_byte(bytes([0x02]))
+    assert p.address != 0x5555
+    assert p.state == 'COUNT_LOW'
+
+
+def test_process_byte_count_low_to_count_high():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'COUNT_LOW'
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'COUNT_HIGH'
+    assert p.count == data_sent
+
+
+def test_process_byte_count_high_to_data_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'COUNT_HIGH'
+    p.process_byte(bytes([0x0f]))
+    assert p.state == 'DATA_LOW'
+    assert p.count == 0xf00
+
+
+def test_process_byte_data_low_to_data_high():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'DATA_LOW'
+    p.count = 2
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'DATA_HIGH'
+    assert p.count == 1
+    assert p.data == data_sent
+
+
+def test_process_byte_data_high_to_data_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'DATA_HIGH'
+    p.count = 3
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'DATA_LOW'
+    assert p.count == 2
+    assert p.data == 0xf00
+
+
+def test_process_byte_data_high_to_address_low():
+    from dcspy.dcsbios import ProtocolParser
+    p = ProtocolParser()
+    p.state = 'DATA_HIGH'
+    p.count = 1
+    data_sent = 0x0f
+    p.process_byte(bytes([data_sent]))
+    assert p.state == 'ADDRESS_LOW'
+    assert p.count == 0
+    assert p.data == 0xf00
+    assert p.address == 2
+
+
+def test_process_byte_data_high_callback():
+    from dcspy.dcsbios import ProtocolParser
+    from functools import partial
+
+    def _callback(addr, data):
+        assert addr == 2
+        assert data == 0xa00
+
+    p = ProtocolParser()
+    p.write_callbacks.add(partial(_callback))
+    p.state = 'DATA_HIGH'
+    p.address = 2
+    p.process_byte(bytes([0x0a]))
+
+
+def test_process_byte_wait_for_sync_callback():
+    from dcspy.dcsbios import ProtocolParser
+    from functools import partial
+
+    def _callback(*args, **kwargs):
+        assert args == tuple()
+        assert kwargs == dict()
+
+    p = ProtocolParser()
+    p.frame_sync_callbacks.add(partial(_callback))
+    p.sync_byte_count = 3
+    p.process_byte(bytes([0x55]))
