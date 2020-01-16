@@ -39,20 +39,16 @@ def test_aircraft_base_class(lcd_size):
                                      ('a', '\n'),
                                      (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
                                      (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
-def test_button_pressed_for_hornet(button, result, lcd_size):
-    from dcspy.aircrafts import FA18Chornet
-    aircraft = FA18Chornet(*lcd_size)
-    assert aircraft.button_request(button) == result
+def test_button_pressed_for_hornet(button, result, hornet):
+    assert hornet.button_request(button) == result
 
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
                                               ('COMM1', '``', '11'),
                                               ('FuelTotal', '104T', '104T')])
-def test_set_bios_for_hornet(selector, value, result, lcd_size):
-    from dcspy.aircrafts import FA18Chornet
-    aircraft = FA18Chornet(*lcd_size)
-    aircraft.set_bios(selector, value, False)
-    assert aircraft.bios_data[selector]['val'] == result
+def test_set_bios_for_hornet(selector, value, result, hornet):
+    hornet.set_bios(selector, value, False)
+    assert hornet.bios_data[selector]['val'] == result
 
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50'])
@@ -74,7 +70,5 @@ def test_prepare_image_for_all_palnes(model, lcd_size):
                                      ('a', '\n'),
                                      (2, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
                                      (3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n')])
-def test_button_pressed_for_shark(button, result, lcd_size):
-    from dcspy.aircrafts import Ka50
-    aircraft = Ka50(*lcd_size)
-    assert aircraft.button_request(button) == result
+def test_button_pressed_for_shark(button, result, black_shark):
+    assert black_shark.button_request(button) == result
