@@ -7,7 +7,7 @@ from typing import NamedTuple
 from PIL import ImageFont
 
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
-__version__ = '0.9.2'
+__version__ = '1.0.0'
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50'}
 LcdSize = NamedTuple('lcd_size', [('width', int), ('height', int)])
 
