@@ -41,9 +41,9 @@ Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Pr
 ```shell script
 pip install dcspy
 ```
-or use attached wheel file:
+or use wheel file from releases:
 ```shell script
-pip install dcspy-0.9.2-py3-none-any.whl
+pip install dcspy-1.0.0-py3-none-any.whl
 ```
 
 ## Usage
