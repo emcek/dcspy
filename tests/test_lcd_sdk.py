@@ -15,6 +15,7 @@ from pytest import mark
                                              ('logi_lcd_color_set_text', (1, '', (1, 2, 3)), False)])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import lcd_sdk
+    lcd_sdk.LCD_DLL = False
     assert getattr(lcd_sdk, function)(*args) is result
 
 
