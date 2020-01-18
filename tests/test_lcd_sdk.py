@@ -1,4 +1,3 @@
-from calendar import LocaleHTMLCalendar
 from unittest.mock import Mock
 
 from pytest import mark
@@ -16,9 +15,7 @@ from pytest import mark
                                              ('logi_lcd_color_set_text', (1, '', (1, 2, 3)), False)])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import lcd_sdk
-    assert lcd_sdk.LCD_DLL is False
-    assert type(lcd_sdk.LCD_DLL) == ''
-    lcd_sdk.LCD_DLL = False
+    lcd_sdk.LCD_DLL = None
     assert getattr(lcd_sdk, function)(*args) is result
 
 
@@ -32,7 +29,7 @@ def test_all_failure_cases(function, args, result):
                                                     ('logi_lcd_color_set_background', 'LogiLcdColorSetBackground', ([1, 2, 3],), True),
                                                     ('logi_lcd_color_set_title', 'LogiLcdColorSetTitle', ('', (1, 2, 3)), True),
                                                     ('logi_lcd_color_set_text', 'LogiLcdColorSetText', (1, '', (1, 2, 3)), True)])
-def test_init2(py_func, c_func, args, result):
+def test_all_success_cases(py_func, c_func, args, result):
     from dcspy.sdk import lcd_sdk
     mocked_c_func = Mock()
     mocked_c_func.return_value = result
