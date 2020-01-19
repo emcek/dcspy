@@ -15,7 +15,7 @@ script:
   - python3 -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
-  - mypy --ignore-missing-imports || echo $(($? - 1))
+  - mypy --ignore-missing-imports dcspy || echo $(($? - 1))
   - pylint dcspy || echo $(($? % 4))
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
