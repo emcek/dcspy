@@ -7,7 +7,7 @@ python:
 install:
   - pip install -U pip setuptools
   - pip install -U six
-  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage
+  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage mypy
 before_script:
   - pip install -Ur requirements.txt
   - python3 -V
@@ -15,6 +15,7 @@ script:
   - python3 -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
+  - mypy --ignore-missing-imports || echo $(($? - 1))
   - pylint dcspy || echo $(($? % 4))
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
