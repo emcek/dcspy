@@ -173,7 +173,7 @@ class IntegerBuffer:
         self.__address = address
         self.__mask = mask
         self.__shift_by = shift_by
-        self.__value = None
+        self.__value = int()
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
