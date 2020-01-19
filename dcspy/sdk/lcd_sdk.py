@@ -4,7 +4,7 @@ from logging import warning, error
 from os import environ
 from platform import architecture
 from sys import maxsize
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 from PIL import Image
 
@@ -48,7 +48,7 @@ def _init_dll() -> CDLL:
 
 
 try:
-    LCD_DLL = _init_dll()
+    LCD_DLL: Optional[CDLL] = _init_dll()
 except (KeyError, FileNotFoundError) as err:
     error(f'Loading of LCD SDK failed: {err}', exc_info=True)
     LCD_DLL = None
@@ -184,7 +184,7 @@ def logi_lcd_color_set_background(pixels: List[int]) -> bool:
     return False
 
 
-def logi_lcd_color_set_title(text: str, rgb: Tuple[int] = (255, 255, 255)):
+def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 255)):
     """
     Function sets the specified text in the first line on the color lcd device connected.
 
@@ -205,7 +205,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int] = (255, 255, 255)):
     return False
 
 
-def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int] = (255, 255, 255)):
+def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)):
     """
     Function sets the specified text in the requested line on the color lcd device connected.
 
