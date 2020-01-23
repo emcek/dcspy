@@ -17,7 +17,7 @@ class Aircraft:
         """
         self.width = width
         self.height = height
-        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {}
+        self.bios_data: Dict[str, Dict[str: Union[str, int]]] = {}
 
     def button_request(self, button: int) -> str:
         """
@@ -82,7 +82,7 @@ class FA18Chornet(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
+        self.bios_data: Dict[str, Dict[str: Union[str, int]]] = {
             'ScratchpadStr1': {'address': 0x744e, 'length': 2, 'value': str()},
             'ScratchpadStr2': {'address': 0x7450, 'length': 2, 'value': str()},
             'ScratchpadNum': {'address': 0x7446, 'length': 8, 'value': str()},
@@ -177,7 +177,7 @@ class F16C50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
+        self.bios_data: Dict[str, Dict[str: Union[str, int]]] = {
             'DEDLine1': {'address': 0x44fc, 'length': 50, 'value': str()},
             'DEDLine2': {'address': 0x452e, 'length': 50, 'value': str()},
             'DEDLine3': {'address': 0x4560, 'length': 50, 'value': str()},
@@ -208,7 +208,7 @@ class Ka50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
+        self.bios_data: Dict[str, Dict[str: Union[str, int]]] = {
             'l1_apostr1': {'address': 0x1934, 'length': 1, 'value': str()},
             'l1_apostr2': {'address': 0x1936, 'length': 1, 'value': str()},
             'l1_point': {'address': 0x1930, 'length': 1, 'value': str()},
