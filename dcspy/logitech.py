@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize
 from dcspy.aircrafts import Aircraft
-from dcspy.dcsbios import StringBuffer, ProtocolParser
+from dcspy.dcsbios import StringBuffer, ProtocolParser, IntegerBuffer
 from dcspy.sdk import lcd_sdk
 
 
@@ -86,7 +86,11 @@ class G13:
         self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
         debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
-            StringBuffer(self.parser, proto_data['addr'], proto_data['len'], partial(self.plane.set_bios, field_name))
+            buff_params = {param: value for param, value in proto_data.items() if param != 'val'}
+            if isinstance(proto_data['val'], str):
+                StringBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
+            else:  # int
+                IntegerBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
 
     def check_buttons(self) -> int:
         """
