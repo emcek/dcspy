@@ -55,7 +55,7 @@ class Aircraft:
         :param value:
         :param update:
         """
-        self.bios_data[selector]['val'] = value
+        self.bios_data[selector]['value'] = value
         debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         lcd_image = self.prepare_image()
         if update:
@@ -68,7 +68,7 @@ class Aircraft:
         :param selector:
         """
         try:
-            return self.bios_data[selector]['val']
+            return self.bios_data[selector]['value']
         except KeyError:
             return ''
 
@@ -83,22 +83,22 @@ class FA18Chornet(Aircraft):
         """
         super().__init__(width, height)
         self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
-            'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': str()},
-            'ScratchpadStr2': {'addr': 0x7450, 'len': 2, 'val': str()},
-            'ScratchpadNum': {'addr': 0x7446, 'len': 8, 'val': str()},
-            'OptionDisplay1': {'addr': 0x7432, 'len': 4, 'val': str()},
-            'OptionDisplay2': {'addr': 0x7436, 'len': 4, 'val': str()},
-            'OptionDisplay3': {'addr': 0x743a, 'len': 4, 'val': str()},
-            'OptionDisplay4': {'addr': 0x743e, 'len': 4, 'val': str()},
-            'OptionDisplay5': {'addr': 0x7442, 'len': 4, 'val': str()},
-            'COMM1': {'addr': 0x7424, 'len': 2, 'val': str()},
-            'COMM2': {'addr': 0x7426, 'len': 2, 'val': str()},
-            'OptionCueing1': {'addr': 0x7428, 'len': 1, 'val': str()},
-            'OptionCueing2': {'addr': 0x742a, 'len': 1, 'val': str()},
-            'OptionCueing3': {'addr': 0x742c, 'len': 1, 'val': str()},
-            'OptionCueing4': {'addr': 0x742e, 'len': 1, 'val': str()},
-            'OptionCueing5': {'addr': 0x7430, 'len': 1, 'val': str()},
-            'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': str()}}
+            'ScratchpadStr1': {'address': 0x744e, 'length': 2, 'value': str()},
+            'ScratchpadStr2': {'address': 0x7450, 'length': 2, 'value': str()},
+            'ScratchpadNum': {'address': 0x7446, 'length': 8, 'value': str()},
+            'OptionDisplay1': {'address': 0x7432, 'length': 4, 'value': str()},
+            'OptionDisplay2': {'address': 0x7436, 'length': 4, 'value': str()},
+            'OptionDisplay3': {'address': 0x743a, 'length': 4, 'value': str()},
+            'OptionDisplay4': {'address': 0x743e, 'length': 4, 'value': str()},
+            'OptionDisplay5': {'address': 0x7442, 'length': 4, 'value': str()},
+            'COMM1': {'address': 0x7424, 'length': 2, 'value': str()},
+            'COMM2': {'address': 0x7426, 'length': 2, 'value': str()},
+            'OptionCueing1': {'address': 0x7428, 'length': 1, 'value': str()},
+            'OptionCueing2': {'address': 0x742a, 'length': 1, 'value': str()},
+            'OptionCueing3': {'address': 0x742c, 'length': 1, 'value': str()},
+            'OptionCueing4': {'address': 0x742e, 'length': 1, 'value': str()},
+            'OptionCueing5': {'address': 0x7430, 'length': 1, 'value': str()},
+            'FuelTotal': {'address': 0x748a, 'length': 6, 'value': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
@@ -178,11 +178,11 @@ class F16C50(Aircraft):
         """
         super().__init__(width, height)
         self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
-            'DEDLine1': {'addr': 0x44fc, 'len': 50, 'val': str()},
-            'DEDLine2': {'addr': 0x452e, 'len': 50, 'val': str()},
-            'DEDLine3': {'addr': 0x4560, 'len': 50, 'val': str()},
-            'DEDLine4': {'addr': 0x4592, 'len': 50, 'val': str()},
-            'DEDLine5': {'addr': 0x45c4, 'len': 50, 'val': str()}}
+            'DEDLine1': {'address': 0x44fc, 'length': 50, 'value': str()},
+            'DEDLine2': {'address': 0x452e, 'length': 50, 'value': str()},
+            'DEDLine3': {'address': 0x4560, 'length': 50, 'value': str()},
+            'DEDLine4': {'address': 0x4592, 'length': 50, 'value': str()},
+            'DEDLine5': {'address': 0x45c4, 'length': 50, 'value': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
