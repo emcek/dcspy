@@ -209,22 +209,21 @@ class Ka50(Aircraft):
         """
         super().__init__(width, height)
         self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
-            'l1_apostr1': {'addr': 0x1934, 'len': 1, 'val': str()},
-            'l1_apostr2': {'addr': 0x1936, 'len': 1, 'val': str()},
-            'l1_point': {'addr': 0x1930, 'len': 1, 'val': str()},
-            'l1_sign': {'addr': 0x1920, 'len': 1, 'val': str()},
-            'l1_text': {'addr': 0x1924, 'len': 6, 'val': str()},
-            'l2_apostr1': {'addr': 0x1938, 'len': 1, 'val': str()},
-            'l2_apostr2': {'addr': 0x193a, 'len': 1, 'val': str()},
-            'l2_point': {'addr': 0x1932, 'len': 1, 'val': str()},
-            'l2_sign': {'addr': 0x1922, 'len': 1, 'val': str()},
-            'l2_text': {'addr': 0x192a, 'len': 6, 'val': str()}}
-        # todo: add handling IntegerBuffer to fetch data from BIOS
-        # 'AP_ALT_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-        # 'AP_BANK_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-        # 'AP_FD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-        # 'AP_HDG_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-        # 'AP_PITCH_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()}}
+            'l1_apostr1': {'address': 0x1934, 'length': 1, 'value': str()},
+            'l1_apostr2': {'address': 0x1936, 'length': 1, 'value': str()},
+            'l1_point': {'address': 0x1930, 'length': 1, 'value': str()},
+            'l1_sign': {'address': 0x1920, 'length': 1, 'value': str()},
+            'l1_text': {'address': 0x1924, 'length': 6, 'value': str()},
+            'l2_apostr1': {'address': 0x1938, 'length': 1, 'value': str()},
+            'l2_apostr2': {'address': 0x193a, 'length': 1, 'value': str()},
+            'l2_point': {'address': 0x1932, 'length': 1, 'value': str()},
+            'l2_sign': {'address': 0x1922, 'length': 1, 'value': str()},
+            'l2_text': {'address': 0x192a, 'length': 6, 'value': str()},
+            'AP_ALT_HOLD_LED': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'value': int()},
+            'AP_BANK_HOLD_LED': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9, 'value': int()},
+            'AP_FD_LED': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'value': int()},
+            'AP_HDG_HOLD_LED': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb, 'value': int()},
+            'AP_PITCH_HOLD_LED': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd, 'value': int()}}
 
     def button_request(self, button: int) -> str:
         """
@@ -274,4 +273,6 @@ class Ka50(Aircraft):
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
         draw.text((2, 3), line1, 1, FONT_16)
         draw.text((2, 24), line2, 1, FONT_16)
+        draw.text((108, 3), f'{self.get_bios("AP_BANK_HOLD_LED")} {self.get_bios("AP_PITCH_HOLD_LED")} {self.get_bios("AP_FD_LED")}', 1, FONT_16)
+        draw.text((108, 24), f'{self.get_bios("AP_HDG_HOLD_LED")} {self.get_bios("AP_ALT_HOLD_LED")}', 1, FONT_16)
         return img
