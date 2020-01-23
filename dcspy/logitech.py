@@ -88,9 +88,13 @@ class G13:
         for field_name, proto_data in self.plane.bios_data.items():
             buff_params = {param: value for param, value in proto_data.items() if param != 'value'}
             if isinstance(proto_data['value'], str):
-                StringBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
+                buf = getattr(import_module('dcspy.dcsbios'), 'StringBuffer')
+                buf(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
+                # StringBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
             else:  # int
-                IntegerBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
+                buf = getattr(import_module('dcspy.dcsbios'), 'IntegerBuffer')
+                buf(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
+                # IntegerBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
 
     def check_buttons(self) -> int:
         """
