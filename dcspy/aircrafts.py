@@ -219,12 +219,12 @@ class Ka50(Aircraft):
             'l2_point': {'addr': 0x1932, 'len': 1, 'val': str()},
             'l2_sign': {'addr': 0x1922, 'len': 1, 'val': str()},
             'l2_text': {'addr': 0x192a, 'len': 6, 'val': str()}}
-            # todo: add handling IntegerBuffer to fetch data from BIOS
-            # 'AP_ALT_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-            # 'AP_BANK_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-            # 'AP_FD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-            # 'AP_HDG_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
-            # 'AP_PITCH_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()}}
+        # todo: add handling IntegerBuffer to fetch data from BIOS
+        # 'AP_ALT_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+        # 'AP_BANK_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+        # 'AP_FD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+        # 'AP_HDG_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+        # 'AP_PITCH_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()}}
 
     def button_request(self, button: int) -> str:
         """
