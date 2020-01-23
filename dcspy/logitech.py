@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize
 from dcspy.aircrafts import Aircraft
-from dcspy.dcsbios import StringBuffer, ProtocolParser, IntegerBuffer
+from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
 
 
@@ -21,7 +21,7 @@ class G13:
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        StringBuffer(parser_hook, 0x0000, 16, partial(self.detecting_plane))
+        getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self._display: List[str] = list()
         self.g13_lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
         self.parser = parser_hook
