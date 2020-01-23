@@ -27,7 +27,7 @@ class Aircraft:
         """
         self.width = width
         self.height = height
-        self.bios_data: Dict[str, BIOS_VALUE] = {}
+        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {}
 
     def button_request(self, button: int) -> str:
         """
@@ -92,23 +92,23 @@ class FA18Chornet(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
-            'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': ''},
-            'ScratchpadStr2': {'addr': 0x7450, 'len': 2, 'val': ''},
-            'ScratchpadNum': {'addr': 0x7446, 'len': 8, 'val': ''},
-            'OptionDisplay1': {'addr': 0x7432, 'len': 4, 'val': ''},
-            'OptionDisplay2': {'addr': 0x7436, 'len': 4, 'val': ''},
-            'OptionDisplay3': {'addr': 0x743a, 'len': 4, 'val': ''},
-            'OptionDisplay4': {'addr': 0x743e, 'len': 4, 'val': ''},
-            'OptionDisplay5': {'addr': 0x7442, 'len': 4, 'val': ''},
-            'COMM1': {'addr': 0x7424, 'len': 2, 'val': ''},
-            'COMM2': {'addr': 0x7426, 'len': 2, 'val': ''},
-            'OptionCueing1': {'addr': 0x7428, 'len': 1, 'val': ''},
-            'OptionCueing2': {'addr': 0x742a, 'len': 1, 'val': ''},
-            'OptionCueing3': {'addr': 0x742c, 'len': 1, 'val': ''},
-            'OptionCueing4': {'addr': 0x742e, 'len': 1, 'val': ''},
-            'OptionCueing5': {'addr': 0x7430, 'len': 1, 'val': ''},
-            'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': ''}}
+        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
+            'ScratchpadStr1': {'addr': 0x744e, 'len': 2, 'val': str()},
+            'ScratchpadStr2': {'addr': 0x7450, 'len': 2, 'val': str()},
+            'ScratchpadNum': {'addr': 0x7446, 'len': 8, 'val': str()},
+            'OptionDisplay1': {'addr': 0x7432, 'len': 4, 'val': str()},
+            'OptionDisplay2': {'addr': 0x7436, 'len': 4, 'val': str()},
+            'OptionDisplay3': {'addr': 0x743a, 'len': 4, 'val': str()},
+            'OptionDisplay4': {'addr': 0x743e, 'len': 4, 'val': str()},
+            'OptionDisplay5': {'addr': 0x7442, 'len': 4, 'val': str()},
+            'COMM1': {'addr': 0x7424, 'len': 2, 'val': str()},
+            'COMM2': {'addr': 0x7426, 'len': 2, 'val': str()},
+            'OptionCueing1': {'addr': 0x7428, 'len': 1, 'val': str()},
+            'OptionCueing2': {'addr': 0x742a, 'len': 1, 'val': str()},
+            'OptionCueing3': {'addr': 0x742c, 'len': 1, 'val': str()},
+            'OptionCueing4': {'addr': 0x742e, 'len': 1, 'val': str()},
+            'OptionCueing5': {'addr': 0x7430, 'len': 1, 'val': str()},
+            'FuelTotal': {'addr': 0x748a, 'len': 6, 'val': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
@@ -187,12 +187,12 @@ class F16C50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DEDLine1': {'addr': 0x44fc, 'len': 50, 'val': ''},
-            'DEDLine2': {'addr': 0x452e, 'len': 50, 'val': ''},
-            'DEDLine3': {'addr': 0x4560, 'len': 50, 'val': ''},
-            'DEDLine4': {'addr': 0x4592, 'len': 50, 'val': ''},
-            'DEDLine5': {'addr': 0x45c4, 'len': 50, 'val': ''}}
+        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
+            'DEDLine1': {'addr': 0x44fc, 'len': 50, 'val': str()},
+            'DEDLine2': {'addr': 0x452e, 'len': 50, 'val': str()},
+            'DEDLine3': {'addr': 0x4560, 'len': 50, 'val': str()},
+            'DEDLine4': {'addr': 0x4592, 'len': 50, 'val': str()},
+            'DEDLine5': {'addr': 0x45c4, 'len': 50, 'val': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
@@ -218,23 +218,23 @@ class Ka50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
-            'l1_apostr1': {'addr': 0x1934, 'len': 1, 'val': ''},
-            'l1_apostr2': {'addr': 0x1936, 'len': 1, 'val': ''},
-            'l1_point': {'addr': 0x1930, 'len': 1, 'val': ''},
-            'l1_sign': {'addr': 0x1920, 'len': 1, 'val': ''},
-            'l1_text': {'addr': 0x1924, 'len': 6, 'val': ''},
-            'l2_apostr1': {'addr': 0x1938, 'len': 1, 'val': ''},
-            'l2_apostr2': {'addr': 0x193a, 'len': 1, 'val': ''},
-            'l2_point': {'addr': 0x1932, 'len': 1, 'val': ''},
-            'l2_sign': {'addr': 0x1922, 'len': 1, 'val': ''},
-            'l2_text': {'addr': 0x192a, 'len': 6, 'val': ''}}
-        # todo: add handling IntegerBuffer to fetch data from BIOS
-        # 'AP_ALT_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': ''},
-        # 'AP_BANK_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': ''},
-        # 'AP_FD_LED': {'addr': 0x1936, 'len': 1, 'val': ''},
-        # 'AP_HDG_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': ''},
-        # 'AP_PITCH_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': ''}}
+        self.bios_data: Dict[str, Dict['str': Union[str, int]]] = {
+            'l1_apostr1': {'addr': 0x1934, 'len': 1, 'val': str()},
+            'l1_apostr2': {'addr': 0x1936, 'len': 1, 'val': str()},
+            'l1_point': {'addr': 0x1930, 'len': 1, 'val': str()},
+            'l1_sign': {'addr': 0x1920, 'len': 1, 'val': str()},
+            'l1_text': {'addr': 0x1924, 'len': 6, 'val': str()},
+            'l2_apostr1': {'addr': 0x1938, 'len': 1, 'val': str()},
+            'l2_apostr2': {'addr': 0x193a, 'len': 1, 'val': str()},
+            'l2_point': {'addr': 0x1932, 'len': 1, 'val': str()},
+            'l2_sign': {'addr': 0x1922, 'len': 1, 'val': str()},
+            'l2_text': {'addr': 0x192a, 'len': 6, 'val': str()}}
+            # todo: add handling IntegerBuffer to fetch data from BIOS
+            # 'AP_ALT_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+            # 'AP_BANK_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+            # 'AP_FD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+            # 'AP_HDG_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()},
+            # 'AP_PITCH_HOLD_LED': {'addr': 0x1936, 'len': 1, 'val': int()}}
 
     def button_request(self, button: int) -> str:
         """
