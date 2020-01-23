@@ -6,16 +6,6 @@ from PIL import Image, ImageDraw
 from dcspy import FONT_11, FONT_16
 from dcspy.sdk import lcd_sdk
 
-try:
-    from typing_extensions import TypedDict
-except ImportError:
-    from typing import TypedDict
-
-
-INT_BIOS = TypedDict('INT_BIOS', {'addr': int, 'mask': int, 'shift_by': int})
-STR_BIOS = TypedDict('STR_BIOS', {'addr': int, 'len': int, 'val': str})
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'type': str, 'data': Union[INT_BIOS, STR_BIOS]})
-
 
 class Aircraft:
     def __init__(self, width: int, height: int) -> None:
