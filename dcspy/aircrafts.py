@@ -1,5 +1,5 @@
 from logging import debug, warning
-from typing import Dict
+from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
@@ -12,7 +12,9 @@ except ImportError:
     from typing import TypedDict
 
 
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'addr': int, 'len': int, 'val': str})
+INT_BIOS = TypedDict('INT_BIOS', {'addr': int, 'mask': int, 'shift_by': int})
+STR_BIOS = TypedDict('STR_BIOS', {'addr': int, 'len': int, 'val': str})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'type': str, 'data': Union[INT_BIOS, STR_BIOS]})
 
 
 class Aircraft:
