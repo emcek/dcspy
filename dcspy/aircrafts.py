@@ -75,7 +75,7 @@ class Aircraft:
         if update:
             self.update_display(lcd_image)
 
-    def get_bios(self, selector: str) -> str:
+    def get_bios(self, selector: str) -> Union[str, int]:
         """
         Get value for DCS-BIOS selector.
 
