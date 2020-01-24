@@ -6,6 +6,16 @@ from PIL import Image, ImageDraw
 from dcspy import FONT_11, FONT_16
 from dcspy.sdk import lcd_sdk
 
+try:
+    from typing_extensions import TypedDict
+except ImportError:
+    from typing import TypedDict
+
+
+INT_BIOS = TypedDict('INT_BIOS', {'addr': int, 'mask': int, 'shift_by': int})
+STR_BIOS = TypedDict('STR_BIOS', {'addr': int, 'len': int})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Union[INT_BIOS, STR_BIOS], 'value': Union[int, str]})
+
 
 class Aircraft:
     def __init__(self, width: int, height: int) -> None:
@@ -17,7 +27,7 @@ class Aircraft:
         """
         self.width = width
         self.height = height
-        self.bios_data: Dict[str, Dict[str, Union[str, int]]] = {}
+        self.bios_data: Dict[str, BIOS_VALUE] = {}
 
     def button_request(self, button: int) -> str:
         """
@@ -82,23 +92,23 @@ class FA18Chornet(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, Dict[str, Union[str, int]]] = {
-            'ScratchpadStr1': {'address': 0x744e, 'length': 2, 'value': str()},
-            'ScratchpadStr2': {'address': 0x7450, 'length': 2, 'value': str()},
-            'ScratchpadNum': {'address': 0x7446, 'length': 8, 'value': str()},
-            'OptionDisplay1': {'address': 0x7432, 'length': 4, 'value': str()},
-            'OptionDisplay2': {'address': 0x7436, 'length': 4, 'value': str()},
-            'OptionDisplay3': {'address': 0x743a, 'length': 4, 'value': str()},
-            'OptionDisplay4': {'address': 0x743e, 'length': 4, 'value': str()},
-            'OptionDisplay5': {'address': 0x7442, 'length': 4, 'value': str()},
-            'COMM1': {'address': 0x7424, 'length': 2, 'value': str()},
-            'COMM2': {'address': 0x7426, 'length': 2, 'value': str()},
-            'OptionCueing1': {'address': 0x7428, 'length': 1, 'value': str()},
-            'OptionCueing2': {'address': 0x742a, 'length': 1, 'value': str()},
-            'OptionCueing3': {'address': 0x742c, 'length': 1, 'value': str()},
-            'OptionCueing4': {'address': 0x742e, 'length': 1, 'value': str()},
-            'OptionCueing5': {'address': 0x7430, 'length': 1, 'value': str()},
-            'FuelTotal': {'address': 0x748a, 'length': 6, 'value': str()}}
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'ScratchpadStr1': {'class': 'StringBuffer', 'args': {'address': 0x744e, 'length': 2}, 'value': str()},
+            'ScratchpadStr2': {'class': 'StringBuffer', 'args': {'address': 0x7450, 'length': 2}, 'value': str()},
+            'ScratchpadNum': {'class': 'StringBuffer', 'args': {'address': 0x7446, 'length': 8}, 'value': str()},
+            'OptionDisplay1': {'class': 'StringBuffer', 'args': {'address': 0x7432, 'length': 4}, 'value': str()},
+            'OptionDisplay2': {'class': 'StringBuffer', 'args': {'address': 0x7436, 'length': 4}, 'value': str()},
+            'OptionDisplay3': {'class': 'StringBuffer', 'args': {'address': 0x743a, 'length': 4}, 'value': str()},
+            'OptionDisplay4': {'class': 'StringBuffer', 'args': {'address': 0x743e, 'length': 4}, 'value': str()},
+            'OptionDisplay5': {'class': 'StringBuffer', 'args': {'address': 0x7442, 'length': 4}, 'value': str()},
+            'COMM1': {'class': 'StringBuffer', 'args': {'address': 0x7424, 'length': 2}, 'value': str()},
+            'COMM2': {'class': 'StringBuffer', 'args': {'address': 0x7426, 'length': 2}, 'value': str()},
+            'OptionCueing1': {'class': 'StringBuffer', 'args': {'address': 0x7428, 'length': 1}, 'value': str()},
+            'OptionCueing2': {'class': 'StringBuffer', 'args': {'address': 0x742a, 'length': 1}, 'value': str()},
+            'OptionCueing3': {'class': 'StringBuffer', 'args': {'address': 0x742c, 'length': 1}, 'value': str()},
+            'OptionCueing4': {'class': 'StringBuffer', 'args': {'address': 0x742e, 'length': 1}, 'value': str()},
+            'OptionCueing5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'length': 1}, 'value': str()},
+            'FuelTotal': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
@@ -177,12 +187,12 @@ class F16C50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, Dict[str, Union[str, int]]] = {
-            'DEDLine1': {'address': 0x44fc, 'length': 50, 'value': str()},
-            'DEDLine2': {'address': 0x452e, 'length': 50, 'value': str()},
-            'DEDLine3': {'address': 0x4560, 'length': 50, 'value': str()},
-            'DEDLine4': {'address': 0x4592, 'length': 50, 'value': str()},
-            'DEDLine5': {'address': 0x45c4, 'length': 50, 'value': str()}}
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'DEDLine1': {'class': 'StringBuffer', 'args': {'address': 0x44fc, 'length': 50}, 'value': str()},
+            'DEDLine2': {'class': 'StringBuffer', 'args': {'address': 0x452e, 'length': 50}, 'value': str()},
+            'DEDLine3': {'class': 'StringBuffer', 'args': {'address': 0x4560, 'length': 50}, 'value': str()},
+            'DEDLine4': {'class': 'StringBuffer', 'args': {'address': 0x4592, 'length': 50}, 'value': str()},
+            'DEDLine5': {'class': 'StringBuffer', 'args': {'address': 0x45c4, 'length': 50}, 'value': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
@@ -208,22 +218,22 @@ class Ka50(Aircraft):
         :param height: LCD height
         """
         super().__init__(width, height)
-        self.bios_data: Dict[str, Dict[str, Union[str, int]]] = {
-            'l1_apostr1': {'address': 0x1934, 'length': 1, 'value': str()},
-            'l1_apostr2': {'address': 0x1936, 'length': 1, 'value': str()},
-            'l1_point': {'address': 0x1930, 'length': 1, 'value': str()},
-            'l1_sign': {'address': 0x1920, 'length': 1, 'value': str()},
-            'l1_text': {'address': 0x1924, 'length': 6, 'value': str()},
-            'l2_apostr1': {'address': 0x1938, 'length': 1, 'value': str()},
-            'l2_apostr2': {'address': 0x193a, 'length': 1, 'value': str()},
-            'l2_point': {'address': 0x1932, 'length': 1, 'value': str()},
-            'l2_sign': {'address': 0x1922, 'length': 1, 'value': str()},
-            'l2_text': {'address': 0x192a, 'length': 6, 'value': str()},
-            'AP_ALT_HOLD_LED': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'value': int()},
-            'AP_BANK_HOLD_LED': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9, 'value': int()},
-            'AP_FD_LED': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'value': int()},
-            'AP_HDG_HOLD_LED': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb, 'value': int()},
-            'AP_PITCH_HOLD_LED': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd, 'value': int()}}
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'l1_apostr1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'length': 1}, 'value': str()},
+            'l1_apostr2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'length': 1}, 'value': str()},
+            'l1_point': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'length': 1}, 'value': str()},
+            'l1_sign': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'length': 1}, 'value': str()},
+            'l1_text': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'length': 6}, 'value': str()},
+            'l2_apostr1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'length': 1}, 'value': str()},
+            'l2_apostr2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'length': 1}, 'value': str()},
+            'l2_point': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'length': 1}, 'value': str()},
+            'l2_sign': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'length': 1}, 'value': str()},
+            'l2_text': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'length': 6}, 'value': str()},
+            'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
+            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
+            'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
+            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
+            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
 
     def button_request(self, button: int) -> str:
         """
