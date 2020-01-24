@@ -86,15 +86,8 @@ class G13:
         self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
         debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
-            buff_params = {param: value for param, value in proto_data.items() if param != 'value'}
-            if isinstance(proto_data['value'], str):
-                buf = getattr(import_module('dcspy.dcsbios'), 'StringBuffer')
-                buf(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
-                # StringBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
-            else:  # int
-                buf = getattr(import_module('dcspy.dcsbios'), 'IntegerBuffer')
-                buf(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
-                # IntegerBuffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **buff_params)
+            buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
+            buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 
     def check_buttons(self) -> int:
         """
