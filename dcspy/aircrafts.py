@@ -1,4 +1,4 @@
-from logging import debug, warning
+from logging import debug
 from typing import Dict, Union
 
 from PIL import Image, ImageDraw
@@ -29,19 +29,22 @@ class Aircraft:
         self.height = height
         self.bios_data: Dict[str, BIOS_VALUE] = {}
 
-    def button_request(self, button: int) -> str:
+    def button_request(self, button: int, request: str = '\n') -> str:
         """
-        Prepare specific DCS-BIOS request for button pressed.
+        Prepare aircraft specific DCS-BIOS request for button pressed.
 
         If button is out of scope new line is return.
 
         :param button: possible values 1-4
         :type: int
+        :param request: valid DCS-BIOS command as string
+        :type request: str
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
         debug(f'{self.__class__.__name__} Button: {button}')
-        return '\n'
+        debug(f'Request: {request.strip()}')
+        return request
 
     @staticmethod
     def update_display(image: Image.Image) -> None:
@@ -153,7 +156,7 @@ class FA18Chornet(Aircraft):
             value = value.replace('`', '1').replace('~', '2')
         super().set_bios(selector, value, update)
 
-    def button_request(self, button: int) -> str:
+    def button_request(self, button: int, request: str = '\n') -> str:
         """
         Prepare F/A-18 Hornet specific DCS-BIOS request for button pressed.
 
@@ -161,6 +164,8 @@ class FA18Chornet(Aircraft):
 
         :param button: possible values 1-4
         :type: int
+        :param request: valid DCS-BIOS command as string
+        :type request: str
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
@@ -168,14 +173,7 @@ class FA18Chornet(Aircraft):
                   2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
                   3: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
                   4: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
-        debug(f'{self.__class__.__name__} Button: {button}')
-        try:
-            request = action[button].replace('\n', '')
-            debug(f'Request: {request}')
-            return f'{action[button]}'
-        except KeyError:
-            warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
-            return f'\n'
+        return super().button_request(button, action.get(button, '\n'))
 
 
 class F16C50(Aircraft):
@@ -235,7 +233,7 @@ class Ka50(Aircraft):
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
 
-    def button_request(self, button: int) -> str:
+    def button_request(self, button: int, request: str = '\n') -> str:
         """
         Prepare Ka-50 Black Shark specific DCS-BIOS request for button pressed.
 
@@ -243,6 +241,8 @@ class Ka50(Aircraft):
 
         :param button: possible values 1-4
         :type: int
+        :param request: valid DCS-BIOS command as string
+        :type request: str
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
@@ -250,14 +250,7 @@ class Ka50(Aircraft):
                   2: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
                   3: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
                   4: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
-        debug(f'{self.__class__.__name__} Button: {button}')
-        try:
-            request = action[button].replace('\n', ' ')
-            debug(f'Request: {request}')
-            return f'{action[button]}'
-        except KeyError:
-            warning(f'{self.__class__.__name__} Wrong key, return empty request with new line')
-            return f'\n'
+        return super().button_request(button, action.get(button, '\n'))
 
     def prepare_image(self) -> Image.Image:
         """
