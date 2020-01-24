@@ -280,18 +280,18 @@ class Ka50(Aircraft):
 
     def _auto_pilot_switch(self, draw_obj: ImageDraw) -> None:
         """
-        Draw rectangle and add text form autopilot channel in correct coordinates.
+        Draw rectangle and add text for autopilot channels in correct coordinates.
 
         :param draw_obj: ImageDraw object form PIL
         """
-        for coord, ap_channel, turn_on in (({'rect': (111, 1, 124, 18), 'text': (114, 3)}, 'B', bool(self.get_bios("AP_BANK_HOLD_LED"))),
-                                           ({'rect': (128, 1, 141, 18), 'text': (130, 3)}, 'P', bool(self.get_bios("AP_PITCH_HOLD_LED"))),
-                                           ({'rect': (145, 1, 158, 18), 'text': (147, 3)}, 'F', bool(self.get_bios("AP_FD_LED"))),
-                                           ({'rect': (111, 22, 124, 39), 'text': (114, 24)}, 'H', bool(self.get_bios("AP_HDG_HOLD_LED"))),
-                                           ({'rect': (128, 22, 141, 39), 'text': (130, 24)}, 'A', bool(self.get_bios("AP_ALT_HOLD_LED")))):
+        for c_rect, c_text, ap_channel, turn_on in (((111, 1, 124, 18), (114, 3), 'B', self.get_bios('AP_BANK_HOLD_LED')),
+                                                    ((128, 1, 141, 18), (130, 3), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
+                                                    ((145, 1, 158, 18), (147, 3), 'F', self.get_bios('AP_FD_LED')),
+                                                    ((111, 22, 124, 39), (114, 24), 'H', self.get_bios('AP_HDG_HOLD_LED')),
+                                                    ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
             if turn_on:
-                draw_obj.rectangle(coord['rect'], 1, 1)
-                draw_obj.text(coord['text'], ap_channel, 0, FONT_16)
+                draw_obj.rectangle(c_rect, 1, 1)
+                draw_obj.text(c_text, ap_channel, 0, FONT_16)
             else:
-                draw_obj.rectangle(coord['rect'], 0, 1)
-                draw_obj.text(coord['text'], ap_channel, 1, FONT_16)
+                draw_obj.rectangle(c_rect, 0, 1)
+                draw_obj.text(c_text, ap_channel, 1, FONT_16)
