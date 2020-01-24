@@ -155,7 +155,7 @@ class FA18Chornet(Aircraft):
 
     def button_request(self, button: int) -> str:
         """
-        Prepare specific DCS-BIOS request for button pressed.
+        Prepare F/A-18 Hornet specific DCS-BIOS request for button pressed.
 
         If button is out of scope new line is return.
 
@@ -237,7 +237,7 @@ class Ka50(Aircraft):
 
     def button_request(self, button: int) -> str:
         """
-        Prepare specific DCS-BIOS request for button pressed.
+        Prepare Ka-50 Black Shark specific DCS-BIOS request for button pressed.
 
         If button is out of scope new line is return.
 
