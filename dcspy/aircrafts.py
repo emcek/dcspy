@@ -275,26 +275,23 @@ class Ka50(Aircraft):
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
         draw.text((2, 3), line1, 1, FONT_16)
         draw.text((2, 24), line2, 1, FONT_16)
-        Ka50._auto_pilot_switch(draw, {'rect': (111, 1, 124, 18), 'text': (114, 3)}, 'B', bool(self.get_bios("AP_BANK_HOLD_LED")))
-        Ka50._auto_pilot_switch(draw, {'rect': (128, 1, 141, 18), 'text': (130, 3)}, 'P', bool(self.get_bios("AP_PITCH_HOLD_LED")))
-        Ka50._auto_pilot_switch(draw, {'rect': (145, 1, 158, 18), 'text': (147, 3)}, 'F', bool(self.get_bios("AP_FD_LED")))
-        Ka50._auto_pilot_switch(draw, {'rect': (111, 22, 124, 39), 'text': (114, 24)}, 'H', bool(self.get_bios("AP_HDG_HOLD_LED")))
-        Ka50._auto_pilot_switch(draw, {'rect': (128, 22, 141, 39), 'text': (130, 24)}, 'A', bool(self.get_bios("AP_ALT_HOLD_LED")))
+        self._auto_pilot_switch(draw)
         return img
 
-    @staticmethod
-    def _auto_pilot_switch(draw_obj: ImageDraw, coord: Dict[str, Tuple[int, ...]], ap_channel: str, turn_on: bool) -> None:
+    def _auto_pilot_switch(self, draw_obj: ImageDraw) -> None:
         """
         Draw rectangle and add text form autopilot channel in correct coordinates.
 
         :param draw_obj: ImageDraw object form PIL
-        :param coord: coordinates where to draw rectangle and where put AP channel name
-        :param ap_channel: Possible values: B, P, H, A and F
-        :param turn_on: AP channel should be turned on
         """
-        if turn_on:
-            draw_obj.rectangle(coord['rect'], 1, 1)
-            draw_obj.text(coord['text'], ap_channel, 0, FONT_16)
-        else:
-            draw_obj.rectangle(coord['rect'], 0, 1)
-            draw_obj.text(coord['text'], ap_channel, 1, FONT_16)
+        for coord, ap_channel, turn_on in (({'rect': (111, 1, 124, 18), 'text': (114, 3)}, 'B', bool(self.get_bios("AP_BANK_HOLD_LED"))),
+                                           ({'rect': (128, 1, 141, 18), 'text': (130, 3)}, 'P', bool(self.get_bios("AP_PITCH_HOLD_LED"))),
+                                           ({'rect': (145, 1, 158, 18), 'text': (147, 3)}, 'F', bool(self.get_bios("AP_FD_LED"))),
+                                           ({'rect': (111, 22, 124, 39), 'text': (114, 24)}, 'H', bool(self.get_bios("AP_HDG_HOLD_LED"))),
+                                           ({'rect': (128, 22, 141, 39), 'text': (130, 24)}, 'A', bool(self.get_bios("AP_ALT_HOLD_LED")))):
+            if turn_on:
+                draw_obj.rectangle(coord['rect'], 1, 1)
+                draw_obj.text(coord['text'], ap_channel, 0, FONT_16)
+            else:
+                draw_obj.rectangle(coord['rect'], 0, 1)
+                draw_obj.text(coord['text'], ap_channel, 1, FONT_16)
