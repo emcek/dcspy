@@ -13,9 +13,7 @@ except ImportError:
     from typing import TypedDict
 
 
-INT_BIOS = TypedDict('INT_BIOS', {'addr': int, 'mask': int, 'shift_by': int})
-STR_BIOS = TypedDict('STR_BIOS', {'addr': int, 'len': int})
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Union[INT_BIOS, STR_BIOS], 'value': Union[int, str]})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
 
 
 class Aircraft:
@@ -267,8 +265,8 @@ class Ka50(Aircraft):
         draw.rectangle((0, 22, 85, 39), 0, 1)
         draw.rectangle((88, 1, 103, 18), 0, 1)
         draw.rectangle((88, 22, 103, 39), 0, 1)
-        l1_text = self.get_bios('l1_text')
-        l2_text = self.get_bios('l2_text')
+        l1_text = str(self.get_bios('l1_text'))
+        l2_text = str(self.get_bios('l2_text'))
         if l1_text:
             text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
         if l2_text:
