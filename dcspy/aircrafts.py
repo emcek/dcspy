@@ -275,27 +275,26 @@ class Ka50(Aircraft):
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
         draw.text((2, 3), line1, 1, FONT_16)
         draw.text((2, 24), line2, 1, FONT_16)
-        Ka50._auto_pilot_switch(draw, (111, 1, 124, 18), (114, 3), 'B', bool(self.get_bios("AP_BANK_HOLD_LED")))
-        Ka50._auto_pilot_switch(draw, (128, 1, 141, 18), (130, 3), 'P', bool(self.get_bios("AP_PITCH_HOLD_LED")))
-        Ka50._auto_pilot_switch(draw, (145, 1, 158, 18), (147, 3), 'F', bool(self.get_bios("AP_FD_LED")))
-        Ka50._auto_pilot_switch(draw, (111, 22, 124, 39), (114, 24), 'H', bool(self.get_bios("AP_HDG_HOLD_LED")))
-        Ka50._auto_pilot_switch(draw, (128, 22, 141, 39), (130, 24), 'A', bool(self.get_bios("AP_ALT_HOLD_LED")))
+        Ka50._auto_pilot_switch(draw, {'rect': (111, 1, 124, 18), 'text': (114, 3)}, 'B', bool(self.get_bios("AP_BANK_HOLD_LED")))
+        Ka50._auto_pilot_switch(draw, {'rect': (128, 1, 141, 18), 'text': (130, 3)}, 'P', bool(self.get_bios("AP_PITCH_HOLD_LED")))
+        Ka50._auto_pilot_switch(draw, {'rect': (145, 1, 158, 18), 'text': (147, 3)}, 'F', bool(self.get_bios("AP_FD_LED")))
+        Ka50._auto_pilot_switch(draw, {'rect': (111, 22, 124, 39), 'text': (114, 24)}, 'H', bool(self.get_bios("AP_HDG_HOLD_LED")))
+        Ka50._auto_pilot_switch(draw, {'rect': (128, 22, 141, 39), 'text': (130, 24)}, 'A', bool(self.get_bios("AP_ALT_HOLD_LED")))
         return img
 
     @staticmethod
-    def _auto_pilot_switch(draw_obj: ImageDraw, rect_coord: Tuple[int, int, int, int], text_coord: Tuple[int, int], ap_channel: str, turn_on: bool) -> None:
+    def _auto_pilot_switch(draw_obj: ImageDraw, coord: Dict[str, Tuple[int, ...]], ap_channel: str, turn_on: bool) -> None:
         """
         Draw rectangle and add text form autopilot channel in correct coordinates.
 
         :param draw_obj: ImageDraw object form PIL
-        :param rect_coord: where to draw rectangle
-        :param text_coord: where put AP channel name
+        :param coord: coordinates where to draw rectangle and where put AP channel name
         :param ap_channel: Possible values: B, P, H, A and F
         :param turn_on: AP channel should be turned on
         """
         if turn_on:
-            draw_obj.rectangle(rect_coord, 1, 1)
-            draw_obj.text(text_coord, ap_channel, 0, FONT_16)
+            draw_obj.rectangle(coord['rect'], 1, 1)
+            draw_obj.text(coord['text'], ap_channel, 0, FONT_16)
         else:
-            draw_obj.rectangle(rect_coord, 0, 1)
-            draw_obj.text(text_coord, ap_channel, 1, FONT_16)
+            draw_obj.rectangle(coord['rect'], 0, 1)
+            draw_obj.text(coord['text'], ap_channel, 1, FONT_16)
