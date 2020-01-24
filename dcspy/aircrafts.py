@@ -1,4 +1,5 @@
 from logging import debug
+from string import whitespace
 from typing import Dict, Union
 
 from PIL import Image, ImageDraw
@@ -43,7 +44,7 @@ class Aircraft:
         :rtype: str
         """
         debug(f'{self.__class__.__name__} Button: {button}')
-        debug(f'Request: {request.strip()}')
+        debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
     @staticmethod
