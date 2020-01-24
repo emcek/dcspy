@@ -1,6 +1,6 @@
 from logging import debug
 from string import whitespace
-from typing import Dict, Union, Tuple
+from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
