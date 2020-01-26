@@ -1,7 +1,7 @@
 import socket
 import sys
 from logging import info, debug, warning, error
-from time import sleep, time
+from time import sleep, time, gmtime
 
 from packaging import version
 from requests import get
@@ -88,16 +88,16 @@ def run() -> None:
     while True:
         parser = ProtocolParser()
         g13 = G13(parser)
-        time_progress = time() - start
-        g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{time_progress :.2f} s', f'dcspy: {__version__}']
+        wait_time = gmtime(time() - start)
+        g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: {__version__}']
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(None)
         if dcs_connected(sock):
             _handle_connection(g13, parser, sock)
             start = time()
         else:
-            time_progress = time() - start
-            g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{time_progress :.2f} s', f'dcspy: {__version__}']
+            wait_time = gmtime(time() - start)
+            g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: {__version__}']
         sleep(0.5)
         del sock
         del g13
