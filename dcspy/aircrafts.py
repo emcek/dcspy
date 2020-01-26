@@ -185,11 +185,11 @@ class F16C50(Aircraft):
         """
         super().__init__(width, height)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DEDLine1': {'class': 'StringBuffer', 'args': {'address': 0x44fc, 'length': 50}, 'value': str()},
-            'DEDLine2': {'class': 'StringBuffer', 'args': {'address': 0x452e, 'length': 50}, 'value': str()},
-            'DEDLine3': {'class': 'StringBuffer', 'args': {'address': 0x4560, 'length': 50}, 'value': str()},
-            'DEDLine4': {'class': 'StringBuffer', 'args': {'address': 0x4592, 'length': 50}, 'value': str()},
-            'DEDLine5': {'class': 'StringBuffer', 'args': {'address': 0x45c4, 'length': 50}, 'value': str()}}
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4502, 'length': 25}, 'value': str()},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x451c, 'length': 25}, 'value': str()},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4536, 'length': 25}, 'value': str()},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4550, 'length': 25}, 'value': str()},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x456a, 'length': 25}, 'value': str()}}
 
     def prepare_image(self) -> Image.Image:
         """
@@ -202,8 +202,8 @@ class F16C50(Aircraft):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            debug(f'*{self.get_bios(f"DEDLine{i}")}*')
-            draw.text((0, offset), self.get_bios(f'DEDLine{i}'), 1, FONT_11)
+            debug(f'*{self.get_bios(f"DED_LINE_{i}")}*')
+            draw.text((0, offset), self.get_bios(f'DED_LINE_{i}'), 1, FONT_11)
         return img
 
 
