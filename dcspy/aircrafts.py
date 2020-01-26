@@ -202,6 +202,7 @@ class F16C50(Aircraft):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
+            debug(f'*{self.get_bios(f"DEDLine{i}")}*')
             draw.text((0, offset), self.get_bios(f'DEDLine{i}'), 1, FONT_11)
         return img
 
