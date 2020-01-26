@@ -89,7 +89,8 @@ def run() -> None:
         parser = ProtocolParser()
         g13 = G13(parser)
         wait_time = gmtime(time() - start)
-        g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
+        spacer = ' ' * 13
+        g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(None)
         if dcs_connected(sock):
@@ -97,7 +98,7 @@ def run() -> None:
             start = time()
         else:
             wait_time = gmtime(time() - start)
-            g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
+            g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
         sleep(0.5)
         del sock
         del g13
