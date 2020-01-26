@@ -1,3 +1,4 @@
+from functools import partial
 from struct import pack
 from typing import Callable, Set
 
@@ -126,7 +127,7 @@ class StringBuffer:
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
-        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(address=addr, data=data))
+        parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def set_char(self, index, char) -> None:
         """
@@ -177,7 +178,7 @@ class IntegerBuffer:
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)
-        parser.write_callbacks.add(lambda addr, data: self.on_dcsbios_write(address=addr, data=data))
+        parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
