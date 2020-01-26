@@ -109,3 +109,19 @@ def test_simple_instance_of_buffers(class_name, params, protocol_parser):
 
     buff = getattr(dcsbios, class_name)(parser=protocol_parser, callback=lambda x: x, **params)
     assert 'on_dcsbios_write' in dir(buff)
+
+
+def test_integer_buffer_callback(protocol_parser):
+    from functools import partial
+    from dcspy.dcsbios import IntegerBuffer
+
+    def _callback(*args, **kwargs):
+        assert args == (1,)
+        assert kwargs == dict()
+
+    IntegerBuffer(parser=protocol_parser, address=0x1938, mask=0x200, shift_by=0x9, callback=partial(_callback))
+    protocol_parser.state = 'DATA_HIGH'
+    protocol_parser.count = 1
+    protocol_parser.address = 0x1938
+    protocol_parser.data = 0x927  # 0x827
+    protocol_parser.process_byte(bytes([0x1]))
