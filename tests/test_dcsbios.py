@@ -1,3 +1,6 @@
+from pytest import mark
+
+
 def test_process_byte_wait_for_sync_to_address_low(protocol_parser):
     assert protocol_parser.state == 'WAIT_FOR_SYNC'
     for _ in range(4):
@@ -97,3 +100,28 @@ def test_process_byte_wait_for_sync_callback(protocol_parser):
     protocol_parser.frame_sync_callbacks.add(partial(_callback))
     protocol_parser.sync_byte_count = 3
     protocol_parser.process_byte(bytes([0x55]))
+
+
+@mark.parametrize('class_name, params', [('StringBuffer', {'address': 0x192a, 'length': 6}),
+                                         ('IntegerBuffer', {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf})])
+def test_simple_instance_of_buffers(class_name, params, protocol_parser):
+    from dcspy import dcsbios
+
+    buff = getattr(dcsbios, class_name)(parser=protocol_parser, callback=lambda x: x, **params)
+    assert 'on_dcsbios_write' in dir(buff)
+
+
+def test_integer_buffer_callback(protocol_parser):
+    from functools import partial
+    from dcspy.dcsbios import IntegerBuffer
+
+    def _callback(*args, **kwargs):
+        assert args == (1,)
+        assert kwargs == dict()
+
+    IntegerBuffer(parser=protocol_parser, address=0x1938, mask=0x200, shift_by=0x9, callback=partial(_callback))
+    protocol_parser.state = 'DATA_HIGH'
+    protocol_parser.count = 1
+    protocol_parser.address = 0x1938
+    protocol_parser.data = 0x927  # 0x827
+    protocol_parser.process_byte(bytes([0x1]))

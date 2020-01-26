@@ -48,7 +48,7 @@ def test_button_pressed_for_hornet(button, result, hornet):
                                               ('FuelTotal', '104T', '104T')])
 def test_set_bios_for_hornet(selector, value, result, hornet):
     hornet.set_bios(selector, value, False)
-    assert hornet.bios_data[selector]['val'] == result
+    assert hornet.bios_data[selector]['value'] == result
 
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50'])
