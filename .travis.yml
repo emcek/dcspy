@@ -29,8 +29,8 @@ script:
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; then python-codacy-coverage -r coverage.xml; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == linux ]]; then coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 && $TRAVIS_OS_NAME == linux ]]; then python-codacy-coverage -r coverage.xml; fi
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
