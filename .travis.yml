@@ -4,6 +4,15 @@ python:
   - '3.6'
   - '3.7'
   - '3.8'
+matrix:
+  include:
+    - os: windows
+      language: sh
+      python: '3.x'
+      before_install:
+        - choco install python3 --params '/InstallDir:C:\\Python'
+        - export PATH='/c/Python:/c/Python/Scripts:$PATH'
+        - python -m pip install --upgrade pip wheel
 install:
   - pip install -U pip setuptools
   - pip install -U six
@@ -31,3 +40,4 @@ deploy:
   on:
     tags: true
   skip_existing: true
+cache: pip
