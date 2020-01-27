@@ -8,7 +8,7 @@ matrix:
   include:
     - os: windows
       language: sh
-      python: '3.x'
+      python: '3.8'
       before_install:
         - choco install python3 --params '/InstallDir:C:\\Python'
         - export PATH='/c/Python:/c/Python/Scripts:$PATH'
@@ -19,9 +19,9 @@ install:
   - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage mypy
 before_script:
   - pip install -Ur requirements.txt
-  - python3 -V
+  - python -V
 script:
-  - python3 -m pytest --mccabe -v dcspy
+  - python -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
   - mypy --ignore-missing-imports dcspy || echo $(($? - 1))
