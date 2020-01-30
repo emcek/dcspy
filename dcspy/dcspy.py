@@ -29,7 +29,7 @@ def check_current_version() -> None:
 
 def dcs_connected(sock: socket.socket) -> bool:
     """
-    Attempt to connect to localhost.
+    Attempt to connect to localhost via UDP.
 
     :param sock: socket
     :return: result as bool
