@@ -72,6 +72,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
 
 
 def run():
+    """Main of running function."""
     parser = ProtocolParser()
     g13 = G13(parser)
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
