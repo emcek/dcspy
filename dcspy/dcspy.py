@@ -48,18 +48,18 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     """
     Main loop where all the magic is happened.
 
-    :param g13:
+    :param g13: type of Logitech keyboard with LCD
     :type g13: G13
-    :param parser:
+    :param parser: DCS protocol parser
     :type parser: ProtocolParser
-    :param sock:
+    :param sock: multi-cast UDP socket
     :type sock: socket.socket
     """
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
-            for c in dcs_bios_resp:
-                parser.process_byte(c)
+            for int_byte in dcs_bios_resp:
+                parser.process_byte(int_byte)
             if g13.plane_detected:
                 g13.load_new_plane()
             g13.button_handle(sock)
