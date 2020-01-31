@@ -1,12 +1,13 @@
 import socket
+import struct
 import sys
 from logging import info, debug, warning, error
-from time import sleep, time, gmtime
+from time import time, gmtime
 
 from packaging import version
 from requests import get
 
-from dcspy import __version__
+from dcspy import RECV_ADDR, MULTICAST_IP, __version__
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import G13
 
@@ -56,8 +57,9 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     """
     while True:
         try:
-            dcs_bios_resp = sock.recv(1)
-            parser.process_byte(dcs_bios_resp)
+            dcs_bios_resp = sock.recv(2048)
+            for c in dcs_bios_resp:
+                parser.process_byte(c)
             if g13.plane_detected:
                 g13.load_new_plane()
             g13.button_handle(sock)
@@ -79,7 +81,18 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
             break
 
 
-def run() -> None:
+def run():
+    parser = ProtocolParser()
+    g13 = G13(parser)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(RECV_ADDR)
+    mreq = struct.pack('=4sl', socket.inet_aton(MULTICAST_IP), socket.INADDR_ANY)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+    _handle_connection(g13, parser, sock)
+
+
+def run1() -> None:
     """Main of running function."""
     info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     check_current_version()
@@ -99,7 +112,7 @@ def run() -> None:
         else:
             wait_time = gmtime(time() - start)
             g13.display = ['G13 initialised OK', 'Waiting for DCS:', f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
-        sleep(0.5)
+        # sleep(0.5)
         del sock
         del g13
         del parser
