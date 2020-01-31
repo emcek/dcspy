@@ -1,7 +1,7 @@
 import socket
 import struct
 import sys
-from logging import info, debug, warning, error
+from logging import info, debug, warning
 from time import time, gmtime
 
 from packaging import version
@@ -30,7 +30,7 @@ def check_current_version() -> None:
 
 def dcs_connected(sock: socket.socket) -> bool:
     """
-    Attempt to connect to localhost via UDP.
+    Attempt to connect to localhost.
 
     :param sock: socket
     :return: result as bool
