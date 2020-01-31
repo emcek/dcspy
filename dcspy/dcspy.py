@@ -69,16 +69,6 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
         except KeyboardInterrupt:
             info('Exit due to Ctrl-C')
             sys.exit(0)
-        except TypeError as exp:
-            if exp.args[0] != 'ord() expected a character, but string of length 0 found':
-                error(f'Unexpected error: resetting... {exp.__class__.__name__}', exc_info=True)
-            info('DCS disconnected')
-            info('Waiting for DCS connection...')
-            break
-        except Exception as exp:
-            error(f'Unexpected error: resetting... {exp.__class__.__name__}', exc_info=True)
-            info('Waiting for DCS connection...')
-            break
 
 
 def run():
