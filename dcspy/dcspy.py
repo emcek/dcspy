@@ -39,23 +39,31 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     :param sock: multi-cast UDP socket
     :type sock: socket.socket
     """
-    start = time()
+    start_time = time()
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
-                start = time()
+                start_time = time()
             if g13.plane_detected:
                 g13.load_new_plane()
             g13.button_handle(sock)
         except socket.error as exp:
             debug(f'Main loop socket error: {exp}')
-            _sock_err_handler(g13, start)
+            _sock_err_handler(g13, start_time)
 
 
-def _sock_err_handler(g13, start):
-    wait_time = gmtime(time() - start)
+def _sock_err_handler(g13: G13, start_time: float) -> None:
+    """
+    Show basic data when DCS is disconnected.
+
+    :param g13: type of Logitech keyboard with LCD
+    :type g13: G13
+    :param start_time: time when connection to DCS was lost
+    :type start_time: float
+    """
+    wait_time = gmtime(time() - start_time)
     spacer = ' ' * 13
     g13.display = ['Logitech G13 OK', 'No new data from DCS:',
                    f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
