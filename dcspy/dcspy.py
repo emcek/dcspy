@@ -50,9 +50,8 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
                 g13.load_new_plane()
             g13.button_handle(sock)
         except socket.error as exp:
-            _sock_err_handler(g13, start)
             debug(f'Main loop socket error: {exp}')
-            info('Waiting for DCS connection...')
+            _sock_err_handler(g13, start)
 
 
 def _sock_err_handler(g13, start):
