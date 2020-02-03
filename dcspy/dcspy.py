@@ -12,8 +12,14 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import G13
 
 
-def check_current_version() -> None:
-    """Check if version is current."""
+def _check_current_version() -> bool:
+    """
+    Check if version is current.
+
+    :return: True if version is current
+    :rtype: bool
+    """
+    result = False
     try:
         response = get('https://api.github.com/repos/emcek/dcspy/releases/latest')
         if response.status_code == 200:
@@ -22,10 +28,12 @@ def check_current_version() -> None:
                 info(f'There is new version of dcspy: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
                 info(f'This is up-to-date version: {__version__}')
+                result = True
         else:
             warning(f'Unable to check version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         warning(f'Unable to check version online: {exc}')
+    return result
 
 
 def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) -> None:
@@ -40,6 +48,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     :type sock: socket.socket
     """
     start_time = time()
+    current_ver = 'current' if _check_current_version() else 'update!'
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -51,10 +60,10 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
             g13.button_handle(sock)
         except socket.error as exp:
             debug(f'Main loop socket error: {exp}')
-            _sock_err_handler(g13, start_time)
+            _sock_err_handler(g13, start_time, current_ver)
 
 
-def _sock_err_handler(g13: G13, start_time: float) -> None:
+def _sock_err_handler(g13: G13, start_time: float, current_ver: str) -> None:
     """
     Show basic data when DCS is disconnected.
 
@@ -62,11 +71,14 @@ def _sock_err_handler(g13: G13, start_time: float) -> None:
     :type g13: G13
     :param start_time: time when connection to DCS was lost
     :type start_time: float
+    :param current_ver: info about current version to show
+    :type current_ver: str
     """
     wait_time = gmtime(time() - start_time)
     spacer = ' ' * 13
     g13.display = ['Logitech G13 OK', 'No new data from DCS:',
-                   f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
+                   f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]',
+                   f'dcspy: v{__version__} ({current_ver})']
 
 
 def _prepare_socket() -> socket.socket:
@@ -88,7 +100,6 @@ def _prepare_socket() -> socket.socket:
 def run():
     """Main of running function."""
     info(f'dcspy {__version__} https://github.com/emcek/dcspy')
-    check_current_version()
     parser = ProtocolParser()
     g13 = G13(parser)
     sock = _prepare_socket()
