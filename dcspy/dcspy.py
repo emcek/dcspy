@@ -62,13 +62,23 @@ def _sock_err_handler(g13, start):
                    f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]', f'dcspy: v{__version__}']
 
 
+def _prepare_socket() -> socket.socket:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(RECV_ADDR)
+    mreq = struct.pack('=4sl', socket.inet_aton(MULTICAST_IP), socket.INADDR_ANY)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+    sock.settimeout(1)
+    return sock
+
+
 def run():
     """Main of running function."""
     info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     check_current_version()
     parser = ProtocolParser()
     g13 = G13(parser)
-    sock = _prepare_sockect()
+    sock = _prepare_socket()
     try:
         _handle_connection(g13, parser, sock)
     except KeyboardInterrupt:
