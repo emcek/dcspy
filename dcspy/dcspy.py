@@ -54,7 +54,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
             dcs_bios_resp = sock.recv(2048)
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
-                start_time = time()
+            start_time = time()
             if g13.plane_detected:
                 g13.load_new_plane()
             g13.button_handle(sock)
