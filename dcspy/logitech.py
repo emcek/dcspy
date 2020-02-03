@@ -7,7 +7,7 @@ from typing import List
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize
+from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
@@ -118,4 +118,4 @@ class G13:
         """
         button = self.check_buttons()
         if button:
-            sock.send(bytes(self.plane.button_request(button), 'utf-8'))
+            sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)

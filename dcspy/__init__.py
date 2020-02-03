@@ -9,6 +9,9 @@ from PIL import ImageFont
 basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
 __version__ = '1.0.0'
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50'}
+SEND_ADDR = ('127.0.0.1', 7778)
+RECV_ADDR = ('', 5010)
+MULTICAST_IP = '239.255.50.10'
 LcdSize = NamedTuple('lcd_size', [('width', int), ('height', int)])
 
 debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')

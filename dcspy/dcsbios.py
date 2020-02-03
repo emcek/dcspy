@@ -14,15 +14,14 @@ class ProtocolParser:
         self.write_callbacks: Set[Callable] = set()
         self.frame_sync_callbacks: Set[Callable] = set()
 
-    def process_byte(self, byte: bytes) -> None:
+    def process_byte(self, int_byte: int) -> None:
         """
         State machine - processing of byte.
 
         Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
 
-        :param byte:
+        :param int_byte:
         """
-        int_byte = ord(byte)
         state_handling = getattr(self, f'_{self.state.lower()}')
         if self.state == 'WAIT_FOR_SYNC':
             state_handling()
