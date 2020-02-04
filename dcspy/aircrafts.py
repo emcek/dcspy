@@ -203,7 +203,7 @@ class F16C50(Aircraft):
         for i in range(1, 6):
             offset = (i - 1) * 8
             # replace 'o' to degree sign and 'a' with up-down arrow
-            text = self.get_bios(f'DED_LINE_{i}').replace('o', '\u00b0').replace('a', '\u2195')
+            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
             draw.text((0, offset), text, 1, FONT_11)
         return img
 
