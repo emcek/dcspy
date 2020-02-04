@@ -4,15 +4,24 @@ python:
   - '3.6'
   - '3.7'
   - '3.8'
+matrix:
+  include:
+    - os: windows
+      language: sh
+      python: '3.8'
+      before_install:
+        - choco install python3 --params '/InstallDir:C:\\Python'
+        - export PATH='/c/Python:/c/Python/Scripts:$PATH'
+        - python -m pip install --upgrade pip wheel
 install:
   - pip install -U pip setuptools
   - pip install -U six
   - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage mypy
 before_script:
   - pip install -Ur requirements.txt
-  - python3 -V
+  - python -V
 script:
-  - python3 -m pytest --mccabe -v dcspy
+  - python -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
   - mypy --ignore-missing-imports dcspy || echo $(($? - 1))
@@ -20,8 +29,8 @@ script:
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 ]]; then coveralls; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 ]]; then python-codacy-coverage -r coverage.xml; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6 && $TRAVIS_OS_NAME == linux ]]; then coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.8 && $TRAVIS_OS_NAME == linux ]]; then python-codacy-coverage -r coverage.xml; fi
 deploy:
   provider: pypi
   distributions: sdist bdist_wheel
@@ -31,3 +40,4 @@ deploy:
   on:
     tags: true
   skip_existing: true
+cache: pip
