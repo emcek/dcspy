@@ -23,7 +23,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 ## Aircrafts and instruments
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
-* Ka-50 Black Shark PVI-800
+* Ka-50 Black Shark PVI-800 and autoplilot chanels
 
 ## Requirements
 * [Python 3.8](https://www.python.org/downloads/) (but 3.6+ should be fine)
