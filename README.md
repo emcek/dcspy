@@ -22,7 +22,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 
 ## Aircrafts and instruments
 * F/A-18C Hornet UFC - Up Front Controller
-* F-16C Viper DED - Data Entry Display (some parts are missing)
+* F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark PVI-800
 
 ## Requirements
