@@ -29,7 +29,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * [Python 3.8](https://www.python.org/downloads/) (but 3.6+ should be fine)
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [Logitech LCD SDK 8.57.148](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
-* [DCS-BIOS 0.7.31](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS-BIOS 0.7.34](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
@@ -43,7 +43,7 @@ pip install dcspy
 ```
 or use wheel file from releases:
 ```shell script
-pip install dcspy-1.0.0-py3-none-any.whl
+pip install dcspy-1.1.0-py3-none-any.whl
 ```
 
 ## Usage
