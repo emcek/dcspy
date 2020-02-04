@@ -1,4 +1,6 @@
 ## Development
+dscpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
+Main modules of dcspy:
 * `dcspy.py` main script - responsible for initialise DCS-BIOS parser, Logitech G13 handler, as well as running connection to DCS.
 * `logitech.py` handling Logitech G13 display and buttons, auto-loading current aircraft
 * `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to G13 handler and returns input data for buttons under G13 display
@@ -28,16 +30,17 @@ for field_name, proto_data in self.plane.bios_data.items():
     buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
     buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 ```
-* when, receive byte, parser will process data:
+* when, receive bytes, parser will process data:
 ```python
-dcs_bios_resp = sock.recv(1)
-parser.process_byte(dcs_bios_resp)
+dcs_bios_resp = sock.recv(2048)
+for int_byte in dcs_bios_resp:
+    parser.process_byte(int_byte)
 ```
 and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through LCD SDK to device display.
 
 * You can also use 4 button below LCD display, just check their state with `g13.check_buttons()` which one is pressed and send request do DCS-BIOS.
 ```python
-sock.send(bytes(self.plane.button_request(button), 'utf-8'))
+sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 7778))
 ```
 * Correct action is define in aircraft instance `button_request()` method:
 ```python
