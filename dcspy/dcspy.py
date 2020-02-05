@@ -49,6 +49,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     """
     start_time = time()
     current_ver = 'current' if _check_current_version() else 'update!'
+    info('Waiting for DCS connection...')
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
