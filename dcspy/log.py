@@ -1,5 +1,6 @@
 from datetime import datetime
-from logging import DEBUG, FileHandler, StreamHandler, INFO, Formatter, Logger
+from logging import DEBUG, StreamHandler, INFO, Formatter, Logger
+from logging.handlers import RotatingFileHandler
 from os import environ, path
 
 
@@ -10,7 +11,7 @@ def config_logger(logger: Logger) -> None:
     :type: Logger
     """
     logger.setLevel(DEBUG)
-    file_hand = FileHandler(filename=path.join(environ.get('TEMP', ''), 'dcspy.log'), mode='a')
+    file_hand = RotatingFileHandler(filename=path.join(environ.get('TEMP', ''), 'dcspy.log'), mode='a', maxBytes=1024*1024, backupCount=1)
     file_hand.setLevel(DEBUG)
     stream_hand = StreamHandler()
     stream_hand.setLevel(INFO)
