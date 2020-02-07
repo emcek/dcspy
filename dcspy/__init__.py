@@ -1,4 +1,4 @@
-from logging import basicConfig, DEBUG, debug
+from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
 from sys import platform
@@ -6,17 +6,20 @@ from typing import NamedTuple
 
 from PIL import ImageFont
 
-basicConfig(format='%(asctime)s | %(levelname)-7s | %(message)s / %(filename)s:%(lineno)d', level=DEBUG)
+from dcspy.log import config_logger
+
 __version__ = '1.1.0'
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50'}
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LcdSize = NamedTuple('lcd_size', [('width', int), ('height', int)])
+logger = getLogger(__name__)
+config_logger(logger)
 
-debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
-debug(f'Python: {python_implementation()}-{python_version()}')
-debug(f'{uname()}')
+logger.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
+logger.debug(f'Python: {python_implementation()}-{python_version()}')
+logger.debug(f'{uname()}')
 
 
 if platform == 'win32':

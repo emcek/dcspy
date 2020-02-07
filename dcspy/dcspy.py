@@ -1,7 +1,7 @@
 import socket
 import struct
 import sys
-from logging import info, debug, warning
+from logging import getLogger
 from time import time, gmtime
 
 from packaging import version
@@ -10,6 +10,8 @@ from requests import get
 from dcspy import RECV_ADDR, MULTICAST_IP, __version__
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import G13
+
+logger = getLogger(__name__)
 
 
 def _check_current_version() -> bool:
@@ -25,14 +27,14 @@ def _check_current_version() -> bool:
         if response.status_code == 200:
             online_version = response.json()['tag_name']
             if version.parse(online_version) > version.parse(__version__):
-                info(f'There is new version of dcspy: {online_version}')
+                logger.info(f'There is new version of dcspy: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
-                info(f'This is up-to-date version: {__version__}')
+                logger.info(f'This is up-to-date version: {__version__}')
                 result = True
         else:
-            warning(f'Unable to check version online. Try again later. Status={response.status_code}')
+            logger.warning(f'Unable to check version online. Try again later. Status={response.status_code}')
     except Exception as exc:
-        warning(f'Unable to check version online: {exc}')
+        logger.warning(f'Unable to check version online: {exc}')
     return result
 
 
@@ -49,7 +51,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     """
     start_time = time()
     current_ver = 'current' if _check_current_version() else 'update!'
-    info('Waiting for DCS connection...')
+    logger.info('Waiting for DCS connection...')
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -60,7 +62,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
                 g13.load_new_plane()
             g13.button_handle(sock)
         except socket.error as exp:
-            debug(f'Main loop socket error: {exp}')
+            logger.debug(f'Main loop socket error: {exp}')
             _sock_err_handler(g13, start_time, current_ver)
 
 
@@ -72,7 +74,7 @@ def _sock_err_handler(g13: G13, start_time: float, current_ver: str) -> None:
     :type g13: G13
     :param start_time: time when connection to DCS was lost
     :type start_time: float
-    :param current_ver: info about current version to show
+    :param current_ver: logger.info about current version to show
     :type current_ver: str
     """
     wait_time = gmtime(time() - start_time)
@@ -100,14 +102,14 @@ def _prepare_socket() -> socket.socket:
 
 def run():
     """Main of running function."""
-    info(f'dcspy {__version__} https://github.com/emcek/dcspy')
+    logger.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     parser = ProtocolParser()
     g13 = G13(parser)
     sock = _prepare_socket()
     try:
         _handle_connection(g13, parser, sock)
     except KeyboardInterrupt:
-        info('Exit due to Ctrl-C')
+        logger.info('Exit due to Ctrl-C')
         sys.exit(0)
 
 
