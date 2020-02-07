@@ -1,6 +1,6 @@
 from functools import partial
 from importlib import import_module
-from logging import info, debug, warning
+from logging import getLogger
 from math import log2
 from socket import socket
 from typing import List
@@ -11,6 +11,8 @@ from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
+
+LOG = getLogger(__name__)
 
 
 class G13:
@@ -69,11 +71,11 @@ class G13:
             self.plane_name = value
             if self.plane_name in SUPPORTED_CRAFTS:
                 self.plane_name = value
-                info(f'Detected Aircraft: {value}')
+                LOG.info(f'Detected Aircraft: {value}')
                 self.display = ['Detected aircraft:', self.plane_name]
                 self.plane_detected = True
             else:
-                warning(f'Not supported aircraft: {value}')
+                LOG.warning(f'Not supported aircraft: {value}')
                 self.display = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
 
     def load_new_plane(self) -> None:
@@ -84,7 +86,7 @@ class G13:
         """
         self.plane_detected = False
         self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
-        debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
+        LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
             buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])

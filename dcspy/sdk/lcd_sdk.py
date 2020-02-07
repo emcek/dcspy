@@ -1,12 +1,14 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
 from itertools import chain
-from logging import warning, error
+from logging import getLogger
 from os import environ
 from platform import architecture
 from sys import maxsize
 from typing import List, Tuple, Optional
 
 from PIL import Image
+
+LOG = getLogger(__name__)
 
 # LCD types
 TYPE_MONO = 1
@@ -50,7 +52,7 @@ def _init_dll() -> CDLL:
 try:
     LCD_DLL: Optional[CDLL] = _init_dll()
 except (KeyError, FileNotFoundError) as err:
-    error(f'Loading of LCD SDK failed: {err}', exc_info=True)
+    LOG.error(f'Loading of LCD SDK failed: {err}', exc_info=True)
     LCD_DLL = None
 
 
@@ -235,7 +237,7 @@ def color_bg_picture(image: Image) -> None:
         logi_lcd_mono_set_background(*list(chain(*list(image.getdata()))))
         logi_lcd_update()
     else:
-        warning('LCD is not connected')
+        LOG.warning('LCD is not connected')
 
 
 def update_display(image: Image) -> None:
@@ -248,7 +250,7 @@ def update_display(image: Image) -> None:
         logi_lcd_mono_set_background(list(image.getdata()))
         logi_lcd_update()
     else:
-        warning('LCD is not connected')
+        LOG.warning('LCD is not connected')
 
 
 def clear_display(true_clear=False) -> None:
