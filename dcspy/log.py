@@ -6,7 +6,8 @@ from os import environ, path
 
 def config_logger(logger: Logger) -> None:
     """
-    Configure logger form dcspy, add handlers and set formatters.
+    Configure global logger add handlers and set formatters.
+
     :param logger:
     :type: Logger
     """
