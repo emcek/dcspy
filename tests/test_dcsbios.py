@@ -125,3 +125,14 @@ def test_integer_buffer_callback(protocol_parser):
     protocol_parser.address = 0x1938
     protocol_parser.data = 0x927  # 0x827
     protocol_parser.process_byte(0x1)
+
+
+def test_string_buffer_callback(protocol_parser):
+    from functools import partial
+    from dcspy.dcsbios import StringBuffer
+
+    def _callback(*args, **kwargs):
+        assert args == (1,)
+        assert kwargs == dict()
+
+    StringBuffer(parser=protocol_parser, address=0x748a, length=6, callback=partial(_callback))
