@@ -11,7 +11,7 @@ from dcspy import RECV_ADDR, MULTICAST_IP, __version__
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import G13
 
-LOGGER = getLogger(__name__)
+LOG = getLogger(__name__)
 
 
 def _check_current_version() -> bool:
@@ -27,14 +27,14 @@ def _check_current_version() -> bool:
         if response.status_code == 200:
             online_version = response.json()['tag_name']
             if version.parse(online_version) > version.parse(__version__):
-                LOGGER.info(f'There is new version of dcspy: {online_version}')
+                LOG.info(f'There is new version of dcspy: {online_version}')
             elif version.parse(online_version) == version.parse(__version__):
-                LOGGER.info(f'This is up-to-date version: {__version__}')
+                LOG.info(f'This is up-to-date version: {__version__}')
                 result = True
         else:
-            LOGGER.warning(f'Unable to check version online. Try again later. Status={response.status_code}')
+            LOG.warning(f'Unable to check version online. Try again later. Status={response.status_code}')
     except Exception as exc:
-        LOGGER.warning(f'Unable to check version online: {exc}')
+        LOG.warning(f'Unable to check version online: {exc}')
     return result
 
 
@@ -51,7 +51,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
     """
     start_time = time()
     current_ver = 'current' if _check_current_version() else 'update!'
-    LOGGER.info('Waiting for DCS connection...')
+    LOG.info('Waiting for DCS connection...')
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -62,7 +62,7 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
                 g13.load_new_plane()
             g13.button_handle(sock)
         except socket.error as exp:
-            LOGGER.debug(f'Main loop socket error: {exp}')
+            LOG.debug(f'Main loop socket error: {exp}')
             _sock_err_handler(g13, start_time, current_ver)
 
 
@@ -102,14 +102,14 @@ def _prepare_socket() -> socket.socket:
 
 def run():
     """Main of running function."""
-    LOGGER.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
+    LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     parser = ProtocolParser()
     g13 = G13(parser)
     sock = _prepare_socket()
     try:
         _handle_connection(g13, parser, sock)
     except KeyboardInterrupt:
-        LOGGER.info('Exit due to Ctrl-C')
+        LOG.info('Exit due to Ctrl-C')
         sys.exit(0)
 
 

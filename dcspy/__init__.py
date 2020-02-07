@@ -14,12 +14,12 @@ SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LcdSize = NamedTuple('lcd_size', [('width', int), ('height', int)])
-LOGGER = getLogger(__name__)
-config_logger(LOGGER)
+LOG = getLogger(__name__)
+config_logger(LOG)
 
-LOGGER.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
-LOGGER.debug(f'Python: {python_implementation()}-{python_version()}')
-LOGGER.debug(f'{uname()}')
+LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
+LOG.debug(f'Python: {python_implementation()}-{python_version()}')
+LOG.debug(f'{uname()}')
 
 
 if platform == 'win32':
