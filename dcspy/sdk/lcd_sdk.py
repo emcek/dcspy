@@ -8,7 +8,7 @@ from typing import List, Tuple, Optional
 
 from PIL import Image
 
-logger = getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 # LCD types
 TYPE_MONO = 1
@@ -52,7 +52,7 @@ def _init_dll() -> CDLL:
 try:
     LCD_DLL: Optional[CDLL] = _init_dll()
 except (KeyError, FileNotFoundError) as err:
-    logger.error(f'Loading of LCD SDK failed: {err}', exc_info=True)
+    LOGGER.error(f'Loading of LCD SDK failed: {err}', exc_info=True)
     LCD_DLL = None
 
 
@@ -237,7 +237,7 @@ def color_bg_picture(image: Image) -> None:
         logi_lcd_mono_set_background(*list(chain(*list(image.getdata()))))
         logi_lcd_update()
     else:
-        logger.warning('LCD is not connected')
+        LOGGER.warning('LCD is not connected')
 
 
 def update_display(image: Image) -> None:
@@ -250,7 +250,7 @@ def update_display(image: Image) -> None:
         logi_lcd_mono_set_background(list(image.getdata()))
         logi_lcd_update()
     else:
-        logger.warning('LCD is not connected')
+        LOGGER.warning('LCD is not connected')
 
 
 def clear_display(true_clear=False) -> None:

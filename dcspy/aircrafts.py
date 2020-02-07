@@ -14,7 +14,7 @@ except ImportError:
 
 
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
-logger = getLogger(__name__)
+LOGGER = getLogger(__name__)
 
 
 class Aircraft:
@@ -42,8 +42,8 @@ class Aircraft:
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
-        logger.debug(f'{self.__class__.__name__} Button: {button}')
-        logger.debug(f'Request: {request.replace(whitespace[2], " ")}')
+        LOGGER.debug(f'{self.__class__.__name__} Button: {button}')
+        LOGGER.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
     @staticmethod
@@ -69,7 +69,7 @@ class Aircraft:
         :param update:
         """
         self.bios_data[selector]['value'] = value
-        logger.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
+        LOGGER.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         lcd_image = self.prepare_image()
         if update:
             self.update_display(lcd_image)
