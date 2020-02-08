@@ -54,7 +54,7 @@ class KeyboardMono(Logitech):
         """
         Display message at LCD.
 
-        :param message: List of strings to display, row by row. G13 support 4 rows.
+        :param message: List of strings to display, row by row. G13/G15/G510 support 4 rows.
         :type message: List[str, ...]
         """
         img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
