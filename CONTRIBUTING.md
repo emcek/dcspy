@@ -2,7 +2,7 @@
 dscpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
 Main modules of dcspy:
 * `dcspy.py` main script - responsible for initialise DCS-BIOS parser, Logitech G13 handler, as well as running connection to DCS.
-* `logitech.py` handling Logitech G13 display and buttons, auto-loading current aircraft
+* `logitech.py` handling Logitech keyboards with LCD display and buttons, auto-loading current aircraft
 * `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to G13 handler and returns input data for buttons under G13 display
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 
@@ -20,9 +20,9 @@ self.bios_data: Dict[str, BIOS_VALUE] = {
                         'value': int()}}
 ```
 which describe data to be fetch from DCS-BIOS with buffer class and its parameters. For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
-* Then after detecting current plane in DCS, G13 will load instance of aircraft as `plane`
+* Then after detecting current plane in DCS, `KeyboardMono` will load instance of aircraft as `plane`
 ```python
-self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
+self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd.width, self.lcd.height)
 ```
 * and "subscribe" for changes with callback for all fields defined in `plane` instance
 ```python
