@@ -95,7 +95,8 @@ class LogitechKeyboard:
         :rtype: int
         """
         # todo: update docstring
-        return 0
+        # return 0
+        raise NotImplementedError
 
     def button_handle(self, sock: socket) -> None:
         """
