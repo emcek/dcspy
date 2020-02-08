@@ -1,9 +1,9 @@
 ## Development
 dscpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
 Main modules of dcspy:
-* `dcspy.py` main script - responsible for initialise DCS-BIOS parser, Logitech G13 handler, as well as running connection to DCS.
+* `dcspy.py` main script - responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 handler, as well as running connection to DCS.
 * `logitech.py` handling Logitech keyboards with LCD display and buttons, auto-loading current aircraft
-* `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to G13 handler and returns input data for buttons under G13 display
+* `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD display
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 
 If you want to modify or write something by yourself, here's a quick walk-through:
@@ -38,7 +38,7 @@ for int_byte in dcs_bios_resp:
 ```
 and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through LCD SDK to device display.
 
-* You can also use 4 button below LCD display, just check their state with `g13.check_buttons()` which one is pressed and send request do DCS-BIOS.
+* You can also use 4 button below LCD display, just check their state with `check_buttons()` of `KeyboardMono` which one is pressed and send request do DCS-BIOS.
 ```python
 sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 7778))
 ```
