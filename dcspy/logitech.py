@@ -15,20 +15,26 @@ from dcspy.sdk import lcd_sdk
 LOG = getLogger(__name__)
 
 
-class G13:
+class Logitech:
+    pass
+
+
+class KeyboardMono(Logitech):
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        Setup G13 LCD and callback for current DCS aircraft in used.
+        Setup keyboard with mono LCD and callback for current DCS aircraft in used.
+
+        Support for: G510, G13, G15 (v1 and v2)
 
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self._display: List[str] = list()
-        self.g13_lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
+        self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
         self.parser = parser_hook
         self.plane_name = ''
-        self.plane = Aircraft(self.g13_lcd.width, self.g13_lcd.height)
+        self.plane = Aircraft(self.lcd.width, self.lcd.height)
         self.plane_detected = False
         self.already_pressed = False
         lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
@@ -51,7 +57,7 @@ class G13:
         :param message: List of strings to display, row by row. G13 support 4 rows.
         :type message: List[str, ...]
         """
-        img = Image.new('1', (self.g13_lcd.width, self.g13_lcd.height), 0)
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
         draw = ImageDraw.Draw(img)
         message.extend(['' for _ in range(4 - len(message))])
         self._display = message
@@ -85,7 +91,7 @@ class G13:
         Setup callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
-        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.g13_lcd.width, self.g13_lcd.height)
+        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd.width, self.lcd.height)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
