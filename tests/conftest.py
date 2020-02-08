@@ -15,7 +15,7 @@ def protocol_parser():
 @fixture()
 def lcd_size() -> Tuple[int, int]:
     """
-    Return width and height of G13 LCD as tuple of integers.
+    Return width and height of mono LCD as tuple of integers.
 
     :return: width and height
     :rtype: Tuple[int, int]
@@ -27,7 +27,7 @@ def lcd_size() -> Tuple[int, int]:
 @fixture()
 def hornet(lcd_size: Tuple[int, int]):
     """
-    Return instance of F/A-18C Hornet for Logitech G13.
+    Return instance of F/A-18C Hornet for Logitech mono LCD.
     :param lcd_size:
     :return: F/A-18C Hornet instance
     :rtype: FA18Chornet
@@ -39,7 +39,7 @@ def hornet(lcd_size: Tuple[int, int]):
 @fixture()
 def black_shark(lcd_size: Tuple[int, int]):
     """
-    Return instance of Ka-50 Black Shark for Logitech G13.
+    Return instance of Ka-50 Black Shark for Logitech mono LCD.
     :param lcd_size:
     :return: Ka-50 Black Shark instance
     :rtype: Ka50
