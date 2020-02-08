@@ -15,7 +15,7 @@ with io.open(join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(name='dcspy',
       version=__version__,
-      description='Software for integrating DCS: F/A-18C, F-16C and Ka-50 with Logitech G13',
+      description='Software for integrating Digital Combat Simulation planes with Logitech G13/G15/G510',
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='https://github.com/emcek/dcspy',
