@@ -53,7 +53,7 @@ class LogitechKeyboard:
         :type message: List[str]
         """
         # todo: update docstring
-        raise NotImplemented
+        raise NotImplementedError
 
     def detecting_plane(self, value: str) -> None:
         """
@@ -95,7 +95,7 @@ class LogitechKeyboard:
         :rtype: int
         """
         # todo: update docstring
-        raise NotImplemented
+        return 0
 
     def button_handle(self, sock: socket) -> None:
         """
