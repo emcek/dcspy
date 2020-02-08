@@ -9,7 +9,7 @@
 # dcspy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD. Developed for **Logitech G13**.
 Should also work with any other Logitech device with 160x43 px monochrome display, like G15 (v1 and v2) and G510. 
-There is possibility to modify this package to use full RGBA LCD of Logitech G19 (size 320x240) - please open issue.  
+There is possibility to modify this package to use full RGBA LCD of Logitech G19 (size 320x240) - please open issue, anyway I have plan to do it in future.  
 
 ## Table of Contents
 * [Aircrafts and instruments](#aircrafts-and-instruments)
@@ -52,7 +52,7 @@ pip should install into you python installation directory: i.e.:
 * `d:\python38\scripts\dcspy.exe`
 
 You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon).
-After successful connect attempt, G13 display should update. 
+After successful connect attempt, LCD display should update. 
 
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.  
