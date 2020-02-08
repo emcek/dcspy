@@ -9,7 +9,7 @@ from requests import get
 
 from dcspy import RECV_ADDR, MULTICAST_IP, __version__
 from dcspy.dcsbios import ProtocolParser
-from dcspy.logitech import G13
+from dcspy.logitech import KeyboardMono
 
 LOG = getLogger(__name__)
 
@@ -38,12 +38,12 @@ def _check_current_version() -> bool:
     return result
 
 
-def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) -> None:
+def _handle_connection(lcd: KeyboardMono, parser: ProtocolParser, sock: socket.socket) -> None:
     """
     Main loop where all the magic is happened.
 
-    :param g13: type of Logitech keyboard with LCD
-    :type g13: G13
+    :param lcd: type of Logitech keyboard with LCD
+    :type lcd: KeyboardMono
     :param parser: DCS protocol parser
     :type parser: ProtocolParser
     :param sock: multi-cast UDP socket
@@ -58,20 +58,20 @@ def _handle_connection(g13: G13, parser: ProtocolParser, sock: socket.socket) ->
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
             start_time = time()
-            if g13.plane_detected:
-                g13.load_new_plane()
-            g13.button_handle(sock)
+            if lcd.plane_detected:
+                lcd.load_new_plane()
+            lcd.button_handle(sock)
         except socket.error as exp:
             LOG.debug(f'Main loop socket error: {exp}')
-            _sock_err_handler(g13, start_time, current_ver)
+            _sock_err_handler(lcd, start_time, current_ver)
 
 
-def _sock_err_handler(g13: G13, start_time: float, current_ver: str) -> None:
+def _sock_err_handler(lcd: KeyboardMono, start_time: float, current_ver: str) -> None:
     """
     Show basic data when DCS is disconnected.
 
-    :param g13: type of Logitech keyboard with LCD
-    :type g13: G13
+    :param lcd: type of Logitech keyboard with LCD
+    :type lcd: KeyboardMono
     :param start_time: time when connection to DCS was lost
     :type start_time: float
     :param current_ver: logger.info about current version to show
@@ -79,7 +79,7 @@ def _sock_err_handler(g13: G13, start_time: float, current_ver: str) -> None:
     """
     wait_time = gmtime(time() - start_time)
     spacer = ' ' * 13
-    g13.display = ['Logitech G13 OK', 'No new data from DCS:',
+    lcd.display = ['Logitech LCD OK', 'No new data from DCS:',
                    f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]',
                    f'dcspy: v{__version__} ({current_ver})']
 
@@ -104,10 +104,10 @@ def run():
     """Main of running function."""
     LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     parser = ProtocolParser()
-    g13 = G13(parser)
+    lcd = KeyboardMono(parser)
     sock = _prepare_socket()
     try:
-        _handle_connection(g13, parser, sock)
+        _handle_connection(lcd, parser, sock)
     except KeyboardInterrupt:
         LOG.info('Exit due to Ctrl-C')
         sys.exit(0)
