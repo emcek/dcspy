@@ -8,5 +8,5 @@ def test_check_keyboard_mono_has_aircraft_member():
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        g = KeyboardMono(ProtocolParser())
-        assert isinstance(g.plane, Aircraft)
+        lcd = KeyboardMono(ProtocolParser())
+        assert isinstance(lcd.plane, Aircraft)
