@@ -208,6 +208,25 @@ class F16C50(Aircraft):
             draw.text((0, offset), text, 1, FONT_11)
         return img
 
+    def button_request(self, button: int, request: str = '\n') -> str:
+        """
+        Prepare F-16C Viper specific DCS-BIOS request for button pressed.
+
+        If button is out of scope new line is return.
+
+        :param button: possible values 1-4
+        :type: int
+        :param request: valid DCS-BIOS command as string
+        :type request: str
+        :return: ready to send DCS-BIOS request
+        :rtype: str
+        """
+        action = {1: '\n',
+                  2: '\n',
+                  3: '\n',
+                  4: '\n'}
+        return super().button_request(button, action.get(button, '\n'))
+
 
 class Ka50(Aircraft):
     def __init__(self, width: int, height: int) -> None:
