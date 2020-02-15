@@ -18,12 +18,22 @@ LOG = getLogger(__name__)
 class LogitechKeyboard:
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        Setup keyboard with LCD and callback for current DCS aircraft in used.
+        General keyboard with LCD form Logitech. It can be easily extended for any of:
+        - Mono LCD: G13, G15 (v1 and v2) and G510
+        - RGB LCD: G19
+
+        However it define bunch of functionally to be used be child class:
+        - DCS-BIOS callback for currently used aircraft in DCS
+        - auto-detecting aircraft and load its handling class
+        - send button request to DCS-BIOS
+
+        Child class needs redefine:
+        - property display
+        - method check_buttons()
 
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        # todo: update docstring
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self.parser = parser_hook
         self.plane_name = ''
@@ -38,21 +48,21 @@ class LogitechKeyboard:
         """
         Get latest set text at LCD.
 
-        :return: list with 4 strings row by row
+        :return: list of strings with data, row by row
         :rtype: List[str]
         """
-        # todo: update docstring
         return self._display
 
     @display.setter
     def display(self, message: List[str]) -> None:
         """
         Display message at LCD.
+        - G13/G15/G510 support 4 rows
+        - G19 support 8 rows
 
-        :param message: List of strings to display, row by row. G13/G15/G510 support 4 rows.
+        :param message: List of strings to display, row by row.
         :type message: List[str]
         """
-        # todo: update docstring
         raise NotImplementedError
 
     def detecting_plane(self, value: str) -> None:
@@ -90,12 +100,12 @@ class LogitechKeyboard:
     def check_buttons(self) -> int:
         """
         Check if button was pressed and return its number.
+        - G13/G15/G510 support 4 button
+        - G19 support 7 buttons
 
-        :return: number of pressed button 1-4
+        :return: number of pressed button
         :rtype: int
         """
-        # todo: update docstring
-        # return 0
         raise NotImplementedError
 
     def button_handle(self, sock: socket) -> None:
@@ -117,7 +127,7 @@ class LogitechKeyboard:
 class KeyboardMono(LogitechKeyboard):
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        Setup keyboard with mono LCD and callback for current DCS aircraft in used.
+        Logitech keyboard with mono LCD.
 
         Support for: G510, G13, G15 (v1 and v2)
 
@@ -144,8 +154,9 @@ class KeyboardMono(LogitechKeyboard):
     def display(self, message: List[str]) -> None:
         """
         Display message at LCD.
+        G13/G15/G510 support 4 rows.
 
-        :param message: List of strings to display, row by row. G13/G15/G510 support 4 rows.
+        :param message: List of strings to display, row by row.
         :type message: List[str]
         """
         img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
