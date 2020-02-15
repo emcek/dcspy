@@ -18,7 +18,9 @@ LOG = getLogger(__name__)
 class LogitechKeyboard:
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        General keyboard with LCD form Logitech. It can be easily extended for any of:
+        General keyboard with LCD form Logitech.
+
+        It can be easily extended for any of:
         - Mono LCD: G13, G15 (v1 and v2) and G510
         - RGB LCD: G19
 
@@ -57,8 +59,8 @@ class LogitechKeyboard:
     def display(self, message: List[str]) -> None:
         """
         Display message at LCD.
-        - G13/G15/G510 support 4 rows
-        - G19 support 8 rows
+
+        G13/G15/G510 support 4 rows and G19 support 8 rows.
 
         :param message: List of strings to display, row by row.
         :type message: List[str]
@@ -100,8 +102,8 @@ class LogitechKeyboard:
     def check_buttons(self) -> int:
         """
         Check if button was pressed and return its number.
-        - G13/G15/G510 support 4 button
-        - G19 support 7 buttons
+
+        G13/G15/G510 support 4 button and G19 support 7 buttons.
 
         :return: number of pressed button
         :rtype: int
@@ -154,6 +156,7 @@ class KeyboardMono(LogitechKeyboard):
     def display(self, message: List[str]) -> None:
         """
         Display message at LCD.
+
         G13/G15/G510 support 4 rows.
 
         :param message: List of strings to display, row by row.
