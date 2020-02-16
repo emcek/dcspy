@@ -17,6 +17,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * [Credits](#credits)
 * [Installation](#installation)
 * [Usage](#usage)
+* [FAQ](#faq)
 * [New ideas](#new-ideas)
 * [Contributing](#contributing)
 
@@ -24,6 +25,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark PVI-800 and autoplilot chanels
+* more to come....
 
 ## Requirements
 * [Python 3.8](https://www.python.org/downloads/) (but 3.6+ should be fine)
@@ -37,22 +39,40 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * [jboecker's parser](https://github.com/jboecker/python-dcs-bios-example) to read data stream from DCS-BIOS
 
 ## Installation
-Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
+1. Install all requirements
+2. During Python installation please select  
+   - Optional Features:
+     - pip
+     - tcl/tk and IDLE (for future use)
+     - py launcher  
+   - Advanced Options:
+     - Associate files with Python (requires the py lauchner)
+     - Add Python to environment variables
+     - Customize install location: C:\Python38 or C:\Python
+3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy
 ```
-or use wheel file from releases:
+or use wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
 pip install dcspy-1.1.0-py3-none-any.whl
 ```
 
 ## Usage
-pip should install into you python installation directory: i.e.:
-* `d:\python38\dcspy_data\dcspy.ico`
-* `d:\python38\scripts\dcspy.exe`
+1. Run Logitech Gaming Software (it allow to update LCD)
+2. You can check with `pip uninstall dcspy` (**NOTE!** answer no to question) where dcspy was installed. Usually pip should install dcspy into you python directory: i.e.:
+   * `c:\python38\dcspy_data\dcspy.ico`
+   * `c:\python38\scripts\dcspy.exe`
+3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon).
+4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
+4. LCD display should update with basic info, waiting to connect to DCS 
+5. Run DCS and start any mission.
 
-You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon).
-After successful connect attempt, LCD display should update. 
+## FAQ
+1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   
+   I didn't find good alternative so I use unicode character [2195](https://www.fileformat.info/info/unicode/char/2195/index.htm) which do not render very well
+2. I got error: `'pip' is not recognized as an internal or external command, operable program or batch file.`  
+   Probably during installation of Python `pip` and/or `Add Python to environment variables` were not selected. Uninstall Python and install again with correct options. 
 
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.  
