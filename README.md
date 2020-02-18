@@ -41,14 +41,14 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 ## Installation
 1. Install all requirements
 2. During Python installation please select  
-   - Optional Features:
-     - pip
-     - tcl/tk and IDLE (for future use)
-     - py launcher  
-   - Advanced Options:
-     - Associate files with Python (requires the py lauchner)
-     - Add Python to environment variables
-     - Customize install location: C:\Python38 or C:\Python
+   * Optional Features:
+     * pip
+     * tcl/tk and IDLE (for future use)
+     * py launcher  
+   * Advanced Options:
+     * Associate files with Python (requires the py lauchner)
+     * Add Python to environment variables
+     * Customize install location: C:\Python38 or C:\Python
 3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy
@@ -65,8 +65,8 @@ pip install dcspy-1.1.0-py3-none-any.whl
    * `c:\python38\scripts\dcspy.exe`
 3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon).
 4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
-4. LCD display should update with basic info, waiting to connect to DCS 
-5. Run DCS and start any mission.
+5. LCD display should update with basic info, waiting to connect to DCS 
+6. Run DCS and start any mission.
 
 ## FAQ
 1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   
