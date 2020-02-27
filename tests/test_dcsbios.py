@@ -136,3 +136,8 @@ def test_string_buffer_callback(protocol_parser):
         assert kwargs == dict()
 
     StringBuffer(parser=protocol_parser, address=0x748a, length=6, callback=partial(_callback))
+    protocol_parser.state = 'DATA_HIGH'
+    protocol_parser.count = 1
+    protocol_parser.address = 0x748a
+    protocol_parser.data = 0x666
+    protocol_parser.process_byte(0x11)
