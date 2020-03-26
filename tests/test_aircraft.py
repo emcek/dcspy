@@ -3,7 +3,7 @@ from unittest import mock
 from pytest import mark, raises
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50'])
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
 def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_size):
     from dcspy import aircrafts
     aircraft = getattr(aircrafts, model)
@@ -51,7 +51,7 @@ def test_set_bios_for_hornet(selector, value, result, hornet):
     assert hornet.bios_data[selector]['value'] == result
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50'])
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
 def test_prepare_image_for_all_palnes(model, lcd_size):
     from PIL.Image import Image
     from dcspy import aircrafts
