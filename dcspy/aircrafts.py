@@ -342,4 +342,6 @@ class F14B(Aircraft):
         :rtype: Image.Image
         """
         img = Image.new('1', (self.width, self.height), 0)
+        draw = ImageDraw.Draw(img)
+        draw.text((2, 3), 'F-14B Tomcat', 1, FONT_16)
         return img
