@@ -335,5 +335,11 @@ class F14B(Aircraft):
         return super().button_request(button, action.get(button, '\n'))
 
     def prepare_image(self) -> Image.Image:
+        """
+        Prepare image to bo send to LCD.
+
+        :return: image instance ready display on LCD
+        :rtype: Image.Image
+        """
         img = Image.new('1', (self.width, self.height), 0)
         return img
