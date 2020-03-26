@@ -72,3 +72,12 @@ def test_prepare_image_for_all_palnes(model, lcd_size):
                                      (3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n')])
 def test_button_pressed_for_shark(button, result, black_shark):
     assert black_shark.button_request(button) == result
+
+
+@mark.parametrize('button, result', [(-1, '\n'),
+                                     (44, '\n'),
+                                     ('*', '\n'),
+                                     (3, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
+                                     (4, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n')])
+def test_button_pressed_for_tomcat(button, result, tomcat):
+    assert tomcat.button_request(button) == result

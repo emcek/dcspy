@@ -46,3 +46,15 @@ def black_shark(lcd_size: Tuple[int, int]):
     """
     from dcspy.aircrafts import Ka50
     return Ka50(*lcd_size)
+
+
+@fixture()
+def tomcat(lcd_size: Tuple[int, int]):
+    """
+    Return instance of F-14B Tomcat for Logitech mono LCD.
+    :param lcd_size:
+    :return: F-14B Tomcat instance
+    :rtype: F14B
+    """
+    from dcspy.aircrafts import F14B
+    return F14B(*lcd_size)
