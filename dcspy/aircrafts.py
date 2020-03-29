@@ -298,3 +298,50 @@ class Ka50(Aircraft):
             else:
                 draw_obj.rectangle(c_rect, 0, 1)
                 draw_obj.text(c_text, ap_channel, 1, FONT_16)
+
+
+class F14B(Aircraft):
+    def __init__(self, width: int, height: int) -> None:
+        """
+        Basic constructor.
+
+        :param width: LCD width
+        :param height: LCD height
+        """
+        super().__init__(width, height)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x1, 'shift_by': 0x0}, 'value': int()},
+            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12d2, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
+            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12d2, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
+            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x2, 'shift_by': 0x1}, 'value': int()}}
+
+    def button_request(self, button: int, request: str = '\n') -> str:
+        """
+        Prepare F-14 Tomcat specific DCS-BIOS request for button pressed.
+
+        If button is out of scope new line is return.
+
+        :param button: possible values 1-4
+        :type: int
+        :param request: valid DCS-BIOS command as string
+        :type request: str
+        :return: ready to send DCS-BIOS request
+        :rtype: str
+        """
+        action = {1: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
+                  2: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
+                  3: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
+                  4: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
+        return super().button_request(button, action.get(button, '\n'))
+
+    def prepare_image(self) -> Image.Image:
+        """
+        Prepare image to bo send to LCD.
+
+        :return: image instance ready display on LCD
+        :rtype: Image.Image
+        """
+        img = Image.new('1', (self.width, self.height), 0)
+        draw = ImageDraw.Draw(img)
+        draw.text((2, 3), 'F-14B Tomcat', 1, FONT_16)
+        return img
