@@ -25,6 +25,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark PVI-800 and autoplilot chanels
+* F-14B Tomcat - basic support for RIO CAP
 * more to come....
 
 ## Requirements
@@ -55,7 +56,7 @@ pip install dcspy
 ```
 or use wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.1.0-py3-none-any.whl
+pip install dcspy-1.1.1-py3-none-any.whl
 ```
 
 ## Usage
