@@ -29,7 +29,7 @@ There is possibility to modify this package to use full RGBA LCD of Logitech G19
 * more to come....
 
 ## Requirements
-* [Python 3.8](https://www.python.org/downloads/) (but 3.6+ should be fine)
+* [Python 3.8](https://www.python.org/downloads/) but 3.6+ should be fine, please choose Windows x86-64 version, file should be python-3.8.5-amd64.exe
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [Logitech LCD SDK 8.57.148](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
 * [DCS-BIOS 0.7.34](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
@@ -49,24 +49,24 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
    * Advanced Options:
      * Associate files with Python (requires the py lauchner)
      * Add Python to environment variables
-     * Customize install location: C:\Python38 or C:\Python
+     * Customize install location: **C:\Python38** or **C:\Python**
 3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy
 ```
-or use wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
+or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
 pip install dcspy-1.1.1-py3-none-any.whl
 ```
 
 ## Usage
 1. Run Logitech Gaming Software (it allow to update LCD)
-2. You can check with `pip uninstall dcspy` (**NOTE!** answer no to question) where dcspy was installed. Usually pip should install dcspy into you python directory: i.e.:
+2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into you python directory: i.e.:
    * `c:\python38\dcspy_data\dcspy.ico`
    * `c:\python38\scripts\dcspy.exe`
-3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon).
+3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory).
 4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
-5. LCD display should update with basic info, waiting to connect to DCS 
+5. LCD display should update with dcspy basic info, waiting to connect to DCS 
 6. Run DCS and start any mission.
 
 ## FAQ
