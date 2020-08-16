@@ -4,14 +4,31 @@ from logging import getLogger
 from math import log2
 from socket import socket
 from typing import List
+from sys import platform
+from typing import NamedTuple
+
+from PIL import ImageFont
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
+# from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
 
+if platform == 'win32':
+    FONT_11 = ImageFont.truetype('consola.ttf', 11)
+    FONT_16 = ImageFont.truetype('consola.ttf', 16)
+else:
+    FONT_11 = ImageFont.truetype('DejaVuSansMono.ttf', 11)
+    FONT_16 = ImageFont.truetype('DejaVuSansMono.ttf', 16)
+
+__version__ = '1.1.4'
+SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50', 'F14B': 'F-14B'}
+SEND_ADDR = ('127.0.0.1', 7778)
+RECV_ADDR = ('', 5010)
+MULTICAST_IP = '239.255.50.10'
+LcdSize = NamedTuple('lcd_size', [('width', int), ('height', int)])
 LOG = getLogger(__name__)
 
 

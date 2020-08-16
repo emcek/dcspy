@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from dcspy import __version__
+# from dcspy import __version__
 
 here = abspath(dirname(__file__))
 
@@ -12,7 +12,7 @@ with io.open(join(here, 'README.md'), encoding='utf-8') as f:
 
 with io.open(join(here, 'requirements.txt'), encoding='utf-8') as f:
     requires = f.read().splitlines()
-
+__version__ = '1.1.4'
 setup(name='dcspy',
       version=__version__,
       description='Software for integrating Digital Combat Simulation planes with Logitech G13/G15/G510',

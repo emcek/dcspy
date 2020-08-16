@@ -2,15 +2,24 @@ from logging import getLogger
 from string import whitespace
 from typing import Dict, Union
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import FONT_11, FONT_16
+# from dcspy import FONT_11, FONT_16
+from sys import platform
 from dcspy.sdk import lcd_sdk
 
 try:
     from typing_extensions import TypedDict
 except ImportError:
     from typing import TypedDict
+
+
+if platform == 'win32':
+    FONT_11 = ImageFont.truetype('consola.ttf', 11)
+    FONT_16 = ImageFont.truetype('consola.ttf', 16)
+else:
+    FONT_11 = ImageFont.truetype('DejaVuSansMono.ttf', 11)
+    FONT_16 = ImageFont.truetype('DejaVuSansMono.ttf', 16)
 
 
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
