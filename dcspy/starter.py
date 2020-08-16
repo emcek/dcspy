@@ -99,7 +99,7 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def run_dcspy():
+def run():
     LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     parser = ProtocolParser()
     lcd = KeyboardMono(parser)
@@ -113,4 +113,4 @@ def run_dcspy():
 
 
 if __name__ == '__main__':
-    run_dcspy()
+    run()

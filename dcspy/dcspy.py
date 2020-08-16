@@ -44,8 +44,8 @@ class DcspyGui(tk.Frame):
 
     @staticmethod
     def start_dcspy():
-        from dcspy import dcs_cli
-        dcs_cli.run_dcspy()
+        from dcspy import starter
+        starter.run()
 
 
 if __name__ == '__main__':
