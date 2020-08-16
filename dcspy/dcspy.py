@@ -31,7 +31,7 @@ class DcspyGui(tk.Frame):
             rb.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
             rb.select()
 
-        start = tk.Button(master=self.master, text='Start', command=self.start_dcspy)
+        start = tk.Button(master=self.master, text='Start', command=DcspyGui.start_dcspy)
         close = tk.Button(master=self.master, text='Close', command=self.master.destroy)
 
         frame.pack(side=tk.LEFT, fill=tk.Y, expand=True)
@@ -42,7 +42,8 @@ class DcspyGui(tk.Frame):
         selection = 'You selected the option ' + self.lcd_type.get()
         print(selection)
 
-    def start_dcspy(self):
+    @staticmethod
+    def start_dcspy():
         from dcspy import dcs_cli
         dcs_cli.run_dcspy()
 
