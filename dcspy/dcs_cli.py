@@ -107,8 +107,9 @@ def run_dcspy():
     try:
         _handle_connection(lcd, parser, sock)
     except KeyboardInterrupt:
-        LOG.info('Exit due to Ctrl-C')
-        # sys.exit(0)
+        LOG.info('Stopped due to Ctrl-C')
+        LOG.info('You can restart by clicking Start in GUI')
+        LOG.info('or close terminal/GUI window')
 
 
 if __name__ == '__main__':
