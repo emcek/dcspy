@@ -101,7 +101,6 @@ def _prepare_socket() -> socket.socket:
 
 def run():
     """Real starting od DCSpy function."""
-    LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     parser = ProtocolParser()
     lcd = KeyboardMono(parser)
     sock = _prepare_socket()
@@ -109,9 +108,5 @@ def run():
         _handle_connection(lcd, parser, sock)
     except KeyboardInterrupt:
         LOG.info('Stopped due to Ctrl-C')
-        LOG.info('You can restart by clicking Start in GUI')
+        LOG.info('You can restart by clicking "Start" button in GUI')
         LOG.info('or close terminal/GUI window')
-
-
-if __name__ == '__main__':
-    run()
