@@ -33,10 +33,11 @@ class DcspyGui(tk.Frame):
         close.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
 
     def _lcd_type_selected(self) -> None:
-        """Handling selected LCD type"""
+        """Handling selected LCD type."""
         LOG.info(f'Logitech {self.lcd_type} selected')
 
     @staticmethod
     def start_dcspy() -> None:
+        """Run real application."""
         from dcspy import starter
         starter.run()
