@@ -12,6 +12,7 @@ with io.open(join(here, 'README.md'), encoding='utf-8') as f:
 
 with io.open(join(here, 'requirements.txt'), encoding='utf-8') as f:
     requires = f.read().splitlines()
+
 setup(name='dcspy',
       version=__version__,
       description='Software for integrating Digital Combat Simulation planes with Logitech G13/G15/G510',

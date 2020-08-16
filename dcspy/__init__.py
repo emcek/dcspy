@@ -21,7 +21,6 @@ LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'{uname()}')
 
-
 if platform == 'win32':
     FONT_11 = ImageFont.truetype('consola.ttf', 11)
     FONT_16 = ImageFont.truetype('consola.ttf', 16)
