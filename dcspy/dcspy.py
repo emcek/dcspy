@@ -25,10 +25,11 @@ class DcspyGui(tk.Frame):
 
     def _create_widgets(self):
         frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
-        lcd_types = {'G19': 'G19', 'G510': 'G510', 'G13': 'G13', 'G15 v1/v2': 'G15'}
+        lcd_types = {'G19': 'G19', 'G510': 'G510', 'G15 v1/v2': 'G15', 'G13': 'G13'}
         for text, value in lcd_types.items():
             rb = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=value, command=self.sel)
             rb.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
+            rb.select()
 
         start = tk.Button(master=self.master, text='Start', command=self.start_dcspy)
         close = tk.Button(master=self.master, text='Close', command=self.master.destroy)
