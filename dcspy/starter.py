@@ -100,6 +100,7 @@ def _prepare_socket() -> socket.socket:
 
 
 def run():
+    """Real starting od DCSpy function."""
     LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     parser = ProtocolParser()
     lcd = KeyboardMono(parser)
