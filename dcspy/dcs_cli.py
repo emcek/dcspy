@@ -1,21 +1,15 @@
 import socket
 import struct
-import sys
 from logging import getLogger
 from time import time, gmtime
 
 from packaging import version
 from requests import get
 
-# from dcspy import RECV_ADDR, MULTICAST_IP, __version__
+from dcspy import RECV_ADDR, MULTICAST_IP, __version__
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import KeyboardMono
 
-__version__ = '1.1.4'
-SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50', 'F14B': 'F-14B'}
-SEND_ADDR = ('127.0.0.1', 7778)
-RECV_ADDR = ('', 5010)
-MULTICAST_IP = '239.255.50.10'
 LOG = getLogger(__name__)
 
 

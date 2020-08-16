@@ -1,9 +1,6 @@
 import tkinter as tk
 from logging import getLogger
 
-# from dcspy import __version__
-
-__version__ = '1.1.4'
 LOG = getLogger(__name__)
 
 
