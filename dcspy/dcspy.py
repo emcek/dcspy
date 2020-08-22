@@ -12,9 +12,9 @@ def run():
     """Function to start DCSpy GUI."""
     LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
     root = tk.Tk()
-    w, h = 200, 130
-    root.geometry(f'{w}x{h}')
-    root.minsize(w, h)
+    width, height = 200, 130
+    root.geometry(f'{width}x{height}')
+    root.minsize(width=width, height=height)
     root.iconbitmap(f'{sys.prefix}/dcspy_data/dcspy.ico')
     gui = DcspyGui(master=root)
     gui.mainloop()

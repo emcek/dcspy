@@ -31,9 +31,9 @@ class DcspyGui(tk.Frame):
         frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
         lcd_types = {'G19': 'G19', 'G510': 'G510', 'G15 v1/v2': 'G15', 'G13': 'G13'}
         for i, (text, value) in enumerate(lcd_types.items()):
-            rb = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=value, command=self._lcd_type_selected)
-            rb.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
-            rb.select()
+            rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=value, command=self._lcd_type_selected)
+            rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
+            rb_lcd_type.select()
 
         start = tk.Button(master=self.master, text='Start', command=self.start_dcspy)
         close = tk.Button(master=self.master, text='Close', command=self.master.destroy)
@@ -51,7 +51,7 @@ class DcspyGui(tk.Frame):
 
     def start_dcspy(self) -> None:
         """Run real application."""
-        t = Thread(target=starter.run)
-        t.setName('dcspy-app')
+        app_thread = Thread(target=starter.run)
+        app_thread.setName('dcspy-app')
         self.status_txt.set('You can close GUI')
-        t.start()
+        app_thread.start()
