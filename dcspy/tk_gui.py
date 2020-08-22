@@ -53,5 +53,5 @@ class DcspyGui(tk.Frame):
         """Run real application."""
         t = Thread(target=starter.run)
         t.setName('dcspy-app')
-        self.status_txt.set(f'You can close GUI')
+        self.status_txt.set('You can close GUI')
         t.start()
