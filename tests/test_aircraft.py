@@ -35,9 +35,10 @@ def test_aircraft_base_class(lcd_size):
 
 
 @mark.parametrize('button, result', [(0, '\n'),
-                                     (5, '\n'),
+                                     (15, '\n'),
                                      ('a', '\n'),
                                      (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                     (8, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
                                      (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
 def test_button_pressed_for_hornet(button, result, hornet):
     assert hornet.button_request(button) == result
@@ -66,9 +67,10 @@ def test_prepare_image_for_all_palnes(model, lcd_size):
 
 
 @mark.parametrize('button, result', [(0, '\n'),
-                                     (5, '\n'),
+                                     (15, '\n'),
                                      ('a', '\n'),
                                      (2, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
+                                     (9, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
                                      (3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n')])
 def test_button_pressed_for_shark(button, result, black_shark):
     assert black_shark.button_request(button) == result
