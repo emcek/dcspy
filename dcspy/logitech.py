@@ -129,7 +129,7 @@ class LogitechKeyboard:
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self):
-        return f'{super(LogitechKeyboard, self).__repr__()} with: {self.__dict__}'
+        return f'{super().__repr__()} with: {self.__dict__}'
 
 
 class KeyboardMono(LogitechKeyboard):
