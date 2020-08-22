@@ -84,13 +84,13 @@ mono devices (like G13, G15 and G510), which support mono, 4-lines LCD with only
 Maybe in future when settings via config file will be added, then it allowed usage all 7 buttons in G19. But right now 
 actions for supported airplanes are hardcoded right now and look like:
 
-### F/A-18C Hornet:
+### F/A-18C Hornet
 * UFC COMM1 channel select decrease
 * UFC COMM1 channel select increase
 * UFC COMM2 channel select decrease
 * UFC COMM2 channel select increase
 
-### Ka-50 Black Shark:
+### Ka-50 Black Shark
 * PVI waypoints button
 * PVI fix points button
 * PVI airfield button
