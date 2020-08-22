@@ -10,7 +10,7 @@ LOG = getLogger(__name__)
 class DcspyGui(tk.Frame):
     def __init__(self, master: tk.Tk) -> None:
         """
-        Basic constructor.
+        Create basic GUI for dcspy application.
 
         :param master: Top level widget
         """
