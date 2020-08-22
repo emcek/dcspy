@@ -191,3 +191,65 @@ class KeyboardMono(LogitechKeyboard):
                 return 0
         self.already_pressed = False
         return 0
+
+
+class KeyboardColor(LogitechKeyboard):
+    def __init__(self, parser_hook: ProtocolParser) -> None:
+        """
+        Logitech keyboard with color LCD.
+
+        Support for: G19
+
+        :param parser_hook: BSC-BIOS parser
+        :type parser_hook: ProtocolParser
+        """
+        super().__init__(parser_hook)
+        self._display: List[str] = list()
+        self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT)
+        self.plane = Aircraft(self.lcd.width, self.lcd.height)
+        lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_COLOR)
+
+    @property
+    def display(self) -> List[str]:
+        """
+        Get latest set text at LCD.
+
+        :return: list with 8 strings row by row
+        :rtype: List[str]
+        """
+        return self._display
+
+    @display.setter
+    def display(self, message: List[str]) -> None:
+        """
+        Display message at LCD.
+
+        G19 support 8 rows.
+
+        :param message: List of strings to display, row by row.
+        :type message: List[str]
+        """
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        draw = ImageDraw.Draw(img)
+        message.extend(['' for _ in range(8 - len(message))])
+        self._display = message
+        for line_no, line in enumerate(message):
+            draw.text((0, 10 * line_no), line, 1, FONT_11)
+        lcd_sdk.update_display(img)
+
+    def check_buttons(self) -> int:
+        """
+        Check if button was pressed and return its number.
+
+        :return: number of pressed button LEFT = 8, RIGHT = 9, OK = 10, CANCEL = 11, UP = 12, DOWN = 13, MENU = 14
+        :rtype: int
+        """
+        for btn in (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK, lcd_sdk.COLOR_BUTTON_CANCEL,
+                    lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN, lcd_sdk.COLOR_BUTTON_MENU):
+            if lcd_sdk.logi_lcd_is_button_pressed(btn):
+                if not self.already_pressed:
+                    self.already_pressed = True
+                    return int(log2(btn))
+                return 0
+        self.already_pressed = False
+        return 0
