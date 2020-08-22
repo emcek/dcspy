@@ -30,7 +30,7 @@ class DcspyGui(tk.Frame):
         self.master.rowconfigure(index=2, weight=1)
 
         frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
-        for i, (text, value) in enumerate(LCD_TYPES.items()):
+        for i, text in enumerate(LCD_TYPES):
             rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
             rb_lcd_type.select()
