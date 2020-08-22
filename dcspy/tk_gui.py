@@ -2,6 +2,8 @@ import tkinter as tk
 from logging import getLogger
 from threading import Thread
 
+from dcspy import starter
+
 LOG = getLogger(__name__)
 
 
@@ -33,7 +35,7 @@ class DcspyGui(tk.Frame):
             rb.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
             rb.select()
 
-        start = tk.Button(master=self.master, text='Start', command=DcspyGui.start_dcspy)
+        start = tk.Button(master=self.master, text='Start', command=self.start_dcspy)
         close = tk.Button(master=self.master, text='Close', command=self.master.destroy)
         status = tk.Label(master=self.master, textvariable=self.status_txt)
 
@@ -47,10 +49,9 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Logitech {self.lcd_type.get()} selected')
         self.status_txt.set(f'Logitech {self.lcd_type.get()} selected')
 
-    @staticmethod
-    def start_dcspy() -> None:
+    def start_dcspy(self) -> None:
         """Run real application."""
-        from dcspy import starter
         t = Thread(target=starter.run)
         t.setName('dcspy-app')
+        self.status_txt.set(f'You can close GUI')
         t.start()
