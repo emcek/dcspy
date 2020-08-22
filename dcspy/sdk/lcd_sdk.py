@@ -250,6 +250,9 @@ def update_display(image: Image) -> None:
     if logi_lcd_is_connected(TYPE_MONO):
         logi_lcd_mono_set_background(list(image.getdata()))
         logi_lcd_update()
+    elif logi_lcd_is_connected(TYPE_COLOR):
+        logi_lcd_color_set_background(list(image.getdata()))
+        logi_lcd_update()
     else:
         LOG.warning('LCD is not connected')
 
@@ -260,8 +263,14 @@ def clear_display(true_clear=False) -> None:
 
     :param true_clear:
     """
-    logi_lcd_mono_set_background([0] * (MONO_WIDTH * MONO_HEIGHT))
-    if true_clear:
-        for i in range(4):
-            logi_lcd_mono_set_text(i, '')
+    if logi_lcd_is_connected(TYPE_MONO):
+        logi_lcd_mono_set_background([0] * (MONO_WIDTH * MONO_HEIGHT))
+        if true_clear:
+            for i in range(4):
+                logi_lcd_mono_set_text(i, '')
+    elif logi_lcd_is_connected(TYPE_COLOR):
+        logi_lcd_color_set_background([0] * (COLOR_WIDTH * COLOR_HEIGHT))
+        if true_clear:
+            for i in range(8):
+                logi_lcd_mono_set_text(i, '')
     logi_lcd_update()
