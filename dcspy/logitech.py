@@ -125,6 +125,12 @@ class LogitechKeyboard:
         if button:
             sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)
 
+    def __str__(self):
+        return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
+
+    def __repr__(self):
+        return f'{super(LogitechKeyboard, self).__repr__()} with: {self.__dict__}'
+
 
 class KeyboardMono(LogitechKeyboard):
     def __init__(self, parser_hook: ProtocolParser) -> None:

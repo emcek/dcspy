@@ -44,7 +44,7 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 2. During Python installation please select  
    * Optional Features:
      * pip
-     * tcl/tk and IDLE (for future use)
+     * tcl/tk and IDLE
      * py launcher  
    * Advanced Options:
      * Associate files with Python (requires the py lauchner)

@@ -12,7 +12,6 @@ try:
 except ImportError:
     from typing import TypedDict
 
-
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
 LOG = getLogger(__name__)
 
