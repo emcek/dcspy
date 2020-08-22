@@ -1,5 +1,6 @@
 import socket
 import struct
+from importlib import import_module
 from logging import getLogger
 from time import time, gmtime
 
@@ -8,7 +9,7 @@ from requests import get
 
 from dcspy import RECV_ADDR, MULTICAST_IP, __version__
 from dcspy.dcsbios import ProtocolParser
-from dcspy.logitech import KeyboardMono
+from dcspy.logitech import LogitechKeyboard
 
 LOG = getLogger(__name__)
 
@@ -37,12 +38,12 @@ def _check_current_version() -> bool:
     return result
 
 
-def _handle_connection(lcd: KeyboardMono, parser: ProtocolParser, sock: socket.socket) -> None:
+def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket) -> None:
     """
     Main loop where all the magic is happened.
 
     :param lcd: type of Logitech keyboard with LCD
-    :type lcd: KeyboardMono
+    :type lcd: LogitechKeyboard
     :param parser: DCS protocol parser
     :type parser: ProtocolParser
     :param sock: multi-cast UDP socket
@@ -65,12 +66,12 @@ def _handle_connection(lcd: KeyboardMono, parser: ProtocolParser, sock: socket.s
             _sock_err_handler(lcd, start_time, current_ver)
 
 
-def _sock_err_handler(lcd: KeyboardMono, start_time: float, current_ver: str) -> None:
+def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str) -> None:
     """
     Show basic data when DCS is disconnected.
 
     :param lcd: type of Logitech keyboard with LCD
-    :type lcd: KeyboardMono
+    :type lcd: LogitechKeyboard
     :param start_time: time when connection to DCS was lost
     :type start_time: float
     :param current_ver: logger.info about current version to show
@@ -99,10 +100,17 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def run():
-    """Real starting od DCSpy function."""
+def dcspy_run(lcd_type: str) -> None:
+    """
+    Real starting od DCSpy function.
+
+    :param lcd_type: LCD handling class as string
+    :type lcd_type: str
+    """
     parser = ProtocolParser()
-    lcd = KeyboardMono(parser)
+    lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
+    LOG.info(f'Loading: {str(lcd)}')
+    LOG.debug(f'Loading: {repr(lcd)}')
     sock = _prepare_socket()
     try:
         _handle_connection(lcd, parser, sock)
