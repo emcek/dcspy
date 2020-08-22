@@ -96,7 +96,7 @@ actions for supported airplanes are hardcoded right now and look like:
 * PVI airfield button
 * PVI targets button
 
-### F-14B Tomcat:
+### F-14B Tomcat
 * RIO CAP Clear
 * RIO CAP SW
 * RIO CAP NE
