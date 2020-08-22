@@ -1,5 +1,6 @@
 import tkinter as tk
 from logging import getLogger
+from threading import Thread
 
 LOG = getLogger(__name__)
 
@@ -50,4 +51,6 @@ class DcspyGui(tk.Frame):
     def start_dcspy() -> None:
         """Run real application."""
         from dcspy import starter
-        starter.run()
+        t = Thread(target=starter.run)
+        t.setName('dcspy-app')
+        t.start()
