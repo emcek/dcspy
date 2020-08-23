@@ -291,4 +291,4 @@ def _clear_color(true_clear):
     logi_lcd_color_set_background([0] * (COLOR_WIDTH * COLOR_HEIGHT))
     if true_clear:
         for i in range(8):
-            logi_lcd_color_set_text(i, '')
+            logi_lcd_color_set_text(i, '', (255, 255, 255))
