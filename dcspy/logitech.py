@@ -60,12 +60,18 @@ class LogitechKeyboard:
         """
         Display message at LCD.
 
-        G13/G15/G510 support 4 rows and G19 support 8 rows.
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+        For G19 takes first 8 or less elements of list and display as 8 rows.
 
         :param message: List of strings to display, row by row.
         :type message: List[str]
         """
-        raise NotImplementedError
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        draw = ImageDraw.Draw(img)
+        self._display = message
+        for line_no, line in enumerate(message):
+            draw.text((0, 10 * line_no), line, 1, FONT_11)
+        lcd_sdk.update_display(img)
 
     def detecting_plane(self, value: str) -> None:
         """
@@ -208,34 +214,6 @@ class KeyboardColor(LogitechKeyboard):
         self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT)
         self.plane = Aircraft(self.lcd.width, self.lcd.height)
         lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_COLOR)
-
-    @property
-    def display(self) -> List[str]:
-        """
-        Get latest set text at LCD.
-
-        :return: list with 8 strings row by row
-        :rtype: List[str]
-        """
-        return self._display
-
-    @display.setter
-    def display(self, message: List[str]) -> None:
-        """
-        Display message at LCD.
-
-        G19 support 8 rows.
-
-        :param message: List of strings to display, row by row.
-        :type message: List[str]
-        """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
-        draw = ImageDraw.Draw(img)
-        message.extend(['' for _ in range(8 - len(message))])
-        self._display = message
-        for line_no, line in enumerate(message):
-            draw.text((0, 10 * line_no), line, 1, FONT_11)
-        lcd_sdk.update_display(img)
 
     def check_buttons(self) -> int:
         """
