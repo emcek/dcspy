@@ -3,7 +3,7 @@ from importlib import import_module
 from logging import getLogger
 from math import log2
 from socket import socket
-from typing import List
+from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -30,7 +30,6 @@ class LogitechKeyboard:
         - send button request to DCS-BIOS
 
         Child class needs redefine:
-        - property display
         - method check_buttons()
 
         :param parser_hook: BSC-BIOS parser
@@ -41,6 +40,7 @@ class LogitechKeyboard:
         self.plane_name = ''
         self.plane_detected = False
         self.already_pressed = False
+        self.buttons: Tuple[int] = tuple()
         self._display: List[str] = list()
         if kwargs.get('lcd_type', 1) == lcd_sdk.TYPE_MONO:
             self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
@@ -114,12 +114,20 @@ class LogitechKeyboard:
         """
         Check if button was pressed and return its number.
 
-        G13/G15/G510 support 4 button and G19 support 7 buttons.
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
 
         :return: number of pressed button
         :rtype: int
         """
-        raise NotImplementedError
+        for btn in self.buttons:
+            if lcd_sdk.logi_lcd_is_button_pressed(btn):
+                if not self.already_pressed:
+                    self.already_pressed = True
+                    return int(log2(btn)) + 1
+                return 0
+        self.already_pressed = False
+        return 0
 
     def button_handle(self, sock: socket) -> None:
         """
@@ -154,22 +162,7 @@ class KeyboardMono(LogitechKeyboard):
         :type parser_hook: ProtocolParser
         """
         super().__init__(parser_hook, lcd_type=lcd_sdk.TYPE_MONO)
-
-    def check_buttons(self) -> int:
-        """
-        Check if button was pressed and return its number.
-
-        :return: number of pressed button 1-4
-        :rtype: int
-        """
-        for btn in (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3):
-            if lcd_sdk.logi_lcd_is_button_pressed(btn):
-                if not self.already_pressed:
-                    self.already_pressed = True
-                    return int(log2(btn)) + 1
-                return 0
-        self.already_pressed = False
-        return 0
+        self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
 
 
 class KeyboardColor(LogitechKeyboard):
@@ -183,20 +176,6 @@ class KeyboardColor(LogitechKeyboard):
         :type parser_hook: ProtocolParser
         """
         super().__init__(parser_hook, lcd_type=lcd_sdk.TYPE_COLOR)
-
-    def check_buttons(self) -> int:
-        """
-        Check if button was pressed and return its number.
-
-        :return: number of pressed button LEFT = 8, RIGHT = 9, OK = 10, CANCEL = 11, UP = 12, DOWN = 13, MENU = 14
-        :rtype: int
-        """
-        for btn in (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK, lcd_sdk.COLOR_BUTTON_CANCEL,
-                    lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN, lcd_sdk.COLOR_BUTTON_MENU):
-            if lcd_sdk.logi_lcd_is_button_pressed(btn):
-                if not self.already_pressed:
-                    self.already_pressed = True
-                    return int(log2(btn))
-                return 0
-        self.already_pressed = False
-        return 0
+        self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
+                        lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
+                        lcd_sdk.COLOR_BUTTON_MENU)
