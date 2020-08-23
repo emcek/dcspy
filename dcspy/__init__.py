@@ -8,7 +8,7 @@ from PIL import ImageFont
 
 from dcspy.log import config_logger
 
-__version__ = '1.1.1'
+__version__ = '1.2.0-rc2'
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50', 'F14B': 'F-14B'}
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
