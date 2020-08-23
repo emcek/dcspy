@@ -16,7 +16,7 @@ LOG = getLogger(__name__)
 
 
 class LogitechKeyboard:
-    def __init__(self, parser_hook: ProtocolParser, *args, **kwargs) -> None:
+    def __init__(self, parser_hook: ProtocolParser, **kwargs) -> None:
         """
         General keyboard with LCD form Logitech.
 
