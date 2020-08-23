@@ -30,7 +30,8 @@ class LogitechKeyboard:
         - send button request to DCS-BIOS
 
         Child class needs redefine:
-        - method check_buttons()
+        - buttons with supported buttons as tuple of int
+        - pass lcd_type argument as int to super constructor
 
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
