@@ -41,7 +41,7 @@ class LogitechKeyboard:
         self.plane_name = ''
         self.plane_detected = False
         self.already_pressed = False
-        self.buttons: Tuple[int] = tuple()
+        self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = list()
         if kwargs.get('lcd_type', 1) == lcd_sdk.TYPE_MONO:
             self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
