@@ -264,13 +264,31 @@ def clear_display(true_clear=False) -> None:
     :param true_clear:
     """
     if logi_lcd_is_connected(TYPE_MONO):
-        logi_lcd_mono_set_background([0] * (MONO_WIDTH * MONO_HEIGHT))
-        if true_clear:
-            for i in range(4):
-                logi_lcd_mono_set_text(i, '')
+        _clear_mono(true_clear)
     elif logi_lcd_is_connected(TYPE_COLOR):
-        logi_lcd_color_set_background([0] * (COLOR_WIDTH * COLOR_HEIGHT))
-        if true_clear:
-            for i in range(8):
-                logi_lcd_color_set_text(i, '')
+        _clear_color(true_clear)
     logi_lcd_update()
+
+
+def _clear_mono(true_clear):
+    """
+    Clear mono display.
+
+    :param true_clear:
+    """
+    logi_lcd_mono_set_background([0] * (MONO_WIDTH * MONO_HEIGHT))
+    if true_clear:
+        for i in range(4):
+            logi_lcd_mono_set_text(i, '')
+
+
+def _clear_color(true_clear):
+    """
+    Clear color display.
+
+    :param true_clear:
+    """
+    logi_lcd_color_set_background([0] * (COLOR_WIDTH * COLOR_HEIGHT))
+    if true_clear:
+        for i in range(8):
+            logi_lcd_color_set_text(i, '')
