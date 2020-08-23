@@ -172,10 +172,10 @@ class FA18Chornet(Aircraft):
                   2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
                   3: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
                   4: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-                  8: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-                  9: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-                  13: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-                  12: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
+                  9: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+                  10: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+                  14: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+                  13: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
@@ -255,10 +255,10 @@ class Ka50(Aircraft):
                   2: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
                   3: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
                   4: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
-                  8: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-                  9: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-                  13: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-                  12: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
+                  9: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
+                  10: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
+                  14: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
+                  13: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
     def prepare_image(self) -> Image.Image:
@@ -339,10 +339,10 @@ class F14B(Aircraft):
                   2: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
                   3: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
                   4: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n',
-                  8: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
-                  9: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
-                  13: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
-                  12: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
+                  9: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
+                  10: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
+                  14: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
+                  13: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
     def prepare_image(self) -> Image.Image:
