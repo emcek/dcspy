@@ -49,10 +49,10 @@ action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
           2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
           3: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
           4: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-          8: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          9: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          13: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          12: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
+          9: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+          10: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+          14: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+          13: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
 return super().button_request(button, action.get(button, '\n'))
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
