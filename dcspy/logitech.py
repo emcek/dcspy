@@ -16,7 +16,7 @@ LOG = getLogger(__name__)
 
 
 class LogitechKeyboard:
-    def __init__(self, parser_hook: ProtocolParser) -> None:
+    def __init__(self, parser_hook: ProtocolParser, *args, **kwargs) -> None:
         """
         General keyboard with LCD form Logitech.
 
@@ -42,7 +42,12 @@ class LogitechKeyboard:
         self.plane_detected = False
         self.already_pressed = False
         self._display: List[str] = list()
-        self.lcd = LcdSize(width=0, height=0)
+        if kwargs.get('lcd_type', 1) == lcd_sdk.TYPE_MONO:
+            self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
+            lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
+        else:
+            self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT)
+            lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_COLOR)
         self.plane = Aircraft(self.lcd.width, self.lcd.height)
 
     @property
@@ -148,39 +153,7 @@ class KeyboardMono(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        super().__init__(parser_hook)
-        self._display: List[str] = list()
-        self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
-        self.plane = Aircraft(self.lcd.width, self.lcd.height)
-        lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
-
-    @property
-    def display(self) -> List[str]:
-        """
-        Get latest set text at LCD.
-
-        :return: list with 4 strings row by row
-        :rtype: List[str]
-        """
-        return self._display
-
-    @display.setter
-    def display(self, message: List[str]) -> None:
-        """
-        Display message at LCD.
-
-        G13/G15/G510 support 4 rows.
-
-        :param message: List of strings to display, row by row.
-        :type message: List[str]
-        """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
-        draw = ImageDraw.Draw(img)
-        message.extend(['' for _ in range(4 - len(message))])
-        self._display = message
-        for line_no, line in enumerate(message):
-            draw.text((0, 10 * line_no), line, 1, FONT_11)
-        lcd_sdk.update_display(img)
+        super().__init__(parser_hook, lcd_type=lcd_sdk.TYPE_MONO)
 
     def check_buttons(self) -> int:
         """
@@ -209,11 +182,7 @@ class KeyboardColor(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        super().__init__(parser_hook)
-        self._display: List[str] = list()
-        self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT)
-        self.plane = Aircraft(self.lcd.width, self.lcd.height)
-        lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_COLOR)
+        super().__init__(parser_hook, lcd_type=lcd_sdk.TYPE_COLOR)
 
     def check_buttons(self) -> int:
         """
