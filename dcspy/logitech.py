@@ -7,10 +7,11 @@ from typing import List
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
+from dcspy import SUPPORTED_CRAFTS, LcdSize, SEND_ADDR
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
+from dcspy.utils import FONT_11
 
 LOG = getLogger(__name__)
 
