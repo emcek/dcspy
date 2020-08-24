@@ -14,7 +14,7 @@ def config_logger(logger: Logger) -> None:
     logger.setLevel(DEBUG)
     file_hand = RotatingFileHandler(filename=path.join(environ.get('TEMP', ''), 'dcspy.log'), mode='a', maxBytes=1024 * 1024, backupCount=1)
     file_hand.setLevel(DEBUG)
-    file_hand.setFormatter(Formatter('%(asctime)s | %(name)-17s | %(levelname)-7s | %(message)s / %(funcName)s:%(lineno)d'))
+    file_hand.setFormatter(Formatter('%(asctime)s | %(name)-17s | %(levelname)-7s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d'))
     stream_hand = StreamHandler()
     stream_hand.setLevel(INFO)
     stream_hand.setFormatter(Formatter('%(levelname)-7s | %(message)s'))

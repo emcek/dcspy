@@ -51,6 +51,7 @@ def _init_dll() -> CDLL:
 
 try:
     LCD_DLL: Optional[CDLL] = _init_dll()
+    LOG.debug('Loading of LCD SDK success')
 except (KeyError, FileNotFoundError) as err:
     LOG.error(f'Loading of LCD SDK failed: {err}', exc_info=True)
     LCD_DLL = None
