@@ -107,6 +107,9 @@ actions for supported airplanes are hardcoded right now and look like:
    I didn't find good alternative so I use unicode character [2195](https://www.fileformat.info/info/unicode/char/2195/index.htm) which do not render very well
 2. I got error: `'pip' is not recognized as an internal or external command, operable program or batch file.`  
    Probably during installation of Python `pip` and/or `Add Python to environment variables` were not selected. Uninstall Python and install again with correct options. 
+3. Is DCSpy working with Python 3.9?  
+   Python 3.9 is not recommended due to problem with Pillow package, as it's developers said: 
+   > Pillow does not support Python 3.9 and does not provide prebuilt Windows binaries. We do not recommend building from source on Windows.  
 
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.  
