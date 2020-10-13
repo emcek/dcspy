@@ -11,7 +11,7 @@ matrix:
       python: '3.8'
       before_install:
         - choco install python --version=3.8.6 --params '/InstallDir:C:\\Python'
-        - python -m pip install --upgrade pip
+#        - python -m pip install --upgrade pip
 #        - export PATH='/c/Python:/c/Python/Scripts:$PATH'
       env: PATH=/c/Python:/c/Python/Scripts:$PATH
 install:
