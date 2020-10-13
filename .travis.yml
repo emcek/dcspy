@@ -6,14 +6,12 @@ python:
   - '3.8'
 matrix:
   include:
-    - name: "Windows"
+    - name: 'Windows Python 3.8'
       os: windows
       language: shell
-      python: '3.8'
       before_install:
-        - choco install python --version=3.8.5 # --params '/InstallDir:C:\\Python'
+        - choco install python --version=3.8.6
         - python -m pip install --upgrade pip
-#        - export PATH='/c/Python:/c/Python/Scripts:$PATH'
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
 install:
   - pip3 install -U pip setuptools wheel
