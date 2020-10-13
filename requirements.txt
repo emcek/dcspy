@@ -1,4 +1,4 @@
 packaging
-Pillow
+Pillow < 7.0.0
 requests
 typing_extensions; python_version < '3.8'
