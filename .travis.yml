@@ -4,29 +4,29 @@ python:
   - '3.6'
   - '3.7'
   - '3.8'
-  - '3.9'
 matrix:
   include:
-    - os: windows
+    - name: "Python 3.9 on Windows"
+      os: windows
       language: shell
       python: '3.8'
       before_install:
-        - choco install python --version=3.8.6 --params '/InstallDir:C:\\Python'
-#        - python -m pip install --upgrade pip
+        - choco install python3 --params '/InstallDir:C:\\Python'
+        - python -m pip install --upgrade pip
 #        - export PATH='/c/Python:/c/Python/Scripts:$PATH'
       env: PATH=/c/Python:/c/Python/Scripts:$PATH
 install:
-  - pip3 install -U pip setuptools wheel
-  - pip3 install -U six
-  - pip3 install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage mypy
+  - pip install -U pip setuptools wheel
+  - pip install -U six
+  - pip install -U coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage #mypy
 before_script:
-  - pip3 install -Ur requirements.txt
+  - pip install -Ur requirements.txt
   - python -V
 script:
   - python -m pytest --mccabe -v dcspy
   - pycodestyle --statistics --count dcspy
   - pydocstyle --count dcspy
-  - mypy --ignore-missing-imports dcspy || echo $(($? - 1))
+#  - mypy --ignore-missing-imports dcspy || echo $(($? - 1))
   - pylint dcspy || echo $(($? % 4))
   - coverage run --source=dcspy -m pytest -v --random
   - coverage xml
