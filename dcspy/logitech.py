@@ -8,8 +8,8 @@ from typing import List, Tuple
 from PIL import Image, ImageDraw
 
 from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR, lcd_sdk
-from dcspy.aircrafts import Aircraft
-from dcspy.dcsbios import ProtocolParser
+from dcspy.dcs.aircrafts import Aircraft
+from dcspy.dcs.bios import ProtocolParser
 
 LOG = getLogger(__name__)
 
@@ -35,7 +35,7 @@ class LogitechKeyboard:
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
+        getattr(import_module('dcspy.dcs.bios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self.parser = parser_hook
         self.plane_name = ''
         self.plane_detected = False
@@ -107,7 +107,7 @@ class LogitechKeyboard:
         self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd.width, self.lcd.height)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
-            buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
+            buffer = getattr(import_module('dcspy.dcs.bios'), proto_data['class'])
             buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 
     def check_buttons(self) -> int:

@@ -105,15 +105,15 @@ def test_process_byte_wait_for_sync_callback(protocol_parser):
 @mark.parametrize('class_name, params', [('StringBuffer', {'address': 0x192a, 'length': 6}),
                                          ('IntegerBuffer', {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf})])
 def test_simple_instance_of_buffers(class_name, params, protocol_parser):
-    from dcspy import dcsbios
+    from dcspy.dcs import bios
 
-    buff = getattr(dcsbios, class_name)(parser=protocol_parser, callback=lambda x: x, **params)
+    buff = getattr(bios, class_name)(parser=protocol_parser, callback=lambda x: x, **params)
     assert 'on_dcsbios_write' in dir(buff)
 
 
 def test_integer_buffer_callback(protocol_parser):
     from functools import partial
-    from dcspy.dcsbios import IntegerBuffer
+    from dcspy.dcs.bios import IntegerBuffer
 
     def _callback(*args, **kwargs):
         assert args == (1,)
@@ -129,7 +129,7 @@ def test_integer_buffer_callback(protocol_parser):
 
 def test_string_buffer_callback(protocol_parser):
     from functools import partial
-    from dcspy.dcsbios import StringBuffer
+    from dcspy.dcs.bios import StringBuffer
 
     def _callback(*args, **kwargs):
         assert args == (1,)

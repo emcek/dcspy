@@ -8,7 +8,7 @@ from packaging import version
 from requests import get
 
 from dcspy import RECV_ADDR, MULTICAST_IP, __version__
-from dcspy.dcsbios import ProtocolParser
+from dcspy.dcs.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
 
 LOG = getLogger(__name__)
