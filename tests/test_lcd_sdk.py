@@ -53,4 +53,3 @@ def test_clear_display(c_funcs, effect, args):
                     connected.assert_called_with(args[0])
                     set_background.assert_called_once_with([0] * args[1])
                     set_text.assert_has_calls(args[2])
-
