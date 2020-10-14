@@ -4,8 +4,7 @@ from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import FONT_11, FONT_16
-from dcspy.utils import lcd_sdk
+from dcspy import FONT_11, FONT_16, lcd_sdk
 
 try:
     from typing_extensions import TypedDict

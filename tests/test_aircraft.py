@@ -5,7 +5,7 @@ from pytest import mark, raises
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
 def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_size):
-    from dcspy.dcs import aircrafts
+    from dcspy import aircrafts
     aircraft = getattr(aircrafts, model)
     aircraft_model = aircraft(*lcd_size)
     assert isinstance(aircraft_model, aircrafts.Aircraft)
@@ -13,7 +13,7 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_size):
 
 
 def test_aircraft_base_class(lcd_size):
-    from dcspy.dcs import aircrafts
+    from dcspy import aircrafts
     from PIL import Image
     with mock.patch.object(aircrafts, 'lcd_sdk', return_value=None) as lcd_sdk_mock:
         aircraft = aircrafts.Aircraft(*lcd_size)
@@ -55,7 +55,7 @@ def test_set_bios_for_hornet(selector, value, result, hornet):
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
 def test_prepare_image_for_all_palnes(model, lcd_size):
     from PIL.Image import Image
-    from dcspy.dcs import aircrafts
+    from dcspy import aircrafts
     aircraft = getattr(aircrafts, model)
     aircraft_model = aircraft(*lcd_size)
     if model == 'Ka50':

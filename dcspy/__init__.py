@@ -6,7 +6,7 @@ from typing import NamedTuple
 
 from PIL import ImageFont
 
-from dcspy.utils.log import config_logger
+from dcspy.log import config_logger
 
 __version__ = '1.1.1'
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50', 'F14B': 'F-14B'}
