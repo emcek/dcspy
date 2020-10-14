@@ -44,10 +44,10 @@ class LogitechKeyboard:
         self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = list()
         if kwargs.get('lcd_type', 1) == lcd_sdk.TYPE_MONO:
-            self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
+            self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO)
             lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
         else:
-            self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT)
+            self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR)
             lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_COLOR)
         self.plane = Aircraft(self.lcd.width, self.lcd.height)
 
@@ -144,6 +144,15 @@ class LogitechKeyboard:
         button = self.check_buttons()
         if button:
             sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)
+
+    def clear(self, true_clear=False):
+        """
+        Clear LCD.
+
+        :param true_clear:
+        """
+        LOG.debug(f'Clear LCD type: {self.lcd.type}')
+        lcd_sdk.clear_display(true_clear)
 
     def __str__(self):
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
