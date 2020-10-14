@@ -36,20 +36,33 @@ def test_all_success_cases(py_func, c_func, args, result):
     assert getattr(lcd_sdk, py_func)(*args) is result
 
 
-@mark.parametrize('c_funcs, effect, args', [(('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'),
-                                             [True],
-                                             (1, 160 * 43, [call(0, ''), call(1, ''), call(2, ''), call(3, '')])),
-                                            (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'),
-                                             [False, True],
-                                             (2, 320 * 240, [call(0, ''), call(1, ''), call(2, ''), call(3, ''),
-                                                             call(4, ''), call(5, ''), call(6, ''), call(7, '')]))])
-def test_clear_display(c_funcs, effect, args):
+@mark.parametrize('c_func, effect, lcd, size', [('logi_lcd_mono_set_background', [True], 1, (16, 4)),
+                                                ('logi_lcd_color_set_background', [False, True], 2, (32, 24))])
+def test_update_display(c_func, effect, lcd, size):
+    from dcspy import lcd_sdk
+    from PIL import Image
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect) as connected:
+        with patch.object(lcd_sdk, c_func, return_value=True) as set_background:
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                lcd_sdk.update_display(Image.new('1', (size[0], size[1]), 0))
+                connected.assert_called_with(lcd)
+                set_background.assert_called_once_with([0] * size[0] * size[1])
+
+
+@mark.parametrize('c_funcs, effect, lcd, size, text', [(('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'),
+                                                        [True], 1, 160 * 43,
+                                                        [call(0, ''), call(1, ''), call(2, ''), call(3, '')]),
+                                                       (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'),
+                                                        [False, True], 2, 320 * 240,
+                                                        [call(0, ''), call(1, ''), call(2, ''), call(3, ''),
+                                                         call(4, ''), call(5, ''), call(6, ''), call(7, '')])])
+def test_clear_display(c_funcs, effect, lcd, size, text):
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect) as connected:
         with patch.object(lcd_sdk, c_funcs[0], return_value=True) as set_background:
             with patch.object(lcd_sdk, c_funcs[1], return_value=True) as set_text:
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                     lcd_sdk.clear_display(true_clear=True)
-                    connected.assert_called_with(args[0])
-                    set_background.assert_called_once_with([0] * args[1])
-                    set_text.assert_has_calls(args[2])
+                    connected.assert_called_with(lcd)
+                    set_background.assert_called_once_with([0] * size)
+                    set_text.assert_has_calls(text)
