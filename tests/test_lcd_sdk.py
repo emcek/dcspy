@@ -1,5 +1,4 @@
-from unittest.mock import Mock
-
+from unittest.mock import Mock, patch, call
 from pytest import mark
 
 
@@ -35,3 +34,23 @@ def test_all_success_cases(py_func, c_func, args, result):
     mocked_c_func.return_value = result
     lcd_sdk.LCD_DLL = {c_func: mocked_c_func}
     assert getattr(lcd_sdk, py_func)(*args) is result
+
+
+@mark.parametrize('c_funcs, effect, args', [(('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'),
+                                             [True],
+                                             (1, 160 * 43, [call(0, ''), call(1, ''), call(2, ''), call(3, '')])),
+                                            (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'),
+                                             [False, True],
+                                             (2, 320 * 240, [call(0, ''), call(1, ''), call(2, ''), call(3, ''),
+                                                             call(4, ''), call(5, ''), call(6, ''), call(7, '')]))])
+def test_clear_display(c_funcs, effect, args):
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect) as connected:
+        with patch.object(lcd_sdk, c_funcs[0], return_value=True) as set_background:
+            with patch.object(lcd_sdk, c_funcs[1], return_value=True) as set_text:
+                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                    lcd_sdk.clear_display(true_clear=True)
+                    connected.assert_called_with(args[0])
+                    set_background.assert_called_once_with([0] * args[1])
+                    set_text.assert_has_calls(args[2])
+
