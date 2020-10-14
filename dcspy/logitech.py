@@ -7,7 +7,8 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR, lcd_sdk
+from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
+from dcspy.utils import lcd_sdk
 from dcspy.dcs.aircrafts import Aircraft
 from dcspy.dcs.bios import ProtocolParser
 

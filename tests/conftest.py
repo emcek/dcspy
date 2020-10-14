@@ -20,7 +20,7 @@ def lcd_size() -> Tuple[int, int]:
     :return: width and height
     :rtype: Tuple[int, int]
     """
-    from dcspy.lcd_sdk import MONO_WIDTH, MONO_HEIGHT
+    from dcspy.utils.lcd_sdk import MONO_WIDTH, MONO_HEIGHT
     return MONO_WIDTH, MONO_HEIGHT
 
 
