@@ -7,10 +7,9 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
+from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR, lcd_sdk
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
 
