@@ -42,7 +42,7 @@ class LogitechKeyboard:
         self.already_pressed = False
         self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = list()
-        self.lcd = kwargs.get('lcd_type')
+        self.lcd = kwargs.get('lcd_type', LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO))
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
         self.plane = Aircraft(self.lcd)
 
