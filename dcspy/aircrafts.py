@@ -115,28 +115,28 @@ class FA18Chornet(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
         # Scrachpad
-        draw.text((0, 0), f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', 255, FONT_16)
-        draw.line((0, 20, 115, 20), 255, 255)
+        draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
+        draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
 
         # comm1
-        draw.rectangle((0, 29, 20, 42), 0, 255)
-        draw.text((2, 29), self.get_bios('COMM1'), 255, FONT_16)
+        draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
+        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT_16)
 
         # comm2
         offset_comm2 = 44
-        draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 255)
-        draw.text((140 - offset_comm2, 29), self.get_bios('COMM2'), 255, FONT_16)
+        draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
+        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT_16)
 
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text((120, offset), f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', 255, FONT_11)
+            draw.text(xy=(120, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=255, font=FONT_11)
 
         # Fuel Totaliser
-        draw.text((36, 29), self.get_bios('FuelTotal'), 255, FONT_16)
+        draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
         return img
 
     def set_bios(self, selector: str, value: str, update=True) -> None:

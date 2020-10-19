@@ -3,8 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from dcspy import __version__
-
+__version__ = '1.1.1'
 here = abspath(dirname(__file__))
 
 with io.open(join(here, 'README.md'), encoding='utf-8') as f:
