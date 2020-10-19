@@ -1,5 +1,4 @@
-from dcspy import LcdSize
-from dcspy.lcd_sdk import COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH, TYPE_COLOR, TYPE_MONO
+from dcspy import LcdColor, LcdMono, LcdSize
 
 from pytest import fixture
 
@@ -21,7 +20,7 @@ def lcd_mono() -> LcdSize:
     :return: mono lcd type
     :rtype: LcdSize
     """
-    return LcdSize(width=MONO_WIDTH, height=MONO_HEIGHT, type=TYPE_MONO)
+    return LcdMono
 
 
 @fixture()
@@ -32,7 +31,7 @@ def lcd_color() -> LcdSize:
     :return: color lcd type
     :rtype: LcdSize
     """
-    return LcdSize(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=TYPE_COLOR)
+    return LcdColor
 
 
 @fixture()

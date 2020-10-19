@@ -7,7 +7,7 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR, lcd_sdk
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT_11, SEND_ADDR, lcd_sdk
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
 
@@ -42,7 +42,7 @@ class LogitechKeyboard:
         self.already_pressed = False
         self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = list()
-        self.lcd = kwargs.get('lcd_type', LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO))
+        self.lcd = kwargs.get('lcd_type', LcdMono)
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
         self.plane = Aircraft(self.lcd)
 
@@ -166,8 +166,7 @@ class KeyboardMono(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        lcd_type = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO)
-        super().__init__(parser_hook, lcd_type=lcd_type)
+        super().__init__(parser_hook, lcd_type=LcdMono)
         self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
 
 
@@ -181,8 +180,7 @@ class KeyboardColor(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        lcd_type = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR)
-        super().__init__(parser_hook, lcd_type=lcd_type)
+        super().__init__(parser_hook, lcd_type=LcdColor)
         self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
                         lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
                         lcd_sdk.COLOR_BUTTON_MENU)
