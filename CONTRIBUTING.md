@@ -23,7 +23,7 @@ self.bios_data: Dict[str, BIOS_VALUE] = {
 which describe data to be fetch from DCS-BIOS with buffer class and its parameters. For required address and data length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 * Then after detecting current plane in DCS, `KeyboardMono` or `KeyboardColor` will load instance of aircraft as `plane`
 ```python
-self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd.width, self.lcd.height)
+self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
 ```
 * and "subscribe" for changes with callback for all fields defined in `plane` instance
 ```python
