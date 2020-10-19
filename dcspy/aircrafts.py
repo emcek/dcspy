@@ -110,10 +110,9 @@ class FA18Chornet(Aircraft):
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to bo send to LCD.
+        Prepare image for F/A-18C Hornet to be send to LCD.
 
         :return: image instance ready display on LCD
-        :rtype: Image.Image
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
@@ -192,18 +191,17 @@ class F16C50(Aircraft):
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to bo send to LCD.
+        Prepare image for F-16C Viper to be send to LCD.
 
         :return: image instance ready display on LCD
-        :rtype: Image.Image
         """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
             # replace 'o' to degree sign and 'a' with up-down arrow
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
-            draw.text((0, offset), text, 255, FONT_11)
+            draw.text(xy=(0, offset), text=text, fill=255, font=FONT_11)
         return img
 
 
@@ -257,18 +255,17 @@ class Ka50(Aircraft):
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to bo send to LCD.
+        Prepare image for Ka-50 Black Shark to be send to LCD.
 
         :return: image instance ready display on LCD
-        :rtype: Image.Image
         """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
-        draw.rectangle((0, 1, 85, 18), 0, 255)
-        draw.rectangle((0, 22, 85, 39), 0, 255)
-        draw.rectangle((88, 1, 103, 18), 0, 255)
-        draw.rectangle((88, 22, 103, 39), 0, 255)
+        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
+        draw.rectangle(xy=(0, 22, 85, 39), fill=0, outline=255)
+        draw.rectangle(xy=(88, 1, 103, 18), fill=0, outline=255)
+        draw.rectangle(xy=(88, 22, 103, 39), fill=0, outline=255)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
@@ -277,8 +274,8 @@ class Ka50(Aircraft):
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
-        draw.text((2, 3), line1, 255, FONT_16)
-        draw.text((2, 24), line2, 255, FONT_16)
+        draw.text(xy=(2, 3), text=line1, fill=255, font=FONT_16)
+        draw.text(xy=(2, 24), text=line2, fill=255, font=FONT_16)
         self._auto_pilot_switch(draw)
         return img
 
@@ -294,11 +291,11 @@ class Ka50(Aircraft):
                                                     ((111, 22, 124, 39), (114, 24), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                                                     ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
             if turn_on:
-                draw_obj.rectangle(c_rect, 255, 255)
-                draw_obj.text(c_text, ap_channel, 0, FONT_16)
+                draw_obj.rectangle(c_rect, fill=255, outline=255)
+                draw_obj.text(xy=c_text, text=ap_channel, fill=0, font=FONT_16)
             else:
-                draw_obj.rectangle(c_rect, 0, 255)
-                draw_obj.text(c_text, ap_channel, 255, FONT_16)
+                draw_obj.rectangle(xy=c_rect, fill=0, outline=255)
+                draw_obj.text(xy=c_text, text=ap_channel, fill=255, font=FONT_16)
 
 
 class F14B(Aircraft):
@@ -340,12 +337,11 @@ class F14B(Aircraft):
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to bo send to LCD.
+        Prepare image for F-14B Tomcat to be send to LCD.
 
         :return: image instance ready display on LCD
-        :rtype: Image.Image
         """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
-        draw.text((2, 3), 'F-14B Tomcat', 255, FONT_16)
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT_16)
         return img
