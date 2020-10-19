@@ -1,14 +1,14 @@
 __config_version__ = 1
 
 GLOBALS = {
-    'serializer': '{{major}}.{{minor}}.{{patch}}',
+    'serializer': '{{MAJOR}}.{{MINOR}}.{{PATCH}}',
 }
 
 FILES = ['setup.py',
          'dcspy/dcspy.py',
          'dcspy/starter.py']
 
-VERSION = ['major', 'minor', 'patch']
+VERSION = ['MAJOR', 'MINOR', 'PATCH']
 
 # VCS = {
 #     'name': 'git',
