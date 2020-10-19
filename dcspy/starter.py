@@ -7,11 +7,12 @@ from time import time, gmtime
 from packaging import version
 from requests import get
 
-from dcspy import RECV_ADDR, MULTICAST_IP, __version__
+from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
 
 LOG = getLogger(__name__)
+__version__ = '1.1.1'
 
 
 def _check_current_version() -> bool:
