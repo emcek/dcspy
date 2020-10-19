@@ -30,7 +30,7 @@ class LogitechKeyboard:
 
         Child class needs redefine:
         - buttons with supported buttons as tuple of int
-        - pass lcd_type argument as int to super constructor
+        - pass lcd_type argument as LcdSize NamedTuple to super constructor
 
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
@@ -42,13 +42,9 @@ class LogitechKeyboard:
         self.already_pressed = False
         self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = list()
-        if kwargs.get('lcd_type', 1) == lcd_sdk.TYPE_MONO:
-            self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO)
-            lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
-        else:
-            self.lcd = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR)
-            lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_COLOR)
-        self.plane = Aircraft(self.lcd.width, self.lcd.height)
+        self.lcd = kwargs.get('lcd_type')
+        lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
+        self.plane = Aircraft(self.lcd)
 
     @property
     def display(self) -> List[str]:
@@ -104,7 +100,7 @@ class LogitechKeyboard:
         Setup callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
-        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd.width, self.lcd.height)
+        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
@@ -170,7 +166,8 @@ class KeyboardMono(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        super().__init__(parser_hook, lcd_type=lcd_sdk.TYPE_MONO)
+        lcd_type = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO)
+        super().__init__(parser_hook, lcd_type=lcd_type)
         self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
 
 
@@ -184,7 +181,8 @@ class KeyboardColor(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        super().__init__(parser_hook, lcd_type=lcd_sdk.TYPE_COLOR)
+        lcd_type = LcdSize(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR)
+        super().__init__(parser_hook, lcd_type=lcd_type)
         self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
                         lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
                         lcd_sdk.COLOR_BUTTON_MENU)

@@ -1,4 +1,5 @@
-from typing import Tuple
+from dcspy import LcdSize
+from dcspy.lcd_sdk import COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH, TYPE_COLOR, TYPE_MONO
 
 from pytest import fixture
 
@@ -13,48 +14,58 @@ def protocol_parser():
 
 # <=><=><=><=><=> aircrafts <=><=><=><=><=>
 @fixture()
-def lcd_size() -> Tuple[int, int]:
+def lcd_mono() -> LcdSize:
     """
-    Return width and height of mono LCD as tuple of integers.
+    Return of mono LCD.
 
-    :return: width and height
-    :rtype: Tuple[int, int]
+    :return: mono lcd type
+    :rtype: LcdSize
     """
-    from dcspy.lcd_sdk import MONO_WIDTH, MONO_HEIGHT
-    return MONO_WIDTH, MONO_HEIGHT
+    return LcdSize(width=MONO_WIDTH, height=MONO_HEIGHT, type=TYPE_MONO)
 
 
 @fixture()
-def hornet(lcd_size: Tuple[int, int]):
+def lcd_color() -> LcdSize:
+    """
+    Return of color LCD.
+
+    :return: color lcd type
+    :rtype: LcdSize
+    """
+    return LcdSize(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=TYPE_COLOR)
+
+
+@fixture()
+def hornet_mono(lcd_mono: LcdSize):
     """
     Return instance of F/A-18C Hornet for Logitech mono LCD.
-    :param lcd_size:
+    :param lcd_mono:
     :return: F/A-18C Hornet instance
     :rtype: FA18Chornet
     """
     from dcspy.aircrafts import FA18Chornet
-    return FA18Chornet(*lcd_size)
+    return FA18Chornet(lcd_mono)
 
 
 @fixture()
-def black_shark(lcd_size: Tuple[int, int]):
+def black_shark_mono(lcd_mono: LcdSize):
     """
     Return instance of Ka-50 Black Shark for Logitech mono LCD.
-    :param lcd_size:
+    :param lcd_mono:
     :return: Ka-50 Black Shark instance
     :rtype: Ka50
     """
     from dcspy.aircrafts import Ka50
-    return Ka50(*lcd_size)
+    return Ka50(lcd_mono)
 
 
 @fixture()
-def tomcat(lcd_size: Tuple[int, int]):
+def tomcat_mono(lcd_mono: LcdSize):
     """
     Return instance of F-14B Tomcat for Logitech mono LCD.
-    :param lcd_size:
+    :param lcd_mono:
     :return: F-14B Tomcat instance
     :rtype: F14B
     """
     from dcspy.aircrafts import F14B
-    return F14B(*lcd_size)
+    return F14B(lcd_mono)

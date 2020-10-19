@@ -4,7 +4,7 @@ from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import FONT_11, FONT_16, lcd_sdk
+from dcspy import FONT_11, FONT_16, lcd_sdk, LcdSize
 
 try:
     from typing_extensions import TypedDict
@@ -16,15 +16,13 @@ LOG = getLogger(__name__)
 
 
 class Aircraft:
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
 
-        :param width: LCD width
-        :param height: LCD height
+        :param lcd_type: LCD type
         """
-        self.width = width
-        self.height = height
+        self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -85,14 +83,13 @@ class Aircraft:
 
 
 class FA18Chornet(Aircraft):
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
 
-        :param width: LCD width
-        :param height: LCD height
+        :param lcd_type: LCD type
         """
-        super().__init__(width, height)
+        super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'ScratchpadStr1': {'class': 'StringBuffer', 'args': {'address': 0x744e, 'length': 2}, 'value': str()},
             'ScratchpadStr2': {'class': 'StringBuffer', 'args': {'address': 0x7450, 'length': 2}, 'value': str()},
@@ -118,7 +115,7 @@ class FA18Chornet(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        img = Image.new('1', (self.width, self.height), 0)
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
         draw = ImageDraw.Draw(img)
         # Scrachpad
         draw.text((0, 0), f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', 255, FONT_16)
@@ -179,14 +176,13 @@ class FA18Chornet(Aircraft):
 
 
 class F16C50(Aircraft):
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
 
-        :param width: LCD width
-        :param height: LCD height
+        :param lcd_type: LCD type
         """
-        super().__init__(width, height)
+        super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4502, 'length': 25}, 'value': str()},
             'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x451c, 'length': 25}, 'value': str()},
@@ -201,7 +197,7 @@ class F16C50(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        img = Image.new('1', (self.width, self.height), 0)
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
@@ -212,14 +208,13 @@ class F16C50(Aircraft):
 
 
 class Ka50(Aircraft):
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
 
-        :param width: LCD width
-        :param height: LCD height
+        :param lcd_type: LCD type
         """
-        super().__init__(width, height)
+        super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'l1_apostr1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'length': 1}, 'value': str()},
             'l1_apostr2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'length': 1}, 'value': str()},
@@ -267,7 +262,7 @@ class Ka50(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        img = Image.new('1', (self.width, self.height), 0)
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
         draw.rectangle((0, 1, 85, 18), 0, 255)
@@ -307,14 +302,13 @@ class Ka50(Aircraft):
 
 
 class F14B(Aircraft):
-    def __init__(self, width: int, height: int) -> None:
+    def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
 
-        :param width: LCD width
-        :param height: LCD height
+        :param lcd_type: LCD type
         """
-        super().__init__(width, height)
+        super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x1, 'shift_by': 0x0}, 'value': int()},
             'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12d2, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
@@ -351,7 +345,7 @@ class F14B(Aircraft):
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        img = Image.new('1', (self.width, self.height), 0)
+        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
         draw = ImageDraw.Draw(img)
         draw.text((2, 3), 'F-14B Tomcat', 255, FONT_16)
         return img
