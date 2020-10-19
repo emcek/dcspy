@@ -121,25 +121,25 @@ class FA18Chornet(Aircraft):
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         # Scrachpad
-        draw.text((0, 0), f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', 1, FONT_16)
-        draw.line((0, 20, 115, 20), 1, 1)
+        draw.text((0, 0), f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', 255, FONT_16)
+        draw.line((0, 20, 115, 20), 255, 255)
 
         # comm1
-        draw.rectangle((0, 29, 20, 42), 0, 1)
-        draw.text((2, 29), self.get_bios('COMM1'), 1, FONT_16)
+        draw.rectangle((0, 29, 20, 42), 0, 255)
+        draw.text((2, 29), self.get_bios('COMM1'), 255, FONT_16)
 
         # comm2
         offset_comm2 = 44
-        draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 1)
-        draw.text((140 - offset_comm2, 29), self.get_bios('COMM2'), 1, FONT_16)
+        draw.rectangle((139 - offset_comm2, 29, 159 - offset_comm2, 42), 0, 255)
+        draw.text((140 - offset_comm2, 29), self.get_bios('COMM2'), 255, FONT_16)
 
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text((120, offset), f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', 1, FONT_11)
+            draw.text((120, offset), f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', 255, FONT_11)
 
         # Fuel Totaliser
-        draw.text((36, 29), self.get_bios('FuelTotal'), 1, FONT_16)
+        draw.text((36, 29), self.get_bios('FuelTotal'), 255, FONT_16)
         return img
 
     def set_bios(self, selector: str, value: str, update=True) -> None:
@@ -207,7 +207,7 @@ class F16C50(Aircraft):
             offset = (i - 1) * 8
             # replace 'o' to degree sign and 'a' with up-down arrow
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
-            draw.text((0, offset), text, 1, FONT_11)
+            draw.text((0, offset), text, 255, FONT_11)
         return img
 
 
@@ -270,10 +270,10 @@ class Ka50(Aircraft):
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
-        draw.rectangle((0, 1, 85, 18), 0, 1)
-        draw.rectangle((0, 22, 85, 39), 0, 1)
-        draw.rectangle((88, 1, 103, 18), 0, 1)
-        draw.rectangle((88, 22, 103, 39), 0, 1)
+        draw.rectangle((0, 1, 85, 18), 0, 255)
+        draw.rectangle((0, 22, 85, 39), 0, 255)
+        draw.rectangle((88, 1, 103, 18), 0, 255)
+        draw.rectangle((88, 22, 103, 39), 0, 255)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
@@ -282,8 +282,8 @@ class Ka50(Aircraft):
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
-        draw.text((2, 3), line1, 1, FONT_16)
-        draw.text((2, 24), line2, 1, FONT_16)
+        draw.text((2, 3), line1, 255, FONT_16)
+        draw.text((2, 24), line2, 255, FONT_16)
         self._auto_pilot_switch(draw)
         return img
 
@@ -299,11 +299,11 @@ class Ka50(Aircraft):
                                                     ((111, 22, 124, 39), (114, 24), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                                                     ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
             if turn_on:
-                draw_obj.rectangle(c_rect, 1, 1)
+                draw_obj.rectangle(c_rect, 255, 255)
                 draw_obj.text(c_text, ap_channel, 0, FONT_16)
             else:
-                draw_obj.rectangle(c_rect, 0, 1)
-                draw_obj.text(c_text, ap_channel, 1, FONT_16)
+                draw_obj.rectangle(c_rect, 0, 255)
+                draw_obj.text(c_text, ap_channel, 255, FONT_16)
 
 
 class F14B(Aircraft):
@@ -353,5 +353,5 @@ class F14B(Aircraft):
         """
         img = Image.new('1', (self.width, self.height), 0)
         draw = ImageDraw.Draw(img)
-        draw.text((2, 3), 'F-14B Tomcat', 1, FONT_16)
+        draw.text((2, 3), 'F-14B Tomcat', 255, FONT_16)
         return img

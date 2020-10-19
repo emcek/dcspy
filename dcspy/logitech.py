@@ -75,7 +75,7 @@ class LogitechKeyboard:
         draw = ImageDraw.Draw(img)
         self._display = message
         for line_no, line in enumerate(message):
-            draw.text((0, 10 * line_no), line, 1, FONT_11)
+            draw.text((0, 10 * line_no), line, 255, FONT_11)
         lcd_sdk.update_display(img)
 
     def detecting_plane(self, value: str) -> None:
