@@ -54,7 +54,12 @@ class Aircraft:
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        raise NotImplementedError
+        if self.lcd.type == 1:
+            return Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        elif self.lcd.type == 2:
+            return Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
+        else:
+            LOG.debug(f'Wrong LCD type: {self.lcd}')
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -112,7 +117,7 @@ class FA18Chornet(Aircraft):
 
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        img = super().prepare_image()
         draw = ImageDraw.Draw(img)
         # Scrachpad
         draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
@@ -192,7 +197,7 @@ class F16C50(Aircraft):
 
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        img = super().prepare_image()
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
@@ -256,7 +261,7 @@ class Ka50(Aircraft):
 
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        img = super().prepare_image()
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
         draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
@@ -338,7 +343,7 @@ class F14B(Aircraft):
 
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        img = super().prepare_image()
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT_16)
         return img

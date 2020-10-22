@@ -1,6 +1,8 @@
 from unittest.mock import patch
 
-from pytest import mark, raises
+from pytest import mark
+
+from dcspy import LcdColor, LcdMono
 
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
@@ -12,26 +14,46 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
     assert issubclass(aircraft, aircrafts.Aircraft)
 
 
-def test_aircraft_base_class(lcd_mono):
-    from dcspy import aircrafts
-    from PIL import Image
-    with patch.object(aircrafts, 'lcd_sdk', return_value=None) as lcd_sdk_mock:
-        aircraft = aircrafts.Aircraft(lcd_type=lcd_mono)
-        aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
+@mark.parametrize('selector, data, value, c_func, effect, lcd', [('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''},
+                                                                  'val1', 'logi_lcd_mono_set_background',
+                                                                  [True], LcdMono),
+                                                                 ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''},
+                                                                  'val2', 'logi_lcd_color_set_background',
+                                                                  [False, True], LcdColor)])
+def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value, c_func, effect, lcd, aircraft):
+    from dcspy import lcd_sdk
+    assert aircraft.bios_data == {}
+    aircraft.bios_data = {selector: data}
+    aircraft.lcd = lcd
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect):
+        with patch.object(lcd_sdk, c_func, return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                assert aircraft.bios_data[selector]['value'] == ''
+                aircraft.set_bios(selector, value)
+                assert aircraft.bios_data[selector]['value'] == value
+                assert aircraft.get_bios('none') == ''
 
-        assert aircraft.button_request(1) == '\n'
 
-        with raises(NotImplementedError):
-            aircraft.prepare_image()
+@mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
+                                        ('RGBA', 'logi_lcd_color_set_background', LcdColor)])
+def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
+    from dcspy import lcd_sdk
+    from PIL.Image import Image
+    aircraft.lcd = lcd
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+        with patch.object(lcd_sdk, c_func, return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                img = aircraft.prepare_image()
+                assert isinstance(img, Image)
+                assert img.size == (lcd.width, lcd.height)
+                assert img.mode == mode
 
-        with raises(NotImplementedError):
-            aircraft.set_bios('abstract_field', 'deadbeef')
 
-        assert aircraft.get_bios('abstract_field') == 'deadbeef'
-        assert aircraft.get_bios('none') == ''
-        img = Image.new('1', (aircraft.lcd.width, aircraft.lcd.height), 0)
-        assert aircraft.update_display(img) is None
-        lcd_sdk_mock.update_display.assert_called_once_with(img)
+def test_aircraft_base_class_other_lcd(aircraft):
+    from dcspy import LcdSize
+    aircraft.lcd = LcdSize(width=3, height=3, type=3)
+    img = aircraft.prepare_image()
+    assert img is None
 
 
 @mark.parametrize('button, result', [(0, '\n'),
@@ -70,8 +92,9 @@ def test_prepare_image_for_all_palnes(model, lcd_mono):
                     aircraft_model.set_bios('l1_text', '123456789')
                     aircraft_model.set_bios('l2_text', '987654321')
     img = aircraft_model.prepare_image()
-    assert img.size == (aircraft_model.lcd.width, aircraft_model.lcd.height)
     assert isinstance(img, Image)
+    assert img.size == (lcd_mono.width, lcd_mono.height)
+    assert img.mode == '1'
 
 
 @mark.parametrize('button, result', [(0, '\n'),

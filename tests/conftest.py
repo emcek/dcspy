@@ -35,6 +35,18 @@ def lcd_color() -> LcdSize:
 
 
 @fixture()
+def aircraft(lcd_mono: LcdSize):
+    """
+    Return instance of Aircraft base class for Logitech mono LCD.
+    :param lcd_mono:
+    :return: Aircraft instance
+    :rtype: Aircraft
+    """
+    from dcspy.aircrafts import Aircraft
+    return Aircraft(lcd_mono)
+
+
+@fixture()
 def hornet_mono(lcd_mono: LcdSize):
     """
     Return instance of F/A-18C Hornet for Logitech mono LCD.
