@@ -29,7 +29,7 @@ self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name
 ```python
 for field_name, proto_data in self.plane.bios_data.items():
     buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
-    buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
+    buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name, self.lcd.type), **proto_data['args'])
 ```
 * when, receive bytes, parser will process data:
 ```python
