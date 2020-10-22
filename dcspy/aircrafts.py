@@ -1,3 +1,4 @@
+from functools import partial
 from logging import getLogger
 from string import whitespace
 from typing import Dict, Union
@@ -54,12 +55,11 @@ class Aircraft:
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
-        if self.lcd.type == 1:
-            return Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
-        elif self.lcd.type == 2:
-            return Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
-        else:
-            LOG.debug(f'Wrong LCD type: {self.lcd}')
+        img_for_lcd = {1: partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=0),
+                       2: partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))}
+        if self.lcd.type in (1, 2):
+            return img_for_lcd[self.lcd.type]()
+        LOG.debug(f'Wrong LCD type: {self.lcd}')
 
     def set_bios(self, selector: str, value: str) -> None:
         """
