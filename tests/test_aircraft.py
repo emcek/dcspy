@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from pytest import mark
+from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono
 
@@ -29,24 +29,21 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
         with patch.object(lcd_sdk, c_func, return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                 assert aircraft.bios_data[selector]['value'] == ''
-                aircraft.set_bios(selector, value)
-                assert aircraft.bios_data[selector]['value'] == value
                 assert aircraft.get_bios('none') == ''
+                with raises(NotImplementedError):
+                    aircraft.set_bios(selector, value)
 
 
 @mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
                                         ('RGBA', 'logi_lcd_color_set_background', LcdColor)])
 def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
     from dcspy import lcd_sdk
-    from PIL.Image import Image
     aircraft.lcd = lcd
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, c_func, return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                img = aircraft.prepare_image()
-                assert isinstance(img, Image)
-                assert img.size == (lcd.width, lcd.height)
-                assert img.mode == mode
+                with raises(NotImplementedError):
+                    aircraft.prepare_image()
 
 
 def test_aircraft_base_class_other_lcd(aircraft):

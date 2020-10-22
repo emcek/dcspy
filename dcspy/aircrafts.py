@@ -91,11 +91,11 @@ class Aircraft:
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
-        pass
+        raise NotImplementedError
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Color LCD."""
-        pass
+        raise NotImplementedError
 
 
 class FA18Chornet(Aircraft):
