@@ -130,7 +130,7 @@ class LogitechKeyboard:
         Button handler.
 
         * detect if button was pressed
-        * fetch BSD-BIOS request form plane
+        * fetch DCS-BIOS request from current plane
         * sent it action to DCS-BIOS via. network socket
 
         :param sock: network socket
