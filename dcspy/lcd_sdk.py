@@ -144,8 +144,8 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
         logilcdmonosetbackground = LCD_DLL['LogiLcdMonoSetBackground']
         logilcdmonosetbackground.restype = c_bool
         logilcdmonosetbackground.argtypes = [c_ubyte * (MONO_WIDTH * MONO_HEIGHT)]
-        p = [pixel * 128 for pixel in pixels]
-        return logilcdmonosetbackground((c_ubyte * (MONO_WIDTH * MONO_HEIGHT))(*p))
+        img_bytes = [pixel * 128 for pixel in pixels]
+        return logilcdmonosetbackground((c_ubyte * (MONO_WIDTH * MONO_HEIGHT))(*img_bytes))
     return False
 
 
@@ -184,8 +184,8 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
         logilcdcolorsetbackground = LCD_DLL['LogiLcdColorSetBackground']
         logilcdcolorsetbackground.restype = c_bool
         logilcdcolorsetbackground.argtypes = [c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT)]
-        p = [byte for pixel in pixels for byte in pixel]
-        return logilcdcolorsetbackground((c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT))(*p))
+        img_bytes = [byte for pixel in pixels for byte in pixel]
+        return logilcdcolorsetbackground((c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT))(*img_bytes))
     return False
 
 
