@@ -30,6 +30,9 @@ class Aircraft:
         """
         Prepare aircraft specific DCS-BIOS request for button pressed.
 
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+
         If button is out of scope new line is return.
 
         :param button: possible values 1-4
@@ -156,6 +159,9 @@ class FA18Chornet(Aircraft):
         """
         Prepare F/A-18 Hornet specific DCS-BIOS request for button pressed.
 
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+
         If button is out of scope new line is return.
 
         :param button: possible values 1-4
@@ -235,6 +241,9 @@ class Ka50(Aircraft):
     def button_request(self, button: int, request: str = '\n') -> str:
         """
         Prepare Ka-50 Black Shark specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
 
         If button is out of scope new line is return.
 
@@ -317,6 +326,9 @@ class F14B(Aircraft):
     def button_request(self, button: int, request: str = '\n') -> str:
         """
         Prepare F-14 Tomcat specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
 
         If button is out of scope new line is return.
 
