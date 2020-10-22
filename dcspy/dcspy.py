@@ -5,7 +5,7 @@ from logging import getLogger
 from dcspy.tk_gui import DcspyGui
 
 LOG = getLogger(__name__)
-__version__ = '1.1.1'
+__version__ = '1.2.0-rc4'
 
 
 def run():
