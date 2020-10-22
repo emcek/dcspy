@@ -1,4 +1,4 @@
-from unittest import mock
+from unittest.mock import patch
 
 from pytest import mark, raises
 
@@ -15,7 +15,7 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
 def test_aircraft_base_class(lcd_mono):
     from dcspy import aircrafts
     from PIL import Image
-    with mock.patch.object(aircrafts, 'lcd_sdk', return_value=None) as lcd_sdk_mock:
+    with patch.object(aircrafts, 'lcd_sdk', return_value=None) as lcd_sdk_mock:
         aircraft = aircrafts.Aircraft(lcd_type=lcd_mono)
         aircraft.bios_data = {'abstract_field': {'addr': 0xdeadbeef, 'len': 16, 'val': ''}}
 
@@ -25,7 +25,7 @@ def test_aircraft_base_class(lcd_mono):
             aircraft.prepare_image(lcd_mono.type)
 
         with raises(NotImplementedError):
-            aircraft.set_bios('abstract_field', lcd_mono.type, 'deadbeef', True)
+            aircraft.set_bios('abstract_field', lcd_mono.type, 'deadbeef')
 
         assert aircraft.get_bios('abstract_field') == 'deadbeef'
         assert aircraft.get_bios('none') == ''
@@ -48,8 +48,12 @@ def test_button_pressed_for_hornet(button, result, hornet_mono):
                                               ('COMM1', '``', '11'),
                                               ('FuelTotal', '104T', '104T')])
 def test_set_bios_for_hornet(selector, value, result, hornet_mono):
-    hornet_mono.set_bios(selector, hornet_mono.lcd.type, value, False)
-    assert hornet_mono.bios_data[selector]['value'] == result
+    from dcspy import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                hornet_mono.set_bios(selector, hornet_mono.lcd.type, value)
+                assert hornet_mono.bios_data[selector]['value'] == result
 
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
@@ -59,8 +63,12 @@ def test_prepare_image_for_all_palnes(model, lcd_mono):
     aircraft = getattr(aircrafts, model)
     aircraft_model = aircraft(lcd_type=lcd_mono)
     if model == 'Ka50':
-        aircraft_model.set_bios('l1_text', lcd_mono.type, '123456789', False)
-        aircraft_model.set_bios('l2_text', lcd_mono.type, '987654321', False)
+        from dcspy import lcd_sdk
+        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                    aircraft_model.set_bios('l1_text', lcd_mono.type, '123456789')
+                    aircraft_model.set_bios('l2_text', lcd_mono.type, '987654321')
     img = aircraft_model.prepare_image(lcd_mono.type)
     assert img.size == (aircraft_model.lcd.width, aircraft_model.lcd.height)
     assert isinstance(img, Image)

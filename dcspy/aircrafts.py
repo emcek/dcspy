@@ -57,20 +57,18 @@ class Aircraft:
         """
         raise NotImplementedError
 
-    def set_bios(self, selector: str, lcd_type: int, value: str, update=True) -> None:
+    def set_bios(self, selector: str, lcd_type: int, value: str) -> None:
         """
         Set value for DCS-BIOS selector.
 
         :param selector:
         :param lcd_type:
         :param value:
-        :param update:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         lcd_image = self.prepare_image(lcd_type)
-        if update:
-            self.update_display(lcd_image)
+        self.update_display(lcd_image)
 
     def get_bios(self, selector: str) -> Union[str, int]:
         """
@@ -141,18 +139,17 @@ class FA18Chornet(Aircraft):
         draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
         return img
 
-    def set_bios(self, selector: str, lcd_type: int, value: str, update=True) -> None:
+    def set_bios(self, selector: str, lcd_type: int, value: str) -> None:
         """
         Set new data.
 
         :param selector:
         :param lcd_type:
         :param value:
-        :param update:
         """
         if selector in ('ScratchpadStr1', 'ScratchpadStr2', 'COMM1', 'COMM2'):
             value = value.replace('`', '1').replace('~', '2')
-        super().set_bios(selector, lcd_type, value, update)
+        super().set_bios(selector, lcd_type, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
