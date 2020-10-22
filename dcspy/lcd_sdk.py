@@ -144,7 +144,8 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
         logilcdmonosetbackground = LCD_DLL['LogiLcdMonoSetBackground']
         logilcdmonosetbackground.restype = c_bool
         logilcdmonosetbackground.argtypes = [c_ubyte * (MONO_WIDTH * MONO_HEIGHT)]
-        return logilcdmonosetbackground((c_ubyte * (MONO_WIDTH * MONO_HEIGHT))(*[p * 128 for p in pixels]))
+        p = [pixel * 128 for pixel in pixels]
+        return logilcdmonosetbackground((c_ubyte * (MONO_WIDTH * MONO_HEIGHT))(*p))
     return False
 
 
@@ -165,7 +166,7 @@ def logi_lcd_mono_set_text(line_no: int, text: str):
     return False
 
 
-def logi_lcd_color_set_background(pixels: List[int]) -> bool:
+def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bool:
     """
     The array of pixels is organized as a rectangular area, 320 bytes wide and 240 bytes high.
 
@@ -175,7 +176,7 @@ def logi_lcd_color_set_background(pixels: List[int]) -> bool:
     Note: The image size must be 320x240 in order to use this function.
 
     :param pixels: list of 307200 (320x240x4) pixels as int
-    :type pixels: List[int]
+    :type pixels: List[Tuple[int]]
     :return: result
     :rtype: bool
     """
@@ -183,7 +184,8 @@ def logi_lcd_color_set_background(pixels: List[int]) -> bool:
         logilcdcolorsetbackground = LCD_DLL['LogiLcdColorSetBackground']
         logilcdcolorsetbackground.restype = c_bool
         logilcdcolorsetbackground.argtypes = [c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT)]
-        return logilcdcolorsetbackground((c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT))(*pixels))
+        p = [byte for pixel in pixels for byte in pixel]
+        return logilcdcolorsetbackground((c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT))(*p))
     return False
 
 
@@ -276,7 +278,7 @@ def _clear_mono(true_clear):
 
     :param true_clear:
     """
-    logi_lcd_mono_set_background([0] * (MONO_WIDTH * MONO_HEIGHT))
+    logi_lcd_mono_set_background([0] * MONO_WIDTH * MONO_HEIGHT)
     if true_clear:
         for i in range(4):
             logi_lcd_mono_set_text(i, '')
@@ -288,7 +290,7 @@ def _clear_color(true_clear):
 
     :param true_clear:
     """
-    logi_lcd_color_set_background([0] * (COLOR_WIDTH * COLOR_HEIGHT))
+    logi_lcd_color_set_background([(0,) * 4] * COLOR_WIDTH * COLOR_HEIGHT)
     if true_clear:
         for i in range(8):
             logi_lcd_color_set_text(i, '')

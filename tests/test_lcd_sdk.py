@@ -25,7 +25,7 @@ def test_all_failure_cases(function, args, result):
                                                     ('logi_lcd_shutdown', 'LogiLcdShutdown', (), None),
                                                     ('logi_lcd_mono_set_background', 'LogiLcdMonoSetBackground', ([1, 2, 3],), True),
                                                     ('logi_lcd_mono_set_text', 'LogiLcdMonoSetText', (1, ''), True),
-                                                    ('logi_lcd_color_set_background', 'LogiLcdColorSetBackground', ([1, 2, 3],), True),
+                                                    ('logi_lcd_color_set_background', 'LogiLcdColorSetBackground', ([(1,) * 2],), True),
                                                     ('logi_lcd_color_set_title', 'LogiLcdColorSetTitle', ('', (1, 2, 3)), True),
                                                     ('logi_lcd_color_set_text', 'LogiLcdColorSetText', (1, '', (1, 2, 3)), True)])
 def test_all_success_cases(py_func, c_func, args, result):
@@ -49,14 +49,15 @@ def test_update_display(c_func, effect, lcd, size):
                 set_background.assert_called_once_with([0] * size[0] * size[1])
 
 
-@mark.parametrize('c_funcs, effect, lcd, size, text', [(('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'),
-                                                        [True], 1, 160 * 43,
-                                                        [call(0, ''), call(1, ''), call(2, ''), call(3, '')]),
-                                                       (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'),
-                                                        [False, True], 2, 320 * 240,
-                                                        [call(0, ''), call(1, ''), call(2, ''), call(3, ''),
-                                                         call(4, ''), call(5, ''), call(6, ''), call(7, '')])])
-def test_clear_display(c_funcs, effect, lcd, size, text):
+@mark.parametrize('c_funcs, effect, lcd, clear, text',
+                  [(('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'),
+                    [True], 1, [0] * 160 * 43,
+                    [call(0, ''), call(1, ''), call(2, ''), call(3, '')]),
+                   (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'),
+                    [False, True], 2, [(0,) * 4] * 320 * 240,
+                    [call(0, ''), call(1, ''), call(2, ''), call(3, ''),
+                     call(4, ''), call(5, ''), call(6, ''), call(7, '')])])
+def test_clear_display(c_funcs, effect, lcd, clear, text):
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect) as connected:
         with patch.object(lcd_sdk, c_funcs[0], return_value=True) as set_background:
@@ -64,5 +65,5 @@ def test_clear_display(c_funcs, effect, lcd, size, text):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                     lcd_sdk.clear_display(true_clear=True)
                     connected.assert_called_with(lcd)
-                    set_background.assert_called_once_with([0] * size)
+                    set_background.assert_called_once_with(clear)
                     set_text.assert_has_calls(text)
