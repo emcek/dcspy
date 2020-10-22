@@ -53,7 +53,7 @@ class Aircraft:
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to be send to LCD.
+        Prepare image to be send to correct type of LCD.
 
         :return: image instance ready display on LCD
         :rtype: Image.Image
@@ -61,7 +61,9 @@ class Aircraft:
         img_for_lcd = {1: partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=0),
                        2: partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))}
         if self.lcd.type in (1, 2):
-            return img_for_lcd[self.lcd.type]()
+            img = img_for_lcd[self.lcd.type]()
+            getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
+            return img
         LOG.debug(f'Wrong LCD type: {self.lcd}')
 
     def set_bios(self, selector: str, value: str) -> None:
@@ -86,6 +88,14 @@ class Aircraft:
             return self.bios_data[selector]['value']
         except KeyError:
             return ''
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for Aircraft for Mono LCD."""
+        pass
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for Aircraft for Color LCD."""
+        pass
 
 
 class FA18Chornet(Aircraft):
@@ -114,59 +124,47 @@ class FA18Chornet(Aircraft):
             'OptionCueing5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'length': 1}, 'value': str()},
             'FuelTotal': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()}}
 
-    def prepare_image(self) -> Image.Image:
-        """
-        Prepare image for F/A-18C Hornet to be send to LCD.
-
-        :return: image instance ready display on LCD
-        """
-        img = super().prepare_image()
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for F/A-18C Hornet for Mono LCD."""
         draw = ImageDraw.Draw(img)
-        if self.lcd.type == 1:
-            # Scrachpad
-            draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
-            draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
+        # Scrachpad
+        draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
+        draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
+        # comm1
+        draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
+        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT_16)
+        # comm2
+        offset_comm2 = 44
+        draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
+        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT_16)
+        # option display 1..5 with cueing
+        for i in range(1, 6):
+            offset = (i - 1) * 8
+            draw.text(xy=(120, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=255, font=FONT_11)
+        # Fuel Totaliser
+        draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
 
-            # comm1
-            draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
-            draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT_16)
-
-            # comm2
-            offset_comm2 = 44
-            draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
-            draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT_16)
-
-            # option display 1..5 with cueing
-            for i in range(1, 6):
-                offset = (i - 1) * 8
-                draw.text(xy=(120, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=255, font=FONT_11)
-
-            # Fuel Totaliser
-            draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
-        else:
-            green = (0, 255, 0, 255)
-            black = (0, 0, 0, 0)
-            # Scrachpad
-            draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=green, font=FONT_35)
-            draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
-
-            # comm1
-            draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
-            draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT_35)
-
-            # comm2
-            offset_comm2 = 88
-            draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
-            draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT_35)
-
-            # option display 1..5 with cueing
-            for i in range(1, 6):
-                offset = (i - 1) * 16
-                draw.text(xy=(240, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=green, font=FONT_25)
-
-            # Fuel Totaliser
-            draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT_35)
-        return img
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for F/A-18C Hornet for Color LCD."""
+        draw = ImageDraw.Draw(img)
+        green = (0, 255, 0, 255)
+        black = (0, 0, 0, 0)
+        # Scrachpad
+        draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=green, font=FONT_35)
+        draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
+        # comm1
+        draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
+        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT_35)
+        # comm2
+        offset_comm2 = 88
+        draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
+        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT_35)
+        # option display 1..5 with cueing
+        for i in range(1, 6):
+            offset = (i - 1) * 16
+            draw.text(xy=(240, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=green, font=FONT_25)
+        # Fuel Totaliser
+        draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT_35)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -221,20 +219,20 @@ class F16C50(Aircraft):
             'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4550, 'length': 25}, 'value': str()},
             'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x456a, 'length': 25}, 'value': str()}}
 
-    def prepare_image(self) -> Image.Image:
-        """
-        Prepare image for F-16C Viper to be send to LCD.
-
-        :return: image instance ready display on LCD
-        """
-        img = super().prepare_image()
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for F-16C Viper for Mono LCD."""
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
             # replace 'o' to degree sign and 'a' with up-down arrow
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
             draw.text(xy=(0, offset), text=text, fill=255, font=FONT_11)
-        return img
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for F-16C Viper for Color LCD."""
+        draw = ImageDraw.Draw(img)
+        green = (0, 255, 0, 255)
+        black = (0, 0, 0, 0)
 
 
 class Ka50(Aircraft):
@@ -288,32 +286,6 @@ class Ka50(Aircraft):
                   13: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
-    def prepare_image(self) -> Image.Image:
-        """
-        Prepare image for Ka-50 Black Shark to be send to LCD.
-
-        :return: image instance ready display on LCD
-        """
-        img = super().prepare_image()
-        draw = ImageDraw.Draw(img)
-        text1, text2 = '', ''
-        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
-        draw.rectangle(xy=(0, 22, 85, 39), fill=0, outline=255)
-        draw.rectangle(xy=(88, 1, 103, 18), fill=0, outline=255)
-        draw.rectangle(xy=(88, 22, 103, 39), fill=0, outline=255)
-        l1_text = str(self.get_bios('l1_text'))
-        l2_text = str(self.get_bios('l2_text'))
-        if l1_text:
-            text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
-        if l2_text:
-            text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
-        line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
-        line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
-        draw.text(xy=(2, 3), text=line1, fill=255, font=FONT_16)
-        draw.text(xy=(2, 24), text=line2, fill=255, font=FONT_16)
-        self._auto_pilot_switch(draw)
-        return img
-
     def _auto_pilot_switch(self, draw_obj: ImageDraw) -> None:
         """
         Draw rectangle and add text for autopilot channels in correct coordinates.
@@ -331,6 +303,32 @@ class Ka50(Aircraft):
             else:
                 draw_obj.rectangle(xy=c_rect, fill=0, outline=255)
                 draw_obj.text(xy=c_text, text=ap_channel, fill=255, font=FONT_16)
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for Ka-50 Black Shark for Mono LCD."""
+        draw = ImageDraw.Draw(img)
+        text1, text2 = '', ''
+        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
+        draw.rectangle(xy=(0, 22, 85, 39), fill=0, outline=255)
+        draw.rectangle(xy=(88, 1, 103, 18), fill=0, outline=255)
+        draw.rectangle(xy=(88, 22, 103, 39), fill=0, outline=255)
+        l1_text = str(self.get_bios('l1_text'))
+        l2_text = str(self.get_bios('l2_text'))
+        if l1_text:
+            text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
+        if l2_text:
+            text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
+        line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
+        line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
+        draw.text(xy=(2, 3), text=line1, fill=255, font=FONT_16)
+        draw.text(xy=(2, 24), text=line2, fill=255, font=FONT_16)
+        self._auto_pilot_switch(draw)
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for Ka-50 Black Shark for Mono LCD."""
+        draw = ImageDraw.Draw(img)
+        green = (0, 255, 0, 255)
+        black = (0, 0, 0, 0)
 
 
 class F14B(Aircraft):
@@ -373,13 +371,13 @@ class F14B(Aircraft):
                   13: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
-    def prepare_image(self) -> Image.Image:
-        """
-        Prepare image for F-14B Tomcat to be send to LCD.
-
-        :return: image instance ready display on LCD
-        """
-        img = super().prepare_image()
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for F-14B Tomcat for Mono LCD."""
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT_16)
-        return img
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for F-14B Tomcat for Color LCD."""
+        draw = ImageDraw.Draw(img)
+        green = (0, 255, 0, 255)
+        black = (0, 0, 0, 0)
