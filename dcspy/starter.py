@@ -114,10 +114,4 @@ def dcspy_run(lcd_type: str) -> None:
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(lcd)}')
     LOG.debug(f'Loading: {repr(lcd)}')
-    sock = _prepare_socket()
-    try:
-        _handle_connection(lcd, parser, sock)
-    except KeyboardInterrupt:
-        LOG.info('Stopped due to Ctrl-C')
-        LOG.info('You can restart by clicking "Start" button in GUI')
-        LOG.info('or close terminal/GUI window')
+    _handle_connection(lcd, parser, _prepare_socket())
