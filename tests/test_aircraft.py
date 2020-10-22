@@ -22,10 +22,10 @@ def test_aircraft_base_class(lcd_mono):
         assert aircraft.button_request(1) == '\n'
 
         with raises(NotImplementedError):
-            aircraft.prepare_image(lcd_mono.type)
+            aircraft.prepare_image()
 
         with raises(NotImplementedError):
-            aircraft.set_bios('abstract_field', lcd_mono.type, 'deadbeef')
+            aircraft.set_bios('abstract_field', 'deadbeef')
 
         assert aircraft.get_bios('abstract_field') == 'deadbeef'
         assert aircraft.get_bios('none') == ''
@@ -52,7 +52,7 @@ def test_set_bios_for_hornet(selector, value, result, hornet_mono):
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                hornet_mono.set_bios(selector, hornet_mono.lcd.type, value)
+                hornet_mono.set_bios(selector, value)
                 assert hornet_mono.bios_data[selector]['value'] == result
 
 
@@ -67,9 +67,9 @@ def test_prepare_image_for_all_palnes(model, lcd_mono):
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('l1_text', lcd_mono.type, '123456789')
-                    aircraft_model.set_bios('l2_text', lcd_mono.type, '987654321')
-    img = aircraft_model.prepare_image(lcd_mono.type)
+                    aircraft_model.set_bios('l1_text', '123456789')
+                    aircraft_model.set_bios('l2_text', '987654321')
+    img = aircraft_model.prepare_image()
     assert img.size == (aircraft_model.lcd.width, aircraft_model.lcd.height)
     assert isinstance(img, Image)
 

@@ -47,27 +47,25 @@ class Aircraft:
         """Update display."""
         lcd_sdk.update_display(image)
 
-    def prepare_image(self, lcd_type) -> Image.Image:
+    def prepare_image(self) -> Image.Image:
         """
-        Prepare image to be send to LCD of lcd_type.
+        Prepare image to be send to LCD.
 
-        :param lcd_type:
         :return: image instance ready display on LCD
         :rtype: Image.Image
         """
         raise NotImplementedError
 
-    def set_bios(self, selector: str, lcd_type: int, value: str) -> None:
+    def set_bios(self, selector: str, value: str) -> None:
         """
         Set value for DCS-BIOS selector.
 
         :param selector:
-        :param lcd_type:
         :param value:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
-        lcd_image = self.prepare_image(lcd_type)
+        lcd_image = self.prepare_image()
         self.update_display(lcd_image)
 
     def get_bios(self, selector: str) -> Union[str, int]:
@@ -108,11 +106,10 @@ class FA18Chornet(Aircraft):
             'OptionCueing5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'length': 1}, 'value': str()},
             'FuelTotal': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()}}
 
-    def prepare_image(self, lcd_type: int) -> Image.Image:
+    def prepare_image(self) -> Image.Image:
         """
-        Prepare image for F/A-18C Hornet to be send to LCD of lcd_type.
+        Prepare image for F/A-18C Hornet to be send to LCD.
 
-        :param lcd_type:
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
@@ -139,17 +136,16 @@ class FA18Chornet(Aircraft):
         draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
         return img
 
-    def set_bios(self, selector: str, lcd_type: int, value: str) -> None:
+    def set_bios(self, selector: str, value: str) -> None:
         """
         Set new data.
 
         :param selector:
-        :param lcd_type:
         :param value:
         """
         if selector in ('ScratchpadStr1', 'ScratchpadStr2', 'COMM1', 'COMM2'):
             value = value.replace('`', '1').replace('~', '2')
-        super().set_bios(selector, lcd_type, value)
+        super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -190,11 +186,10 @@ class F16C50(Aircraft):
             'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4550, 'length': 25}, 'value': str()},
             'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x456a, 'length': 25}, 'value': str()}}
 
-    def prepare_image(self, lcd_type: int) -> Image.Image:
+    def prepare_image(self) -> Image.Image:
         """
-        Prepare image for F-16C Viper to be send to LCD of lcd_type.
+        Prepare image for F-16C Viper to be send to LCD.
 
-        :param lcd_type:
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
@@ -255,11 +250,10 @@ class Ka50(Aircraft):
                   13: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
-    def prepare_image(self, lcd_type: int) -> Image.Image:
+    def prepare_image(self) -> Image.Image:
         """
-        Prepare image for Ka-50 Black Shark to be send to LCD of lcd_type.
+        Prepare image for Ka-50 Black Shark to be send to LCD.
 
-        :param lcd_type:
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
@@ -338,11 +332,10 @@ class F14B(Aircraft):
                   13: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
-    def prepare_image(self, lcd_type: int) -> Image.Image:
+    def prepare_image(self) -> Image.Image:
         """
-        Prepare image for F-14B Tomcat to be send to LCD of lcd_type.
+        Prepare image for F-14B Tomcat to be send to LCD.
 
-        :param lcd_type:
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
