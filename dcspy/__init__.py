@@ -27,6 +27,10 @@ LOG.debug(f'{uname()}')
 if platform == 'win32':
     FONT_11 = ImageFont.truetype('consola.ttf', 11)
     FONT_16 = ImageFont.truetype('consola.ttf', 16)
+    FONT_35 = ImageFont.truetype('consola.ttf', 35)
+    FONT_25 = ImageFont.truetype('consola.ttf', 25)
 else:
     FONT_11 = ImageFont.truetype('DejaVuSansMono.ttf', 11)
     FONT_16 = ImageFont.truetype('DejaVuSansMono.ttf', 16)
+    FONT_35 = ImageFont.truetype('DejaVuSansMono.ttf', 35)
+    FONT_25 = ImageFont.truetype('DejaVuSansMono.ttf', 25)

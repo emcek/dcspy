@@ -5,7 +5,7 @@ from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import FONT_11, FONT_16, lcd_sdk, LcdSize
+from dcspy import FONT_11, FONT_16, FONT_35, FONT_25, lcd_sdk, LcdSize
 
 try:
     from typing_extensions import TypedDict
@@ -122,26 +122,50 @@ class FA18Chornet(Aircraft):
         """
         img = super().prepare_image()
         draw = ImageDraw.Draw(img)
-        # Scrachpad
-        draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
-        draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
+        if self.lcd.type == 1:
+            # Scrachpad
+            draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
+            draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
 
-        # comm1
-        draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
-        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT_16)
+            # comm1
+            draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
+            draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT_16)
 
-        # comm2
-        offset_comm2 = 44
-        draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
-        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT_16)
+            # comm2
+            offset_comm2 = 44
+            draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
+            draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT_16)
 
-        # option display 1..5 with cueing
-        for i in range(1, 6):
-            offset = (i - 1) * 8
-            draw.text(xy=(120, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=255, font=FONT_11)
+            # option display 1..5 with cueing
+            for i in range(1, 6):
+                offset = (i - 1) * 8
+                draw.text(xy=(120, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=255, font=FONT_11)
 
-        # Fuel Totaliser
-        draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
+            # Fuel Totaliser
+            draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
+        else:
+            green = (0, 255, 0, 255)
+            black = (0, 0, 0, 0)
+            # Scrachpad
+            draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=green, font=FONT_35)
+            draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
+
+            # comm1
+            draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
+            draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT_35)
+
+            # comm2
+            offset_comm2 = 88
+            draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
+            draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT_35)
+
+            # option display 1..5 with cueing
+            for i in range(1, 6):
+                offset = (i - 1) * 16
+                draw.text(xy=(240, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=green, font=FONT_25)
+
+            # Fuel Totaliser
+            draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT_35)
         return img
 
     def set_bios(self, selector: str, value: str) -> None:
