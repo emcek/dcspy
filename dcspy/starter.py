@@ -31,6 +31,8 @@ def _check_current_version() -> bool:
             elif version.parse(online_version) == version.parse(__version__):
                 LOG.info(f'This is up-to-date version: {__version__}')
                 result = True
+            else:
+                result = True
         else:
             LOG.warning(f'Unable to check version online. Try again later. Status={response.status_code}')
     except Exception as exc:
