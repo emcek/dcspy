@@ -128,7 +128,8 @@ class FA18Chornet(Aircraft):
         """Prepare image for F/A-18C Hornet for Mono LCD."""
         draw = ImageDraw.Draw(img)
         # Scrachpad
-        draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=255, font=FONT_16)
+        draw.text(xy=(0, 0), fill=255, font=FONT_16,
+                  text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
         draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
         # comm1
         draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
@@ -140,7 +141,8 @@ class FA18Chornet(Aircraft):
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text(xy=(120, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=255, font=FONT_11)
+            draw.text(xy=(120, offset), fill=255, font=FONT_11,
+                      text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
         draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
 
@@ -150,7 +152,8 @@ class FA18Chornet(Aircraft):
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         # Scrachpad
-        draw.text(xy=(0, 0), text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}', fill=green, font=FONT_35)
+        draw.text(xy=(0, 0), fill=green, font=FONT_35,
+                  text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
         draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
         # comm1
         draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
@@ -162,7 +165,8 @@ class FA18Chornet(Aircraft):
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 16
-            draw.text(xy=(240, offset), text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}', fill=green, font=FONT_25)
+            draw.text(xy=(240, offset), fill=green, font=FONT_25,
+                      text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
         draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT_35)
 
