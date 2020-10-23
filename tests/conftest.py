@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 from dcspy import LcdSize
 
@@ -113,9 +113,9 @@ def tomcat_color(lcd_color: LcdSize):
     return F14B(lcd_color)
 
 
-# <=><=><=><=><=> aircrafts <=><=><=><=><=>
+# <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
-def keyborad_base(protocol_parser):
+def keyboard_base(protocol_parser):
     from dcspy.logitech import LogitechKeyboard
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
@@ -123,7 +123,7 @@ def keyborad_base(protocol_parser):
 
 
 @fixture()
-def keyborad_mono(protocol_parser):
+def keyboard_mono(protocol_parser):
     from dcspy.logitech import KeyboardMono
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
@@ -131,8 +131,13 @@ def keyborad_mono(protocol_parser):
 
 
 @fixture()
-def keyborad_color(protocol_parser):
+def keyboard_color(protocol_parser):
     from dcspy.logitech import KeyboardColor
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         return KeyboardColor(protocol_parser)
+
+
+@fixture()
+def sock():
+    return MagicMock()
