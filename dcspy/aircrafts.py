@@ -5,7 +5,7 @@ from typing import Dict, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import FONT_11, FONT_16, FONT_35, FONT_25, lcd_sdk, LcdSize
+from dcspy import FONT, lcd_sdk, LcdSize
 
 try:
     from typing_extensions import TypedDict
@@ -129,23 +129,23 @@ class FA18Chornet(Aircraft):
         """Prepare image for F/A-18C Hornet for Mono LCD."""
         draw = ImageDraw.Draw(img)
         # Scrachpad
-        draw.text(xy=(0, 0), fill=255, font=FONT_16,
+        draw.text(xy=(0, 0), fill=255, font=FONT[16],
                   text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
         draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
         # comm1
         draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
-        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT_16)
+        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT[16])
         # comm2
         offset_comm2 = 44
         draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
-        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT_16)
+        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT[16])
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text(xy=(120, offset), fill=255, font=FONT_11,
+            draw.text(xy=(120, offset), fill=255, font=FONT[11],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT_16)
+        draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT[16])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
@@ -154,23 +154,23 @@ class FA18Chornet(Aircraft):
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         # Scrachpad
-        draw.text(xy=(0, 0), fill=green, font=FONT_35,
+        draw.text(xy=(0, 0), fill=green, font=FONT[35],
                   text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
         draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
         # comm1
         draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
-        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT_35)
+        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT[35])
         # comm2
         offset_comm2 = 88
         draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
-        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT_35)
+        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT[35])
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 16
-            draw.text(xy=(240, offset), fill=green, font=FONT_25,
+            draw.text(xy=(240, offset), fill=green, font=FONT[25],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT_35)
+        draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT[35])
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -232,7 +232,7 @@ class F16C50(Aircraft):
             offset = (i - 1) * 8
             # replace 'o' to degree sign and 'a' with up-down arrow
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
-            draw.text(xy=(0, offset), text=text, fill=255, font=FONT_11)
+            draw.text(xy=(0, offset), text=text, fill=255, font=FONT[11])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
@@ -243,7 +243,7 @@ class F16C50(Aircraft):
             offset = (i - 1) * 16
             # replace 'o' to degree sign and 'a' with up-down arrow
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
-            draw.text(xy=(0, offset), text=text, fill=green, font=FONT_25)
+            draw.text(xy=(0, offset), text=text, fill=green, font=FONT[25])
 
 
 class Ka50(Aircraft):
@@ -310,10 +310,10 @@ class Ka50(Aircraft):
                                                     ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
             if turn_on:
                 draw_obj.rectangle(c_rect, fill=255, outline=255)
-                draw_obj.text(xy=c_text, text=ap_channel, fill=0, font=FONT_16)
+                draw_obj.text(xy=c_text, text=ap_channel, fill=0, font=FONT[16])
             else:
                 draw_obj.rectangle(xy=c_rect, fill=0, outline=255)
-                draw_obj.text(xy=c_text, text=ap_channel, fill=255, font=FONT_16)
+                draw_obj.text(xy=c_text, text=ap_channel, fill=255, font=FONT[16])
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
@@ -331,8 +331,8 @@ class Ka50(Aircraft):
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
-        draw.text(xy=(2, 3), text=line1, fill=255, font=FONT_16)
-        draw.text(xy=(2, 24), text=line2, fill=255, font=FONT_16)
+        draw.text(xy=(2, 3), text=line1, fill=255, font=FONT[16])
+        draw.text(xy=(2, 24), text=line2, fill=255, font=FONT[16])
         self._auto_pilot_switch(draw)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
@@ -354,8 +354,8 @@ class Ka50(Aircraft):
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
-        draw.text(xy=(2, 3), text=line1, fill=green, font=FONT_25)
-        draw.text(xy=(2, 24), text=line2, fill=green, font=FONT_25)
+        draw.text(xy=(2, 3), text=line1, fill=green, font=FONT[25])
+        draw.text(xy=(2, 24), text=line2, fill=green, font=FONT[25])
         # self._auto_pilot_switch(draw)
 
 
@@ -403,10 +403,10 @@ class F14B(Aircraft):
         """Prepare image for F-14B Tomcat for Mono LCD."""
         # todo: extract common code, maybe add some public members, do some scaleing
         draw = ImageDraw.Draw(img)
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT_16)
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT[16])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Color LCD."""
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=green, font=FONT_25)
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=green, font=FONT[25])

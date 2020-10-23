@@ -7,7 +7,7 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT_11, FONT_35, SEND_ADDR, lcd_sdk
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT, SEND_ADDR, lcd_sdk
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
 
@@ -187,7 +187,7 @@ class KeyboardMono(LogitechKeyboard):
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
-        fill, font, space = 255, FONT_11, 10
+        fill, font, space = 255, FONT[11], 10
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
         return img
@@ -218,7 +218,7 @@ class KeyboardColor(LogitechKeyboard):
         """
         img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
-        fill, font, space = (0, 255, 0, 255), FONT_35, 40
+        fill, font, space = (0, 255, 0, 255), FONT[35], 40
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
         return img

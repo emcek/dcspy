@@ -24,13 +24,7 @@ LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'{uname()}')
 
+font_name = 'DejaVuSansMono.ttf'
 if platform == 'win32':
-    FONT_11 = ImageFont.truetype('consola.ttf', 11)
-    FONT_16 = ImageFont.truetype('consola.ttf', 16)
-    FONT_35 = ImageFont.truetype('consola.ttf', 35)
-    FONT_25 = ImageFont.truetype('consola.ttf', 25)
-else:
-    FONT_11 = ImageFont.truetype('DejaVuSansMono.ttf', 11)
-    FONT_16 = ImageFont.truetype('DejaVuSansMono.ttf', 16)
-    FONT_35 = ImageFont.truetype('DejaVuSansMono.ttf', 35)
-    FONT_25 = ImageFont.truetype('DejaVuSansMono.ttf', 25)
+    font_name = 'consola.ttf'
+FONT = {size: ImageFont.truetype(font_name, size) for size in (11, 16, 25, 35)}
