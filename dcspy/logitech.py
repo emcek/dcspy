@@ -149,6 +149,7 @@ class LogitechKeyboard:
     def _prepare_image(self) -> Image.Image:
         """
         Prepare image for base of LCD type.
+
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         For G19 takes first 8 or less elements of list and display as 8 rows.
 
