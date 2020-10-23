@@ -36,7 +36,7 @@ def test_keyboard_mono_check_buttons(pressed1, effect, chk_btn, calls, pressed2,
 
 @mark.parametrize('mode, size, lcd_type, keyboard', [('1', (160, 43), 1, KeyboardMono),
                                                      ('RGBA', (320, 240), 2, KeyboardColor)])
-def test_check_keyboard_mono_has_aircraft_member(mode, size, lcd_type, keyboard, protocol_parser):
+def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
     from dcspy.aircrafts import Aircraft
     from dcspy import lcd_sdk
     from dcspy import LcdSize
