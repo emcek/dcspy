@@ -340,13 +340,23 @@ class Ka50(Aircraft):
         # todo: extract common code, maybe add some public members, do some scaleing
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
-        text1 = ''
-        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
+        black = (0, 0, 0, 0)
+        text1, text2 = '', ''
+        draw.rectangle(xy=(0, 1, 85, 18), fill=black, outline=green)
+        draw.rectangle(xy=(0, 22, 85, 39), fill=black, outline=green)
+        draw.rectangle(xy=(88, 1, 103, 18), fill=black, outline=green)
+        draw.rectangle(xy=(88, 22, 103, 39), fill=black, outline=green)
         l1_text = str(self.get_bios('l1_text'))
+        l2_text = str(self.get_bios('l2_text'))
         if l1_text:
             text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
+        if l2_text:
+            text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
+        line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
         draw.text(xy=(2, 3), text=line1, fill=green, font=FONT_25)
+        draw.text(xy=(2, 24), text=line2, fill=green, font=FONT_25)
+        # self._auto_pilot_switch(draw)
 
 
 class F14B(Aircraft):

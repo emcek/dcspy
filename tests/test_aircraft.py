@@ -59,39 +59,20 @@ def test_aircraft_base_class_other_lcd(aircraft):
                                      (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
                                      (9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
                                      (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
-def test_button_pressed_for_hornet(button, result, hornet_mono):
+def test_button_pressed_for_hornet_mono(button, result, hornet_mono):
     assert hornet_mono.button_request(button) == result
 
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
                                               ('COMM1', '``', '11'),
                                               ('FuelTotal', '104T', '104T')])
-def test_set_bios_for_hornet(selector, value, result, hornet_mono):
+def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                 hornet_mono.set_bios(selector, value)
                 assert hornet_mono.bios_data[selector]['value'] == result
-
-
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
-def test_prepare_image_for_all_palnes(model, lcd_mono):
-    from PIL.Image import Image
-    from dcspy import aircrafts
-    aircraft = getattr(aircrafts, model)
-    aircraft_model = aircraft(lcd_type=lcd_mono)
-    if model == 'Ka50':
-        from dcspy import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('l1_text', '123456789')
-                    aircraft_model.set_bios('l2_text', '987654321')
-    img = aircraft_model.prepare_image()
-    assert isinstance(img, Image)
-    assert img.size == (lcd_mono.width, lcd_mono.height)
-    assert img.mode == '1'
 
 
 @mark.parametrize('button, result', [(0, '\n'),
@@ -111,3 +92,41 @@ def test_button_pressed_for_shark(button, result, black_shark_mono):
                                      (4, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n')])
 def test_button_pressed_for_tomcat(button, result, tomcat_mono):
     assert tomcat_mono.button_request(button) == result
+
+
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
+def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
+    from PIL.Image import Image
+    from dcspy import aircrafts
+    aircraft = getattr(aircrafts, model)
+    aircraft_model = aircraft(lcd_type=lcd_mono)
+    if model == 'Ka50':
+        from dcspy import lcd_sdk
+        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                    aircraft_model.set_bios('l1_text', '123456789')
+                    aircraft_model.set_bios('l2_text', '987654321')
+    img = aircraft_model.prepare_image()
+    assert isinstance(img, Image)
+    assert img.size == (lcd_mono.width, lcd_mono.height)
+    assert img.mode == '1'
+
+
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
+def test_prepare_image_for_all_palnes_color(model, lcd_color):
+    from PIL.Image import Image
+    from dcspy import aircrafts
+    aircraft = getattr(aircrafts, model)
+    aircraft_model = aircraft(lcd_type=lcd_color)
+    if model == 'Ka50':
+        from dcspy import lcd_sdk
+        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                    aircraft_model.set_bios('l1_text', '123456789')
+                    aircraft_model.set_bios('l2_text', '987654321')
+    img = aircraft_model.prepare_image()
+    assert isinstance(img, Image)
+    assert img.size == (lcd_color.width, lcd_color.height)
+    assert img.mode == 'RGBA'

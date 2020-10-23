@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from dcspy import LcdColor, LcdMono, LcdSize
+from dcspy import LcdSize
 
 from pytest import fixture
 
@@ -21,6 +21,7 @@ def lcd_mono() -> LcdSize:
 
     :return: mono lcd type
     """
+    from dcspy import LcdMono
     return LcdMono
 
 
@@ -31,6 +32,7 @@ def lcd_color() -> LcdSize:
 
     :return: color lcd type
     """
+    from dcspy import LcdColor
     return LcdColor
 
 
