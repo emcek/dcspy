@@ -57,10 +57,18 @@ def test_aircraft_base_class_other_lcd(aircraft):
                                      (16, '\n'),
                                      ('a', '\n'),
                                      (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                     (9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
                                      (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
 def test_button_pressed_for_hornet_mono(button, result, hornet_mono):
     assert hornet_mono.button_request(button) == result
+
+
+@mark.parametrize('button, result', [(0, '\n'),
+                                     (16, '\n'),
+                                     (' ', '\n'),
+                                     (9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                     (14, 'UFC_COMM2_CHANNEL_SELECT DEC\n')])
+def test_button_pressed_for_hornet_color(button, result, hornet_color):
+    assert hornet_color.button_request(button) == result
 
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
@@ -73,6 +81,18 @@ def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                 hornet_mono.set_bios(selector, value)
                 assert hornet_mono.bios_data[selector]['value'] == result
+
+
+@mark.parametrize('selector, value, result', [('ScratchpadStr1', '~~', '22'),
+                                              ('COMM2', '``', '11'),
+                                              ('FuelTotal', '1000T', '1000T')])
+def test_set_bios_for_hornet_color(selector, value, result, hornet_color):
+    from dcspy import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                hornet_color.set_bios(selector, value)
+                assert hornet_color.bios_data[selector]['value'] == result
 
 
 @mark.parametrize('button, result', [(0, '\n'),
