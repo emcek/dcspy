@@ -148,6 +148,7 @@ class FA18Chornet(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
+        # todo: extract common code, maybe add some public members, do some scaleing
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
@@ -234,9 +235,14 @@ class F16C50(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
+        # todo: extract common code, maybe add some public members, do some scaleing
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
-        black = (0, 0, 0, 0)
+        for i in range(1, 6):
+            offset = (i - 1) * 16
+            # replace 'o' to degree sign and 'a' with up-down arrow
+            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
+            draw.text(xy=(0, offset), text=text, fill=green, font=FONT_25)
 
 
 class Ka50(Aircraft):
@@ -330,9 +336,16 @@ class Ka50(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
+        # todo: extract common code, maybe add some public members, do some scaleing
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
-        black = (0, 0, 0, 0)
+        text1 = ''
+        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
+        l1_text = str(self.get_bios('l1_text'))
+        if l1_text:
+            text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
+        line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
+        draw.text(xy=(2, 3), text=line1, fill=green, font=FONT_25)
 
 
 class F14B(Aircraft):
@@ -377,6 +390,7 @@ class F14B(Aircraft):
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
+        # todo: extract common code, maybe add some public members, do some scaleing
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT_16)
 
@@ -384,4 +398,4 @@ class F14B(Aircraft):
         """Prepare image for F-14B Tomcat for Color LCD."""
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
-        black = (0, 0, 0, 0)
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=green, font=FONT_25)
