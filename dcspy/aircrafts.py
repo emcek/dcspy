@@ -60,11 +60,12 @@ class Aircraft:
         """
         img_for_lcd = {1: partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=0),
                        2: partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))}
-        if self.lcd.type in (1, 2):
+        try:
             img = img_for_lcd[self.lcd.type]()
             getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
             return img
-        LOG.debug(f'Wrong LCD type: {self.lcd}')
+        except KeyError:
+            LOG.debug(f'Wrong LCD type: {self.lcd}')
 
     def set_bios(self, selector: str, value: str) -> None:
         """
