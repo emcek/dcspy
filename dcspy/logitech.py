@@ -67,16 +67,8 @@ class LogitechKeyboard:
         :param message: List of strings to display, row by row.
         :type message: List[str]
         """
-        img_for_lcd = {1: partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=0),
-                       2: partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))}
-        img = img_for_lcd[self.lcd.type]()
-        draw = ImageDraw.Draw(img)
         self._display = message
-        fill, font, space = 255, FONT_11, 10
-        if self.lcd.type == 2:
-            fill, font, space = (0, 255, 0, 255), FONT_35, 40
-        for line_no, line in enumerate(message):
-            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+        img = self._prepare_image()
         lcd_sdk.update_display(img)
 
     def detecting_plane(self, value: str) -> None:
@@ -154,6 +146,16 @@ class LogitechKeyboard:
         LOG.debug(f'Clear LCD type: {self.lcd.type}')
         lcd_sdk.clear_display(true_clear)
 
+    def _prepare_image(self) -> Image.Image:
+        """
+        Prepare image for base of LCD type.
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+        For G19 takes first 8 or less elements of list and display as 8 rows.
+
+        :return: image instance ready display on LCD
+        """
+        raise NotImplementedError
+
     def __str__(self):
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
 
@@ -174,6 +176,21 @@ class KeyboardMono(LogitechKeyboard):
         super().__init__(parser_hook, lcd_type=LcdMono)
         self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
 
+    def _prepare_image(self) -> Image.Image:
+        """
+        Prepare image for base of Mono LCD.
+
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+
+        :return: image instance ready display on LCD
+        """
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        draw = ImageDraw.Draw(img)
+        fill, font, space = 255, FONT_11, 10
+        for line_no, line in enumerate(self._display):
+            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+        return img
+
 
 class KeyboardColor(LogitechKeyboard):
     def __init__(self, parser_hook: ProtocolParser) -> None:
@@ -189,3 +206,18 @@ class KeyboardColor(LogitechKeyboard):
         self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
                         lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
                         lcd_sdk.COLOR_BUTTON_MENU)
+
+    def _prepare_image(self) -> Image.Image:
+        """
+        Prepare image for base of Color LCD.
+
+        For G19 takes first 8 or less elements of list and display as 8 rows.
+
+        :return: image instance ready display on LCD
+        """
+        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        fill, font, space = (0, 255, 0, 255), FONT_35, 40
+        for line_no, line in enumerate(self._display):
+            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+        return img
