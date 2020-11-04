@@ -12,7 +12,7 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
 
 LOG = getLogger(__name__)
-__version__ = '1.2.0rc6'
+__version__ = '1.2.0-alpha'
 
 
 def _check_current_version() -> bool:
