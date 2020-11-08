@@ -63,6 +63,7 @@ class Aircraft:
         try:
             img = img_for_lcd[self.lcd.type]()
             getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
+            # img.save(path.join(environ.get('TEMP', ''), f'{self.__class__.__name__}.png'), 'PNG')
             return img
         except KeyError:
             LOG.debug(f'Wrong LCD type: {self.lcd}')
