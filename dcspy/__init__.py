@@ -27,4 +27,4 @@ LOG.debug(f'{uname()}')
 font_name = 'DejaVuSansMono.ttf'
 if platform == 'win32':
     font_name = 'consola.ttf'
-FONT = {size: ImageFont.truetype(font_name, size) for size in (11, 16, 25, 35)}
+FONT = {size: ImageFont.truetype(font_name, size) for size in (11, 16, 22, 32)}
