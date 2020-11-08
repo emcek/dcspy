@@ -65,8 +65,8 @@ class Aircraft:
             getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
             # img.save(path.join(environ.get('TEMP', ''), f'{self.__class__.__name__}.png'), 'PNG')
             return img
-        except KeyError:
-            LOG.debug(f'Wrong LCD type: {self.lcd}')
+        except KeyError as err:
+            LOG.debug(f'Wrong LCD type: {self.lcd} or key: {err}')
 
     def set_bios(self, selector: str, value: str) -> None:
         """
