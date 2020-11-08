@@ -1,7 +1,7 @@
 from logging import getLogger
-from os import name
+from os import name, path
 from platform import architecture, uname, python_implementation, python_version
-from sys import platform
+from sys import platform, prefix
 from typing import NamedTuple
 
 from PIL import ImageFont
@@ -28,3 +28,5 @@ font_name = 'DejaVuSansMono.ttf'
 if platform == 'win32':
     font_name = 'consola.ttf'
 FONT = {size: ImageFont.truetype(font_name, size) for size in (11, 16, 22, 32)}
+DEDFONT_11 = ImageFont.truetype(path.join(prefix, 'dcspy_data', 'falconded.ttf'), 11)
+DEDFONT_22 = ImageFont.truetype(path.join(prefix, 'dcspy_data', 'falconded.ttf'), 22)
