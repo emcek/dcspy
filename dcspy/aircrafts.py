@@ -208,7 +208,9 @@ class FA18Chornet(Aircraft):
                   9: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
                   10: 'UFC_COMM1_CHANNEL_SELECT INC\n',
                   14: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-                  13: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
+                  13: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+                  15: 'IFEI_DWN_BTN 1\nIFEI_DWN_BTN 0\n',
+                  12: 'IFEI_UP_BTN 1\nIFEI_UP_BTN 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
