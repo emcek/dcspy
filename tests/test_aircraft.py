@@ -73,7 +73,7 @@ def test_button_pressed_for_hornet_color(button, result, hornet_color):
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
                                               ('COMM1', '``', '11'),
-                                              ('FuelTotal', '104T', '104T')])
+                                              ('IFEI_FUEL_UP', '104T', '104T')])
 def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
@@ -85,7 +85,7 @@ def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
 
 @mark.parametrize('selector, value, result', [('ScratchpadStr1', '~~', '22'),
                                               ('COMM2', '``', '11'),
-                                              ('FuelTotal', '1000T', '1000T')])
+                                              ('IFEI_FUEL_UP', '1000T', '1000T')])
 def test_set_bios_for_hornet_color(selector, value, result, hornet_color):
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
