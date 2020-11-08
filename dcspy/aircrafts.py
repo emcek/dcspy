@@ -123,7 +123,8 @@ class FA18Chornet(Aircraft):
             'OptionCueing3': {'class': 'StringBuffer', 'args': {'address': 0x742c, 'length': 1}, 'value': str()},
             'OptionCueing4': {'class': 'StringBuffer', 'args': {'address': 0x742e, 'length': 1}, 'value': str()},
             'OptionCueing5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'length': 1}, 'value': str()},
-            'FuelTotal': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()}}
+            'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()},
+            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'length': 6}, 'value': str()}}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Mono LCD."""
@@ -145,7 +146,7 @@ class FA18Chornet(Aircraft):
             draw.text(xy=(120, offset), fill=255, font=FONT[11],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(36, 29), text=self.get_bios('FuelTotal'), fill=255, font=FONT[16])
+        draw.text(xy=(36, 29), text=self.get_bios('IFEI_FUEL_UP'), fill=255, font=FONT[16])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
@@ -170,7 +171,7 @@ class FA18Chornet(Aircraft):
             draw.text(xy=(240, offset), fill=green, font=FONT[22],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT[32])
+        draw.text(xy=(72, 58), text=self.get_bios('IFEI_FUEL_UP'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -321,8 +322,10 @@ class Ka50(Aircraft):
 
         :param draw_obj: ImageDraw object form PIL
         """
+        # todo extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
+        # todo: extract common code, maybe add some public members, do some scaling
         for c_rect, c_text, ap_channel, turn_on in (((222, 2, 248, 36), (228, 6), 'B', self.get_bios('AP_BANK_HOLD_LED')),
                                                     ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
                                                     ((290, 2, 316, 36), (294, 6), 'F', self.get_bios('AP_FD_LED')),
