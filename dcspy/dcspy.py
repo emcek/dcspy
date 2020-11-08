@@ -2,10 +2,10 @@ import sys
 import tkinter as tk
 from logging import getLogger
 
-from dcspy import __version__
 from dcspy.tk_gui import DcspyGui
 
 LOG = getLogger(__name__)
+__version__ = '1.2.0-alpha'
 
 
 def run():

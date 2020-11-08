@@ -3,20 +3,19 @@ from importlib import import_module
 from logging import getLogger
 from math import log2
 from socket import socket
-from typing import List
+from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import SUPPORTED_CRAFTS, FONT_11, LcdSize, SEND_ADDR
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT, SEND_ADDR, lcd_sdk
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
 
 
 class LogitechKeyboard:
-    def __init__(self, parser_hook: ProtocolParser) -> None:
+    def __init__(self, parser_hook: ProtocolParser, **kwargs) -> None:
         """
         General keyboard with LCD form Logitech.
 
@@ -30,8 +29,8 @@ class LogitechKeyboard:
         - send button request to DCS-BIOS
 
         Child class needs redefine:
-        - property display
-        - method check_buttons()
+        - buttons with supported buttons as tuple of int
+        - pass lcd_type argument as LcdSize NamedTuple to super constructor
 
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
@@ -41,9 +40,11 @@ class LogitechKeyboard:
         self.plane_name = ''
         self.plane_detected = False
         self.already_pressed = False
+        self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = list()
-        self.lcd = LcdSize(width=0, height=0)
-        self.plane = Aircraft(self.lcd.width, self.lcd.height)
+        self.lcd = kwargs.get('lcd_type', LcdMono)
+        lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
+        self.plane = Aircraft(self.lcd)
 
     @property
     def display(self) -> List[str]:
@@ -60,12 +61,16 @@ class LogitechKeyboard:
         """
         Display message at LCD.
 
-        G13/G15/G510 support 4 rows and G19 support 8 rows.
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+        For G19 takes first 8 or less elements of list and display as 8 rows.
 
         :param message: List of strings to display, row by row.
         :type message: List[str]
         """
-        raise NotImplementedError
+        self._display = message
+        # todo: use settext form sdk
+        img = self._prepare_image()
+        lcd_sdk.update_display(img)
 
     def detecting_plane(self, value: str) -> None:
         """
@@ -93,7 +98,7 @@ class LogitechKeyboard:
         Setup callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
-        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd.width, self.lcd.height)
+        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         for field_name, proto_data in self.plane.bios_data.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
@@ -103,19 +108,27 @@ class LogitechKeyboard:
         """
         Check if button was pressed and return its number.
 
-        G13/G15/G510 support 4 button and G19 support 7 buttons.
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
 
         :return: number of pressed button
         :rtype: int
         """
-        raise NotImplementedError
+        for btn in self.buttons:
+            if lcd_sdk.logi_lcd_is_button_pressed(btn):
+                if not self.already_pressed:
+                    self.already_pressed = True
+                    return int(log2(btn)) + 1
+                return 0
+        self.already_pressed = False
+        return 0
 
     def button_handle(self, sock: socket) -> None:
         """
         Button handler.
 
         * detect if button was pressed
-        * fetch BSD-BIOS request form plane
+        * fetch DCS-BIOS request from current plane
         * sent it action to DCS-BIOS via. network socket
 
         :param sock: network socket
@@ -124,6 +137,26 @@ class LogitechKeyboard:
         button = self.check_buttons()
         if button:
             sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)
+
+    def clear(self, true_clear=False):
+        """
+        Clear LCD.
+
+        :param true_clear:
+        """
+        LOG.debug(f'Clear LCD type: {self.lcd.type}')
+        lcd_sdk.clear_display(true_clear)
+
+    def _prepare_image(self) -> Image.Image:
+        """
+        Prepare image for base of LCD type.
+
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+        For G19 takes first 8 or less elements of list and display as 8 rows.
+
+        :return: image instance ready display on LCD
+        """
+        raise NotImplementedError
 
     def __str__(self):
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
@@ -142,52 +175,52 @@ class KeyboardMono(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         :type parser_hook: ProtocolParser
         """
-        super().__init__(parser_hook)
-        self._display: List[str] = list()
-        self.lcd = LcdSize(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT)
-        self.plane = Aircraft(self.lcd.width, self.lcd.height)
-        lcd_sdk.logi_lcd_init('DCS World', lcd_sdk.TYPE_MONO)
+        super().__init__(parser_hook, lcd_type=LcdMono)
+        self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
 
-    @property
-    def display(self) -> List[str]:
+    def _prepare_image(self) -> Image.Image:
         """
-        Get latest set text at LCD.
+        Prepare image for base of Mono LCD.
 
-        :return: list with 4 strings row by row
-        :rtype: List[str]
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+
+        :return: image instance ready display on LCD
         """
-        return self._display
-
-    @display.setter
-    def display(self, message: List[str]) -> None:
-        """
-        Display message at LCD.
-
-        G13/G15/G510 support 4 rows.
-
-        :param message: List of strings to display, row by row.
-        :type message: List[str]
-        """
-        img = Image.new('1', (self.lcd.width, self.lcd.height), 0)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
-        message.extend(['' for _ in range(4 - len(message))])
-        self._display = message
-        for line_no, line in enumerate(message):
-            draw.text((0, 10 * line_no), line, 1, FONT_11)
-        lcd_sdk.update_display(img)
+        fill, font, space = 255, FONT[11], 10
+        for line_no, line in enumerate(self._display):
+            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+        return img
 
-    def check_buttons(self) -> int:
-        """
-        Check if button was pressed and return its number.
 
-        :return: number of pressed button 1-4
-        :rtype: int
+class KeyboardColor(LogitechKeyboard):
+    def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        for btn in (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3):
-            if lcd_sdk.logi_lcd_is_button_pressed(btn):
-                if not self.already_pressed:
-                    self.already_pressed = True
-                    return int(log2(btn)) + 1
-                return 0
-        self.already_pressed = False
-        return 0
+        Logitech keyboard with color LCD.
+
+        Support for: G19
+
+        :param parser_hook: BSC-BIOS parser
+        :type parser_hook: ProtocolParser
+        """
+        super().__init__(parser_hook, lcd_type=LcdColor)
+        self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
+                        lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
+                        lcd_sdk.COLOR_BUTTON_MENU)
+
+    def _prepare_image(self) -> Image.Image:
+        """
+        Prepare image for base of Color LCD.
+
+        For G19 takes first 8 or less elements of list and display as 8 rows.
+
+        :return: image instance ready display on LCD
+        """
+        # todo extract color to Logitech
+        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)
+        fill, font, space = (0, 255, 0, 255), FONT[22], 40
+        for line_no, line in enumerate(self._display):
+            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+        return img

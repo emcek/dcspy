@@ -7,11 +7,12 @@ from time import time, gmtime
 from packaging import version
 from requests import get
 
-from dcspy import RECV_ADDR, MULTICAST_IP, __version__
+from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
 
 LOG = getLogger(__name__)
+__version__ = '1.2.0-alpha'
 
 
 def _check_current_version() -> bool:
@@ -81,6 +82,7 @@ def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str
     """
     wait_time = gmtime(time() - start_time)
     spacer = ' ' * 13
+    # todo: use settext form sdk
     lcd.display = ['Logitech LCD OK', 'No new data from DCS:',
                    f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]',
                    f'dcspy: v{__version__} ({current_ver})']
@@ -113,10 +115,4 @@ def dcspy_run(lcd_type: str) -> None:
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(lcd)}')
     LOG.debug(f'Loading: {repr(lcd)}')
-    sock = _prepare_socket()
-    try:
-        _handle_connection(lcd, parser, sock)
-    except KeyboardInterrupt:
-        LOG.info('Stopped due to Ctrl-C')
-        LOG.info('You can restart by clicking "Start" button in GUI')
-        LOG.info('or close terminal/GUI window')
+    _handle_connection(lcd, parser, _prepare_socket())
