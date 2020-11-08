@@ -3,8 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from dcspy import __version__
-
+__version__ = '1.2.0'
 here = abspath(dirname(__file__))
 
 with io.open(join(here, 'README.md'), encoding='utf-8') as f:
@@ -22,8 +21,8 @@ setup(name='dcspy',
       author='Michal Plichta',
       license='MIT License',
       entry_points={'console_scripts': ['dcspy = dcspy.dcspy:run']},
-      data_files=[('dcspy_data', ['images/dcspy.ico', 'fonts/falconded.ttf', 'fonts/license.txt'])],
-      classifiers=['Development Status :: 4 - Beta',
+      data_files=[('dcspy_data', ['images/dcspy.ico'])],
+      classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: Console',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 3.6',
@@ -36,9 +35,10 @@ setup(name='dcspy',
                    'Topic :: Software Development :: Libraries :: Python Modules',
                    'Topic :: System :: Hardware',
                    'Topic :: Utilities'],
-      keywords='logitech logitech-sdk logitech-keyboards logitech-gaming logitech-gaming-keyboard dcs-world dcs g13 g15 g510',
+      keywords='logitech logitech-sdk logitech-keyboards logitech-gaming logitech-gaming-keyboard dcs-world dcs g13 g15 g510 g19',
       packages=find_packages(exclude=['tests']),
       install_requires=requires,
+      python_requires='>=3.6, !=3.9.*',
       platforms=['win32', 'nt', 'Windows'],
       extras_require={'testing': ['pytest']},
       project_urls={'Bug Reports': 'https://github.com/emcek/dcspy/issues',

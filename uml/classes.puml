@@ -1,0 +1,130 @@
+@startuml
+hide empty members
+
+package dcsbios {
+    class ProtocolParser {
+        + state : str
+        + sync_byte_count : int
+        + address : int
+        + count : int
+        + data : int
+        + write_callbacks : Set[Callable]
+        + frame_sync_callbacks : Set[Callable]
+        + process_byte(byte: int)
+    }
+
+    class StringBuffer {
+        + buffer : bytearray
+        + callbacks: Set[Callable]
+        + __init__(parser, address, length, callback)
+        + set_char(index, char)
+        + on_dcsbios_write(address, data)
+    }
+
+    class IntegerBuffer {
+        + callbacks: Set[Callable]
+        + __init__(parser, address, mask, shift_by, callback)
+        + on_dcsbios_write(address, data)
+    }
+}
+
+package logitech {
+    LogitechKeyboard <|-- KeyboardMono
+    LogitechKeyboard <|-- KeyboardColor
+}
+
+class LogitechKeyboard {
+    + parser : ProtocolParser
+    + plane : Aircraft
+    + plane_name = '' : str
+    + plane_detected = False : bool
+    + already_pressed = False : bool
+    + buttons : Tuple[int]
+    + lcd : LcdSize
+    + dislay(message : List[str]) -> List[str]
+    # {abstract} _prepare_image() -> Image
+    + detecting_plane()
+    + load_new_plane(value : str)
+    + check_buttons() -> int
+    + button_handle(sock : socket)
+    + clear()
+}
+
+class KeyboardMono {
+    + buttons : Tuple[int]
+    # _prepare_image() -> Image
+}
+
+class KeyboardColor {
+    + buttons : Tuple[int]
+    # _prepare_image() -> Image
+}
+
+
+package aircrafts {
+  Aircraft <|-- FA18Chornet
+  Aircraft <|-- F16C50
+  Aircraft <|-- Ka50
+  Aircraft <|-- F14B
+}
+
+class Aircraft {
+    + bios_data : Dict[str, BIOS_VALUE]
+    + lcd : LcdSize
+    + __init__(lcd_type: LcdSize)
+    + button_request(button: int, request: str) -> str
+    + update_display(image : Image)
+    + prepare_image() -> Image
+    + set_bios(selector: str, value: str)
+    + get_bios(selector: str) -> Union[str, int]
+    + {abstract} draw_for_lcd_type_1(img: Image)
+    + {abstract} draw_for_lcd_type_2(img: Image)
+}
+
+class FA18Chornet {
+    + bios_data : Dict[str, BIOS_VALUE]
+    + draw_for_lcd_type_1(img: Image)
+    + draw_for_lcd_type_2(img: Image)
+    + set_bios(selector: str, value: str)
+    + button_request(button: int, request: str) -> str
+}
+
+class F16C50 {
+    + bios_data : Dict[str, BIOS_VALUE]
+    + draw_for_lcd_type_1(img: Image)
+    + draw_for_lcd_type_2(img: Image)
+}
+
+class Ka50 {
+    + bios_data : Dict[str, BIOS_VALUE]
+    + draw_for_lcd_type_1(img: Image)
+    + draw_for_lcd_type_2(img: Image)
+    + button_request(button: int, request: str) -> str
+}
+
+class F14B {
+    + bios_data : Dict[str, BIOS_VALUE]
+    + draw_for_lcd_type_1(img: Image)
+    + draw_for_lcd_type_2(img: Image)
+    + button_request(button: int, request: str) -> str
+}
+
+LogitechKeyboard *- Aircraft
+LogitechKeyboard *- LcdSize
+LogitechKeyboard *--- ProtocolParser
+Aircraft *-- LcdSize
+Aircraft *-- StringBuffer
+Aircraft *-- IntegerBuffer
+
+class BIOS_VALUE <<(T,orange)>> {
+    + class : str
+    + args: Dict[str, int]
+    + value: Union[int, str]
+}
+
+class LcdSize <<(N,orchid)>> {
+    + height : int
+    + width : int
+    + type : int
+}
+@enduml
