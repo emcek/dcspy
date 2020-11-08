@@ -149,28 +149,28 @@ class FA18Chornet(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
-        # todo: extract common code, maybe add some public members, do some scaleing
+        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         # Scrachpad
-        draw.text(xy=(0, 0), fill=green, font=FONT[35],
+        draw.text(xy=(0, 0), fill=green, font=FONT[32],
                   text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
         draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
         # comm1
         draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
-        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT[35])
+        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT[32])
         # comm2
         offset_comm2 = 88
         draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
-        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT[35])
+        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT[32])
         # option display 1..5 with cueing
         for i in range(1, 6):
             offset = (i - 1) * 16
-            draw.text(xy=(240, offset), fill=green, font=FONT[25],
+            draw.text(xy=(240, offset), fill=green, font=FONT[22],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT[35])
+        draw.text(xy=(72, 58), text=self.get_bios('FuelTotal'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -236,14 +236,14 @@ class F16C50(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
-        # todo: extract common code, maybe add some public members, do some scaleing
+        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
         for i in range(1, 6):
             offset = (i - 1) * 16
             # replace 'o' to degree sign and 'a' with up-down arrow
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
-            draw.text(xy=(0, offset), text=text, fill=green, font=FONT[25])
+            draw.text(xy=(0, offset), text=text, fill=green, font=FONT[22])
 
 
 class Ka50(Aircraft):
@@ -297,7 +297,7 @@ class Ka50(Aircraft):
                   13: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
-    def _auto_pilot_switch(self, draw_obj: ImageDraw) -> None:
+    def _auto_pilot_switch_1(self, draw_obj: ImageDraw) -> None:
         """
         Draw rectangle and add text for autopilot channels in correct coordinates.
 
@@ -314,6 +314,26 @@ class Ka50(Aircraft):
             else:
                 draw_obj.rectangle(xy=c_rect, fill=0, outline=255)
                 draw_obj.text(xy=c_text, text=ap_channel, fill=255, font=FONT[16])
+
+    def _auto_pilot_switch_2(self, draw_obj: ImageDraw) -> None:
+        """
+        Draw rectangle and add text for autopilot channels in correct coordinates.
+
+        :param draw_obj: ImageDraw object form PIL
+        """
+        green = (0, 255, 0, 255)
+        black = (0, 0, 0, 0)
+        for c_rect, c_text, ap_channel, turn_on in (((222, 2, 248, 36), (228, 6), 'B', self.get_bios('AP_BANK_HOLD_LED')),
+                                                    ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
+                                                    ((290, 2, 316, 36), (294, 6), 'F', self.get_bios('AP_FD_LED')),
+                                                    ((222, 44, 248, 78), (228, 48), 'H', self.get_bios('AP_HDG_HOLD_LED')),
+                                                    ((256, 44, 282, 78), (260, 48), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
+            if turn_on:
+                draw_obj.rectangle(c_rect, fill=green, outline=green)
+                draw_obj.text(xy=c_text, text=ap_channel, fill=black, font=FONT[32])
+            else:
+                draw_obj.rectangle(xy=c_rect, fill=black, outline=green)
+                draw_obj.text(xy=c_text, text=ap_channel, fill=green, font=FONT[32])
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
@@ -333,19 +353,19 @@ class Ka50(Aircraft):
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
         draw.text(xy=(2, 3), text=line1, fill=255, font=FONT[16])
         draw.text(xy=(2, 24), text=line2, fill=255, font=FONT[16])
-        self._auto_pilot_switch(draw)
+        self._auto_pilot_switch_1(draw)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
-        # todo: extract common code, maybe add some public members, do some scaleing
+        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         text1, text2 = '', ''
-        draw.rectangle(xy=(0, 1, 85, 18), fill=black, outline=green)
-        draw.rectangle(xy=(0, 22, 85, 39), fill=black, outline=green)
-        draw.rectangle(xy=(88, 1, 103, 18), fill=black, outline=green)
-        draw.rectangle(xy=(88, 22, 103, 39), fill=black, outline=green)
+        draw.rectangle(xy=(0, 2, 170, 36), fill=black, outline=green)
+        draw.rectangle(xy=(0, 44, 170, 78), fill=black, outline=green)
+        draw.rectangle(xy=(176, 2, 206, 36), fill=black, outline=green)
+        draw.rectangle(xy=(176, 44, 203, 78), fill=black, outline=green)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
@@ -354,9 +374,9 @@ class Ka50(Aircraft):
             text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
         line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
         line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
-        draw.text(xy=(2, 3), text=line1, fill=green, font=FONT[25])
-        draw.text(xy=(2, 24), text=line2, fill=green, font=FONT[25])
-        # self._auto_pilot_switch(draw)
+        draw.text(xy=(4, 6), text=line1, fill=green, font=FONT[32])
+        draw.text(xy=(4, 48), text=line2, fill=green, font=FONT[32])
+        self._auto_pilot_switch_2(draw)
 
 
 class F14B(Aircraft):
@@ -401,7 +421,7 @@ class F14B(Aircraft):
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
-        # todo: extract common code, maybe add some public members, do some scaleing
+        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT[16])
 
@@ -409,4 +429,4 @@ class F14B(Aircraft):
         """Prepare image for F-14B Tomcat for Color LCD."""
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=green, font=FONT[25])
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=green, font=FONT[32])
