@@ -151,9 +151,8 @@ class FA18Chornet(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
-        # todo: extract common code, maybe add some public members, do some scaling
+        # todo: extract common code, maybe add some public members, do some scaling and extract color to Logitech
         draw = ImageDraw.Draw(img)
-        # todo extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         # Scrachpad
@@ -241,9 +240,7 @@ class F16C50(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
-        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
-        # todo extract color to Logitech
         green = (0, 255, 0, 255)
         for i in range(1, 6):
             offset = (i - 1) * 16
@@ -309,7 +306,6 @@ class Ka50(Aircraft):
 
         :param draw_obj: ImageDraw object form PIL
         """
-        # todo: extract common code, maybe add some public members, do some scaling
         for c_rect, c_text, ap_channel, turn_on in (((111, 1, 124, 18), (114, 3), 'B', self.get_bios('AP_BANK_HOLD_LED')),
                                                     ((128, 1, 141, 18), (130, 3), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
                                                     ((145, 1, 158, 18), (147, 3), 'F', self.get_bios('AP_FD_LED')),
@@ -328,10 +324,8 @@ class Ka50(Aircraft):
 
         :param draw_obj: ImageDraw object form PIL
         """
-        # todo extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
-        # todo: extract common code, maybe add some public members, do some scaling
         for c_rect, c_text, ap_channel, turn_on in (((222, 2, 248, 36), (228, 6), 'B', self.get_bios('AP_BANK_HOLD_LED')),
                                                     ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
                                                     ((290, 2, 316, 36), (294, 6), 'F', self.get_bios('AP_FD_LED')),
@@ -366,9 +360,7 @@ class Ka50(Aircraft):
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
-        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
-        # todo extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         text1, text2 = '', ''
@@ -431,13 +423,11 @@ class F14B(Aircraft):
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
-        # todo: extract common code, maybe add some public members, do some scaling
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=255, font=FONT[16])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Color LCD."""
         draw = ImageDraw.Draw(img)
-        # todo extract color to Logitech
         green = (0, 255, 0, 255)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=green, font=FONT[32])

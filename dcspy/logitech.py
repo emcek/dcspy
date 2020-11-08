@@ -186,11 +186,9 @@ class KeyboardMono(LogitechKeyboard):
 
         :return: image instance ready display on LCD
         """
-        # todo extract color to Logitech
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
         draw = ImageDraw.Draw(img)
         fill, font, space = 255, FONT[11], 10
-        # todo: use settext form sdk
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
         return img
@@ -223,7 +221,6 @@ class KeyboardColor(LogitechKeyboard):
         img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img)
         fill, font, space = (0, 255, 0, 255), FONT[22], 40
-        # todo: use settext form sdk
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
         return img
