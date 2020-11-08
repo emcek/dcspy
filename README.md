@@ -19,7 +19,6 @@ It supports:
 * [Installation](#installation)
 * [Usage](#usage)
 * [Mono vs. Color](#mono-vs-color)
-* [Buttons actions](#buttons-actions)
 * [FAQ](#faq)
 * [New ideas](#new-ideas)
 * [Contributing](#contributing)
@@ -27,7 +26,7 @@ It supports:
 ## Aircrafts and instruments
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
-* Ka-50 Black Shark PVI-800 and autoplilot chanels
+* Ka-50 Black Shark PVI-800 and autopilot channels
 * F-14B Tomcat - basic support for RIO CAP
 * more to come....
 
@@ -50,7 +49,7 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
      * tcl/tk and IDLE
      * py launcher  
    * Advanced Options:
-     * Associate files with Python (requires the py lauchner)
+     * Associate files with Python (requires the py launcher)
      * Add Python to environment variables
      * Customize install location: **C:\Python38** or **C:\Python**
 3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
