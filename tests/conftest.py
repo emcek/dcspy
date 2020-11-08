@@ -1,4 +1,6 @@
-from typing import Tuple
+from unittest.mock import patch, MagicMock
+
+from dcspy import LcdSize
 
 from pytest import fixture
 
@@ -13,36 +15,129 @@ def protocol_parser():
 
 # <=><=><=><=><=> aircrafts <=><=><=><=><=>
 @fixture()
-def lcd_size() -> Tuple[int, int]:
+def lcd_mono() -> LcdSize:
     """
-    Return width and height of G13 LCD as tuple of integers.
+    Return of mono LCD.
 
-    :return: width and height
-    :rtype: Tuple[int, int]
+    :return: mono lcd type
     """
-    from dcspy.sdk.lcd_sdk import MONO_WIDTH, MONO_HEIGHT
-    return MONO_WIDTH, MONO_HEIGHT
+    from dcspy import LcdMono
+    return LcdMono
 
 
 @fixture()
-def hornet(lcd_size: Tuple[int, int]):
+def lcd_color() -> LcdSize:
     """
-    Return instance of F/A-18C Hornet for Logitech G13.
-    :param lcd_size:
+    Return of color LCD.
+
+    :return: color lcd type
+    """
+    from dcspy import LcdColor
+    return LcdColor
+
+
+@fixture()
+def aircraft(lcd_mono: LcdSize):
+    """
+    Return instance of Aircraft base class for Logitech mono LCD.
+    :param lcd_mono:
+    :return: Aircraft instance
+    """
+    from dcspy.aircrafts import Aircraft
+    return Aircraft(lcd_mono)
+
+
+@fixture()
+def hornet_mono(lcd_mono: LcdSize):
+    """
+    Return instance of F/A-18C Hornet for Logitech mono LCD.
+    :param lcd_mono:
     :return: F/A-18C Hornet instance
-    :rtype: FA18Chornet
     """
     from dcspy.aircrafts import FA18Chornet
-    return FA18Chornet(*lcd_size)
+    return FA18Chornet(lcd_mono)
 
 
 @fixture()
-def black_shark(lcd_size: Tuple[int, int]):
+def black_shark_mono(lcd_mono: LcdSize):
     """
-    Return instance of Ka-50 Black Shark for Logitech G13.
-    :param lcd_size:
+    Return instance of Ka-50 Black Shark for Logitech mono LCD.
+    :param lcd_mono:
     :return: Ka-50 Black Shark instance
-    :rtype: Ka50
     """
     from dcspy.aircrafts import Ka50
-    return Ka50(*lcd_size)
+    return Ka50(lcd_mono)
+
+
+@fixture()
+def tomcat_mono(lcd_mono: LcdSize):
+    """
+    Return instance of F-14B Tomcat for Logitech mono LCD.
+    :param lcd_mono:
+    :return: F-14B Tomcat instance
+    """
+    from dcspy.aircrafts import F14B
+    return F14B(lcd_mono)
+
+
+@fixture()
+def hornet_color(lcd_color: LcdSize):
+    """
+    Return instance of F/A-18C Hornet for Logitech color LCD.
+    :param lcd_color:
+    :return: F/A-18C Hornet instance
+    """
+    from dcspy.aircrafts import FA18Chornet
+    return FA18Chornet(lcd_color)
+
+
+@fixture()
+def black_shark_color(lcd_color: LcdSize):
+    """
+    Return instance of Ka-50 Black Shark for Logitech color LCD.
+    :param lcd_color:
+    :return: Ka-50 Black Shark instance
+    """
+    from dcspy.aircrafts import Ka50
+    return Ka50(lcd_color)
+
+
+@fixture()
+def tomcat_color(lcd_color: LcdSize):
+    """
+    Return instance of F-14B Tomcat for Logitech color LCD.
+    :param lcd_color:
+    :return: F-14B Tomcat instance
+    """
+    from dcspy.aircrafts import F14B
+    return F14B(lcd_color)
+
+
+# <=><=><=><=><=> logitech <=><=><=><=><=>
+@fixture()
+def keyboard_base(protocol_parser):
+    from dcspy.logitech import LogitechKeyboard
+    from dcspy import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
+        return LogitechKeyboard(protocol_parser)
+
+
+@fixture()
+def keyboard_mono(protocol_parser):
+    from dcspy.logitech import KeyboardMono
+    from dcspy import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
+        return KeyboardMono(protocol_parser)
+
+
+@fixture()
+def keyboard_color(protocol_parser):
+    from dcspy.logitech import KeyboardColor
+    from dcspy import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
+        return KeyboardColor(protocol_parser)
+
+
+@fixture()
+def sock():
+    return MagicMock()

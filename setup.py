@@ -3,8 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-from dcspy import __version__
-
+__version__ = '1.2.0'
 here = abspath(dirname(__file__))
 
 with io.open(join(here, 'README.md'), encoding='utf-8') as f:
@@ -15,7 +14,7 @@ with io.open(join(here, 'requirements.txt'), encoding='utf-8') as f:
 
 setup(name='dcspy',
       version=__version__,
-      description='Software for integrating DCS: F/A-18C, F-16C and Ka-50 with Logitech G13',
+      description='Software for integrating Digital Combat Simulation planes with Logitech G13/G15/G510',
       long_description=long_description,
       long_description_content_type='text/markdown',
       url='https://github.com/emcek/dcspy',
@@ -23,7 +22,7 @@ setup(name='dcspy',
       license='MIT License',
       entry_points={'console_scripts': ['dcspy = dcspy.dcspy:run']},
       data_files=[('dcspy_data', ['images/dcspy.ico'])],
-      classifiers=['Development Status :: 4 - Beta',
+      classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: Console',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 3.6',
@@ -36,9 +35,10 @@ setup(name='dcspy',
                    'Topic :: Software Development :: Libraries :: Python Modules',
                    'Topic :: System :: Hardware',
                    'Topic :: Utilities'],
-      keywords='logitech logitech-sdk logitech-keyboards logitech-gaming logitech-gaming-keyboard dcs-world dcs g13',
+      keywords='logitech logitech-sdk logitech-keyboards logitech-gaming logitech-gaming-keyboard dcs-world dcs g13 g15 g510 g19',
       packages=find_packages(exclude=['tests']),
       install_requires=requires,
+      python_requires='>=3.6, !=3.9.*',
       platforms=['win32', 'nt', 'Windows'],
       extras_require={'testing': ['pytest']},
       project_urls={'Bug Reports': 'https://github.com/emcek/dcspy/issues',
