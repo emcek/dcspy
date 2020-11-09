@@ -48,14 +48,16 @@ jobs:
           pytest dcspy --mccabe
       - name: Test with pytest
         run: |
-          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html
           ls -la
+          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html
           coverage run --source=dcspy -m pytest -v --random
           coverage xml
-          ls -la
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         with:
           name: pytest-results-${{ matrix.python-version }}
-          path: htmlcov/*
+          path: |
+            htmlcov/*
+            coverage.xml
+            dcspy.log
         if: ${{ always() }}
