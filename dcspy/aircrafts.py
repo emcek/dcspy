@@ -8,9 +8,9 @@ from PIL import Image, ImageDraw
 from dcspy import FONT, lcd_sdk, LcdSize
 
 try:
-    from typing_extensions import TypedDict
-except ImportError:
     from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
 LOG = getLogger(__name__)
