@@ -46,4 +46,4 @@ jobs:
           pytest dcspy --mccabe
       - name: Test with pytest
         run: |
-          pytest dcspy -cov=dcspy --cov-report=xml --cov-report=html
+          pytest dcspy --cov=dcspy --cov-report=xml --cov-report=html
