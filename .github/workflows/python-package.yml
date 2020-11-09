@@ -6,8 +6,6 @@ name: Python package
 on:
   push:
     branches: [ github_actions, master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   build:
@@ -18,7 +16,7 @@ jobs:
         python-version: [3.6, 3.7, 3.8, 3.9]
         exclude:
           - os: windows-latest
-            python-version: [3.6, 3.7]
+            python-version: [3.6, 3.7, 3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -29,21 +27,23 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install flake8 pytest-cov coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage mypy
-          pwd
-          ls -la
+          pip install pytest-cov coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint coverage codacy-coverage mypy
           pip install -Ur requirements.txt
-      - name: Lint with flake8
-        run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 dcspy --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          flake8 dcspy --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Lint with PyLint
+      - name: Check PyCodeStyle
         run: |
           pycodestyle --statistics --count dcspy
+      - name: Check PyDocStyle
+        run: |
           pydocstyle --count dcspy
+      - name: Check mypy
+        run: |
+          mypy --ignore-missing-imports dcspy || echo $(($? - 1))
+      - name: Check PyLint
+        run: |
           pylint dcspy || echo $(($? % 4))
+      - name: Test McCabe
+        run: |
+          pytest dcspy --mccabe
       - name: Test with pytest
         run: |
-          pytest dcspy --mccabe --cov=dcspy --cov-report=xml --cov-report=html
+          pytest dcspy -cov=dcspy --cov-report=xml --cov-report=html
