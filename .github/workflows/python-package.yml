@@ -49,4 +49,3 @@ jobs:
           python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html
           coverage run --source=dcspy -m pytest -v --random
           coverage xml
-          coveralls
