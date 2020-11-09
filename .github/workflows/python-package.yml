@@ -46,4 +46,8 @@ jobs:
           pytest dcspy --mccabe
       - name: Test with pytest
         run: |
-          pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html
+          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html
+          coverage run --source=dcspy -m pytest -v --random
+          coverage xml
+          python-codacy-coverage -r coverage.xml
+          coveralls

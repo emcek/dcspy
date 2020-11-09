@@ -36,7 +36,7 @@ deploy:
   distributions: sdist bdist_wheel
   user: __token__
   password:
-    secure: LMQ9dVx3fKArgAK3KH4M1OyoiVW8gQKTBYOSD62sYyTKk78vFnFftlPjNifDKLFjaJXVD9ZEoOe9XYKDLHa95lFZrWAD61ObfHSVDg2Ww4NKLKdW/VRjC3xQCoh6dDkyeWlqpRUuE37yz/JQrechcJRgiMYnKoj0SkKzo9q52GI/pRQbECuP3wVsFnNSKc4+vBfFBtWSXe1hy9sgKRkeoWN9AR7bwT/fa3YM+HI//1/WW+j81kY+9TP7UqgdeHhAa36Ba0eVRDf78gNExqawYki9HtOZEHX8DvAOhhG8/XNceAUOMQqDSaZxqv0u2udPm766JGDf8EFU8QekkFHJObbdXr381riNwUlx1EYoyV8wGk5aglhQJy4CJlXXHSOxhcO256HK6kArrH/jhQ6yWfdGo5jljzIs3J9HT4QgdY//3aMRi34Iow3kg6K4+DwFjhkD3vCnt2FZPRQpZHBIbOLWKUwwIwnyhrmilfiaeu1b5f/YiwCovF86DME0k73yzqAYx1+20ohKBPdPZEYI3rTKM/wUGgq+bssibHMtvtyt1jA47E3h1HX047SdX+Cr/kY0yYvzJdLmjdIluFEFH1L0QexqJIGjk8s2f577bwQvcLjRLY99Y3hVmW8VUA+F1DLtuUIGBXiCvNRbZXPaUjdb4oFeY3zGZGgQsbtxo6I=
+    secure: ${{ secrets.PYPI_TOKEN }}
   on:
     tags: true
     condition: $TRAVIS_OS_NAME = linux
