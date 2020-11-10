@@ -51,7 +51,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install pytest-cov coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint codacy-coverage mypy
+          pip install flake8 pytest-cov coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint codacy-coverage mypy
           pip install -Ur requirements.txt
       - name: Check PyCodeStyle
         run: |
@@ -62,7 +62,6 @@ jobs:
       - name: Check mypy
         run: |
           mypy --ignore-missing-imports dcspy
-          mypy --ignore-missing-imports dcspy || echo $(($? - 1))
       - name: Check PyLint
         run: |
           pylint dcspy || echo $(($? % 4))
