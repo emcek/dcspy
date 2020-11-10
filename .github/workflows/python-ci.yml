@@ -95,7 +95,8 @@ jobs:
           retention-days: 4
       - name: Test Coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.COVERALLS }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           coveralls
