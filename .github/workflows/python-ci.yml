@@ -82,7 +82,6 @@ jobs:
       - name: Test Coveralls
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           coveralls
       - name: Run codacy-coverage
