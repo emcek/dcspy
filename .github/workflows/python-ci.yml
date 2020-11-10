@@ -12,6 +12,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: [3.6, 3.7, 3.8]
+        exclude:
+          - os: windows-latest
+            python-version: 3.6
+          - os: windows-latest
+            python-version: 3.7
+        include:
+          - os: windows-latest
+            python-version: 3.9
 
     steps:
       - uses: actions/checkout@v2
@@ -72,7 +80,6 @@ jobs:
       - name: Test with pytest
         run: |
           python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term --mccabe
-          ls -la
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: failure()
