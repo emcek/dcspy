@@ -1,6 +1,5 @@
 [![image](https://img.shields.io/badge/pypi-v1.2.0-blue.svg)](https://pypi.org/project/dcspy/)
-[![build](https://github.com/emcek/dcspy/workflows/Python/badge.svg)](https://github.com/emcek/dcspy/actions)
-[![Build Status](https://travis-ci.org/emcek/dcspy.svg?branch=master)](https://travis-ci.org/emcek/dcspy)
+[![build](https://github.com/emcek/dcspy/workflows/build/badge.svg)](https://github.com/emcek/dcspy/actions)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
