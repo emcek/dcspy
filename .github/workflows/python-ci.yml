@@ -95,8 +95,8 @@ jobs:
           retention-days: 4
       - name: Test Coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.COVERALLS }}
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COVERALLS }}
         run: |
           coveralls
       - name: Run codacy-coverage-reporter
