@@ -61,7 +61,7 @@ jobs:
           pydocstyle --count dcspy
       - name: Check mypy
         run: |
-          mypy dcspy
+          mypy --ignore-missing-imports dcspy
           mypy --ignore-missing-imports dcspy || echo $(($? - 1))
       - name: Check PyLint
         run: |
