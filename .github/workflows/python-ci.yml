@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python
+name: ci
 
 on: [push]
 
@@ -20,7 +20,6 @@ jobs:
         include:
           - os: windows-latest
             python-version: 3.9
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
@@ -43,14 +42,12 @@ jobs:
           path: |
             dcspy.log
           retention-days: 5
-
   coverage:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.9]
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
@@ -89,14 +86,12 @@ jobs:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           python-codacy-coverage -r coverage.xml
-
   style:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
         python-version: [3.9]
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
