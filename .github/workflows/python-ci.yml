@@ -80,7 +80,10 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=6 --max-line-length=160 --statistics
       - name: Test with pytest
         run: |
+          ls -la ..
           python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term --mccabe
+          ls -la ../..
+          cp coverage.xml /github/workspace/
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: always()
