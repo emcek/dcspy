@@ -6,11 +6,41 @@ name: Python
 on: [push]
 
 jobs:
-  linux:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: [3.6, 3.7, 3.8]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install pycodestyle pydocstyle pytest-mccabe pytest-random
+          pip install -Ur requirements.txt
+      - name: Test with pytest
+        run: |
+          python -m pytest -v --random --cov=dcspy --mccabe
+      - name: Upload pytest test results
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            dcspy.log
+          retention-days: 5
+
+  coverage:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -31,62 +61,24 @@ jobs:
           pydocstyle --count dcspy
       - name: Check mypy
         run: |
+          mypy dcspy
           mypy --ignore-missing-imports dcspy || echo $(($? - 1))
       - name: Check PyLint
         run: |
           pylint dcspy || echo $(($? % 4))
-      - name: Test with pytest
-        run: |
-          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --mccabe
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: pytest-linux-${{ matrix.python-version }}
-          path: |
-            htmlcov/*
-            coverage.xml
-            dcspy.log
-          retention-days: 5
-
-  windows:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.8, 3.9]
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install pytest-cov flake8 coveralls pycodestyle pydocstyle pytest-mccabe pytest-random pylint codacy-coverage mypy
-          pip install -Ur requirements.txt
-      - name: Check PyCodeStyle
-        run: |
-          pycodestyle --statistics --count dcspy
-      - name: Check PyDocStyle
-        run: |
-          pydocstyle --count dcspy
-      - name: Check mypy
-        run: |
-          mypy --ignore-missing-imports dcspy || echo $(($? - 1))
       - name: Check flake8
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=160 --statistics
       - name: Test with pytest
         run: |
-          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --mccabe
+          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term --mccabe
+          ls -la
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: pytest-windows-${{ matrix.python-version }}
+          name: pytest-${{ matrix.python-version }}
           path: |
             htmlcov/*
             coverage.xml
