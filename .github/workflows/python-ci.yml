@@ -94,9 +94,5 @@ jobs:
             dcspy.log
           retention-days: 4
       - name: Run codacy-coverage-reporter
-        uses: codacy/codacy-coverage-reporter-action@master
         run: |
-          cp  coverage.xml ../../_temp/_github_workflow
-        with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage.xml
+          python-codacy-coverage -r coverage.xml
