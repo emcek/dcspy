@@ -82,9 +82,6 @@ jobs:
         run: |
           python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term --mccabe
           cp  coverage.xml ../../_temp/_github_workflow
-          ls -la ../../_temp/_github_workflow
-          cd ../../_temp/_github_workflow
-          pwd
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: always()
@@ -98,6 +95,8 @@ jobs:
           retention-days: 4
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@master
+        run: |
+          cp  coverage.xml ../../_temp/_github_workflow
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
           coverage-reports: coverage.xml
