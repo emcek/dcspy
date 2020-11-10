@@ -52,10 +52,6 @@ jobs:
         python-version: [3.9]
 
     steps:
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -98,8 +94,13 @@ jobs:
             dcspy.log
           retention-days: 4
       - name: Test Coveralls
+        env:
+          GITHUB_TOKEN: ${{ secrets.COVERALLS }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           coveralls
       - name: Run codacy-coverage-reporter
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           python-codacy-coverage -r coverage.xml
