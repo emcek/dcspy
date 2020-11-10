@@ -26,7 +26,7 @@ jobs:
           pip install -Ur requirements.txt
       - name: Test with pytest
         run: |
-          python -m pytest -v --random --cov=dcspy --mccabe
+          python -m pytest -v --random --mccabe
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: failure()
