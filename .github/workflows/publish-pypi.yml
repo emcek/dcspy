@@ -1,0 +1,34 @@
+name: Upload Package
+
+on:
+  release:
+    types: [created]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        pip install -Ur requirements.txt
+    - name: Publish a Python distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: __token__
+        password:
+          secure: ${{ secrets.PYPI_TOKEN }}
+        skip_existing: true
+        verbose: true
+#    - name: Build and publish
+#      env:
+#        TWINE_USERNAME: __token__
+#        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+#      run: |
+#        python setup.py sdist bdist_wheel
+#        twine upload dist/*
