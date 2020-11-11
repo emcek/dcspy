@@ -21,14 +21,6 @@ jobs:
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
-        password:
-          secure: ${{ secrets.PYPI_TOKEN }}
+        password: ${{ secrets.PYPI_TOKEN }}
         skip_existing: true
         verbose: true
-#    - name: Build and publish
-#      env:
-#        TWINE_USERNAME: __token__
-#        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-#      run: |
-#        python setup.py sdist bdist_wheel
-#        twine upload dist/*
