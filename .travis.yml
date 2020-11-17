@@ -32,8 +32,7 @@ deploy:
   provider: pypi
   distributions: sdist bdist_wheel
   user: __token__
-  password:
-    secure: ${{ secrets.PYPI_TOKEN }}
+  password: ${{ secrets.PYPI_TOKEN }}
   on:
     tags: true
     condition: $TRAVIS_OS_NAME = linux
