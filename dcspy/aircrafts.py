@@ -1,7 +1,7 @@
 from functools import partial
 from logging import getLogger
 from string import whitespace
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -127,52 +127,38 @@ class FA18Chornet(Aircraft):
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()},
             'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'length': 6}, 'value': str()}}
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
-        """Prepare image for F/A-18C Hornet for Mono LCD."""
-        draw = ImageDraw.Draw(img)
+    def _draw_scalable_data(self, draw: ImageDraw, fg: Union[int, Tuple[int, int, int, int]],
+                            bg: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
         # Scrachpad
-        draw.text(xy=(0, 0), fill=255, font=FONT[16],
+        draw.text(xy=(0, 0), fill=fg, font=FONT[16 * scale],
                   text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
-        draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
+        draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=fg, width=1)
         # comm1
-        draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
-        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT[16])
+        draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=bg, outline=fg)
+        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('COMM1'), fill=fg, font=FONT[16 * scale])
         # comm2
-        offset_comm2 = 44
-        draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
-        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT[16])
+        offset_comm2 = 44 * scale
+        draw.rectangle(xy=(139 * scale - offset_comm2, 29 * scale, 159 * scale - offset_comm2, 42 * scale), fill=bg, outline=fg)
+        draw.text(xy=(140 * scale - offset_comm2, 29 * scale), text=self.get_bios('COMM2'), fill=fg, font=FONT[16 * scale])
         # option display 1..5 with cueing
         for i in range(1, 6):
-            offset = (i - 1) * 8
-            draw.text(xy=(120, offset), fill=255, font=FONT[11],
+            offset = (i - 1) * 8 * scale
+            draw.text(xy=(120 * scale, offset), fill=fg, font=FONT[11 * scale],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(36, 29), text=self.get_bios('IFEI_FUEL_UP'), fill=255, font=FONT[16])
+        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=fg, font=FONT[16 * scale])
+        return draw
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for F/A-18C Hornet for Mono LCD."""
+        self._draw_scalable_data(draw=ImageDraw.Draw(img), fg=255, bg=0, scale=1)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
-        # todo: extract common code, maybe add some public members, do some scaling and extract color to Logitech
-        draw = ImageDraw.Draw(img)
+        # todo: maybe add some public members, do some scaling and extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
-        # Scrachpad
-        draw.text(xy=(0, 0), fill=green, font=FONT[32],
-                  text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
-        draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
-        # comm1
-        draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
-        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT[32])
-        # comm2
-        offset_comm2 = 88
-        draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
-        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT[32])
-        # option display 1..5 with cueing
-        for i in range(1, 6):
-            offset = (i - 1) * 16
-            draw.text(xy=(240, offset), fill=green, font=FONT[22],
-                      text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
-        # Fuel Totaliser
-        draw.text(xy=(72, 58), text=self.get_bios('IFEI_FUEL_UP'), fill=green, font=FONT[32])
+        draw = self._draw_scalable_data(draw=ImageDraw.Draw(img), fg=green, bg=black, scale=2)
         draw.text(xy=(112, 58), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
