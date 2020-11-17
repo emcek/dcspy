@@ -173,6 +173,7 @@ class FA18Chornet(Aircraft):
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
         draw.text(xy=(72, 58), text=self.get_bios('IFEI_FUEL_UP'), fill=green, font=FONT[32])
+        draw.text(xy=(112, 58), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
         """
