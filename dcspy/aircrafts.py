@@ -127,8 +127,8 @@ class FA18Chornet(Aircraft):
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()},
             'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'length': 6}, 'value': str()}}
 
-    def _draw_scalable_data(self, draw: ImageDraw, fg: Union[int, Tuple[int, int, int, int]],
-                            bg: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
+    def _draw_common_data(self, draw: ImageDraw, fg: Union[int, Tuple[int, int, int, int]],
+                          bg: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
         # Scrachpad
         draw.text(xy=(0, 0), fill=fg, font=FONT[16 * scale],
                   text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
@@ -151,14 +151,14 @@ class FA18Chornet(Aircraft):
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Mono LCD."""
-        self._draw_scalable_data(draw=ImageDraw.Draw(img), fg=255, bg=0, scale=1)
+        self._draw_common_data(draw=ImageDraw.Draw(img), fg=255, bg=0, scale=1)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
         # todo: maybe add some public members, do some scaling and extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
-        draw = self._draw_scalable_data(draw=ImageDraw.Draw(img), fg=green, bg=black, scale=2)
+        draw = self._draw_common_data(draw=ImageDraw.Draw(img), fg=green, bg=black, scale=2)
         draw.text(xy=(112, 58), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
