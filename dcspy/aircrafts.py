@@ -159,7 +159,7 @@ class FA18Chornet(Aircraft):
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), fg=green, bg=black, scale=2)
-        draw.text(xy=(112, 58), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
+        draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
         """
