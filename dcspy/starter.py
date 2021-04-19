@@ -106,7 +106,7 @@ def _prepare_socket() -> socket.socket:
 
 def dcspy_run(lcd_type: str) -> None:
     """
-    Real starting od DCSpy function.
+    Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
     :type lcd_type: str
