@@ -12,7 +12,7 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
 
 LOG = getLogger(__name__)
-__version__ = '1.2.0'
+__version__ = '1.2.2'
 
 
 def _check_current_version() -> bool:
@@ -106,7 +106,7 @@ def _prepare_socket() -> socket.socket:
 
 def dcspy_run(lcd_type: str) -> None:
     """
-    Real starting od DCSpy function.
+    Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
     :type lcd_type: str

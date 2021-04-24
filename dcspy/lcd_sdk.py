@@ -1,5 +1,4 @@
 from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
-from itertools import chain
 from logging import getLogger
 from os import environ
 from platform import architecture
@@ -228,19 +227,6 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
         logilcdcolorsettext.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
         return logilcdcolorsettext(line_no, text, *rgb)
     return False
-
-
-def color_bg_picture(image: Image) -> None:
-    """
-    Set color background picture.
-
-    :param image: image object from pillow library
-    """
-    if logi_lcd_is_connected(TYPE_COLOR):
-        logi_lcd_mono_set_background(*list(chain(*list(image.getdata()))))
-        logi_lcd_update()
-    else:
-        LOG.warning('LCD is not connected')
 
 
 def update_display(image: Image) -> None:

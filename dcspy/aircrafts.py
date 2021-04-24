@@ -1,7 +1,7 @@
 from functools import partial
 from logging import getLogger
 from string import whitespace
-from typing import Dict, Union
+from typing import Dict, Union, Tuple
 
 from PIL import Image, ImageDraw
 
@@ -127,52 +127,39 @@ class FA18Chornet(Aircraft):
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'length': 6}, 'value': str()},
             'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'length': 6}, 'value': str()}}
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
-        """Prepare image for F/A-18C Hornet for Mono LCD."""
-        draw = ImageDraw.Draw(img)
+    def _draw_common_data(self, draw: ImageDraw, fg: Union[int, Tuple[int, int, int, int]],
+                          bg: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
         # Scrachpad
-        draw.text(xy=(0, 0), fill=255, font=FONT[16],
+        draw.text(xy=(0, 0), fill=fg, font=FONT[16 * scale],
                   text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
-        draw.line(xy=(0, 20, 115, 20), fill=255, width=1)
+        draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=fg, width=1)
         # comm1
-        draw.rectangle(xy=(0, 29, 20, 42), fill=0, outline=255)
-        draw.text(xy=(2, 29), text=self.get_bios('COMM1'), fill=255, font=FONT[16])
+        draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=bg, outline=fg)
+        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('COMM1'), fill=fg, font=FONT[16 * scale])
         # comm2
-        offset_comm2 = 44
-        draw.rectangle(xy=(139 - offset_comm2, 29, 159 - offset_comm2, 42), fill=0, outline=255)
-        draw.text(xy=(140 - offset_comm2, 29), text=self.get_bios('COMM2'), fill=255, font=FONT[16])
+        offset_comm2 = 44 * scale
+        draw.rectangle(xy=(139 * scale - offset_comm2, 29 * scale, 159 * scale - offset_comm2, 42 * scale), fill=bg, outline=fg)
+        draw.text(xy=(140 * scale - offset_comm2, 29 * scale), text=self.get_bios('COMM2'), fill=fg, font=FONT[16 * scale])
         # option display 1..5 with cueing
         for i in range(1, 6):
-            offset = (i - 1) * 8
-            draw.text(xy=(120, offset), fill=255, font=FONT[11],
+            offset = (i - 1) * 8 * scale
+            draw.text(xy=(120 * scale, offset), fill=fg, font=FONT[11 * scale],
                       text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
         # Fuel Totaliser
-        draw.text(xy=(36, 29), text=self.get_bios('IFEI_FUEL_UP'), fill=255, font=FONT[16])
+        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=fg, font=FONT[16 * scale])
+        return draw
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for F/A-18C Hornet for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), fg=255, bg=0, scale=1)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
-        # todo: extract common code, maybe add some public members, do some scaling and extract color to Logitech
-        draw = ImageDraw.Draw(img)
+        # todo: maybe add some public members, do some scaling and extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
-        # Scrachpad
-        draw.text(xy=(0, 0), fill=green, font=FONT[32],
-                  text=f'{self.get_bios("ScratchpadStr1")}{self.get_bios("ScratchpadStr2")}{self.get_bios("ScratchpadNum")}')
-        draw.line(xy=(0, 40, 230, 40), fill=green, width=1)
-        # comm1
-        draw.rectangle(xy=(0, 58, 40, 84), fill=black, outline=green)
-        draw.text(xy=(4, 58), text=self.get_bios('COMM1'), fill=green, font=FONT[32])
-        # comm2
-        offset_comm2 = 88
-        draw.rectangle(xy=(278 - offset_comm2, 58, 318 - offset_comm2, 84), fill=black, outline=green)
-        draw.text(xy=(280 - offset_comm2, 58), text=self.get_bios('COMM2'), fill=green, font=FONT[32])
-        # option display 1..5 with cueing
-        for i in range(1, 6):
-            offset = (i - 1) * 16
-            draw.text(xy=(240, offset), fill=green, font=FONT[22],
-                      text=f'{i}{self.get_bios(f"OptionCueing{i}")}{self.get_bios(f"OptionDisplay{i}")}')
-        # Fuel Totaliser
-        draw.text(xy=(72, 58), text=self.get_bios('IFEI_FUEL_UP'), fill=green, font=FONT[32])
+        draw = self._draw_common_data(draw=ImageDraw.Draw(img), fg=green, bg=black, scale=2)
+        draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -223,11 +210,11 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4502, 'length': 25}, 'value': str()},
-            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x451c, 'length': 25}, 'value': str()},
-            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4536, 'length': 25}, 'value': str()},
-            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4550, 'length': 25}, 'value': str()},
-            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x456a, 'length': 25}, 'value': str()}}
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x44FC, 'length': 25}, 'value': str()},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4516, 'length': 25}, 'value': str()},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4530, 'length': 25}, 'value': str()},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x454a, 'length': 25}, 'value': str()},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'length': 25}, 'value': str()}}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
@@ -342,10 +329,8 @@ class Ka50(Aircraft):
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
-        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
-        draw.rectangle(xy=(0, 22, 85, 39), fill=0, outline=255)
-        draw.rectangle(xy=(88, 1, 103, 18), fill=0, outline=255)
-        draw.rectangle(xy=(88, 22, 103, 39), fill=0, outline=255)
+        for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
+            draw.rectangle(xy=rect_xy, fill=0, outline=255)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
@@ -364,10 +349,8 @@ class Ka50(Aircraft):
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         text1, text2 = '', ''
-        draw.rectangle(xy=(0, 2, 170, 36), fill=black, outline=green)
-        draw.rectangle(xy=(0, 44, 170, 78), fill=black, outline=green)
-        draw.rectangle(xy=(176, 2, 206, 36), fill=black, outline=green)
-        draw.rectangle(xy=(176, 44, 203, 78), fill=black, outline=green)
+        for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
+            draw.rectangle(xy=rect_xy, fill=black, outline=green)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
