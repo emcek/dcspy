@@ -210,11 +210,11 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4502, 'length': 25}, 'value': str()},
-            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x451c, 'length': 25}, 'value': str()},
-            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4536, 'length': 25}, 'value': str()},
-            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4550, 'length': 25}, 'value': str()},
-            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x456a, 'length': 25}, 'value': str()}}
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x44FC, 'length': 25}, 'value': str()},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4516, 'length': 25}, 'value': str()},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4530, 'length': 25}, 'value': str()},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x454a, 'length': 25}, 'value': str()},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'length': 25}, 'value': str()}}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
