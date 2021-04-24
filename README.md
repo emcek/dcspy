@@ -51,21 +51,21 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
    * Advanced Options:
      * Associate files with Python (requires the py launcher)
      * Add Python to environment variables
-     * Customize install location: **C:\Python38** or **C:\Python**
+     * Customize install location: **C:\Python39** or **C:\Python**
 3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy
 ```
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.2.1-py3-none-any.whl
+pip install dcspy-1.2.2-py3-none-any.whl
 ```
 
 ## Usage
 1. Run Logitech Gaming Software (it allow to update LCD)
 2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into you python directory: i.e.:
-   * `c:\python38\dcspy_data\dcspy.ico`
-   * `c:\python38\scripts\dcspy.exe`
+   * `c:\python39\dcspy_data\dcspy.ico`
+   * `c:\python39\scripts\dcspy.exe`
 3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory).
 4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
 5. LCD display should update with dcspy basic info, waiting to connect to DCS 
@@ -106,10 +106,7 @@ actions for supported airplanes are hardcoded right now and look like:
    I didn't find good alternative so I use unicode character [2195](https://www.fileformat.info/info/unicode/char/2195/index.htm) which do not render very well
 2. I got error: `'pip' is not recognized as an internal or external command, operable program or batch file.`  
    Probably during installation of Python `pip` and/or `Add Python to environment variables` were not selected. Uninstall Python and install again with correct options. 
-3. Is DCSpy working with Python 3.9?  
-   Python 3.9 is not supported, because current [Pillow 7.2](https://pillow.readthedocs.io/en/latest/installation.html#python-support) not working with Python 3.9, as it's developers said: 
-   > Pillow 7.2.0 does not support Python 3.9 and does not provide prebuilt Windows binaries. We do not recommend building from source on Windows.  
-
+   
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.  
 You are welcome [dcspy Discord](https://discord.gg/SP5Yjx3) server. 
