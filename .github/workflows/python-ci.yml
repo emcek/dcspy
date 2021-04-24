@@ -80,7 +80,7 @@ jobs:
           python-codacy-coverage -r coverage.xml
       - name: Test Coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
         run: |
           coveralls
   style:
