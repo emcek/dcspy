@@ -329,10 +329,8 @@ class Ka50(Aircraft):
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
         draw = ImageDraw.Draw(img)
         text1, text2 = '', ''
-        draw.rectangle(xy=(0, 1, 85, 18), fill=0, outline=255)
-        draw.rectangle(xy=(0, 22, 85, 39), fill=0, outline=255)
-        draw.rectangle(xy=(88, 1, 103, 18), fill=0, outline=255)
-        draw.rectangle(xy=(88, 22, 103, 39), fill=0, outline=255)
+        for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
+            draw.rectangle(xy=rect_xy, fill=0, outline=255)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
@@ -351,10 +349,8 @@ class Ka50(Aircraft):
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
         text1, text2 = '', ''
-        draw.rectangle(xy=(0, 2, 170, 36), fill=black, outline=green)
-        draw.rectangle(xy=(0, 44, 170, 78), fill=black, outline=green)
-        draw.rectangle(xy=(176, 2, 206, 36), fill=black, outline=green)
-        draw.rectangle(xy=(176, 44, 203, 78), fill=black, outline=green)
+        for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
+            draw.rectangle(xy=rect_xy, fill=black, outline=green)
         l1_text = str(self.get_bios('l1_text'))
         l2_text = str(self.get_bios('l2_text'))
         if l1_text:
