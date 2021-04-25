@@ -27,12 +27,11 @@ def _check_current_version() -> bool:
         response = get('https://api.github.com/repos/emcek/dcspy/releases/latest')
         if response.status_code == 200:
             online_version = response.json()['tag_name']
+            LOG.debug(f'Latest GitHub version: {online_version}')
             if version.parse(online_version) > version.parse(__version__):
                 LOG.info(f'There is new version of dcspy: {online_version}')
-            elif version.parse(online_version) == version.parse(__version__):
+            elif version.parse(online_version) <= version.parse(__version__):
                 LOG.info(f'This is up-to-date version: {__version__}')
-                result = True
-            else:
                 result = True
         else:
             LOG.warning(f'Unable to check version online. Try again later. Status={response.status_code}')
