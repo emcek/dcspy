@@ -1,3 +1,4 @@
+import socket
 from unittest.mock import patch, PropertyMock, MagicMock
 
 from pytest import mark
@@ -23,3 +24,12 @@ def test_check_ver_can_not_check():
 def test_check_ver_exception():
     with patch.object(starter, 'get', side_effect=Exception('Connection error')):
         assert starter._check_current_version() is False
+
+
+def test_prepare_socket():
+    sock = starter._prepare_socket()
+    assert isinstance(sock, socket.socket)
+    assert sock.proto == 17
+    assert sock.gettimeout() == 1.0
+    assert sock.type == 2
+    assert sock.family == 2
