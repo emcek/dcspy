@@ -2,9 +2,10 @@
 [![Python CI](https://github.com/emcek/dcspy/workflows/Python%20CI/badge.svg)](https://github.com/emcek/dcspy/actions)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
-[![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
-[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/emcek/dcspy)
 [![License](https://img.shields.io/badge/Licence-MIT-blue.svg)](./LICENSE.md)  
+[![Patreon](https://img.shields.io/badge/Patreon-donate-ff424d?logo=patreon)](https://www.patreon.com/mplichta)
+[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/emcek/dcspy)
+[![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)  
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)  
 # dcspy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
