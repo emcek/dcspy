@@ -150,3 +150,32 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
+
+
+@mark.skip
+def test_bios_values_for_shark(black_shark_mono):
+    import json
+    with open('Ka-50.json') as f:
+        shark = json.load(f)
+
+    def _finditem(obj, key):
+        if key in obj:
+            return obj[key]
+        for k, v in obj.items():
+            if isinstance(v, dict):
+                item = _finditem(v, key)
+                if item is not None:
+                    return item
+
+    conver = {'length': 'max_length',
+              'address': 'address',
+              'mask': 'mask',
+              'shift_by': 'shift_by'}
+
+    for bios_data, json_data in {1: (black_shark_mono.bios_data, shark)}.values():
+        for b in bios_data:
+            js = _finditem(json_data, b)['outputs'][0]
+            for k in bios_data[b]['args']:
+                if not bios_data[b]['args'][k] == js[conver[k]]:
+                    print(f"{b}: {k}, dcspy: {bios_data[b]['args'][k]} ({hex(bios_data[b]['args'][k])}) "
+                          f"bios: {js[conver[k]]} ({hex(js[conver[k]])})")
