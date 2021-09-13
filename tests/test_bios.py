@@ -12,8 +12,14 @@ def test_bios_values_for_shark(black_shark_mono):
 
     data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/Ka-50.json')
     local_json = loads(data.content)
-    results = {}
+    results = _check_dcsbios_data(black_shark_mono, local_json)
+    print('\n')
+    pprint(results)
+    # assert not results
 
+
+def _check_dcsbios_data(black_shark_mono, local_json):
+    results = {}
     for bios_key in black_shark_mono.bios_data:
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
@@ -25,12 +31,12 @@ def test_bios_values_for_shark(black_shark_mono):
             dcsbios_value = bios_outputs[check_convert[args_key]]
             if not aircraft_value == dcsbios_value:
                 if results.get(bios_key):
-                    results[bios_key].update({args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"})
+                    results[bios_key].update({
+                                                 args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"})
                 else:
-                    results[bios_key] = {args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"}
-    print('\n')
-    pprint(results)
-    # assert not results
+                    results[bios_key] = {
+                        args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"}
+    return results
 
 
 def _recursive_lookup(k: str, d: dict):
