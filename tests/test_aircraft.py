@@ -71,8 +71,8 @@ def test_button_pressed_for_hornet_color(button, result, hornet_color):
     assert hornet_color.button_request(button) == result
 
 
-@mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
-                                              ('COMM1', '``', '11'),
+@mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
+                                              ('UFC_COMM1_DISPLAY', '``', '11'),
                                               ('IFEI_FUEL_UP', '104T', '104T')])
 def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
     from dcspy import lcd_sdk
@@ -83,8 +83,8 @@ def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
                 assert hornet_mono.bios_data[selector]['value'] == result
 
 
-@mark.parametrize('selector, value, result', [('ScratchpadStr1', '~~', '22'),
-                                              ('COMM2', '``', '11'),
+@mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~', '22'),
+                                              ('UFC_COMM1_DISPLAY', '``', '11'),
                                               ('IFEI_FUEL_UP', '1000T', '1000T')])
 def test_set_bios_for_hornet_color(selector, value, result, hornet_color):
     from dcspy import lcd_sdk
