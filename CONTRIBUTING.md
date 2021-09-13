@@ -14,7 +14,7 @@ BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'val
 
 self.bios_data: Dict[str, BIOS_VALUE] = {
     'PVI_LINE2_TEXT': {'class': 'StringBuffer',
-                       'args': {'address': 0x192a, 'length': 6},
+                       'args': {'address': 0x192a, 'max_length': 6},
                        'value': str()},
     'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 
                         'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 
