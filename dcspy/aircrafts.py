@@ -373,10 +373,10 @@ class F14B(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x1, 'shift_by': 0x0}, 'value': int()},
-            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12d2, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
-            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12d2, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
-            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x2, 'shift_by': 0x1}, 'value': int()}}
+            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
+            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
+            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
+            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
