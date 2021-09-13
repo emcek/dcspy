@@ -18,16 +18,16 @@ def test_bios_values_for_shark(black_shark_mono):
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
             results[bios_key] = f'Not found in DCS-BIOS {dcsbios_ver}'
-        else:
-            bios_outputs = bios_ref['outputs'][0]
-            for args_key in black_shark_mono.bios_data[bios_key]['args']:
-                aircraft_value = black_shark_mono.bios_data[bios_key]['args'][args_key]
-                dcsbios_value = bios_outputs[check_convert[args_key]]
-                if not aircraft_value == dcsbios_value:
-                    if results.get(bios_key):
-                        results[bios_key].update({args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"})
-                    else:
-                        results[bios_key] = {args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"}
+            continue
+        bios_outputs = bios_ref['outputs'][0]
+        for args_key in black_shark_mono.bios_data[bios_key]['args']:
+            aircraft_value = black_shark_mono.bios_data[bios_key]['args'][args_key]
+            dcsbios_value = bios_outputs[check_convert[args_key]]
+            if not aircraft_value == dcsbios_value:
+                if results.get(bios_key):
+                    results[bios_key].update({args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"})
+                else:
+                    results[bios_key] = {args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"}
     print('\n')
     pprint(results)
     # assert not results
