@@ -165,18 +165,16 @@ def test_bios_values_for_shark(black_shark_mono):
 
     for bios_data, json_data in {1: (black_shark_mono.bios_data, shark)}.values():
         for b in bios_data:
-            js = _finditem(json_data, b)['outputs'][0]
+            js = recursive_lookup(b, json_data)['outputs'][0]
             for k in bios_data[b]['args']:
                 if not bios_data[b]['args'][k] == js[conver[k]]:
                     print(f"{b}: {k}, dcspy: {bios_data[b]['args'][k]} ({hex(bios_data[b]['args'][k])}) "
                           f"bios: {js[conver[k]]} ({hex(js[conver[k]])})")
 
 
-def _finditem(obj, key):
-    if key in obj:
-        return obj[key]
-    for k, v in obj.items():
+def recursive_lookup(k, d):
+    if k in d:
+        return d[k]
+    for v in d.values():
         if isinstance(v, dict):
-            item = _finditem(v, key)
-            if item is not None:
-                return item
+            return recursive_lookup(k, v)
