@@ -129,8 +129,11 @@ class FA18Chornet(Aircraft):
 
     def _draw_common_data(self, draw: ImageDraw, fg: Union[int, Tuple[int, int, int, int]],
                           bg: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
+        scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
+        scratch_2 = self.get_bios("UFC_SCRATCHPAD_STRING_2_DISPLAY")
+        scratch_num = self.get_bios("UFC_SCRATCHPAD_NUMBER_DISPLAY")
         draw.text(xy=(0, 0), fill=fg, font=FONT[16 * scale],
-                  text=f'{self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")}{self.get_bios("UFC_SCRATCHPAD_STRING_2_DISPLAY")}{self.get_bios("UFC_SCRATCHPAD_NUMBER_DISPLAY")}')
+                  text=f'{scratch_1}{scratch_2}{scratch_num}')
         draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=fg, width=1)
 
         draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=bg, outline=fg)
@@ -331,12 +334,16 @@ class Ka50(Aircraft):
         text1, text2 = '', ''
         for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
             draw.rectangle(xy=rect_xy, fill=0, outline=255)
-        pvi_line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
-        pvi_line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
-        if pvi_line1_text:
-            text1 = f'{pvi_line1_text[-6:-3]}{self.get_bios("PVI_LINE1_APOSTROPHE1")}{pvi_line1_text[-3:-1]}{self.get_bios("PVI_LINE1_APOSTROPHE2")}{pvi_line1_text[-1]}'
-        if pvi_line2_text:
-            text2 = f'{pvi_line2_text[-6:-3]}{self.get_bios("PVI_LINE2_APOSTROPHE1")}{pvi_line2_text[-3:-1]}{self.get_bios("PVI_LINE2_APOSTROPHE2")}{pvi_line2_text[-1]}'
+        line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
+        line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
+        if line1_text:
+            l1_apostro1 = self.get_bios("PVI_LINE1_APOSTROPHE1")
+            l1_apostro2 = self.get_bios("PVI_LINE1_APOSTROPHE2")
+            text1 = f'{line1_text[-6:-3]}{l1_apostro1}{line1_text[-3:-1]}{l1_apostro2}{line1_text[-1]}'
+        if line2_text:
+            l2_apostro1 = self.get_bios("PVI_LINE2_APOSTROPHE1")
+            l2_apostro2 = self.get_bios("PVI_LINE2_APOSTROPHE2")
+            text2 = f'{line2_text[-6:-3]}{l2_apostro1}{line2_text[-3:-1]}{l2_apostro2}{line2_text[-1]}'
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         draw.text(xy=(2, 3), text=line1, fill=255, font=FONT[16])
