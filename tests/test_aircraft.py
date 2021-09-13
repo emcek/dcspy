@@ -71,8 +71,8 @@ def test_button_pressed_for_hornet_color(button, result, hornet_color):
     assert hornet_color.button_request(button) == result
 
 
-@mark.parametrize('selector, value, result', [('ScratchpadStr2', '~~', '22'),
-                                              ('COMM1', '``', '11'),
+@mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
+                                              ('UFC_COMM1_DISPLAY', '``', '11'),
                                               ('IFEI_FUEL_UP', '104T', '104T')])
 def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
     from dcspy import lcd_sdk
@@ -83,8 +83,8 @@ def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
                 assert hornet_mono.bios_data[selector]['value'] == result
 
 
-@mark.parametrize('selector, value, result', [('ScratchpadStr1', '~~', '22'),
-                                              ('COMM2', '``', '11'),
+@mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~', '22'),
+                                              ('UFC_COMM1_DISPLAY', '``', '11'),
                                               ('IFEI_FUEL_UP', '1000T', '1000T')])
 def test_set_bios_for_hornet_color(selector, value, result, hornet_color):
     from dcspy import lcd_sdk
@@ -125,8 +125,8 @@ def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('l1_text', '123456789')
-                    aircraft_model.set_bios('l2_text', '987654321')
+                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
+                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
     assert isinstance(img, Image)
     assert img.size == (lcd_mono.width, lcd_mono.height)
@@ -144,37 +144,10 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('l1_text', '123456789')
-                    aircraft_model.set_bios('l2_text', '987654321')
+                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
+                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
 
-
-@mark.skip
-def test_bios_values_for_shark(black_shark_mono):
-    import json
-    with open('Ka-50.json') as f:
-        shark = json.load(f)
-
-    conver = {'length': 'max_length',
-              'address': 'address',
-              'mask': 'mask',
-              'shift_by': 'shift_by'}
-
-    for bios_data, json_data in {1: (black_shark_mono.bios_data, shark)}.values():
-        for b in bios_data:
-            js = recursive_lookup(b, json_data)['outputs'][0]
-            for k in bios_data[b]['args']:
-                if not bios_data[b]['args'][k] == js[conver[k]]:
-                    print(f"{b}: {k}, dcspy: {bios_data[b]['args'][k]} ({hex(bios_data[b]['args'][k])}) "
-                          f"bios: {js[conver[k]]} ({hex(js[conver[k]])})")
-
-
-def recursive_lookup(k, d):
-    if k in d:
-        return d[k]
-    for v in d.values():
-        if isinstance(v, dict):
-            return recursive_lookup(k, v)
