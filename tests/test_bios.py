@@ -3,9 +3,9 @@ from json import loads
 from pprint import pprint
 
 check_convert = {'length': 'max_length',
-                  'address': 'address',
-                  'mask': 'mask',
-                  'shift_by': 'shift_by'}
+                 'address': 'address',
+                 'mask': 'mask',
+                 'shift_by': 'shift_by'}
 
 response = get('https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest')
 if response.status_code == 200:
