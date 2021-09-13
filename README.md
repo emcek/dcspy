@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v1.2.2-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v1.2.3-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/workflows/Python%20CI/badge.svg)](https://github.com/emcek/dcspy/actions)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
@@ -38,7 +38,7 @@ It supports:
 * [Python 3.9](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.9.4-amd64.exe
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [Logitech LCD SDK 8.57.148](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
-* [DCS-BIOS 0.7.34](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS-BIOS 0.7.41](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
@@ -62,7 +62,7 @@ pip install dcspy
 ```
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.2.2-py3-none-any.whl
+pip install dcspy-1.2.3-py3-none-any.whl
 ```
 
 ## Usage
