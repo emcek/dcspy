@@ -18,6 +18,45 @@ def test_bios_values_for_shark(black_shark_mono):
     # assert not results
 
 
+def test_bios_values_for_viper(viper_mono):
+    from requests import get
+    from json import loads
+    from pprint import pprint
+
+    data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/F-16C_50.json')
+    local_json = loads(data.content)
+    results = _check_dcsbios_data(viper_mono, local_json)
+    print('\n')
+    pprint(results)
+    # assert not results
+
+
+def test_bios_values_for_hornet(hornet_mono):
+    from requests import get
+    from json import loads
+    from pprint import pprint
+
+    data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/FA-18C_hornet.json')
+    local_json = loads(data.content)
+    results = _check_dcsbios_data(hornet_mono, local_json)
+    print('\n')
+    pprint(results)
+    # assert not results
+
+
+def test_bios_values_for_tomcat(tomcat_mono):
+    from requests import get
+    from json import loads
+    from pprint import pprint
+
+    data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/F-14B.json')
+    local_json = loads(data.content)
+    results = _check_dcsbios_data(tomcat_mono, local_json)
+    print('\n')
+    pprint(results)
+    # assert not results
+
+
 def _check_dcsbios_data(black_shark_mono, local_json):
     results = {}
     for bios_key in black_shark_mono.bios_data:
