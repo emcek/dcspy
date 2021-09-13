@@ -158,15 +158,6 @@ def test_bios_values_for_shark(black_shark_mono):
     with open('Ka-50.json') as f:
         shark = json.load(f)
 
-    def _finditem(obj, key):
-        if key in obj:
-            return obj[key]
-        for k, v in obj.items():
-            if isinstance(v, dict):
-                item = _finditem(v, key)
-                if item is not None:
-                    return item
-
     conver = {'length': 'max_length',
               'address': 'address',
               'mask': 'mask',
@@ -179,3 +170,13 @@ def test_bios_values_for_shark(black_shark_mono):
                 if not bios_data[b]['args'][k] == js[conver[k]]:
                     print(f"{b}: {k}, dcspy: {bios_data[b]['args'][k]} ({hex(bios_data[b]['args'][k])}) "
                           f"bios: {js[conver[k]]} ({hex(js[conver[k]])})")
+
+
+def _finditem(obj, key):
+    if key in obj:
+        return obj[key]
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            item = _finditem(v, key)
+            if item is not None:
+                return item
