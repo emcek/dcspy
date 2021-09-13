@@ -337,13 +337,13 @@ class Ka50(Aircraft):
         line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
         line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
         if line1_text:
-            l1_apostro1 = self.get_bios("PVI_LINE1_APOSTROPHE1")
-            l1_apostro2 = self.get_bios("PVI_LINE1_APOSTROPHE2")
-            text1 = f'{line1_text[-6:-3]}{l1_apostro1}{line1_text[-3:-1]}{l1_apostro2}{line1_text[-1]}'
+            l1_apostr1 = self.get_bios("PVI_LINE1_APOSTROPHE1")
+            l1_apostr2 = self.get_bios("PVI_LINE1_APOSTROPHE2")
+            text1 = f'{line1_text[-6:-3]}{l1_apostr1}{line1_text[-3:-1]}{l1_apostr2}{line1_text[-1]}'
         if line2_text:
-            l2_apostro1 = self.get_bios("PVI_LINE2_APOSTROPHE1")
-            l2_apostro2 = self.get_bios("PVI_LINE2_APOSTROPHE2")
-            text2 = f'{line2_text[-6:-3]}{l2_apostro1}{line2_text[-3:-1]}{l2_apostro2}{line2_text[-1]}'
+            l2_apostr1 = self.get_bios("PVI_LINE2_APOSTROPHE1")
+            l2_apostr2 = self.get_bios("PVI_LINE2_APOSTROPHE2")
+            text2 = f'{line2_text[-6:-3]}{l2_apostr1}{line2_text[-3:-1]}{l2_apostr2}{line2_text[-1]}'
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         draw.text(xy=(2, 3), text=line1, fill=255, font=FONT[16])
@@ -358,12 +358,16 @@ class Ka50(Aircraft):
         text1, text2 = '', ''
         for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
             draw.rectangle(xy=rect_xy, fill=black, outline=green)
-        pvi_line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
-        pvi_line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
-        if pvi_line1_text:
-            text1 = f'{pvi_line1_text[-6:-3]}{self.get_bios("PVI_LINE1_APOSTROPHE1")}{pvi_line1_text[-3:-1]}{self.get_bios("PVI_LINE1_APOSTROPHE2")}{pvi_line1_text[-1]}'
-        if pvi_line2_text:
-            text2 = f'{pvi_line2_text[-6:-3]}{self.get_bios("PVI_LINE2_APOSTROPHE1")}{pvi_line2_text[-3:-1]}{self.get_bios("PVI_LINE2_APOSTROPHE2")}{pvi_line2_text[-1]}'
+        line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
+        line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
+        if line1_text:
+            l1_apostr1 = self.get_bios("PVI_LINE1_APOSTROPHE1")
+            l1_apostr2 = self.get_bios("PVI_LINE1_APOSTROPHE2")
+            text1 = f'{line1_text[-6:-3]}{l1_apostr1}{line1_text[-3:-1]}{l1_apostr2}{line1_text[-1]}'
+        if line2_text:
+            l2_apostr1 = self.get_bios("PVI_LINE2_APOSTROPHE1")
+            l2_apostr2 = self.get_bios("PVI_LINE2_APOSTROPHE2")
+            text2 = f'{line2_text[-6:-3]}{l2_apostr1}{line2_text[-3:-1]}{l2_apostr2}{line2_text[-1]}'
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         draw.text(xy=(4, 6), text=line1, fill=green, font=FONT[32])
