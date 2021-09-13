@@ -167,7 +167,7 @@ class FA18Chornet(Aircraft):
         :param selector:
         :param value:
         """
-        if selector in ('UFC_SCRATCHPAD_STRING_1_DISPLAY', 'UFC_SCRATCHPAD_STRING_2_DISPLAY', 
+        if selector in ('UFC_SCRATCHPAD_STRING_1_DISPLAY', 'UFC_SCRATCHPAD_STRING_2_DISPLAY',
                         'UFC_COMM1_DISPLAY', 'UFC_COMM2_DISPLAY'):
             value = value.replace('`', '1').replace('~', '2')
         super().set_bios(selector, value)
