@@ -62,12 +62,12 @@ def _check_dcsbios_data(black_shark_mono, local_json):
             aircraft_value = black_shark_mono.bios_data[bios_key]['args'][args_key]
             dcsbios_value = bios_outputs[check_convert[args_key]]
             if not aircraft_value == dcsbios_value:
+                bios_issue = {args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) "
+                                        f"bios: {dcsbios_value} ({hex(dcsbios_value)})"}
                 if results.get(bios_key):
-                    results[bios_key].update({
-                                                 args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"})
+                    results[bios_key].update(bios_issue)
                 else:
-                    results[bios_key] = {
-                        args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) bios: {dcsbios_value} ({hex(dcsbios_value)})"}
+                    results[bios_key] = bios_issue
     return results
 
 
