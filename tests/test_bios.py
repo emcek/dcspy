@@ -10,7 +10,7 @@ def test_bios_values_for_shark(black_shark_mono):
     from json import loads
     from pprint import pprint
 
-    data = get('https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/Ka-50.json')
+    data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/Ka-50.json')
     local_json = loads(data.content)
     results = {}
 
