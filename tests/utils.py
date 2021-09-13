@@ -8,11 +8,6 @@ if response.status_code == 200:
 else:
     dcsbios_ver = '0.7.41'
 
-check_convert = {'length': 'max_length',
-                 'address': 'address',
-                 'mask': 'mask',
-                 'shift_by': 'shift_by'}
-
 
 def check_dcsbios_data(plane_bios: dict, plane_json: str) -> dict:
     results = {}
@@ -25,7 +20,7 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> dict:
         bios_outputs = bios_ref['outputs'][0]
         for args_key in plane_bios[bios_key]['args']:
             aircraft_value = plane_bios[bios_key]['args'][args_key]
-            dcsbios_value = bios_outputs[check_convert[args_key]]
+            dcsbios_value = bios_outputs[args_key]
             if not aircraft_value == dcsbios_value:
                 bios_issue = {args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) "
                                         f"bios: {dcsbios_value} ({hex(dcsbios_value)})"}
