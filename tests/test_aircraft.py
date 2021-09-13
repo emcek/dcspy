@@ -151,30 +151,3 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
 
-
-@mark.skip
-def test_bios_values_for_shark(black_shark_mono):
-    import json
-    with open('Ka-50.json') as f:
-        shark = json.load(f)
-
-    conver = {'length': 'max_length',
-              'address': 'address',
-              'mask': 'mask',
-              'shift_by': 'shift_by'}
-
-    for bios_data, json_data in {1: (black_shark_mono.bios_data, shark)}.values():
-        for b in bios_data:
-            js = recursive_lookup(b, json_data)['outputs'][0]
-            for k in bios_data[b]['args']:
-                if not bios_data[b]['args'][k] == js[conver[k]]:
-                    print(f"{b}: {k}, dcspy: {bios_data[b]['args'][k]} ({hex(bios_data[b]['args'][k])}) "
-                          f"bios: {js[conver[k]]} ({hex(js[conver[k]])})")
-
-
-def recursive_lookup(k, d):
-    if k in d:
-        return d[k]
-    for v in d.values():
-        if isinstance(v, dict):
-            return recursive_lookup(k, v)
