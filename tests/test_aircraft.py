@@ -125,8 +125,8 @@ def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('l1_text', '123456789')
-                    aircraft_model.set_bios('l2_text', '987654321')
+                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
+                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
     assert isinstance(img, Image)
     assert img.size == (lcd_mono.width, lcd_mono.height)
@@ -144,8 +144,8 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('l1_text', '123456789')
-                    aircraft_model.set_bios('l2_text', '987654321')
+                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
+                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)

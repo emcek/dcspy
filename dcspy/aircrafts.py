@@ -245,16 +245,16 @@ class Ka50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'l1_apostr1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'length': 1}, 'value': str()},
-            'l1_apostr2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'length': 1}, 'value': str()},
-            'l1_point': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'length': 1}, 'value': str()},
-            'l1_sign': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'length': 1}, 'value': str()},
-            'l1_text': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'length': 6}, 'value': str()},
-            'l2_apostr1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'length': 1}, 'value': str()},
-            'l2_apostr2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'length': 1}, 'value': str()},
-            'l2_point': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'length': 1}, 'value': str()},
-            'l2_sign': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'length': 1}, 'value': str()},
-            'l2_text': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'length': 6}, 'value': str()},
+            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'length': 1}, 'value': str()},
+            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'length': 1}, 'value': str()},
+            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'length': 1}, 'value': str()},
+            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'length': 1}, 'value': str()},
+            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'length': 6}, 'value': str()},
+            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'length': 1}, 'value': str()},
+            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'length': 1}, 'value': str()},
+            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'length': 1}, 'value': str()},
+            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'length': 1}, 'value': str()},
+            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'length': 6}, 'value': str()},
             'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
             'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
             'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
@@ -331,14 +331,14 @@ class Ka50(Aircraft):
         text1, text2 = '', ''
         for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
             draw.rectangle(xy=rect_xy, fill=0, outline=255)
-        l1_text = str(self.get_bios('l1_text'))
-        l2_text = str(self.get_bios('l2_text'))
-        if l1_text:
-            text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
-        if l2_text:
-            text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
-        line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
-        line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
+        pvi_line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
+        pvi_line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
+        if pvi_line1_text:
+            text1 = f'{pvi_line1_text[-6:-3]}{self.get_bios("PVI_LINE1_APOSTROPHE1")}{pvi_line1_text[-3:-1]}{self.get_bios("PVI_LINE1_APOSTROPHE2")}{pvi_line1_text[-1]}'
+        if pvi_line2_text:
+            text2 = f'{pvi_line2_text[-6:-3]}{self.get_bios("PVI_LINE2_APOSTROPHE1")}{pvi_line2_text[-3:-1]}{self.get_bios("PVI_LINE2_APOSTROPHE2")}{pvi_line2_text[-1]}'
+        line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
+        line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         draw.text(xy=(2, 3), text=line1, fill=255, font=FONT[16])
         draw.text(xy=(2, 24), text=line2, fill=255, font=FONT[16])
         self._auto_pilot_switch_1(draw)
@@ -351,14 +351,14 @@ class Ka50(Aircraft):
         text1, text2 = '', ''
         for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
             draw.rectangle(xy=rect_xy, fill=black, outline=green)
-        l1_text = str(self.get_bios('l1_text'))
-        l2_text = str(self.get_bios('l2_text'))
-        if l1_text:
-            text1 = f'{l1_text[-6:-3]}{self.get_bios("l1_apostr1")}{l1_text[-3:-1]}{self.get_bios("l1_apostr2")}{l1_text[-1]}'
-        if l2_text:
-            text2 = f'{l2_text[-6:-3]}{self.get_bios("l2_apostr1")}{l2_text[-3:-1]}{self.get_bios("l2_apostr2")}{l2_text[-1]}'
-        line1 = f'{self.get_bios("l1_sign")}{text1} {self.get_bios("l1_point")}'
-        line2 = f'{self.get_bios("l2_sign")}{text2} {self.get_bios("l2_point")}'
+        pvi_line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
+        pvi_line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
+        if pvi_line1_text:
+            text1 = f'{pvi_line1_text[-6:-3]}{self.get_bios("PVI_LINE1_APOSTROPHE1")}{pvi_line1_text[-3:-1]}{self.get_bios("PVI_LINE1_APOSTROPHE2")}{pvi_line1_text[-1]}'
+        if pvi_line2_text:
+            text2 = f'{pvi_line2_text[-6:-3]}{self.get_bios("PVI_LINE2_APOSTROPHE1")}{pvi_line2_text[-3:-1]}{self.get_bios("PVI_LINE2_APOSTROPHE2")}{pvi_line2_text[-1]}'
+        line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
+        line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         draw.text(xy=(4, 6), text=line1, fill=green, font=FONT[32])
         draw.text(xy=(4, 48), text=line2, fill=green, font=FONT[32])
         self._auto_pilot_switch_2(draw)
