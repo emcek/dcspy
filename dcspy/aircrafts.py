@@ -1,7 +1,7 @@
 from functools import partial
 from logging import getLogger
 from string import whitespace
-from typing import Dict, Union, Tuple, Optional
+from typing import Dict, Union, Tuple, Optional, Iterator
 
 from PIL import Image, ImageDraw
 
@@ -12,7 +12,7 @@ try:
 except ImportError:
     from typing import TypedDict
 
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int})
 LOG = getLogger(__name__)
 
 
@@ -25,6 +25,7 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
+        self.iterators: Dict[str, Optional[Iterator[int]]] = {}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -99,6 +100,22 @@ class Aircraft:
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Color LCD."""
         raise NotImplementedError
+
+    def get_next_value_for_button(self, btn_name: str) -> int:
+        """
+        Get next int value (cycle fore and back) for button name.
+        :param btn_name: BIOS button name
+        :return: next int value
+        """
+        from itertools import chain, cycle
+        curr_val = self.get_bios(btn_name)
+        max_val = self.bios_data[btn_name]['max_value']
+        if not self.iterators[btn_name]:
+            full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
+            seed = full_seed[curr_val + 1:2 * max_val + curr_val + 1]
+            LOG.debug(f'{self.__class__.__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
+            self.iterators[btn_name] = cycle(chain(seed))
+        return next(self.iterators[btn_name])
 
 
 class FA18Chornet(Aircraft):
@@ -206,6 +223,9 @@ class FA18Chornet(Aircraft):
 
 
 class F16C50(Aircraft):
+    button_map = {1: 'IFF_MASTER_KNB', 2: 'IFF_ENABLE_SW', 3: 'IFF_M4_CODE_SW', 4: 'IFF_M4_REPLY_SW',
+                  9: 'IFF_MASTER_KNB', 10: 'IFF_ENABLE_SW', 14: 'IFF_M4_CODE_SW', 13: 'IFF_M4_REPLY_SW'}
+
     def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
@@ -219,10 +239,11 @@ class F16C50(Aircraft):
             'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4534, 'max_length': 25}, 'value': str()},
             'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x454e, 'max_length': 25}, 'value': str()},
             'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4568, 'max_length': 25}, 'value': str()},
-            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x380, 'shift_by': 0x7}, 'value': int()},
-            'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'value': int()},
-            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'value': int()},
-            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int()}}
+            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x380, 'shift_by': 0x7}, 'max_value': 4, 'value': int()},
+            'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'max_value': 2, 'value': int()},
+            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'max_value': 2, 'value': int()},
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'max_value': 2, 'value': int()}}
+        self.iterators = {'IFF_MASTER_KNB': None, 'IFF_ENABLE_SW': None, 'IFF_M4_CODE_SW': None, 'IFF_M4_REPLY_SW': None}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
@@ -256,15 +277,9 @@ class F16C50(Aircraft):
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
-        action = {1: 'IFF_MASTER_KNB 0\n',
-                  2: 'IFF_ENABLE_SW 0\n',
-                  3: 'IFF_M4_CODE_SW 0\n',
-                  4: 'IFF_M4_REPLY_SW 0\n',
-                  9: 'IFF_MASTER_KNB 0\n',
-                  10: 'IFF_ENABLE_SW 0\n',
-                  14: 'IFF_M4_CODE_SW 0\n',
-                  13: 'IFF_M4_REPLY_SW 0\n'}
-        return super().button_request(button, action.get(button, '\n'))
+        button_bios_name = F16C50.button_map[button]
+        setting = self.get_next_value_for_button(button_bios_name)
+        return super().button_request(button, f'{button_bios_name} {setting}\n')
 
 
 class Ka50(Aircraft):
