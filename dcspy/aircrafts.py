@@ -104,6 +104,7 @@ class Aircraft:
     def get_next_value_for_button(self, btn_name: str) -> int:
         """
         Get next int value (cycle fore and back) for button name.
+
         :param btn_name: BIOS button name
         :return: next int value
         """
