@@ -218,7 +218,11 @@ class F16C50(Aircraft):
             'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x451a, 'max_length': 25}, 'value': str()},
             'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4534, 'max_length': 25}, 'value': str()},
             'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x454e, 'max_length': 25}, 'value': str()},
-            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4568, 'max_length': 25}, 'value': str()}}
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4568, 'max_length': 25}, 'value': str()},
+            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x380, 'shift_by': 0x7}, 'value': int()},
+            'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'value': int()},
+            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'value': int()},
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int()}}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
@@ -252,10 +256,14 @@ class F16C50(Aircraft):
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
-        action = {1: '\n',
-                  2: '\n',
-                  3: '\n',
-                  4: '\n'}
+        action = {1: 'IFF_MASTER_KNB 0\n',
+                  2: 'IFF_ENABLE_SW 0\n',
+                  3: 'IFF_M4_CODE_SW 0\n',
+                  4: 'IFF_M4_REPLY_SW 0\n',
+                  9: 'IFF_MASTER_KNB 0\n',
+                  10: 'IFF_ENABLE_SW 0\n',
+                  14: 'IFF_M4_CODE_SW 0\n',
+                  13: 'IFF_M4_REPLY_SW 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
