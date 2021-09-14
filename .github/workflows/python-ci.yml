@@ -30,7 +30,7 @@ jobs:
           pip install -Ur requirements.txt
       - name: Test with pytest
         run: |
-          python -m pytest -q
+          python -m pytest
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: failure()
@@ -61,7 +61,7 @@ jobs:
           mypy --ignore-missing-imports --html-report mypyhtml dcspy
       - name: Test with pytest
         run: |
-          python -m pytest -v --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term
+          python -m pytest --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: always()
