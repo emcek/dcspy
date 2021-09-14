@@ -1,7 +1,7 @@
 from functools import partial
 from logging import getLogger
 from string import whitespace
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, Optional
 
 from PIL import Image, ImageDraw
 
@@ -51,7 +51,7 @@ class Aircraft:
         """Update display."""
         lcd_sdk.update_display(image)
 
-    def prepare_image(self) -> Image.Image:
+    def prepare_image(self) -> Optional[Image.Image]:
         """
         Prepare image to be send to correct type of LCD.
 
@@ -67,6 +67,7 @@ class Aircraft:
             return img
         except KeyError as err:
             LOG.debug(f'Wrong LCD type: {self.lcd} or key: {err}')
+            return None
 
     def set_bios(self, selector: str, value: str) -> None:
         """
