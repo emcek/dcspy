@@ -110,19 +110,19 @@ class ProtocolParser:
 
 
 class StringBuffer:
-    def __init__(self, parser: ProtocolParser, address: int, length: int, callback: Callable) -> None:
+    def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable) -> None:
         """
         Basic constructor.
 
         :param parser:
         :param address:
-        :param length:
+        :param max_length:
         :param callback:
         """
         self.__address = address
-        self.__length = length
+        self.__length = max_length
         self.__dirty = False
-        self.buffer = bytearray(length)
+        self.buffer = bytearray(max_length)
         self.callbacks: Set[Callable] = set()
         if callback:
             self.callbacks.add(callback)

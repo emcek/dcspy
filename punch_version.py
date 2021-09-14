@@ -1,4 +1,2 @@
-MAJOR = 1
-MINOR = 2
-PATCH = 2
+MAJOR, MINOR, PATCH = [int(i) for i in '1.2.3'.split('.')]
 PRERELEASE = ''

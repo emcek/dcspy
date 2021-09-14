@@ -30,7 +30,7 @@ jobs:
           pip install -Ur requirements.txt
       - name: Test with pytest
         run: |
-          python -m pytest -v --random --mccabe
+          python -m pytest
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: failure()
@@ -54,14 +54,14 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install lxml pytest-cov coveralls pytest-mccabe pytest-random pylint codacy-coverage mypy
+          pip install lxml pytest-cov coveralls pytest-mccabe pytest-random pylint codacy-coverage mypy types-requests
           pip install -Ur requirements.txt
       - name: Check mypy
         run: |
           mypy --ignore-missing-imports --html-report mypyhtml dcspy
       - name: Test with pytest
         run: |
-          python -m pytest -v --random --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term --mccabe
+          python -m pytest --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term
       - name: Upload pytest test results
         uses: actions/upload-artifact@v2
         if: always()
