@@ -1,4 +1,5 @@
 from functools import partial
+from itertools import chain, cycle
 from logging import getLogger
 from string import whitespace
 from typing import Dict, Union, Tuple, Optional, Iterator
@@ -108,7 +109,6 @@ class Aircraft:
         :param btn_name: BIOS button name
         :return: next int value
         """
-        from itertools import chain, cycle
         curr_val = int(self.get_bios(btn_name))
         max_val = self.bios_data[btn_name]['max_value']
         if not self.iterators[btn_name]:
