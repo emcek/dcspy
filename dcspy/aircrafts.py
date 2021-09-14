@@ -244,7 +244,7 @@ class F16C50(Aircraft):
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'value': int(), 'max_value': 2},
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int(), 'max_value': 2}}
-        self.iterators = {'IFF_MASTER_KNB': None, 'IFF_ENABLE_SW': None, 'IFF_M4_CODE_SW': None, 'IFF_M4_REPLY_SW': None}
+        self.iterators = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
