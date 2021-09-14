@@ -331,21 +331,9 @@ class Ka50(Aircraft):
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
         draw = ImageDraw.Draw(img)
-        text1, text2 = '', ''
         for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
             draw.rectangle(xy=rect_xy, fill=0, outline=255)
-        line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
-        line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
-        if line1_text:
-            l1_apostr1 = self.get_bios("PVI_LINE1_APOSTROPHE1")
-            l1_apostr2 = self.get_bios("PVI_LINE1_APOSTROPHE2")
-            text1 = f'{line1_text[-6:-3]}{l1_apostr1}{line1_text[-3:-1]}{l1_apostr2}{line1_text[-1]}'
-        if line2_text:
-            l2_apostr1 = self.get_bios("PVI_LINE2_APOSTROPHE1")
-            l2_apostr2 = self.get_bios("PVI_LINE2_APOSTROPHE2")
-            text2 = f'{line2_text[-6:-3]}{l2_apostr1}{line2_text[-3:-1]}{l2_apostr2}{line2_text[-1]}'
-        line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
-        line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
+        line1, line2 = self._generate_pvi_lines()
         draw.text(xy=(2, 3), text=line1, fill=255, font=FONT[16])
         draw.text(xy=(2, 24), text=line2, fill=255, font=FONT[16])
         self._auto_pilot_switch_1(draw)
@@ -355,9 +343,15 @@ class Ka50(Aircraft):
         draw = ImageDraw.Draw(img)
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
-        text1, text2 = '', ''
         for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
             draw.rectangle(xy=rect_xy, fill=black, outline=green)
+        line1, line2 = self._generate_pvi_lines()
+        draw.text(xy=(4, 6), text=line1, fill=green, font=FONT[32])
+        draw.text(xy=(4, 48), text=line2, fill=green, font=FONT[32])
+        self._auto_pilot_switch_2(draw)
+
+    def _generate_pvi_lines(self) -> Tuple[str, str]:
+        text1, text2 = '', ''
         line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
         line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
         if line1_text:
@@ -370,9 +364,7 @@ class Ka50(Aircraft):
             text2 = f'{line2_text[-6:-3]}{l2_apostr1}{line2_text[-3:-1]}{l2_apostr2}{line2_text[-1]}'
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
-        draw.text(xy=(4, 6), text=line1, fill=green, font=FONT[32])
-        draw.text(xy=(4, 48), text=line2, fill=green, font=FONT[32])
-        self._auto_pilot_switch_2(draw)
+        return line1, line2
 
 
 class F14B(Aircraft):
