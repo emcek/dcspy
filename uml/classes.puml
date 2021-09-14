@@ -16,7 +16,7 @@ package dcsbios {
     class StringBuffer {
         + buffer : bytearray
         + callbacks: Set[Callable]
-        + __init__(parser, address, length, callback)
+        + __init__(parser, address, max_length, callback)
         + set_char(index, char)
         + on_dcsbios_write(address, data)
     }

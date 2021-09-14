@@ -14,10 +14,3 @@ VERSION = ['MAJOR',
            {'name': 'PRERELEASE',
             'type': 'value_list',
             'allowed_values': ['', 'alpha', 'beta']}]
-
-# VCS = {
-#     'name': 'git',
-#     'commit_message': (
-#         "Version updated from {{ current_version }}"
-#         " to {{ new_version }}")
-# }
