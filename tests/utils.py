@@ -1,11 +1,12 @@
 from json import loads
 
-from requests import get
+from requests import get, exceptions
 
-response = get('https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest')
-if response.status_code == 200:
-    dcsbios_ver = response.json()['tag_name']
-else:
+try:
+    response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=1)
+    if response.status_code == 200:
+        dcsbios_ver = response.json()['tag_name']
+except exceptions.ConnectTimeout as e:
     dcsbios_ver = '0.7.41'
 
 
