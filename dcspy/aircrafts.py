@@ -127,40 +127,40 @@ class FA18Chornet(Aircraft):
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 6}, 'value': str()},
             'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': str()}}
 
-    def _draw_common_data(self, draw: ImageDraw, fg: Union[int, Tuple[int, int, int, int]],
-                          bg: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
+    def _draw_common_data(self, draw: ImageDraw, foreground: Union[int, Tuple[int, int, int, int]],
+                          background: Union[int, Tuple[int, int, int, int]], scale: int) -> ImageDraw:
         scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
         scratch_2 = self.get_bios("UFC_SCRATCHPAD_STRING_2_DISPLAY")
         scratch_num = self.get_bios("UFC_SCRATCHPAD_NUMBER_DISPLAY")
-        draw.text(xy=(0, 0), fill=fg, font=FONT[16 * scale],
+        draw.text(xy=(0, 0), fill=foreground, font=FONT[16 * scale],
                   text=f'{scratch_1}{scratch_2}{scratch_num}')
-        draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=fg, width=1)
+        draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=foreground, width=1)
 
-        draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=bg, outline=fg)
-        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=fg, font=FONT[16 * scale])
+        draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=background, outline=foreground)
+        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=foreground, font=FONT[16 * scale])
 
         offset_comm2 = 44 * scale
-        draw.rectangle(xy=(139 * scale - offset_comm2, 29 * scale, 159 * scale - offset_comm2, 42 * scale), fill=bg, outline=fg)
-        draw.text(xy=(140 * scale - offset_comm2, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=fg, font=FONT[16 * scale])
+        draw.rectangle(xy=(139 * scale - offset_comm2, 29 * scale, 159 * scale - offset_comm2, 42 * scale), fill=background, outline=foreground)
+        draw.text(xy=(140 * scale - offset_comm2, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=foreground, font=FONT[16 * scale])
 
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
-            draw.text(xy=(120 * scale, offset), fill=fg, font=FONT[11 * scale],
+            draw.text(xy=(120 * scale, offset), fill=foreground, font=FONT[11 * scale],
                       text=f'{i}{self.get_bios(f"UFC_OPTION_CUEING_{i}")}{self.get_bios(f"UFC_OPTION_DISPLAY_{i}")}')
 
-        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=fg, font=FONT[16 * scale])
+        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=foreground, font=FONT[16 * scale])
         return draw
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Mono LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), fg=255, bg=0, scale=1)
+        self._draw_common_data(draw=ImageDraw.Draw(img), foreground=255, background=0, scale=1)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
         # todo: maybe add some public members, do some scaling and extract color to Logitech
         green = (0, 255, 0, 255)
         black = (0, 0, 0, 0)
-        draw = self._draw_common_data(draw=ImageDraw.Draw(img), fg=green, bg=black, scale=2)
+        draw = self._draw_common_data(draw=ImageDraw.Draw(img), foreground=green, background=black, scale=2)
         draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=green, font=FONT[32])
 
     def set_bios(self, selector: str, value: str) -> None:
