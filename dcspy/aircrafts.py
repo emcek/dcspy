@@ -25,7 +25,7 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
-        self.iterators: Dict[str, Optional[Iterator[int]]] = {}
+        self.iterators: Dict[str, Iterator[int]] = {}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -109,7 +109,7 @@ class Aircraft:
         :return: next int value
         """
         from itertools import chain, cycle
-        curr_val = self.get_bios(btn_name)
+        curr_val = int(self.get_bios(btn_name))
         max_val = self.bios_data[btn_name]['max_value']
         if not self.iterators[btn_name]:
             full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))

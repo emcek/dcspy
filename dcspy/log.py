@@ -16,7 +16,7 @@ def config_logger(logger: Logger) -> None:
     file_hand.setLevel(DEBUG)
     file_hand.setFormatter(Formatter('%(asctime)s | %(name)-17s | %(levelname)-7s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d'))
     stream_hand = StreamHandler()
-    stream_hand.setLevel(INFO)
+    stream_hand.setLevel(DEBUG)
     stream_hand.setFormatter(Formatter('%(levelname)-7s | %(message)s'))
     logger.addHandler(stream_hand)
     logger.addHandler(file_hand)
