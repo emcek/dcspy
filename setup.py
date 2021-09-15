@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-__version__ = '1.2.3'
+__version__ = '1.3.0'
 here = abspath(dirname(__file__))
 
 with io.open(join(here, 'README.md'), encoding='utf-8') as f:
