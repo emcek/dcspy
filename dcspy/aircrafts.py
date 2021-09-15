@@ -248,8 +248,8 @@ class F16C50(Aircraft):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            # replace 'o' to degree sign and 'a' with up-down arrow
-            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
+            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
+            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
             draw.text(xy=(0, offset), text=text, fill=255, font=FONT[11])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
@@ -258,8 +258,8 @@ class F16C50(Aircraft):
         green = (0, 255, 0, 255)
         for i in range(1, 6):
             offset = (i - 1) * 16
-            # replace 'o' to degree sign and 'a' with up-down arrow
-            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2195')
+            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
+            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
             draw.text(xy=(0, offset), text=text, fill=green, font=FONT[22])
 
     def button_request(self, button: int, request: str = '\n') -> str:
