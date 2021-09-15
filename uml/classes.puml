@@ -71,7 +71,7 @@ package aircrafts {
 
 class Aircraft {
     + bios_data : Dict[str, BIOS_VALUE]
-    + iterators : Dict[str, Iterator[int]]
+    + cycle_buttons : Dict[str, Iterator[int]]
     + lcd : LcdSize
     + __init__(lcd_type: LcdSize)
     + button_request(button: int, request: str) -> str

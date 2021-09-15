@@ -26,7 +26,7 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
-        self.iterators: Dict[str, Iterator[int]] = {}
+        self.cycle_buttons: Dict[str, Iterator[int]] = {}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -111,12 +111,12 @@ class Aircraft:
         """
         curr_val = int(self.get_bios(btn_name))
         max_val = self.bios_data[btn_name]['max_value']
-        if not self.iterators[btn_name]:
+        if not self.cycle_buttons[btn_name]:
             full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
             seed = full_seed[curr_val + 1:2 * max_val + curr_val + 1]
             LOG.debug(f'{self.__class__.__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
-            self.iterators[btn_name] = cycle(chain(seed))
-        return next(self.iterators[btn_name])
+            self.cycle_buttons[btn_name] = cycle(chain(seed))
+        return next(self.cycle_buttons[btn_name])
 
 
 class FA18Chornet(Aircraft):
@@ -241,7 +241,7 @@ class F16C50(Aircraft):
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'value': int(), 'max_value': 2},
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int(), 'max_value': 2}}
-        self.iterators = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
+        self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
