@@ -114,6 +114,29 @@ def test_button_pressed_for_tomcat(button, result, tomcat_mono):
     assert tomcat_mono.button_request(button) == result
 
 
+@mark.parametrize('button, result', [(2, 'IFF_ENABLE_SW 1\n'),
+                                     (3, 'IFF_M4_CODE_SW 1\n'),
+                                     (4, 'IFF_M4_REPLY_SW 1\n')])
+def test_button_pressed_for_viper_mono(button, result, viper_mono):
+    assert viper_mono.button_request(button) == result
+
+
+def test_get_next_value_for_button_in_viper(viper_color):
+    from itertools import cycle
+    btn9, name9 = 9, 'IFF_MASTER_KNB'
+    assert not all([v for v in viper_color.iterators.values()])
+    assert viper_color.button_request(btn9) == f'{name9} 1\n'
+    assert viper_color.button_request(btn9) == f'{name9} 2\n'
+    assert viper_color.button_request(btn9) == f'{name9} 3\n'
+    assert viper_color.button_request(btn9) == f'{name9} 4\n'
+    assert viper_color.button_request(btn9) == f'{name9} 3\n'
+    assert viper_color.button_request(btn9) == f'{name9} 2\n'
+    assert viper_color.button_request(btn9) == f'{name9} 1\n'
+    assert viper_color.button_request(btn9) == f'{name9} 0\n'
+    assert viper_color.button_request(btn9) == f'{name9} 1\n'
+    assert isinstance(viper_color.iterators[name9], cycle)
+
+
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
 def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
     from PIL.Image import Image
