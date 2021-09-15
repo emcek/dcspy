@@ -92,6 +92,17 @@ def viper_mono(lcd_mono: LcdSize):
 
 
 @fixture()
+def viper_color(lcd_color: LcdSize):
+    """
+    Return instance of F16C Viper for Logitech color LCD.
+    :param lcd_color:
+    :return: F-16C Viper instance
+    """
+    from dcspy.aircrafts import F16C50
+    return F16C50(lcd_color)
+
+
+@fixture()
 def hornet_color(lcd_color: LcdSize):
     """
     Return instance of F/A-18C Hornet for Logitech color LCD.

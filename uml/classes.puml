@@ -66,10 +66,12 @@ package aircrafts {
   Aircraft <|-- F16C50
   Aircraft <|-- Ka50
   Aircraft <|-- F14B
+  class BIOS_VALUE
 }
 
 class Aircraft {
     + bios_data : Dict[str, BIOS_VALUE]
+    + iterators : Dict[str, Iterator[int]]
     + lcd : LcdSize
     + __init__(lcd_type: LcdSize)
     + button_request(button: int, request: str) -> str
@@ -77,6 +79,7 @@ class Aircraft {
     + prepare_image() -> Image
     + set_bios(selector: str, value: str)
     + get_bios(selector: str) -> Union[str, int]
+    + get_next_value_for_button(btn_name: str) -> int
     + {abstract} draw_for_lcd_type_1(img: Image)
     + {abstract} draw_for_lcd_type_2(img: Image)
 }
@@ -93,6 +96,7 @@ class F16C50 {
     + bios_data : Dict[str, BIOS_VALUE]
     + draw_for_lcd_type_1(img: Image)
     + draw_for_lcd_type_2(img: Image)
+    + button_request(button: int, request: str) -> str
 }
 
 class Ka50 {
@@ -120,6 +124,8 @@ class BIOS_VALUE <<(T,orange)>> {
     + class : str
     + args: Dict[str, int]
     + value: Union[int, str]
+    + max_value: int
+    - total=False
 }
 
 class LcdSize <<(N,orchid)>> {
