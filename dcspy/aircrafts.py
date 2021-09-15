@@ -224,9 +224,6 @@ class FA18Chornet(Aircraft):
 
 
 class F16C50(Aircraft):
-    button_map = {1: 'IFF_MASTER_KNB', 2: 'IFF_ENABLE_SW', 3: 'IFF_M4_CODE_SW', 4: 'IFF_M4_REPLY_SW',
-                  9: 'IFF_MASTER_KNB', 10: 'IFF_ENABLE_SW', 14: 'IFF_M4_CODE_SW', 13: 'IFF_M4_REPLY_SW'}
-
     def __init__(self, lcd_type: LcdSize) -> None:
         """
         Basic constructor.
@@ -269,7 +266,8 @@ class F16C50(Aircraft):
         """
         Prepare F-16C Viper specific DCS-BIOS request for button pressed.
 
-        If button is out of scope new line is return.
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
 
         :param button: possible values 1-4
         :type: int
@@ -278,7 +276,9 @@ class F16C50(Aircraft):
         :return: ready to send DCS-BIOS request
         :rtype: str
         """
-        button_bios_name = F16C50.button_map[button]
+        button_map = {1: 'IFF_MASTER_KNB', 2: 'IFF_ENABLE_SW', 3: 'IFF_M4_CODE_SW', 4: 'IFF_M4_REPLY_SW',
+                      9: 'IFF_MASTER_KNB', 10: 'IFF_ENABLE_SW', 14: 'IFF_M4_CODE_SW', 13: 'IFF_M4_REPLY_SW'}
+        button_bios_name = button_map[button]
         setting = self.get_next_value_for_button(button_bios_name)
         return super().button_request(button, f'{button_bios_name} {setting}\n')
 
