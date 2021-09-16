@@ -99,7 +99,7 @@ actions for supported airplanes are hardcoded right now and look like:
 * PVI airfield button
 * PVI targets button
 
-### F-16C Viper ###
+### F-16C Viper
 * IFF MASTER Knob - OFF/STBY/LOW/NORM/EMER
 * IFF ENABLE Switch - M1/M3 /OFF/ M3/MS
 * IFF M-4 CODE Switch - HOLD/ A/B /ZERO
