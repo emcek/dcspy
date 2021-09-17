@@ -34,8 +34,8 @@ FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str, int]]:
     """
     Load configuration form yaml filename.
-    I case of any problems default values will be used.
 
+    I case of any problems default values will be used.
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
