@@ -1,6 +1,7 @@
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
+from pprint import pformat
 from string import whitespace
 from typing import Dict, Union, Tuple, Optional, Iterator
 
@@ -117,6 +118,9 @@ class Aircraft:
             LOG.debug(f'{self.__class__.__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
             self.cycle_buttons[btn_name] = cycle(chain(seed))
         return next(self.cycle_buttons[btn_name])
+
+    def __repr__(self):
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class FA18Chornet(Aircraft):
