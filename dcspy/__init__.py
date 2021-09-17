@@ -62,6 +62,7 @@ def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_dat
     """
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
+    LOG.debug(f'Save: {curr_dict}')
     with open(filename, 'w') as yaml_file:
         dump(curr_dict, yaml_file)
 
