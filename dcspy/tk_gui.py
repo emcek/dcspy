@@ -2,7 +2,7 @@ import tkinter as tk
 from logging import getLogger
 from threading import Thread
 
-from dcspy import LCD_TYPES
+from dcspy import LCD_TYPES, cfg_save, config
 from dcspy.starter import dcspy_run
 
 LOG = getLogger(__name__)
@@ -33,7 +33,8 @@ class DcspyGui(tk.Frame):
         for i, text in enumerate(LCD_TYPES):
             rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
-            rb_lcd_type.select()
+            if config.get('keyboard', 'G13') == text:
+                rb_lcd_type.select()
 
         start = tk.Button(master=self.master, text='Start', command=self.start_dcspy)
         close = tk.Button(master=self.master, text='Close', command=self.master.destroy)
@@ -46,12 +47,16 @@ class DcspyGui(tk.Frame):
 
     def _lcd_type_selected(self) -> None:
         """Handling selected LCD type."""
-        LOG.debug(f'Logitech {self.lcd_type.get()} selected')
-        self.status_txt.set(f'Logitech {self.lcd_type.get()} selected')
+        keyboard = self.lcd_type.get()
+        LOG.debug(f'Logitech {keyboard} selected')
+        self.status_txt.set(f'Logitech {keyboard} selected')
+        cfg_save(cfg_dict={'keyboard': keyboard})
 
     def start_dcspy(self) -> None:
         """Run real application."""
-        app_params = {'lcd_type': LCD_TYPES[self.lcd_type.get()]}
+        keyboard = self.lcd_type.get()
+        cfg_save(cfg_dict={'keyboard': keyboard})
+        app_params = {'lcd_type': LCD_TYPES[keyboard]}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         LOG.debug(f'Starting thread for: {app_params}')
         app_thread.setName('dcspy-app')
