@@ -35,7 +35,6 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str
     """
     Load configuration form yaml filename.
 
-    In case of any problems default values will be used.
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
@@ -67,7 +66,13 @@ def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_dat
         dump(curr_dict, yaml_file)
 
 
-def _set_defaults(cfg):
+def _set_defaults(cfg: Dict[str, Union[str, int]]) -> Dict[str, Union[str, int]]:
+    """
+    Set defaults to not existing config options.
+
+    :param cfg: dict before migration
+    :return: dict after migration
+    """
     LOG.debug(f'Before migration: {cfg}')
     defaults = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
     migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
