@@ -67,5 +67,13 @@ def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_dat
         dump(curr_dict, yaml_file)
 
 
-config = load_cfg()
-LOG.debug(f'Configuration: {config}')
+def _set_defaults(cfg):
+    LOG.debug(f'Before migration: {cfg}')
+    defaults = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
+    migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
+    save_cfg(migrated_cfg)
+    return migrated_cfg
+
+
+config = _set_defaults(load_cfg())
+LOG.info(f'Configuration: {config}')
