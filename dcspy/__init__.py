@@ -35,7 +35,7 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str
     """
     Load configuration form yaml filename.
 
-    I case of any problems default values will be used.
+    In case of any problems default values will be used.
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
