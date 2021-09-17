@@ -2,7 +2,7 @@ from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
 from sys import platform, prefix
-from typing import NamedTuple, Mapping, Union
+from typing import NamedTuple, Dict, Union
 
 from yaml import load, FullLoader, dump, parser
 from PIL import ImageFont
@@ -31,7 +31,7 @@ if platform == 'win32':
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 
 
-def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Mapping[str, Union[str, int]]:
+def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str, int]]:
     """
     Load configuration form yaml filename.
 
@@ -39,7 +39,7 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Mapping[str, Union[
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
-    cfg_dict = {'keyboard': 'G13', 'dcsbios': ''}
+    cfg_dict: Dict[str, Union[str, int]] = {'keyboard': 'G13', 'dcsbios': ''}
     try:
         with open(filename) as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
@@ -49,7 +49,7 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Mapping[str, Union[
     return cfg_dict
 
 
-def save_cfg(cfg_dict: Mapping[str, Union[str, int]], filename=f'{prefix}/dcspy_data/config.yaml') -> None:
+def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_data/config.yaml') -> None:
     """
     Update yaml file with dict.
 
