@@ -51,6 +51,6 @@ def set_defaults(cfg: Dict[str, Union[str, int]]) -> Dict[str, Union[str, int]]:
     """
     LOG.debug(f'Before migration: {cfg}')
     defaults = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
-    migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
+    migrated_cfg: Dict[str, Union[str, int]] = {key: cfg.get(key, defaults[key]) for key in defaults}
     save_cfg(migrated_cfg)
     return migrated_cfg
