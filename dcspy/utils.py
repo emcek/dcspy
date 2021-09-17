@@ -5,7 +5,6 @@ from typing import Dict, Union, List
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
-
 CONFIG_DICT = Dict[str, Union[str, int, List[int]]]
 
 
