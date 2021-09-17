@@ -1,20 +1,22 @@
 from logging import getLogger
 from sys import prefix
-from typing import Dict, Union
+from typing import Dict, Union, List
 
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 
+CONFIG_DICT = Dict[str, Union[str, int, List[int]]]
 
-def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str, int]]:
+
+def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> CONFIG_DICT:
     """
     Load configuration form yaml filename.
 
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
-    cfg_dict: Dict[str, Union[str, int]] = {}
+    cfg_dict: CONFIG_DICT = {}
     try:
         with open(filename) as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
@@ -28,7 +30,7 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str
     return cfg_dict
 
 
-def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_data/config.yaml') -> None:
+def save_cfg(cfg_dict: CONFIG_DICT, filename=f'{prefix}/dcspy_data/config.yaml') -> None:
     """
     Update yaml file with dict.
 
@@ -42,7 +44,7 @@ def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_dat
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: Dict[str, Union[str, int]]) -> Dict[str, Union[str, int]]:
+def set_defaults(cfg: CONFIG_DICT) -> CONFIG_DICT:
     """
     Set defaults to not existing config options.
 
@@ -50,7 +52,7 @@ def set_defaults(cfg: Dict[str, Union[str, int]]) -> Dict[str, Union[str, int]]:
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
-    defaults: Dict[str, Union[str, int]] = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
+    defaults: CONFIG_DICT = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
     migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
     save_cfg(migrated_cfg)
     return migrated_cfg
