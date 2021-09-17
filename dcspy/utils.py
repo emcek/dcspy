@@ -5,17 +5,17 @@ from typing import Dict, Union, List
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
-CONFIG_DICT = Dict[str, Union[str, int, List[int]]]
+ConfigDict = Dict[str, Union[str, int, List[int]]]
 
 
-def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> CONFIG_DICT:
+def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> ConfigDict:
     """
     Load configuration form yaml filename.
 
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
-    cfg_dict: CONFIG_DICT = {}
+    cfg_dict: ConfigDict = {}
     try:
         with open(filename) as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
@@ -31,7 +31,7 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> CONFIG_DICT:
     return cfg_dict
 
 
-def save_cfg(cfg_dict: CONFIG_DICT, filename=f'{prefix}/dcspy_data/config.yaml') -> None:
+def save_cfg(cfg_dict: ConfigDict, filename=f'{prefix}/dcspy_data/config.yaml') -> None:
     """
     Update yaml file with dict.
 
@@ -45,7 +45,7 @@ def save_cfg(cfg_dict: CONFIG_DICT, filename=f'{prefix}/dcspy_data/config.yaml')
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: CONFIG_DICT) -> CONFIG_DICT:
+def set_defaults(cfg: ConfigDict) -> ConfigDict:
     """
     Set defaults to not existing config options.
 
@@ -53,7 +53,7 @@ def set_defaults(cfg: CONFIG_DICT) -> CONFIG_DICT:
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
-    defaults: CONFIG_DICT = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
+    defaults: ConfigDict = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
     migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
     save_cfg(migrated_cfg)
     return migrated_cfg
