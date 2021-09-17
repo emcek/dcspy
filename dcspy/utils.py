@@ -1,4 +1,5 @@
 from logging import getLogger
+from os import makedirs
 from sys import prefix
 from typing import Dict, Union, List
 
@@ -24,7 +25,6 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> ConfigDict:
                 raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
             LOG.debug(f'Load: {cfg_dict}')
     except (FileNotFoundError, parser.ParserError, AttributeError) as err:
-        from os import makedirs
         makedirs(name=filename.rpartition('/')[0], exist_ok=True)
         LOG.warning(f'{err.__class__.__name__}: {filename}. Default configuration will be used.')
         LOG.debug(f'{err}')
