@@ -31,7 +31,14 @@ if platform == 'win32':
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 
 
-def cfg_load(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str, int]]:
+def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str, int]]:
+    """
+    Load configuration form yaml filename.
+    I case of any problems default values will be used.
+
+    :param filename: path to yam file - default dcspy_data/config.yaml
+    :return: configuration dict
+    """
     cfg_dict = {'keyboard': 'G13', 'dcsbios': ''}
     try:
         with open(filename) as yaml_file:
@@ -42,12 +49,18 @@ def cfg_load(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str
     return cfg_dict
 
 
-def cfg_save(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_data/config.yaml') -> None:
-    curr_dict = cfg_load(filename)
+def save_cfg(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_data/config.yaml') -> None:
+    """
+    Update yaml file with dict.
+
+    :param cfg_dict: configuration dict
+    :param filename: path to yam file - default dcspy_data/config.yaml
+    """
+    curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
     with open(filename, 'w') as yaml_file:
         dump(curr_dict, yaml_file)
 
 
-config = cfg_load()
+config = load_cfg()
 LOG.debug(f'Configuration: {config}')

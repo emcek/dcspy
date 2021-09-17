@@ -2,7 +2,7 @@ import tkinter as tk
 from logging import getLogger
 from threading import Thread
 
-from dcspy import LCD_TYPES, cfg_save, config
+from dcspy import LCD_TYPES, save_cfg, config
 from dcspy.starter import dcspy_run
 
 LOG = getLogger(__name__)
@@ -50,12 +50,12 @@ class DcspyGui(tk.Frame):
         keyboard = self.lcd_type.get()
         LOG.debug(f'Logitech {keyboard} selected')
         self.status_txt.set(f'Logitech {keyboard} selected')
-        cfg_save(cfg_dict={'keyboard': keyboard})
+        save_cfg(cfg_dict={'keyboard': keyboard})
 
     def start_dcspy(self) -> None:
         """Run real application."""
         keyboard = self.lcd_type.get()
-        cfg_save(cfg_dict={'keyboard': keyboard})
+        save_cfg(cfg_dict={'keyboard': keyboard})
         app_params = {'lcd_type': LCD_TYPES[keyboard]}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         LOG.debug(f'Starting thread for: {app_params}')
