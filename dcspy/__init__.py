@@ -1,9 +1,10 @@
 from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
-from sys import platform
-from typing import NamedTuple
+from sys import platform, prefix
+from typing import NamedTuple, Dict, Union
 
+from yaml import load, FullLoader, dump, parser
 from PIL import ImageFont
 
 from dcspy import lcd_sdk
@@ -28,3 +29,25 @@ FONT_NAME = 'DejaVuSansMono.ttf'
 if platform == 'win32':
     FONT_NAME = 'consola.ttf'
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
+
+
+def cfg_load(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str, int]]:
+    cfg_dict = {'keyboard': 'G13', 'dcsbios': ''}
+    try:
+        with open(filename) as yaml_file:
+            cfg_dict = load(yaml_file, Loader=FullLoader)
+    except (FileNotFoundError, parser.ParserError) as err:
+        LOG.warning(f'{err.__class__.__name__}: {filename} . Default configuration will be used.')
+        LOG.debug(f'{err}')
+    return cfg_dict
+
+
+def cfg_save(cfg_dict: Dict[str, Union[str, int]], filename=f'{prefix}/dcspy_data/config.yaml') -> None:
+    curr_dict = cfg_load(filename)
+    curr_dict.update(cfg_dict)
+    with open(filename, 'w') as yaml_file:
+        dump(curr_dict, yaml_file)
+
+
+config = cfg_load()
+LOG.debug(f'Configuration: {config}')
