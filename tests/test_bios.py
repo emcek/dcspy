@@ -1,7 +1,7 @@
 from pprint import pprint
 
 from dcspy import SUPPORTED_CRAFTS
-from utils import check_dcsbios_data
+from helpers import check_dcsbios_data
 
 
 def test_bios_values_for_shark(black_shark_mono):
