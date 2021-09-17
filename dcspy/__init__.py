@@ -39,12 +39,16 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> Dict[str, Union[str
     :param filename: path to yam file - default dcspy_data/config.yaml
     :return: configuration dict
     """
-    cfg_dict: Dict[str, Union[str, int]] = {'keyboard': 'G13', 'dcsbios': ''}
+    cfg_dict: Dict[str, Union[str, int]] = {}
     try:
         with open(filename) as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
-    except (FileNotFoundError, parser.ParserError) as err:
-        LOG.warning(f'{err.__class__.__name__}: {filename} . Default configuration will be used.')
+            if not isinstance(cfg_dict, dict):
+                cfg_dict, old_dict = {}, cfg_dict
+                raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
+            LOG.debug(f'Load: {cfg_dict}')
+    except (FileNotFoundError, parser.ParserError, AttributeError) as err:
+        LOG.warning(f'{err.__class__.__name__}: {filename}. Default configuration will be used.')
         LOG.debug(f'{err}')
     return cfg_dict
 
