@@ -2,7 +2,8 @@ import tkinter as tk
 from logging import getLogger
 from threading import Thread
 
-from dcspy import LCD_TYPES, save_cfg, config
+from dcspy import LCD_TYPES, config
+from dcspy.utils import save_cfg
 from dcspy.starter import dcspy_run
 
 LOG = getLogger(__name__)
