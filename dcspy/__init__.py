@@ -28,6 +28,6 @@ LOG.debug(f'{uname()}')
 config = set_defaults(load_cfg())
 FONT_NAME = 'DejaVuSansMono.ttf'
 if platform == 'win32':
-    FONT_NAME: str = config['fontname']
-FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in config['fontsize']}
+    FONT_NAME = config['fontname']  # type: ignore
+FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in config['fontsize']}  # type: ignore
 LOG.info(f'Configuration: {config}')
