@@ -26,5 +26,8 @@ LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'{uname()}')
 
 config = set_defaults(load_cfg())
-FONT = {size: ImageFont.truetype(config['fontname'], size) for size in config['fontsize']}
+FONT_NAME = 'DejaVuSansMono.ttf'
+if platform == 'win32':
+    FONT_NAME = config['fontname']
+FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in config['fontsize']}
 LOG.info(f'Configuration: {config}')
