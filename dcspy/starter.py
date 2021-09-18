@@ -20,7 +20,6 @@ def _check_current_version() -> bool:
     Check if version is current.
 
     :return: True if version is current
-    :rtype: bool
     """
     result = False
     try:
@@ -45,11 +44,8 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     Main loop where all the magic is happened.
 
     :param lcd: type of Logitech keyboard with LCD
-    :type lcd: LogitechKeyboard
     :param parser: DCS protocol parser
-    :type parser: ProtocolParser
     :param sock: multi-cast UDP socket
-    :type sock: socket.socket
     """
     start_time = time()
     current_ver = 'current' if _check_current_version() else 'update!'
@@ -73,11 +69,8 @@ def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str
     Show basic data when DCS is disconnected.
 
     :param lcd: type of Logitech keyboard with LCD
-    :type lcd: LogitechKeyboard
     :param start_time: time when connection to DCS was lost
-    :type start_time: float
     :param current_ver: logger.info about current version to show
-    :type current_ver: str
     """
     wait_time = gmtime(time() - start_time)
     spacer = ' ' * 13
@@ -92,7 +85,6 @@ def _prepare_socket() -> socket.socket:
     Preparing multi-cast UDP socket for DCS-BIOS communication.
 
     :return: socket object
-    :rtype: socket.socket
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -108,7 +100,6 @@ def dcspy_run(lcd_type: str) -> None:
     Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
-    :type lcd_type: str
     """
     parser = ProtocolParser()
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
