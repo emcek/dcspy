@@ -63,7 +63,7 @@ class DcspyGui(tk.Frame):
     def _config_editor(self) -> None:
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 450, 200
+        width, height = 550, 200
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
         cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
