@@ -61,11 +61,9 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     Function makes necessary initializations.
 
     You must call this function prior to any other function in the library.
-
     :param name: the name of your applet, you cant change it after initialization
     :param lcd_type: defines the type of your applet lcd target
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdinit = LCD_DLL['LogiLcdInit']
@@ -81,7 +79,6 @@ def logi_lcd_is_connected(lcd_type: int) -> bool:
 
     :param lcd_type: defines the type of your applet lcd target
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdisconnected = LCD_DLL['LogiLcdIsConnected']
@@ -97,7 +94,6 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
 
     :param button: defines the button to check on
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdisbuttonpressed = LCD_DLL['LogiLcdIsButtonPressed']
@@ -133,11 +129,8 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     Note: The image size must be 160x43 in order to use this function. The SDK will turn on
     the pixel on the screen if the value assigned to that byte is >= 128, it will remain off
     if the  value is < 128.
-
     :param pixels: list of 6880 (160x43) pixels as int
-    :type pixels: List[int]
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdmonosetbackground = LCD_DLL['LogiLcdMonoSetBackground']
@@ -155,7 +148,6 @@ def logi_lcd_mono_set_text(line_no: int, text: str):
     :param line_no: The monochrome lcd display has 4 lines, so this parameter can be any number from 0 to 3
     :param text: defines the text you want to display
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdmonosettext = LCD_DLL['LogiLcdMonoSetText']
@@ -171,13 +163,9 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
 
     Since the color lcd can display the full RGB gamma, 32 bits per pixel (4 bytes) are used.
     The size of the colorBitmap array has to be 320x240x4 = 307200 therefore.
-
     Note: The image size must be 320x240 in order to use this function.
-
     :param pixels: list of 307200 (320x240x4) pixels as int
-    :type pixels: List[Tuple[int]]
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdcolorsetbackground = LCD_DLL['LogiLcdColorSetBackground']
@@ -195,11 +183,9 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
     The font size that will be displayed is bigger than the one used in the other lines,
     so you can use this function to set the title of your applet/page.
     If you dont specify any color, your title will be white.
-
     :param text: defines the text you want to display as title
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdcolorsettitle = LCD_DLL['LogiLcdColorSetTitle']
@@ -214,12 +200,10 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     Function sets the specified text in the requested line on the color lcd device connected.
 
     If you dont specify any color, your title will be white.
-
     :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
     :param text: defines the text you want to display
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
-    :rtype: bool
     """
     if LCD_DLL:
         logilcdcolorsettext = LCD_DLL['LogiLcdColorSetText']
