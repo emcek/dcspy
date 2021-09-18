@@ -9,7 +9,6 @@ def config_logger(logger: Logger) -> None:
     Configure global logger add handlers and set formatters.
 
     :param logger:
-    :type: Logger
     """
     logger.setLevel(DEBUG)
     file_hand = RotatingFileHandler(filename=path.join(environ.get('TEMP', ''), 'dcspy.log'), mode='a', maxBytes=1024 * 1024, backupCount=1)
