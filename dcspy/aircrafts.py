@@ -38,11 +38,8 @@ class Aircraft:
         If button is out of scope new line is return.
 
         :param button: possible values 1-4
-        :type: int
         :param request: valid DCS-BIOS command as string
-        :type request: str
         :return: ready to send DCS-BIOS request
-        :rtype: str
         """
         LOG.debug(f'{self.__class__.__name__} Button: {button}')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
@@ -58,7 +55,6 @@ class Aircraft:
         Prepare image to be send to correct type of LCD.
 
         :return: image instance ready display on LCD
-        :rtype: Image.Image
         """
         img_for_lcd = {1: partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=0),
                        2: partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))}
@@ -107,7 +103,6 @@ class Aircraft:
         Get next int value (cycle fore and back) for button name.
 
         :param btn_name: BIOS button name
-        :return: next int value
         """
         curr_val = int(self.get_bios(btn_name))
         max_val = self.bios_data[btn_name]['max_value']
@@ -200,15 +195,10 @@ class FA18Chornet(Aircraft):
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
         If button is out of scope new line is return.
-
         :param button: possible values 1-4
-        :type: int
         :param request: valid DCS-BIOS command as string
-        :type request: str
         :return: ready to send DCS-BIOS request
-        :rtype: str
         """
         action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
                   2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
@@ -268,13 +258,9 @@ class F16C50(Aircraft):
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
         :param button: possible values 1-4
-        :type: int
         :param request: valid DCS-BIOS command as string
-        :type request: str
         :return: ready to send DCS-BIOS request
-        :rtype: str
         """
         button_map = {1: 'IFF_MASTER_KNB', 2: 'IFF_ENABLE_SW', 3: 'IFF_M4_CODE_SW', 4: 'IFF_M4_REPLY_SW',
                       9: 'IFF_MASTER_KNB', 10: 'IFF_ENABLE_SW', 14: 'IFF_M4_CODE_SW', 13: 'IFF_M4_REPLY_SW'}
@@ -314,15 +300,10 @@ class Ka50(Aircraft):
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
         If button is out of scope new line is return.
-
         :param button: possible values 1-4
-        :type: int
         :param request: valid DCS-BIOS command as string
-        :type request: str
         :return: ready to send DCS-BIOS request
-        :rtype: str
         """
         action = {1: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
                   2: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
@@ -431,15 +412,10 @@ class F14B(Aircraft):
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
         If button is out of scope new line is return.
-
         :param button: possible values 1-4
-        :type: int
         :param request: valid DCS-BIOS command as string
-        :type request: str
         :return: ready to send DCS-BIOS request
-        :rtype: str
         """
         action = {1: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
                   2: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
