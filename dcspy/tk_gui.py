@@ -70,9 +70,6 @@ class DcspyGui(tk.Frame):
 
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        # from tkinter import font
-        # print(font.families())
-        # print(font.names())
         text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD,
                               font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True)
