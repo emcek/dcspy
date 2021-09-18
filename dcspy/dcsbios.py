@@ -19,7 +19,6 @@ class ProtocolParser:
         State machine - processing of byte.
 
         Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
-
         :param int_byte:
         """
         state_handling = getattr(self, f'_{self.state.lower()}')
