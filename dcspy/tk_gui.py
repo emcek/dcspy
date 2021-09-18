@@ -1,4 +1,5 @@
 import tkinter as tk
+from functools import partial
 from logging import getLogger
 from sys import prefix
 from threading import Thread
@@ -41,7 +42,7 @@ class DcspyGui(tk.Frame):
                 rb_lcd_type.select()
 
         start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
-        cfg = tk.Button(master=self.master, text='Config', width=6, command=self._cfg_window)
+        cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
         close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
         status = tk.Label(master=self.master, textvariable=self.status_txt)
 
@@ -58,7 +59,7 @@ class DcspyGui(tk.Frame):
         self.status_txt.set(f'Logitech {keyboard} selected')
         save_cfg(cfg_dict={'keyboard': keyboard})
 
-    def _cfg_window(self):
+    def _config_editor(self) -> None:
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
         width, height = 450, 200
@@ -71,25 +72,28 @@ class DcspyGui(tk.Frame):
         # from tkinter import font
         # print(font.families())
         # print(font.names())
-        text_info = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD,
-                            font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
-        text_info.pack(fill=tk.BOTH, expand=True)
-        scrollbar_y.config(command=text_info.yview)
-        load = tk.Button(master=cfg_edit, text='Load', width=6, command=self._load_cfg)
-        save = tk.Button(master=cfg_edit, text='Save', width=6, command=self._save_cfg)
+        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD,
+                              font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
+        text_editor.pack(fill=tk.BOTH, expand=True)
+        scrollbar_y.config(command=text_editor.yview)
+        load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
+        save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
-        statusbar = tk.Label(master=cfg_edit, textvariable=self.cfg_status, anchor=tk.E)
-        self.cfg_status.set('Ready')
-        statusbar.pack(side=tk.BOTTOM, fill=tk.X)
+        editor_status = tk.Label(master=cfg_edit, text=self.cfg_file, anchor=tk.E)
+        editor_status.pack(side=tk.BOTTOM, fill=tk.X)
+        self._load_cfg(text_editor)
 
-    def _load_cfg(self):
-        pass
+    def _load_cfg(self, text_widget: tk.Text) -> None:
+        text_widget.delete('1.0', tk.END)
+        with open(self.cfg_file, 'r') as cfg_file:
+            text_widget.insert(tk.END, cfg_file.read())
 
-    def _save_cfg(self):
-        pass
+    def _save_cfg(self, text_info: tk.Text) -> None:
+        with open(self.cfg_file, 'w+') as cfg_file:
+            cfg_file.write(text_info.get('1.0', tk.END))
 
     def start_dcspy(self) -> None:
         """Run real application."""
