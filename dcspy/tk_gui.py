@@ -90,11 +90,11 @@ class DcspyGui(tk.Frame):
     def _load_cfg(self, text_widget: tk.Text) -> None:
         text_widget.delete('1.0', tk.END)
         with open(self.cfg_file, 'r') as cfg_file:
-            text_widget.insert(tk.END, cfg_file.read())
+            text_widget.insert(tk.END, cfg_file.read().strip())
 
     def _save_cfg(self, text_info: tk.Text) -> None:
         with open(self.cfg_file, 'w+') as cfg_file:
-            cfg_file.write(text_info.get('1.0', tk.END))
+            cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def start_dcspy(self) -> None:
         """Run real application."""
