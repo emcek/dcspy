@@ -31,9 +31,7 @@ class LogitechKeyboard:
         Child class needs redefine:
         - buttons with supported buttons as tuple of int
         - pass lcd_type argument as LcdSize NamedTuple to super constructor
-
         :param parser_hook: BSC-BIOS parser
-        :type parser_hook: ProtocolParser
         """
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self.parser = parser_hook
@@ -52,7 +50,6 @@ class LogitechKeyboard:
         Get latest set text at LCD.
 
         :return: list of strings with data, row by row
-        :rtype: List[str]
         """
         return self._display
 
@@ -63,9 +60,7 @@ class LogitechKeyboard:
 
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         For G19 takes first 8 or less elements of list and display as 8 rows.
-
         :param message: List of strings to display, row by row.
-        :type message: List[str]
         """
         self._display = message
         # todo: use settext form sdk
@@ -77,7 +72,6 @@ class LogitechKeyboard:
         Try detect airplane base on value received from DCS-BIOS.
 
         :param value: data from DCS-BIOS
-        :type value: str
         """
         value = value.replace('-', '').replace('_', '')
         if self.plane_name != value:
@@ -110,9 +104,7 @@ class LogitechKeyboard:
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
         :return: number of pressed button
-        :rtype: int
         """
         for btn in self.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn):
@@ -130,9 +122,7 @@ class LogitechKeyboard:
         * detect if button was pressed
         * fetch DCS-BIOS request from current plane
         * sent it action to DCS-BIOS via. network socket
-
         :param sock: network socket
-        :type sock: socket
         """
         button = self.check_buttons()
         if button:
@@ -153,7 +143,6 @@ class LogitechKeyboard:
 
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         For G19 takes first 8 or less elements of list and display as 8 rows.
-
         :return: image instance ready display on LCD
         """
         raise NotImplementedError
@@ -171,9 +160,7 @@ class KeyboardMono(LogitechKeyboard):
         Logitech keyboard with mono LCD.
 
         Support for: G510, G13, G15 (v1 and v2)
-
         :param parser_hook: BSC-BIOS parser
-        :type parser_hook: ProtocolParser
         """
         super().__init__(parser_hook, lcd_type=LcdMono)
         self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
@@ -183,7 +170,6 @@ class KeyboardMono(LogitechKeyboard):
         Prepare image for base of Mono LCD.
 
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
-
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
@@ -200,9 +186,7 @@ class KeyboardColor(LogitechKeyboard):
         Logitech keyboard with color LCD.
 
         Support for: G19
-
         :param parser_hook: BSC-BIOS parser
-        :type parser_hook: ProtocolParser
         """
         super().__init__(parser_hook, lcd_type=LcdColor)
         self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
@@ -214,7 +198,6 @@ class KeyboardColor(LogitechKeyboard):
         Prepare image for base of Color LCD.
 
         For G19 takes first 8 or less elements of list and display as 8 rows.
-
         :return: image instance ready display on LCD
         """
         # todo extract color to Logitech
