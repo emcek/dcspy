@@ -1,5 +1,5 @@
 from logging import getLogger
-from os import makedirs
+from os import environ, makedirs
 from sys import prefix
 from typing import Dict, Union, List
 
@@ -53,7 +53,8 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
-    defaults: ConfigDict = {'keyboard': 'G13', 'dcsbios': '', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
+    defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                            'keyboard': 'G13', 'fontname': 'consola.ttf', 'fontsize': [11, 16, 22, 32]}
     migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
     save_cfg(migrated_cfg)
     return migrated_cfg
