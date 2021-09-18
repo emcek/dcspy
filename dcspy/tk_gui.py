@@ -12,18 +12,19 @@ LOG = getLogger(__name__)
 
 
 class DcspyGui(tk.Frame):
-    def __init__(self, master: tk.Tk) -> None:
+    def __init__(self, master: tk.Tk, config_file: str) -> None:
         """
         Create basic GUI for dcspy application.
 
         :param master: Top level widget
+        :param config_file: path to configuration yaml file
         """
         super().__init__(master)
         self.master = master
         self.master.title('GUI')
         self.lcd_type = tk.StringVar()
         self.status_txt = tk.StringVar()
-        self.cfg_status = tk.StringVar()
+        self.cfg_file = config_file
         self._init_widgets()
 
     def _init_widgets(self) -> None:
