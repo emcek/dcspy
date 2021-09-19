@@ -7,9 +7,10 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, List[int]]]
+default_yaml = f'{prefix}/dcspy_data/config.yaml'
 
 
-def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> ConfigDict:
+def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     Load configuration form yaml filename.
 
@@ -31,7 +32,7 @@ def load_cfg(filename=f'{prefix}/dcspy_data/config.yaml') -> ConfigDict:
     return cfg_dict
 
 
-def save_cfg(cfg_dict: ConfigDict, filename=f'{prefix}/dcspy_data/config.yaml') -> None:
+def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
     """
     Update yaml file with dict.
 
