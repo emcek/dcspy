@@ -63,16 +63,16 @@ class DcspyGui(tk.Frame):
     def _config_editor(self) -> None:
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 550, 200
+        width, height = 580, 200
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
         cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
 
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD,
+        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD, relief=tk.GROOVE, borderwidth=2,
                               font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
-        text_editor.pack(fill=tk.BOTH, expand=True)
+        text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
