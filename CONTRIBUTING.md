@@ -6,6 +6,7 @@ Main modules of dcspy:
 * `logitech.py` handling Logitech keyboards with LCD display and buttons, auto-loading current aircraft
 * `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD display
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
+* `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
 
 If you want to modify or write something by yourself, here's a quick walk-through:
 * Each plan has special dict:
