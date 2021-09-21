@@ -1,10 +1,10 @@
 ## Development
-dscpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
-Main modules of dcspy:
+DCSpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
+Main modules of DCSpy:
 * `dcspy.py` main script - it starts GUI in tkinter
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.
-* `logitech.py` handling Logitech keyboards with LCD display and buttons, auto-loading current aircraft
-* `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD display
+* `logitech.py` handling Logitech keyboards with LCD and buttons, auto-loading current aircraft
+* `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 * `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
 
@@ -40,7 +40,7 @@ for int_byte in dcs_bios_resp:
 ```
 and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through LCD SDK to device display.
 
-* You can also use 4 buttons below LCD display (G13) and left, right, up and down buttons (G19), just check their state with `check_buttons()` of `KeyboardMono` which one is pressed and send request do DCS-BIOS.
+* You can also use 4 buttons below LCD (G13) and left, right, up and down buttons (G19), just check their state with `check_buttons()` of `KeyboardMono` which one is pressed and send request do DCS-BIOS.
 ```python
 sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 7778))
 ```
