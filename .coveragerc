@@ -1,6 +1,6 @@
 [run]
 source = dcspy
-omit = dcspy/tk_gui.py
 
 [report]
 omit = tests/*
+       dcspy/tk_gui.py
