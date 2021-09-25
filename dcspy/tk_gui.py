@@ -61,6 +61,7 @@ class DcspyGui(tk.Frame):
         save_cfg(cfg_dict={'keyboard': keyboard})
 
     def _config_editor(self) -> None:
+        """Config and settings editor window."""
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
         width, height = 580, 200
