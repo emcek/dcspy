@@ -77,9 +77,11 @@ class DcspyGui(tk.Frame):
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
+        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=6, command=self._check_bios)
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
+        check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
         editor_status = tk.Label(master=cfg_edit, text=self.cfg_file, anchor=tk.E)
         editor_status.pack(side=tk.BOTTOM, fill=tk.X)
@@ -93,6 +95,9 @@ class DcspyGui(tk.Frame):
     def _save_cfg(self, text_info: tk.Text) -> None:
         with open(self.cfg_file, 'w+') as cfg_file:
             cfg_file.write(text_info.get('1.0', tk.END).strip())
+
+    def _check_bios(self):
+        pass
 
     def start_dcspy(self) -> None:
         """Run real application."""
