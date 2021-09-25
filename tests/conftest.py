@@ -59,6 +59,17 @@ def hornet_mono(lcd_mono: LcdSize):
 
 
 @fixture()
+def viper_mono(lcd_mono: LcdSize):
+    """
+    Return instance of F16C Viper for Logitech mono LCD.
+    :param lcd_mono:
+    :return: F-16C Viper instance
+    """
+    from dcspy.aircrafts import F16C50
+    return F16C50(lcd_mono)
+
+
+@fixture()
 def black_shark_mono(lcd_mono: LcdSize):
     """
     Return instance of Ka-50 Black Shark for Logitech mono LCD.
@@ -81,14 +92,14 @@ def tomcat_mono(lcd_mono: LcdSize):
 
 
 @fixture()
-def viper_mono(lcd_mono: LcdSize):
+def hornet_color(lcd_color: LcdSize):
     """
-    Return instance of F16C Viper for Logitech mono LCD.
-    :param lcd_mono:
-    :return: F-16C Viper instance
+    Return instance of F/A-18C Hornet for Logitech color LCD.
+    :param lcd_color:
+    :return: F/A-18C Hornet instance
     """
-    from dcspy.aircrafts import F16C50
-    return F16C50(lcd_mono)
+    from dcspy.aircrafts import FA18Chornet
+    return FA18Chornet(lcd_color)
 
 
 @fixture()
@@ -100,17 +111,6 @@ def viper_color(lcd_color: LcdSize):
     """
     from dcspy.aircrafts import F16C50
     return F16C50(lcd_color)
-
-
-@fixture()
-def hornet_color(lcd_color: LcdSize):
-    """
-    Return instance of F/A-18C Hornet for Logitech color LCD.
-    :param lcd_color:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircrafts import FA18Chornet
-    return FA18Chornet(lcd_color)
 
 
 @fixture()

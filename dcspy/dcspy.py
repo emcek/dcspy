@@ -1,4 +1,4 @@
-import sys
+from sys import prefix
 import tkinter as tk
 from logging import getLogger
 
@@ -15,8 +15,8 @@ def run():
     width, height = 200, 130
     root.geometry(f'{width}x{height}')
     root.minsize(width=width, height=height)
-    root.iconbitmap(f'{sys.prefix}/dcspy_data/dcspy.ico')
-    gui = DcspyGui(master=root)
+    root.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
+    gui = DcspyGui(master=root, config_file=f'{prefix}/dcspy_data/config.yaml')
     gui.mainloop()
 
 

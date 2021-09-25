@@ -22,6 +22,7 @@ It supports:
 * [Credits](#credits)
 * [Installation](#installation)
 * [Usage](#usage)
+* [Configuration](#configuration)
 * [Mono vs. Color](#mono-vs-color)
 * [FAQ](#faq)
 * [New ideas](#new-ideas)
@@ -74,6 +75,10 @@ pip install dcspy-1.3.0-py3-none-any.whl
 4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
 5. LCD display should update with dcspy basic info, waiting to connect to DCS 
 6. Run DCS and start any mission.
+
+## Configuration
+DCSpy can be configured via `config.yaml` file. This is simple file, most users do not need to touch it at all.
+However, it allows tune DCSpy to users' needs.
 
 ## Mono vs. Color
 DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 

@@ -2,6 +2,7 @@ from functools import partial
 from importlib import import_module
 from logging import getLogger
 from math import log2
+from pprint import pformat
 from socket import socket
 from typing import List, Tuple
 
@@ -94,6 +95,7 @@ class LogitechKeyboard:
         self.plane_detected = False
         self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
+        LOG.debug(f'{repr(self)}')
         for field_name, proto_data in self.plane.bios_data.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
             buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
@@ -151,7 +153,7 @@ class LogitechKeyboard:
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self):
-        return f'{super().__repr__()} with: {self.__dict__}'
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class KeyboardMono(LogitechKeyboard):
