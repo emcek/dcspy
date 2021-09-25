@@ -1,12 +1,14 @@
+import re
 import tkinter as tk
 from functools import partial
 from logging import getLogger
 from sys import prefix
+from os import path
 from threading import Thread
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg
+from dcspy.utils import save_cfg, load_cfg
 
 LOG = getLogger(__name__)
 
@@ -26,6 +28,8 @@ class DcspyGui(tk.Frame):
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
         self._init_widgets()
+        self.l_bios = 'Not checked'
+        self.r_bios = 'Not checked'
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -79,12 +83,14 @@ class DcspyGui(tk.Frame):
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=self._check_bios)
+        bios_status = tk.Label(master=cfg_edit, text=f'Local BIOS: {self.l_bios} Remote BIOS: {self.r_bios}', anchor=tk.E)
+        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
         check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
+        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
         self._load_cfg(text_editor)
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
@@ -96,8 +102,19 @@ class DcspyGui(tk.Frame):
         with open(self.cfg_file, 'w+') as cfg_file:
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
-    def _check_bios(self):
-        pass
+    def _check_bios(self, bios_statusbar):
+        bios_path = load_cfg()['dcsbios']
+        self.l_bios = 'Unknown'
+        try:
+            with open(path.join(bios_path, 'Lib\\CommonData.lua')) as cd_lua:
+                cd_lua_data = cd_lua.read()
+        except FileNotFoundError as err:
+            LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+        else:
+            bios_re = re.search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
+            if bios_re:
+                self.l_bios = bios_re.group(1)
+        bios_statusbar.config(text=f'Local BIOS: {self.l_bios}')
 
     def start_dcspy(self) -> None:
         """Run real application."""
