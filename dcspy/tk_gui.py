@@ -69,6 +69,8 @@ class DcspyGui(tk.Frame):
         cfg_edit.minsize(width=250, height=150)
         cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
 
+        editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
+        editor_status.pack(side=tk.TOP, fill=tk.X)
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
         text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD, relief=tk.GROOVE, borderwidth=2,
@@ -77,14 +79,12 @@ class DcspyGui(tk.Frame):
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=6, command=self._check_bios)
+        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=self._check_bios)
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
         check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
-        editor_status = tk.Label(master=cfg_edit, text=self.cfg_file, anchor=tk.E)
-        editor_status.pack(side=tk.BOTTOM, fill=tk.X)
         self._load_cfg(text_editor)
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
