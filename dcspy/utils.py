@@ -1,8 +1,11 @@
+from datetime import datetime
 from logging import getLogger
 from os import environ, makedirs
 from sys import prefix
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Tuple
 
+from packaging import version
+from requests import get
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
@@ -59,3 +62,41 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
     save_cfg(migrated_cfg)
     return migrated_cfg
+
+
+def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, str, bool]:
+    """
+    Check version of <organization>/<package> at GitHub.
+
+    Return tuple with:
+    - result (bool) - if local version is latest
+    - online version (str) - latest version
+    - download url (str) - ready to download
+    - published date (str) - format DD MMMM YYYY
+    - pre-release (bool) - normal or pre release
+
+    :param repo: format '<organization or user>/<package>'
+    :param current_ver: current local version
+    :return: tuple with information
+    """
+    result, online_version, asset_url, published, pre_release = False, '', '', '', False
+    package = repo.split('/')[1]
+    try:
+        response = get(f'https://api.github.com/repos/{repo}/releases/latest')
+        if response.status_code == 200:
+            online_version = response.json()['tag_name']
+            pre_release = response.json()['prerelease']
+            published = datetime.strptime(response.json()['published_at'], "%Y-%m-%dT%H:%M:%S%z").strftime('%d %B %Y')
+            asset_url = response.json()['assets'][0]['browser_download_url']
+            LOG.info(f'{pre_release} {published} {asset_url}')
+            LOG.debug(f'Latest GitHub version: {online_version}')
+            if version.parse(online_version) > version.parse(current_ver):
+                LOG.info(f'There is new version of {package}: {online_version}')
+            elif version.parse(online_version) <= version.parse(current_ver):
+                LOG.info(f'{package} is up-to-date version: {current_ver}')
+                result = True
+        else:
+            LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
+    except Exception as exc:
+        LOG.warning(f'Unable to check {package} version online: {exc}')
+    return result, online_version, asset_url, published, pre_release
