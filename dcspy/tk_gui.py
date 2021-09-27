@@ -104,6 +104,21 @@ class DcspyGui(tk.Frame):
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar):
+        self._check_local_bios()
+        bios_statusbar.config(text=self.bios_text)
+        latest, ver, url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
+                                                                       current_ver=self.l_bios)
+        self.r_bios = ver if ver else 'Unknown'
+        bios_statusbar.config(text=self.bios_text)
+
+        if not latest:
+            # show mesage box
+            pass
+        else:
+            # msg box
+            pass
+
+    def _check_local_bios(self) -> None:
         bios_path = load_cfg()['dcsbios']
         self.l_bios = 'Unknown'
         try:
@@ -115,18 +130,6 @@ class DcspyGui(tk.Frame):
             bios_re = re.search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
-        bios_statusbar.config(text=self.bios_text)
-
-        latest, ver, url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
-                                                                       current_ver=self.l_bios)
-        self.r_bios = ver if ver else 'Unknown'
-        bios_statusbar.config(text=self.bios_text)
-        if not latest:
-            # show mesage box
-            pass
-        else:
-            # msg box
-            pass
 
     def start_dcspy(self) -> None:
         """Run real application."""
