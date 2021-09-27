@@ -8,7 +8,7 @@ from threading import Thread
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, load_cfg
+from dcspy.utils import save_cfg, load_cfg, check_ver_at_github
 
 LOG = getLogger(__name__)
 
@@ -114,7 +114,18 @@ class DcspyGui(tk.Frame):
             bios_re = re.search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
-        bios_statusbar.config(text=f'Local BIOS: {self.l_bios}')
+        bios_statusbar.config(text=f'Local BIOS: {self.l_bios} Remote BIOS: {self.r_bios}')
+
+        latest, ver, url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
+                                                                       current_ver=self.l_bios)
+        self.r_bios = ver if ver else 'Unknown'
+        bios_statusbar.config(text=f'Local BIOS: {self.l_bios} Remote BIOS: {self.r_bios}')
+        if not latest:
+            # show mesage box
+            pass
+        else:
+            # msg box
+            pass
 
     def start_dcspy(self) -> None:
         """Run real application."""
