@@ -99,3 +99,23 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
     return result, online_version, asset_url, published, pre_release
+
+
+def download_file(url: str, save_path: str) -> bool:
+    """
+    Download file from URL and save to save_path.
+
+    :param url: URL address
+    :param save_path: full path to save
+    """
+    response = get(url=url, stream=True)
+    if response.ok:
+        LOG.debug(f'Download file from: {url}')
+        with open(save_path, 'wb+') as dl_file:
+            for chunk in response.iter_content(chunk_size=128):
+                dl_file.write(chunk)
+            LOG.debug(f'Saved as: {save_path}')
+            return True
+    else:
+        LOG.warning(f'Can not download from: {url}')
+        return False
