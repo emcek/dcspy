@@ -1,14 +1,16 @@
 import tkinter as tk
 from functools import partial
 from logging import getLogger
-from os import path
+from os import path, environ
 from re import search
+from shutil import unpack_archive, rmtree
 from sys import prefix
 from threading import Thread
+from tkinter import messagebox
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, load_cfg, check_ver_at_github
+from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file
 
 LOG = getLogger(__name__)
 
@@ -111,12 +113,15 @@ class DcspyGui(tk.Frame):
         self.r_bios = ver if ver else 'Unknown'
         bios_statusbar.config(text=self.bios_text)
 
+        msg_txt = f'You are running latest {ver} version.\nReleased: {published}\n\nDo you like force update?'
         if not latest:
-            # show mesage box
-            pass
-        else:
-            # msg box
-            pass
+            msg_txt = f'New version {ver} available.\nReleased: {published}\n\nDo you like update?'
+        if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
+            tmp_dir = environ.get('TEMP', 'C:\\')
+            local_zip = path.join(tmp_dir, url.split('/')[-1])
+            download_file(url=url, save_path=local_zip)
+            rmtree(path.join(tmp_dir, 'DCS-BIOS'))
+            unpack_archive(filename=local_zip, extract_dir=tmp_dir)
 
     def _check_local_bios(self) -> None:
         bios_path = load_cfg()['dcsbios']
