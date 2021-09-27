@@ -4,39 +4,13 @@ from importlib import import_module
 from logging import getLogger
 from time import time, gmtime
 
-from packaging import version
-from requests import get
-
 from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
+from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
 __version__ = '1.3.0'
-
-
-def _check_current_version() -> bool:
-    """
-    Check if version is current.
-
-    :return: True if version is current
-    """
-    result = False
-    try:
-        response = get('https://api.github.com/repos/emcek/dcspy/releases/latest')
-        if response.status_code == 200:
-            online_version = response.json()['tag_name']
-            LOG.debug(f'Latest GitHub version: {online_version}')
-            if version.parse(online_version) > version.parse(__version__):
-                LOG.info(f'There is new version of dcspy: {online_version}')
-            elif version.parse(online_version) <= version.parse(__version__):
-                LOG.info(f'This is up-to-date version: {__version__}')
-                result = True
-        else:
-            LOG.warning(f'Unable to check version online. Try again later. Status={response.status_code}')
-    except Exception as exc:
-        LOG.warning(f'Unable to check version online: {exc}')
-    return result
 
 
 def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket) -> None:
@@ -48,7 +22,8 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     :param sock: multi-cast UDP socket
     """
     start_time = time()
-    current_ver = 'current' if _check_current_version() else 'update!'
+    result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
+    current_ver = 'current' if result[0] else 'update!'
     LOG.info('Waiting for DCS connection...')
     while True:
         try:
