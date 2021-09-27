@@ -88,8 +88,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             pre_release = response.json()['prerelease']
             published = datetime.strptime(response.json()['published_at'], "%Y-%m-%dT%H:%M:%S%z").strftime('%d %B %Y')
             asset_url = response.json()['assets'][0]['browser_download_url']
-            LOG.info(f'{pre_release} {published} {asset_url}')
-            LOG.debug(f'Latest GitHub version: {online_version}')
+            LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             if version.parse(online_version) > version.parse(current_ver):
                 LOG.info(f'There is new version of {package}: {online_version}')
             elif version.parse(online_version) <= version.parse(current_ver):
