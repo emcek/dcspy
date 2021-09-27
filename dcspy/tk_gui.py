@@ -30,6 +30,7 @@ class DcspyGui(tk.Frame):
         self._init_widgets()
         self.l_bios = 'Not checked'
         self.r_bios = 'Not checked'
+        self.bios_text = f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}'
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -83,7 +84,7 @@ class DcspyGui(tk.Frame):
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        bios_status = tk.Label(master=cfg_edit, text=f'Local BIOS: {self.l_bios} Remote BIOS: {self.r_bios}', anchor=tk.E)
+        bios_status = tk.Label(master=cfg_edit, text=self.bios_text, anchor=tk.E)
         check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
@@ -114,12 +115,12 @@ class DcspyGui(tk.Frame):
             bios_re = re.search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
-        bios_statusbar.config(text=f'Local BIOS: {self.l_bios} Remote BIOS: {self.r_bios}')
+        bios_statusbar.config(text=self.bios_text)
 
         latest, ver, url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
                                                                        current_ver=self.l_bios)
         self.r_bios = ver if ver else 'Unknown'
-        bios_statusbar.config(text=f'Local BIOS: {self.l_bios} Remote BIOS: {self.r_bios}')
+        bios_statusbar.config(text=self.bios_text)
         if not latest:
             # show mesage box
             pass
