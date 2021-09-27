@@ -1,9 +1,9 @@
-import re
 import tkinter as tk
 from functools import partial
 from logging import getLogger
-from sys import prefix
 from os import path
+from re import search
+from sys import prefix
 from threading import Thread
 
 from dcspy import LCD_TYPES, config
@@ -127,7 +127,7 @@ class DcspyGui(tk.Frame):
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
         else:
-            bios_re = re.search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
+            bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
 
