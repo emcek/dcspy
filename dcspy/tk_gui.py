@@ -113,6 +113,7 @@ class DcspyGui(tk.Frame):
         self.r_bios = ver if ver else 'Unknown'
         bios_statusbar.config(text=self.bios_text)
 
+        # todo: check if DCS is not running
         msg_txt = f'You are running latest {ver} version.\nReleased: {published}\n\nDo you like force update?'
         if not latest:
             msg_txt = f'New version {ver} available.\nReleased: {published}\n\nDo you like update?'
@@ -125,6 +126,7 @@ class DcspyGui(tk.Frame):
 
     def _check_local_bios(self) -> None:
         bios_path = load_cfg()['dcsbios']
+        # todo: check local dcsbios path - add result to prevent remote checking
         self.l_bios = 'Unknown'
         try:
             with open(path.join(bios_path, 'Lib\\CommonData.lua')) as cd_lua:
