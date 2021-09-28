@@ -31,6 +31,7 @@ def test_download_file(response, result, tmp_path):
     dl_file = str(tmp_path / 'tmp.txt')
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=response)
+        type(response_get.return_value).iter_content = MagicMock(return_value=[b'1', b'0', b'0', b'1'])
         assert utils.download_file('https://test.com', dl_file) is result
 
 
