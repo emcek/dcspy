@@ -31,7 +31,7 @@ def test_download_file(response, result, tmp_path):
     dl_file = str(tmp_path / 'tmp.txt')
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=response)
-        assert utils.download_file('http://ok.com', dl_file) is result
+        assert utils.download_file('https://test.com', dl_file) is result
 
 
 def test_dummy_save_load_set_defaults():
