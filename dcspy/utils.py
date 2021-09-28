@@ -1,7 +1,7 @@
 from datetime import datetime
 from logging import getLogger
 from os import environ, makedirs
-from sys import prefix
+from sys import prefix, version_info
 from typing import Dict, Union, List, Tuple
 
 from packaging import version
@@ -87,7 +87,8 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             dict_json = response.json()
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
-            published = datetime.strptime(dict_json['published_at'], "%Y-%m-%dT%H:%M:%S%z").strftime('%d %B %Y')
+            frmt = '%Y-%m-%dT%H:%M:%S%z' if version_info.minor > 6 else '%Y-%m-%dT%H:%M:%SZ'
+            published = datetime.strptime(dict_json['published_at'], frmt).strftime('%d %B %Y')
             asset_url = dict_json['assets'][0]['browser_download_url']
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             if version.parse(online_version) > version.parse(current_ver):
