@@ -113,13 +113,14 @@ class DcspyGui(tk.Frame):
         self.r_bios = ver if ver else 'Unknown'
         bios_statusbar.config(text=self.bios_text)
 
+        archive_file = url.split('/')[-1]
         # todo: check if DCS is not running
-        msg_txt = f'You are running latest {ver} version.\nReleased: {published}\n\nDo you like force update?'
+        msg_txt = f'You are running latest {ver} version.\nReleased: {published}\n\nWould you like to download {archive_file} and overwrite update?'
         if not latest:
-            msg_txt = f'New version {ver} available.\nReleased: {published}\n\nDo you like update?'
+            msg_txt = f'New version {ver} available.\nReleased: {published}\n\nWould you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
             tmp_dir = environ.get('TEMP', 'C:\\')
-            local_zip = path.join(tmp_dir, url.split('/')[-1])
+            local_zip = path.join(tmp_dir, archive_file)
             download_file(url=url, save_path=local_zip)
             rmtree(path.join(tmp_dir, 'DCS-BIOS'))
             unpack_archive(filename=local_zip, extract_dir=tmp_dir)
