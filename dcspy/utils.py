@@ -84,10 +84,11 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
     try:
         response = get(f'https://api.github.com/repos/{repo}/releases/latest')
         if response.status_code == 200:
-            online_version = response.json()['tag_name']
-            pre_release = response.json()['prerelease']
-            published = datetime.strptime(response.json()['published_at'], "%Y-%m-%dT%H:%M:%S%z").strftime('%d %B %Y')
-            asset_url = response.json()['assets'][0]['browser_download_url']
+            dict_json = response.json()
+            online_version = dict_json['tag_name']
+            pre_release = dict_json['prerelease']
+            published = datetime.strptime(dict_json['published_at'], "%Y-%m-%dT%H:%M:%S%z").strftime('%d %B %Y')
+            asset_url = dict_json['assets'][0]['browser_download_url']
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             if version.parse(online_version) > version.parse(current_ver):
                 LOG.info(f'There is new version of {package}: {online_version}')
