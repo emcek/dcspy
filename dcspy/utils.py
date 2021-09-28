@@ -83,7 +83,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
     package = repo.split('/')[1]
     try:
         response = get(f'https://api.github.com/repos/{repo}/releases/latest')
-        if response.status_code == 200:
+        if response.ok:
             dict_json = response.json()
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']

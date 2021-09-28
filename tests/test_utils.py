@@ -8,7 +8,7 @@ from pytest import mark
                                          ('3.2.1', (False, '3.2.1', 'github.com', '09 August 2021', True))])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
-        type(response_get.return_value).status_code = PropertyMock(return_value=200)
+        type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
                                                                        'assets': [{'browser_download_url': 'github.com'}],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
@@ -17,7 +17,7 @@ def test_check_ver_is_possible(online_tag, result):
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
-        type(response_get.return_value).status_code = PropertyMock(return_value=202)
+        type(response_get.return_value).ok = PropertyMock(return_value=False)
         assert utils.check_ver_at_github(repo='fake/package', current_ver='1.1.1') == (False, '', '', '', False)
 
 
