@@ -26,6 +26,14 @@ def test_check_ver_exception():
         assert utils.check_ver_at_github(repo='fake/package', current_ver='1.1.1') == (False, '', '', '', False)
 
 
+@mark.parametrize('response, result', [(False, False), (True, True)])
+def test_download_file(response, result, tmp_path):
+    dl_file = str(tmp_path / 'tmp.txt')
+    with patch.object(utils, 'get') as response_get:
+        type(response_get.return_value).ok = PropertyMock(return_value=response)
+        assert utils.download_file('http://ok.com', dl_file) is result
+
+
 def test_dummy_save_load_set_defaults():
     from os import makedirs, remove, rmdir, environ
     makedirs(name='./tmp', exist_ok=True)
