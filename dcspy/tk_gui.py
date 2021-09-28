@@ -108,12 +108,12 @@ class DcspyGui(tk.Frame):
     def _check_bios(self, bios_statusbar):
         self._check_local_bios()
         bios_statusbar.config(text=self.bios_text)
-        latest, ver, url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
-                                                                       current_ver=self.l_bios)
+        latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
+                                                                          current_ver=self.l_bios)
+        archive_file = dl_url.split('/')[-1]
         self.r_bios = ver if ver else 'Unknown'
         bios_statusbar.config(text=self.bios_text)
 
-        archive_file = url.split('/')[-1]
         # todo: check if DCS is not running
         msg_txt = f'You are running latest {ver} version.\nReleased: {published}\n\nWould you like to download {archive_file} and overwrite update?'
         if not latest:
@@ -121,7 +121,7 @@ class DcspyGui(tk.Frame):
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
             tmp_dir = environ.get('TEMP', 'C:\\')
             local_zip = path.join(tmp_dir, archive_file)
-            download_file(url=url, save_path=local_zip)
+            download_file(url=dl_url, save_path=local_zip)
             rmtree(path.join(tmp_dir, 'DCS-BIOS'))
             unpack_archive(filename=local_zip, extract_dir=tmp_dir)
 
