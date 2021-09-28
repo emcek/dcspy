@@ -111,13 +111,20 @@ class DcspyGui(tk.Frame):
         latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
                                                                           current_ver=self.l_bios)
         archive_file = dl_url.split('/')[-1]
+        pre_release = 'Pre-release' if pre_release else 'Regular'
         self.r_bios = ver if ver else 'Unknown'
         bios_statusbar.config(text=self.bios_text)
 
         # todo: check if DCS is not running
-        msg_txt = f'You are running latest {ver} version.\nReleased: {published}\n\nWould you like to download {archive_file} and overwrite update?'
+        msg_txt = f'You are running latest {ver} version.\n' \
+                  f'Type: {pre_release}\n' \
+                  f'Released: {published}\n\n' \
+                  f'Would you like to download {archive_file} and overwrite update?'
         if not latest:
-            msg_txt = f'New version {ver} available.\nReleased: {published}\n\nWould you like to update?'
+            msg_txt = f'New version {ver} available.\n' \
+                      f'Type: {pre_release}\n' \
+                      f'Released: {published}\n\n' \
+                      f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
             tmp_dir = environ.get('TEMP', 'C:\\')
             local_zip = path.join(tmp_dir, archive_file)
