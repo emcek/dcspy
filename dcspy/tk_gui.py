@@ -129,7 +129,7 @@ class DcspyGui(tk.Frame):
         # todo: check local dcsbios path - add result to prevent remote checking
         self.l_bios = 'Unknown'
         try:
-            with open(path.join(bios_path, 'Lib\\CommonData.lua')) as cd_lua:
+            with open(path.join(bios_path, 'Lib\\CommonData.lua')) as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
