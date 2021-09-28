@@ -87,6 +87,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             dict_json = response.json()
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
+            # code need cleanup after remove py36
             frmt = '%Y-%m-%dT%H:%M:%S%z' if version_info.minor > 6 else '%Y-%m-%dT%H:%M:%SZ'
             published = datetime.strptime(dict_json['published_at'], frmt).strftime('%d %B %Y')
             asset_url = dict_json['assets'][0]['browser_download_url']
