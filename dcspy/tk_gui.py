@@ -15,7 +15,7 @@ from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, 
 
 LOG = getLogger(__name__)
 DcsBios = NamedTuple('DcsBios', [('latest', bool), ('ver', str), ('dl_url', str),
-                                 ('published', str), ('pre_release', str), ('archive_file', str)])
+                                 ('published', str), ('release_type', str), ('archive_file', str)])
 
 
 class DcspyGui(tk.Frame):
@@ -148,19 +148,19 @@ class DcspyGui(tk.Frame):
         latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
                                                                           current_ver=self.l_bios)
         archive_file = dl_url.split('/')[-1]
-        pre_release = 'Pre-release' if pre_release else 'Regular'
+        release_type = 'Pre-release' if pre_release else 'Regular'
         self.r_bios = ver if ver else 'Unknown'
-        return DcsBios(latest, ver, dl_url, published, pre_release, archive_file)
+        return DcsBios(latest, ver, dl_url, published, release_type, archive_file)
 
     @staticmethod
     def _update(results: DcsBios) -> None:
         msg_txt = f'You are running latest {results.ver} version.\n' \
-                  f'Type: {results.pre_release}\n' \
+                  f'Type: {results.release_type}\n' \
                   f'Released: {results.published}\n\n' \
                   f'Would you like to download {results.archive_file} and overwrite update?'
         if not results.latest:
             msg_txt = f'New version {results.ver} available.\n' \
-                      f'Type: {results.pre_release}\n' \
+                      f'Type: {results.release_type}\n' \
                       f'Released: {results.published}\n\n' \
                       f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
