@@ -14,8 +14,8 @@ from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
 LOG = getLogger(__name__)
-DcsBios = NamedTuple('DcsBios', [('latest', bool), ('ver', str), ('dl_url', str),
-                                 ('published', str), ('release_type', str), ('archive_file', str)])
+BiosRelease = NamedTuple('BiosRelease', [('latest', bool), ('ver', str), ('dl_url', str),
+                                         ('published', str), ('release_type', str), ('archive_file', str)])
 
 
 class DcspyGui(tk.Frame):
@@ -143,17 +143,17 @@ class DcspyGui(tk.Frame):
                 result = True
         return result
 
-    def _check_remote_bios(self) -> DcsBios:
+    def _check_remote_bios(self) -> BiosRelease:
         # change API to indicate success or fail and then verification it running latest version
         latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
                                                                           current_ver=self.l_bios)
         archive_file = dl_url.split('/')[-1]
         release_type = 'Pre-release' if pre_release else 'Regular'
         self.r_bios = ver if ver else 'Unknown'
-        return DcsBios(latest, ver, dl_url, published, release_type, archive_file)
+        return BiosRelease(latest, ver, dl_url, published, release_type, archive_file)
 
     @staticmethod
-    def _update(results: DcsBios) -> None:
+    def _update(results: BiosRelease) -> None:
         msg_txt = f'You are running latest {results.ver} version.\n' \
                   f'Type: {results.release_type}\n' \
                   f'Released: {results.published}\n\n' \
