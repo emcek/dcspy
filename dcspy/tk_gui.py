@@ -82,8 +82,8 @@ class DcspyGui(tk.Frame):
         editor_status.pack(side=tk.TOP, fill=tk.X)
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD, relief=tk.GROOVE, borderwidth=2,
-                              font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
+        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
+                              borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
@@ -120,7 +120,7 @@ class DcspyGui(tk.Frame):
             dcs_runs = 'running' if dcs_runs else 'not running'
             local = '\u2714 Local' if check_local_bios else '\u2716 Local'
             remote = '\u2714 Remote' if check_remote_bios.latest else '\u2716 Remote'
-            # todo: tune message to fit all failed conditions - mayby append
+            # todo: tune message to fit all failed conditions - maybe append
             messagebox.showwarning('Update', f'{dcs}: {dcs_runs}\n'
                                              f'{local} Bios ver: {self.l_bios}\n'
                                              f'{remote} Bios ver: {self.r_bios}\n\n'
@@ -144,7 +144,7 @@ class DcspyGui(tk.Frame):
         return result
 
     def _check_remote_bios(self) -> BiosRelease:
-        # change API to indicate success or fail and then verification it running latest version
+        # todo: change API to indicate success or fail and then verification it running latest version
         latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
                                                                           current_ver=self.l_bios)
         archive_file = dl_url.split('/')[-1]
