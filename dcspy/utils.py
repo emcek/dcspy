@@ -5,6 +5,7 @@ from sys import prefix, version_info
 from typing import Dict, Union, List, Tuple
 
 from packaging import version
+from psutil import process_iter
 from requests import get
 from yaml import load, FullLoader, parser, dump
 
@@ -122,3 +123,17 @@ def download_file(url: str, save_path: str) -> bool:
     else:
         LOG.warning(f'Can not download from: {url}')
         return False
+
+
+def proc_is_running(name: str) -> int:
+    """
+    Check if process is running and return its PID.
+
+    If process name is not found, 0 (zero) is returned.
+    :param name: process name
+    :return: PID as int
+    """
+    for proc in process_iter(['pid', 'name']):
+        if name in proc.info['name']:
+            return proc.info['pid']
+    return 0
