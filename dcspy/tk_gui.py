@@ -7,12 +7,15 @@ from shutil import unpack_archive, rmtree
 from sys import prefix
 from threading import Thread
 from tkinter import messagebox
+from typing import NamedTuple
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file
+from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
 LOG = getLogger(__name__)
+DcsBios = NamedTuple('DcsBios', [('latest', bool), ('ver', str), ('dl_url', str),
+                                 ('published', str), ('pre_release', str), ('archive_file', str)])
 
 
 class DcspyGui(tk.Frame):
@@ -32,7 +35,6 @@ class DcspyGui(tk.Frame):
         self._init_widgets()
         self.l_bios = 'Not checked'
         self.r_bios = 'Not checked'
-        self.bios_text = f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}'
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -86,7 +88,7 @@ class DcspyGui(tk.Frame):
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        bios_status = tk.Label(master=cfg_edit, text=self.bios_text, anchor=tk.E)
+        bios_status = tk.Label(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}', anchor=tk.E)
         check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
@@ -106,35 +108,28 @@ class DcspyGui(tk.Frame):
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar):
-        self._check_local_bios()
-        bios_statusbar.config(text=self.bios_text)
-        latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
-                                                                          current_ver=self.l_bios)
-        archive_file = dl_url.split('/')[-1]
-        pre_release = 'Pre-release' if pre_release else 'Regular'
-        self.r_bios = ver if ver else 'Unknown'
-        bios_statusbar.config(text=self.bios_text)
+        check_local_bios = self._check_local_bios()
+        check_remote_bios = self._check_remote_bios()
+        bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        dcs_runs = proc_is_running(name='DCS.exe')
 
-        # todo: check if DCS is not running
-        msg_txt = f'You are running latest {ver} version.\n' \
-                  f'Type: {pre_release}\n' \
-                  f'Released: {published}\n\n' \
-                  f'Would you like to download {archive_file} and overwrite update?'
-        if not latest:
-            msg_txt = f'New version {ver} available.\n' \
-                      f'Type: {pre_release}\n' \
-                      f'Released: {published}\n\n' \
-                      f'Would you like to update?'
-        if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
-            tmp_dir = environ.get('TEMP', 'C:\\')
-            local_zip = path.join(tmp_dir, archive_file)
-            download_file(url=dl_url, save_path=local_zip)
-            rmtree(path.join(tmp_dir, 'DCS-BIOS'))
-            unpack_archive(filename=local_zip, extract_dir=tmp_dir)
+        if all([check_local_bios, check_remote_bios.ver, not dcs_runs]):
+            self._update(check_remote_bios)
+        else:
+            dcs = '\u2716 DCS' if dcs_runs else '\u2714 DCS'
+            dcs_runs = 'running' if dcs_runs else 'not running'
+            local = '\u2714 Local' if check_local_bios else '\u2716 Local'
+            remote = '\u2714 Remote' if check_remote_bios.latest else '\u2716 Remote'
+            # todo: tune message to fit all failed conditions - mayby append
+            messagebox.showwarning('Update', f'{dcs}: {dcs_runs}\n'
+                                             f'{local} Bios ver: {self.l_bios}\n'
+                                             f'{remote} Bios ver: {self.r_bios}\n\n'
+                                             f'Note:\nIt is not recommended update DCS-BIOS while DCS is running.\n'
+                                             f'Check settings for "dcsbios" path.')
 
-    def _check_local_bios(self) -> None:
+    def _check_local_bios(self) -> bool:
+        result = False
         bios_path = load_cfg()['dcsbios']
-        # todo: check local dcsbios path - add result to prevent remote checking
         self.l_bios = 'Unknown'
         try:
             with open(path.join(bios_path, 'Lib\\CommonData.lua')) as cd_lua:  # type: ignore
@@ -145,6 +140,35 @@ class DcspyGui(tk.Frame):
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
+                result = True
+        return result
+
+    def _check_remote_bios(self) -> DcsBios:
+        # change API to indicate success or fail and then verification it running latest version
+        latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
+                                                                          current_ver=self.l_bios)
+        archive_file = dl_url.split('/')[-1]
+        pre_release = 'Pre-release' if pre_release else 'Regular'
+        self.r_bios = ver if ver else 'Unknown'
+        return DcsBios(latest, ver, dl_url, published, pre_release, archive_file)
+
+    @staticmethod
+    def _update(results: DcsBios) -> None:
+        msg_txt = f'You are running latest {results.ver} version.\n' \
+                  f'Type: {results.pre_release}\n' \
+                  f'Released: {results.published}\n\n' \
+                  f'Would you like to download {results.archive_file} and overwrite update?'
+        if not results.latest:
+            msg_txt = f'New version {results.ver} available.\n' \
+                      f'Type: {results.pre_release}\n' \
+                      f'Released: {results.published}\n\n' \
+                      f'Would you like to update?'
+        if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
+            tmp_dir = environ.get('TEMP', 'C:\\')
+            local_zip = path.join(tmp_dir, results.archive_file)
+            download_file(url=results.dl_url, save_path=local_zip)
+            rmtree(path.join(tmp_dir, 'DCS-BIOS'))
+            unpack_archive(filename=local_zip, extract_dir=tmp_dir)
 
     def start_dcspy(self) -> None:
         """Run real application."""
