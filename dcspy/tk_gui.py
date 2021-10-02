@@ -119,7 +119,7 @@ class DcspyGui(tk.Frame):
             dcs = '\u2716 DCS' if dcs_runs else '\u2714 DCS'
             dcs_runs = 'running' if dcs_runs else 'not running'
             local = '\u2714 Local' if check_local_bios else '\u2716 Local'
-            remote = '\u2714 Remote' if check_remote_bios.latest else '\u2716 Remote'
+            remote = '\u2714 Remote' if check_remote_bios.ver else '\u2716 Remote'
             # todo: tune message to fit all failed conditions - maybe append
             messagebox.showwarning('Update', f'{dcs}: {dcs_runs}\n'
                                              f'{local} Bios ver: {self.l_bios}\n'
@@ -144,7 +144,6 @@ class DcspyGui(tk.Frame):
         return result
 
     def _check_remote_bios(self) -> BiosRelease:
-        # todo: change API to indicate success or fail and then verification it running latest version
         latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
                                                                           current_ver=self.l_bios)
         archive_file = dl_url.split('/')[-1]
