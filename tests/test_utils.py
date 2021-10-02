@@ -35,6 +35,13 @@ def test_download_file(response, result, tmp_path):
         assert utils.download_file('https://test.com', dl_file) is result
 
 
+def test_proc_is_running():
+    # p = utils.proc_is_running('python')
+    # print(p)
+    # assert p == 100
+    pass
+
+
 def test_dummy_save_load_set_defaults():
     from os import makedirs, remove, rmdir, environ
     makedirs(name='./tmp', exist_ok=True)
