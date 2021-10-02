@@ -116,16 +116,21 @@ class DcspyGui(tk.Frame):
         if all([check_local_bios, check_remote_bios.ver, not dcs_runs]):
             self._update(check_remote_bios)
         else:
-            dcs = '\u2716 DCS' if dcs_runs else '\u2714 DCS'
-            dcs_runs = 'running' if dcs_runs else 'not running'
-            local = '\u2714 Local' if check_local_bios else '\u2716 Local'
-            remote = '\u2714 Remote' if check_remote_bios.ver else '\u2716 Remote'
-            # todo: tune message to fit all failed conditions - maybe append
-            messagebox.showwarning('Update', f'{dcs}: {dcs_runs}\n'
-                                             f'{local} Bios ver: {self.l_bios}\n'
-                                             f'{remote} Bios ver: {self.r_bios}\n\n'
-                                             f'Note:\nIt is not recommended update DCS-BIOS while DCS is running.\n'
-                                             f'Check settings for "dcsbios" path.')
+            msg = self._get_problem_desc(check_local_bios, bool(check_remote_bios.ver), bool(dcs_runs))
+            messagebox.showwarning('Update', msg)
+
+    def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
+        dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
+        dcs_sta = 'running' if dcs else 'not running'
+        dcs_note = ' - Quit is recommended.' if dcs else ''
+        lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
+        lbios_note = '' if local_bios else ' - Check "dcsbios" path in config.'
+        rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
+        rbios_note = '' if remote_bios else ' - Check internet connection.'
+
+        return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
+               f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
+               f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> bool:
         result = False
