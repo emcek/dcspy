@@ -3,7 +3,7 @@ from functools import partial
 from logging import getLogger
 from os import path, environ
 from re import search
-from shutil import unpack_archive, rmtree
+from shutil import unpack_archive, rmtree, copytree
 from sys import prefix
 from threading import Thread
 from tkinter import messagebox
@@ -35,6 +35,7 @@ class DcspyGui(tk.Frame):
         self._init_widgets()
         self.l_bios = 'Not checked'
         self.r_bios = 'Not checked'
+        self.bios_path = ''
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -107,14 +108,14 @@ class DcspyGui(tk.Frame):
         with open(self.cfg_file, 'w+') as cfg_file:
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
-    def _check_bios(self, bios_statusbar):
+    def _check_bios(self, bios_statusbar) -> None:
         check_local_bios = self._check_local_bios()
         check_remote_bios = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
         dcs_runs = proc_is_running(name='DCS.exe')
 
         if all([check_local_bios, check_remote_bios.ver, not dcs_runs]):
-            self._update(check_remote_bios)
+            self._ask_to_update(check_remote_bios)
         else:
             msg = self._get_problem_desc(check_local_bios, bool(check_remote_bios.ver), bool(dcs_runs))
             messagebox.showwarning('Update', msg)
@@ -142,6 +143,7 @@ class DcspyGui(tk.Frame):
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
         else:
+            self.bios_path = bios_path
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
@@ -156,23 +158,33 @@ class DcspyGui(tk.Frame):
         self.r_bios = ver if ver else 'Unknown'
         return BiosRelease(latest, ver, dl_url, published, release_type, archive_file)
 
-    @staticmethod
-    def _update(results: BiosRelease) -> None:
+    def _ask_to_update(self, results: BiosRelease) -> None:
         msg_txt = f'You are running latest {results.ver} version.\n' \
                   f'Type: {results.release_type}\n' \
                   f'Released: {results.published}\n\n' \
                   f'Would you like to download {results.archive_file} and overwrite update?'
         if not results.latest:
-            msg_txt = f'New version {results.ver} available.\n' \
+            msg_txt = f'You are running latest {self.l_bios} version.\n' \
+                      f'New version {results.ver} available.\n' \
                       f'Type: {results.release_type}\n' \
                       f'Released: {results.published}\n\n' \
                       f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
-            tmp_dir = environ.get('TEMP', 'C:\\')
-            local_zip = path.join(tmp_dir, results.archive_file)
-            download_file(url=results.dl_url, save_path=local_zip)
-            rmtree(path.join(tmp_dir, 'DCS-BIOS'))
-            unpack_archive(filename=local_zip, extract_dir=tmp_dir)
+            self._update(results)
+
+    def _update(self, results):
+        tmp_dir = environ.get('TEMP', 'C:\\')
+        local_zip = path.join(tmp_dir, results.archive_file)
+        download_file(url=results.dl_url, save_path=local_zip)
+        LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
+        rmtree(path=path.join(tmp_dir, 'DCS-BIOS'), ignore_errors=True)
+        LOG.debug(f'Unpack file: {local_zip} ')
+        unpack_archive(filename=local_zip, extract_dir=tmp_dir)
+        LOG.debug(f'Remove: {self.bios_path} ')
+        rmtree(self.bios_path)
+        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
+        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
+        messagebox.showinfo('Updated', 'Success. Done.')
 
     def start_dcspy(self) -> None:
         """Run real application."""
