@@ -1,5 +1,6 @@
 packaging
 Pillow
+psutil
 PyYAML
 requests
 typing-extensions; python_version < '3.8'

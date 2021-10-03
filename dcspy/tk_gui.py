@@ -1,14 +1,21 @@
 import tkinter as tk
 from functools import partial
 from logging import getLogger
+from os import path, environ
+from re import search
+from shutil import unpack_archive, rmtree, copytree
 from sys import prefix
 from threading import Thread
+from tkinter import messagebox
+from typing import NamedTuple
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg
+from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
 LOG = getLogger(__name__)
+BiosReleaseInfo = NamedTuple('BiosReleaseInfo', [('latest', bool), ('ver', str), ('dl_url', str),
+                                                 ('published', str), ('release_type', str), ('archive_file', str)])
 
 
 class DcspyGui(tk.Frame):
@@ -26,6 +33,9 @@ class DcspyGui(tk.Frame):
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
         self._init_widgets()
+        self.l_bios = 'Not checked'
+        self.r_bios = 'Not checked'
+        self.bios_path = ''
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -69,20 +79,24 @@ class DcspyGui(tk.Frame):
         cfg_edit.minsize(width=250, height=150)
         cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
 
+        editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
+        editor_status.pack(side=tk.TOP, fill=tk.X)
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.WORD, relief=tk.GROOVE, borderwidth=2,
-                              font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
+        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
+                              borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
         scrollbar_y.config(command=text_editor.yview)
         load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
+        bios_status = tk.Label(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}', anchor=tk.E)
+        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
+        check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
-        editor_status = tk.Label(master=cfg_edit, text=self.cfg_file, anchor=tk.E)
-        editor_status.pack(side=tk.BOTTOM, fill=tk.X)
+        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
         self._load_cfg(text_editor)
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
@@ -93,6 +107,84 @@ class DcspyGui(tk.Frame):
     def _save_cfg(self, text_info: tk.Text) -> None:
         with open(self.cfg_file, 'w+') as cfg_file:
             cfg_file.write(text_info.get('1.0', tk.END).strip())
+
+    def _check_bios(self, bios_statusbar) -> None:
+        local_bios_info = self._check_local_bios()
+        remote_bios_info = self._check_remote_bios()
+        bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        dcs_runs = proc_is_running(name='DCS.exe')
+
+        if all([local_bios_info.ver, remote_bios_info.ver, not dcs_runs]):
+            self._ask_to_update(rel_info=remote_bios_info)
+        else:
+            msg = self._get_problem_desc(local_bios_info.ver, remote_bios_info.ver, bool(dcs_runs))
+            messagebox.showwarning('Update', msg)
+
+    def _get_problem_desc(self, local_bios: str, remote_bios: str, dcs: bool) -> str:
+        dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
+        dcs_sta = 'running' if dcs else 'not running'
+        dcs_note = ' - Quit is recommended.' if dcs else ''
+        lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
+        lbios_note = '' if local_bios else ' - Check "dcsbios" path in config.'
+        rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
+        rbios_note = '' if remote_bios else ' - Check internet connection.'
+
+        return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
+               f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
+               f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
+
+    def _check_local_bios(self) -> BiosReleaseInfo:
+        result = BiosReleaseInfo(False, '', '', '', '', '')
+        bios_path = load_cfg()['dcsbios']
+        self.l_bios = 'Unknown'
+        try:
+            with open(path.join(bios_path, 'Lib\\CommonData.lua')) as cd_lua:  # type: ignore
+                cd_lua_data = cd_lua.read()
+        except FileNotFoundError as err:
+            LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+        else:
+            self.bios_path = bios_path  # type: ignore
+            bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
+            if bios_re:
+                self.l_bios = bios_re.group(1)
+                result = BiosReleaseInfo(False, self.l_bios, '', '', '', '')
+        return result
+
+    def _check_remote_bios(self) -> BiosReleaseInfo:
+        latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
+                                                                          current_ver=self.l_bios)
+        archive_file = dl_url.split('/')[-1]
+        release_type = 'Pre-release' if pre_release else 'Regular'
+        self.r_bios = ver if ver else 'Unknown'
+        return BiosReleaseInfo(latest, ver, dl_url, published, release_type, archive_file)
+
+    def _ask_to_update(self, rel_info: BiosReleaseInfo) -> None:
+        msg_txt = f'You are running latest {rel_info.ver} version.\n' \
+                  f'Type: {rel_info.release_type}\n' \
+                  f'Released: {rel_info.published}\n\n' \
+                  f'Would you like to download {rel_info.archive_file} and overwrite update?'
+        if not rel_info.latest:
+            msg_txt = f'You are running latest {self.l_bios} version.\n' \
+                      f'New version {rel_info.ver} available.\n' \
+                      f'Type: {rel_info.release_type}\n' \
+                      f'Released: {rel_info.published}\n\n' \
+                      f'Would you like to update?'
+        if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
+            self._update(rel_info=rel_info)
+
+    def _update(self, rel_info: BiosReleaseInfo) -> None:
+        tmp_dir = environ.get('TEMP', 'C:\\')
+        local_zip = path.join(tmp_dir, rel_info.archive_file)
+        download_file(url=rel_info.dl_url, save_path=local_zip)
+        LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
+        rmtree(path=path.join(tmp_dir, 'DCS-BIOS'), ignore_errors=True)
+        LOG.debug(f'Unpack file: {local_zip} ')
+        unpack_archive(filename=local_zip, extract_dir=tmp_dir)
+        LOG.debug(f'Remove: {self.bios_path} ')
+        rmtree(self.bios_path)
+        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
+        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
+        messagebox.showinfo('Updated', 'Success. Done.')
 
     def start_dcspy(self) -> None:
         """Run real application."""
