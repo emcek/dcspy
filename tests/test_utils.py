@@ -36,10 +36,8 @@ def test_download_file(response, result, tmp_path):
 
 
 def test_proc_is_running():
-    # p = utils.proc_is_running('python')
-    # print(p)
-    # assert p == 100
-    pass
+    assert utils.proc_is_running('python')
+    assert not utils.proc_is_running('wrong_python')
 
 
 def test_dummy_save_load_set_defaults():
