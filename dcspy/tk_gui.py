@@ -143,7 +143,7 @@ class DcspyGui(tk.Frame):
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
         else:
-            self.bios_path = bios_path
+            self.bios_path = bios_path  # type: ignore
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
