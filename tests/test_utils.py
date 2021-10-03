@@ -1,7 +1,8 @@
-from dcspy import utils
 from unittest.mock import patch, PropertyMock, MagicMock
 
 from pytest import mark
+
+from dcspy import utils
 
 
 @mark.parametrize('online_tag, result', [('1.1.1', (True, '1.1.1', 'github.com', '09 August 2021', True)),
@@ -12,18 +13,18 @@ def test_check_ver_is_possible(online_tag, result):
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
                                                                        'assets': [{'browser_download_url': 'github.com'}],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake/package', current_ver='1.1.1') == result
+        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1') == result
 
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake/package', current_ver='1.1.1') == (False, '', '', '', False)
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2') == (False, '', '', '', False)
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake/package', current_ver='1.1.1') == (False, '', '', '', False)
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == (False, '', '', '', False)
 
 
 @mark.parametrize('response, result', [(False, False), (True, True)])
