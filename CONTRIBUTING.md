@@ -9,7 +9,7 @@ Main modules of DCSpy:
 * `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
 
 If you want to modify or write something by yourself, here's a quick walk-through:
-* Each plan has special dict:
+* Each plane has special dict:
 ```python
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
 
