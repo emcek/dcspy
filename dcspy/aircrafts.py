@@ -7,7 +7,7 @@ from typing import Dict, Union, Tuple, Optional, Iterator
 
 from PIL import Image, ImageDraw
 
-from dcspy import FONT, lcd_sdk, LcdSize
+from dcspy import FONT, lcd_sdk, LcdInfo
 
 try:
     from typing_extensions import TypedDict
@@ -19,7 +19,7 @@ LOG = getLogger(__name__)
 
 
 class Aircraft:
-    def __init__(self, lcd_type: LcdSize) -> None:
+    def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Basic constructor.
 
@@ -119,7 +119,7 @@ class Aircraft:
 
 
 class FA18Chornet(Aircraft):
-    def __init__(self, lcd_type: LcdSize) -> None:
+    def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Basic constructor.
 
@@ -214,7 +214,7 @@ class FA18Chornet(Aircraft):
 
 
 class F16C50(Aircraft):
-    def __init__(self, lcd_type: LcdSize) -> None:
+    def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Basic constructor.
 
@@ -269,7 +269,7 @@ class F16C50(Aircraft):
 
 
 class Ka50(Aircraft):
-    def __init__(self, lcd_type: LcdSize) -> None:
+    def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Basic constructor.
 
@@ -388,7 +388,7 @@ class Ka50(Aircraft):
 
 
 class F14B(Aircraft):
-    def __init__(self, lcd_type: LcdSize) -> None:
+    def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Basic constructor.
 
