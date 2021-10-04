@@ -3,7 +3,7 @@ from itertools import chain, cycle
 from logging import getLogger
 from pprint import pformat
 from string import whitespace
-from typing import Dict, Union, Tuple, Optional, Iterator
+from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
@@ -370,7 +370,7 @@ class Ka50(Aircraft):
         draw.text(xy=(4, 48), text=line2, fill=self.lcd.fg, font=FONT[32])
         self._auto_pilot_switch_2(draw)
 
-    def _generate_pvi_lines(self) -> Tuple[str, str]:
+    def _generate_pvi_lines(self) -> Sequence[str]:
         text1, text2 = '', ''
         line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
         line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
