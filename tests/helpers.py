@@ -18,7 +18,8 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> dict:
         if not bios_ref:
             results[bios_key] = f'Not found in DCS-BIOS {dcsbios_ver}'
             continue
-        bios_outputs = bios_ref['outputs'][0]
+        output_type = plane_bios[bios_key]['class'].split('Buffer')[0].lower()
+        bios_outputs = [out for out in bios_ref['outputs'] if output_type == out['type']][0]
         for args_key in plane_bios[bios_key]['args']:
             aircraft_value = plane_bios[bios_key]['args'][args_key]
             dcsbios_value = bios_outputs[args_key]
