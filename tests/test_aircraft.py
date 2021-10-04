@@ -48,7 +48,7 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 def test_aircraft_base_class_other_lcd(aircraft):
     from dcspy import LcdSize
-    aircraft.lcd = LcdSize(width=3, height=3, type=3)
+    aircraft.lcd = LcdSize(width=3, height=3, type=3, fg=0, bg=128)
     img = aircraft.prepare_image()
     assert img is None
 
