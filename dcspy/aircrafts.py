@@ -399,10 +399,12 @@ class A10C(Aircraft):
             'CDU_LINE0': {'class': 'StringBuffer', 'args': {'address': 0x11c0, 'max_length': 24}, 'value': str()}}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for A-10C Warthog or A-10C II Tank Killer for Mono LCD."""
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 0), text=self.get_bios('CDU_LINE0'), fill=self.lcd.fg, font=FONT[11])
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for A-10C Warthog or A-10C II Tank Killer for Color LCD."""
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 0), text=self.get_bios('CDU_LINE0'), fill=self.lcd.fg, font=FONT[22])
 
