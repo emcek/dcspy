@@ -387,6 +387,30 @@ class Ka50(Aircraft):
         return line1, line2
 
 
+class A10C(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Basic constructor.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'CDU_LINE0': {'class': 'StringBuffer', 'args': {'address': 0x11c0, 'max_length': 24}, 'value': str()}}
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        draw = ImageDraw.Draw(img)
+        draw.text(xy=(2, 0), text=self.get_bios('CDU_LINE0'), fill=self.lcd.fg, font=FONT[11])
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        draw = ImageDraw.Draw(img)
+        draw.text(xy=(2, 0), text=self.get_bios('CDU_LINE0'), fill=self.lcd.fg, font=FONT[22])
+
+
+class A10C2(A10C):
+    pass
+
+
 class F14B(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
