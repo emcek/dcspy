@@ -202,7 +202,6 @@ class KeyboardColor(LogitechKeyboard):
         For G19 takes first 8 or less elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
-        # todo extract color to Logitech
         img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
         draw = ImageDraw.Draw(img)
         font, space = FONT[22], 40
