@@ -21,7 +21,7 @@ LOG = getLogger(__name__)
 class Aircraft:
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create common aircraft.
 
         :param lcd_type: LCD type
         """
@@ -121,7 +121,7 @@ class Aircraft:
 class FA18Chornet(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create F/A-18C Hornet.
 
         :param lcd_type: LCD type
         """
@@ -216,7 +216,7 @@ class FA18Chornet(Aircraft):
 class F16C50(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create F-16C Viper.
 
         :param lcd_type: LCD type
         """
@@ -271,7 +271,7 @@ class F16C50(Aircraft):
 class Ka50(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create Ka-50 Black Shark.
 
         :param lcd_type: LCD type
         """
@@ -390,7 +390,7 @@ class Ka50(Aircraft):
 class A10C(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create A-10C Warthog or A-10C II Tank Killer.
 
         :param lcd_type: LCD type
         """
@@ -416,7 +416,7 @@ class A10C2(A10C):
 class F14B(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create F-14B Tomcat.
 
         :param lcd_type: LCD type
         """
