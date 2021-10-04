@@ -59,12 +59,12 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
     from dcspy.aircrafts import Aircraft
     from dcspy import lcd_sdk
-    from dcspy import LcdSize
+    from dcspy import LcdInfo
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         keyboard = keyboard(protocol_parser)
     assert isinstance(keyboard.plane, Aircraft)
-    assert isinstance(keyboard.lcd, LcdSize)
+    assert isinstance(keyboard.lcd, LcdInfo)
     assert keyboard.lcd.type == lcd_type
     assert isinstance(keyboard.display, list)
     with patch.object(lcd_sdk, 'update_display', return_value=True):

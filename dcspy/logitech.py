@@ -31,7 +31,7 @@ class LogitechKeyboard:
 
         Child class needs redefine:
         - buttons with supported buttons as tuple of int
-        - pass lcd_type argument as LcdSize NamedTuple to super constructor
+        - pass lcd_type argument as LcdInfo NamedTuple to super constructor
         :param parser_hook: BSC-BIOS parser
         """
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
@@ -174,11 +174,11 @@ class KeyboardMono(LogitechKeyboard):
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=0)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
         draw = ImageDraw.Draw(img)
-        fill, font, space = 255, FONT[11], 10
+        font, space = FONT[11], 10
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
         return img
 
 
@@ -203,9 +203,9 @@ class KeyboardColor(LogitechKeyboard):
         :return: image instance ready display on LCD
         """
         # todo extract color to Logitech
-        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=(0, 0, 0, 0))
+        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
         draw = ImageDraw.Draw(img)
-        fill, font, space = (0, 255, 0, 255), FONT[22], 40
+        font, space = FONT[22], 40
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, space * line_no), text=line, fill=fill, font=font)
+            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
         return img

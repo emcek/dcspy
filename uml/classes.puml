@@ -40,7 +40,7 @@ class LogitechKeyboard {
     + plane_detected = False : bool
     + already_pressed = False : bool
     + buttons : Tuple[int]
-    + lcd : LcdSize
+    + lcd : LcdInfo
     + dislay(message : List[str]) -> List[str]
     # {abstract} _prepare_image() -> Image
     + detecting_plane()
@@ -72,8 +72,8 @@ package aircrafts {
 class Aircraft {
     + bios_data : Dict[str, BIOS_VALUE]
     + cycle_buttons : Dict[str, Iterator[int]]
-    + lcd : LcdSize
-    + __init__(lcd_type: LcdSize)
+    + lcd : LcdInfo
+    + __init__(lcd_type: LcdInfo)
     + button_request(button: int, request: str) -> str
     + update_display(image : Image)
     + prepare_image() -> Image
@@ -114,9 +114,9 @@ class F14B {
 }
 
 LogitechKeyboard *- Aircraft
-LogitechKeyboard *- LcdSize
+LogitechKeyboard *- LcdInfo
 LogitechKeyboard *--- ProtocolParser
-Aircraft *-- LcdSize
+Aircraft *-- LcdInfo
 Aircraft *-- StringBuffer
 Aircraft *-- IntegerBuffer
 
@@ -128,9 +128,11 @@ class BIOS_VALUE <<(T,orange)>> {
     - total=False
 }
 
-class LcdSize <<(N,orchid)>> {
+class LcdInfo <<(N,orchid)>> {
     + height : int
     + width : int
     + type : int
+    + fg : Union[int, Sequence[int]]
+    + bg : Union[int, Sequence[int]]
 }
 @enduml

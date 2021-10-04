@@ -1,8 +1,8 @@
 from unittest.mock import patch, MagicMock
 
-from dcspy import LcdSize
-
 from pytest import fixture
+
+from dcspy import LcdInfo
 
 
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
@@ -15,7 +15,7 @@ def protocol_parser():
 
 # <=><=><=><=><=> aircrafts <=><=><=><=><=>
 @fixture()
-def lcd_mono() -> LcdSize:
+def lcd_mono() -> LcdInfo:
     """
     Return of mono LCD.
 
@@ -26,7 +26,7 @@ def lcd_mono() -> LcdSize:
 
 
 @fixture()
-def lcd_color() -> LcdSize:
+def lcd_color() -> LcdInfo:
     """
     Return of color LCD.
 
@@ -37,7 +37,7 @@ def lcd_color() -> LcdSize:
 
 
 @fixture()
-def aircraft(lcd_mono: LcdSize):
+def aircraft(lcd_mono: LcdInfo):
     """
     Return instance of Aircraft base class for Logitech mono LCD.
     :param lcd_mono:
@@ -48,7 +48,7 @@ def aircraft(lcd_mono: LcdSize):
 
 
 @fixture()
-def hornet_mono(lcd_mono: LcdSize):
+def hornet_mono(lcd_mono: LcdInfo):
     """
     Return instance of F/A-18C Hornet for Logitech mono LCD.
     :param lcd_mono:
@@ -59,7 +59,7 @@ def hornet_mono(lcd_mono: LcdSize):
 
 
 @fixture()
-def viper_mono(lcd_mono: LcdSize):
+def viper_mono(lcd_mono: LcdInfo):
     """
     Return instance of F16C Viper for Logitech mono LCD.
     :param lcd_mono:
@@ -70,7 +70,7 @@ def viper_mono(lcd_mono: LcdSize):
 
 
 @fixture()
-def black_shark_mono(lcd_mono: LcdSize):
+def black_shark_mono(lcd_mono: LcdInfo):
     """
     Return instance of Ka-50 Black Shark for Logitech mono LCD.
     :param lcd_mono:
@@ -81,7 +81,7 @@ def black_shark_mono(lcd_mono: LcdSize):
 
 
 @fixture()
-def tomcat_mono(lcd_mono: LcdSize):
+def tomcat_mono(lcd_mono: LcdInfo):
     """
     Return instance of F-14B Tomcat for Logitech mono LCD.
     :param lcd_mono:
@@ -92,7 +92,7 @@ def tomcat_mono(lcd_mono: LcdSize):
 
 
 @fixture()
-def hornet_color(lcd_color: LcdSize):
+def hornet_color(lcd_color: LcdInfo):
     """
     Return instance of F/A-18C Hornet for Logitech color LCD.
     :param lcd_color:
@@ -103,7 +103,7 @@ def hornet_color(lcd_color: LcdSize):
 
 
 @fixture()
-def viper_color(lcd_color: LcdSize):
+def viper_color(lcd_color: LcdInfo):
     """
     Return instance of F16C Viper for Logitech color LCD.
     :param lcd_color:
@@ -114,7 +114,7 @@ def viper_color(lcd_color: LcdSize):
 
 
 @fixture()
-def black_shark_color(lcd_color: LcdSize):
+def black_shark_color(lcd_color: LcdInfo):
     """
     Return instance of Ka-50 Black Shark for Logitech color LCD.
     :param lcd_color:
@@ -125,7 +125,7 @@ def black_shark_color(lcd_color: LcdSize):
 
 
 @fixture()
-def tomcat_color(lcd_color: LcdSize):
+def tomcat_color(lcd_color: LcdInfo):
     """
     Return instance of F-14B Tomcat for Logitech color LCD.
     :param lcd_color:
