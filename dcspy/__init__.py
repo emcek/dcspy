@@ -12,7 +12,7 @@ from dcspy.utils import load_cfg, set_defaults
 
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50', 'F14B': 'F-14B'}
 SEND_ADDR = ('127.0.0.1', 7778)
-RECV_ADDR = ('172.17.96.1', 5010)
+RECV_ADDR = ('0.0.0.0', 5010)
 MULTICAST_IP = '239.255.50.10'
 LcdInfo = NamedTuple('LcdInfo', [('width', int), ('height', int), ('type', int),
                                  ('fg', Union[int, Sequence[int]]), ('bg', Union[int, Sequence[int]])])
