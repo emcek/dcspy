@@ -81,6 +81,17 @@ def black_shark_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
+def warthog_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of A-10C Warthog for Logitech mono LCD.
+    :param lcd_mono:
+    :return: A-10C Warthog instance
+    """
+    from dcspy.aircrafts import A10C
+    return A10C(lcd_mono)
+
+
+@fixture()
 def tomcat_mono(lcd_mono: LcdInfo):
     """
     Return instance of F-14B Tomcat for Logitech mono LCD.
@@ -122,6 +133,17 @@ def black_shark_color(lcd_color: LcdInfo):
     """
     from dcspy.aircrafts import Ka50
     return Ka50(lcd_color)
+
+
+@fixture()
+def warthog_color(lcd_color: LcdInfo):
+    """
+    Return instance of A-10C II Tank Killer for Logitech mono LCD.
+    :param lcd_color:
+    :return: A-10C II Tank Killer instance
+    """
+    from dcspy.aircrafts import A10C2
+    return A10C2(lcd_color)
 
 
 @fixture()

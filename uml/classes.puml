@@ -65,6 +65,8 @@ package aircrafts {
   Aircraft <|-- FA18Chornet
   Aircraft <|-- F16C50
   Aircraft <|-- Ka50
+  Aircraft <|-- A10C
+  A10C <|-- A10C2
   Aircraft <|-- F14B
   class BIOS_VALUE
 }
@@ -104,6 +106,15 @@ class Ka50 {
     + draw_for_lcd_type_1(img: Image)
     + draw_for_lcd_type_2(img: Image)
     + button_request(button: int, request: str) -> str
+}
+
+class A10C {
+    + bios_data : Dict[str, BIOS_VALUE]
+    + draw_for_lcd_type_1(img: Image)
+    + draw_for_lcd_type_2(img: Image)
+}
+
+class A10C2 {
 }
 
 class F14B {

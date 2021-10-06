@@ -21,7 +21,7 @@ LOG = getLogger(__name__)
 class Aircraft:
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create common aircraft.
 
         :param lcd_type: LCD type
         """
@@ -121,7 +121,7 @@ class Aircraft:
 class FA18Chornet(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create F/A-18C Hornet.
 
         :param lcd_type: LCD type
         """
@@ -216,7 +216,7 @@ class FA18Chornet(Aircraft):
 class F16C50(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create F-16C Viper.
 
         :param lcd_type: LCD type
         """
@@ -271,7 +271,7 @@ class F16C50(Aircraft):
 class Ka50(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create Ka-50 Black Shark.
 
         :param lcd_type: LCD type
         """
@@ -387,10 +387,65 @@ class Ka50(Aircraft):
         return line1, line2
 
 
+class A10C(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create A-10C Warthog or A-10C II Tank Killer.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'VHFAM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x1190, 'max_length': 2}, 'value': str()},
+            'VHFAM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
+            'VHFAM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
+            'VHFAM_FREQ4': {'class': 'StringBuffer', 'args': {'address': 0x1192, 'max_length': 2}, 'value': str()},
+            'VHFFM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x119a, 'max_length': 2}, 'value': str()},
+            'VHFFM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf, 'shift_by': 0x0}, 'value': int()},
+            'VHFFM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
+            'VHFFM_FREQ4': {'class': 'StringBuffer', 'args': {'address': 0x119e, 'max_length': 2}, 'value': str()},
+            'UHF_100MHZ_SEL': {'class': 'StringBuffer', 'args': {'address': 0x1178, 'max_length': 1}, 'value': str()},
+            'UHF_10MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa}, 'value': int()},
+            'UHF_1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
+            'UHF_POINT1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}, 'value': int()},
+            'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': str()}}
+
+    def _generate_freq_values(self) -> Sequence[str]:
+        vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
+                f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")}'
+        vhffm = f'{self.get_bios("VHFFM_FREQ1")}{self.get_bios("VHFFM_FREQ2")}.' \
+                f'{self.get_bios("VHFFM_FREQ3")}{self.get_bios("VHFFM_FREQ4")}'
+        uhf = f'{self.get_bios("UHF_100MHZ_SEL")}{self.get_bios("UHF_10MHZ_SEL")}{self.get_bios("UHF_1MHZ_SEL")}.' \
+              f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")}'
+        return uhf, vhfam, vhffm
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for A-10C Warthog or A-10C II Tank Killer for Mono LCD."""
+        draw = ImageDraw.Draw(img)
+        uhf, vhfam, vhffm = self._generate_freq_values()
+        for i, line in enumerate(['      *** RADIOS ***', f'VHF AM: {vhfam} MHz',
+                                  f'VHF FM: {vhffm} MHz', f'   UHF: {uhf} MHz']):
+            offset = i * 10
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.fg, font=FONT[11])
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for A-10C Warthog or A-10C II Tank Killer for Color LCD."""
+        draw = ImageDraw.Draw(img)
+        uhf, vhfam, vhffm = self._generate_freq_values()
+        for i, line in enumerate(['      *** RADIOS ***', f'VHF AM: {vhfam} MHz',
+                                  f'VHF FM: {vhffm} MHz', f'   UHF: {uhf} MHz']):
+            offset = i * 20
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.fg, font=FONT[22])
+
+
+class A10C2(A10C):
+    pass
+
+
 class F14B(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Basic constructor.
+        Create F-14B Tomcat.
 
         :param lcd_type: LCD type
         """
