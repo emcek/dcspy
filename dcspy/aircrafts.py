@@ -1,6 +1,7 @@
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
+from os import environ, path
 from pprint import pformat
 from string import whitespace
 from typing import Dict, Union, Optional, Iterator, Sequence
@@ -28,6 +29,7 @@ class Aircraft:
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
+        self._debug_img = cycle(range(10))
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -62,7 +64,7 @@ class Aircraft:
         try:
             img = img_for_lcd[self.lcd.type]()
             getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
-            # img.save(path.join(environ.get('TEMP', ''), f'{self.__class__.__name__}.png'), 'PNG')
+            img.save(path.join(environ.get('TEMP', ''), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
             return img
         except KeyError as err:
             LOG.debug(f'Wrong LCD type: {self.lcd} or key: {err}')
