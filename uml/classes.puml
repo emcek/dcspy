@@ -48,6 +48,7 @@ class LogitechKeyboard {
     + check_buttons() -> int
     + button_handle(sock : socket)
     + clear()
+    + text(List[str])
 }
 
 class KeyboardMono {
@@ -75,6 +76,7 @@ class Aircraft {
     + bios_data : Dict[str, BIOS_VALUE]
     + cycle_buttons : Dict[str, Iterator[int]]
     + lcd : LcdInfo
+    # _debug_img : Iterator[int]
     + __init__(lcd_type: LcdInfo)
     + button_request(button: int, request: str) -> str
     + update_display(image : Image)
