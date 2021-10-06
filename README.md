@@ -78,7 +78,8 @@ pip install dcspy-1.3.0-py3-none-any.whl
 
 ## Configuration
 DCSpy can be configured via `config.yaml` file. This is simple file, most users do not need to touch it at all.
-However, it allows tune DCSpy to users' needs.
+However, it allows tune DCSpy to users' needs.  
+Location of configuration file is in Python installation directory (e.g. `c:\python39\dcspy_data\config.yaml`)
 
 ## Mono vs. Color
 DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 
