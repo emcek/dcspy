@@ -28,6 +28,14 @@ def test_bios_values_for_hornet(hornet_mono):
     assert not results
 
 
+def test_bios_values_for_warthog(warthog_mono):
+    name = SUPPORTED_CRAFTS[warthog_mono.__class__.__name__]
+    results = check_dcsbios_data(warthog_mono.bios_data, f'{name}.json')
+    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
+    pprint(results)
+    assert not results
+
+
 def test_bios_values_for_tomcat(tomcat_mono):
     name = SUPPORTED_CRAFTS[tomcat_mono.__class__.__name__]
     results = check_dcsbios_data(tomcat_mono.bios_data, f'{name}.json')

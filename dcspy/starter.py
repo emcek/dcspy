@@ -49,7 +49,6 @@ def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str
     """
     wait_time = gmtime(time() - start_time)
     spacer = ' ' * 13
-    # todo: use settext form sdk
     lcd.display = ['Logitech LCD OK', 'No new data from DCS:',
                    f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]',
                    f'dcspy: v{__version__} ({current_ver})']

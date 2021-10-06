@@ -47,8 +47,8 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 
 def test_aircraft_base_class_other_lcd(aircraft):
-    from dcspy import LcdSize
-    aircraft.lcd = LcdSize(width=3, height=3, type=3)
+    from dcspy import LcdInfo
+    aircraft.lcd = LcdInfo(width=3, height=3, type=3, fg=0, bg=128)
     img = aircraft.prepare_image()
     assert img is None
 
@@ -137,7 +137,7 @@ def test_get_next_value_for_button_in_viper(viper_color):
     assert isinstance(viper_color.cycle_buttons[name9], cycle)
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B'])
 def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
     from PIL.Image import Image
     from dcspy import aircrafts
@@ -156,7 +156,7 @@ def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
     assert img.mode == '1'
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B'])
 def test_prepare_image_for_all_palnes_color(model, lcd_color):
     from PIL.Image import Image
     from dcspy import aircrafts
