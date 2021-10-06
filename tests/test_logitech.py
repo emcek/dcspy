@@ -8,12 +8,12 @@ from dcspy.logitech import KeyboardColor, KeyboardMono
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy import lcd_sdk
     with raises(NotImplementedError):
-        keyboard_base._prepare_image(['1', '2'])
+        keyboard_base._prepare_image()
 
     assert str(keyboard_base) == 'LogitechKeyboard: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'already_pressed', 'buttons',
-            '_text', 'plane', 'Aircraft')
+            '_display', 'plane', 'Aircraft')
     for test_string in data:
         assert test_string in logitech_repr
 
@@ -46,16 +46,17 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_text', return_value=True):
+        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                 keyboard_mono.detecting_plane(plane_str)
     assert keyboard_mono.plane_name == plane
-    assert keyboard_mono._text == ['Detected aircraft:'] + [plane] + display
+    assert keyboard_mono._display == ['Detected aircraft:'] + [plane] + display
     assert keyboard_mono.plane_detected is detect
 
 
-@mark.parametrize('lcd_type, keyboard', [(1, KeyboardMono), (2, KeyboardColor)])
-def test_check_keyboard_text(lcd_type, keyboard, protocol_parser):
+@mark.parametrize('mode, size,  lcd_type, keyboard', [('1', (160, 43), 1, KeyboardMono),
+                                                      ('RGBA', (320, 240), 2, KeyboardColor)])
+def test_check_keyboard_display_and_prepare_image(mode, size,  lcd_type, keyboard, protocol_parser):
     from dcspy.aircrafts import Aircraft
     from dcspy import lcd_sdk
     from dcspy import LcdInfo
@@ -65,23 +66,23 @@ def test_check_keyboard_text(lcd_type, keyboard, protocol_parser):
     assert isinstance(keyboard.plane, Aircraft)
     assert isinstance(keyboard.lcd, LcdInfo)
     assert keyboard.lcd.type == lcd_type
-    assert isinstance(keyboard.text, list)
-    with patch.object(lcd_sdk, 'update_text', return_value=True):
-        keyboard.text = ['1', '2']
-        assert len(keyboard.text) == 2
+    assert isinstance(keyboard.display, list)
+    with patch.object(lcd_sdk, 'update_display', return_value=True):
+        keyboard.display = ['1', '2']
+        assert len(keyboard.display) == 2
+
+    img = keyboard._prepare_image()
+    assert img.mode == mode
+    assert img.size == size
 
 
-@mark.parametrize('mode, size,  keyboard', [('1', (160, 43), KeyboardMono), ('RGBA', (320, 240), KeyboardColor)])
-def test_check_keyboard_display_and_prepare_image(mode, size,  keyboard, protocol_parser):
+@mark.parametrize('keyboard', [KeyboardMono, KeyboardColor])
+def test_check_keyboard_text(keyboard, protocol_parser):
     from dcspy import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         keyboard = keyboard(protocol_parser)
 
-    with patch.object(lcd_sdk, 'update_display', return_value=True) as upd_disp:
-        keyboard.display(['1', '2'])
-        upd_disp.assert_called()
-
-    img = keyboard._prepare_image(['1', '2'])
-    assert img.mode == mode
-    assert img.size == size
+    with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
+        keyboard.text(['1', '2'])
+        upd_txt.assert_called()
