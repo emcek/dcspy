@@ -1,4 +1,5 @@
 from unittest.mock import Mock, patch, call
+
 from pytest import mark
 
 
@@ -47,6 +48,20 @@ def test_update_display(c_func, effect, lcd, size):
                 lcd_sdk.update_display(Image.new('1', (size[0], size[1]), 0))
                 connected.assert_called_with(lcd)
                 set_background.assert_called_once_with([0] * size[0] * size[1])
+
+
+@mark.parametrize('c_func, effect, lcd, list_txt', [('logi_lcd_mono_set_text', [True], 1,
+                                                     ['1', '2', '3', '4']),
+                                                    ('logi_lcd_color_set_text', [False, True], 2,
+                                                     ['1', '2', '3', '4', '5', '6', '7', '8'])])
+def test_update_text(c_func, effect, lcd, list_txt):
+    from dcspy import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect) as connected:
+        with patch.object(lcd_sdk, c_func, return_value=True) as set_text:
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                lcd_sdk.update_text(list_txt)
+                connected.assert_called_with(lcd)
+                set_text.assert_has_calls([call(i, j) for i, j in enumerate(list_txt)])
 
 
 @mark.parametrize('c_funcs, effect, lcd, clear, text',
