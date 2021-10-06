@@ -213,6 +213,26 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     return False
 
 
+def update_text(txt: List[str]) -> None:
+    """
+    Update display LCD with list of text.
+
+    For mono LCD it takes 4 elements of list and display as 4 rows.
+    For color LCD  takes 8 elements of list and display as 8 rows.
+    :param txt: List of strings to display, row by row
+    """
+    if logi_lcd_is_connected(TYPE_MONO):
+        for line_no, line in enumerate(txt):
+            logi_lcd_mono_set_text(line_no, line)
+        logi_lcd_update()
+    elif logi_lcd_is_connected(TYPE_COLOR):
+        for line_no, line in enumerate(txt):
+            logi_lcd_color_set_text(line_no, line)
+        logi_lcd_update()
+    else:
+        LOG.warning('LCD is not connected')
+
+
 def update_display(image: Image) -> None:
     """
     Update display LCD with image.

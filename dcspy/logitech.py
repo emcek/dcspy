@@ -40,22 +40,33 @@ class LogitechKeyboard:
         self.plane_detected = False
         self.already_pressed = False
         self.buttons: Tuple[int, ...] = (0,)
-        self._display: List[str] = list()
+        self._text: List[str] = list()
         self.lcd = kwargs.get('lcd_type', LcdMono)
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
         self.plane = Aircraft(self.lcd)
 
+    def display(self, message: List[str]) -> None:
+        """
+        Display message as image at LCD.
+
+        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+        For G19 takes first 8 or less elements of list and display as 8 rows.
+        :param message: List of strings to display, row by row.
+        """
+        img = self._prepare_image(message)
+        lcd_sdk.update_display(img)
+
     @property
-    def display(self) -> List[str]:
+    def text(self) -> List[str]:
         """
         Get latest set text at LCD.
 
         :return: list of strings with data, row by row
         """
-        return self._display
+        return self._text
 
-    @display.setter
-    def display(self, message: List[str]) -> None:
+    @text.setter
+    def text(self, message: List[str]) -> None:
         """
         Display message at LCD.
 
@@ -63,10 +74,8 @@ class LogitechKeyboard:
         For G19 takes first 8 or less elements of list and display as 8 rows.
         :param message: List of strings to display, row by row.
         """
-        self._display = message
-        # todo: use settext form sdk
-        img = self._prepare_image()
-        lcd_sdk.update_display(img)
+        self._text = message
+        lcd_sdk.update_text(message)
 
     def detecting_plane(self, value: str) -> None:
         """
@@ -80,11 +89,11 @@ class LogitechKeyboard:
             if self.plane_name in SUPPORTED_CRAFTS:
                 self.plane_name = value
                 LOG.info(f'Detected Aircraft: {value}')
-                self.display = ['Detected aircraft:', self.plane_name]
+                self.text = ['Detected aircraft:', self.plane_name]
                 self.plane_detected = True
             else:
                 LOG.warning(f'Not supported aircraft: {value}')
-                self.display = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
+                self.text = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
 
     def load_new_plane(self) -> None:
         """
@@ -139,12 +148,13 @@ class LogitechKeyboard:
         LOG.debug(f'Clear LCD type: {self.lcd.type}')
         lcd_sdk.clear_display(true_clear)
 
-    def _prepare_image(self) -> Image.Image:
+    def _prepare_image(self, message: List[str]) -> Image.Image:
         """
         Prepare image for base of LCD type.
 
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         For G19 takes first 8 or less elements of list and display as 8 rows.
+        :param message: List of strings to display, row by row.
         :return: image instance ready display on LCD
         """
         raise NotImplementedError
@@ -167,17 +177,18 @@ class KeyboardMono(LogitechKeyboard):
         super().__init__(parser_hook, lcd_type=LcdMono)
         self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
 
-    def _prepare_image(self) -> Image.Image:
+    def _prepare_image(self, message: List[str]) -> Image.Image:
         """
         Prepare image for base of Mono LCD.
 
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
+        :param message: List of strings to display, row by row.
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
         draw = ImageDraw.Draw(img)
         font, space = FONT[11], 10
-        for line_no, line in enumerate(self._display):
+        for line_no, line in enumerate(message):
             draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
         return img
 
@@ -195,16 +206,17 @@ class KeyboardColor(LogitechKeyboard):
                         lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
                         lcd_sdk.COLOR_BUTTON_MENU)
 
-    def _prepare_image(self) -> Image.Image:
+    def _prepare_image(self, message: List[str]) -> Image.Image:
         """
         Prepare image for base of Color LCD.
 
         For G19 takes first 8 or less elements of list and display as 8 rows.
+        :param message: List of strings to display, row by row.
         :return: image instance ready display on LCD
         """
         img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
         draw = ImageDraw.Draw(img)
         font, space = FONT[22], 40
-        for line_no, line in enumerate(self._display):
+        for line_no, line in enumerate(message):
             draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
         return img
