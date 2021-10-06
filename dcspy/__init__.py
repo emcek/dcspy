@@ -8,7 +8,7 @@ from PIL import ImageFont
 
 from dcspy import lcd_sdk
 from dcspy.log import config_logger
-from dcspy.utils import load_cfg, set_defaults
+from dcspy.utils import load_cfg, set_defaults, default_yaml
 
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50',
                     'A10C': 'A-10C', 'A10C2': 'A-10C_2', 'F14B': 'F-14B'}
@@ -32,4 +32,4 @@ FONT_NAME = 'DejaVuSansMono.ttf'
 if platform == 'win32':
     FONT_NAME = 'consola.ttf'
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
-LOG.info(f'Configuration: {config}')
+LOG.info(f'Configuration: {config} from: {default_yaml}')
