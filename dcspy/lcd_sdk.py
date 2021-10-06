@@ -216,7 +216,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
 def update_text(txt: List[str]) -> None:
     """
     Update display LCD with list of text.
-    
+
     For mono LCD it takes 4 elements of list and display as 4 rows.
     For color LCD  takes 8 elements of list and display as 8 rows.
     :param txt: List of strings to display, row by row
