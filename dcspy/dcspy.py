@@ -12,7 +12,7 @@ __version__ = '1.3.0'
 
 def run():
     """Function to start DCSpy GUI."""
-    if config['auto_gui']:
+    if config['show_gui']:
         LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
         root = tk.Tk()
         width, height = 200, 130

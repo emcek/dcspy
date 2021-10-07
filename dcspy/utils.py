@@ -60,7 +60,7 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                             'keyboard': 'G13',
-                            'auto_gui': True}
+                            'show_gui': True}
     migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
     save_cfg(migrated_cfg)
     return migrated_cfg
