@@ -78,8 +78,17 @@ pip install dcspy-1.3.0-py3-none-any.whl
 6. Run DCS and start any mission.
 
 ## Configuration
-DCSpy can be configured via `config.yaml` file. This is simple file, most users do not need to touch it at all.
-However, it allows tune DCSpy to users' needs.
+DCSpy can be configured via `config.yaml` file. It is located in Python's installation directory (e.g. `c:\python39\dcspy_data\config.yaml`). 
+This is simple file, most users do not need to touch it at all. However, it can be easily edited directly from GUI. Configuring DCSpy enable some powerful features of DCSpy.
+Please check **Config** button in GUI.    
+Right now there are available options:
+* **dcsbios** - location of DCS-BIOS folder inside user's `Saved Games\DCS.openbeta`.  
+  Set this parameter to correct value allows user check and update DCS-BIOS to the latest release.  
+  *example value*: `D:\Users\emcek\Saved Games\DCS.openbeta\Scripts\DCS-BIOS`
+* **keyboard** - default Logitech keyboard value, last used value is saved automatically  
+  *possible values*: `G19`, `G510`, `G15 v1/v2`, `G13`
+* **show_gui** - it allows showing or hiding GUI during start of DCSpy.  
+  *possible values*: `true` or `false`
 
 ## Mono vs. Color
 DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 
