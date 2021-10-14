@@ -69,7 +69,7 @@ package aircrafts {
   Aircraft <|-- A10C
   A10C <|-- A10C2
   Aircraft <|-- F14B
-  Aircraft <|-- AV8B
+  Aircraft <|-- AV8BNA
   class BIOS_VALUE
 }
 
