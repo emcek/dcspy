@@ -10,7 +10,7 @@ from dcspy.logitech import LogitechKeyboard
 from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
-__version__ = '1.4.0'
+__version__ = '1.5.0'
 
 
 def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket) -> None:
