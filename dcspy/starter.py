@@ -25,7 +25,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     global LOOP_FLAG
     start_time = time()
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
-    current_ver = 'current' if result[0] else 'update!'
+    current_ver = 'latest' if result[0] else 'please update!'
     LOG.info('Waiting for DCS connection...')
     while True:
         try:
@@ -53,10 +53,9 @@ def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str
     :param current_ver: logger.info about current version to show
     """
     wait_time = gmtime(time() - start_time)
-    spacer = ' ' * 13
-    lcd.display = ['Logitech LCD OK', 'No new data from DCS:',
-                   f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]',
-                   f'dcspy: v{__version__} ({current_ver})']
+    lcd.display = ['Logitech LCD OK', f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                   f'',
+                   f'v{__version__} ({current_ver})']
 
 
 def _prepare_socket() -> socket.socket:
