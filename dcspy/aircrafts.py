@@ -493,7 +493,7 @@ class F14B(Aircraft):
 class AV8BNA(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Create AV-8B Night Attack
+        Create AV-8B Night Attack.
 
         :param lcd_type: LCD type
         """
