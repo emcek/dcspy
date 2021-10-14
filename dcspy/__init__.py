@@ -11,7 +11,7 @@ from dcspy.log import config_logger
 from dcspy.utils import load_cfg, set_defaults, default_yaml
 
 SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50',
-                    'A10C': 'A-10C', 'A10C2': 'A-10C_2', 'F14B': 'F-14B'}
+                    'A10C': 'A-10C', 'A10C2': 'A-10C_2', 'F14B': 'F-14B', 'AV8BNA': 'AV8BNA'}
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'

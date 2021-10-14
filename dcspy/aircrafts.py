@@ -488,3 +488,71 @@ class F14B(Aircraft):
         """Prepare image for F-14B Tomcat for Color LCD."""
         draw = ImageDraw.Draw(img)
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.fg, font=FONT[32])
+
+
+class AV8BNA(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create AV-8B Night Attack.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'UFC_SCRATCHPAD': {'class': 'StringBuffer', 'args': {'address': 0x7984, 'max_length': 12}, 'value': str()},
+            'UFC_COMM1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7954, 'max_length': 2}, 'value': str()},
+            'UFC_COMM2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7956, 'max_length': 2}, 'value': str()},
+            'AV8BNA_ODU_1_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7966, 'max_length': 1}, 'value': str()},
+            'AV8BNA_ODU_1_Text': {'class': 'StringBuffer', 'args': {'address': 0x7968, 'max_length': 4}, 'value': str()},
+            'AV8BNA_ODU_2_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x796c, 'max_length': 1}, 'value': str()},
+            'AV8BNA_ODU_2_Text': {'class': 'StringBuffer', 'args': {'address': 0x796e, 'max_length': 4}, 'value': str()},
+            'AV8BNA_ODU_3_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7972, 'max_length': 1}, 'value': str()},
+            'AV8BNA_ODU_3_Text': {'class': 'StringBuffer', 'args': {'address': 0x7974, 'max_length': 4}, 'value': str()},
+            'AV8BNA_ODU_4_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7978, 'max_length': 1}, 'value': str()},
+            'AV8BNA_ODU_4_Text': {'class': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 4}, 'value': str()},
+            'AV8BNA_ODU_5_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': str()},
+            'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': str()}}
+
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
+        draw.text(xy=(50 * scale, 0), fill=self.lcd.fg, font=FONT[16 * scale], text=f'{self.get_bios("UFC_SCRATCHPAD")}')
+        draw.line(xy=(50 * scale, 20 * scale, 160 * scale, 20 * scale), fill=self.lcd.fg, width=1)
+
+        draw.rectangle(xy=(50 * scale, 29 * scale, 70 * scale, 42 * scale), fill=self.lcd.bg, outline=self.lcd.fg)
+        draw.text(xy=(52 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.fg, font=FONT[16 * scale])
+
+        draw.rectangle(xy=(139 * scale, 29 * scale, 159 * scale, 42 * scale), fill=self.lcd.bg, outline=self.lcd.fg)
+        draw.text(xy=(140 * scale, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.fg, font=FONT[16 * scale])
+
+        for i in range(1, 6):
+            offset = (i - 1) * 8 * scale
+            draw.text(xy=(0 * scale, offset), fill=self.lcd.fg, font=FONT[11 * scale],
+                      text=f'{i}{self.get_bios(f"AV8BNA_ODU_{i}_SELECT")}{self.get_bios(f"AV8BNA_ODU_{i}_Text")}')
+        return draw
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for AV-8B N/A for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for AV-8B N/A for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+
+    def button_request(self, button: int, request: str = '\n') -> str:
+        """
+        Prepare AV-8B N/A specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        :param button: possible values 1-4
+        :param request: valid DCS-BIOS command as string
+        :return: ready to send DCS-BIOS request
+        """
+        action = {1: 'UFC_COM1_SEL -3200\n',
+                  2: 'UFC_COM1_SEL 3200\n',
+                  3: 'UFC_COM2_SEL -3200\n',
+                  4: 'UFC_COM2_SEL 3200\n',
+                  9: 'UFC_COM1_SEL -3200\n',
+                  10: 'UFC_COM1_SEL 3200\n',
+                  14: 'UFC_COM2_SEL -3200\n',
+                  13: 'UFC_COM2_SEL 3200\n'}
+        return super().button_request(button, action.get(button, '\n'))

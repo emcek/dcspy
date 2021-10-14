@@ -103,6 +103,17 @@ def tomcat_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
+def harrier_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of AV-8B N/A Harrier for Logitech mono LCD.
+    :param lcd_mono:
+    :return: AV-8B N/A Harrier instance
+    """
+    from dcspy.aircrafts import AV8BNA
+    return AV8BNA(lcd_mono)
+
+
+@fixture()
 def hornet_color(lcd_color: LcdInfo):
     """
     Return instance of F/A-18C Hornet for Logitech color LCD.
@@ -155,6 +166,17 @@ def tomcat_color(lcd_color: LcdInfo):
     """
     from dcspy.aircrafts import F14B
     return F14B(lcd_color)
+
+
+@fixture()
+def harrier_color(lcd_color: LcdInfo):
+    """
+    Return instance of AV-8B N/A Harrier for Logitech color LCD.
+    :param lcd_color:
+    :return: AV-8B N/A Harrier instance
+    """
+    from dcspy.aircrafts import AV8BNA
+    return AV8BNA(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>

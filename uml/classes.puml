@@ -69,6 +69,7 @@ package aircrafts {
   Aircraft <|-- A10C
   A10C <|-- A10C2
   Aircraft <|-- F14B
+  Aircraft <|-- AV8BNA
   class BIOS_VALUE
 }
 
@@ -86,44 +87,6 @@ class Aircraft {
     + get_next_value_for_button(btn_name: str) -> int
     + {abstract} draw_for_lcd_type_1(img: Image)
     + {abstract} draw_for_lcd_type_2(img: Image)
-}
-
-class FA18Chornet {
-    + bios_data : Dict[str, BIOS_VALUE]
-    + draw_for_lcd_type_1(img: Image)
-    + draw_for_lcd_type_2(img: Image)
-    + set_bios(selector: str, value: str)
-    + button_request(button: int, request: str) -> str
-}
-
-class F16C50 {
-    + bios_data : Dict[str, BIOS_VALUE]
-    + draw_for_lcd_type_1(img: Image)
-    + draw_for_lcd_type_2(img: Image)
-    + button_request(button: int, request: str) -> str
-}
-
-class Ka50 {
-    + bios_data : Dict[str, BIOS_VALUE]
-    + draw_for_lcd_type_1(img: Image)
-    + draw_for_lcd_type_2(img: Image)
-    + button_request(button: int, request: str) -> str
-}
-
-class A10C {
-    + bios_data : Dict[str, BIOS_VALUE]
-    + draw_for_lcd_type_1(img: Image)
-    + draw_for_lcd_type_2(img: Image)
-}
-
-class A10C2 {
-}
-
-class F14B {
-    + bios_data : Dict[str, BIOS_VALUE]
-    + draw_for_lcd_type_1(img: Image)
-    + draw_for_lcd_type_2(img: Image)
-    + button_request(button: int, request: str) -> str
 }
 
 LogitechKeyboard *- Aircraft
