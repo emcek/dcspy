@@ -10,6 +10,7 @@ from dcspy.logitech import LogitechKeyboard
 from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
+LOOP_FLAG = True
 __version__ = '1.5.0'
 
 
@@ -21,6 +22,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     :param parser: DCS protocol parser
     :param sock: multi-cast UDP socket
     """
+    global LOOP_FLAG
     start_time = time()
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
     current_ver = 'current' if result[0] else 'update!'
@@ -33,9 +35,12 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
             start_time = time()
             if lcd.plane_detected:
                 lcd.load_new_plane()
+                LOOP_FLAG = True
             lcd.button_handle(sock)
         except socket.error as exp:
-            LOG.debug(f'Main loop socket error: {exp}')
+            if LOOP_FLAG:
+                LOG.debug(f'Main loop socket error: {exp}')
+                LOOP_FLAG = False
             _sock_err_handler(lcd, start_time, current_ver)
 
 
