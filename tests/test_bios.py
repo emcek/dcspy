@@ -42,3 +42,11 @@ def test_bios_values_for_tomcat(tomcat_mono):
     print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
     pprint(results, width=100)
     assert not results
+
+
+def test_bios_values_for_harrier(harrier_mono):
+    name = SUPPORTED_CRAFTS[harrier_mono.__class__.__name__]
+    results = check_dcsbios_data(harrier_mono.bios_data, f'{name}.json')
+    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
+    pprint(results, width=100)
+    assert not results
