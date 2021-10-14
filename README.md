@@ -34,7 +34,7 @@ It supports:
 * Ka-50 Black Shark PVI-800 and autopilot channels
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
 * F-14B Tomcat - basic support for RIO CAP
-* AV-8B Night Attack Harrier
+* AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * more to come....
 
 ## Requirements
@@ -125,6 +125,12 @@ actions for supported airplanes are hardcoded right now and look like:
 * RIO CAP SW
 * RIO CAP NE
 * RIO CAP Enter
+
+### AV-8B N/A Harrier
+* UFC COMM1 channel select decrease
+* UFC COMM1 channel select increase
+* UFC COMM2 channel select decrease
+* UFC COMM2 channel select increase
 
 ## FAQ
 1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   
