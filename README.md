@@ -21,6 +21,7 @@ It supports:
 * [Requirements](#requirements)
 * [Credits](#credits)
 * [Installation](#installation)
+* [Upgrade](#upgrade)
 * [Usage](#usage)
 * [Configuration](#configuration)
 * [Mono vs. Color](#mono-vs-color)
@@ -66,6 +67,11 @@ pip install dcspy
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
 pip install dcspy-1.5.0-py3-none-any.whl
+```
+## Upgrade
+To upgrade DCSpy to the latest version, open Command Prompt and type:
+```shell script
+pip install -U dcspy
 ```
 
 ## Usage
