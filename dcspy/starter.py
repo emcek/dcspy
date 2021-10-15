@@ -22,7 +22,6 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     :param parser: DCS protocol parser
     :param sock: multi-cast UDP socket
     """
-    global LOOP_FLAG
     start_time = time()
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
     current_ver = 'latest' if result[0] else 'please update!'
@@ -33,25 +32,32 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
             start_time = time()
-            if lcd.plane_detected:
-                lcd.load_new_plane()
-                LOOP_FLAG = True
+            _load_new_plane_if_detected(lcd)
             lcd.button_handle(sock)
         except socket.error as exp:
-            if LOOP_FLAG:
-                LOG.debug(f'Main loop socket error: {exp}')
-                LOOP_FLAG = False
-            _sock_err_handler(lcd, start_time, current_ver)
+            _sock_err_handler(lcd, start_time, current_ver, exp)
 
 
-def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str) -> None:
+def _load_new_plane_if_detected(lcd: LogitechKeyboard) -> None:
+    global LOOP_FLAG
+    if lcd.plane_detected:
+        lcd.load_new_plane()
+        LOOP_FLAG = True
+
+
+def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str, exp: Exception) -> None:
     """
     Show basic data when DCS is disconnected.
 
     :param lcd: type of Logitech keyboard with LCD
     :param start_time: time when connection to DCS was lost
     :param current_ver: logger.info about current version to show
+    :param exp: caught exception instance
     """
+    global LOOP_FLAG
+    if LOOP_FLAG:
+        LOG.debug(f'Main loop socket error: {exp}')
+        LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
     lcd.display = ['Logitech LCD OK', f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
                    f'',
