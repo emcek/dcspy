@@ -94,16 +94,22 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             published = datetime.strptime(dict_json['published_at'], frmt).strftime('%d %B %Y')
             asset_url = dict_json['assets'][0]['browser_download_url']
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
-            if version.parse(online_version) > version.parse(current_ver):
-                LOG.info(f'There is new version of {package}: {online_version}')
-            elif version.parse(online_version) <= version.parse(current_ver):
-                LOG.info(f'{package} is up-to-date version: {current_ver}')
-                latest = True
+            latest = _compare_versions(package, current_ver, online_version)
         else:
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
     return latest, online_version, asset_url, published, pre_release
+
+
+def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
+    latest = False
+    if version.parse(remote_ver) > version.parse(current_ver):
+        LOG.info(f'There is new version of {package}: {remote_ver}')
+    elif version.parse(remote_ver) <= version.parse(current_ver):
+        LOG.info(f'{package} is up-to-date version: {current_ver}')
+        latest = True
+    return latest
 
 
 def download_file(url: str, save_path: str) -> bool:
