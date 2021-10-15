@@ -44,6 +44,14 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
             _sock_err_handler(lcd, start_time, current_ver)
 
 
+def supporters():
+    i = 0
+    supporters = 'Supporters Nick Thain and mamy more others 123456789 987654321 123456789' * 10
+    while True:
+        yield supporters[i:26+i]
+        i = i + 1
+
+
 def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str) -> None:
     """
     Show basic data when DCS is disconnected.
@@ -53,8 +61,10 @@ def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str
     :param current_ver: logger.info about current version to show
     """
     wait_time = gmtime(time() - start_time)
-    lcd.display = ['Logitech LCD OK', f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
-                   f'',
+    s = next(supporters())
+    lcd.display = ['Logitech LCD OK', f'No data from DCS:    {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                   # f'123456789 123456789 123456',
+                   f'{s}',
                    f'v{__version__} ({current_ver})']
 
 
