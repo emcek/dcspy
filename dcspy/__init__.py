@@ -6,7 +6,7 @@ from typing import NamedTuple, Union, Sequence
 
 from PIL import ImageFont
 
-from dcspy import lcd_sdk
+from dcspy.sdk import lcd_sdk
 from dcspy.log import config_logger
 from dcspy.utils import load_cfg, set_defaults, default_yaml
 
