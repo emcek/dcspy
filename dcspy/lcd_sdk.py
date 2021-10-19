@@ -61,7 +61,7 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     Function makes necessary initializations.
 
     You must call this function prior to any other function in the library.
-    :param name: the name of your applet, you cant change it after initialization
+    :param name: the name of your applet, you can't change it after initialization
     :param lcd_type: defines the type of your applet lcd target
     :return: result
     """
@@ -182,7 +182,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
 
     The font size that will be displayed is bigger than the one used in the other lines,
     so you can use this function to set the title of your applet/page.
-    If you dont specify any color, your title will be white.
+    If you don't specify any color, your title will be white.
     :param text: defines the text you want to display as title
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
@@ -199,7 +199,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     """
     Function sets the specified text in the requested line on the color lcd device connected.
 
-    If you dont specify any color, your title will be white.
+    If you don't specify any color, your title will be white.
     :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
     :param text: defines the text you want to display
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
