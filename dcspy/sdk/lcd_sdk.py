@@ -44,6 +44,7 @@ def _init_dll() -> CDLL:
         prog_files = environ['PROGRAMW6432']
     except KeyError:
         prog_files = environ['PROGRAMFILES']
+    # dll_path = 'C:\\Program Files\\Logitech Gaming Software\\SDK\\LCD\\x64\\LogitechLcd.dll'
     dll_path = f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
     return CDLL(dll_path)
 
