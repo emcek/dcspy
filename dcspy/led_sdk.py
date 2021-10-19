@@ -3,7 +3,7 @@ from logging import getLogger
 from os import environ
 from platform import architecture
 from sys import maxsize
-from typing import Optional
+from typing import Optional, Tuple
 
 LOG = getLogger(__name__)
 
@@ -116,7 +116,7 @@ def logi_led_restore_lighting() -> bool:
     return False
 
 
-def logi_led_set_lighting(red: int, green: int, blue: int) -> bool:
+def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
     """
     The function sets the lighting on connected and supported devices.
 
@@ -125,27 +125,23 @@ def logi_led_set_lighting(red: int, green: int, blue: int) -> bool:
     define the intensity. For monochrome backlighting device, Logitech Gaming Software will reduce
     proportionally the value of the highest color, according to the user hardware brightness setting.
 
-    :param red: amount of red, range is 0 to 100.
-    :param green: amount of green, range is 0 to 100.
-    :param blue: amount of blue, range is 0 to 100.
+    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :return: result
     """
     if LED_DLL:
         logiledsetlighting = LED_DLL['LogiLedSetLighting']
         logiledsetlighting.restype = c_bool
         logiledsetlighting.argtypes = (c_int, c_int, c_int)
-        return logiledsetlighting(red, green, blue)
+        return logiledsetlighting(*rgb)
     return False
 
 
-def logi_led_flash_lighting(red: int, green: int, blue: int, duration: int, interval: int) -> bool:
+def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
     """
     The function saves the current lighting, plays the flashing effect on the targeted devices.
 
     Finally, restores the saved lighting.
-    :param red: amount of red, range is 0 to 100.
-    :param green: amount of green, range is 0 to 100.
-    :param blue: amount of blue, range is 0 to 100.
+    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :param duration: duration of the effect in milliseconds this parameter can be set to LOGI_LED_DURATION_INFINITE
                      to make the effect run until sto ed through logi_led_stop_effects()
     :param interval: duration of the flashing interval in milliseconds
@@ -155,18 +151,16 @@ def logi_led_flash_lighting(red: int, green: int, blue: int, duration: int, inte
         logiledflashlighting = LED_DLL['LogiLedFlashLighting']
         logiledflashlighting.restype = c_bool
         logiledflashlighting.argtypes = (c_int, c_int, c_int, c_int, c_int)
-        return logiledflashlighting(red, green, blue, duration, interval)
+        return logiledflashlighting(*rgb, duration, interval)
     return False
 
 
-def logi_led_pulse_lighting(red: int, green: int, blue: int, duration: int, interval: int) -> bool:
+def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
     """
     The function saves the current lighting, plays the pulsing effect on the targeted devices.
 
     Finally, restores the saved lighting.
-    :param red: amount of red, range is 0 to 100.
-    :param green: amount of green, range is 0 to 100.
-    :param blue: amount of blue, range is 0 to 100.
+    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :param duration: duration of the effect in milliseconds this parameter can be set to LOGI_LED_DURATION_INFINITE
                      to make the effect run until sto ed through logi_led_stop_effects()
     :param interval: duration of the flashing interval in milliseconds
@@ -176,7 +170,7 @@ def logi_led_pulse_lighting(red: int, green: int, blue: int, duration: int, inte
         logiledpulselighting = LED_DLL['LogiLedPulseLighting']
         logiledpulselighting.restype = c_bool
         logiledpulselighting.argtypes = (c_int, c_int, c_int, c_int, c_int)
-        return logiledpulselighting(red, green, blue, duration, interval)
+        return logiledpulselighting(*rgb, duration, interval)
     return False
 
 
