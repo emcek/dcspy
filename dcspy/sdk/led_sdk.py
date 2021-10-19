@@ -27,10 +27,13 @@ def _init_dll() -> CDLL:
 
 try:
     LED_DLL: Optional[CDLL] = _init_dll()
-    LOG.debug('Loading of LED SDK success')
+    LOG.warning('Loading of LED SDK success')
 except (KeyError, FileNotFoundError) as err:
-    LOG.error(f'Loading of LED SDK failed: {err}', exc_info=True)
-    LED_DLL = None
+    header = '*' * 40
+    space = ' ' * 15
+    LOG.error(f'{header}\n*{space}ERROR!!!{space}*\n{header}\nLoading of LED SDK failed: {err.__class__.__name__}', exc_info=True)
+    LOG.error(f'{header}\n')
+    LCD_DLL = None
 
 
 def logi_led_init() -> bool:
