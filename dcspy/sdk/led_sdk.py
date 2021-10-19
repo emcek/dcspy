@@ -1,9 +1,7 @@
-from ctypes import CDLL, c_bool, c_wchar_p, c_int, sizeof, c_void_p
+from ctypes import CDLL, c_bool, c_wchar_p, c_int
 from logging import getLogger
-from os import environ
-from platform import architecture
-from sys import maxsize
 from typing import Optional, Tuple
+from dcspy.sdk import init_dll
 
 LOG = getLogger(__name__)
 
@@ -13,20 +11,8 @@ LOGI_DEVICETYPE_RGB = 2
 LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 
 
-def _init_dll() -> CDLL:
-    """Initialization od dynamic linking library."""
-    arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
-    try:
-        prog_files = environ['PROGRAMW6432']
-    except KeyError:
-        prog_files = environ['PROGRAMFILES']
-    # dll_path = 'C:\\Program Files\\Logitech Gaming Software\\SDK\\LED\\x64\\LogitechLed.dll'
-    dll_path = f"{prog_files}\\Logitech Gaming Software\\LED_SDK_9.00\\Lib\\LogitechLedEnginesWrapper\\{arch}\\LogitechLedEnginesWrapper.dll"
-    return CDLL(dll_path)
-
-
 try:
-    LED_DLL: Optional[CDLL] = _init_dll()
+    LED_DLL: Optional[CDLL] = init_dll('LED')
     LOG.warning('Loading of LED SDK success')
 except (KeyError, FileNotFoundError) as err:
     header = '*' * 40

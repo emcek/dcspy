@@ -1,11 +1,10 @@
-from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
+from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte
 from logging import getLogger
-from os import environ
-from platform import architecture
-from sys import maxsize
 from typing import List, Tuple, Optional
 
 from PIL import Image
+
+from dcspy.sdk import init_dll
 
 LOG = getLogger(__name__)
 
@@ -36,21 +35,8 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-
-def _init_dll() -> CDLL:
-    """Initialization od dynamic linking library."""
-    arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
-    try:
-        prog_files = environ['PROGRAMW6432']
-    except KeyError:
-        prog_files = environ['PROGRAMFILES']
-    # dll_path = 'C:\\Program Files\\Logitech Gaming Software\\SDK\\LCD\\x64\\LogitechLcd.dll'
-    dll_path = f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
-    return CDLL(dll_path)
-
-
 try:
-    LCD_DLL: Optional[CDLL] = _init_dll()
+    LCD_DLL: Optional[CDLL] = init_dll('LCD')
     LOG.warning('Loading of LCD SDK success')
 except (KeyError, FileNotFoundError) as err:
     header = '*' * 40
