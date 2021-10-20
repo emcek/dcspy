@@ -93,7 +93,7 @@ def logi_lcd_update() -> None:
         logilcdupdate()
 
 
-def logi_lcd_shutdown():
+def logi_lcd_shutdown() -> None:
     """Function kills the applet and frees memory used by the SDK."""
     if LCD_DLL:
         logilcdshutdown = LCD_DLL['LogiLcdShutdown']
