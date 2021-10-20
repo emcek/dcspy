@@ -169,14 +169,9 @@ def logi_led_stop_effects() -> bool:
     return False
 
 
-def logi_led_shutdown() -> bool:
-    """
-    The function restores the last saved lighting and frees memory used by the SDK.
-
-    :return: result
-    """
+def logi_led_shutdown() -> None:
+    """The function restores the last saved lighting and frees memory used by the SDK."""
     if LED_DLL:
         logiledshutdown = LED_DLL['LogiLedShutdown']
         logiledshutdown.restype = c_bool
-        return logiledshutdown()
-    return False
+        logiledshutdown()
