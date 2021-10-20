@@ -12,7 +12,7 @@ from pytest import mark
                                              ('logi_led_flash_lighting', ((1, 2, 3), 1, 1), False),
                                              ('logi_led_pulse_lighting', ((1, 2, 3), 1, 1), False),
                                              ('logi_led_stop_effects', (), False),
-                                             ('logi_led_shutdown', (), False)])
+                                             ('logi_led_shutdown', (), None)])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import led_sdk
     led_sdk.LED_DLL = None
@@ -28,7 +28,7 @@ def test_all_failure_cases(function, args, result):
                                                     ('logi_led_flash_lighting', 'LogiLedFlashLighting', ((1, 2, 3), 1, 1), True),
                                                     ('logi_led_pulse_lighting', 'LogiLedPulseLighting', ((1, 2, 3), 1, 1), True),
                                                     ('logi_led_stop_effects', 'LogiLedStopEffects', (), True),
-                                                    ('logi_led_shutdown', 'LogiLedShutdown', (), True)])
+                                                    ('logi_led_shutdown', 'LogiLedShutdown', (), None)])
 def test_all_success_cases(py_func, c_func, args, result):
     from dcspy.sdk import led_sdk
     mocked_c_func = Mock()
