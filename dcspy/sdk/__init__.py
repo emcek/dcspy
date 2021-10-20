@@ -45,4 +45,3 @@ def load_dll(lib_type: str) -> Optional[CDLL]:
                   exc_info=True)
         LOG.error(f'{header}\n')
         return None
-
