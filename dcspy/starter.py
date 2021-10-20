@@ -1,8 +1,10 @@
 import socket
 import struct
+from collections import deque
 from importlib import import_module
 from logging import getLogger
 from time import time, gmtime
+from typing import Iterator
 
 from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
@@ -27,6 +29,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
     current_ver = 'latest' if result[0] else 'please update!'
     LOG.info('Waiting for DCS connection...')
+    support_banner = _supporters(width=26)
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -41,30 +44,29 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
             if LOOP_FLAG:
                 LOG.debug(f'Main loop socket error: {exp}')
                 LOOP_FLAG = False
-            _sock_err_handler(lcd, start_time, current_ver)
+            _sock_err_handler(lcd, start_time, current_ver, support_banner)
 
 
-def supporters():
-    i = 0
-    supporters = 'Supporters Nick Thain and mamy more others 123456789 987654321 123456789' * 10
+def _supporters(width: int) -> Iterator[str]:
+    queue = deque('Supporters: Nick Thain and many others!')
     while True:
-        yield supporters[i:26+i]
-        i = i + 1
+        yield ''.join(queue)[:width]
+        queue.rotate(-1)
 
 
-def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str) -> None:
+def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str, support_iter: Iterator[str]) -> None:
     """
     Show basic data when DCS is disconnected.
 
     :param lcd: type of Logitech keyboard with LCD
     :param start_time: time when connection to DCS was lost
     :param current_ver: logger.info about current version to show
+    :param support_iter: iterator for banner supporters
     """
     wait_time = gmtime(time() - start_time)
-    s = next(supporters())
-    lcd.display = ['Logitech LCD OK', f'No data from DCS:    {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
-                   # f'123456789 123456789 123456',
-                   f'{s}',
+    lcd.display = ['Logitech LCD OK',
+                   f'No data from DCS:    {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                   f'{next(support_iter)}',
                    f'v{__version__} ({current_ver})']
 
 
