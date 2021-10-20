@@ -1,10 +1,10 @@
-from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte
+from ctypes import c_bool, c_wchar_p, c_int, c_ubyte
 from logging import getLogger
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 from PIL import Image
 
-from dcspy.sdk import init_dll
+from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
@@ -35,15 +35,7 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-try:
-    LCD_DLL: Optional[CDLL] = init_dll('LCD')
-    LOG.warning('Loading of LCD SDK success')
-except (KeyError, FileNotFoundError) as err:
-    header = '*' * 40
-    space = ' ' * 15
-    LOG.error(f'{header}\n*{space}ERROR!!!{space}*\n{header}\nLoading of LCD SDK failed: {err.__class__.__name__}', exc_info=True)
-    LOG.error(f'{header}\n')
-    LCD_DLL = None
+LCD_DLL = load_dll('LCD')
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:

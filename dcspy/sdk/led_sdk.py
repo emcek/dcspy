@@ -1,7 +1,8 @@
-from ctypes import CDLL, c_bool, c_wchar_p, c_int
+from ctypes import c_bool, c_wchar_p, c_int
 from logging import getLogger
-from typing import Optional, Tuple
-from dcspy.sdk import init_dll
+from typing import Tuple
+
+from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
@@ -10,16 +11,7 @@ LOGI_DEVICETYPE_MONOCHROME = 1
 LOGI_DEVICETYPE_RGB = 2
 LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 
-
-try:
-    LED_DLL: Optional[CDLL] = init_dll('LED')
-    LOG.warning('Loading of LED SDK success')
-except (KeyError, FileNotFoundError) as err:
-    header = '*' * 40
-    space = ' ' * 15
-    LOG.error(f'{header}\n*{space}ERROR!!!{space}*\n{header}\nLoading of LED SDK failed: {err.__class__.__name__}', exc_info=True)
-    LOG.error(f'{header}\n')
-    LCD_DLL = None
+LED_DLL = load_dll('LED')
 
 
 def logi_led_init() -> bool:
