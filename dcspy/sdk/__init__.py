@@ -8,34 +8,41 @@ from typing import Optional
 LOG = getLogger(__name__)
 
 
-def _init_dll(lib: str) -> CDLL:
-    """Initialization od dynamic linking library."""
+def _init_dll(lib_type: str) -> CDLL:
+    """
+    Initialization of C dynamic linking library.
+
+    :param lib_type: LCD or LED
+    :return: C DLL instance
+    """
     arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
     try:
         prog_files = environ['PROGRAMW6432']
     except KeyError:
         prog_files = environ['PROGRAMFILES']
-    lib_type = {'LCD': f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll",
-                'LED': f"{prog_files}\\Logitech Gaming Software\\LED_SDK_9.00\\Lib\\LogitechLedEnginesWrapper\\{arch}\\LogitechLedEnginesWrapper.dll"}
+    lib = {'LCD': f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll",
+           'LED': f"{prog_files}\\Logitech Gaming Software\\LED_SDK_9.00\\Lib\\LogitechLedEnginesWrapper\\{arch}\\LogitechLedEnginesWrapper.dll"}
     # 'C:\\Program Files\\Logitech Gaming Software\\SDK\\LCD\\x64\\LogitechLcd.dll'
     # 'C:\\Program Files\\Logitech Gaming Software\\SDK\\LED\\x64\\LogitechLed.dll'
-    return CDLL(lib_type[lib])
+    return CDLL(lib[lib_type])
 
 
-def load_dll(lib: str) -> Optional[CDLL]:
+def load_dll(lib_type: str) -> Optional[CDLL]:
     """
-    Load C dynamic library.
+    Initialization and loading of C dynamic linking library.
 
-    :param lib: library to load: LCD or LED
+    :param lib_type: library to load: LCD or LED
     :return: C DLL instance
     """
     try:
-        _DLL: Optional[CDLL] = _init_dll(f'{lib}')
-        LOG.warning(f'Loading of {lib} SDK success')
+        _DLL = _init_dll(lib_type)
+        LOG.warning(f'Loading of {lib_type} SDK success')
         return _DLL
     except (KeyError, FileNotFoundError) as err:
         header = '*' * 40
         space = ' ' * 15
-        LOG.error(f'{header}\n*{space}ERROR!!!{space}*\n{header}\nLoading of {lib} SDK failed: {err.__class__.__name__}',
+        LOG.error(f'{header}\n*{space}ERROR!!!{space}*\n{header}\nLoading of {lib_type} SDK failed: {err.__class__.__name__}',
                   exc_info=True)
         LOG.error(f'{header}\n')
+        return None
+
