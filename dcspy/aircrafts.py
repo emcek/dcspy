@@ -9,7 +9,7 @@ from typing import Dict, Union, Optional, Iterator, Sequence
 from PIL import Image, ImageDraw
 
 from dcspy import FONT, LcdInfo
-from dcspy.sdk import lcd_sdk, led_sdk
+from dcspy.sdk import lcd_sdk
 
 try:
     from typing_extensions import TypedDict
@@ -30,7 +30,6 @@ class Aircraft:
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
-        led_sdk.logi_led_init()
         self._debug_img = cycle(range(10))
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -81,8 +80,6 @@ class Aircraft:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
-        if 'MASTER' in selector:
-            led_sdk.logi_led_flash_lighting((100, 0, 0), 3000, 4)
         lcd_image = self.prepare_image()
         self.update_display(lcd_image)
 
@@ -236,8 +233,7 @@ class F16C50(Aircraft):
             'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x380, 'shift_by': 0x7}, 'value': int(), 'max_value': 4},
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'value': int(), 'max_value': 2},
-            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int(), 'max_value': 2},
-            'LIGHT_MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x4476, 'mask': 0x80, 'shift_by': 0x7}, 'value': int(), 'max_value': 1}}
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
