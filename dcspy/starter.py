@@ -16,7 +16,7 @@ LOOP_FLAG = True
 __version__ = '1.5.0'
 
 
-def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket) -> None:
+def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event) -> None:
     """
     Main loop where all the magic is happened.
 
@@ -29,7 +29,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     current_ver = 'latest' if result[0] else 'please update!'
     LOG.info('Waiting for DCS connection...')
     support_banner = _supporters(text='Huge thanks to: Nick Thain, BrotherBloat and others! For support and help! ', width=26)
-    while True:
+    while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
             for int_byte in dcs_bios_resp:
@@ -91,7 +91,7 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(lcd_type: str) -> None:
+def dcspy_run(lcd_type: str, event) -> None:
     """
     Real starting point of DCSpy.
 
@@ -101,4 +101,4 @@ def dcspy_run(lcd_type: str) -> None:
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(lcd)}')
     LOG.debug(f'Loading: {repr(lcd)}')
-    _handle_connection(lcd, parser, _prepare_socket())
+    _handle_connection(lcd, parser, _prepare_socket(), event)
