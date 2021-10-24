@@ -55,14 +55,16 @@ class DcspyGui(tk.Frame):
 
         start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
         cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
-        close = tk.Button(master=self.master, text='Close', width=6, command=lambda: self.event.set())
+        stop = tk.Button(master=self.master, text='Stop', width=6, command=self._stop)
+        close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
         status = tk.Label(master=self.master, textvariable=self.status_txt)
 
-        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
+        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=4)
         start.grid(row=0, column=1, padx=2, pady=2)
         cfg.grid(row=1, column=1, padx=2, pady=2)
-        close.grid(row=2, column=1, padx=2, pady=2)
-        status.grid(row=3, column=0, columnspan=2, sticky=tk.W)
+        stop.grid(row=2, column=1, padx=2, pady=2)
+        close.grid(row=3, column=1, padx=2, pady=2)
+        status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
 
     def _lcd_type_selected(self) -> None:
         """Handling selected LCD type."""
@@ -186,6 +188,10 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
         messagebox.showinfo('Updated', 'Success. Done.')
+
+    def _stop(self) -> None:
+        self.status_txt.set('Close will shutdown DCSpy')
+        self.event.set()
 
     def start_dcspy(self) -> None:
         """Run real application."""
