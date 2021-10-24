@@ -1,4 +1,12 @@
 import socket
+from unittest.mock import patch
+
+
+def test_load_new_plane_if_detected():
+    from dcspy import starter
+    with patch.object(starter, 'LogitechKeyboard') as lcd:
+        starter._load_new_plane_if_detected(lcd)
+        lcd.load_new_plane.assert_called_once_with()
 
 
 def test_supporters():
