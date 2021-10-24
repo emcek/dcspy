@@ -5,7 +5,7 @@ from os import path, environ
 from re import search
 from shutil import unpack_archive, rmtree, copytree
 from sys import prefix
-from threading import Thread
+from threading import Thread, Event
 from tkinter import messagebox
 from typing import NamedTuple
 
@@ -36,6 +36,7 @@ class DcspyGui(tk.Frame):
         self.l_bios = 'Not checked'
         self.r_bios = 'Not checked'
         self.bios_path = ''
+        self.event = Event()
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -54,7 +55,7 @@ class DcspyGui(tk.Frame):
 
         start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
         cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
-        close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
+        close = tk.Button(master=self.master, text='Close', width=6, command=lambda: self.event.set())
         status = tk.Label(master=self.master, textvariable=self.status_txt)
 
         frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
@@ -190,7 +191,7 @@ class DcspyGui(tk.Frame):
         """Run real application."""
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
-        app_params = {'lcd_type': LCD_TYPES[keyboard]}
+        app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         LOG.debug(f'Starting thread for: {app_params}')
         app_thread.setName('dcspy-app')
