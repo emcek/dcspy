@@ -28,7 +28,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
     current_ver = 'latest' if result[0] else 'please update!'
     LOG.info('Waiting for DCS connection...')
-    support_banner = _supporters(width=26)
+    support_banner = _supporters(text='Huge thanks to: Nick Thain, BrotherBloat and others! For support and help!', width=26)
     while True:
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -48,8 +48,8 @@ def _load_new_plane_if_detected(lcd: LogitechKeyboard) -> None:
         LOOP_FLAG = True
 
 
-def _supporters(width: int) -> Iterator[str]:
-    queue = deque('Supporters: Nick Thain and many others!')
+def _supporters(text: str, width: int) -> Iterator[str]:
+    queue = deque(text)
     while True:
         yield ''.join(queue)[:width]
         queue.rotate(-1)
