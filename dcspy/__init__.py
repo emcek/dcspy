@@ -1,9 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
 from sys import platform
-from typing import NamedTuple, Union, Sequence, Tuple
+from typing import NamedTuple, Union, Sequence, Tuple, Dict
 
 from PIL import ImageFont
 
@@ -23,37 +23,26 @@ LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=
 
 
 @dataclass
-class GeneralLcd:
+class Lcd:
     width: int
     height: int
     type: int
     fg: Union[int, Sequence[int]]
     bg: Union[int, Sequence[int]]
     mode: str
-    s_font: Tuple[str, int]
-    l_font: Tuple[str, int]
+    s_font: Tuple[str, str, int]
+    l_font: Tuple[str, str, int]
+    font: Dict[str, ImageFont.FreeTypeFont] = field(init=False)
+
+    def __post_init__(self):
+        self.font = {size_str: ImageFont.truetype(name, size_int)
+                     for size_str, name, size_int in (self.s_font, self.l_font)}
 
 
-class MonoLcd(GeneralLcd):
-    width = lcd_sdk.MONO_WIDTH
-    height = lcd_sdk.MONO_HEIGHT
-    type = lcd_sdk.TYPE_MONO
-    fg = 255
-    bg = 0
-    mode = '1'
-    s_font = ('consola.ttf', 11)
-    l_font = ('consola.ttf', 22)
-
-
-class ColorLcd(GeneralLcd):
-    width = lcd_sdk.COLOR_WIDTH
-    height = lcd_sdk.COLOR_HEIGHT
-    type = lcd_sdk.TYPE_COLOR
-    fg = (0, 255, 0, 255)
-    bg = (0, 0, 0, 0)
-    mode = 'RGBA'
-    s_font = ('consola.ttf', 16)
-    l_font = ('consola.ttf', 32)
+mono = Lcd(width=1, height=1, type=1, fg=255, bg=0, mode='1',
+           s_font=('S', 'DejaVuSansMono.ttf', 11), l_font=('L', 'DejaVuSansMono.ttf', 11))
+colo = Lcd(width=1, height=1, type=1, fg=(0, 255, 0, 255), bg=(0, 0, 0, 0), mode='RGBA',
+           s_font=('S', 'DejaVuSansMono.ttf', 16), l_font=('L', 'DejaVuSansMono.ttf', 32))
 
 
 LCD_TYPES = {'G19': 'KeyboardColor', 'G510': 'KeyboardMono', 'G15 v1/v2': 'KeyboardMono', 'G13': 'KeyboardMono'}
