@@ -3,7 +3,7 @@ from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
 from sys import platform
-from typing import NamedTuple, Union, Sequence
+from typing import NamedTuple, Union, Sequence, Tuple
 
 from PIL import ImageFont
 
@@ -30,8 +30,8 @@ class GeneralLcd:
     fg: Union[int, Sequence[int]]
     bg: Union[int, Sequence[int]]
     mode: str
-    s_font: Sequence[str, int]
-    l_font: Sequence[str, int]
+    s_font: Tuple[str, int]
+    l_font: Tuple[str, int]
 
 
 class MonoLcd(GeneralLcd):
