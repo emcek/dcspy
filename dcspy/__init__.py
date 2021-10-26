@@ -38,11 +38,15 @@ class Lcd:
         self.font = {size_str: ImageFont.truetype(name, size_int)
                      for size_str, name, size_int in (self.s_font, self.l_font)}
 
+FONT_NAME = 'DejaVuSansMono.ttf'
+if platform == 'win32':
+    FONT_NAME = 'consola.ttf'
+FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 
-mono = Lcd(width=1, height=1, type=1, fg=255, bg=0, mode='1',
-           s_font=('S', 'DejaVuSansMono.ttf', 11), l_font=('L', 'DejaVuSansMono.ttf', 11))
-colo = Lcd(width=1, height=1, type=1, fg=(0, 255, 0, 255), bg=(0, 0, 0, 0), mode='RGBA',
-           s_font=('S', 'DejaVuSansMono.ttf', 16), l_font=('L', 'DejaVuSansMono.ttf', 32))
+mono = Lcd(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO, fg=255,
+           bg=0, mode='1', s_font=('S', FONT_NAME, 11), l_font=('L', FONT_NAME, 11))
+colo = Lcd(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR, fg=(0, 255, 0, 255),
+           bg=(0, 0, 0, 0), mode='RGBA', s_font=('S', FONT_NAME, 16), l_font=('L', FONT_NAME, 32))
 
 
 LCD_TYPES = {'G19': 'KeyboardColor', 'G510': 'KeyboardMono', 'G15 v1/v2': 'KeyboardMono', 'G13': 'KeyboardMono'}
@@ -54,8 +58,4 @@ LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'{uname()}')
 
 config = set_defaults(load_cfg())
-FONT_NAME = 'DejaVuSansMono.ttf'
-if platform == 'win32':
-    FONT_NAME = 'consola.ttf'
-FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 LOG.info(f'Configuration: {config} from: {default_yaml}')
