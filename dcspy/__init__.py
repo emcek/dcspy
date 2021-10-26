@@ -41,8 +41,8 @@ class MonoLcd(GeneralLcd):
     fg = 255
     bg = 0
     mode = '1'
-    s_font: ('consola.ttf', 11)
-    l_font: ('consola.ttf', 22)
+    s_font = ('consola.ttf', 11)
+    l_font = ('consola.ttf', 22)
 
 
 class ColorLcd(GeneralLcd):
@@ -52,8 +52,8 @@ class ColorLcd(GeneralLcd):
     fg = (0, 255, 0, 255)
     bg = (0, 0, 0, 0)
     mode = 'RGBA'
-    s_font: ('consola.ttf', 16)
-    l_font: ('consola.ttf', 32)
+    s_font = ('consola.ttf', 16)
+    l_font = ('consola.ttf', 32)
 
 
 LCD_TYPES = {'G19': 'KeyboardColor', 'G510': 'KeyboardMono', 'G15 v1/v2': 'KeyboardMono', 'G13': 'KeyboardMono'}
