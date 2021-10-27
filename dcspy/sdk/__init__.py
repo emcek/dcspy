@@ -37,6 +37,7 @@ def load_dll(lib_type: str) -> Optional[CDLL]:
         dll = _init_dll(lib_type)
         LOG.warning(f'Loading of {lib_type} SDK success')
         return dll
+    # todo: KeyError can be reoven when SDK folder is used
     except (KeyError, FileNotFoundError) as err:
         header = '*' * 40
         space = ' ' * 15
