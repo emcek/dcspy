@@ -48,7 +48,14 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 def test_aircraft_base_class_other_lcd(aircraft):
     from dcspy import LcdInfo
-    aircraft.lcd = LcdInfo(width=3, height=3, type=3, fg=0, bg=128)
+    from sys import platform
+
+    font_name = 'DejaVuSans.ttf'
+    if platform == 'win32':
+        font_name = 'consola.ttf'
+    # todo: secure when font is not found
+    aircraft.lcd = LcdInfo(width=3, height=3, type=3, fg=0, bg=128, mode='2',
+                           s_font=('S', font_name, 10), l_font=('L', font_name, 20))
     img = aircraft.prepare_image()
     assert img is None
 
