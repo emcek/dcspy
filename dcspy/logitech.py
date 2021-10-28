@@ -215,6 +215,6 @@ class KeyboardColor(LogitechKeyboard):
         img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
         draw = ImageDraw.Draw(img)
         font, space = FONT[22], 40
-        for line_no, line in enumerate(self.display):
+        for line_no, line in enumerate(self._display):
             draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
         return img
