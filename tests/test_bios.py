@@ -1,52 +1,16 @@
 from pprint import pprint
 
+from pytest import mark
+
 from dcspy import SUPPORTED_CRAFTS
 from helpers import check_dcsbios_data
 
 
-def test_bios_values_for_shark(black_shark_mono):
-    name = SUPPORTED_CRAFTS[black_shark_mono.__class__.__name__]
-    results = check_dcsbios_data(black_shark_mono.bios_data, f'{name}.json')
+@mark.parametrize('plane', ['hornet_mono', 'viper_mono', 'black_shark_mono', 'warthog_mono', 'tomcat_mono', 'harrier_mono'])
+def test_bios_values_all_planes(plane, request):
+    plane = request.getfixturevalue(plane)
+    name = SUPPORTED_CRAFTS[plane.__class__.__name__]
+    results = check_dcsbios_data(plane.bios_data, f'{name}.json')
     print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
-    pprint({results if results else 'No issues found'}, width=100)
-    assert not results
-
-
-def test_bios_values_for_viper(viper_mono):
-    name = SUPPORTED_CRAFTS[viper_mono.__class__.__name__]
-    results = check_dcsbios_data(viper_mono.bios_data, f'{name}.json')
-    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
-    pprint({results if results else 'No issues found'}, width=100)
-    assert not results
-
-
-def test_bios_values_for_hornet(hornet_mono):
-    name = SUPPORTED_CRAFTS[hornet_mono.__class__.__name__]
-    results = check_dcsbios_data(hornet_mono.bios_data, f'{name}.json')
-    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
-    pprint({results if results else 'No issues found'}, width=100)
-    assert not results
-
-
-def test_bios_values_for_warthog(warthog_mono):
-    name = SUPPORTED_CRAFTS[warthog_mono.__class__.__name__]
-    results = check_dcsbios_data(warthog_mono.bios_data, f'{name}.json')
-    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
-    pprint({results if results else 'No issues found'}, width=100)
-    assert not results
-
-
-def test_bios_values_for_tomcat(tomcat_mono):
-    name = SUPPORTED_CRAFTS[tomcat_mono.__class__.__name__]
-    results = check_dcsbios_data(tomcat_mono.bios_data, f'{name}.json')
-    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
-    pprint({results if results else 'No issues found'}, width=100)
-    assert not results
-
-
-def test_bios_values_for_harrier(harrier_mono):
-    name = SUPPORTED_CRAFTS[harrier_mono.__class__.__name__]
-    results = check_dcsbios_data(harrier_mono.bios_data, f'{name}.json')
-    print(f'\n{name} BIOS Report\n{"-" * (len(name) + 12)}')
-    pprint({results if results else 'No issues found'}, width=100)
+    pprint(results if results else 'No issues found', width=100)
     assert not results
