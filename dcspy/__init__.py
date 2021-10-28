@@ -31,11 +31,12 @@ class LcdInfo:
     font: Dict[str, ImageFont.FreeTypeFont] = field(init=False)
 
     def __post_init__(self):
-        self.font = {size_str: ImageFont.truetype(name, size_int)
-                     for size_str, name, size_int in (self.s_font, self.l_font)}
+        # todo: secure when font is not found
+        self.font = {size_str: ImageFont.truetype(font_name, size_int)
+                     for size_str, font_name, size_int in (self.s_font, self.l_font)}
 
 
-FONT_NAME = 'DejaVuSansMono.ttf'
+FONT_NAME = 'DejaVuSans.ttf'
 if platform == 'win32':
     FONT_NAME = 'consola.ttf'
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
