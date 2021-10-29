@@ -66,7 +66,7 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     return migrated_cfg
 
 
-def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, str, bool]:
+def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, str, str, str]:
     """
     Check version of <organization>/<package> at GitHub.
 
@@ -75,7 +75,8 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
     - online version (str) - latest version
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
-    - pre-release (bool) - normal or pre release
+    - release type (str) - Regular or Pre-release
+    - archive file (str) - file name of archive
 
     :param repo: format '<organization or user>/<package>'
     :param current_ver: current local version
@@ -99,7 +100,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return latest, online_version, asset_url, published, pre_release
+    return latest, online_version, asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1]
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
