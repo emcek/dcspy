@@ -103,9 +103,9 @@ class DcspyGui(tk.Frame):
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
-        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
         check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
+        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
         return text_editor
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
