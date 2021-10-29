@@ -28,7 +28,7 @@ class DcspyGui(tk.Frame):
         """
         super().__init__(master)
         self.master = master
-        self.master.title('GUI')
+        self.master.title('DCSpy')
         self.lcd_type = tk.StringVar()
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
