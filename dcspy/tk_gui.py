@@ -47,19 +47,21 @@ class DcspyGui(tk.Frame):
         self.master.rowconfigure(index=3, weight=1)
 
         frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
+        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
         for i, text in enumerate(LCD_TYPES):
             rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
 
+        self._add_buttons_mainwindow()
+
+    def _add_buttons_mainwindow(self):
         start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
         cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
         stop = tk.Button(master=self.master, text='Stop', width=6, command=self._stop)
         close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
         status = tk.Label(master=self.master, textvariable=self.status_txt)
-
-        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=4)
         start.grid(row=0, column=1, padx=2, pady=2)
         cfg.grid(row=1, column=1, padx=2, pady=2)
         stop.grid(row=2, column=1, padx=2, pady=2)
@@ -86,6 +88,10 @@ class DcspyGui(tk.Frame):
         editor_status.pack(side=tk.TOP, fill=tk.X)
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        text_editor = self._create_text_editor(cfg_edit, scrollbar_y)
+        self._load_cfg(text_editor)
+
+    def _create_text_editor(self, cfg_edit, scrollbar_y):
         text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
                               borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
@@ -97,10 +103,10 @@ class DcspyGui(tk.Frame):
         close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
+        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
         check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
-        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
-        self._load_cfg(text_editor)
+        return text_editor
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
         text_widget.delete('1.0', tk.END)
