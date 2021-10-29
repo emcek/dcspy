@@ -48,7 +48,13 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 def test_aircraft_base_class_other_lcd(aircraft):
     from dcspy import LcdInfo
-    aircraft.lcd = LcdInfo(width=3, height=3, type=3, fg=0, bg=128)
+    from sys import platform
+    from PIL import ImageFont
+
+    # todo: secure when font is not found
+    font_name = 'consola.ttf' if platform == 'win32' else 'DejaVuSans.ttf'
+    font = ImageFont.truetype(font_name, 10)
+    aircraft.lcd = LcdInfo(width=3, height=3, type=3, fg=0, bg=128, mode='2', font_s=font, font_l=font)
     img = aircraft.prepare_image()
     assert img is None
 
@@ -69,6 +75,24 @@ def test_button_pressed_for_hornet_mono(button, result, hornet_mono):
                                      (14, 'UFC_COMM2_CHANNEL_SELECT DEC\n')])
 def test_button_pressed_for_hornet_color(button, result, hornet_color):
     assert hornet_color.button_request(button) == result
+
+
+@mark.parametrize('button, result', [(0, '\n'),
+                                     (16, '\n'),
+                                     ('g', '\n'),
+                                     (2, 'UFC_COM1_SEL 3200\n'),
+                                     (3, 'UFC_COM2_SEL -3200\n')])
+def test_button_pressed_for_harierr_mono(button, result, harrier_mono):
+    assert harrier_mono.button_request(button) == result
+
+
+@mark.parametrize('button, result', [(0, '\n'),
+                                     (16, '\n'),
+                                     ('.', '\n'),
+                                     (10, 'UFC_COM1_SEL 3200\n'),
+                                     (13, 'UFC_COM2_SEL 3200\n')])
+def test_button_pressed_for_harrier_color(button, result, harrier_color):
+    assert harrier_color.button_request(button) == result
 
 
 @mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
@@ -137,7 +161,7 @@ def test_get_next_value_for_button_in_viper(viper_color):
     assert isinstance(viper_color.cycle_buttons[name9], cycle)
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B'])
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B', 'AV8BNA'])
 def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
     from PIL.Image import Image
     from dcspy import aircrafts
@@ -156,7 +180,7 @@ def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
     assert img.mode == '1'
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B'])
+@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B', 'AV8BNA'])
 def test_prepare_image_for_all_palnes_color(model, lcd_color):
     from PIL.Image import Image
     from dcspy import aircrafts

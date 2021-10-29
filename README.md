@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v1.3.0-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v1.5.0-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/workflows/Python%20CI/badge.svg)](https://github.com/emcek/dcspy/actions)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
@@ -6,7 +6,7 @@
 [![Downloads](https://img.shields.io/github/downloads/emcek/dcspy/total?label=Downloads)](https://github.com/emcek/dcspy/releases)  
 [![Patreon](https://img.shields.io/badge/Patreon-donate-ff424d?logo=patreon)](https://www.patreon.com/mplichta)
 [![Discord](https://img.shields.io/discord/672486999516774442?label=Discord&logo=discord&logoColor=lightblue)](https://discord.gg/SP5Yjx3)
-[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue.svg)](https://github.com/emcek/dcspy)
+[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/emcek/dcspy)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)  
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)  
@@ -21,6 +21,7 @@ It supports:
 * [Requirements](#requirements)
 * [Credits](#credits)
 * [Installation](#installation)
+* [Upgrade](#upgrade)
 * [Usage](#usage)
 * [Configuration](#configuration)
 * [Mono vs. Color](#mono-vs-color)
@@ -34,13 +35,14 @@ It supports:
 * Ka-50 Black Shark PVI-800 and autopilot channels
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
 * F-14B Tomcat - basic support for RIO CAP
+* AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * more to come....
 
 ## Requirements
-* [Python 3.9](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.9.4-amd64.exe
+* [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.0-amd64.exe
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [Logitech LCD SDK 8.57.148](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
-* [DCS-BIOS 0.7.41](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS-BIOS 0.7.42](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
@@ -57,30 +59,42 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
    * Advanced Options:
      * Associate files with Python (requires the py launcher)
      * Add Python to environment variables
-     * Customize install location: **C:\Python39** or **C:\Python**
+     * Customize install location: **C:\Python310** or **C:\Python**
 3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy
 ```
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.3.0-py3-none-any.whl
+pip install dcspy-1.5.0-py3-none-any.whl
+```
+## Upgrade
+To upgrade DCSpy to the latest version, open Command Prompt and type:
+```shell script
+pip install -U dcspy
 ```
 
 ## Usage
 1. Run Logitech Gaming Software (it allow to update LCD)
 2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into you python directory: i.e.:
-   * `c:\python39\dcspy_data\dcspy.ico`
-   * `c:\python39\scripts\dcspy.exe`
+   * `c:\python310\dcspy_data\dcspy.ico`
+   * `c:\python310\scripts\dcspy.exe`
 3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory).
 4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
 5. LCD display should update with dcspy basic info, waiting to connect to DCS 
 6. Run DCS and start any mission.
 
 ## Configuration
-DCSpy can be configured via `config.yaml` file. This is simple file, most users do not need to touch it at all.
-However, it allows tune DCSpy to users' needs.  
-Location of configuration file is in Python installation directory (e.g. `c:\python39\dcspy_data\config.yaml`)
+DCSpy can be configured via `config.yaml` file. It is located in Python's installation directory (e.g. `c:\python310\dcspy_data\config.yaml`). 
+This is simple file, most users do not need to touch it at all. However, it can be easily edited directly from GUI. Configuring DCSpy enable some powerful features of DCSpy.  
+Please check **Config** button in GUI. Right now there are available options:  
+* **dcsbios** - location of DCS-BIOS folder inside user's `Saved Games\DCS.openbeta`.  
+  Set this parameter to correct value allows user check and update DCS-BIOS to the latest release.  
+  *example value*: `D:\Users\emcek\Saved Games\DCS.openbeta\Scripts\DCS-BIOS`
+* **keyboard** - default Logitech keyboard value, last used value is saved automatically  
+  *possible values*: `G19`, `G510`, `G15 v1/v2`, `G13`
+* **show_gui** - it allows showing or hiding GUI during start of DCSpy.  
+  *possible values*: `true` or `false`
 
 ## Mono vs. Color
 DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 
@@ -117,6 +131,12 @@ actions for supported airplanes are hardcoded right now and look like:
 * RIO CAP SW
 * RIO CAP NE
 * RIO CAP Enter
+
+### AV-8B N/A Harrier
+* UFC COMM1 channel select decrease
+* UFC COMM1 channel select increase
+* UFC COMM2 channel select decrease
+* UFC COMM2 channel select increase
 
 ## FAQ
 1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   

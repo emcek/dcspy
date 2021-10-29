@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-__version__ = '1.3.0'
+__version__ = '1.5.0'
 here = abspath(dirname(__file__))
 
 with io.open(join(here, 'README.md'), encoding='utf-8') as f:
@@ -24,11 +24,13 @@ setup(name='dcspy',
       data_files=[('dcspy_data', ['resources/dcspy.ico', 'resources/config.yaml'])],
       classifiers=['Development Status :: 5 - Production/Stable',
                    'Environment :: Console',
+                   'Environment :: Win32 (MS Windows)',
                    'License :: OSI Approved :: MIT License',
                    'Programming Language :: Python :: 3.6',
                    'Programming Language :: Python :: 3.7',
                    'Programming Language :: Python :: 3.8',
                    'Programming Language :: Python :: 3.9',
+                   'Programming Language :: Python :: 3.10',
                    'Operating System :: Microsoft :: Windows',
                    'Operating System :: Microsoft :: Windows :: Windows 10',
                    'Topic :: Games/Entertainment',

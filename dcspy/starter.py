@@ -1,8 +1,11 @@
 import socket
 import struct
+from collections import deque
 from importlib import import_module
 from logging import getLogger
 from time import time, gmtime
+from typing import Iterator
+from threading import Event
 
 from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
@@ -10,48 +13,69 @@ from dcspy.logitech import LogitechKeyboard
 from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
-__version__ = '1.3.0'
+LOOP_FLAG = True
+__version__ = '1.5.0'
 
 
-def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket) -> None:
+def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
     """
     Main loop where all the magic is happened.
 
     :param lcd: type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
     :param sock: multi-cast UDP socket
+    :param event: stop event for main loop
     """
     start_time = time()
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
-    current_ver = 'current' if result[0] else 'update!'
+    current_ver = 'latest' if result[0] else 'please update!'
     LOG.info('Waiting for DCS connection...')
-    while True:
+    support_banner = _supporters(text='Huge thanks to: Nick Thain, BrotherBloat and others! For support and help! ', width=26)
+    while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
             start_time = time()
-            if lcd.plane_detected:
-                lcd.load_new_plane()
+            _load_new_plane_if_detected(lcd)
             lcd.button_handle(sock)
         except socket.error as exp:
-            LOG.debug(f'Main loop socket error: {exp}')
-            _sock_err_handler(lcd, start_time, current_ver)
+            _sock_err_handler(lcd, start_time, current_ver, support_banner, exp)
 
 
-def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str) -> None:
+def _load_new_plane_if_detected(lcd: LogitechKeyboard) -> None:
+    global LOOP_FLAG
+    if lcd.plane_detected:
+        lcd.load_new_plane()
+        LOOP_FLAG = True
+
+
+def _supporters(text: str, width: int) -> Iterator[str]:
+    queue = deque(text)
+    while True:
+        yield ''.join(queue)[:width]
+        queue.rotate(-1)
+
+
+def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, current_ver: str, support_iter: Iterator[str], exp: Exception) -> None:
     """
     Show basic data when DCS is disconnected.
 
     :param lcd: type of Logitech keyboard with LCD
     :param start_time: time when connection to DCS was lost
     :param current_ver: logger.info about current version to show
+    :param support_iter: iterator for banner supporters
+    :param exp: caught exception instance
     """
+    global LOOP_FLAG
+    if LOOP_FLAG:
+        LOG.debug(f'Main loop socket error: {exp}')
+        LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
-    spacer = ' ' * 13
-    lcd.display = ['Logitech LCD OK', 'No new data from DCS:',
-                   f'{spacer}{wait_time.tm_min:02d}:{wait_time.tm_sec:02d} [min:s]',
-                   f'dcspy: v{__version__} ({current_ver})']
+    lcd.display = ['Logitech LCD OK',
+                   f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                   f'{next(support_iter)}',
+                   f'v{__version__} ({current_ver})']
 
 
 def _prepare_socket() -> socket.socket:
@@ -69,14 +93,15 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(lcd_type: str) -> None:
+def dcspy_run(lcd_type: str, event: Event) -> None:
     """
     Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
+    :param event: stop event for main loop
     """
     parser = ProtocolParser()
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(lcd)}')
     LOG.debug(f'Loading: {repr(lcd)}')
-    _handle_connection(lcd, parser, _prepare_socket())
+    _handle_connection(lcd, parser, _prepare_socket(), event)

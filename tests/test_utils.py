@@ -5,13 +5,13 @@ from pytest import mark
 from dcspy import utils
 
 
-@mark.parametrize('online_tag, result', [('1.1.1', (True, '1.1.1', 'github.com', '09 August 2021', True)),
-                                         ('3.2.1', (False, '3.2.1', 'github.com', '09 August 2021', True))])
+@mark.parametrize('online_tag, result', [('1.1.1', (True, '1.1.1', 'github.com/fake.tgz', '09 August 2021',  'Pre-release', 'fake.tgz')),
+                                         ('3.2.1', (False, '3.2.1', 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz'))])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{'browser_download_url': 'github.com'}],
+                                                                       'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
         assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1') == result
 
@@ -19,12 +19,12 @@ def test_check_ver_is_possible(online_tag, result):
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2') == (False, '', '', '', False)
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2') == (False, '', '', '', 'Regular', '')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == (False, '', '', '', False)
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == (False, '', '', '', 'Regular', '')
 
 
 @mark.parametrize('response, result', [(False, False), (True, True)])
@@ -50,7 +50,7 @@ def test_dummy_save_load_set_defaults():
     d_cfg = utils.load_cfg(test_tmp_yaml)
     assert d_cfg == {'1': 1}
     d_cfg = utils.set_defaults(d_cfg)
-    assert d_cfg == {'keyboard': 'G13', 'auto_gui': True,
+    assert d_cfg == {'keyboard': 'G13', 'show_gui': True,
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
