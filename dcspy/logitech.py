@@ -31,7 +31,8 @@ class LogitechKeyboard:
 
         Child class needs redefine:
         - buttons with supported buttons as tuple of int
-        - pass lcd_type argument as LcdInfo NamedTuple to super constructor
+        - pass lcd_type argument as LcdInfo to super constructor
+
         :param parser_hook: BSC-BIOS parser
         """
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
