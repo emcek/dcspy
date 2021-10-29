@@ -15,7 +15,7 @@ from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, 
 
 LOG = getLogger(__name__)
 ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', str), ('dl_url', str),
-                                         ('published', str), ('release_type', str), ('archive_file', str)])
+                                         ('published', str), ('pre_release', bool), ('archive_file', str)])
 
 
 class DcspyGui(tk.Frame):
@@ -134,7 +134,7 @@ class DcspyGui(tk.Frame):
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> ReleaseInfo:
-        result = ReleaseInfo(False, '', '', '', '', '')
+        result = ReleaseInfo(False, '', '', '', False, '')
         bios_path = load_cfg()['dcsbios']
         self.l_bios = 'Unknown'
         try:
@@ -147,26 +147,24 @@ class DcspyGui(tk.Frame):
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
-                result = ReleaseInfo(False, self.l_bios, '', '', '', '')
+                result = ReleaseInfo(False, self.l_bios, '', '', False, '')
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:
-        latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
-                                                                          current_ver=self.l_bios)
-        archive_file = dl_url.split('/')[-1]
-        release_type = 'Pre-release' if pre_release else 'Regular'
-        self.r_bios = ver if ver else 'Unknown'
-        return ReleaseInfo(latest, ver, dl_url, published, release_type, archive_file)
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=self.l_bios)
+        self.r_bios = release_info[1] if release_info[1] else 'Unknown'
+        return ReleaseInfo(*release_info, archive_file=release_info[2].split('/')[-1])
 
     def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
+        release_type = 'Pre-release' if rel_info.pre_release else 'Regular'
         msg_txt = f'You are running latest {rel_info.ver} version.\n' \
-                  f'Type: {rel_info.release_type}\n' \
+                  f'Type: {release_type}\n' \
                   f'Released: {rel_info.published}\n\n' \
                   f'Would you like to download {rel_info.archive_file} and overwrite update?'
         if not rel_info.latest:
             msg_txt = f'You are running latest {self.l_bios} version.\n' \
                       f'New version {rel_info.ver} available.\n' \
-                      f'Type: {rel_info.release_type}\n' \
+                      f'Type: {release_type}\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
