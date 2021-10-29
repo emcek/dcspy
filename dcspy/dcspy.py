@@ -16,7 +16,7 @@ def run():
     if config['show_gui']:
         LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
         root = tk.Tk()
-        width, height = 200, 160
+        width, height = 210, 160
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
         root.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
