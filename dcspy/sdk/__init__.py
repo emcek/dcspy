@@ -35,13 +35,13 @@ def load_dll(lib_type: str) -> Optional[CDLL]:
     """
     try:
         dll = _init_dll(lib_type)
-        LOG.warning(f'Loading of {lib_type} SDK success')
+        LOG.info(f'Loading of {lib_type} SDK success')
         return dll
     # todo: KeyError can be reoven when SDK folder is used
     except (KeyError, FileNotFoundError) as err:
         header = '*' * 40
         space = ' ' * 15
-        LOG.error(f'{header}\n*{space}ERROR!!!{space}*\n{header}\n'
+        LOG.error(f'\n{header}\n*{space}ERROR!!!{space}*\n{header}\n'
                   f'Loading of {lib_type} SDK failed: {err.__class__.__name__}', exc_info=True)
-        LOG.error(f'{header}\n')
+        LOG.error(f'\n{header}')
         return None
