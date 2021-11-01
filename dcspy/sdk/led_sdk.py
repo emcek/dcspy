@@ -1,5 +1,7 @@
 from ctypes import c_bool, c_wchar_p, c_int
 from logging import getLogger
+from threading import Event
+from time import sleep
 from typing import Tuple
 
 from dcspy.sdk import load_dll
@@ -175,3 +177,26 @@ def logi_led_shutdown() -> None:
         logiledshutdown = LED_DLL['LogiLedShutdown']
         logiledshutdown.restype = c_bool
         logiledshutdown()
+
+
+def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event):
+    """
+    The function start the pulsing red effect in thread on the keyboard.
+
+    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
+    :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
+                     to make the effect run until event is set
+    :param interval: duration of the flashing interval in milliseconds
+    :param event: stop event for infinite loop
+    """
+    LOG.debug('Start LED thread')
+    logi_led_init()
+    sleep(0.05)
+    logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
+    sleep_time = duration + 0.2
+    logi_led_pulse_lighting(rgb, duration, interval)
+    sleep(sleep_time)
+    while not event.is_set():
+        sleep(0.2)
+    logi_led_shutdown()
+    LOG.debug('Stop LED thread')
