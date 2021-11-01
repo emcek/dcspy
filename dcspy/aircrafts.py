@@ -9,7 +9,7 @@ from typing import Dict, Union, Optional, Iterator, Sequence
 from PIL import Image, ImageDraw
 
 from dcspy import FONT, LcdInfo
-from dcspy.sdk import lcd_sdk
+from dcspy.sdk import lcd_sdk, led_sdk
 
 try:
     from typing_extensions import TypedDict
@@ -52,6 +52,7 @@ class Aircraft:
     @staticmethod
     def update_display(image: Image.Image) -> None:
         """Update display."""
+        led_sdk.logi_led_flash_lighting((20, 20, 20), 20, 2)
         lcd_sdk.update_display(image)
 
     def prepare_image(self) -> Optional[Image.Image]:
