@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
