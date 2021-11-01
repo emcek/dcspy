@@ -104,11 +104,14 @@ class BIOS_VALUE <<(T,orange)>> {
     - total=False
 }
 
-class LcdInfo <<(N,orchid)>> {
+class LcdInfo <<(D,orchid)>> {
     + height : int
     + width : int
     + type : int
     + fg : Union[int, Sequence[int]]
     + bg : Union[int, Sequence[int]]
+    + mode: str
+    + font_s: ImageFont.FreeTypeFont
+    + font_l: ImageFont.FreeTypeFont
 }
 @enduml
