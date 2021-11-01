@@ -9,7 +9,7 @@ from typing import Dict, Union, Optional, Iterator, Sequence
 from PIL import Image, ImageDraw
 
 from dcspy import FONT, LcdInfo
-from dcspy.sdk import lcd_sdk, led_sdk
+from dcspy.sdk import lcd_sdk
 
 try:
     from typing_extensions import TypedDict
