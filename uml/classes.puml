@@ -133,6 +133,7 @@ package sdk{
         + logi_led_pulse_lighting()
         + logi_led_stop_effects()
         + logi_led_shutdown()
+        + start_led_pulse()
     }
 }
 
