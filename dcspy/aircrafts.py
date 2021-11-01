@@ -52,7 +52,6 @@ class Aircraft:
     @staticmethod
     def update_display(image: Image.Image) -> None:
         """Update display."""
-        led_sdk.logi_led_flash_lighting((20, 20, 20), 20, 2)
         lcd_sdk.update_display(image)
 
     def prepare_image(self) -> Optional[Image.Image]:
