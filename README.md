@@ -43,8 +43,6 @@ It supports:
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.42](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
-[comment]: <> (* [Logitech LCD SDK 8.57.148]&#40;http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip&#41; extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`)
-
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
 * [DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios) fork by DCSFlightpanels for exporting data from DCS to local network
