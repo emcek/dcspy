@@ -5,7 +5,7 @@ from os import path, environ
 from re import search
 from shutil import unpack_archive, rmtree, copytree
 from sys import prefix
-from threading import Thread
+from threading import Thread, Event
 from tkinter import messagebox
 from typing import NamedTuple
 
@@ -14,8 +14,8 @@ from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
 LOG = getLogger(__name__)
-BiosReleaseInfo = NamedTuple('BiosReleaseInfo', [('latest', bool), ('ver', str), ('dl_url', str),
-                                                 ('published', str), ('release_type', str), ('archive_file', str)])
+ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', str), ('dl_url', str),
+                                         ('published', str), ('release_type', str), ('archive_file', str)])
 
 
 class DcspyGui(tk.Frame):
@@ -28,7 +28,7 @@ class DcspyGui(tk.Frame):
         """
         super().__init__(master)
         self.master = master
-        self.master.title('GUI')
+        self.master.title('DCSpy')
         self.lcd_type = tk.StringVar()
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
@@ -36,6 +36,7 @@ class DcspyGui(tk.Frame):
         self.l_bios = 'Not checked'
         self.r_bios = 'Not checked'
         self.bios_path = ''
+        self.event = Event()
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -46,22 +47,26 @@ class DcspyGui(tk.Frame):
         self.master.rowconfigure(index=3, weight=1)
 
         frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
+        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
         for i, text in enumerate(LCD_TYPES):
             rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
 
+        self._add_buttons_mainwindow()
+
+    def _add_buttons_mainwindow(self):
         start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
         cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
+        stop = tk.Button(master=self.master, text='Stop', width=6, command=self._stop)
         close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
         status = tk.Label(master=self.master, textvariable=self.status_txt)
-
-        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
         start.grid(row=0, column=1, padx=2, pady=2)
         cfg.grid(row=1, column=1, padx=2, pady=2)
-        close.grid(row=2, column=1, padx=2, pady=2)
-        status.grid(row=3, column=0, columnspan=2, sticky=tk.W)
+        stop.grid(row=2, column=1, padx=2, pady=2)
+        close.grid(row=3, column=1, padx=2, pady=2)
+        status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
 
     def _lcd_type_selected(self) -> None:
         """Handling selected LCD type."""
@@ -83,6 +88,10 @@ class DcspyGui(tk.Frame):
         editor_status.pack(side=tk.TOP, fill=tk.X)
         scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
         scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        text_editor = self._create_text_editor(cfg_edit, scrollbar_y)
+        self._load_cfg(text_editor)
+
+    def _create_text_editor(self, cfg_edit, scrollbar_y):
         text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
                               borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
@@ -97,7 +106,7 @@ class DcspyGui(tk.Frame):
         check_bios.pack(side=tk.LEFT)
         close.pack(side=tk.LEFT)
         bios_status.pack(side=tk.BOTTOM, fill=tk.X)
-        self._load_cfg(text_editor)
+        return text_editor
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
         text_widget.delete('1.0', tk.END)
@@ -133,8 +142,8 @@ class DcspyGui(tk.Frame):
                f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
-    def _check_local_bios(self) -> BiosReleaseInfo:
-        result = BiosReleaseInfo(False, '', '', '', '', '')
+    def _check_local_bios(self) -> ReleaseInfo:
+        result = ReleaseInfo(False, '', '', '', '', '')
         bios_path = load_cfg()['dcsbios']
         self.l_bios = 'Unknown'
         try:
@@ -147,18 +156,15 @@ class DcspyGui(tk.Frame):
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = bios_re.group(1)
-                result = BiosReleaseInfo(False, self.l_bios, '', '', '', '')
+                result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         return result
 
-    def _check_remote_bios(self) -> BiosReleaseInfo:
-        latest, ver, dl_url, published, pre_release = check_ver_at_github(repo='DCSFlightpanels/dcs-bios',
-                                                                          current_ver=self.l_bios)
-        archive_file = dl_url.split('/')[-1]
-        release_type = 'Pre-release' if pre_release else 'Regular'
-        self.r_bios = ver if ver else 'Unknown'
-        return BiosReleaseInfo(latest, ver, dl_url, published, release_type, archive_file)
+    def _check_remote_bios(self) -> ReleaseInfo:
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=self.l_bios)
+        self.r_bios = release_info[1] if release_info[1] else 'Unknown'
+        return ReleaseInfo(*release_info)
 
-    def _ask_to_update(self, rel_info: BiosReleaseInfo) -> None:
+    def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
         msg_txt = f'You are running latest {rel_info.ver} version.\n' \
                   f'Type: {rel_info.release_type}\n' \
                   f'Released: {rel_info.published}\n\n' \
@@ -172,7 +178,7 @@ class DcspyGui(tk.Frame):
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
             self._update(rel_info=rel_info)
 
-    def _update(self, rel_info: BiosReleaseInfo) -> None:
+    def _update(self, rel_info: ReleaseInfo) -> None:
         tmp_dir = environ.get('TEMP', 'C:\\')
         local_zip = path.join(tmp_dir, rel_info.archive_file)
         download_file(url=rel_info.dl_url, save_path=local_zip)
@@ -186,11 +192,15 @@ class DcspyGui(tk.Frame):
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
         messagebox.showinfo('Updated', 'Success. Done.')
 
+    def _stop(self) -> None:
+        self.status_txt.set('Close will shutdown DCSpy')
+        self.event.set()
+
     def start_dcspy(self) -> None:
         """Run real application."""
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
-        app_params = {'lcd_type': LCD_TYPES[keyboard]}
+        app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         LOG.debug(f'Starting thread for: {app_params}')
         app_thread.setName('dcspy-app')
