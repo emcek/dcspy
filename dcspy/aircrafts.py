@@ -453,6 +453,7 @@ class F14B(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
+        # todo - add IAS (kph/mach), wing swept indication
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
             'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
