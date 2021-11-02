@@ -159,9 +159,9 @@ class FA18Chornet(Aircraft):
         draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
         draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
 
-        offset_comm2 = 44 * scale
-        draw.rectangle(xy=(139 * scale - offset_comm2, 29 * scale, 159 * scale - offset_comm2, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(140 * scale - offset_comm2, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
+        offset = 44 * scale
+        draw.rectangle(xy=(139 * scale - offset, 29 * scale, 159 * scale - offset, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
+        draw.text(xy=(140 * scale - offset, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
 
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
