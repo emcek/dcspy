@@ -23,7 +23,7 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     cfg_dict: ConfigDict = {}
     try:
-        with open(file=filename, encoding='utf-8') as yaml_file:
+        with open(file=filename, mode='r', encoding='utf-8') as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
             if not isinstance(cfg_dict, dict):
                 cfg_dict, old_dict = {}, cfg_dict

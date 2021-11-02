@@ -110,11 +110,11 @@ class DcspyGui(tk.Frame):
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
         text_widget.delete('1.0', tk.END)
-        with open(self.cfg_file, 'r') as cfg_file:
+        with open(file=self.cfg_file, mode='r', encoding='utf-8') as cfg_file:
             text_widget.insert(tk.END, cfg_file.read().strip())
 
     def _save_cfg(self, text_info: tk.Text) -> None:
-        with open(self.cfg_file, 'w+') as cfg_file:
+        with open(file=self.cfg_file, mode='w+', encoding='utf-8') as cfg_file:
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar) -> None:
@@ -147,7 +147,7 @@ class DcspyGui(tk.Frame):
         bios_path = load_cfg()['dcsbios']
         self.l_bios = 'Unknown'
         try:
-            with open(path.join(bios_path, 'lib\\CommonData.lua')) as cd_lua:  # type: ignore
+            with open(file=path.join(bios_path, 'lib\\CommonData.lua'), mode='r', encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
