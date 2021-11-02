@@ -197,4 +197,3 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
-
