@@ -7,11 +7,12 @@ Main modules of DCSpy:
 * `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 * `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
+* `utils.py` various useful tools - load and save config, check online version or download file
 
 If you want to modify or write something by yourself, here's a quick walk-through:
 * Each plane has special dict:
 ```python
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int}, total=False)
 
 self.bios_data: Dict[str, BIOS_VALUE] = {
     'PVI_LINE2_TEXT': {'class': 'StringBuffer',
