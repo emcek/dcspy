@@ -203,6 +203,6 @@ class DcspyGui(tk.Frame):
         app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         LOG.debug(f'Starting thread for: {app_params}')
-        app_thread.setName('dcspy-app')
+        app_thread.name = 'dcspy-app'
         self.status_txt.set('You can close GUI')
         app_thread.start()
