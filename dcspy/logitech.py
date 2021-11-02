@@ -8,9 +8,10 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT, SEND_ADDR, lcd_sdk
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT, SEND_ADDR
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
+from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
 

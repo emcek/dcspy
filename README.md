@@ -41,7 +41,6 @@ It supports:
 ## Requirements
 * [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.0-amd64.exe
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
-* [Logitech LCD SDK 8.57.148](http://gaming.logitech.com/sdk/LCDSDK_8.57.148.zip) extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
 * [DCS-BIOS 0.7.42](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 ## Credits

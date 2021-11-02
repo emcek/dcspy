@@ -1,11 +1,10 @@
-from ctypes import CDLL, c_bool, c_wchar_p, c_int, c_ubyte, sizeof, c_void_p
+from ctypes import c_bool, c_wchar_p, c_int, c_ubyte
 from logging import getLogger
-from os import environ
-from platform import architecture
-from sys import maxsize
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 
 from PIL import Image
+
+from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
@@ -36,24 +35,7 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-
-def _init_dll() -> CDLL:
-    """Initialization od dynamic linking library."""
-    arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
-    try:
-        prog_files = environ['PROGRAMW6432']
-    except KeyError:
-        prog_files = environ['PROGRAMFILES']
-    dll_path = f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll"
-    return CDLL(dll_path)
-
-
-try:
-    LCD_DLL: Optional[CDLL] = _init_dll()
-    LOG.debug('Loading of LCD SDK success')
-except (KeyError, FileNotFoundError) as err:
-    LOG.error(f'Loading of LCD SDK failed: {err}', exc_info=True)
-    LCD_DLL = None
+LCD_DLL = load_dll('LCD')
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
@@ -61,7 +43,7 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     Function makes necessary initializations.
 
     You must call this function prior to any other function in the library.
-    :param name: the name of your applet, you cant change it after initialization
+    :param name: the name of your applet, you can't change it after initialization
     :param lcd_type: defines the type of your applet lcd target
     :return: result
     """
@@ -111,7 +93,7 @@ def logi_lcd_update() -> None:
         logilcdupdate()
 
 
-def logi_lcd_shutdown():
+def logi_lcd_shutdown() -> None:
     """Function kills the applet and frees memory used by the SDK."""
     if LCD_DLL:
         logilcdshutdown = LCD_DLL['LogiLcdShutdown']
@@ -182,7 +164,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
 
     The font size that will be displayed is bigger than the one used in the other lines,
     so you can use this function to set the title of your applet/page.
-    If you dont specify any color, your title will be white.
+    If you don't specify any color, your title will be white.
     :param text: defines the text you want to display as title
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
@@ -199,7 +181,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     """
     Function sets the specified text in the requested line on the color lcd device connected.
 
-    If you dont specify any color, your title will be white.
+    If you don't specify any color, your title will be white.
     :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
     :param text: defines the text you want to display
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue

@@ -61,7 +61,6 @@ class KeyboardColor {
     # _prepare_image() -> Image
 }
 
-
 package aircrafts {
   Aircraft <|-- FA18Chornet
   Aircraft <|-- F16C50
@@ -89,13 +88,6 @@ class Aircraft {
     + {abstract} draw_for_lcd_type_2(img: Image)
 }
 
-LogitechKeyboard *- Aircraft
-LogitechKeyboard *- LcdInfo
-LogitechKeyboard *--- ProtocolParser
-Aircraft *-- LcdInfo
-Aircraft *-- StringBuffer
-Aircraft *-- IntegerBuffer
-
 class BIOS_VALUE <<(T,orange)>> {
     + class : str
     + args: Dict[str, int]
@@ -114,4 +106,50 @@ class LcdInfo <<(D,orchid)>> {
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
 }
+
+package sdk{
+    class lcd_sdk <<(D,red)>> {
+        + logi_lcd_init()
+        + logi_lcd_is_connected()
+        + logi_lcd_is_button_pressed()
+        + logi_lcd_update()
+        + logi_lcd_shutdown()
+        + logi_lcd_mono_set_background()
+        + logi_lcd_mono_set_text()
+        + logi_lcd_color_set_background()
+        + logi_lcd_color_set_title()
+        + logi_lcd_color_set_text()
+        + update_text()
+        + update_display()
+        + clear_display()
+        # _clear_mono()
+        # _clear_color()
+    }
+    class led_sdk <<(D,red)>> {
+        + logi_led_init()
+        + logi_led_init_with_name()
+        + logi_led_set_target_device()
+        + logi_led_save_current_lighting()
+        + logi_led_restore_lighting()
+        + logi_led_set_lighting()
+        + logi_led_flash_lighting()
+        + logi_led_pulse_lighting()
+        + logi_led_stop_effects()
+        + logi_led_shutdown()
+        + start_led_pulse()
+    }
+}
+
+LogitechKeyboard *- Aircraft
+LcdInfo -* LogitechKeyboard
+LogitechKeyboard *--- ProtocolParser
+LogitechKeyboard *-- lcd_sdk
+
+KeyboardMono *-- lcd_sdk
+KeyboardColor *-- lcd_sdk
+
+LcdInfo -* Aircraft
+Aircraft *-- StringBuffer
+Aircraft *-- IntegerBuffer
+Aircraft *-- lcd_sdk
 @enduml
