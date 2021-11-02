@@ -3,8 +3,39 @@ name: Python CI
 on: [push]
 
 jobs:
+  style:
+    name: style ${{ matrix.os }} (py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.10']
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install flake8 pycodestyle pydocstyle pylint
+          pip install -Ur requirements.txt
+      - name: Check PyCodeStyle
+        run: |
+          pycodestyle --statistics --count dcspy
+      - name: Check PyDocStyle
+        run: |
+          pydocstyle --count dcspy
+      - name: Check PyLint
+        run: |
+          pylint dcspy || echo $(($? % 4))
+      - name: Check flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=6 --max-line-length=160 --statistics
   test:
-    name: test ${{ matrix.os }} py${{ matrix.python-version }}
+    name: test ${{ matrix.os }} (py${{ matrix.python-version }})
     needs: style
     runs-on: ${{ matrix.os }}
     strategy:
@@ -41,7 +72,7 @@ jobs:
             dcspy.log
           retention-days: 5
   coverage:
-    name: cov ${{ matrix.os }} py${{ matrix.python-version }}
+    name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
     needs: test
     runs-on: ${{ matrix.os }}
     strategy:
@@ -69,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
+          name: cov-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |
             htmlcov/*
             mypyhtml/*
@@ -87,34 +118,3 @@ jobs:
           COVERALLS_SERVICE_NAME: github
         run: |
           coveralls
-  style:
-    name: style ${{ matrix.os }} py${{ matrix.python-version }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.10']
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install flake8 pycodestyle pydocstyle pylint
-          pip install -Ur requirements.txt
-      - name: Check PyCodeStyle
-        run: |
-          pycodestyle --statistics --count dcspy
-      - name: Check PyDocStyle
-        run: |
-          pydocstyle --count dcspy
-      - name: Check PyLint
-        run: |
-          pylint dcspy || echo $(($? % 4))
-      - name: Check flake8
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=6 --max-line-length=160 --statistics
