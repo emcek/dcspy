@@ -20,9 +20,6 @@ def _init_dll(lib_type: str) -> CDLL:
         prog_files = environ['PROGRAMW6432']
     except KeyError:
         prog_files = environ['PROGRAMFILES']
-    # lib = {'LCD': f"{prog_files}\\Logitech Gaming Software\\LCDSDK_8.57.148\\Lib\\GameEnginesWrapper\\{arch}\\LogitechLcdEnginesWrapper.dll",
-    #        'LED': f"{prog_files}\\Logitech Gaming Software\\LED_SDK_9.00\\Lib\\LogitechLedEnginesWrapper\\{arch}\\LogitechLedEnginesWrapper.dll"}
-    # return CDLL(lib[lib_type])
     return CDLL(f"{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type}\\{arch}\\Logitech{lib_type.capitalize()}.dll")
 
 
