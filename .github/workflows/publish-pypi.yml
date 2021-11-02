@@ -7,7 +7,7 @@ on:
     tags: ['v*']
 
 jobs:
-  deploy:
+  pypi:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
