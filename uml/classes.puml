@@ -100,15 +100,15 @@ class LcdInfo <<(D,orchid)>> {
     + height : int
     + width : int
     + type : int
-    + fg : Union[int, Sequence[int]]
-    + bg : Union[int, Sequence[int]]
+    + foreground : Union[int, Sequence[int]]
+    + background : Union[int, Sequence[int]]
     + mode: str
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
 }
 
 package sdk{
-    class lcd_sdk <<(D,red)>> {
+    class lcd_sdk <<(L,lightblue)>> {
         + logi_lcd_init()
         + logi_lcd_is_connected()
         + logi_lcd_is_button_pressed()
@@ -125,7 +125,7 @@ package sdk{
         # _clear_mono()
         # _clear_color()
     }
-    class led_sdk <<(D,red)>> {
+    class led_sdk <<(L,lightblue)>> {
         + logi_led_init()
         + logi_led_init_with_name()
         + logi_led_set_target_device()

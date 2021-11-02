@@ -186,11 +186,11 @@ class KeyboardMono(LogitechKeyboard):
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         draw = ImageDraw.Draw(img)
         font, space = FONT[11], 10
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
+            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.foreground, font=font)
         return img
 
 
@@ -214,9 +214,9 @@ class KeyboardColor(LogitechKeyboard):
         For G19 takes first 8 or less elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
+        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         draw = ImageDraw.Draw(img)
         font, space = FONT[22], 40
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
+            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.foreground, font=font)
         return img
