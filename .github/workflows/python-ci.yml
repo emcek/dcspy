@@ -4,6 +4,8 @@ on: [push]
 
 jobs:
   test:
+    name: test ${{ matrix.os }} py${{ matrix.python-version }}
+    needs: style
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -39,6 +41,8 @@ jobs:
             dcspy.log
           retention-days: 5
   coverage:
+    name: cov ${{ matrix.os }} py${{ matrix.python-version }}
+    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -84,6 +88,7 @@ jobs:
         run: |
           coveralls
   style:
+    name: style ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
