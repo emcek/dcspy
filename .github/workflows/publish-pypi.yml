@@ -28,3 +28,48 @@ jobs:
         password: ${{ secrets.PYPI_TOKEN }}
         skip_existing: true
         verbose: true
+
+# pip install -r requirements.txt --target app / pip install dcspy --target app
+# rm *.dist-info (optional)
+# python -m zipapp --output dcspy_sa.pyz --compress --main "dcspy.dcspy:run" app
+
+# shiv
+# python -m shiv --console-script dcspy --output-file dcspy_sh.pyz --compressed --compile-pyc dcspy
+# python -m shiv-info dcspy_sh.pyz
+
+# pyinstaller
+
+
+#  github-release:
+#    name: Create Github Release
+#    needs: determine-tag
+#    runs-on: ubuntu-20.04
+#    environment: Release
+#    steps:
+#      - name: Checkout Pex ${{ needs.determine-tag.outputs.release-tag }}
+#        uses: actions/checkout@v2
+#        with:
+#          ref: ${{ needs.determine-tag.outputs.release-tag }}
+#          fetch-depth: 0
+#      - name: Setup Python 3.9
+#        uses: actions/setup-python@v2
+#        with:
+#          python-version: 3.9
+#      - name: Package Pex ${{ needs.determine-tag.outputs.release-tag }} PEX
+#        uses: pantsbuild/actions/run-tox@95209b287c817c78a765962d40ac6cea790fc511
+#        with:
+#          tox-env: package
+#      - name: Create ${{ needs.determine-tag.outputs.release-tag }} Release
+#        uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: ${{ needs.determine-tag.outputs.release-tag }}
+#          name: pex ${{ needs.determine-tag.outputs.release-version }}
+#          body: |
+#            ---
+            # ${{ needs.determine-tag.outputs.release-version }}
+#            TODO: Add CHANGES.rst entries.
+#          draft: false
+#          prerelease: false
+#          files: dist/pex
