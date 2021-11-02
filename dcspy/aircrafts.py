@@ -29,6 +29,7 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
+        self.led_data: Dict[str, BIOS_VALUE] = {}  # todo: how handle bios data related to led - new 'set_bios()' or 'if'
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
 
