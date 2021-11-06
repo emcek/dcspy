@@ -4,6 +4,7 @@ codacy-coverage
 # https://github.com/TheKevJames/coveralls-python/issues/333
 coveralls < 3.3.0
 flake8
+lxml
 mypy
 pycodestyle
 pydocstyle
