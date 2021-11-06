@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install flake8 pycodestyle pydocstyle pylint
+          pip install -Ur requirements_test.txt
           pip install -Ur requirements.txt
       - name: Check PyCodeStyle
         run: |
@@ -65,7 +65,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install pycodestyle pydocstyle pytest-mccabe pytest-random
+          pip install -Ur requirements_test.txt
           pip install -Ur requirements.txt
       - name: Test with pytest
         run: |
@@ -102,11 +102,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install lxml pytest-cov pytest-mccabe pytest-random pylint codacy-coverage mypy types-requests types-PyYAML
-          # todo workaround for
-          # https://github.com/nedbat/coveragepy/issues/1273
-          # https://github.com/TheKevJames/coveralls-python/issues/333
-          pip install -U coveralls==3.2.0
+          pip install -Ur requirements_test.txt
           pip install -Ur requirements.txt
       - name: Check mypy
         run: |
