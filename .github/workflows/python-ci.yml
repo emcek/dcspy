@@ -56,7 +56,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install MS Fonts
-        if: !contains(matrix.os, 'windows')
+        if: ${{ contains( matrix.os, 'ubuntu') }}
         run: wget -q -O - https://gist.githubusercontent.com/Blastoise/72e10b8af5ca359772ee64b6dba33c91/raw/2d7ab3caa27faa61beca9fbf7d3aca6ce9a25916/clearType.sh | bash
       - name: Install dependencies
         run: |
@@ -89,7 +89,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install MS Fonts
-        if: !contains(matrix.os, 'windows')
+        if: ${{ contains( matrix.os, 'ubuntu') }}
         run: wget -q -O - https://gist.githubusercontent.com/Blastoise/72e10b8af5ca359772ee64b6dba33c91/raw/2d7ab3caa27faa61beca9fbf7d3aca6ce9a25916/clearType.sh | bash
              # wget https://gist.github.com/maxwelleite/10774746/raw/ttf-vista-fonts-installer.sh -q -O - | sudo bash
       - name: Install dependencies
