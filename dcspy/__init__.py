@@ -31,7 +31,7 @@ class LcdInfo:
 
 
 # todo: secure when font is not found
-FONT_NAME = 'consola.ttf' if platform == 'win32' else 'DejaVuSans.ttf'
+FONT_NAME = 'consola.ttf'
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 
 LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO, foreground=255,
