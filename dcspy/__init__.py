@@ -16,6 +16,7 @@ SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': '
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
+FONT_NAME = 'consola.ttf'
 
 
 @dataclass
@@ -30,8 +31,6 @@ class LcdInfo:
     font_l: ImageFont.FreeTypeFont
 
 
-# todo: secure when font is not found
-FONT_NAME = 'consola.ttf'
 FONT = {size: ImageFont.truetype(FONT_NAME, size) for size in (11, 16, 22, 32)}
 
 LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO, foreground=255,
