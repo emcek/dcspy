@@ -8,9 +8,10 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT, SEND_ADDR, lcd_sdk
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, FONT, SEND_ADDR
 from dcspy.aircrafts import Aircraft
 from dcspy.dcsbios import ProtocolParser
+from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
 
@@ -41,7 +42,7 @@ class LogitechKeyboard:
         self.plane_detected = False
         self.already_pressed = False
         self.buttons: Tuple[int, ...] = (0,)
-        self._display: List[str] = list()
+        self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
         self.plane = Aircraft(self.lcd)
@@ -185,11 +186,11 @@ class KeyboardMono(LogitechKeyboard):
         For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
+        img = Image.new(mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         draw = ImageDraw.Draw(img)
         font, space = FONT[11], 10
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
+            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.foreground, font=font)
         return img
 
 
@@ -213,9 +214,9 @@ class KeyboardColor(LogitechKeyboard):
         For G19 takes first 8 or less elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.bg)
+        img = Image.new(mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         draw = ImageDraw.Draw(img)
         font, space = FONT[22], 40
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.fg, font=font)
+            draw.text(xy=(0, space * line_no), text=line, fill=self.lcd.foreground, font=font)
         return img

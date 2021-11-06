@@ -21,7 +21,7 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
                                                                   'val2', 'logi_lcd_color_set_background',
                                                                   [False, True], LcdColor)])
 def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value, c_func, effect, lcd, aircraft):
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     assert aircraft.bios_data == {}
     aircraft.bios_data = {selector: data}
     aircraft.lcd = lcd
@@ -37,7 +37,7 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
 @mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
                                         ('RGBA', 'logi_lcd_color_set_background', LcdColor)])
 def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     aircraft.lcd = lcd
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, c_func, return_value=True):
@@ -48,13 +48,10 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 def test_aircraft_base_class_other_lcd(aircraft):
     from dcspy import LcdInfo
-    from sys import platform
     from PIL import ImageFont
 
-    # todo: secure when font is not found
-    font_name = 'consola.ttf' if platform == 'win32' else 'DejaVuSans.ttf'
-    font = ImageFont.truetype(font_name, 10)
-    aircraft.lcd = LcdInfo(width=3, height=3, type=3, fg=0, bg=128, mode='2', font_s=font, font_l=font)
+    font = ImageFont.truetype('consola.ttf', 10)
+    aircraft.lcd = LcdInfo(width=3, height=3, type=3, foreground=0, background=128, mode='2', font_s=font, font_l=font)
     img = aircraft.prepare_image()
     assert img is None
 
@@ -99,7 +96,7 @@ def test_button_pressed_for_harrier_color(button, result, harrier_color):
                                               ('UFC_COMM1_DISPLAY', '``', '11'),
                                               ('IFEI_FUEL_UP', '104T', '104T')])
 def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
@@ -111,7 +108,7 @@ def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
                                               ('UFC_COMM1_DISPLAY', '``', '11'),
                                               ('IFEI_FUEL_UP', '1000T', '1000T')])
 def test_set_bios_for_hornet_color(selector, value, result, hornet_color):
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
@@ -168,7 +165,7 @@ def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
     aircraft = getattr(aircrafts, model)
     aircraft_model = aircraft(lcd_type=lcd_mono)
     if model == 'Ka50':
-        from dcspy import lcd_sdk
+        from dcspy.sdk import lcd_sdk
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
@@ -187,7 +184,7 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
     aircraft = getattr(aircrafts, model)
     aircraft_model = aircraft(lcd_type=lcd_color)
     if model == 'Ka50':
-        from dcspy import lcd_sdk
+        from dcspy.sdk import lcd_sdk
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
                 with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
@@ -197,4 +194,3 @@ def test_prepare_image_for_all_palnes_color(model, lcd_color):
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
-

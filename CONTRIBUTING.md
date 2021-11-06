@@ -3,15 +3,17 @@ DCSpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here
 Main modules of DCSpy:
 * `dcspy.py` main script - it starts GUI in tkinter
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.
+* `log.py` dumb simple logger configuration
 * `logitech.py` handling Logitech keyboards with LCD and buttons, auto-loading current aircraft
 * `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 * `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
+* `utils.py` various useful tools - load and save config, check online version or download file
 
 If you want to modify or write something by yourself, here's a quick walk-through:
 * Each plane has special dict:
 ```python
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str]})
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int}, total=False)
 
 self.bios_data: Dict[str, BIOS_VALUE] = {
     'PVI_LINE2_TEXT': {'class': 'StringBuffer',

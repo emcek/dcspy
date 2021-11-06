@@ -23,7 +23,7 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     cfg_dict: ConfigDict = {}
     try:
-        with open(filename) as yaml_file:
+        with open(file=filename, mode='r', encoding='utf-8') as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
             if not isinstance(cfg_dict, dict):
                 cfg_dict, old_dict = {}, cfg_dict
@@ -46,7 +46,7 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
     LOG.debug(f'Save: {curr_dict}')
-    with open(filename, 'w') as yaml_file:
+    with open(file=filename, mode='w', encoding='utf-8') as yaml_file:
         dump(curr_dict, yaml_file)
 
 
@@ -61,7 +61,7 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                             'keyboard': 'G13',
                             'show_gui': True}
-    migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
+    migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
     save_cfg(migrated_cfg)
     return migrated_cfg
 
