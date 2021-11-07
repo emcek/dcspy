@@ -110,11 +110,11 @@ jobs:
       - name: Test with pytest
         run: |
           python -m pytest --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term
-      - name: Upload pytest test results
+      - name: Upload pytest and mypy results
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: cov-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: test_mypy-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |
             htmlcov/*
             mypyhtml/*
