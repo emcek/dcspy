@@ -5,6 +5,7 @@ on:
     types: [created]
   push:
     tags: ['v*']
+    branches: [ 1_5_1 ]
 
 jobs:
   deploy:
