@@ -183,7 +183,7 @@ def harrier_color(lcd_color: LcdInfo):
 @fixture()
 def keyboard_base(protocol_parser):
     from dcspy.logitech import LogitechKeyboard
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         return LogitechKeyboard(protocol_parser)
 
@@ -191,7 +191,7 @@ def keyboard_base(protocol_parser):
 @fixture()
 def keyboard_mono(protocol_parser):
     from dcspy.logitech import KeyboardMono
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         return KeyboardMono(protocol_parser)
 
@@ -199,7 +199,7 @@ def keyboard_mono(protocol_parser):
 @fixture()
 def keyboard_color(protocol_parser):
     from dcspy.logitech import KeyboardColor
-    from dcspy import lcd_sdk
+    from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         return KeyboardColor(protocol_parser)
 

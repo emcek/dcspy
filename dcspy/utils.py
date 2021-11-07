@@ -23,7 +23,7 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     cfg_dict: ConfigDict = {}
     try:
-        with open(filename) as yaml_file:
+        with open(file=filename, mode='r', encoding='utf-8') as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
             if not isinstance(cfg_dict, dict):
                 cfg_dict, old_dict = {}, cfg_dict
@@ -46,7 +46,7 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
     LOG.debug(f'Save: {curr_dict}')
-    with open(filename, 'w') as yaml_file:
+    with open(file=filename, mode='w', encoding='utf-8') as yaml_file:
         dump(curr_dict, yaml_file)
 
 
@@ -61,12 +61,12 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                             'keyboard': 'G13',
                             'show_gui': True}
-    migrated_cfg = {key: cfg.get(key, defaults[key]) for key in defaults}
+    migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
     save_cfg(migrated_cfg)
     return migrated_cfg
 
 
-def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, str, bool]:
+def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, str, str, str]:
     """
     Check version of <organization>/<package> at GitHub.
 
@@ -75,7 +75,8 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
     - online version (str) - latest version
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
-    - pre-release (bool) - normal or pre release
+    - release type (str) - Regular or Pre-release
+    - archive file (str) - file name of archive
 
     :param repo: format '<organization or user>/<package>'
     :param current_ver: current local version
@@ -89,21 +90,27 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             dict_json = response.json()
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
-            # code need cleanup after remove py36
+            # quick hack for python3.6 - time zone has different code
             frmt = '%Y-%m-%dT%H:%M:%S%z' if version_info.minor > 6 else '%Y-%m-%dT%H:%M:%SZ'
             published = datetime.strptime(dict_json['published_at'], frmt).strftime('%d %B %Y')
             asset_url = dict_json['assets'][0]['browser_download_url']
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
-            if version.parse(online_version) > version.parse(current_ver):
-                LOG.info(f'There is new version of {package}: {online_version}')
-            elif version.parse(online_version) <= version.parse(current_ver):
-                LOG.info(f'{package} is up-to-date version: {current_ver}')
-                latest = True
+            latest = _compare_versions(package, current_ver, online_version)
         else:
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return latest, online_version, asset_url, published, pre_release
+    return latest, online_version, asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1]
+
+
+def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
+    latest = False
+    if version.parse(remote_ver) > version.parse(current_ver):
+        LOG.info(f'There is new version of {package}: {remote_ver}')
+    elif version.parse(remote_ver) <= version.parse(current_ver):
+        LOG.info(f'{package} is up-to-date version: {current_ver}')
+        latest = True
+    return latest
 
 
 def download_file(url: str, save_path: str) -> bool:
