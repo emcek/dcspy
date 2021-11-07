@@ -54,7 +54,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install lxml pytest-cov coveralls pytest-mccabe pytest-random pylint codacy-coverage mypy types-requests types-PyYAML
+          pip install lxml pytest-cov pytest-mccabe pytest-random pylint codacy-coverage mypy types-requests types-PyYAML
+          pip install -U coveralls==3.2.0
           pip install -Ur requirements.txt
       - name: Check mypy
         run: |
