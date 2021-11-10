@@ -484,7 +484,14 @@ class F14B(Aircraft):
         return super().button_request(button, action.get(button, '\n'))
 
     def _draw_common_data(self, draw: ImageDraw) -> None:
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
+        as1 = self.get_bios('PLT_AIRSPEED_INNER')
+        as2 = self.get_bios('PLT_AIRSPEED_NEEDLE')
+        as3 = self.get_bios('PLT_AIRSPEED_POINTER1')
+        as4 = self.get_bios('PLT_AIRSPEED_POINTER2')
+
+        for i, line in enumerate([as1, as2, as3, as4]):
+            offset = i * 10
+            draw.text(xy=(0, offset), text=str(line), fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
