@@ -455,6 +455,10 @@ class F14B(Aircraft):
         super().__init__(lcd_type)
         # todo - add IAS (kph/mach), wing swept indication
         self.bios_data: Dict[str, BIOS_VALUE] = {
+            'PLT_AIRSPEED_INNER': {'class': 'IntegerBuffer', 'args': {'address': 0x1304, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_AIRSPEED_NEEDLE': {'class': 'IntegerBuffer', 'args': {'address': 0x1302, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_AIRSPEED_POINTER1': {'class': 'IntegerBuffer', 'args': {'address': 0x1306, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_AIRSPEED_POINTER2': {'class': 'IntegerBuffer', 'args': {'address': 0x1308, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
             'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
             'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
             'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
