@@ -170,7 +170,7 @@ class DcspyGui(tk.Frame):
                   f'Released: {rel_info.published}\n\n' \
                   f'Would you like to download {rel_info.archive_file} and overwrite update?'
         if not rel_info.latest:
-            msg_txt = f'You are running latest {self.l_bios} version.\n' \
+            msg_txt = f'You are running {self.l_bios} version.\n' \
                       f'New version {rel_info.ver} available.\n' \
                       f'Type: {rel_info.release_type}\n' \
                       f'Released: {rel_info.published}\n\n' \

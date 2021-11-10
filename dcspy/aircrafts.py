@@ -8,7 +8,7 @@ from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
-from dcspy import FONT, LcdInfo
+from dcspy import LcdInfo
 from dcspy.sdk import lcd_sdk
 
 try:
@@ -152,23 +152,23 @@ class FA18Chornet(Aircraft):
         scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
         scratch_2 = self.get_bios("UFC_SCRATCHPAD_STRING_2_DISPLAY")
         scratch_num = self.get_bios("UFC_SCRATCHPAD_NUMBER_DISPLAY")
-        draw.text(xy=(0, 0), fill=self.lcd.foreground, font=FONT[16 * scale],
+        draw.text(xy=(0, 0), fill=self.lcd.foreground, font=self.lcd.font_l,
                   text=f'{scratch_1}{scratch_2}{scratch_num}')
         draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=self.lcd.foreground, width=1)
 
         draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
+        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         offset = 44 * scale
         draw.rectangle(xy=(139 * scale - offset, 29 * scale, 159 * scale - offset, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(140 * scale - offset, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
+        draw.text(xy=(140 * scale - offset, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
-            draw.text(xy=(120 * scale, offset), fill=self.lcd.foreground, font=FONT[11 * scale],
+            draw.text(xy=(120 * scale, offset), fill=self.lcd.foreground, font=self.lcd.font_s,
                       text=f'{i}{self.get_bios(f"UFC_OPTION_CUEING_{i}")}{self.get_bios(f"UFC_OPTION_DISPLAY_{i}")}')
 
-        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=self.lcd.foreground, font=FONT[16 * scale])
+        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=self.lcd.foreground, font=self.lcd.font_l)
         return draw
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
@@ -178,7 +178,7 @@ class FA18Chornet(Aircraft):
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
-        draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=self.lcd.foreground, font=FONT[32])
+        draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -230,10 +230,10 @@ class F16C50(Aircraft):
             'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4534, 'max_length': 25}, 'value': str()},
             'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x454e, 'max_length': 25}, 'value': str()},
             'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4568, 'max_length': 25}, 'value': str()},
-            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x380, 'shift_by': 0x7}, 'value': int(), 'max_value': 4},
+            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x700, 'shift_by': 0x8}, 'value': int(), 'max_value': 4},
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0}, 'value': int(), 'max_value': 2},
-            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0xc00, 'shift_by': 0xa}, 'value': int(), 'max_value': 2},
-            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x3000, 'shift_by': 0xc}, 'value': int(), 'max_value': 2}}
+            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x1800, 'shift_by': 0xb}, 'value': int(), 'max_value': 2},
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x6000, 'shift_by': 0xd}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
@@ -243,7 +243,7 @@ class F16C50(Aircraft):
             offset = (i - 1) * 8
             # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=FONT[11])
+            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
@@ -252,7 +252,7 @@ class F16C50(Aircraft):
             offset = (i - 1) * 16
             # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
             text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=FONT[22])
+            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -328,12 +328,7 @@ class Ka50(Aircraft):
                                                     ((145, 1, 158, 18), (147, 3), 'F', self.get_bios('AP_FD_LED')),
                                                     ((111, 22, 124, 39), (114, 24), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                                                     ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
-            if turn_on:
-                draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
-                draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=FONT[16])
-            else:
-                draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
-                draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=FONT[16])
+            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
 
     def _auto_pilot_switch_2(self, draw_obj: ImageDraw) -> None:
         """
@@ -346,12 +341,15 @@ class Ka50(Aircraft):
                                                     ((290, 2, 316, 36), (294, 6), 'F', self.get_bios('AP_FD_LED')),
                                                     ((222, 44, 248, 78), (228, 48), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                                                     ((256, 44, 282, 78), (260, 48), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
-            if turn_on:
-                draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
-                draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=FONT[32])
-            else:
-                draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
-                draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=FONT[32])
+            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
+
+    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
+        if turn_on:
+            draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
+            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
+        else:
+            draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
+            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
@@ -359,8 +357,8 @@ class Ka50(Aircraft):
         for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
             draw.rectangle(xy=rect_xy, fill=self.lcd.background, outline=self.lcd.foreground)
         line1, line2 = self._generate_pvi_lines()
-        draw.text(xy=(2, 3), text=line1, fill=self.lcd.foreground, font=FONT[16])
-        draw.text(xy=(2, 24), text=line2, fill=self.lcd.foreground, font=FONT[16])
+        draw.text(xy=(2, 3), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2, 24), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
         self._auto_pilot_switch_1(draw)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
@@ -369,8 +367,8 @@ class Ka50(Aircraft):
         for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
             draw.rectangle(xy=rect_xy, fill=self.lcd.background, outline=self.lcd.foreground)
         line1, line2 = self._generate_pvi_lines()
-        draw.text(xy=(4, 6), text=line1, fill=self.lcd.foreground, font=FONT[32])
-        draw.text(xy=(4, 48), text=line2, fill=self.lcd.foreground, font=FONT[32])
+        draw.text(xy=(4, 6), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(4, 48), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
         self._auto_pilot_switch_2(draw)
 
     def _generate_pvi_lines(self) -> Sequence[str]:
@@ -429,7 +427,7 @@ class A10C(Aircraft):
         for i, line in enumerate(['      *** RADIOS ***', f'VHF AM: {vhfam} MHz',
                                   f'VHF FM: {vhffm} MHz', f'   UHF: {uhf} MHz']):
             offset = i * 10
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=FONT[11])
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog or A-10C II Tank Killer for Color LCD."""
@@ -438,7 +436,7 @@ class A10C(Aircraft):
         for i, line in enumerate(['      *** RADIOS ***', f'VHF AM: {vhfam} MHz',
                                   f'VHF FM: {vhffm} MHz', f'   UHF: {uhf} MHz']):
             offset = i * 20
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=FONT[22])
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
 class A10C2(A10C):
@@ -485,15 +483,16 @@ class F14B(Aircraft):
                   13: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
+    def _draw_common_data(self, draw: ImageDraw) -> None:
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
+
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=FONT[16])
+        self._draw_common_data(draw=ImageDraw.Draw(img))
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=FONT[32])
+        self._draw_common_data(draw=ImageDraw.Draw(img))
 
 
 class AV8BNA(Aircraft):
@@ -520,18 +519,18 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': str()}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
-        draw.text(xy=(50 * scale, 0), fill=self.lcd.foreground, font=FONT[16 * scale], text=f'{self.get_bios("UFC_SCRATCHPAD")}')
+        draw.text(xy=(50 * scale, 0), fill=self.lcd.foreground, font=self.lcd.font_l, text=f'{self.get_bios("UFC_SCRATCHPAD")}')
         draw.line(xy=(50 * scale, 20 * scale, 160 * scale, 20 * scale), fill=self.lcd.foreground, width=1)
 
         draw.rectangle(xy=(50 * scale, 29 * scale, 70 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(52 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
+        draw.text(xy=(52 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         draw.rectangle(xy=(139 * scale, 29 * scale, 159 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(140 * scale, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=FONT[16 * scale])
+        draw.text(xy=(140 * scale, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
-            draw.text(xy=(0 * scale, offset), fill=self.lcd.foreground, font=FONT[11 * scale],
+            draw.text(xy=(0 * scale, offset), fill=self.lcd.foreground, font=self.lcd.font_s,
                       text=f'{i}{self.get_bios(f"AV8BNA_ODU_{i}_SELECT")}{self.get_bios(f"AV8BNA_ODU_{i}_Text")}')
         return draw
 

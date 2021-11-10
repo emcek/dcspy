@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install flake8 pycodestyle pydocstyle pylint
+          pip install -Ur requirements_test.txt
           pip install -Ur requirements.txt
       - name: Check PyCodeStyle
         run: |
@@ -55,10 +55,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install MS Fonts
+        if: ${{ contains( matrix.os, 'ubuntu') }}
+        run: |
+          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
+          sudo mkdir -p /usr/share/fonts/truetype
+          sudo mv consola.ttf /usr/share/fonts/truetype
+          fc-cache -f -v
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install pycodestyle pydocstyle pytest-mccabe pytest-random
+          pip install -Ur requirements_test.txt
           pip install -Ur requirements.txt
       - name: Test with pytest
         run: |
@@ -85,10 +92,17 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install MS Fonts
+        if: ${{ contains( matrix.os, 'ubuntu') }}
+        run: |
+          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
+          sudo mkdir -p /usr/share/fonts/truetype
+          sudo mv consola.ttf /usr/share/fonts/truetype
+          fc-cache -f
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install lxml pytest-cov coveralls pytest-mccabe pytest-random pylint codacy-coverage mypy types-requests types-PyYAML
+          pip install -Ur requirements_test.txt
           pip install -Ur requirements.txt
       - name: Check mypy
         run: |
@@ -96,11 +110,11 @@ jobs:
       - name: Test with pytest
         run: |
           python -m pytest --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term
-      - name: Upload pytest test results
+      - name: Upload pytest and mypy results
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: cov-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: test_mypy-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |
             htmlcov/*
             mypyhtml/*
