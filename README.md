@@ -94,6 +94,11 @@ Please check **Config** button in GUI. Right now there are available options:
   *possible values*: `G19`, `G510`, `G15 v1/v2`, `G13`
 * **show_gui** - it allows showing or hiding GUI during start of DCSpy.  
   *possible values*: `true` or `false`
+* **font_name** - file name with TrueType font use in all devices
+* **font_mono_s** - size of small font for mono devices
+* **font_mono_l** - size of large font for mono devices
+* **font_color_s** - size of small font for color devices
+* **font_color_l** - size of large font for color devices
 
 ## Mono vs. Color
 DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 
