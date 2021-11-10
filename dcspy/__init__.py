@@ -34,9 +34,9 @@ config = set_defaults(load_cfg())
 
 LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO, foreground=255,
                   background=0, mode='1', font_s=ImageFont.truetype(config['font_name'], config['font_size'][0]),
-                  font_l=ImageFont.truetype(config['font_name'], config['font_size'][1]))
+                  font_l=ImageFont.truetype(config['font_name'], config['font_size'][2]))
 LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR, foreground=(0, 255, 0, 255),
-                   background=(0, 0, 0, 0), mode='RGBA', font_s=ImageFont.truetype(config['font_name'], config['font_size'][2]),
+                   background=(0, 0, 0, 0), mode='RGBA', font_s=ImageFont.truetype(config['font_name'], config['font_size'][1]),
                    font_l=ImageFont.truetype(config['font_name'], config['font_size'][3]))
 
 LCD_TYPES = {'G19': 'KeyboardColor', 'G510': 'KeyboardMono', 'G15 v1/v2': 'KeyboardMono', 'G13': 'KeyboardMono'}
