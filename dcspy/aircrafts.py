@@ -343,7 +343,7 @@ class Ka50(Aircraft):
                                                     ((256, 44, 282, 78), (260, 48), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
             self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
 
-    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: int) -> None:
+    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
         if turn_on:
             draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
             draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
