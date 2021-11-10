@@ -51,7 +51,9 @@ def test_dummy_save_load_set_defaults():
     assert d_cfg == {'1': 1}
     d_cfg = utils.set_defaults(d_cfg)
     assert d_cfg == {'keyboard': 'G13', 'show_gui': True,
-                     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'}
+                     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                     'font_name': 'consola.ttf',
+                     'font_size': [11, 22, 16, 32]}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
     d_cfg = utils.load_cfg(test_tmp_yaml)
