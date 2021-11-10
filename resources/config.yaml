@@ -1,2 +1,8 @@
+font_name: consola.ttf
+font_size:
+  - 11
+  - 22
+  - 16
+  - 32
 keyboard: G13
 show_gui: true
