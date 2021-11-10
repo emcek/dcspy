@@ -32,6 +32,7 @@ class LcdInfo:
 
 config = set_defaults(load_cfg())
 
+# find better way to pass font_size
 LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO, foreground=255,
                   background=0, mode='1', font_s=ImageFont.truetype(config['font_name'], config['font_size'][0]),
                   font_l=ImageFont.truetype(config['font_name'], config['font_size'][2]))
