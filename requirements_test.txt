@@ -1,7 +1,4 @@
 codacy-coverage
-# workaround for
-# https://github.com/nedbat/coveragepy/issues/1273
-# https://github.com/TheKevJames/coveralls-python/issues/333
 coveralls
 flake8
 lxml
