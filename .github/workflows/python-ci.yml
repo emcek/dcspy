@@ -34,6 +34,9 @@ jobs:
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           flake8 . --count --exit-zero --max-complexity=6 --max-line-length=160 --statistics
+      - name: Check MANIFEST
+        run: |
+          check-manifest -q || echo $(($? -1))
   test:
     name: test ${{ matrix.os }} (py${{ matrix.python-version }})
     needs: style
