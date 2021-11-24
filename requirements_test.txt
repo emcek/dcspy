@@ -1,3 +1,4 @@
+check-manifest
 codacy-coverage
 coveralls
 flake8
