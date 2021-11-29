@@ -3,5 +3,5 @@ packaging
 Pillow
 psutil
 PyYAML
-requests
+requests==2.26.0
 typing-extensions; python_version < '3.8'
