@@ -1,7 +1,7 @@
 check-manifest
 codacy-coverage
 coveralls
-flake8
+flake8==4.0.1
 lxml
 mypy
 pycodestyle
