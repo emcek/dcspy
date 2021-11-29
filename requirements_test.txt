@@ -1,6 +1,6 @@
 check-manifest
 codacy-coverage
-coveralls
+coveralls==3.3.1
 flake8
 lxml
 mypy
