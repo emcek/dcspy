@@ -179,24 +179,28 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event):
+def start_led_effect(effect: str, rgb: Tuple[int, int, int], duration: int, interval: int, event: Event, selector: str) -> None:
     """
-    The function start the pulsing red effect in thread on the keyboard.
+    The function start the pulsing or flash effect for the keyboard.
 
+    :param effect: `pulse` or `flash` effect
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
                      to make the effect run until event is set
     :param interval: duration of the flashing interval in milliseconds
     :param event: stop event for infinite loop
+    :param selector: DCS-BIOS field/selector name
     """
-    LOG.debug('Start LED thread')
+    LOG.debug(f'Start LED thread {selector}')
     logi_led_init()
     sleep(0.05)
     logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
     sleep_time = duration + 0.2
-    logi_led_pulse_lighting(rgb, duration, interval)
+    if effect == 'pulse':
+        logi_led_pulse_lighting(rgb, duration, interval)
+    else:
+        logi_led_flash_lighting(rgb, duration, interval)
     sleep(sleep_time)
-    while not event.is_set():
-        sleep(0.2)
+    event.wait()
     logi_led_shutdown()
-    LOG.debug('Stop LED thread')
+    LOG.debug(f'Stop LED thread {selector}')
