@@ -7,7 +7,7 @@ mypy
 pycodestyle
 pydocstyle
 pylint
-pytest-cov
+pytest-cov==3.0.0
 pytest-mccabe
 pytest-random
 types-requests
