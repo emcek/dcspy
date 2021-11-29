@@ -10,5 +10,5 @@ pylint
 pytest-cov
 pytest-mccabe
 pytest-random
-types-requests
+types-requests==2.26.1
 types-PyYAML
