@@ -2,12 +2,13 @@ from ctypes import c_bool, c_wchar_p, c_int
 from logging import getLogger
 from threading import Event
 from time import sleep
-from typing import Tuple
+from typing import Tuple, NamedTuple
 
 from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
+EFFECT_INFO = NamedTuple('EFFECT_INFO', [('name', str), ('rgb', Tuple[int, int, int]), ('duration', int), ('interval', int)])
 LOGI_LED_DURATION_INFINITE = 0
 LOGI_DEVICETYPE_MONOCHROME = 1
 LOGI_DEVICETYPE_RGB = 2
@@ -179,14 +180,11 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_pulse_effect(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event, selector: str) -> None:
+def start_led_effect(effect: EFFECT_INFO, event: Event, selector: str) -> None:
     """
-    The function start the pulsing effect for the keyboard.
+    The function start the pulsing effect or flash for the keyboard.
 
-    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
-    :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
-                     to make the effect run until event is set
-    :param interval: duration of the flashing interval in milliseconds
+    :param effect: information with effect details
     :param event: stop event for infinite loop
     :param selector: DCS-BIOS field/selector name
     """
@@ -194,31 +192,11 @@ def start_led_pulse_effect(rgb: Tuple[int, int, int], duration: int, interval: i
     logi_led_init()
     sleep(0.05)
     logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
-    sleep_time = duration + 0.2
-    logi_led_pulse_lighting(rgb, duration, interval)
-    sleep(sleep_time)
-    event.wait()
-    logi_led_shutdown()
-    LOG.debug(f'Stop LED thread {selector}')
-
-
-def start_led_flash_effect(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event, selector: str) -> None:
-    """
-    The function start the flash effect for the keyboard.
-
-    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
-    :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
-                     to make the effect run until event is set
-    :param interval: duration of the flashing interval in milliseconds
-    :param event: stop event for infinite loop
-    :param selector: DCS-BIOS field/selector name
-    """
-    LOG.debug(f'Start LED thread {selector}')
-    logi_led_init()
-    sleep(0.05)
-    logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
-    sleep_time = duration + 0.2
-    logi_led_flash_lighting(rgb, duration, interval)
+    sleep_time = effect.duration + 0.2
+    if effect.name == 'pulse':
+        logi_led_pulse_lighting(effect.rgb, effect.duration, effect.interval)
+    else:
+        logi_led_flash_lighting(effect.rgb, effect.duration, effect.interval)
     sleep(sleep_time)
     event.wait()
     logi_led_shutdown()
