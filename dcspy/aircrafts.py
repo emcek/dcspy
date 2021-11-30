@@ -33,7 +33,7 @@ class Aircraft:
         self.bios_data: Dict[str, BIOS_VALUE] = {}
         self.led_data: Dict[str, BIOS_VALUE] = {}  # todo: how handle bios data related to led - new 'set_bios()' or 'if'
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
-        self.led_events: Dict[str, Optional[Event]] = {}  # todo: what when 2 filed request effect?
+        self.led_events: Dict[str, Event] = {}  # todo: what when 2 filed request effect?
         self._debug_img = cycle(range(10))
 
     def button_request(self, button: int, request: str = '\n') -> str:
