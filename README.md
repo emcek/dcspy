@@ -1,5 +1,5 @@
-[![image](https://img.shields.io/badge/pypi-v1.5.0-blue.svg)](https://pypi.org/project/dcspy/)
-[![Python CI](https://github.com/emcek/dcspy/workflows/Python%20CI/badge.svg)](https://github.com/emcek/dcspy/actions)
+[![image](https://img.shields.io/badge/pypi-v1.5.1-blue.svg)](https://pypi.org/project/dcspy/)
+[![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/Licence-MIT-blue.svg)](./LICENSE.md)
@@ -41,7 +41,7 @@ It supports:
 ## Requirements
 * [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.0-amd64.exe
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
-* [DCS-BIOS 0.7.42](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
@@ -65,7 +65,7 @@ pip install dcspy
 ```
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.5.0-py3-none-any.whl
+pip install dcspy-1.5.1-py3-none-any.whl
 ```
 ## Upgrade
 To upgrade DCSpy to the latest version, open Command Prompt and type:
@@ -94,6 +94,11 @@ Please check **Config** button in GUI. Right now there are available options:
   *possible values*: `G19`, `G510`, `G15 v1/v2`, `G13`
 * **show_gui** - it allows showing or hiding GUI during start of DCSpy.  
   *possible values*: `true` or `false`
+* **font_name** - file name with TrueType font use in all devices
+* **font_mono_s** - size of small font for mono devices
+* **font_mono_l** - size of large font for mono devices
+* **font_color_s** - size of small font for color devices
+* **font_color_l** - size of large font for color devices
 
 ## Mono vs. Color
 DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 

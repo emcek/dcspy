@@ -3,7 +3,7 @@ from os.path import abspath, dirname, join
 
 from setuptools import setup, find_packages
 
-__version__ = '1.5.0'
+__version__ = '1.5.1'
 here = abspath(dirname(__file__))
 
 with io.open(join(here, 'README.md'), encoding='utf-8') as f:
@@ -41,6 +41,7 @@ setup(name='dcspy',
       keywords='logitech logitech-sdk logitech-keyboards logitech-gaming logitech-gaming-keyboard dcs-world dcs g13 g15 g510 g19',
       packages=find_packages(exclude=['tests']),
       install_requires=requires,
+      include_package_data=True,
       python_requires='>=3.6',
       platforms=['win32', 'nt', 'Windows'],
       extras_require={'testing': ['pytest']},

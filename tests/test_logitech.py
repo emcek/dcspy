@@ -7,13 +7,11 @@ from dcspy.logitech import KeyboardColor, KeyboardMono
 
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk import lcd_sdk
-    with raises(NotImplementedError):
-        keyboard_base._prepare_image()
 
     assert str(keyboard_base) == 'LogitechKeyboard: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'already_pressed', 'buttons',
-            '_display', 'plane', 'Aircraft')
+            '_display', 'plane', 'Aircraft', 'vert_space', 'lcd')
     for test_string in data:
         assert test_string in logitech_repr
 

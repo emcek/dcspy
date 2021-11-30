@@ -1,4 +1,5 @@
 from json import loads
+from typing import Tuple
 
 from requests import get, exceptions
 
@@ -7,10 +8,10 @@ try:
     if response.status_code == 200:
         dcsbios_ver = response.json()['tag_name']
 except exceptions.ConnectTimeout:
-    dcsbios_ver = '0.7.42'
+    dcsbios_ver = '0.7.43'
 
 
-def check_dcsbios_data(plane_bios: dict, plane_json: str) -> dict:
+def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
     results = {}
     local_json = _get_json_for_plane(plane_json)
     for bios_key in plane_bios:
@@ -25,7 +26,7 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> dict:
             results[bios_key] = f'Wrong output type: {output_type}'
             continue
         results = _compare_dcspy_with_bios(bios_key, bios_outputs, plane_bios, results)
-    return results
+    return results, dcsbios_ver
 
 
 def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict, results: dict) -> dict:
