@@ -9,7 +9,7 @@ from typing import List, Tuple
 from PIL import Image, ImageDraw
 
 from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR
-from dcspy.aircrafts import Aircraft
+from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
 
@@ -106,7 +106,7 @@ class LogitechKeyboard:
         Setup callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
-        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
+        self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         LOG.debug(f'{repr(self)}')
         for field_name, proto_data in self.plane.bios_data.items():

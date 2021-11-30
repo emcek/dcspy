@@ -55,7 +55,7 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
 @mark.parametrize('mode, size,  lcd_type, keyboard', [('1', (160, 43), 1, KeyboardMono),
                                                       ('RGBA', (320, 240), 2, KeyboardColor)])
 def test_check_keyboard_display_and_prepare_image(mode, size,  lcd_type, keyboard, protocol_parser):
-    from dcspy.aircrafts import Aircraft
+    from dcspy.aircraft import Aircraft
     from dcspy.sdk import lcd_sdk
     from dcspy import LcdInfo
 
