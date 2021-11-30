@@ -179,11 +179,10 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_effect(effect: str, rgb: Tuple[int, int, int], duration: int, interval: int, event: Event, selector: str) -> None:
+def start_led_pulse_effect(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event, selector: str) -> None:
     """
-    The function start the pulsing or flash effect for the keyboard.
+    The function start the pulsing effect for the keyboard.
 
-    :param effect: `pulse` or `flash` effect
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
                      to make the effect run until event is set
@@ -196,10 +195,30 @@ def start_led_effect(effect: str, rgb: Tuple[int, int, int], duration: int, inte
     sleep(0.05)
     logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
     sleep_time = duration + 0.2
-    if effect == 'pulse':
-        logi_led_pulse_lighting(rgb, duration, interval)
-    else:
-        logi_led_flash_lighting(rgb, duration, interval)
+    logi_led_pulse_lighting(rgb, duration, interval)
+    sleep(sleep_time)
+    event.wait()
+    logi_led_shutdown()
+    LOG.debug(f'Stop LED thread {selector}')
+
+
+def start_led_flash_effect(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event, selector: str) -> None:
+    """
+    The function start the flash effect for the keyboard.
+
+    :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
+    :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
+                     to make the effect run until event is set
+    :param interval: duration of the flashing interval in milliseconds
+    :param event: stop event for infinite loop
+    :param selector: DCS-BIOS field/selector name
+    """
+    LOG.debug(f'Start LED thread {selector}')
+    logi_led_init()
+    sleep(0.05)
+    logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
+    sleep_time = duration + 0.2
+    logi_led_flash_lighting(rgb, duration, interval)
     sleep(sleep_time)
     event.wait()
     logi_led_shutdown()
