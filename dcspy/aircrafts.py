@@ -60,7 +60,7 @@ class Aircraft:
 
     def prepare_image(self) -> Optional[Image.Image]:
         """
-        Prepare image to be send to correct type of LCD.
+        Prepare image to be sent to correct type of LCD.
 
         :return: image instance ready display on LCD
         """
