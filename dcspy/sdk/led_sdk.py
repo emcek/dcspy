@@ -8,7 +8,7 @@ from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
-EFFECT_INFO = NamedTuple('EFFECT_INFO', [('name', str), ('rgb', Tuple[int, int, int]), ('duration', int), ('interval', int)])
+EffectInfo = NamedTuple('EffectInfo', [('name', str), ('rgb', Tuple[int, int, int]), ('duration', int), ('interval', int)])
 LOGI_LED_DURATION_INFINITE = 0
 LOGI_DEVICETYPE_MONOCHROME = 1
 LOGI_DEVICETYPE_RGB = 2
