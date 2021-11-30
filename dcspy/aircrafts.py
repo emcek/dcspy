@@ -4,12 +4,13 @@ from logging import getLogger
 from os import environ, path
 from pprint import pformat
 from string import whitespace
+from threading import Event, Thread
 from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
 from dcspy import FONT, LcdInfo
-from dcspy.sdk import lcd_sdk
+from dcspy.sdk import lcd_sdk, led_sdk
 
 try:
     from typing_extensions import TypedDict
@@ -32,6 +33,7 @@ class Aircraft:
         self.bios_data: Dict[str, BIOS_VALUE] = {}
         self.led_data: Dict[str, BIOS_VALUE] = {}  # todo: how handle bios data related to led - new 'set_bios()' or 'if'
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
+        self.led_events: Dict[str, Optional[Event]] = {}  # todo: what when 2 filed request effect?
         self._debug_img = cycle(range(10))
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -95,6 +97,27 @@ class Aircraft:
             return self.bios_data[selector]['value']
         except KeyError:
             return ''
+
+    def led_handler(self, selector: str, value: str) -> None:
+        """
+        Start thread or set event.
+
+        First time it will start thread for DCS selector for LED effect.
+        Next time it will set event to stop thread and finish LED effect for DCS-BIOS selector.
+
+        :param selector:
+        :param value:
+        """
+        if not self.led_events[selector] and value:
+            led_event = Event()
+            self.led_events[selector] = led_event
+            led_data = {'effect': 'pulse', 'rgb': (1, 1, 1), 'duration': 0, 'interval': 10, 'event': led_event, 'selector': selector}
+            th = Thread(target=led_sdk.start_led_effect, kwargs=led_data)
+            th.name = f'{selector}_led'
+            th.start()
+        elif self.led_events[selector] and not value:
+            self.led_events[selector].set()
+            self.led_events[selector] = None
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
