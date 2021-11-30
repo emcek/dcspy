@@ -1,6 +1,6 @@
 from unittest.mock import call, patch
 
-from pytest import mark, raises
+from pytest import mark
 
 from dcspy.logitech import KeyboardColor, KeyboardMono
 
