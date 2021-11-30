@@ -111,7 +111,7 @@ class Aircraft:
         if not self.led_events[selector] and value:
             led_event = Event()
             self.led_events[selector] = led_event
-            led_data = {'effect': 'pulse', 'rgb': (1, 1, 1), 'duration': 0, 'interval': 10, 'event': led_event, 'selector': selector}
+            led_data = {'effect': 'pulse', 'rgb': (100, 0, 0), 'duration': 0, 'interval': 10, 'event': led_event, 'selector': selector}
             th = Thread(target=led_sdk.start_led_effect, kwargs=led_data)
             th.name = f'{selector}_led'
             th.start()
