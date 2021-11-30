@@ -159,7 +159,7 @@ def test_get_next_value_for_button_in_viper(viper_color):
 
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B', 'AV8BNA'])
-def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
+def test_prepare_image_for_all_planes_mono(model, lcd_mono):
     from PIL.Image import Image
     from dcspy import aircrafts
     aircraft = getattr(aircrafts, model)
@@ -178,7 +178,7 @@ def test_prepare_image_for_all_palnes_mono(model, lcd_mono):
 
 
 @mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B', 'AV8BNA'])
-def test_prepare_image_for_all_palnes_color(model, lcd_color):
+def test_prepare_image_for_all_planes_color(model, lcd_color):
     from PIL.Image import Image
     from dcspy import aircrafts
     aircraft = getattr(aircrafts, model)
