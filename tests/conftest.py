@@ -13,7 +13,7 @@ def protocol_parser():
     return ProtocolParser()
 
 
-# <=><=><=><=><=> aircrafts <=><=><=><=><=>
+# <=><=><=><=><=> aircraft <=><=><=><=><=>
 @fixture()
 def lcd_mono() -> LcdInfo:
     """
@@ -43,7 +43,7 @@ def aircraft(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: Aircraft instance
     """
-    from dcspy.aircrafts import Aircraft
+    from dcspy.aircraft import Aircraft
     return Aircraft(lcd_mono)
 
 
@@ -54,7 +54,7 @@ def hornet_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: F/A-18C Hornet instance
     """
-    from dcspy.aircrafts import FA18Chornet
+    from dcspy.aircraft import FA18Chornet
     return FA18Chornet(lcd_mono)
 
 
@@ -65,7 +65,7 @@ def viper_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: F-16C Viper instance
     """
-    from dcspy.aircrafts import F16C50
+    from dcspy.aircraft import F16C50
     return F16C50(lcd_mono)
 
 
@@ -76,7 +76,7 @@ def black_shark_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: Ka-50 Black Shark instance
     """
-    from dcspy.aircrafts import Ka50
+    from dcspy.aircraft import Ka50
     return Ka50(lcd_mono)
 
 
@@ -87,7 +87,7 @@ def warthog_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: A-10C Warthog instance
     """
-    from dcspy.aircrafts import A10C
+    from dcspy.aircraft import A10C
     return A10C(lcd_mono)
 
 
@@ -98,7 +98,7 @@ def tomcat_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: F-14B Tomcat instance
     """
-    from dcspy.aircrafts import F14B
+    from dcspy.aircraft import F14B
     return F14B(lcd_mono)
 
 
@@ -109,7 +109,7 @@ def harrier_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: AV-8B N/A Harrier instance
     """
-    from dcspy.aircrafts import AV8BNA
+    from dcspy.aircraft import AV8BNA
     return AV8BNA(lcd_mono)
 
 
@@ -120,7 +120,7 @@ def hornet_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: F/A-18C Hornet instance
     """
-    from dcspy.aircrafts import FA18Chornet
+    from dcspy.aircraft import FA18Chornet
     return FA18Chornet(lcd_color)
 
 
@@ -131,7 +131,7 @@ def viper_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: F-16C Viper instance
     """
-    from dcspy.aircrafts import F16C50
+    from dcspy.aircraft import F16C50
     return F16C50(lcd_color)
 
 
@@ -142,7 +142,7 @@ def black_shark_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: Ka-50 Black Shark instance
     """
-    from dcspy.aircrafts import Ka50
+    from dcspy.aircraft import Ka50
     return Ka50(lcd_color)
 
 
@@ -153,7 +153,7 @@ def warthog_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: A-10C II Tank Killer instance
     """
-    from dcspy.aircrafts import A10C2
+    from dcspy.aircraft import A10C2
     return A10C2(lcd_color)
 
 
@@ -164,7 +164,7 @@ def tomcat_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: F-14B Tomcat instance
     """
-    from dcspy.aircrafts import F14B
+    from dcspy.aircraft import F14B
     return F14B(lcd_color)
 
 
@@ -175,7 +175,7 @@ def harrier_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: AV-8B N/A Harrier instance
     """
-    from dcspy.aircrafts import AV8BNA
+    from dcspy.aircraft import AV8BNA
     return AV8BNA(lcd_color)
 
 

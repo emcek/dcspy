@@ -13,11 +13,11 @@
 # dcspy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
 It supports:
-*  Logitech device with 160x43 px (4 lines) monochrome LCD display - **G13**, **G15 (v1 and v2)** and **G510**
-*  Logitech device with 320x240 px (8 lines) full RGBA LCD display - **G19**
+*  Logitech device with 160x43 px (4 lines) monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
+*  Logitech device with 320x240 px (8 lines) full RGBA LCD - **G19**
 
 ## Table of Contents
-* [Aircrafts and instruments](#aircrafts-and-instruments)
+* [Aircraft and instruments](#aircraft-and-instruments)
 * [Requirements](#requirements)
 * [Credits](#credits)
 * [Installation](#installation)
@@ -29,7 +29,7 @@ It supports:
 * [New ideas](#new-ideas)
 * [Contributing](#contributing)
 
-## Aircrafts and instruments
+## Aircraft and instruments
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark PVI-800 and autopilot channels
@@ -74,13 +74,13 @@ pip install -U dcspy
 ```
 
 ## Usage
-1. Run Logitech Gaming Software (it allow to update LCD)
-2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into you python directory: i.e.:
+1. Run Logitech Gaming Software (it allows updating LCD)
+2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into your python directory: i.e.:
    * `c:\python310\dcspy_data\dcspy.ico`
    * `c:\python310\scripts\dcspy.exe`
 3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory).
-4. Double click on dcspy icon or type `dcspy.exe` from Command Prompt
-5. LCD display should update with dcspy basic info, waiting to connect to DCS 
+4. Double-click on dcspy icon or type `dcspy.exe` from Command Prompt
+5. LCD should update with dcspy basic info, waiting to connect to DCS 
 6. Run DCS and start any mission.
 
 ## Configuration
@@ -101,9 +101,9 @@ Please check **Config** button in GUI. Right now there are available options:
 * **font_color_l** - size of large font for color devices
 
 ## Mono vs. Color
-DCSpy do not uses full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 
+DCSpy do not use full potential of G19, which support full RGBA, 8-lines LCD with 7 programmable buttons. In contrast to 
 mono devices (like G13, G15 and G510), which support mono, 4-lines LCD with only 4 buttons. Right now DCSpy use only top 
-4 lines of LCD and 4 buttons. Way in which actions assign to buttons for G13 (4 buttons form left to right) are mapped to G19 looks:
+4 lines of LCD and 4 buttons. Way in which actions assign to button for G13 (4 buttons form left to right) are mapped to G19 looks:
 * G13 1st button -> G19 left button
 * G13 2nd button -> G19 right button
 * G13 3rd button -> G19 down button

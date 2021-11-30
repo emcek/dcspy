@@ -103,9 +103,9 @@ def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
     """
     The function sets the lighting on connected and supported devices.
 
-    Do not call this function immediately after logi_led_init(). Instead leave a little bit of time after logi_led_init().
+    Do not call this function immediately after logi_led_init(). Instead of leave a little of time after logi_led_init().
     For devices that only support a single color, the highest percentage value given of the three colors will
-    define the intensity. For monochrome backlighting device, Logitech Gaming Software will reduce
+    define the intensity. For monochrome device, Logitech Gaming Software will reduce
     proportionally the value of the highest color, according to the user hardware brightness setting.
 
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
