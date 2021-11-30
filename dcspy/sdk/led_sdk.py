@@ -180,7 +180,7 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_effect(effect: EFFECT_INFO, event: Event, selector: str) -> None:
+def start_led_effect(effect: EffectInfo, event: Event, selector: str) -> None:
     """
     The function start the pulsing effect or flash for the keyboard.
 
