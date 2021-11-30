@@ -77,7 +77,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
 
     Return tuple with:
     - result (bool) - if local version is latest
-    - online version (str) - latest version
+    - online version (str) - the latest version
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
     - release type (str) - Regular or Pre-release
