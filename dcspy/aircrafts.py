@@ -319,7 +319,8 @@ class Ka50(Aircraft):
             'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'set_bios'},
             'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'set_bios'},
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'set_bios'},
-            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios'}}
+            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios'},
+            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'led_handler'}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
