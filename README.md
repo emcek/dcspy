@@ -44,6 +44,9 @@ It supports:
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
+**Note:** 
+You do not need Logitech LCD SDK ver. 8.57.148 probably extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove from your system.
+
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
 * [DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios) fork by DCSFlightpanels for exporting data from DCS to local network
@@ -73,6 +76,7 @@ To upgrade DCSpy to the latest version, open Command Prompt and type:
 ```shell script
 pip install -U dcspy
 ```
+**Note:** If you upgrade DCSpy from 1.5.1 or older you can remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
 
 ## Usage
 1. Run Logitech Gaming Software (it allows updating LCD)
