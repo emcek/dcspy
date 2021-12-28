@@ -41,12 +41,12 @@ It supports:
 
 ## Requirements
 * [Python 3.9](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.9.9-amd64.exe.  
-  Python 3.9 is recommended (however DCSpy is compatible with newest 3.10), due to fact `psutil` package include compiled Windows C/C++ library only for Python 3.9.
+  Python 3.9 is recommended, due to fact `psutil` package include compiled Windows C/C++ library only for Python 3.9.
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 **Notes:**
-* DCSpy is fully compatible with Python 3.10 during installation of DCSpy `pip` will compile `psutil` C library itself, but you need Visual C++ 14.0 or greater. Get it with [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+* DCSpy is fully compatible with Python 3.10 if you want use it, during installation of DCSpy `pip` will compile `psutil` C/C++ library itself, but you need Visual C++ 14.0 or greater. Get it with [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 * You do not need Logitech LCD SDK ver. 8.57.148 probably extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove from your system.
 
 ## Credits
