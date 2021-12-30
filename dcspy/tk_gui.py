@@ -201,7 +201,7 @@ class DcspyGui(tk.Frame):
     def _handling_export_lua(self, temp_dir: str) -> str:
         result = 'Success. Done.'
         if path.isfile(path.join(self.bios_path, '..', 'Export.lua')):
-            result += '\nExport.lua exists.\nAdd: dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])\n or follow https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+            result += r'\nExport.lua exists.\nAdd: dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])\n or follow https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
         else:
             copy(src=path.join(temp_dir, 'Export.lua'), dst=path.join(self.bios_path, '..'))
         return result
