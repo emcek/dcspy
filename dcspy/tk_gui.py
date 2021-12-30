@@ -3,7 +3,7 @@ from functools import partial
 from logging import getLogger
 from os import path, environ
 from re import search
-from shutil import unpack_archive, rmtree, copytree
+from shutil import unpack_archive, rmtree, copy, copytree
 from sys import prefix
 from threading import Thread, Event
 from tkinter import messagebox
@@ -119,6 +119,11 @@ class DcspyGui(tk.Frame):
 
     def _check_bios(self, bios_statusbar) -> None:
         local_bios_info = self._check_local_bios()
+        bios_path = load_cfg()['dcsbios']
+        if not path.isdir(bios_path) and not local_bios_info.ver:
+            self.l_bios = 'not installed'
+            local_bios_info = ReleaseInfo(False, self.l_bios, '', '', '', '')
+            self.bios_path = bios_path  # type: ignore
         remote_bios_info = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
         dcs_runs = proc_is_running(name='DCS.exe')
