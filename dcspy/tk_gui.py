@@ -192,7 +192,7 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
         LOG.debug(f'Remove: {self.bios_path} ')
-        rmtree(self.bios_path)
+        rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
         messagebox.showinfo('Updated', 'Success. Done.')
