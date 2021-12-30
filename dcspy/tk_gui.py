@@ -195,7 +195,16 @@ class DcspyGui(tk.Frame):
         rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
-        messagebox.showinfo('Updated', 'Success. Done.')
+        install_result = self._handling_export_lua(tmp_dir)
+        messagebox.showinfo('Updated', install_result)
+
+    def _handling_export_lua(self, temp_dir: str) -> str:
+        result = 'Success. Done.'
+        if path.isfile(path.join(self.bios_path, '..', 'Export.lua')):
+            result += '\nExport.lua exists.\nAdd: dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])\n or follow https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+        else:
+            copy(src=path.join(temp_dir, 'Export.lua'), dst=path.join(self.bios_path, '..'))
+        return result
 
     def _stop(self) -> None:
         self.status_txt.set('Close will shutdown DCSpy')
