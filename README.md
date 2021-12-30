@@ -40,13 +40,11 @@ It supports:
 * more to come....
 
 ## Requirements
-* [Python 3.9](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.9.9-amd64.exe.  
-  Python 3.9 is recommended, due to fact `psutil` package include compiled Windows C/C++ library only for Python 3.9.
+* [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
-**Notes:**
-* DCSpy is fully compatible with Python 3.10 if you want use it, during installation of DCSpy `pip` will compile `psutil` C/C++ library itself, but you need Visual C++ 14.0 or greater. Get it with [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+**Note:**
 * You do not need Logitech LCD SDK ver. 8.57.148 probably extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove from your system.
 
 ## Credits
@@ -64,7 +62,7 @@ Install all requirements:
    * Advanced Options:
      * Associate files with Python (requires the py launcher)
      * Add Python to environment variables
-     * Customize install location: **C:\Python39** or **C:\Python**
+     * Customize install location: **C:\Python310** or **C:\Python**
 2. Logitech Gaming Software installation is straightforward.
 3. [DCS-BIOS instllation](https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation)
 4. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
@@ -85,15 +83,15 @@ pip install -U dcspy
 ## Usage
 1. Run Logitech Gaming Software (it allows updating LCD)
 2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into your python directory: i.e.:
-   * `c:\python39\dcspy_data\dcspy.ico`
-   * `c:\python39\scripts\dcspy.exe`
+   * `c:\python310\dcspy_data\dcspy.ico`
+   * `c:\python310\scripts\dcspy.exe`
 3. You can drag and drop `dcspy.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory).
 4. Double-click on dcspy icon or type `dcspy.exe` from Command Prompt
 5. LCD should update with dcspy basic info, waiting to connect to DCS 
 6. Run DCS and start any mission.
 
 ## Configuration
-DCSpy can be configured via `config.yaml` file. It is located in Python's installation directory (e.g. `c:\python39\dcspy_data\config.yaml`). 
+DCSpy can be configured via `config.yaml` file. It is located in Python's installation directory (e.g. `c:\python310\dcspy_data\config.yaml`). 
 This is simple file, most users do not need to touch it at all. However, it can be easily edited directly from GUI. Configuring DCSpy enable some powerful features of DCSpy.  
 Please check **Config** button in GUI. Right now there are available options:  
 * **dcsbios** - location of DCS-BIOS folder inside user's `Saved Games\DCS.openbeta`.  
