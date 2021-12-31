@@ -121,20 +121,18 @@ class DcspyGui(tk.Frame):
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar) -> None:
-        local_bios_info = self._check_local_bios()
-        bios_path = load_cfg()['dcsbios']
-        if not path.isdir(bios_path) and not local_bios_info.ver:
-            self.l_bios = 'not installed'
-            local_bios_info = ReleaseInfo(False, self.l_bios, '', '', '', '')
-            self.bios_path = bios_path  # type: ignore
+        self.bios_path = load_cfg()['dcsbios']  # type: ignore
+        self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        correct_local_bios_ver = isinstance(self.l_bios, version.Version)
+        correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
 
-        if all([local_bios_info.ver, remote_bios_info.ver, not dcs_runs]):
+        if all([correct_remote_bios_ver, not dcs_runs]):
             self._ask_to_update(rel_info=remote_bios_info)
         else:
-            msg = self._get_problem_desc(local_bios_info.ver, remote_bios_info.ver, bool(dcs_runs))
+            msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
             messagebox.showwarning('Update', msg)
 
     def _get_problem_desc(self, local_bios: str, remote_bios: str, dcs: bool) -> str:
