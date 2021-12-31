@@ -151,19 +151,17 @@ class DcspyGui(tk.Frame):
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> ReleaseInfo:
-        result = ReleaseInfo(False, '', '', '', '', '')
-        bios_path = load_cfg()['dcsbios']
-        self.l_bios = 'Unknown'
+        self.l_bios = version.parse('not installed')
+        result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(bios_path, 'lib\\CommonData.lua'), mode='r', encoding='utf-8') as cd_lua:  # type: ignore
+            with open(file=path.join(self.bios_path, 'lib\\CommonData.lua'), mode='r', encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
         else:
-            self.bios_path = bios_path  # type: ignore
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
-                self.l_bios = bios_re.group(1)
+                self.l_bios = version.parse(bios_re.group(1))
                 result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         return result
 
