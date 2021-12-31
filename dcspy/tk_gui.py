@@ -208,6 +208,7 @@ class DcspyGui(tk.Frame):
             with open(file=path.join(exportlua_dst_path, 'Export.lua'), mode='r', encoding='utf-8') as exportlua_dst:  # type: ignore
                 exportlua_dst_data = exportlua_dst.read()
         except FileNotFoundError as err:
+            LOG.debug(f'{err.__class__.__name__}: {err.filename}')
             copy(src=path.join(temp_dir, 'Export.lua'), dst=exportlua_dst_path)
             LOG.debug(f'Copy Export.lua from: {temp_dir} to {exportlua_dst_path} ')
         else:
