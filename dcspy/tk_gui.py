@@ -166,8 +166,8 @@ class DcspyGui(tk.Frame):
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:
-        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=self.l_bios)
-        self.r_bios = release_info[1] if release_info[1] else 'Unknown'
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
+        self.r_bios = release_info[1]
         return ReleaseInfo(*release_info)
 
     def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
