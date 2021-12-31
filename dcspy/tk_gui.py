@@ -7,15 +7,17 @@ from shutil import unpack_archive, rmtree, copy, copytree
 from sys import prefix
 from threading import Thread, Event
 from tkinter import messagebox
-from typing import NamedTuple
+from typing import NamedTuple, Union
 from webbrowser import open_new
+
+from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
 LOG = getLogger(__name__)
-ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', str), ('dl_url', str),
+ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', Union[version.Version, version.LegacyVersion]), ('dl_url', str),
                                          ('published', str), ('release_type', str), ('archive_file', str)])
 
 
