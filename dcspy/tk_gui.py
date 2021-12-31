@@ -212,8 +212,7 @@ class DcspyGui(tk.Frame):
             LOG.debug(f'Copy Export.lua from: {temp_dir} to {exportlua_dst_path} ')
         else:
             result += self._check_dcs_bios_entry(exportlua_dst_data, exportlua_dst_path, temp_dir)
-        finally:
-            return result
+        return result
 
     @staticmethod
     def _check_dcs_bios_entry(exportlua_dst_data: str, exportlua_dst_path: str, temp_dir: str) -> str:
