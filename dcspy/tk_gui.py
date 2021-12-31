@@ -203,29 +203,31 @@ class DcspyGui(tk.Frame):
 
     def _handling_export_lua(self, temp_dir: str) -> str:
         result = 'Installation Success. Done.'
-        exportlua_dst_path = path.join(self.bios_path, '..')
+        lua_dst_path = path.join(self.bios_path, '..')
+        lua = 'Export.lua'
         try:
-            with open(file=path.join(exportlua_dst_path, 'Export.lua'), mode='r', encoding='utf-8') as exportlua_dst:  # type: ignore
-                exportlua_dst_data = exportlua_dst.read()
+            with open(file=path.join(lua_dst_path, lua), mode='r', encoding='utf-8') as lua_dst:  # type: ignore
+                lua_dst_data = lua_dst.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
-            copy(src=path.join(temp_dir, 'Export.lua'), dst=exportlua_dst_path)
-            LOG.debug(f'Copy Export.lua from: {temp_dir} to {exportlua_dst_path} ')
+            copy(src=path.join(temp_dir, lua), dst=lua_dst_path)
+            LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
         else:
-            result += self._check_dcs_bios_entry(exportlua_dst_data, exportlua_dst_path, temp_dir)
+            result += self._check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
     @staticmethod
-    def _check_dcs_bios_entry(exportlua_dst_data: str, exportlua_dst_path: str, temp_dir: str) -> str:
+    def _check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
         result = '\n\nExport.lua exists.'
-        with open(file=path.join(temp_dir, 'Export.lua'), mode='r', encoding='utf-8') as exportlua_src:  # type: ignore
-            exportlua_src_data = exportlua_src.read()
-        export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', exportlua_dst_data)
+        lua = 'Export.lua'
+        with open(file=path.join(temp_dir, lua), mode='r', encoding='utf-8') as lua_src:  # type: ignore
+            lua_src_data = lua_src.read()
+        export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
         if not export_re:
-            with open(file=path.join(exportlua_dst_path, 'Export.lua'), mode='a+',
+            with open(file=path.join(lua_dst_path, lua), mode='a+',
                       encoding='utf-8') as exportlua_dst:  # type: ignore
-                exportlua_dst.write(f'\n{exportlua_src_data}')
-            LOG.debug(f'Add DCS-BIOS to Export.lua: {exportlua_src_data}')
+                exportlua_dst.write(f'\n{lua_src_data}')
+            LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
             result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
         else:
             result += '\n\nDCS-BIOS entry detected.'
