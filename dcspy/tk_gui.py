@@ -135,14 +135,14 @@ class DcspyGui(tk.Frame):
             msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
             messagebox.showwarning('Update', msg)
 
-    def _get_problem_desc(self, local_bios: str, remote_bios: str, dcs: bool) -> str:
+    def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
         dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
         dcs_sta = 'running' if dcs else 'not running'
-        dcs_note = ' - Quit is recommended.' if dcs else ''
+        dcs_note = '\n     Quit is recommended.' if dcs else ''
         lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
-        lbios_note = '' if local_bios else ' - Check "dcsbios" path in config.'
+        lbios_note = '' if local_bios else '\n     Check "dcsbios" path in config'
         rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
-        rbios_note = '' if remote_bios else ' - Check internet connection.'
+        rbios_note = '' if remote_bios else '\n     Check internet connection.'
 
         return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
                f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
