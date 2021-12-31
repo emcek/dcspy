@@ -8,6 +8,7 @@ from sys import prefix
 from threading import Thread, Event
 from tkinter import messagebox
 from typing import NamedTuple
+from webbrowser import open_new
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
@@ -196,14 +197,40 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
         install_result = self._handling_export_lua(tmp_dir)
-        messagebox.showinfo('Updated', install_result)
+        if 'github' in install_result:
+            if messagebox.askyesno('Open browser', install_result):
+                open_new(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+        else:
+            messagebox.showinfo('Updated', install_result)
 
     def _handling_export_lua(self, temp_dir: str) -> str:
-        result = 'Success. Done.'
-        if path.isfile(path.join(self.bios_path, '..', 'Export.lua')):
-            result += r'\nExport.lua exists.\nAdd: dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])\n or follow https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+        result = 'Installation Success. Done.'
+        exportlua_dst_path = path.join(self.bios_path, '..')
+        try:
+            with open(file=path.join(exportlua_dst_path, 'Export.lua'), mode='r', encoding='utf-8') as exportlua_dst:  # type: ignore
+                exportlua_dst_data = exportlua_dst.read()
+        except FileNotFoundError as err:
+            copy(src=path.join(temp_dir, 'Export.lua'), dst=exportlua_dst_path)
+            LOG.debug(f'Copy Export.lua from: {temp_dir} to {exportlua_dst_path} ')
         else:
-            copy(src=path.join(temp_dir, 'Export.lua'), dst=path.join(self.bios_path, '..'))
+            result += self._check_dcs_bios_entry(exportlua_dst_data, exportlua_dst_path, temp_dir)
+        finally:
+            return result
+
+    @staticmethod
+    def _check_dcs_bios_entry(exportlua_dst_data: str, exportlua_dst_path: str, temp_dir: str) -> str:
+        result = '\n\nExport.lua exists.'
+        with open(file=path.join(temp_dir, 'Export.lua'), mode='r', encoding='utf-8') as exportlua_src:  # type: ignore
+            exportlua_src_data = exportlua_src.read()
+        export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', exportlua_dst_data)
+        if not export_re:
+            with open(file=path.join(exportlua_dst_path, 'Export.lua'), mode='a+',
+                      encoding='utf-8') as exportlua_dst:  # type: ignore
+                exportlua_dst.write(f'\n{exportlua_src_data}')
+            LOG.debug(f'Add DCS-BIOS to Export.lua: {exportlua_src_data}')
+            result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+        else:
+            result += '\n\nDCS-BIOS entry detected.'
         return result
 
     def _stop(self) -> None:
