@@ -1,7 +1,5 @@
 from ctypes import c_bool, c_wchar_p, c_int
 from logging import getLogger
-from threading import Event
-from time import sleep
 from typing import Tuple, NamedTuple
 
 from dcspy.sdk import load_dll
@@ -180,24 +178,18 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_effect(effect: EffectInfo, event: Event, selector: str) -> None:
+def start_led_effect(effect: EffectInfo, selector: str) -> None:
     """
     The function start the pulsing effect or flash for the keyboard.
 
     :param effect: information with effect details
-    :param event: stop event for infinite loop
     :param selector: DCS-BIOS field/selector name
     """
     LOG.debug(f'Start LED thread {selector}')
     logi_led_init()
-    sleep(0.05)
     logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
-    sleep_time = effect.duration + 0.2
     if effect.name == 'pulse':
         logi_led_pulse_lighting(effect.rgb, effect.duration, effect.interval)
     else:
         logi_led_flash_lighting(effect.rgb, effect.duration, effect.interval)
-    sleep(sleep_time)
-    event.wait()
-    logi_led_shutdown()
     LOG.debug(f'Stop LED thread {selector}')
