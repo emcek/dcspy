@@ -4,7 +4,6 @@ from logging import getLogger
 from os import environ, path
 from pprint import pformat
 from string import whitespace
-from threading import Event, Thread
 from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
@@ -18,10 +17,8 @@ except ImportError:
     from typing import TypedDict
 
 PROTO_ARGS = TypedDict('PROTO_ARGS', {'address': int, 'max_length': int, 'mask': int, 'shift_by': int}, total=False)
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': PROTO_ARGS, 'value': Union[int, str],
-                                      'max_value': int}, total=False)
-LED_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': PROTO_ARGS, 'value': Union[int, str],
-                                      'max_value': int}, total=False)
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': PROTO_ARGS, 'value': Union[int, str], 'max_value': int,
+                                      'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
 LOG = getLogger(__name__)
 
 
@@ -34,9 +31,7 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
-        self.led_data: Dict[str, LED_VALUE] = {}  # todo: how handle bios data related to led - new 'set_bios()' or 'if'
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
-        # self.led_events: Dict[str, Optional[Event]] = {}  # todo: what when 2 filed request effect?
         self._debug_img = cycle(range(10))
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -101,7 +96,7 @@ class Aircraft:
         except KeyError:
             return ''
 
-    def led_handler(self, selector: str, value: str) -> None:
+    def led_handler(self, selector: str, value: str, effect: led_sdk.EffectInfo) -> None:
         """
         Start thread or set event.
 
@@ -110,16 +105,13 @@ class Aircraft:
 
         :param selector:
         :param value:
+        :param effect:
         """
-        LOG.debug(self.led_data)
-        self.led_data[selector]['value'] = value
-        if selector == 'AP_FD_LED':
-            led_data = {'effect': led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10), 'selector': selector}
-        else:
-            led_data = {'effect': led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10), 'selector': selector}
+        LOG.debug(self.bios_data)
+        self.bios_data[selector]['value'] = value
 
         if value:
-            led_sdk.start_led_effect(**led_data)
+            led_sdk.start_led_effect(effect=effect, selector=selector)
         elif not value:
             led_sdk.logi_led_shutdown()
 
@@ -308,27 +300,25 @@ class Ka50(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
+        effect1 = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
+        effect2 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': str()},
-            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str()},
-            # 'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
-            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
-            # 'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
-            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
-            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
-            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()}}
-        self.led_data: Dict[str, LED_VALUE] = {
-            'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
-            'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
-            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()}}
+            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
+            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}},
+            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
