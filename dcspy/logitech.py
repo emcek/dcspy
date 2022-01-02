@@ -109,7 +109,7 @@ class LogitechKeyboard:
         self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         LOG.debug(f'{repr(self)}')
-        for field_name, proto_data in self.plane.bios_protp.items():
+        for field_name, proto_data in self.plane.bios_proto.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
             callback = self.plane.bios_data[field_name]['callback']
             callback_args = self.plane.bios_data[field_name]['callback_args']
