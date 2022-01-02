@@ -331,7 +331,7 @@ class Ka50(Aircraft):
         """
         super().__init__(lcd_type)
         effect1 = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
-        effect2 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)        
+        effect2 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)
         self.bios_proto: Dict[str, BIOS_PROTO] = {
             'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}},
             'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}},
