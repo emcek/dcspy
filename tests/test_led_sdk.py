@@ -46,7 +46,7 @@ def test_start_led_effect(name, rgb, duration, interval, c_func):
     with patch.object(led_sdk, 'logi_led_init', return_value=True) as logi_led_init:
         with patch.object(led_sdk, 'logi_led_set_target_device', return_value=True) as logi_led_set_target_device:
             with patch.object(led_sdk, c_func, return_value=True) as logi_led_lighting:
-                led_sdk.start_led_effect(effect, 'selector')
+                led_sdk.start_led_effect(effect)
                 logi_led_init.assert_called_once()
-                logi_led_set_target_device.assert_called_once_with(3)
+                logi_led_set_target_device.assert_called_once_with(led_sdk.LOGI_DEVICETYPE_ALL)
                 logi_led_lighting.assert_called_once_with(effect.rgb, effect.duration, effect.interval)
