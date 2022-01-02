@@ -4,7 +4,7 @@ from logging import getLogger
 from os import environ, path
 from pprint import pformat
 from string import whitespace
-from typing import Dict, Union, Optional, Iterator, Sequence, Callable
+from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
@@ -18,7 +18,8 @@ except ImportError:
 
 PROTO_ARGS = TypedDict('PROTO_ARGS', {'address': int, 'max_length': int, 'mask': int, 'shift_by': int}, total=False)
 BIOS_PROTO = TypedDict('BIOS_PROTO', {'class': str, 'args': PROTO_ARGS})
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'value': Union[int, str], 'max_value': int, 'callback': Callable[[str, str, Optional[led_sdk.EffectInfo]], None], 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'value': Union[int, str], 'max_value': int, 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
+# BIOS_VALUE = TypedDict('BIOS_VALUE', {'value': Union[int, str], 'max_value': int, 'callback': Callable[[str, str, Optional[led_sdk.EffectInfo]], None], 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
 LOG = getLogger(__name__)
 
 
@@ -34,7 +35,7 @@ class Aircraft:
         self.bios_proto: Dict[str, BIOS_PROTO] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
-        self.default_callback = {'value': None, 'callback': self.set_bios, 'callback_args': {}}
+        self.default_callback = {'value': None, 'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -140,9 +141,8 @@ class Aircraft:
             self.cycle_buttons[btn_name] = cycle(chain(seed))
         return next(self.cycle_buttons[btn_name])
 
-    # fixme: inifinity recussione
-    # def __repr__(self):
-    #     return f'{super().__repr__()} with: {pformat(self.__dict__)}'
+    def __repr__(self):
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class FA18Chornet(Aircraft):
@@ -361,12 +361,12 @@ class Ka50(Aircraft):
             'PVI_LINE2_POINT': {**self.default_callback},
             'PVI_LINE2_SIGN': {**self.default_callback},
             'PVI_LINE2_TEXT': {**self.default_callback},
-            'AP_ALT_HOLD_LED': {'value': int(), 'callback': self.led_handler, 'callback_args': {'effect': effect1}},
+            'AP_ALT_HOLD_LED': {'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
             'AP_BANK_HOLD_LED': {**self.default_callback},
-            'AP_FD_LED': {'value': int(), 'callback': self.led_handler, 'callback_args': {'effect': effect2}},
+            'AP_FD_LED': {'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}},
             'AP_HDG_HOLD_LED': {**self.default_callback},
             'AP_PITCH_HOLD_LED': {**self.default_callback},
-            'SC_MASTER_CAUTION_LED': {'value': int(), 'callback': self.led_handler, 'callback_args': {'effect': effect1}}}
+            'SC_MASTER_CAUTION_LED': {'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
