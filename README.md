@@ -1,9 +1,10 @@
-[![image](https://img.shields.io/badge/pypi-v1.5.1-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v1.6.0-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
 [![License](https://img.shields.io/badge/Licence-MIT-blue.svg)](./LICENSE.md)
-[![Downloads](https://img.shields.io/github/downloads/emcek/dcspy/total?label=Downloads)](https://github.com/emcek/dcspy/releases)  
+[![Downloads](https://img.shields.io/github/downloads/emcek/dcspy/total?label=Downloads)](https://github.com/emcek/dcspy/releases)
+[![dcspy](https://snyk.io/advisor/python/dcspy/badge.svg)](https://snyk.io/advisor/python/dcspy)  
 [![Patreon](https://img.shields.io/badge/Patreon-donate-ff424d?logo=patreon)](https://www.patreon.com/mplichta)
 [![Discord](https://img.shields.io/discord/672486999516774442?label=Discord&logo=discord&logoColor=lightblue)](https://discord.gg/SP5Yjx3)
 [![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/emcek/dcspy)
@@ -39,9 +40,12 @@ It supports:
 * more to come....
 
 ## Requirements
-* [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.0-amd64.exe
+* [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+
+**Note:**
+* You do not need Logitech LCD SDK ver. 8.57.148 probably extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove from your system.
 
 ## Credits
 This project has been heavily inspired by [specelUFC](https://github.com/specel/specelUFC), and I want to thank **specel**, the author of that project for his work and the inspiring ideas. This software uses:
@@ -49,8 +53,8 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
 * [jboecker's parser](https://github.com/jboecker/python-dcs-bios-example) to read data stream from DCS-BIOS
 
 ## Installation
-1. Install all requirements
-2. During Python installation please select  
+Install all requirements:
+1. During Python installation please select  
    * Optional Features:
      * pip
      * tcl/tk and IDLE
@@ -59,19 +63,22 @@ This project has been heavily inspired by [specelUFC](https://github.com/specel/
      * Associate files with Python (requires the py launcher)
      * Add Python to environment variables
      * Customize install location: **C:\Python310** or **C:\Python**
-3. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
+2. Logitech Gaming Software installation is straightforward.
+3. [DCS-BIOS instllation](https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation)
+4. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy
 ```
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.5.1-py3-none-any.whl
+pip install dcspy-1.6.0-py3-none-any.whl
 ```
 ## Upgrade
 To upgrade DCSpy to the latest version, open Command Prompt and type:
 ```shell script
 pip install -U dcspy
 ```
+**Note:** If you upgrade DCSpy from 1.5.1 or older you can remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
 
 ## Usage
 1. Run Logitech Gaming Software (it allows updating LCD)

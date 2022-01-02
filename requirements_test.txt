@@ -5,6 +5,7 @@ coveralls
 flake8
 lxml
 mypy
+pip-audit
 pycodestyle
 pydocstyle
 pylint

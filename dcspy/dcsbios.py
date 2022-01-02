@@ -153,7 +153,7 @@ class StringBuffer:
 
         if address == 0xfffe and self.__dirty:
             self.__dirty = False
-            str_buff = self.buffer.split(b'\x00')[0].decode('latin-1')
+            str_buff = self.buffer.split(sep=b'\x00', maxsplit=1)[0].decode('latin-1')
             for callback in self.callbacks:
                 callback(str_buff)
 

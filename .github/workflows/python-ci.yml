@@ -79,6 +79,9 @@ jobs:
           path: |
             dcspy.log
           retention-days: 5
+      - name: Check pip-audit
+        run: |
+          pip-audit -r requirements.txt --progress-spinner off
   coverage:
     name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
     needs: test
