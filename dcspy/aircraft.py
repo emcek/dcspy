@@ -19,7 +19,6 @@ except ImportError:
 PROTO_ARGS = TypedDict('PROTO_ARGS', {'address': int, 'max_length': int, 'mask': int, 'shift_by': int}, total=False)
 BIOS_PROTO = TypedDict('BIOS_PROTO', {'class': str, 'args': PROTO_ARGS})
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'value': Union[int, str], 'max_value': int, 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
-# BIOS_VALUE = TypedDict('BIOS_VALUE', {'value': Union[int, str], 'max_value': int, 'callback': Callable[[str, str, Optional[led_sdk.EffectInfo]], None], 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
 LOG = getLogger(__name__)
 
 
