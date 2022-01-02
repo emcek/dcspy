@@ -302,22 +302,23 @@ class Ka50(Aircraft):
         super().__init__(lcd_type)
         effect1 = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
         effect2 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)
+        set_bios = {'callback': 'set_bios', 'callback_args': {}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': str(), **set_bios},
+            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str(), **set_bios},
+            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str(), **set_bios},
             'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
-            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), **set_bios},
             'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}},
-            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), **set_bios},
+            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), **set_bios},
             'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
