@@ -178,18 +178,15 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_effect(effect: EffectInfo, selector: str) -> None:
+def start_led_effect(effect: EffectInfo) -> None:
     """
     The function start the pulsing effect or flash for the keyboard.
 
     :param effect: information with effect details
-    :param selector: DCS-BIOS field/selector name
     """
-    LOG.debug(f'Start LED thread {selector}')
     logi_led_init()
     logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
     if effect.name == 'pulse':
         logi_led_pulse_lighting(effect.rgb, effect.duration, effect.interval)
     else:
         logi_led_flash_lighting(effect.rgb, effect.duration, effect.interval)
-    LOG.debug(f'Stop LED thread {selector}')

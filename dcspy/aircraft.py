@@ -109,13 +109,12 @@ class Aircraft:
         :param value:
         :param effect:
         """
-        LOG.debug(self.bios_data)
-        self.bios_data[selector]['value'] = value
-
         if value:
-            led_sdk.start_led_effect(effect=effect, selector=selector)
-        elif not value:
+            LOG.debug(f'LED on {selector} with {effect}')
+            led_sdk.start_led_effect(effect=effect)
+        else:
             led_sdk.logi_led_shutdown()
+            LOG.debug(f'LED off {selector}')
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
