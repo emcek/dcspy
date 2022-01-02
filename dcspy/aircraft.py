@@ -98,12 +98,10 @@ class Aircraft:
         except KeyError:
             return ''
 
-    def led_handler(self, selector: str, value: str, effect: led_sdk.EffectInfo) -> None:
+    @staticmethod
+    def led_handler(selector: str, value: str, effect: led_sdk.EffectInfo) -> None:
         """
-        Start thread or set event.
-
-        First time it will start thread for DCS selector for LED effect.
-        Next time it will set event to stop thread and finish LED effect for DCS-BIOS selector.
+        Switch on and off LED effect for DCS-BIOS selector.
 
         :param selector:
         :param value:
