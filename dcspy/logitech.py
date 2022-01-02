@@ -112,8 +112,7 @@ class LogitechKeyboard:
         for field_name, proto_data in self.plane.bios_data.items():
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
             callback = getattr(self.plane, proto_data['callback'])
-            callback_args = getattr(self.plane, proto_data['callback_args'])
-            buffer(parser=self.parser, callback=partial(callback, field_name, **callback_args), **proto_data['args'])
+            buffer(parser=self.parser, callback=partial(callback, field_name, **proto_data['callback_args']), **proto_data['args'])
 
     def check_buttons(self) -> int:
         """
