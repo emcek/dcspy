@@ -34,7 +34,7 @@ class Aircraft:
         self.bios_proto: Dict[str, BIOS_PROTO] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
-        self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
+        # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -171,23 +171,23 @@ class FA18Chornet(Aircraft):
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 6}},
             'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'value': str(), **self.default_callback},
-            'UFC_SCRATCHPAD_STRING_2_DISPLAY': {'value': str(), **self.default_callback},
-            'UFC_SCRATCHPAD_NUMBER_DISPLAY': {'value': str(), **self.default_callback},
-            'UFC_OPTION_DISPLAY_1': {'value': str(), **self.default_callback},
-            'UFC_OPTION_DISPLAY_2': {'value': str(), **self.default_callback},
-            'UFC_OPTION_DISPLAY_3': {'value': str(), **self.default_callback},
-            'UFC_OPTION_DISPLAY_4': {'value': str(), **self.default_callback},
-            'UFC_OPTION_DISPLAY_5': {'value': str(), **self.default_callback},
-            'UFC_COMM1_DISPLAY': {'value': str(), **self.default_callback},
-            'UFC_COMM2_DISPLAY': {'value': str(), **self.default_callback},
-            'UFC_OPTION_CUEING_1': {'value': str(), **self.default_callback},
-            'UFC_OPTION_CUEING_2': {'value': str(), **self.default_callback},
-            'UFC_OPTION_CUEING_3': {'value': str(), **self.default_callback},
-            'UFC_OPTION_CUEING_4': {'value': str(), **self.default_callback},
-            'UFC_OPTION_CUEING_5': {'value': str(), **self.default_callback},
-            'IFEI_FUEL_DOWN': {'value': str(), **self.default_callback},
-            'IFEI_FUEL_UP': {'value': str(), **self.default_callback}}
+            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_SCRATCHPAD_STRING_2_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_SCRATCHPAD_NUMBER_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_2': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_3': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_4': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_5': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM1_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM2_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_2': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_3': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_4': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_5': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'IFEI_FUEL_DOWN': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'IFEI_FUEL_UP': {'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
         scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
@@ -276,15 +276,15 @@ class F16C50(Aircraft):
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x1800, 'shift_by': 0xb}},
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x6000, 'shift_by': 0xd}}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DED_LINE_1': {'value': str(), **self.default_callback},
-            'DED_LINE_2': {'value': str(), **self.default_callback},
-            'DED_LINE_3': {'value': str(), **self.default_callback},
-            'DED_LINE_4': {'value': str(), **self.default_callback},
-            'DED_LINE_5': {'value': str(), **self.default_callback},
-            'IFF_MASTER_KNB': {'value': int(), 'max_value': 4, **self.default_callback},
-            'IFF_ENABLE_SW': {'value': int(), 'max_value': 2, **self.default_callback},
-            'IFF_M4_CODE_SW': {'value': int(), 'max_value': 2, **self.default_callback},
-            'IFF_M4_REPLY_SW': {'value': int(), 'max_value': 2, **self.default_callback}}
+            'DED_LINE_1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_2': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_3': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_4': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_5': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_MASTER_KNB': {'value': int(), 'max_value': 4, 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_ENABLE_SW': {'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_M4_CODE_SW': {'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_M4_REPLY_SW': {'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
@@ -350,21 +350,21 @@ class Ka50(Aircraft):
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}},
             'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb}}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PVI_LINE1_APOSTROPHE1': {'value': str(), **self.default_callback},
-            'PVI_LINE1_APOSTROPHE2': {'value': str(), **self.default_callback},
-            'PVI_LINE1_POINT': {'value': str(), **self.default_callback},
-            'PVI_LINE1_SIGN': {'value': str(), **self.default_callback},
-            'PVI_LINE1_TEXT': {'value': str(), **self.default_callback},
-            'PVI_LINE2_APOSTROPHE1': {'value': str(), **self.default_callback},
-            'PVI_LINE2_APOSTROPHE2': {'value': str(), **self.default_callback},
-            'PVI_LINE2_POINT': {'value': str(), **self.default_callback},
-            'PVI_LINE2_SIGN': {'value': str(), **self.default_callback},
-            'PVI_LINE2_TEXT': {'value': str(), **self.default_callback},
+            'PVI_LINE1_APOSTROPHE1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_APOSTROPHE2': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_POINT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_SIGN': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_TEXT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_APOSTROPHE1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_APOSTROPHE2': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_POINT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_SIGN': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_TEXT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'AP_ALT_HOLD_LED': {'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
-            'AP_BANK_HOLD_LED': {'value': int(), **self.default_callback},
+            'AP_BANK_HOLD_LED': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'AP_FD_LED': {'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}},
-            'AP_HDG_HOLD_LED': {'value': int(), **self.default_callback},
-            'AP_PITCH_HOLD_LED': {'value': int(), **self.default_callback},
+            'AP_HDG_HOLD_LED': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_PITCH_HOLD_LED': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'SC_MASTER_CAUTION_LED': {'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -482,19 +482,19 @@ class A10C(Aircraft):
             'UHF_POINT1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}},
             'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'VHFAM_FREQ1': {'value': str(), **self.default_callback},
-            'VHFAM_FREQ2': {'value': int(), **self.default_callback},
-            'VHFAM_FREQ3': {'value': int(), **self.default_callback},
-            'VHFAM_FREQ4': {'value': str(), **self.default_callback},
-            'VHFFM_FREQ1': {'value': str(), **self.default_callback},
-            'VHFFM_FREQ2': {'value': int(), **self.default_callback},
-            'VHFFM_FREQ3': {'value': int(), **self.default_callback},
-            'VHFFM_FREQ4': {'value': str(), **self.default_callback},
-            'UHF_100MHZ_SEL': {'value': str(), **self.default_callback},
-            'UHF_10MHZ_SEL': {'value': int(), **self.default_callback},
-            'UHF_1MHZ_SEL': {'value': int(), **self.default_callback},
-            'UHF_POINT1MHZ_SEL': {'value': int(), **self.default_callback},
-            'UHF_POINT25_SEL': {'value': str(), **self.default_callback}}
+            'VHFAM_FREQ1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFAM_FREQ2': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFAM_FREQ3': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFAM_FREQ4': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ1': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ2': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ3': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ4': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_100MHZ_SEL': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_10MHZ_SEL': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_1MHZ_SEL': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_POINT1MHZ_SEL': {'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_POINT25_SEL': {'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
 
     def _generate_freq_values(self) -> Sequence[str]:
         vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
@@ -542,10 +542,10 @@ class F14B(Aircraft):
             'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}},
             'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'RIO_CAP_CLEAR': {'value': str(), **self.default_callback},
-            'RIO_CAP_SW': {'value': str(), **self.default_callback},
-            'RIO_CAP_NE': {'value': str(), **self.default_callback},
-            'RIO_CAP_ENTER': {'value': str(), **self.default_callback}}
+            'RIO_CAP_CLEAR': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_SW': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_NE': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_ENTER': {'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -603,19 +603,19 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_5_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}},
             'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}}}
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'UFC_SCRATCHPAD': {'value': str(), **self.default_callback},
-            'UFC_COMM1_DISPLAY': {'value': str(), **self.default_callback},
-            'UFC_COMM2_DISPLAY': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_1_SELECT': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_1_Text': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_2_SELECT': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_2_Text': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_3_SELECT': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_3_Text': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_4_SELECT': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_4_Text': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_5_SELECT': {'value': str(), **self.default_callback},
-            'AV8BNA_ODU_5_Text': {'value': str(), **self.default_callback}}
+            'UFC_SCRATCHPAD': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM1_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM2_DISPLAY': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_1_SELECT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_1_Text': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_2_SELECT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_2_Text': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_3_SELECT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_3_Text': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_4_SELECT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_4_Text': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_5_SELECT': {'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_5_Text': {'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
         draw.text(xy=(50 * scale, 0), fill=self.lcd.foreground, font=self.lcd.font_l, text=f'{self.get_bios("UFC_SCRATCHPAD")}')
