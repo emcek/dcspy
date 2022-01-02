@@ -142,7 +142,7 @@ class Aircraft:
         return next(self.cycle_buttons[btn_name])
 
     def __repr__(self):
-        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
+        return f'{super().__repr__()} with: {pformat(object=self.__dict__, width=100)}'
 
 
 class FA18Chornet(Aircraft):

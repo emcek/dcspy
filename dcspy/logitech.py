@@ -173,7 +173,7 @@ class LogitechKeyboard:
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self):
-        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
+        return f'{super().__repr__()} with: {pformat(object=self.__dict__, width=100)}'
 
 
 class KeyboardMono(LogitechKeyboard):
