@@ -44,7 +44,7 @@ It supports:
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
-**Note:**
+**Notes:**
 * You do not need Logitech LCD SDK ver. 8.57.148 probably extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove from your system.
 
 ## Credits
@@ -65,6 +65,8 @@ Install all requirements:
      * Customize install location: **C:\Python310** or **C:\Python**
 2. Logitech Gaming Software installation is straightforward.
 3. [DCS-BIOS instllation](https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation)
+   * You can skip for now and install DCS-BIOS directly from Dcspy (Config -> Check DCS-BIOS). Check **dcsbios** config flag before. 
+     It checks if new version exists, download, and unpack DCS-BIOS to `Save Games` folder and check `Export.lua` file.
 4. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
 ```shell script
 pip install dcspy

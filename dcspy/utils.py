@@ -71,13 +71,13 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     return migrated_cfg
 
 
-def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, str, str, str]:
+def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[version.Version, version.LegacyVersion], str, str, str, str]:
     """
     Check version of <organization>/<package> at GitHub.
 
     Return tuple with:
     - result (bool) - if local version is latest
-    - online version (str) - the latest version
+    - online version (version.Version, version.LegacyVersion) - the latest version
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
     - release type (str) - Regular or Pre-release
@@ -87,7 +87,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
     :param current_ver: current local version
     :return: tuple with information
     """
-    latest, online_version, asset_url, published, pre_release = False, '', '', '', False
+    latest, online_version, asset_url, published, pre_release = False, 'unknown', '', '', False
     package = repo.split('/')[1]
     try:
         response = get(f'https://api.github.com/repos/{repo}/releases/latest')
@@ -105,7 +105,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return latest, online_version, asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1]
+    return latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1]
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
