@@ -9,7 +9,7 @@ from typing import List, Tuple
 from PIL import Image, ImageDraw
 
 from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR
-from dcspy.aircrafts import Aircraft
+from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
 
@@ -25,7 +25,7 @@ class LogitechKeyboard:
         - Mono LCD: G13, G15 (v1 and v2) and G510
         - RGB LCD: G19
 
-        However it define bunch of functionally to be used be child class:
+        However, it defines a bunch of functionally to be used be child class:
         - DCS-BIOS callback for currently used aircraft in DCS
         - auto-detecting aircraft and load its handling class
         - send button request to DCS-BIOS
@@ -51,7 +51,7 @@ class LogitechKeyboard:
     @property
     def display(self) -> List[str]:
         """
-        Get latest set text at LCD.
+        Get the latest text from LCD.
 
         :return: list of strings with data, row by row
         """
@@ -62,8 +62,8 @@ class LogitechKeyboard:
         """
         Display message as image at LCD.
 
-        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
-        For G19 takes first 8 or less elements of list and display as 8 rows.
+        For G13/G15/G510 takes first 4 or fewer elements of list and display as 4 rows.
+        For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :param message: List of strings to display, row by row.
         """
         self._display = message
@@ -75,15 +75,15 @@ class LogitechKeyboard:
         """
         Display message at LCD.
 
-        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
-        For G19 takes first 8 or less elements of list and display as 8 rows.
+        For G13/G15/G510 takes first 4 or fewer elements of list and display as 4 rows.
+        For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :param message: List of strings to display, row by row.
         """
         lcd_sdk.update_text(message)
 
     def detecting_plane(self, value: str) -> None:
         """
-        Try detect airplane base on value received from DCS-BIOS.
+        Try to detect airplane base on value received from DCS-BIOS.
 
         :param value: data from DCS-BIOS
         """
@@ -106,7 +106,7 @@ class LogitechKeyboard:
         Setup callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
-        self.plane = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
+        self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]}')
         LOG.debug(f'{repr(self)}')
         for field_name, proto_data in self.plane.bios_data.items():
@@ -115,7 +115,7 @@ class LogitechKeyboard:
 
     def check_buttons(self) -> int:
         """
-        Check if button was pressed and return its number.
+        Check if button was pressed and return it`s number.
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
@@ -156,8 +156,8 @@ class LogitechKeyboard:
         """
         Prepare image for base of LCD type.
 
-        For G13/G15/G510 takes first 4 or less elements of list and display as 4 rows.
-        For G19 takes first 8 or less elements of list and display as 8 rows.
+        For G13/G15/G510 takes first 4 or fewer elements of list and display as 4 rows.
+        For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
         img = Image.new(mode=self.lcd.mode, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
@@ -176,7 +176,7 @@ class LogitechKeyboard:
 class KeyboardMono(LogitechKeyboard):
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        Logitech keyboard with mono LCD.
+        Logitech`s keyboard with mono LCD.
 
         Support for: G510, G13, G15 (v1 and v2)
         :param parser_hook: BSC-BIOS parser
@@ -189,7 +189,7 @@ class KeyboardMono(LogitechKeyboard):
 class KeyboardColor(LogitechKeyboard):
     def __init__(self, parser_hook: ProtocolParser) -> None:
         """
-        Logitech keyboard with color LCD.
+        Logitech`s keyboard with color LCD.
 
         Support for: G19
         :param parser_hook: BSC-BIOS parser

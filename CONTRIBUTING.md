@@ -1,11 +1,11 @@
 ## Development
-DCSpy use multi-cast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
+DCSpy use multicast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
 Main modules of DCSpy:
 * `dcspy.py` main script - it starts GUI in tkinter
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.
 * `log.py` dumb simple logger configuration
-* `logitech.py` handling Logitech keyboards with LCD and buttons, auto-loading current aircraft
-* `aircrafts.py` are define all supported aircrafts with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD
+* `logitech.py` handling Logitech keyboards with LCD and buttons, loading dynamically current aircraft
+* `aircraft.py` are define all supported aircraft with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 * `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
 * `utils.py` various useful tools - load and save config, check online version or download file
@@ -23,10 +23,10 @@ self.bios_data: Dict[str, BIOS_VALUE] = {
                         'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 
                         'value': int()}}
 ```
-which describe data to be fetch from DCS-BIOS with buffer class and its parameters. For required address and data max_length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
+which describe data to be fetched from DCS-BIOS with buffer class and its parameters. For required address and data max_length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 * Then after detecting current plane in DCS, `KeyboardMono` or `KeyboardColor` will load instance of aircraft as `plane`
 ```python
-self.plane: Aircraft = getattr(import_module('dcspy.aircrafts'), self.plane_name)(self.lcd)
+self.plane: Aircraft = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
 ```
 * and "subscribe" for changes with callback for all fields defined in `plane` instance
 ```python

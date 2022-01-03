@@ -1,11 +1,11 @@
+-r requirements.txt
+check-manifest
 codacy-coverage
-# workaround for
-# https://github.com/nedbat/coveragepy/issues/1273
-# https://github.com/TheKevJames/coveralls-python/issues/333
-coveralls < 3.3.0
+coveralls
 flake8
 lxml
 mypy
+pip-audit
 pycodestyle
 pydocstyle
 pylint
