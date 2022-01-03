@@ -16,8 +16,10 @@ try:
 except ImportError:
     from typing import TypedDict
 
-PROTO_ARGS = TypedDict('PROTO_ARGS', {'address': int, 'max_length': int, 'mask': int, 'shift_by': int}, total=False)
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': PROTO_ARGS, 'value': Union[int, str], 'max_value': int, 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
+PROTO_STR = TypedDict('PROTO_STR', {'address': int, 'max_length': int})
+PROTO_INT = TypedDict('PROTO_INT', {'address': int, 'max_length': int, 'mask': int, 'shift_by': int})
+BIOS_STR = TypedDict('BIOS_STR', {'class': str, 'args': PROTO_STR, 'value': str, 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]})
+BIOS_INT = TypedDict('BIOS_INT', {'class': str, 'args': PROTO_INT, 'value': int, 'max_value': int, 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]})
 LOG = getLogger(__name__)
 
 
@@ -29,7 +31,7 @@ class Aircraft:
         :param lcd_type: LCD type
         """
         self.lcd = lcd_type
-        self.bios_data: Dict[str, BIOS_VALUE] = {}
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
         # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
@@ -147,7 +149,7 @@ class FA18Chornet(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {
             'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'UFC_SCRATCHPAD_STRING_2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7450, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'UFC_SCRATCHPAD_NUMBER_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7446, 'max_length': 8}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
@@ -242,7 +244,7 @@ class F16C50(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {
             'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4500, 'max_length': 25}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x451a, 'max_length': 25}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4534, 'max_length': 25}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
@@ -299,7 +301,7 @@ class Ka50(Aircraft):
         super().__init__(lcd_type)
         effect1 = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
         effect2 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {
             'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
@@ -417,7 +419,7 @@ class A10C(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {
             'VHFAM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x1190, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'VHFAM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'VHFAM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
@@ -472,11 +474,11 @@ class F14B(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
-            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {
+            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -519,7 +521,7 @@ class AV8BNA(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BIOS_VALUE] = {
+        self.bios_data: Dict[str, Union[BIOS_STR, BIOS_INT]] = {
             'UFC_SCRATCHPAD': {'class': 'StringBuffer', 'args': {'address': 0x7984, 'max_length': 12}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'UFC_COMM1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7954, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'UFC_COMM2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7956, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
