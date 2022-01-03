@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from pytest import mark
 
@@ -35,3 +35,33 @@ def test_all_success_cases(py_func, c_func, args, result):
     mocked_c_func.return_value = result
     led_sdk.LED_DLL = {c_func: mocked_c_func}
     assert getattr(led_sdk, py_func)(*args) is result
+
+
+def test_start_led_pulse():
+    from dcspy.sdk import led_sdk
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Event
+    from time import sleep
+
+    rgb = (100, 0, 0)
+    duration = 1
+    interval = 1
+    event = Event()
+
+    def pulse_led(_rgb, _duration, _interval, _event):
+        with patch.object(led_sdk, 'logi_led_init', return_value=True) as logi_led_init:
+            with patch.object(led_sdk, 'logi_led_set_target_device', return_value=True) as logi_led_set_target_device:
+                with patch.object(led_sdk, 'logi_led_pulse_lighting', return_value=True) as logi_led_pulse_lighting:
+                    with patch.object(led_sdk, 'logi_led_shutdown', return_value=True) as logi_led_shutdown:
+                        led_sdk.start_led_pulse(_rgb, _duration, _interval, _event)
+                        logi_led_init.assert_called_once()
+                        logi_led_set_target_device.assert_called_once_with(3)
+                        logi_led_pulse_lighting.assert_called_once_with(_rgb, _duration, _interval)
+                        logi_led_shutdown.assert_called_once()
+        return True
+
+    with ThreadPoolExecutor() as executor:
+        future = executor.submit(pulse_led, rgb, duration, interval, event)
+        sleep(1.3)
+        event.set()
+        assert future.result()

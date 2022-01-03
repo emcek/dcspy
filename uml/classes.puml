@@ -61,7 +61,7 @@ class KeyboardColor {
     # _prepare_image() -> Image
 }
 
-package aircrafts {
+package aircraft {
   Aircraft <|-- FA18Chornet
   Aircraft <|-- F16C50
   Aircraft <|-- Ka50

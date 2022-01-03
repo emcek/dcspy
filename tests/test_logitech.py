@@ -1,19 +1,17 @@
 from unittest.mock import call, patch
 
-from pytest import mark, raises
+from pytest import mark
 
 from dcspy.logitech import KeyboardColor, KeyboardMono
 
 
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk import lcd_sdk
-    with raises(NotImplementedError):
-        keyboard_base._prepare_image()
 
     assert str(keyboard_base) == 'LogitechKeyboard: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'already_pressed', 'buttons',
-            '_display', 'plane', 'Aircraft')
+            '_display', 'plane', 'Aircraft', 'vert_space', 'lcd')
     for test_string in data:
         assert test_string in logitech_repr
 
@@ -57,7 +55,7 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
 @mark.parametrize('mode, size,  lcd_type, keyboard', [('1', (160, 43), 1, KeyboardMono),
                                                       ('RGBA', (320, 240), 2, KeyboardColor)])
 def test_check_keyboard_display_and_prepare_image(mode, size,  lcd_type, keyboard, protocol_parser):
-    from dcspy.aircrafts import Aircraft
+    from dcspy.aircraft import Aircraft
     from dcspy.sdk import lcd_sdk
     from dcspy import LcdInfo
 

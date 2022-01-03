@@ -14,7 +14,7 @@ from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
-__version__ = '1.5.0'
+__version__ = '1.6.0'
 
 
 def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:

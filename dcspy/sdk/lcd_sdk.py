@@ -86,7 +86,7 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
 
 
 def logi_lcd_update() -> None:
-    """Function updates the LCD display."""
+    """Function updates the LCD."""
     if LCD_DLL:
         logilcdupdate = LCD_DLL['LogiLcdUpdate']
         logilcdupdate.restype = None
@@ -127,7 +127,7 @@ def logi_lcd_mono_set_text(line_no: int, text: str):
     """
     Function sets the specified text in the requested line on the monochrome lcd device connected.
 
-    :param line_no: The monochrome lcd display has 4 lines, so this parameter can be any number from 0 to 3
+    :param line_no: The monochrome LCD has 4 lines, so this parameter can be any number from 0 to 3
     :param text: defines the text you want to display
     :return: result
     """
@@ -182,7 +182,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     Function sets the specified text in the requested line on the color lcd device connected.
 
     If you don't specify any color, your title will be white.
-    :param line_no: The color lcd display has 8 lines for standard text, so this parameter can be any number from 0 to 7
+    :param line_no: The color LCD has 8 lines for standard text, so this parameter can be any number from 0 to 7
     :param text: defines the text you want to display
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result

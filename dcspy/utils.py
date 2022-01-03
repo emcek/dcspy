@@ -2,7 +2,7 @@ from datetime import datetime
 from logging import getLogger
 from os import environ, makedirs
 from sys import prefix, version_info
-from typing import Dict, Union, List, Tuple
+from typing import Dict, Union, Tuple
 
 from packaging import version
 from psutil import process_iter
@@ -10,7 +10,7 @@ from requests import get
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
-ConfigDict = Dict[str, Union[str, int, List[int]]]
+ConfigDict = Dict[str, Union[str, int]]
 default_yaml = f'{prefix}/dcspy_data/config.yaml'
 
 
@@ -60,7 +60,12 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                             'keyboard': 'G13',
-                            'show_gui': True}
+                            'show_gui': True,
+                            'font_name': 'consola.ttf',
+                            'font_mono_s': 11,
+                            'font_mono_l': 16,
+                            'font_color_s': 22,
+                            'font_color_l': 32}
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
     save_cfg(migrated_cfg)
     return migrated_cfg
@@ -72,7 +77,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, str, str, st
 
     Return tuple with:
     - result (bool) - if local version is latest
-    - online version (str) - latest version
+    - online version (str) - the latest version
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
     - release type (str) - Regular or Pre-release

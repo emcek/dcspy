@@ -1,0 +1,16 @@
+-r requirements.txt
+check-manifest
+codacy-coverage
+coveralls
+flake8
+lxml
+mypy
+pip-audit
+pycodestyle
+pydocstyle
+pylint
+pytest-cov
+pytest-mccabe
+pytest-random
+types-requests
+types-PyYAML
