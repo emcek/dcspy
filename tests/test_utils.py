@@ -6,7 +6,7 @@ from pytest import mark
 from dcspy import utils
 
 
-@mark.parametrize('online_tag, result', [('1.1.1', (True, version.parse('1.1.1'), 'github.com/fake.tgz', '09 August 2021',  'Pre-release', 'fake.tgz')),
+@mark.parametrize('online_tag, result', [('1.1.1', (True, version.parse('1.1.1'), 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz')),
                                          ('3.2.1', (False, version.parse('3.2.1'), 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz'))])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
