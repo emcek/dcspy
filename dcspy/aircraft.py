@@ -33,7 +33,7 @@ class Aircraft:
         self.bios_data: Dict[str, BIOS] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
-        self.led_stack = list()  # todo: use dict with selector and effect and keep track of order
+        self.led_stack = list()  # todo: use Ordered dict with selector and effect
         # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
