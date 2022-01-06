@@ -33,6 +33,7 @@ class Aircraft:
         self.bios_data: Dict[str, BIOS] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
+        self.led_stack = list()  # todo: use dict with selector and effect and keep track of order
         # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -97,8 +98,7 @@ class Aircraft:
         except KeyError:
             return ''
 
-    @staticmethod
-    def led_handler(selector: str, value: str, effect: led_sdk.EffectInfo) -> None:
+    def led_handler(self, selector: str, value: str, effect: led_sdk.EffectInfo) -> None:
         """
         Switch on and off LED effect for DCS-BIOS selector.
 
@@ -109,9 +109,11 @@ class Aircraft:
         if value:
             LOG.debug(f'LED on {selector} with {effect}')
             led_sdk.start_led_effect(effect=effect)
+            self.led_stack.append(selector)
         else:
             led_sdk.logi_led_shutdown()
             LOG.debug(f'LED off {selector}')
+            # todo: detect if last on stack and switch effect to next one (previus)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
