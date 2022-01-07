@@ -217,3 +217,34 @@ def test_led_effect_one_selector_for_shark_mono_on_off(black_shark_mono):
                     assert black_shark_mono.bios_data[selector]['value'] == 0
                     assert len(black_shark_mono.led_stack) == 0
                     logi_led_shutdown.assert_has_calls([call(), call()])
+
+
+def test_led_effect_two_selector_for_shark_mono_on_off(black_shark_mono):
+    from dcspy.sdk import led_sdk
+    with patch.object(led_sdk, 'logi_led_init', return_value=True) as logi_led_init:
+        with patch.object(led_sdk, 'logi_led_shutdown', return_value=True) as logi_led_shutdown:
+            with patch.object(led_sdk, 'logi_led_set_target_device', return_value=True) as logi_led_set_target_device:
+                with patch.object(led_sdk, 'logi_led_pulse_lighting', return_value=True) as logi_led_pulse_lighting:
+                    with patch.object(led_sdk, 'logi_led_flash_lighting', return_value=True) as logi_led_flash_lighting:
+                        selector1 = 'SC_MASTER_CAUTION_LED'
+                        effect1 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=10, interval=10)
+                        selector2 = 'SC_ROTOR_RPM_LED'
+                        effect2 = led_sdk.EffectInfo(name='flash', rgb=(100, 100, 0), duration=20, interval=20)
+                        on, off = 1, 0
+                        black_shark_mono.led_handler(selector1, on, effect1)
+                        black_shark_mono.led_handler(selector2, on, effect2)
+                        logi_led_shutdown.assert_has_calls([call(), call()])
+                        logi_led_init.assert_has_calls([call(), call()])
+                        logi_led_set_target_device.assert_has_calls([call(led_sdk.LOGI_DEVICETYPE_ALL), call(led_sdk.LOGI_DEVICETYPE_ALL)])
+                        logi_led_pulse_lighting.assert_called_once_with(effect1.rgb, effect1.duration, effect1.interval)
+                        logi_led_flash_lighting.assert_called_once_with(effect2.rgb, effect2.duration, effect2.interval)
+                        assert len(black_shark_mono.led_stack) == 2
+                        black_shark_mono.led_handler(selector2, off, effect2)
+                        logi_led_pulse_lighting.assert_has_calls([call(effect1.rgb, effect1.duration, effect1.interval), call(effect1.rgb, effect1.duration, effect1.interval)])
+                        assert len(black_shark_mono.led_stack) == 1
+                        black_shark_mono.led_handler(selector1, off, effect1)
+                        assert len(black_shark_mono.led_stack) == 0
+
+                        logi_led_shutdown.assert_has_calls([call(), call(), call()])
+                        logi_led_init.assert_has_calls([call(), call(), call()])
+                        logi_led_set_target_device.assert_has_calls([call(led_sdk.LOGI_DEVICETYPE_ALL), call(led_sdk.LOGI_DEVICETYPE_ALL), call(led_sdk.LOGI_DEVICETYPE_ALL)])
