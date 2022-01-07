@@ -92,12 +92,10 @@ Effect has few arguments:
 * interval in milliseconds
 ```python
 EffectInfo = NamedTuple('EffectInfo', [('name', str), ('rgb', Tuple[int, int, int]), ('duration', int), ('interval', int)])
-self.led_stack: Dict[str, Tuple[str, led_sdk.EffectInfo]] = OrderedDict()
+self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
 ```
 When 2 or more effect are triggered only last one will be active. And when last one will be switched off again last one become active.
 ```python
-self.led_stack = {'AP_HDG_HOLD_LED': 
-                      ('1', led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)),
-                  'AP_ALT_HOLD_LED': 
-                      ('1', led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10))}
+self.led_stack = {'AP_HDG_HOLD_LED': led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10),
+                  'AP_ALT_HOLD_LED': led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)}
 ```
