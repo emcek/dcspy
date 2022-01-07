@@ -36,8 +36,8 @@ class DcspyGui(tk.Frame):
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
         self._init_widgets()
-        self.l_bios: Union[version.Version, version.LegacyVersion]
-        self.r_bios: Union[version.Version, version.LegacyVersion]
+        self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
+        self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.bios_path = ''
         self.event = Event()
 
