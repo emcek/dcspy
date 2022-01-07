@@ -1,5 +1,5 @@
 from ctypes import c_bool, c_wchar_p, c_int
-from logging import getLogger
+from time import sleep
 from typing import Tuple, NamedTuple
 
 from dcspy.sdk import load_dll
