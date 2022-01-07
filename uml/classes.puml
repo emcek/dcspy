@@ -80,7 +80,7 @@ class Aircraft {
     + bios_data : Dict[str, BIOS]
     + cycle_buttons : Dict[str, Iterator[int]]
     + lcd : LcdInfo
-    + led_stack: OrderedDict[str, Tuple[str, EffectInfo]]
+    + led_stack: OrderedDict[str, EffectInfo]
     # _debug_img : Iterator[int]
     + __init__(lcd_type: LcdInfo)
     + button_request(button: int, request: str) -> str
@@ -88,7 +88,7 @@ class Aircraft {
     + prepare_image() -> Image
     + set_bios(selector: str, value: str)
     + get_bios(selector: str) -> Union[str, int]
-    + led_handler(selector: str, value: str, effect: EffectInfo)
+    + led_handler(selector: str, value: int, effect: EffectInfo)
     + get_next_value_for_button(btn_name: str) -> int
     # _popitem_and_reply_last_effect(selector: str)
     + {abstract} draw_for_lcd_type_1(img: Image)
