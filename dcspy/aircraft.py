@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
@@ -33,7 +34,7 @@ class Aircraft:
         self.bios_data: Dict[str, BIOS] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
-        self.led_stack = list()  # todo: use Ordered dict with selector and effect
+        self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
         # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -107,13 +108,13 @@ class Aircraft:
         :param effect:
         """
         if value:
-            LOG.debug(f'LED on {selector} with {effect}')
+            LOG.debug(f'LED on {selector} vel: {value} with {effect}')
             led_sdk.start_led_effect(effect=effect)
-            self.led_stack.append(selector)
+            self.led_stack[selector] = effect
         else:
             led_sdk.logi_led_shutdown()
             LOG.debug(f'LED off {selector}')
-            # todo: detect if last on stack and switch effect to next one (previus)
+            self._popitem_and_reply_last_effect(selector)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
@@ -137,6 +138,13 @@ class Aircraft:
             LOG.debug(f'{self.__class__.__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
             self.cycle_buttons[btn_name] = cycle(chain(seed))
         return next(self.cycle_buttons[btn_name])
+
+    def _popitem_and_reply_last_effect(self, selector: str) -> None:
+        del self.led_stack[selector]
+        if self.led_stack:
+            selector, effect = self.led_stack.popitem()
+            LOG.debug(f'Replay effect for {selector}')
+            self.led_handler(selector, '1', effect)
 
     def __repr__(self):
         return f'{super().__repr__()} with: {pformat(object=self.__dict__, width=100)}'
