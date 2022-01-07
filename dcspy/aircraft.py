@@ -35,7 +35,6 @@ class Aircraft:
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
         self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
-        # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
