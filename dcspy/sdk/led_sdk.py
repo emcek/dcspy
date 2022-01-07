@@ -4,7 +4,6 @@ from typing import Tuple, NamedTuple
 
 from dcspy.sdk import load_dll
 
-LOG = getLogger(__name__)
 
 EffectInfo = NamedTuple('EffectInfo', [('name', str), ('rgb', Tuple[int, int, int]), ('duration', int), ('interval', int)])
 LOGI_LED_DURATION_INFINITE = 0
