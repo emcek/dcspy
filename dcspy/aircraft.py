@@ -5,7 +5,7 @@ from logging import getLogger
 from os import environ, path
 from pprint import pformat
 from string import whitespace
-from typing import Dict, Union, Optional, Iterator, Sequence, Tuple
+from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
@@ -34,7 +34,7 @@ class Aircraft:
         self.bios_data: Dict[str, BIOS] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
-        self.led_stack: Dict[str, Tuple[str, led_sdk.EffectInfo]] = OrderedDict()
+        self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
         # self.default_callback = {'callback': 'set_bios', 'callback_args': {}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -107,11 +107,12 @@ class Aircraft:
         :param value:
         :param effect:
         """
+        self.bios_data[selector]['value'] = value
         if value:
             LOG.debug(f'LED on {selector} val: {value} with {effect}')
             led_sdk.logi_led_shutdown()
             led_sdk.start_led_effect(effect=effect)
-            self.led_stack[selector] = value, effect
+            self.led_stack[selector] = effect
         else:
             LOG.debug(f'LED off {selector}')
             self._popitem_and_reply_last_effect(selector)
@@ -142,9 +143,9 @@ class Aircraft:
     def _popitem_and_reply_last_effect(self, selector: str) -> None:
         del self.led_stack[selector]
         if self.led_stack:
-            selector, val_effect = self.led_stack.popitem()
+            selector, effect = self.led_stack.popitem()
             LOG.debug(f'Replay effect for {selector}')
-            self.led_handler(selector, *val_effect)
+            self.led_handler(selector, self.bios_data[selector]['value'], effect)
         else:
             led_sdk.logi_led_shutdown()
 
