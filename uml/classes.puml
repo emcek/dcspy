@@ -42,6 +42,7 @@ class LogitechKeyboard {
     + buttons : Tuple[int]
     + lcd : LcdInfo
     + dislay(message : List[str]) -> List[str]
+    + vert_space : int
     # {abstract} _prepare_image() -> Image
     + detecting_plane()
     + load_new_plane(value : str)
@@ -53,11 +54,13 @@ class LogitechKeyboard {
 
 class KeyboardMono {
     + buttons : Tuple[int]
+    + vert_space = 10
     # _prepare_image() -> Image
 }
 
 class KeyboardColor {
     + buttons : Tuple[int]
+    + vert_space = 40
     # _prepare_image() -> Image
 }
 
@@ -69,13 +72,15 @@ package aircraft {
   A10C <|-- A10C2
   Aircraft <|-- F14B
   Aircraft <|-- AV8BNA
-  class BIOS_VALUE
+  BIOS *-- PROTO_STR
+  BIOS *-- PROTO_INT
 }
 
 class Aircraft {
-    + bios_data : Dict[str, BIOS_VALUE]
+    + bios_data : Dict[str, BIOS]
     + cycle_buttons : Dict[str, Iterator[int]]
     + lcd : LcdInfo
+    + led_stack: OrderedDict[str, Tuple[str, EffectInfo]]
     # _debug_img : Iterator[int]
     + __init__(lcd_type: LcdInfo)
     + button_request(button: int, request: str) -> str
@@ -83,17 +88,32 @@ class Aircraft {
     + prepare_image() -> Image
     + set_bios(selector: str, value: str)
     + get_bios(selector: str) -> Union[str, int]
+    + led_handler(selector: str, value: str, effect: EffectInfo)
     + get_next_value_for_button(btn_name: str) -> int
+    # _popitem_and_reply_last_effect(selector: str)
     + {abstract} draw_for_lcd_type_1(img: Image)
     + {abstract} draw_for_lcd_type_2(img: Image)
 }
 
-class BIOS_VALUE <<(T,orange)>> {
+
+class PROTO_STR <<(T,orange)>> {
+    + address: int
+    + max_length: int
+}
+
+class PROTO_INT <<(T,orange)>> {
+    + address: int
+    + mask: int
+    + shift_by: int
+    + max_value': int
+}
+
+class BIOS <<(T,orange)>> {
     + class : str
-    + args: Dict[str, int]
+    + args: Dict[PROTO_STR, PROTO_INT]
     + value: Union[int, str]
-    + max_value: int
-    - total=False
+    + callback: str
+    + callback_args: Dict[str, EffectInfo]
 }
 
 class LcdInfo <<(D,orchid)>> {
@@ -138,6 +158,12 @@ package sdk{
         + logi_led_shutdown()
         + start_led_pulse()
     }
+    class EffectInfo <<(T,orange)>> {
+       + name : str
+       + rgb : Tuple[int, int, int]
+       + duration : int
+       + interval : int
+    }
 }
 
 LogitechKeyboard *- Aircraft
@@ -152,4 +178,6 @@ LcdInfo -* Aircraft
 Aircraft *-- StringBuffer
 Aircraft *-- IntegerBuffer
 Aircraft *-- lcd_sdk
+Aircraft *-- EffectInfo
+BIOS *-- EffectInfo
 @enduml
