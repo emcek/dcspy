@@ -145,7 +145,8 @@ class Aircraft:
         if self.led_stack:
             selector, effect = self.led_stack.popitem()
             LOG.debug(f'Replay effect for {selector}')
-            self.led_handler(selector, self.bios_data[selector]['value'], effect)
+            value = str(self.bios_data[selector]['value'])
+            self.led_handler(selector, value, effect)
         else:
             led_sdk.logi_led_shutdown()
 
