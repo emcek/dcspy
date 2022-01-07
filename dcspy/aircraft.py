@@ -313,7 +313,7 @@ class Ka50(Aircraft):
         """
         super().__init__(lcd_type)
         effect1 = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
-        effect2 = led_sdk.EffectInfo(name='pulse', rgb=(0, 0, 100), duration=0, interval=10)
+        effect2 = led_sdk.EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
         self.bios_data: Dict[str, BIOS] = {
             'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
@@ -330,7 +330,8 @@ class Ka50(Aircraft):
             'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}},
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}}}
+            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
+            'SC_ROTOR_RPM_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x4000, 'shift_by': 0xe, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
