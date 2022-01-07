@@ -175,6 +175,7 @@ def logi_led_shutdown() -> None:
         logiledshutdown = LED_DLL['LogiLedShutdown']
         logiledshutdown.restype = c_bool
         logiledshutdown()
+        sleep(0.01)
 
 
 def start_led_effect(effect: EffectInfo) -> None:
