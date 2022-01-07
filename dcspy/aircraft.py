@@ -98,7 +98,7 @@ class Aircraft:
         except KeyError:
             return ''
 
-    def led_handler(self, selector: str, value: str, effect: led_sdk.EffectInfo) -> None:
+    def led_handler(self, selector: str, value: int, effect: led_sdk.EffectInfo) -> None:
         """
         Switch on and off LED effect for DCS-BIOS selector.
 
@@ -144,7 +144,7 @@ class Aircraft:
         if self.led_stack:
             selector, effect = self.led_stack.popitem()
             LOG.debug(f'Replay effect for {selector}')
-            value = str(self.bios_data[selector]['value'])
+            value = int(self.bios_data[selector]['value'])
             self.led_handler(selector, value, effect)
         else:
             led_sdk.logi_led_shutdown()
