@@ -10,7 +10,7 @@ from requests import get
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
-ConfigDict = Dict[str, Union[str, int]]
+ConfigDict = Dict[str, Union[str, int, bool]]
 default_yaml = f'{prefix}/dcspy_data/config.yaml'
 
 
@@ -60,6 +60,7 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                             'keyboard': 'G13',
+                            'led_effect': True,
                             'show_gui': True,
                             'font_name': 'consola.ttf',
                             'font_mono_s': 11,
