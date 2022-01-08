@@ -9,7 +9,7 @@ from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdInfo
+from dcspy import LcdInfo, config
 from dcspy.sdk import lcd_sdk, led_sdk
 
 try:
@@ -35,6 +35,7 @@ class Aircraft:
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
         self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
+        self.led_effect = config['led_effect']
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -107,14 +108,15 @@ class Aircraft:
         :param effect:
         """
         self.bios_data[selector]['value'] = value
-        if value:
-            LOG.debug(f'LED on {selector} val: {value} with {effect}')
-            led_sdk.logi_led_shutdown()
-            led_sdk.start_led_effect(effect=effect)
-            self.led_stack[selector] = effect
-        else:
-            LOG.debug(f'LED off {selector}')
-            self._popitem_and_reply_last_effect(selector)
+        if self.led_effect:
+            if value:
+                LOG.debug(f'LED on {selector} val: {value} with {effect}')
+                led_sdk.logi_led_shutdown()
+                led_sdk.start_led_effect(effect=effect)
+                self.led_stack[selector] = effect
+            else:
+                LOG.debug(f'LED off {selector}')
+                self._popitem_and_reply_last_effect(selector)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
