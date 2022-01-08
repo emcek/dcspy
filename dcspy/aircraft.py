@@ -9,7 +9,8 @@ from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdInfo, config
+from dcspy import LcdInfo
+from dcspy.utils import load_cfg
 from dcspy.sdk import lcd_sdk, led_sdk
 
 try:
@@ -35,7 +36,7 @@ class Aircraft:
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(range(10))
         self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
-        self.led_effect = config['led_effect']
+        self.led_effect = load_cfg()['led_effect']
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
