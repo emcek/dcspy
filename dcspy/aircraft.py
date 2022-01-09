@@ -21,6 +21,8 @@ except ImportError:
 PROTO_STR = TypedDict('PROTO_STR', {'address': int, 'max_length': int})
 PROTO_INT = TypedDict('PROTO_INT', {'address': int, 'mask': int, 'shift_by': int, 'max_value': int})
 BIOS = TypedDict('BIOS', {'class': str, 'args': Union[PROTO_STR, PROTO_INT], 'value': Union[str, int], 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]})
+RED_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
+YELLOW_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
 
 
@@ -181,7 +183,8 @@ class FA18Chornet(Aircraft):
             'UFC_OPTION_CUEING_4': {'class': 'StringBuffer', 'args': {'address': 0x742e, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'UFC_OPTION_CUEING_5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 0x6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 0x6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
+            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 0x6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'MASTER_CAUTION_LT': {'class': 'IntegerBuffer', 'args': {'address': 0x7408, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
         scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
@@ -268,7 +271,9 @@ class F16C50(Aircraft):
             'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x700, 'shift_by': 0x8, 'max_value': 0x4}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444e, 'mask': 0x3, 'shift_by': 0x0, 'max_value': 0x2}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x1800, 'shift_by': 0xb, 'max_value': 0x2}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x6000, 'shift_by': 0xd, 'max_value': 0x2}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}}}
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x444a, 'mask': 0x6000, 'shift_by': 0xd, 'max_value': 0x2}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x4400, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
+            'LIGHT_MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x4476, 'mask': 0x80, 'shift_by': 0x7, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
@@ -314,8 +319,6 @@ class Ka50(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        effect1 = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
-        effect2 = led_sdk.EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
         self.bios_data: Dict[str, BIOS] = {
             'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
@@ -327,15 +330,15 @@ class Ka50(Aircraft):
             'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 0x6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            # 'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
+            # 'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': red_pulse}},
             'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            # 'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}},
+            # 'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': yellow_pulse}},
             'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect1}},
-            'SC_ROTOR_RPM_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x4000, 'shift_by': 0xe, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': effect2}}}
+            'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
+            'SC_ROTOR_RPM_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x4000, 'shift_by': 0xe, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -450,7 +453,8 @@ class A10C(Aircraft):
             'UHF_10MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa, 'max_value': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'UHF_1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8, 'max_value': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'UHF_POINT1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc, 'max_value': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 0x2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
+            'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 0x2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x1012, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
 
     def _generate_freq_values(self) -> Sequence[str]:
         vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
@@ -496,7 +500,9 @@ class F14B(Aircraft):
             'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}}}
+            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 0x1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x80, 'shift_by': 0x7, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
+            'RIO_MASTERCAUTION_LIGHT': {'class': 'IntegerBuffer', 'args': {'address': 0x12e4, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}}}
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -552,7 +558,9 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_4_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7978, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'AV8BNA_ODU_4_Text': {'class': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 0x4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'AV8BNA_ODU_5_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 0x1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 0x4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}}}
+            'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 0x4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'MC_LIGHT': {'class': 'IntegerBuffer', 'args': {'address': 0x787c, 'mask': 0x4, 'shift_by': 0x2, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
+            'MW_LIGHT': {'class': 'IntegerBuffer', 'args': {'address': 0x787c, 'mask': 0x8, 'shift_by': 0x3, 'max_value': 0x1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
         draw.text(xy=(50 * scale, 0), fill=self.lcd.foreground, font=self.lcd.font_l, text=f'{self.get_bios("UFC_SCRATCHPAD")}')
