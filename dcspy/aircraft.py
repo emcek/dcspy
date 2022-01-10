@@ -5,6 +5,7 @@ from logging import getLogger
 from os import environ, path
 from pprint import pformat
 from string import whitespace
+from threading import Timer
 from typing import Dict, Union, Optional, Iterator, Sequence
 
 from PIL import Image, ImageDraw
@@ -39,6 +40,8 @@ class Aircraft:
         self._debug_img = cycle(range(10))
         self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
         self.led_effect = load_cfg()['led_effect']
+        self.led_counter = 16
+        self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
@@ -111,15 +114,22 @@ class Aircraft:
         :param effect:
         """
         self.bios_data[selector]['value'] = value
-        if self.led_effect:
+        if self.led_effect and not self.led_counter:
             if value:
                 LOG.debug(f'LED on {selector} val: {value} with {effect}')
                 led_sdk.logi_led_shutdown()
+                self.led_counter = 16
+                LOG.debug(f'Th: {self.led_shutdown}')
+                self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
+                self.led_shutdown.start()
                 led_sdk.start_led_effect(effect=effect)
                 self.led_stack[selector] = effect
             else:
                 LOG.debug(f'LED off {selector}')
                 self._popitem_and_reply_last_effect(selector)
+        else:
+            self.led_counter -= 1
+        LOG.debug(f'Couter: {value} {self.led_counter}')
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""

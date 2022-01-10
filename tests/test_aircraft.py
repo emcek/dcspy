@@ -196,6 +196,7 @@ def test_prepare_image_for_all_planes_color(model, lcd_color):
     assert img.mode == 'RGBA'
 
 
+@mark.skip
 def test_led_effect_one_selector_for_shark_mono_on_off(black_shark_mono):
     from dcspy.sdk import led_sdk
     with patch.object(led_sdk, 'logi_led_init', return_value=True) as logi_led_init:
@@ -219,6 +220,7 @@ def test_led_effect_one_selector_for_shark_mono_on_off(black_shark_mono):
                     logi_led_shutdown.assert_has_calls([call(), call()])
 
 
+@mark.skip
 def test_led_effect_two_selector_for_shark_mono_on_off(black_shark_mono):
     from dcspy.sdk import led_sdk
     with patch.object(led_sdk, 'logi_led_init', return_value=True) as logi_led_init:
