@@ -8,7 +8,7 @@ mypy
 pip-audit
 pycodestyle
 pydocstyle
-pylint
+pylint==2.12.2
 pytest-cov
 pytest-mccabe
 pytest-random
