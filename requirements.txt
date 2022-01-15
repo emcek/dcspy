@@ -4,4 +4,4 @@ Pillow
 psutil
 PyYAML
 requests
-typing-extensions; python_version < '3.8'
+typing-extensions==4.0.1; python_version < '3.8'
