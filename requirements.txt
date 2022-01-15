@@ -1,7 +1,7 @@
 dataclasses; python_version == '3.6'
 packaging
 Pillow
-psutil
+psutil==5.9.0
 PyYAML
 requests
 typing-extensions; python_version < '3.8'
