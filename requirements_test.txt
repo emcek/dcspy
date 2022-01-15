@@ -1,5 +1,5 @@
 -r requirements.txt
-check-manifest
+check-manifest==0.47
 codacy-coverage
 coveralls
 flake8
