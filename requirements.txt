@@ -1,5 +1,5 @@
 dataclasses; python_version == '3.6'
-packaging
+packaging==21.3
 Pillow
 psutil
 PyYAML
