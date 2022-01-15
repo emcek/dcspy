@@ -13,4 +13,4 @@ pytest-cov
 pytest-mccabe
 pytest-random
 types-requests
-types-PyYAML
+types-PyYAML==6.0.3
