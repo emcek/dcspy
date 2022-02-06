@@ -7,7 +7,7 @@
 [![dcspy](https://snyk.io/advisor/python/dcspy/badge.svg)](https://snyk.io/advisor/python/dcspy)  
 [![Patreon](https://img.shields.io/badge/Patreon-donate-ff424d?logo=patreon)](https://www.patreon.com/mplichta)
 [![Discord](https://img.shields.io/discord/672486999516774442?label=Discord&logo=discord&logoColor=lightblue)](https://discord.gg/SP5Yjx3)
-[![image](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/emcek/dcspy)
+[![image](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/emcek/dcspy)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)  
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)  
@@ -40,7 +40,7 @@ It supports:
 * more to come....
 
 ## Requirements
-* [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
+* [Python 3.10](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.44](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
@@ -158,7 +158,14 @@ actions for supported airplanes are hardcoded right now and look like:
    I didn't find good alternative, so I use unicode character [2666](https://www.fileformat.info/info/unicode/char/2195/index.htm) (I consider [2195](https://www.fileformat.info/info/unicode/char/2195/index.htm) as well, which do not render very well).
 2. I got error: `'pip' is not recognized as an internal or external command, operable program or batch file.`  
    Probably during installation of Python `pip` and/or `Add Python to environment variables` were not selected. Uninstall Python and install again with correct options, or consider add Python installation directory to PATH environment variable.
-   
+3. Python 3.6 not supported due to 3 known vulnerabilities in Pillow library (version 9.0.0 drop support for Python 3.6)
+
+| Name   | Version | ID            | Fix Versions |
+|--------| --------|---------------|--------------|
+| pillow | 8.4.0   | PYSEC-2022-10 | 9.0.0        |
+| pillow | 8.4.0   | PYSEC-2022-9  | 9.0.0        |
+| pillow | 8.4.0   | PYSEC-2022-8  | 9.0.0        |
+
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.  
 You are welcome [dcspy Discord](https://discord.gg/SP5Yjx3) server. 
