@@ -42,7 +42,7 @@ It supports:
 ## Requirements
 * [Python 3.10](https://www.python.org/downloads/) but 3.6+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
-* [DCS-BIOS 0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS-BIOS 0.7.44](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 **Notes:**
 * You do not need Logitech LCD SDK ver. 8.57.148 probably extract to `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove from your system.
@@ -64,10 +64,11 @@ Install all requirements:
      * Add Python to environment variables
      * Customize install location: **C:\Python310** or **C:\Python**
 2. Logitech Gaming Software installation is straightforward.
-3. [DCS-BIOS instllation](https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation)
-   * You can skip for now and install DCS-BIOS directly from Dcspy (Config -> Check DCS-BIOS). Check **dcsbios** config flag before. 
+3. DCS-BIOS
+   * You can skip for now and install DCS-BIOS directly from Dcspy (Config -> Check DCS-BIOS). Check **dcsbios** config flag before, see [Configuration](#configuration).  
      It checks if new version exists, download, and unpack DCS-BIOS to `Save Games` folder and check `Export.lua` file.
-4. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Command Prompt and type:
+   * Or follow manual installation [DCS-BIOS wiki page](https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation)
+4. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Windows Command Prompt (cmd.exe) and type:
 ```shell script
 pip install dcspy
 ```
@@ -75,6 +76,7 @@ or download manually wheel file from [releases](https://github.com/emcek/dcspy/r
 ```shell script
 pip install dcspy-1.6.0-py3-none-any.whl
 ```
+**Note:** If you got `pip is not recognized as an internal or external command, operable program or batch file.` error, see [FAQ](#faq)
 ## Upgrade
 To upgrade DCSpy to the latest version, open Command Prompt and type:
 ```shell script
@@ -155,7 +157,7 @@ actions for supported airplanes are hardcoded right now and look like:
 1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   
    I didn't find good alternative, so I use unicode character [2666](https://www.fileformat.info/info/unicode/char/2195/index.htm) (I consider [2195](https://www.fileformat.info/info/unicode/char/2195/index.htm) as well, which do not render very well).
 2. I got error: `'pip' is not recognized as an internal or external command, operable program or batch file.`  
-   Probably during installation of Python `pip` and/or `Add Python to environment variables` were not selected. Uninstall Python and install again with correct options. 
+   Probably during installation of Python `pip` and/or `Add Python to environment variables` were not selected. Uninstall Python and install again with correct options, or consider add Python installation directory to PATH environment variable.
    
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.  
