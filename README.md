@@ -17,6 +17,10 @@ It supports:
 *  Logitech device with 160x43 px (4 lines) monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
 *  Logitech device with 320x240 px (8 lines) full RGBA LCD - **G19**
 
+# Sponsored by Jetbrains Open Source Support Program
+[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://jb.gg/OpenSourceSupport)
+[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.svg)](https://jb.gg/OpenSourceSupport)
+
 ## Table of Contents
 * [Aircraft and instruments](#aircraft-and-instruments)
 * [Requirements](#requirements)
