@@ -13,7 +13,7 @@ def protocol_parser():
     return ProtocolParser()
 
 
-# <=><=><=><=><=> aircraft <=><=><=><=><=>
+# <=><=><=><=><=> lcd <=><=><=><=><=>
 @fixture()
 def lcd_mono() -> LcdInfo:
     """
@@ -36,6 +36,7 @@ def lcd_color() -> LcdInfo:
     return LcdColor
 
 
+# <=><=><=><=><=> aircraft mono <=><=><=><=><=>
 @fixture()
 def aircraft(lcd_mono: LcdInfo):
     """
@@ -113,6 +114,7 @@ def harrier_mono(lcd_mono: LcdInfo):
     return AV8BNA(lcd_mono)
 
 
+# <=><=><=><=><=> aircraft color <=><=><=><=><=>
 @fixture()
 def hornet_color(lcd_color: LcdInfo):
     """
@@ -204,6 +206,7 @@ def keyboard_color(protocol_parser):
         return KeyboardColor(protocol_parser)
 
 
+# <=><=><=><=><=> others <=><=><=><=><=>
 @fixture()
 def sock():
     return MagicMock()
