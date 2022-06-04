@@ -16,6 +16,7 @@ from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
+__version__ = '1.6.1'
 LOG = getLogger(__name__)
 ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', Union[version.Version, version.LegacyVersion]), ('dl_url', str),
                                          ('published', str), ('release_type', str), ('archive_file', str)])
@@ -40,6 +41,7 @@ class DcspyGui(tk.Frame):
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.bios_path = ''
         self.event = Event()
+        self.status_txt.set(f'ver. {__version__}')
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)

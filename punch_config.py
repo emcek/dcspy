@@ -6,7 +6,8 @@ GLOBALS = {
 
 FILES = ['setup.py',
          'dcspy/dcspy.py',
-         'dcspy/starter.py']
+         'dcspy/starter.py',
+         'dcspy/tk_gui.py']
 
 VERSION = ['MAJOR',
            'MINOR',
