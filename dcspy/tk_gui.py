@@ -121,7 +121,6 @@ class DcspyGui(tk.Frame):
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar) -> None:
-        self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
@@ -149,6 +148,7 @@ class DcspyGui(tk.Frame):
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> ReleaseInfo:
+        self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
@@ -239,6 +239,7 @@ class DcspyGui(tk.Frame):
 
     def start_dcspy(self) -> None:
         """Run real application."""
+        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
         app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
