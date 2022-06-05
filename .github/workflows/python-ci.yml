@@ -49,15 +49,12 @@ jobs:
           check-manifest -q || echo $(($? -1))
   test:
     name: test ${{ matrix.os }} (py${{ matrix.python-version }})
-    needs: style
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.7', '3.8', '3.9', '3.10']
         exclude:
-          - os: windows-latest
-            python-version: '3.7'
           - os: ubuntu-latest
             python-version: '3.10'
     steps:
@@ -93,7 +90,6 @@ jobs:
           pip-audit -r requirements.txt --progress-spinner off
   coverage:
     name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
-    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
