@@ -114,6 +114,17 @@ def harrier_mono(lcd_mono: LcdInfo):
     return AV8BNA(lcd_mono)
 
 
+@fixture()
+def apache_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of AH-64D Apache for Logitech mono LCD.
+    :param lcd_mono:
+    :return: AH-64D Apache instance
+    """
+    from dcspy.aircraft import AH64D
+    return AH64D(lcd_mono)
+
+
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
 @fixture()
 def hornet_color(lcd_color: LcdInfo):
@@ -179,6 +190,17 @@ def harrier_color(lcd_color: LcdInfo):
     """
     from dcspy.aircraft import AV8BNA
     return AV8BNA(lcd_color)
+
+
+@fixture()
+def apache_color(lcd_color: LcdInfo):
+    """
+    Return instance of AH-64D Apache for Logitech color LCD.
+    :param lcd_color:
+    :return: AH-64D Apache instance
+    """
+    from dcspy.aircraft import AH64D
+    return AH64D(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>

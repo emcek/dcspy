@@ -388,6 +388,28 @@ class Ka50(Aircraft):
         return line1, line2
 
 
+class AH64D(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create AH-64D Apache.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x8248, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8280, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82b8, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        pass
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        pass
+
+
 class A10C(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
