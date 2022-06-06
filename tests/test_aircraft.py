@@ -4,8 +4,10 @@ from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono
 
+all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64D', 'A10C', 'A10C2', 'F14B', 'AV8BNA']
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'F14B'])
+
+@mark.parametrize('model', all_plane_list)
 def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
     from dcspy import aircraft
     airplane = getattr(aircraft, model)
@@ -14,12 +16,9 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
     assert issubclass(airplane, aircraft.Aircraft)
 
 
-@mark.parametrize('selector, data, value, c_func, effect, lcd', [('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''},
-                                                                  'val1', 'logi_lcd_mono_set_background',
-                                                                  [True], LcdMono),
-                                                                 ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''},
-                                                                  'val2', 'logi_lcd_color_set_background',
-                                                                  [False, True], LcdColor)])
+@mark.parametrize('selector, data, value, c_func, effect, lcd',
+                  [('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], LcdMono),
+                   ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], LcdColor)])
 def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value, c_func, effect, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     assert aircraft.bios_data == {}
@@ -158,12 +157,11 @@ def test_get_next_value_for_button_in_viper(viper_color):
     assert isinstance(viper_color.cycle_buttons[name9], cycle)
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B', 'AV8BNA'])
+@mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes_mono(model, lcd_mono):
     from PIL.Image import Image
     from dcspy import aircraft
-    aircraft = getattr(aircraft, model)
-    aircraft_model = aircraft(lcd_type=lcd_mono)
+    aircraft_model = getattr(aircraft, model)(lcd_type=lcd_mono)
     if model == 'Ka50':
         from dcspy.sdk import lcd_sdk
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
@@ -177,12 +175,11 @@ def test_prepare_image_for_all_planes_mono(model, lcd_mono):
     assert img.mode == '1'
 
 
-@mark.parametrize('model', ['FA18Chornet', 'F16C50', 'Ka50', 'A10C', 'A10C2', 'F14B', 'AV8BNA'])
+@mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes_color(model, lcd_color):
     from PIL.Image import Image
     from dcspy import aircraft
-    aircraft = getattr(aircraft, model)
-    aircraft_model = aircraft(lcd_type=lcd_color)
+    aircraft_model = getattr(aircraft, model)(lcd_type=lcd_color)
     if model == 'Ka50':
         from dcspy.sdk import lcd_sdk
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
