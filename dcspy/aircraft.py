@@ -403,6 +403,27 @@ class AH64D(Aircraft):
             'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
 
+    def button_request(self, button: int, request: str = '\n') -> str:
+        """
+        Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        If button is out of scope new line is return.
+        :param button: possible values 1-4
+        :param request: valid DCS-BIOS command as string
+        :return: ready to send DCS-BIOS request
+        """
+        action = {1: 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n',
+                  2: 'PLT_EUFD_IDM 2\nPLT_EUFD_IDM 1\n',
+                  3: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  4: 'PLT_EUFD_RTS 2\nPLT_EUFD_RTS 1\n',
+                  9: 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n',
+                  10: 'PLT_EUFD_IDM 2\nPLT_EUFD_IDM 1\n',
+                  14: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  13: 'PLT_EUFD_RTS 2\nPLT_EUFD_RTS 1\n'}
+        return super().button_request(button, action.get(button, '\n'))
+
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
         draw = ImageDraw.Draw(img)
