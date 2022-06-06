@@ -404,10 +404,20 @@ class AH64D(Aircraft):
             'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
-        pass
+        """Prepare image for AH-64D Apache for Mono LCD."""
+        draw = ImageDraw.Draw(img)
+        for i in range(8, 13):
+            offset = (i - 1) * 16
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
-        pass
+        """Prepare image for AH-64D Apache for Color LCD."""
+        draw = ImageDraw.Draw(img)
+        for i in range(8, 13):
+            offset = (i - 1) * 16
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
 class A10C(Aircraft):
