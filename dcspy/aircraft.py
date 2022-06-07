@@ -428,16 +428,20 @@ class AH64DBLKII(Aircraft):
         """Prepare image for AH-64D Apache for Mono LCD."""
         draw = ImageDraw.Draw(img)
         for i in range(8, 13):
-            offset = (i - 1) * 16
+            offset = (i - 8) * 8
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            text = text.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').replace('>', '\u25b8').replace('<', '\u25c2')
+            text = ''.join(text.split('-----    '))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
         draw = ImageDraw.Draw(img)
         for i in range(8, 13):
-            offset = (i - 1) * 16
+            offset = (i - 8) * 16
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            text = text.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').replace('>', '\u25b8').replace('<', '\u25c2')
+            text = ''.join(text.split('-----    '))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
