@@ -438,16 +438,14 @@ class AH64DBLKII(Aircraft):
         :return: ready to send DCS-BIOS request
         """
         wca_or_idm = f'PLT_EUFD_{self.rocker} 0\nPLT_EUFD_{self.rocker} 1\n'
-        action = {
-                  1: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+        action = {1: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   2: wca_or_idm,
                   3: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
                   4: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
                   9: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   10: wca_or_idm,
                   14: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-                  13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
-        }
+                  13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',}
         return super().button_request(button, action.get(button, '\n'))
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
