@@ -237,13 +237,25 @@ class F16C50(Aircraft):
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
+    def set_bios(self, selector: str, value: str) -> None:
+        """
+        Set new data.
+
+        :param selector:
+        :param value:
+        """
+        if 'DED_LINE_' in selector:
+            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
+            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
+            value = value.replace('o', '\u00b0').replace('a', '\u2666')
+        super().set_bios(selector, value)
+
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
-            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
+            text = str(self.get_bios(f'DED_LINE_{i}'))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
@@ -251,8 +263,7 @@ class F16C50(Aircraft):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 16
-            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
-            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
+            text = str(self.get_bios(f'DED_LINE_{i}'))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -425,9 +436,9 @@ class AH64DBLKII(Aircraft):
             if match:
                 self.rocker = 'WCA'
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
+            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
             value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
                 replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
-        LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
