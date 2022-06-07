@@ -388,7 +388,7 @@ class Ka50(Aircraft):
         return line1, line2
 
 
-class AH64D(Aircraft):
+class AH64DBLKII(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AH-64D Apache.
