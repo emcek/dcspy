@@ -445,7 +445,7 @@ class AH64DBLKII(Aircraft):
                   9: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   10: wca_or_idm,
                   14: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-                  13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',}
+                  13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'}
         return super().button_request(button, action.get(button, '\n'))
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
