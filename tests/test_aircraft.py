@@ -96,8 +96,8 @@ def test_button_pressed_for_harrier_color(button, result, harrier_color):
 @mark.parametrize('button, result', [(0, '\n'),
                                      (16, '\n'),
                                      ('a', '\n'),
-                                     (2, 'PLT_EUFD_IDM 2\nPLT_EUFD_IDM 1\n'),
-                                     (4, 'PLT_EUFD_RTS 2\nPLT_EUFD_RTS 1\n')])
+                                     (2, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+                                     (4, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_apache_mono(button, result, apache_mono):
     assert apache_mono.button_request(button) == result
 
@@ -105,9 +105,10 @@ def test_button_pressed_for_apache_mono(button, result, apache_mono):
 @mark.parametrize('button, result', [(0, '\n'),
                                      (16, '\n'),
                                      (' ', '\n'),
-                                     (10, 'PLT_EUFD_IDM 2\nPLT_EUFD_IDM 1\n'),
-                                     (14, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n')])
+                                     (10, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
+                                     (14, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n')])
 def test_button_pressed_for_apache_color(button, result, apache_color):
+    apache_color.rocker = 'WCA'
     assert apache_color.button_request(button) == result
 
 
@@ -154,28 +155,34 @@ def test_get_next_value_for_button_in_viper(viper_color):
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
-@mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
-                                              ('UFC_COMM1_DISPLAY', '``', '11'),
-                                              ('IFEI_FUEL_UP', '104T', '104T')])
-def test_set_bios_for_hornet_mono(selector, value, result, hornet_mono):
+@mark.parametrize('plane, selector, value, result', [('hornet_mono', 'UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
+                                                     ('hornet_mono', 'UFC_COMM1_DISPLAY', '``', '11'),
+                                                     ('hornet_mono', 'IFEI_FUEL_UP', '104T', '104T'),
+                                                     ('hornet_color', 'UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~', '22'),
+                                                     ('hornet_color', 'UFC_COMM1_DISPLAY', '``', '11'),
+                                                     ('hornet_color', 'IFEI_FUEL_UP', '1000T', '1000T')])
+def test_set_bios_for_hornet(plane, selector, value, result, request):
+    plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
         with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                hornet_mono.set_bios(selector, value)
-                assert hornet_mono.bios_data[selector]['value'] == result
+                plane.set_bios(selector, value)
+                assert plane.bios_data[selector]['value'] == result
 
 
-@mark.parametrize('selector, value, result', [('UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~', '22'),
-                                              ('UFC_COMM1_DISPLAY', '``', '11'),
-                                              ('IFEI_FUEL_UP', '1000T', '1000T')])
-def test_set_bios_for_hornet_color(selector, value, result, hornet_color):
+@mark.parametrize('plane, selector, value, rocker', [('apache_mono', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
+                                                     ('apache_mono', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'WCA'),
+                                                     ('apache_color', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
+                                                     ('apache_color', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'WCA')])
+def test_rocker_state_for_apache(plane, selector, value, rocker, request):
+    plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                hornet_color.set_bios(selector, value)
-                assert hornet_color.bios_data[selector]['value'] == result
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        plane.set_bios(selector, value)
+        assert plane.rocker == rocker
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
