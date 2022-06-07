@@ -160,10 +160,10 @@ actions for supported airplanes are hardcoded right now and look like:
 * UFC COMM2 channel select increase
 
 ### AH-64D Apache
-* IDM Radio Select Rocker Down
-* IDM Radio Select Rocker Up
 * Radio Transmit Select Rocker Down
-* Radio Transmit Select Rocker Up
+* IDM Radio Select Rocker Down or WCA Rocker Scroll Rocker Down (when Preset is active)
+* Preset Button
+* Enter Button
 
 ## FAQ
 1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   

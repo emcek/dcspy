@@ -3,6 +3,7 @@ from itertools import chain, cycle
 from logging import getLogger
 from os import environ, path
 from pprint import pformat
+from re import search
 from string import whitespace
 from typing import Dict, Union, Optional, Iterator, Sequence
 
@@ -396,6 +397,7 @@ class AH64DBLKII(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
+        self.rocker = 'IDM'
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
@@ -410,6 +412,20 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
 
+    def set_bios(self, selector: str, value: str) -> None:
+        """
+        Set new data.
+
+        :param selector:
+        :param value:
+        """
+        if selector == 'PLT_EUFD_LINE1':
+            match = search(r'\s+\|\s+\|(PRESET TUNE)\s(\w+)\s+', value)
+            self.rocker = 'IDM'
+            if match:
+                self.rocker = 'WCA'
+        super().set_bios(selector, value)
+
     def button_request(self, button: int, request: str = '\n') -> str:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
@@ -421,14 +437,17 @@ class AH64DBLKII(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        action = {1: 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n',
-                  2: 'PLT_EUFD_IDM 2\nPLT_EUFD_IDM 1\n',
-                  3: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-                  4: 'PLT_EUFD_RTS 2\nPLT_EUFD_RTS 1\n',
-                  9: 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n',
-                  10: 'PLT_EUFD_IDM 2\nPLT_EUFD_IDM 1\n',
-                  14: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-                  13: 'PLT_EUFD_RTS 2\nPLT_EUFD_RTS 1\n'}
+        wca_or_idm = f'PLT_EUFD_{self.rocker} 0\nPLT_EUFD_{self.rocker} 1\n'
+        action = {
+                  1: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  2: wca_or_idm,
+                  3: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
+                  4: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
+                  9: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  10: wca_or_idm,
+                  14: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
+                  13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
+        }
         return super().button_request(button, action.get(button, '\n'))
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
