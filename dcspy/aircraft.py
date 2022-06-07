@@ -425,7 +425,9 @@ class AH64DBLKII(Aircraft):
             if match:
                 self.rocker = 'WCA'
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
-            value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').replace('>', '\u25b8').replace('<', '\u25c2')
+            value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
+                replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
+        LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
         super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:

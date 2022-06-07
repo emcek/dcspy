@@ -160,23 +160,14 @@ def test_get_next_value_for_button_in_viper(viper_color):
                                                      ('hornet_mono', 'IFEI_FUEL_UP', '104T', '104T'),
                                                      ('hornet_color', 'UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~', '22'),
                                                      ('hornet_color', 'UFC_COMM1_DISPLAY', '``', '11'),
-                                                     ('hornet_color', 'IFEI_FUEL_UP', '1000T', '1000T')])
-def test_set_bios_for_hornet(plane, selector, value, result, request):
-    plane = request.getfixturevalue(plane)
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                plane.set_bios(selector, value)
-                assert plane.bios_data[selector]['value'] == result
-
-
-@mark.parametrize('plane, selector, value, result', [('apache_mono', 'PLT_EUFD_LINE8', ']', '\u2666'),
-                                                     ('apache_mono', 'PLT_EUFD_LINE9', '[', '\u25ca'),
-                                                     ('apache_mono', 'PLT_EUFD_LINE10', '~', '\u25a0'),
-                                                     ('apache_color', 'PLT_EUFD_LINE11', '>', '\u25b8'),
-                                                     ('apache_color', 'PLT_EUFD_LINE12', '<', '\u25c2')])
-def test_set_bios_for_apache(plane, selector, value, result, request):
+                                                     ('hornet_color', 'IFEI_FUEL_UP', '1000T', '1000T'),
+                                                     ('apache_mono', 'PLT_EUFD_LINE8', '~=>VHF*  121.000   -----              121.500   -----   ', '\u25a0\u2219\u25b8VHF*  121.000   -----              121.500   -----   '),
+                                                     ('apache_mono', 'PLT_EUFD_LINE9', ' <=UHF*  305.000   -----              305.000   -----   ', ' \u25c2\u2219UHF*  305.000   -----              305.000   -----   '),
+                                                     ('apache_mono', 'PLT_EUFD_LINE10', ' <>FM1*   30.000   -----    NORM       30.000   -----   ', ' \u25c2\u25b8FM1*   30.000   -----    NORM       30.000   -----   '),
+                                                     ('apache_color', 'PLT_EUFD_LINE11', '[==FM2*   30.000   -----               30.000   -----   ', '\u25ca\u2219\u2219FM2*   30.000   -----               30.000   -----   '),
+                                                     ('apache_color', 'PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ', ' \u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
+                                                     ('apache_color', 'PLT_EUFD_LINE12', ']==HF *    2.0000A -----    LOW         2.0000A -----   ', '\u2666\u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   ')])
+def test_set_bios_for_airplane(plane, selector, value, result, request):
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
