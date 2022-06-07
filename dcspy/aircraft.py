@@ -397,6 +397,13 @@ class AH64DBLKII(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
+            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8130, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x8168, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a0, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81d8, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8210, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x8248, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8280, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82b8, 'max_length': 56}, 'value': str()},
