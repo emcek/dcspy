@@ -45,7 +45,7 @@ It supports:
 * AH-64D Apache - Enhanced Up Front Display
 * more to come....
 
-## Requirements 
+## Requirements
 * [Python 3.10](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
 * [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.45](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
