@@ -424,6 +424,8 @@ class AH64DBLKII(Aircraft):
             self.rocker = 'IDM'
             if match:
                 self.rocker = 'WCA'
+        if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
+            value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').replace('>', '\u25b8').replace('<', '\u25c2')
         super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
@@ -454,7 +456,6 @@ class AH64DBLKII(Aircraft):
         for i in range(8, 13):
             offset = (i - 8) * 8
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = text.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').replace('>', '\u25b8').replace('<', '\u25c2')
             text = ''.join(text.split('-----    '))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -464,7 +465,6 @@ class AH64DBLKII(Aircraft):
         for i in range(8, 13):
             offset = (i - 8) * 16
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = text.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').replace('>', '\u25b8').replace('<', '\u25c2')
             text = ''.join(text.split('-----    '))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 

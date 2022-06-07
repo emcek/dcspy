@@ -171,6 +171,21 @@ def test_set_bios_for_hornet(plane, selector, value, result, request):
                 assert plane.bios_data[selector]['value'] == result
 
 
+@mark.parametrize('plane, selector, value, result', [('apache_mono', 'PLT_EUFD_LINE8', ']', '\u2666'),
+                                                     ('apache_mono', 'PLT_EUFD_LINE9', '[', '\u25ca'),
+                                                     ('apache_mono', 'PLT_EUFD_LINE10', '~', '\u25a0'),
+                                                     ('apache_color', 'PLT_EUFD_LINE11', '>', '\u25b8'),
+                                                     ('apache_color', 'PLT_EUFD_LINE12', '<', '\u25c2')])
+def test_set_bios_for_apache(plane, selector, value, result, request):
+    plane = request.getfixturevalue(plane)
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                plane.set_bios(selector, value)
+                assert plane.bios_data[selector]['value'] == result
+
+
 @mark.parametrize('plane, selector, value, rocker', [('apache_mono', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
                                                      ('apache_mono', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'WCA'),
                                                      ('apache_color', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
