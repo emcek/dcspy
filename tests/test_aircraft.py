@@ -57,49 +57,54 @@ def test_aircraft_base_class_other_lcd(aircraft):
 
 
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     ('a', '\n'),
-                                     (1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                     (4, 'UFC_COMM2_CHANNEL_SELECT INC\n')])
-def test_button_pressed_for_hornet_mono(button, result, hornet_mono):
-    assert hornet_mono.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     (' ', '\n'),
-                                     (9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                     (14, 'UFC_COMM2_CHANNEL_SELECT DEC\n')])
-def test_button_pressed_for_hornet_color(button, result, hornet_color):
-    assert hornet_color.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     ('g', '\n'),
-                                     (2, 'UFC_COM1_SEL 3200\n'),
-                                     (3, 'UFC_COM2_SEL -3200\n')])
-def test_button_pressed_for_harierr_mono(button, result, harrier_mono):
-    assert harrier_mono.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     ('.', '\n'),
-                                     (10, 'UFC_COM1_SEL 3200\n'),
-                                     (13, 'UFC_COM2_SEL 3200\n')])
-def test_button_pressed_for_harrier_color(button, result, harrier_color):
-    assert harrier_color.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     ('a', '\n'),
-                                     (2, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
-                                     (4, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
-def test_button_pressed_for_apache_mono(button, result, apache_mono):
-    assert apache_mono.button_request(button) == result
+@mark.parametrize('plane, button, result', [('hornet_mono', 0, '\n'),
+                                            ('hornet_mono', 16, '\n'),
+                                            ('hornet_mono', 'a', '\n'),
+                                            ('hornet_mono', 1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                            ('hornet_mono', 4, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
+                                            ('hornet_color', 0, '\n'),
+                                            ('hornet_color', 16, '\n'),
+                                            ('hornet_color', ' ', '\n'),
+                                            ('hornet_color', 9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                            ('hornet_color', 14, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
+                                            ('harrier_mono', 0, '\n'),
+                                            ('harrier_mono', 16, '\n'),
+                                            ('harrier_mono', 'g', '\n'),
+                                            ('harrier_mono', 2, 'UFC_COM1_SEL 3200\n'),
+                                            ('harrier_mono', 3, 'UFC_COM2_SEL -3200\n'),
+                                            ('harrier_color', 0, '\n'),
+                                            ('harrier_color', 16, '\n'),
+                                            ('harrier_color', '.', '\n'),
+                                            ('harrier_color', 10, 'UFC_COM1_SEL 3200\n'),
+                                            ('harrier_color', 13, 'UFC_COM2_SEL 3200\n'),
+                                            ('black_shark_mono', 0, '\n'),
+                                            ('black_shark_mono', 16, '\n'),
+                                            ('black_shark_mono', 2, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
+                                            ('black_shark_mono', 3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
+                                            ('black_shark_color', 'a', '\n'),
+                                            ('black_shark_color', 9, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
+                                            ('black_shark_color', 13, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
+                                            ('tomcat_mono', -1, '\n'),
+                                            ('tomcat_mono', 44, '\n'),
+                                            ('tomcat_mono', 3, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
+                                            ('tomcat_mono', 4, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
+                                            ('tomcat_color', '*', '\n'),
+                                            ('tomcat_color', 9, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
+                                            ('tomcat_color', 10, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
+                                            ('viper_mono', 2, 'IFF_ENABLE_SW 1\n'),
+                                            ('viper_mono', 3, 'IFF_M4_CODE_SW 1\n'),
+                                            ('viper_mono', 4, 'IFF_M4_REPLY_SW 1\n'),
+                                            ('viper_color', 9, 'IFF_MASTER_KNB 1\n'),
+                                            ('viper_color', 10, 'IFF_ENABLE_SW 1\n'),
+                                            ('viper_color', 14, 'IFF_M4_CODE_SW 1\n'),
+                                            ('apache_mono', 0, '\n'),
+                                            ('apache_mono', 16, '\n'),
+                                            ('apache_mono', 'a', '\n'),
+                                            ('apache_mono', 2, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+                                            ('apache_mono', 4, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+def test_button_pressed_for_plane(plane, button, result, request):
+    plane = request.getfixturevalue(plane)
+    assert plane.button_request(button) == result
 
 
 @mark.parametrize('button, result', [(0, '\n'),
@@ -110,32 +115,6 @@ def test_button_pressed_for_apache_mono(button, result, apache_mono):
 def test_button_pressed_for_apache_color(button, result, apache_color):
     apache_color.rocker = 'WCA'
     assert apache_color.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     ('a', '\n'),
-                                     (2, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
-                                     (10, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
-                                     (3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n')])
-def test_button_pressed_for_shark(button, result, black_shark_mono):
-    assert black_shark_mono.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(-1, '\n'),
-                                     (44, '\n'),
-                                     ('*', '\n'),
-                                     (3, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
-                                     (4, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n')])
-def test_button_pressed_for_tomcat(button, result, tomcat_mono):
-    assert tomcat_mono.button_request(button) == result
-
-
-@mark.parametrize('button, result', [(2, 'IFF_ENABLE_SW 1\n'),
-                                     (3, 'IFF_M4_CODE_SW 1\n'),
-                                     (4, 'IFF_M4_REPLY_SW 1\n')])
-def test_button_pressed_for_viper_mono(button, result, viper_mono):
-    assert viper_mono.button_request(button) == result
 
 
 def test_get_next_value_for_button_in_viper(viper_color):
