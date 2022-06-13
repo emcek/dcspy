@@ -1,4 +1,4 @@
 include *.md
 include *.txt
 include *.yml
-recursive-include resources *.ico *.yml
+include *.ico
