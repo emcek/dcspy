@@ -4,7 +4,6 @@ from logging import getLogger
 from os import path, environ
 from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
-from sys import prefix
 from threading import Thread, Event
 from tkinter import messagebox
 from typing import NamedTuple, Union
@@ -87,7 +86,6 @@ class DcspyGui(tk.Frame):
         width, height = 580, 200
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
-        cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
 
         editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
         editor_status.pack(side=tk.TOP, fill=tk.X)

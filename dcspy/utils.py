@@ -1,7 +1,6 @@
 from datetime import datetime
 from logging import getLogger
-from os import environ, makedirs
-from sys import prefix
+from os import environ, makedirs, path
 from typing import Dict, Union, Tuple
 
 from packaging import version
@@ -11,14 +10,14 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int]]
-default_yaml = f'{prefix}/dcspy_data/config.yaml'
+default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
 
 
 def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     Load configuration form yaml filename.
 
-    :param filename: path to yam file - default dcspy_data/config.yaml
+    :param filename: path to yam file - default <package_dir>/config.yaml
     :return: configuration dict
     """
     cfg_dict: ConfigDict = {}
@@ -41,7 +40,7 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
     Update yaml file with dict.
 
     :param cfg_dict: configuration dict
-    :param filename: path to yam file - default dcspy_data/config.yaml
+    :param filename: path to yam file - default <package_dir>/config.yaml
     """
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
