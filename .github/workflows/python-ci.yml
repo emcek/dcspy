@@ -31,11 +31,11 @@ jobs:
           pylint dcspy || echo $(($? % 4))
       - name: Check flake8
         run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-          flake8 . --count --exit-zero --max-complexity=5 --ignore=E501 --statistics
+          flake8 . --select=E9,F63,F7,F82 --show-source
+          flake8 . --exit-zero --ignore=E501
       - name: Check mypy
         run: |
-          mypy --ignore-missing-imports --html-report mypyhtml dcspy
+          mypy dcspy
       - name: Upload mypy results
         uses: actions/upload-artifact@v2
         if: always()
@@ -49,7 +49,6 @@ jobs:
           check-manifest -q || echo $(($? -1))
   test:
     name: test ${{ matrix.os }} (py${{ matrix.python-version }})
-    needs: style
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -93,7 +92,6 @@ jobs:
           pip-audit -r requirements.txt --progress-spinner off
   coverage:
     name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
-    needs: test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
