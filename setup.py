@@ -1,3 +1,4 @@
 from setuptools import setup
 
-setup(data_files=[('dcspy_data', ['resources/dcspy.ico', 'resources/config.yaml'])])
+if __name__ == '__main__':
+    setup()
