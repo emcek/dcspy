@@ -1,6 +1,6 @@
 import tkinter as tk
 from logging import getLogger
-from sys import prefix
+from os import path
 from threading import Event
 
 from dcspy import config, LCD_TYPES
@@ -19,8 +19,9 @@ def run():
         width, height = 210, 160
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
-        root.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
-        gui = DcspyGui(master=root, config_file=f'{prefix}/dcspy_data/config.yaml')
+        here = path.abspath(path.dirname(__file__))
+        root.iconbitmap(default=path.join(here, 'dcspy.ico'))
+        gui = DcspyGui(master=root, config_file=path.join(here, 'config.yaml'))
         gui.mainloop()
     else:
         dcspy_run(lcd_type=LCD_TYPES[config['keyboard']], event=Event())
