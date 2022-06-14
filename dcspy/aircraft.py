@@ -236,23 +236,37 @@ class F16C50(Aircraft):
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        for i in range(1, 6):
+            offset = (i - 1) * 8 * scale
+            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.lcd.font_s)
+
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        for i in range(1, 6):
-            offset = (i - 1) * 8
-            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
-            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        for i in range(1, 6):
-            offset = (i - 1) * 16
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+
+    def set_bios(self, selector: str, value: str) -> None:
+        """
+        Set new data.
+
+        :param selector:
+        :param value:
+        """
+        if 'DED_LINE_' in selector:
             # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
-            text = str(self.get_bios(f'DED_LINE_{i}')).replace('o', '\u00b0').replace('a', '\u2666')
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
+            value = value.replace('o', '\u00b0').replace('a', '\u2666')
+            value = value.replace('A\x10\x04', '')  # List page
+            value = value.replace('\x82', '')  # List - R
+            value = value.replace('\x03', '')
+            value = value.replace('@', '')  # List - 6
+            value = value.replace('\u0002', '')  # List - 7
+            value = value.replace('\x80', '')  # 1 T-ILS
+            value = value.replace('\x08', '')  # 7 MARK
+        super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
