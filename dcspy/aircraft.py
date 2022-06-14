@@ -427,6 +427,21 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
 
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        for i in range(8, 13):
+            offset = (i - 8) * 8 * scale
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            text = ''.join(text.split('-----    '))
+            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for AH-64D Apache for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for AH-64D Apache for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+
     def set_bios(self, selector: str, value: str) -> None:
         """
         Set new data.
@@ -466,24 +481,6 @@ class AH64DBLKII(Aircraft):
                   14: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
                   13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'}
         return super().button_request(button, action.get(button, '\n'))
-
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
-        """Prepare image for AH-64D Apache for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        for i in range(8, 13):
-            offset = (i - 8) * 8
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = ''.join(text.split('-----    '))
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
-
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
-        """Prepare image for AH-64D Apache for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        for i in range(8, 13):
-            offset = (i - 8) * 16
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = ''.join(text.split('-----    '))
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
 class A10C(Aircraft):
