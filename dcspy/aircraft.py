@@ -259,6 +259,13 @@ class F16C50(Aircraft):
         if 'DED_LINE_' in selector:
             # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
             value = value.replace('o', '\u00b0').replace('a', '\u2666')
+            value = value.replace('A\x10\x04', '')  # List page
+            value = value.replace('\x82', '')  # List - R
+            value = value.replace('\x03', '')
+            value = value.replace('@', '')  # List - 6
+            value = value.replace('\u0002', '')  # List - 7
+            value = value.replace('\x80', '')  # 1 T-ILS
+            value = value.replace('\x08', '')  # 7 MARK
         super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
