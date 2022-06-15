@@ -476,7 +476,7 @@ class AH64DBLKII(Aircraft):
         :param value:
         """
         if selector == 'PLT_EUFD_LINE1':
-            match = search(r'\s+\|\s+\|(PRESET TUNE)\s(\w+)\s+', value)
+            match = search(r'\s+\|(PRESET TUNE)\s(\w+)\s+', value)
             self.rocker = 'IDM'
             if match:
                 self.rocker = 'WCA'
