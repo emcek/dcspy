@@ -104,6 +104,7 @@ class LcdInfo <<(D,orchid)>> {
     + foreground : Union[int, Sequence[int]]
     + background : Union[int, Sequence[int]]
     + mode: str
+    + font_xs: ImageFont.FreeTypeFont
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
 }
