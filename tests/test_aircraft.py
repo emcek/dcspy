@@ -165,9 +165,9 @@ def test_set_bios_for_airplane(plane, selector, value, result, request):
 
 
 @mark.parametrize('plane, selector, value, rocker', [('apache_mono', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
-                                                     ('apache_mono', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'WCA'),
+                                                     ('apache_mono', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'PRESET'),
                                                      ('apache_color', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
-                                                     ('apache_color', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'WCA')])
+                                                     ('apache_color', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'PRESET')])
 def test_rocker_state_for_apache(plane, selector, value, rocker, request):
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk

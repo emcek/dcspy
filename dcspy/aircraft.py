@@ -425,22 +425,24 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8280, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82b8, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
+            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x8398, 'max_length': 56}, 'value': str()},
+        }
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
         # todo: optimize dict usage
         match_dict = {
-            # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([0-9\.]*)\s+ -> '!CO CMD   '
-            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([0-9\.]*)\s+',
-            3: r'.*\|.*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            4: r'.*\|.*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            5: r'.*\|.*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            6: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            7: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            8: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            9: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            10: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
-            11: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([\d\.]*)\s+ -> '!CO CMD   '
+            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',            
+            3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',            
+            6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
         }
         if self.rocker == 'IDM':
             for i in range(8, 13):
@@ -448,6 +450,20 @@ class AH64DBLKII(Aircraft):
                 text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
                 text = ''.join(text.split('-----    '))
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
+        elif self.rocker == 'WCA':
+            w = []
+            j = 0
+            for i in range(1, 8):
+                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+                match = search(r'(.*)\|(.*)\|(.*)', text)
+                if match:
+                    w.extend([i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
+            if len(w) % 2:
+                w.append('')
+            for i in range(0, len(w), 2):
+                line = j * 8 * scale
+                draw.text(xy=(0, line), text=f'{w[i]}|{w[i + 1]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
+                j += 1
         else:
             # todo: combine 2 fors - clever usage of offset depending on index in dict
             for i in range(2, 7):
@@ -482,7 +498,7 @@ class AH64DBLKII(Aircraft):
             match = search(r'\s+\|(PRESET TUNE)\s(\w+)\s+', value)
             self.rocker = 'IDM'
             if match:
-                self.rocker = 'WCA'
+                self.rocker = 'PRESET'
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
             LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
             value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
@@ -503,6 +519,10 @@ class AH64DBLKII(Aircraft):
         :return: ready to send DCS-BIOS request
         """
         wca_or_idm = f'PLT_EUFD_{self.rocker} 0\nPLT_EUFD_{self.rocker} 1\n'
+        if button  in (4, 13) and self.rocker == 'IDM':
+            self.rocker = 'WCA'
+        else:
+            self.rocker = 'IDM'
         action = {1: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   2: wca_or_idm,
                   3: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
