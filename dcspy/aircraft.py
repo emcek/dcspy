@@ -428,6 +428,7 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        # todo: optimize dict usage
         match_dict = {
             # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([0-9\.]*)\s+ -> '!CO CMD   '
             2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([0-9\.]*)\s+',
@@ -448,6 +449,7 @@ class AH64DBLKII(Aircraft):
                 text = ''.join(text.split('-----    '))
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
         else:
+            # todo: combine 2 fors - clever usage of offset depending on index in dict
             for i in range(2, 7):
                 offset = (i - 2) * 8 * scale
                 text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
