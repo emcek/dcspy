@@ -433,10 +433,10 @@ class AH64DBLKII(Aircraft):
         # todo: optimize dict usage
         match_dict = {
             # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([\d\.]*)\s+ -> '!CO CMD   '
-            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',            
+            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
             3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
             4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',            
+            5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
             6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
             7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
             8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
@@ -519,7 +519,7 @@ class AH64DBLKII(Aircraft):
         :return: ready to send DCS-BIOS request
         """
         wca_or_idm = f'PLT_EUFD_{self.rocker} 0\nPLT_EUFD_{self.rocker} 1\n'
-        if button  in (4, 13) and self.rocker == 'IDM':
+        if button in (4, 13) and self.rocker == 'IDM':
             self.rocker = 'WCA'
         else:
             self.rocker = 'IDM'
