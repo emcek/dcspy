@@ -445,20 +445,20 @@ class AH64DBLKII(Aircraft):
                 offset = (i - 8) * 8 * scale
                 text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
                 text = ''.join(text.split('-----    '))
-                draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
+                draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
         else:
             for i in range(2, 7):
                 offset = (i - 2) * 8 * scale
                 text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
                 match = search(match_dict[i], text)
                 if match:
-                    draw.text(xy=(0, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_s)
+                    draw.text(xy=(0, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
             for i in range(7, 12):
                 offset = (i - 7) * 8 * scale
                 text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
                 match = search(match_dict[i], text)
                 if match:
-                    draw.text(xy=(80, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_s)
+                    draw.text(xy=(80, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
