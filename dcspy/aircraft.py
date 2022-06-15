@@ -428,11 +428,37 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
-        for i in range(8, 13):
-            offset = (i - 8) * 8 * scale
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = ''.join(text.split('-----    '))
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
+        match_dict = {
+            2:  r'.*\|.*\|([\u2192\s]CO CMD)\s*([0-9\.]*)\s+',
+            3:  r'.*\|.*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            4:  r'.*\|.*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            5:  r'.*\|.*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            6:  r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            7:  r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            8:  r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            9:  r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            10: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+            11: r'\s*\|([\u2192\s][A-Z0-9\/]*)\s*([0-9\.]*)\s+',
+        }
+        if self.rocker == 'IDM':
+            for i in range(8, 13):
+                offset = (i - 8) * 8 * scale
+                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+                text = ''.join(text.split('-----    '))
+                draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_s)
+        else:
+            for i in range(2, 7):
+                offset = (i - 2) * 8 * scale
+                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+                match = search(match_dict[i], text)
+                if match:
+                    draw.text(xy=(0, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_s)
+            for i in range(7, 12):
+                offset = (i - 7) * 8 * scale
+                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+                match = search(match_dict[i], text)
+                if match:
+                    draw.text(xy=(80, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -458,6 +484,8 @@ class AH64DBLKII(Aircraft):
             LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
             value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
                 replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
+        if 'PLT_EUFD_LINE' in selector:
+            value = value.replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
