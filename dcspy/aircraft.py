@@ -439,21 +439,21 @@ class AH64DBLKII(Aircraft):
     def draw_for_lcd_type_1(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
         LOG.debug(f'Mode: {self.mode}')
-        getattr(self, f'_draw_for_{self.mode.name}')(draw=ImageDraw.Draw(img), scale=1)
+        getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=1)
 
     def draw_for_lcd_type_2(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
         LOG.debug(f'Mode: {self.mode}')
-        getattr(self, f'_draw_for_{self.mode.name}')(draw=ImageDraw.Draw(img), scale=2)
+        getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=2)
 
-    def _draw_for_IDM(self, draw, scale):
+    def _draw_for_idm(self, draw, scale):
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
             text = ''.join(text.split('-----    '))
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
-    def _draw_for_WCA(self, draw, scale):
+    def _draw_for_wca(self, draw, scale):
         w = []
         j = 0
         for i in range(1, 8):
@@ -468,7 +468,7 @@ class AH64DBLKII(Aircraft):
             draw.text(xy=(0, line), text=f'{w[i]}|{w[i + 1]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
             j += 1
 
-    def _draw_for_PRE(self, draw, scale):
+    def _draw_for_pre(self, draw, scale):
         # todo: combine 2 fors - clever usage of offset depending on index in dict
         match_dict = {
             # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([\d\.]*)\s+ -> '!CO CMD   '
