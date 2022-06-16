@@ -450,7 +450,7 @@ class AH64DBLKII(Aircraft):
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = ''.join(text.split('-----    '))
+            text = ''.join(text.split('-----    '))  # todo: add 2nd freq
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def _draw_for_wca(self, draw, scale):
