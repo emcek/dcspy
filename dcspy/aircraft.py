@@ -1,3 +1,4 @@
+from enum import Enum
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
@@ -404,6 +405,13 @@ class Ka50(Aircraft):
         return line1, line2
 
 
+class ApacheEufdMode(Enum):
+    UNK = 0
+    IDM = 1
+    WCA = 2
+    PRE = 4
+
+
 class AH64DBLKII(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -412,7 +420,7 @@ class AH64DBLKII(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.rocker = 'IDM'
+        self.mode = ApacheEufdMode.UNK
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
@@ -431,6 +439,7 @@ class AH64DBLKII(Aircraft):
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
         # todo: optimize dict usage
+        LOG.debug(f'Mode: {self.mode}')
         match_dict = {
             # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([\d\.]*)\s+ -> '!CO CMD   '
             2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
@@ -444,13 +453,13 @@ class AH64DBLKII(Aircraft):
             10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
             11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
         }
-        if self.rocker == 'IDM':
+        if self.mode == ApacheEufdMode.IDM:
             for i in range(8, 13):
                 offset = (i - 8) * 8 * scale
                 text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
                 text = ''.join(text.split('-----    '))
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
-        elif self.rocker == 'WCA':
+        elif self.mode == ApacheEufdMode.WCA:
             w = []
             j = 0
             for i in range(1, 8):
@@ -464,7 +473,7 @@ class AH64DBLKII(Aircraft):
                 line = j * 8 * scale
                 draw.text(xy=(0, line), text=f'{w[i]}|{w[i + 1]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
                 j += 1
-        else:
+        else:  # ApacheEufdMode.PRE
             # todo: combine 2 fors - clever usage of offset depending on index in dict
             for i in range(2, 7):
                 offset = (i - 2) * 8 * scale
@@ -495,15 +504,16 @@ class AH64DBLKII(Aircraft):
         :param value:
         """
         if selector == 'PLT_EUFD_LINE1':
-            match = search(r'\s+\|(PRESET TUNE)\s(\w+)\s+', value)
-            self.rocker = 'IDM'
+            match = search(r'.*\|.*\|(PRESET TUNE)\s\w+', value)
+            self.mode = ApacheEufdMode.IDM
             if match:
-                self.rocker = 'PRESET'
+                self.mode = ApacheEufdMode.PRE
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
             LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
             value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
                 replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
         if 'PLT_EUFD_LINE' in selector:
+            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
             value = value.replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
@@ -518,17 +528,20 @@ class AH64DBLKII(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = f'PLT_EUFD_{self.rocker} 0\nPLT_EUFD_{self.rocker} 1\n'
-        if button in (4, 13) and self.rocker == 'IDM':
-            self.rocker = 'WCA'
-        else:
-            self.rocker = 'IDM'
-        action = {1: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-                  2: wca_or_idm,
+        wca_or_idm = f'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'
+        if self.mode == ApacheEufdMode.IDM:
+            wca_or_idm = f'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'
+
+        if button in (4, 13) and self.mode == ApacheEufdMode.IDM:
+            self.mode = ApacheEufdMode.WCA
+        elif button in (4, 13) and self.mode != ApacheEufdMode.IDM:
+            self.mode = ApacheEufdMode.IDM
+        action = {1: wca_or_idm,
+                  2: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   3: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
                   4: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
-                  9: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-                  10: wca_or_idm,
+                  9: wca_or_idm,
+                  10: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   14: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
                   13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'}
         return super().button_request(button, action.get(button, '\n'))

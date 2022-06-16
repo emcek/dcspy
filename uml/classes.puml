@@ -71,6 +71,7 @@ package aircraft {
   Aircraft <|-- F14B
   Aircraft <|-- AV8BNA
   class BIOS_VALUE
+  AH64DBLKII *-- ApacheEufdMode
 }
 
 class Aircraft {
@@ -87,6 +88,13 @@ class Aircraft {
     + get_next_value_for_button(btn_name: str) -> int
     + {abstract} draw_for_lcd_type_1(img: Image)
     + {abstract} draw_for_lcd_type_2(img: Image)
+}
+
+class ApacheEufdMode <<(E,yellow)>> {
+    + UNK = 0
+    + IDM = 1
+    + WCA = 2
+    + PRE = 4
 }
 
 class BIOS_VALUE <<(T,orange)>> {
