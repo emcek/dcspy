@@ -468,7 +468,7 @@ class AH64DBLKII(Aircraft):
     def _fetch_warning_list(self) -> List[str]:
         warn = []
         for i in range(1, 8):
-            mat = search(r'(.*)\|(.*)\|(.*)', self.get_bios(f'PLT_EUFD_LINE{i}'))
+            mat = search(r'(.*)\|(.*)\|(.*)', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
