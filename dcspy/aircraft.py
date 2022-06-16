@@ -467,14 +467,12 @@ class AH64DBLKII(Aircraft):
                 break
 
     def _fetch_warning_list(self) -> List[str]:
-        warnings = []
+        warn = []
         for i in range(1, 8):
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            match = search(r'(.*)\|(.*)\|(.*)', text)
-            if match:
-                warnings.extend(
-                    [i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
-        return warnings
+            mat = search(r'(.*)\|(.*)\|(.*)', self.get_bios(f'PLT_EUFD_LINE{i}'))
+            if mat:
+                warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
+        return warn
 
     def _draw_for_pre(self, draw, scale):
         # todo: combine 2 fors - clever usage of offset depending on index in dict
@@ -493,18 +491,14 @@ class AH64DBLKII(Aircraft):
         }
         for i in range(2, 7):
             offset = (i - 2) * 8 * scale
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            match = search(match_dict[i], text)
-            if match:
-                draw.text(xy=(0, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground,
-                          font=self.lcd.font_xs)
+            mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
+            if mat:
+                draw.text(xy=(0, offset), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
         for i in range(7, 12):
             offset = (i - 7) * 8 * scale
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            match = search(match_dict[i], text)
-            if match:
-                draw.text(xy=(80, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground,
-                          font=self.lcd.font_xs)
+            mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
+            if mat:
+                draw.text(xy=(80, offset), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
