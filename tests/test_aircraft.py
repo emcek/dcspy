@@ -100,7 +100,9 @@ def test_aircraft_base_class_other_lcd(aircraft):
                                             ('apache_mono', 0, '\n'),
                                             ('apache_mono', 16, '\n'),
                                             ('apache_mono', 'a', '\n'),
-                                            ('apache_mono', 2, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+                                            ('apache_mono', 1, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+                                            ('apache_mono', 2, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+                                            ('apache_mono', 3, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
                                             ('apache_mono', 4, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_plane(plane, button, result, request):
     plane = request.getfixturevalue(plane)
@@ -110,10 +112,13 @@ def test_button_pressed_for_plane(plane, button, result, request):
 @mark.parametrize('button, result', [(0, '\n'),
                                      (16, '\n'),
                                      (' ', '\n'),
-                                     (10, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
-                                     (14, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n')])
+                                     (9, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
+                                     (10, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+                                     (14, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+                                     (13, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_apache_color(button, result, apache_color):
-    apache_color.rocker = 'WCA'
+    from dcspy.aircraft import ApacheEufdMode
+    apache_color.mode = ApacheEufdMode.WCA
     assert apache_color.button_request(button) == result
 
 
@@ -164,18 +169,19 @@ def test_set_bios_for_airplane(plane, selector, value, result, request):
                 assert plane.bios_data[selector]['value'] == result
 
 
-@mark.parametrize('plane, selector, value, rocker', [('apache_mono', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
-                                                     ('apache_mono', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'PRESET'),
-                                                     ('apache_color', 'PLT_EUFD_LINE1', '  |   |                ', 'IDM'),
-                                                     ('apache_color', 'PLT_EUFD_LINE1', '  |   |PRESET TUNE VHS ', 'PRESET')])
-def test_rocker_state_for_apache(plane, selector, value, rocker, request):
+@mark.parametrize('plane, selector, value, mode', [('apache_mono', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
+                                                   ('apache_mono', 'PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |PRESET TUNE VHS ', 'PRE'),
+                                                   ('apache_color', 'PLT_EUFD_LINE1', '                  |                  |TAIL WHL LOCK SEL ', 'IDM'),
+                                                   ('apache_color', 'PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
+                                                   ('apache_color', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ', 'PRE')])
+def test_rocker_state_for_apache(plane, selector, value, mode, request):
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
         plane.set_bios(selector, value)
-        assert plane.rocker == rocker
+        assert plane.mode.name == mode
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>

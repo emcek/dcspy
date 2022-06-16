@@ -406,7 +406,6 @@ class Ka50(Aircraft):
 
 
 class ApacheEufdMode(Enum):
-    UNK = 0
     IDM = 1
     WCA = 2
     PRE = 4
@@ -420,7 +419,7 @@ class AH64DBLKII(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.mode = ApacheEufdMode.UNK
+        self.mode = ApacheEufdMode.IDM
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
@@ -437,9 +436,40 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x8398, 'max_length': 56}, 'value': str()},
         }
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
-        # todo: optimize dict usage
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for AH-64D Apache for Mono LCD."""
         LOG.debug(f'Mode: {self.mode}')
+        getattr(self, f'_draw_for_{self.mode.name}')(draw=ImageDraw.Draw(img), scale=1)
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for AH-64D Apache for Color LCD."""
+        LOG.debug(f'Mode: {self.mode}')
+        getattr(self, f'_draw_for_{self.mode.name}')(draw=ImageDraw.Draw(img), scale=2)
+
+    def _draw_for_IDM(self, draw, scale):
+        for i in range(8, 13):
+            offset = (i - 8) * 8 * scale
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            text = ''.join(text.split('-----    '))
+            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
+
+    def _draw_for_WCA(self, draw, scale):
+        w = []
+        j = 0
+        for i in range(1, 8):
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            match = search(r'(.*)\|(.*)\|(.*)', text)
+            if match:
+                w.extend([i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
+        if len(w) % 2:
+            w.append('')
+        for i in range(0, len(w), 2):
+            line = j * 8 * scale
+            draw.text(xy=(0, line), text=f'{w[i]}|{w[i + 1]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
+            j += 1
+
+    def _draw_for_PRE(self, draw, scale):
+        # todo: combine 2 fors - clever usage of offset depending on index in dict
         match_dict = {
             # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([\d\.]*)\s+ -> '!CO CMD   '
             2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
@@ -453,48 +483,20 @@ class AH64DBLKII(Aircraft):
             10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
             11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
         }
-        if self.mode == ApacheEufdMode.IDM:
-            for i in range(8, 13):
-                offset = (i - 8) * 8 * scale
-                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-                text = ''.join(text.split('-----    '))
-                draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
-        elif self.mode == ApacheEufdMode.WCA:
-            w = []
-            j = 0
-            for i in range(1, 8):
-                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-                match = search(r'(.*)\|(.*)\|(.*)', text)
-                if match:
-                    w.extend([i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
-            if len(w) % 2:
-                w.append('')
-            for i in range(0, len(w), 2):
-                line = j * 8 * scale
-                draw.text(xy=(0, line), text=f'{w[i]}|{w[i + 1]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
-                j += 1
-        else:  # ApacheEufdMode.PRE
-            # todo: combine 2 fors - clever usage of offset depending on index in dict
-            for i in range(2, 7):
-                offset = (i - 2) * 8 * scale
-                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-                match = search(match_dict[i], text)
-                if match:
-                    draw.text(xy=(0, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
-            for i in range(7, 12):
-                offset = (i - 7) * 8 * scale
-                text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-                match = search(match_dict[i], text)
-                if match:
-                    draw.text(xy=(80, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
-
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
-        """Prepare image for AH-64D Apache for Mono LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
-
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
-        """Prepare image for AH-64D Apache for Color LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+        for i in range(2, 7):
+            offset = (i - 2) * 8 * scale
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            match = search(match_dict[i], text)
+            if match:
+                draw.text(xy=(0, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground,
+                          font=self.lcd.font_xs)
+        for i in range(7, 12):
+            offset = (i - 7) * 8 * scale
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            match = search(match_dict[i], text)
+            if match:
+                draw.text(xy=(80, offset), text=f'{match.group(1):<9}{match.group(2):>7}', fill=self.lcd.foreground,
+                          font=self.lcd.font_xs)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
