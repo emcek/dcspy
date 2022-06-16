@@ -6,7 +6,7 @@ from os import environ, path
 from pprint import pformat
 from re import search
 from string import whitespace
-from typing import Dict, Union, Optional, Iterator, Sequence
+from typing import Dict, Union, Optional, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw
 
@@ -455,12 +455,7 @@ class AH64DBLKII(Aircraft):
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def _draw_for_wca(self, draw, scale):
-        warnings = []
-        for i in range(1, 8):
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            match = search(r'(.*)\|(.*)\|(.*)', text)
-            if match:
-                warnings.extend([i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
+        warnings = self._fetch_warning_list()
         LOG.debug(f'{warnings}')
         for i in range(self.warning_line - 1, self.warning_line + 4):
             line = (i % 5) * 8 * scale
@@ -470,6 +465,16 @@ class AH64DBLKII(Aircraft):
                 self.warning_line = 1
             if i == len(warnings) - 1:
                 break
+
+    def _fetch_warning_list(self) -> List[str]:
+        warnings = []
+        for i in range(1, 8):
+            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
+            match = search(r'(.*)\|(.*)\|(.*)', text)
+            if match:
+                warnings.extend(
+                    [i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
+        return warnings
 
     def _draw_for_pre(self, draw, scale):
         # todo: combine 2 fors - clever usage of offset depending on index in dict
