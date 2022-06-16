@@ -174,7 +174,7 @@ def test_set_bios_for_airplane(plane, selector, value, result, request):
                                                    ('apache_color', 'PLT_EUFD_LINE1', '                  |                  |TAIL WHL LOCK SEL ', 'IDM'),
                                                    ('apache_color', 'PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
                                                    ('apache_color', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ', 'PRE')])
-def test_rocker_state_for_apache(plane, selector, value, mode, request):
+def test_mode_switch_idm_pre_for_apache(plane, selector, value, mode, request):
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -219,3 +219,22 @@ def test_prepare_image_for_all_planes_color(model, lcd_color):
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
+
+
+def test_prepare_image_for_apache_wca_mode(apache_mono, lcd_mono):
+    from PIL.Image import Image
+    from dcspy.aircraft import ApacheEufdMode
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
+                apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
+                apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+                apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  ')
+                apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
+    apache_mono.mode = ApacheEufdMode.WCA
+    img = apache_mono.prepare_image()
+    assert isinstance(img, Image)
+    assert img.size == (lcd_mono.width, lcd_mono.height)
+    assert img.mode == '1'
