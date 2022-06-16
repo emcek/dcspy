@@ -420,6 +420,7 @@ class AH64DBLKII(Aircraft):
         """
         super().__init__(lcd_type)
         self.mode = ApacheEufdMode.IDM
+        self.warning_line = 1
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
             'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
@@ -454,19 +455,21 @@ class AH64DBLKII(Aircraft):
             draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def _draw_for_wca(self, draw, scale):
-        w = []
-        j = 0
+        warnings = []
         for i in range(1, 8):
             text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
             match = search(r'(.*)\|(.*)\|(.*)', text)
             if match:
-                w.extend([i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
-        if len(w) % 2:
-            w.append('')
-        for i in range(0, len(w), 2):
-            line = j * 8 * scale
-            draw.text(xy=(0, line), text=f'{w[i]}|{w[i + 1]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
-            j += 1
+                warnings.extend([i for i in [match.group(1).strip(), match.group(2).strip(), match.group(3).strip()] if i])
+        LOG.debug(f'{warnings}')
+        for i in range(self.warning_line - 1, self.warning_line + 4):
+            line = (i % 5) * 8 * scale
+            LOG.debug(f'{line} {warnings[i]}')
+            draw.text(xy=(0, line), text=f'{warnings[i]}', fill=self.lcd.foreground, font=self.lcd.font_xs)
+            if self.warning_line >= len(warnings) - 4:
+                self.warning_line = 1
+            if i == len(warnings) - 1:
+                break
 
     def _draw_for_pre(self, draw, scale):
         # todo: combine 2 fors - clever usage of offset depending on index in dict
@@ -538,6 +541,10 @@ class AH64DBLKII(Aircraft):
             self.mode = ApacheEufdMode.WCA
         elif button in (4, 13) and self.mode != ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.IDM
+
+        if button in (1, 9) and self.mode == ApacheEufdMode.WCA:
+            self.warning_line += 1
+
         action = {1: wca_or_idm,
                   2: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
                   3: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
