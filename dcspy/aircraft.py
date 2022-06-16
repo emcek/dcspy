@@ -475,30 +475,22 @@ class AH64DBLKII(Aircraft):
         return warn
 
     def _draw_for_pre(self, draw, scale):
-        # todo: combine 2 fors - clever usage of offset depending on index in dict
-        match_dict = {
-            # r'.*\|.*\|([\u2192\s][A-Z\s]*)\s*([\d\.]*)\s+ -> '!CO CMD   '
-            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
-            3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-        }
-        for i in range(2, 7):
-            offset = (i - 2) * 8 * scale
+        match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
+                      3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
+        for i, x, y in zip(range(2, 12),
+                           [0, 0, 0, 0, 0, 80, 80, 80, 80, 80],
+                           [j * 8 * scale for j in range(0, 5)] * 2):
             mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
             if mat:
-                draw.text(xy=(0, offset), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
-        for i in range(7, 12):
-            offset = (i - 7) * 8 * scale
-            mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
-            if mat:
-                draw.text(xy=(80, offset), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
+                draw.text(xy=(x, y), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
