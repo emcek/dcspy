@@ -259,7 +259,6 @@ class F16C50(Aircraft):
         :param value:
         """
         if 'DED_LINE_' in selector:
-            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
             # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
             value = value.replace('o', '\u00b0').replace('a', '\u2666')
             value = value.replace('A\x10\x04', '')  # List page
