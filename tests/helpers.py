@@ -8,7 +8,7 @@ try:
     if response.status_code == 200:
         dcsbios_ver = response.json()['tag_name']
 except exceptions.ConnectTimeout:
-    dcsbios_ver = '0.7.43'
+    dcsbios_ver = '0.7.45'
 
 
 def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
