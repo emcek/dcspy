@@ -1,10 +1,12 @@
+from enum import Enum
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
 from os import environ, path
 from pprint import pformat
+from re import search
 from string import whitespace
-from typing import Dict, Union, Optional, Iterator, Sequence
+from typing import Dict, Union, Optional, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw
 
@@ -401,6 +403,150 @@ class Ka50(Aircraft):
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         return line1, line2
+
+
+class ApacheEufdMode(Enum):
+    IDM = 1
+    WCA = 2
+    PRE = 4
+
+
+class AH64DBLKII(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create AH-64D Apache.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.mode = ApacheEufdMode.IDM
+        self.warning_line = 1
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8130, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x8168, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a0, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81d8, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8210, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x8248, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8280, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82b8, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x8398, 'max_length': 56}, 'value': str()},
+        }
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for AH-64D Apache for Mono LCD."""
+        LOG.debug(f'Mode: {self.mode}')
+        getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=1)
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for AH-64D Apache for Color LCD."""
+        LOG.debug(f'Mode: {self.mode}')
+        getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=2)
+
+    def _draw_for_idm(self, draw, scale):
+        for i in range(8, 13):
+            offset = (i - 8) * 8 * scale
+            mat = search(r'(.*\*)\s+(\d+)([\.\dA]+)[-\sA-Z]*(\d+)([\.\dA]+)[\s-]+', self.get_bios(f'PLT_EUFD_LINE{i}'))
+            if mat:
+                spacer = ' ' * (6 - len(mat.group(3)))
+                text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
+                draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
+
+    def _draw_for_wca(self, draw, scale):
+        warnings = self._fetch_warning_list()
+        LOG.debug(f'Warnings: {warnings}')
+        try:
+            for idx, warn_no in enumerate(range(self.warning_line - 1, self.warning_line + 4)):
+                line = idx * 8 * scale
+                draw.text(xy=(0, line), text=f'{idx + self.warning_line:2} {warnings[warn_no]}', fill=self.lcd.foreground, font=self.lcd.font_s)
+                if self.warning_line >= len(warnings) - 3:
+                    self.warning_line = 1
+        except IndexError:
+            self.warning_line = 1
+
+    def _fetch_warning_list(self) -> List[str]:
+        warn = []
+        for i in range(1, 8):
+            mat = search(r'(.*)\|(.*)\|(.*)', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
+            if mat:
+                warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
+        return warn
+
+    def _draw_for_pre(self, draw, scale):
+        match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
+                      3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+                      11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
+        for i, x, y in zip(range(2, 12),
+                           [0, 0, 0, 0, 0, 80, 80, 80, 80, 80],
+                           [j * 8 * scale for j in range(0, 5)] * 2):
+            mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
+            if mat:
+                draw.text(xy=(x, y), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
+
+    def set_bios(self, selector: str, value: str) -> None:
+        """
+        Set new data.
+
+        :param selector:
+        :param value:
+        """
+        if selector == 'PLT_EUFD_LINE1':
+            match = search(r'.*\|.*\|(PRESET TUNE)\s\w+', value)
+            self.mode = ApacheEufdMode.IDM
+            if match:
+                self.mode = ApacheEufdMode.PRE
+        if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
+            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
+            value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
+                replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
+        if 'PLT_EUFD_LINE' in selector:
+            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
+            value = value.replace('!', '\u2192')  # replace ! with ->
+        super().set_bios(selector, value)
+
+    def button_request(self, button: int, request: str = '\n') -> str:
+        """
+        Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        If button is out of scope new line is return.
+        :param button: possible values 1-4
+        :param request: valid DCS-BIOS command as string
+        :return: ready to send DCS-BIOS request
+        """
+        wca_or_idm = f'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'
+        if self.mode == ApacheEufdMode.IDM:
+            wca_or_idm = f'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'
+
+        if button in (4, 13) and self.mode == ApacheEufdMode.IDM:
+            self.mode = ApacheEufdMode.WCA
+        elif button in (4, 13) and self.mode != ApacheEufdMode.IDM:
+            self.mode = ApacheEufdMode.IDM
+
+        if button in (1, 9) and self.mode == ApacheEufdMode.WCA:
+            self.warning_line += 1
+
+        action = {1: wca_or_idm,
+                  2: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  3: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
+                  4: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
+                  9: wca_or_idm,
+                  10: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  14: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
+                  13: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'}
+        return super().button_request(button, action.get(button, '\n'))
 
 
 class A10C(Aircraft):

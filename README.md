@@ -42,6 +42,7 @@ It supports:
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
 * F-14B Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
+* AH-64D Apache - Enhanced Up Front Display
 * more to come....
 
 ## Requirements
@@ -111,8 +112,10 @@ Please check **Config** button in GUI. Right now there are available options:
 * **show_gui** - it allows showing or hiding GUI during start of DCSpy.  
   *possible values*: `true` or `false`
 * **font_name** - file name with TrueType font use in all devices
+* **font_mono_xs** - size of extra small font for mono devices
 * **font_mono_s** - size of small font for mono devices
 * **font_mono_l** - size of large font for mono devices
+* **font_color_xs** - size of extra small font for color devices
 * **font_color_s** - size of small font for color devices
 * **font_color_l** - size of large font for color devices
 
@@ -157,6 +160,20 @@ actions for supported airplanes are hardcoded right now and look like:
 * UFC COMM1 channel select increase
 * UFC COMM2 channel select decrease
 * UFC COMM2 channel select increase
+
+### AH-64D Apache
+* IDM Radio Select Rocker Down or WCA Rocker Scroll Rocker Down (for PRE and WCA modes)
+* Radio Transmit Select Rocker Down
+* Preset Button (toggle PRE mode)
+* Enter Button (toggle WCA mode)
+
+Map for buttons and EUFD Modes:
+
+| Mode | Button1  | Button2  | Button3      | Button4  |
+|------|----------|----------|--------------|----------|
+| IDM  | IDM Down | RTS Down | P / PRE Mode | WCA Mode |
+| WCA  | WCA Dwon |          |              | IDM Mode |
+| PRE  | WCA Dwon | RTS Down | IDM Mode     | E        |
 
 ## FAQ
 1. Why in [F-16C DED](https://i.imgur.com/Hr0kmFV.jpg) instead of triangle up and down arrow I see strange character.   

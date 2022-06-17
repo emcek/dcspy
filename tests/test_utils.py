@@ -55,8 +55,10 @@ def test_dummy_save_load_set_defaults():
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                      'font_name': 'consola.ttf',
                      'font_mono_s': 11,
+                     'font_mono_xs': 9,
                      'font_mono_l': 16,
                      'font_color_s': 22,
+                     'font_color_xs': 18,
                      'font_color_l': 32}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')

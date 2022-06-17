@@ -93,6 +93,17 @@ def warthog_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
+def warthog2_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of A-10C II Tank Killer for Logitech mono LCD.
+    :param lcd_mono:
+    :return: A-10C II Tank Killer instance
+    """
+    from dcspy.aircraft import A10C2
+    return A10C2(lcd_mono)
+
+
+@fixture()
 def tomcat_mono(lcd_mono: LcdInfo):
     """
     Return instance of F-14B Tomcat for Logitech mono LCD.
@@ -112,6 +123,17 @@ def harrier_mono(lcd_mono: LcdInfo):
     """
     from dcspy.aircraft import AV8BNA
     return AV8BNA(lcd_mono)
+
+
+@fixture()
+def apache_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of AH-64D Apache for Logitech mono LCD.
+    :param lcd_mono:
+    :return: AH-64D Apache instance
+    """
+    from dcspy.aircraft import AH64DBLKII
+    return AH64DBLKII(lcd_mono)
 
 
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
@@ -149,7 +171,7 @@ def black_shark_color(lcd_color: LcdInfo):
 
 
 @fixture()
-def warthog_color(lcd_color: LcdInfo):
+def warthog2_color(lcd_color: LcdInfo):
     """
     Return instance of A-10C II Tank Killer for Logitech mono LCD.
     :param lcd_color:
@@ -179,6 +201,17 @@ def harrier_color(lcd_color: LcdInfo):
     """
     from dcspy.aircraft import AV8BNA
     return AV8BNA(lcd_color)
+
+
+@fixture()
+def apache_color(lcd_color: LcdInfo):
+    """
+    Return instance of AH-64D Apache for Logitech color LCD.
+    :param lcd_color:
+    :return: AH-64D Apache instance
+    """
+    from dcspy.aircraft import AH64DBLKII
+    return AH64DBLKII(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>

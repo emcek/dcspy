@@ -65,11 +65,13 @@ package aircraft {
   Aircraft <|-- FA18Chornet
   Aircraft <|-- F16C50
   Aircraft <|-- Ka50
+  Aircraft <|-- AH64DBLKII
   Aircraft <|-- A10C
   A10C <|-- A10C2
   Aircraft <|-- F14B
   Aircraft <|-- AV8BNA
   class BIOS_VALUE
+  AH64DBLKII *-- ApacheEufdMode
 }
 
 class Aircraft {
@@ -88,6 +90,13 @@ class Aircraft {
     + {abstract} draw_for_lcd_type_2(img: Image)
 }
 
+class ApacheEufdMode <<(E,yellow)>> {
+    + UNK = 0
+    + IDM = 1
+    + WCA = 2
+    + PRE = 4
+}
+
 class BIOS_VALUE <<(T,orange)>> {
     + class : str
     + args: Dict[str, int]
@@ -103,6 +112,7 @@ class LcdInfo <<(D,orchid)>> {
     + foreground : Union[int, Sequence[int]]
     + background : Union[int, Sequence[int]]
     + mode: str
+    + font_xs: ImageFont.FreeTypeFont
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
 }
