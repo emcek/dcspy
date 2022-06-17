@@ -32,7 +32,7 @@ class Aircraft:
         self.lcd = lcd_type
         self.bios_data: Dict[str, BIOS_VALUE] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
-        self._debug_img = cycle(range(10))
+        self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
 
     def button_request(self, button: int, request: str = '\n') -> str:
         """
