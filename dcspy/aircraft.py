@@ -449,9 +449,11 @@ class AH64DBLKII(Aircraft):
     def _draw_for_idm(self, draw, scale):
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
-            text = str(self.get_bios(f'PLT_EUFD_LINE{i}'))
-            text = ''.join(text.split('-----    '))  # todo: add 2nd freq
-            draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
+            mat = search(r'(.*\*)\s+(\d+)([\.\dA]+)[-\sA-Z]*(\d+)([\.\dA]+)[\s-]+', self.get_bios(f'PLT_EUFD_LINE{i}'))
+            if mat:
+                spacer = ' ' * (6 - len(mat.group(3)))
+                text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
+                draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def _draw_for_wca(self, draw, scale):
         warnings = self._fetch_warning_list()
