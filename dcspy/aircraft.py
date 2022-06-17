@@ -458,13 +458,14 @@ class AH64DBLKII(Aircraft):
     def _draw_for_wca(self, draw, scale):
         warnings = self._fetch_warning_list()
         LOG.debug(f'Warnings: {warnings}')
-        for idx, warn_no in enumerate(range(self.warning_line - 1, self.warning_line + 4)):
-            line = idx * 8 * scale
-            draw.text(xy=(0, line), text=f'{idx + self.warning_line:2} {warnings[warn_no]}', fill=self.lcd.foreground, font=self.lcd.font_s)
-            if self.warning_line >= len(warnings) - 3:
-                self.warning_line = 1
-            if warn_no == len(warnings) - 1:
-                break
+        try:
+            for idx, warn_no in enumerate(range(self.warning_line - 1, self.warning_line + 4)):
+                line = idx * 8 * scale
+                draw.text(xy=(0, line), text=f'{idx + self.warning_line:2} {warnings[warn_no]}', fill=self.lcd.foreground, font=self.lcd.font_s)
+                if self.warning_line >= len(warnings) - 3:
+                    self.warning_line = 1
+        except IndexError:
+            self.warning_line = 1
 
     def _fetch_warning_list(self) -> List[str]:
         warn = []
