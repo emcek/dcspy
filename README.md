@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v1.6.1-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v1.7.0-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/manual/mplichta/dcspy?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
@@ -10,7 +10,7 @@
 [![image](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10-blue.svg)](https://github.com/emcek/dcspy)
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)
-[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6056/badge)](https://bestpractices.coreinfrastructure.org/projects/6056)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6056/badge)](https://bestpractices.coreinfrastructure.org/projects/6056)  
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)  
 ## DCSpy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
@@ -80,7 +80,7 @@ pip install dcspy
 ```
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-1.6.1-py3-none-any.whl
+pip install dcspy-1.7.0-py3-none-any.whl
 ```
 **Note:** If you got `pip is not recognized as an internal or external command, operable program or batch file.` error, see [FAQ](#faq)
 ## Upgrade
