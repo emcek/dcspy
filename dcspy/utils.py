@@ -49,11 +49,12 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: ConfigDict) -> ConfigDict:
+def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     """
     Set defaults to not existing config options.
 
     :param cfg: dict before migration
+    :param filename: path to yam file - default <package_dir>/config.yaml
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
@@ -69,7 +70,7 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
                             'font_color_xs': 18,
                             'font_color_l': 32}
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
-    save_cfg(migrated_cfg)
+    save_cfg(cfg_dict=migrated_cfg, filename=filename)
     return migrated_cfg
 
 
