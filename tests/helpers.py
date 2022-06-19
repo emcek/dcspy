@@ -50,8 +50,8 @@ def _get_json_for_plane(plane: str) -> dict:
     plane_path = path.join(gettempdir(), plane)
     try:
         m_time = path.getmtime(plane_path)
-        day = int(datetime.fromtimestamp(int(m_time)).strftime('%d'))
-        if day == datetime.now().day:
+        week = datetime.fromtimestamp(int(m_time)).strftime('%U')
+        if week == datetime.now().strftime('%U'):
             with open(plane_path) as plane_json_file:
                 data = plane_json_file.read()
             return loads(data)
