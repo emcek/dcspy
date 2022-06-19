@@ -41,6 +41,8 @@ class DcspyGui(tk.Frame):
         self.bios_path = ''
         self.event = Event()
         self.status_txt.set(f'ver. {__version__}')
+        if config.get('autostart', False):
+            self.start_dcspy()
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
