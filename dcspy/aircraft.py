@@ -526,9 +526,9 @@ class AH64DBLKII(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = f'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'
+        wca_or_idm = 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = f'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'
+            wca_or_idm = 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'
 
         if button in (4, 13) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
