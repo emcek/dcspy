@@ -43,7 +43,7 @@ def test_proc_is_running():
 
 
 def test_dummy_save_load_set_defaults():
-    from os import makedirs, remove, rmdir
+    from os import makedirs, remove, rmdir, environ
     makedirs(name='./tmp', exist_ok=True)
     test_tmp_yaml = './tmp/c.yaml'
 
@@ -52,7 +52,7 @@ def test_dummy_save_load_set_defaults():
     assert d_cfg == {'font_mono_xs': 9}
     d_cfg = utils.set_defaults(d_cfg, test_tmp_yaml)
     assert d_cfg == {'keyboard': 'G13', 'show_gui': True, 'autostart': False,
-                     'dcsbios': 'D:\\Users\\UNKNOWN\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                      'font_name': 'consola.ttf',
                      'font_mono_s': 11,
                      'font_mono_xs': 9,
