@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 from os import environ, path
 
 
-def config_logger(logger: Logger, verbose: bool) -> None:
+def config_logger(logger: Logger, verbose=False) -> None:
     """
     Configure global logger add handlers and set formatters.
 
