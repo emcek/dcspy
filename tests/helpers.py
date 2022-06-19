@@ -1,4 +1,7 @@
+from datetime import datetime
 from json import loads
+from os import path
+from tempfile import gettempdir
 from typing import Tuple
 
 from requests import get, exceptions
@@ -44,8 +47,19 @@ def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict
 
 
 def _get_json_for_plane(plane: str) -> dict:
-    data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/{plane}')
-    return loads(data.content)
+    plane_path = path.join(gettempdir(), plane)
+    try:
+        m_time = path.getmtime(plane_path)
+        day = int(datetime.fromtimestamp(int(m_time)).strftime('%d'))
+        if day == datetime.now().day:
+            with open(plane_path) as plane_json_file:
+                data = plane_json_file.read()
+            return loads(data)
+    except FileNotFoundError:
+        data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{dcsbios_ver}/Scripts/DCS-BIOS/doc/json/{plane}')
+        with open(plane_path, 'wb+') as plane_json_file:
+            plane_json_file.write(data.content)
+        return loads(data.content)
 
 
 def _recursive_lookup(k: str, d: dict):
