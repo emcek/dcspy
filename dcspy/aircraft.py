@@ -487,12 +487,13 @@ class AH64DBLKII(Aircraft):
                       9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
-        for i, x, y in zip(range(2, 12),
+        for i, xcord, ycord in zip(range(2, 12),
                            [0, 0, 0, 0, 0, 80, 80, 80, 80, 80],
                            [j * 8 * scale for j in range(0, 5)] * 2):
             mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
             if mat:
-                draw.text(xy=(x, y), text=f'{mat.group(1):<9}{mat.group(2):>7}', fill=self.lcd.foreground, font=self.lcd.font_xs)
+                draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
+                          fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
