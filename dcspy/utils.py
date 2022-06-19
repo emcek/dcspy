@@ -49,15 +49,17 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: ConfigDict) -> ConfigDict:
+def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     """
     Set defaults to not existing config options.
 
     :param cfg: dict before migration
+    :param filename: path to yam file - default <package_dir>/config.yaml
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                            'autostart': False,
                             'keyboard': 'G13',
                             'show_gui': True,
                             'font_name': 'consola.ttf',
@@ -68,7 +70,9 @@ def set_defaults(cfg: ConfigDict) -> ConfigDict:
                             'font_color_xs': 18,
                             'font_color_l': 32}
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
-    save_cfg(migrated_cfg)
+    if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
+        migrated_cfg['dcsbios'] = defaults['dcsbios']
+    save_cfg(cfg_dict=migrated_cfg, filename=filename)
     return migrated_cfg
 
 
