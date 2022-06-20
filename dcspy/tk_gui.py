@@ -1,9 +1,10 @@
 import tkinter as tk
 from functools import partial
 from logging import getLogger
-from os import path, environ
+from os import path
 from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
+from tempfile import gettempdir
 from threading import Thread, Event
 from tkinter import messagebox
 from typing import NamedTuple, Union
@@ -185,7 +186,7 @@ class DcspyGui(tk.Frame):
             self._update(rel_info=rel_info)
 
     def _update(self, rel_info: ReleaseInfo) -> None:
-        tmp_dir = environ.get('TEMP', 'C:\\')
+        tmp_dir = gettempdir()
         local_zip = path.join(tmp_dir, rel_info.archive_file)
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
