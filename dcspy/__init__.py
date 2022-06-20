@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from logging import getLogger
 from os import name
 from platform import architecture, uname, python_implementation, python_version
@@ -18,11 +19,16 @@ RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 
 
+class LcdType(Enum):
+    mono = lcd_sdk.TYPE_MONO
+    color = lcd_sdk.TYPE_COLOR
+
+
 @dataclass
 class LcdInfo:
     width: int
     height: int
-    type: int
+    type: LcdType
     foreground: Union[int, Sequence[int]]
     background: Union[int, Sequence[int]]
     mode: str
@@ -33,11 +39,11 @@ class LcdInfo:
 
 config = set_defaults(load_cfg())
 
-LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=lcd_sdk.TYPE_MONO, foreground=255,
+LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.mono, foreground=255,
                   background=0, mode='1', font_s=ImageFont.truetype(config['font_name'], config['font_mono_s']),
                   font_l=ImageFont.truetype(config['font_name'], config['font_mono_l']),
                   font_xs=ImageFont.truetype(config['font_name'], config['font_mono_xs']))
-LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=lcd_sdk.TYPE_COLOR, foreground=(0, 255, 0, 255),
+LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=LcdType.color, foreground=(0, 255, 0, 255),
                    background=(0, 0, 0, 0), mode='RGBA', font_s=ImageFont.truetype(config['font_name'], config['font_color_s']),
                    font_l=ImageFont.truetype(config['font_name'], config['font_color_l']),
                    font_xs=ImageFont.truetype(config['font_name'], config['font_color_xs']))
