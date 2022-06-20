@@ -57,22 +57,19 @@ class Aircraft:
         """Update display."""
         lcd_sdk.update_display(image)
 
-    def prepare_image(self) -> Optional[Image.Image]:
+    def prepare_image(self) -> Image.Image:
         """
         Prepare image to be sent to correct type of LCD.
 
         :return: image instance ready display on LCD
         """
-        img_for_lcd = {1: partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.background),
-                       2: partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)}
-        try:
-            img = img_for_lcd[self.lcd.type]()
-            getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
-            img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
-            return img
-        except KeyError as err:
-            LOG.debug(f'Wrong LCD type: {self.lcd} or key: {err}')
-            return None
+        img_for_lcd = {'mono': partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.background),
+                       'color': partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)}
+
+        img = img_for_lcd[self.lcd.type.name]()
+        getattr(self, f'draw_for_lcd_{self.lcd.type.name}')(img)
+        img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
+        return img
 
     def set_bios(self, selector: str, value: str) -> None:
         """
@@ -97,11 +94,11 @@ class Aircraft:
         except KeyError:
             return ''
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
         raise NotImplementedError
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Color LCD."""
         raise NotImplementedError
 
@@ -174,11 +171,11 @@ class FA18Chornet(Aircraft):
         draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=self.lcd.foreground, font=self.lcd.font_l)
         return draw
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Mono LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
         draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=self.lcd.foreground, font=self.lcd.font_l)
@@ -244,11 +241,11 @@ class F16C50(Aircraft):
             offset = (i - 1) * 8 * scale
             draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.lcd.font_s)
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
 
@@ -348,7 +345,7 @@ class Ka50(Aircraft):
             draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
             draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
         draw = ImageDraw.Draw(img)
         for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
@@ -358,7 +355,7 @@ class Ka50(Aircraft):
         draw.text(xy=(2, 24), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
         self._auto_pilot_switch_1(draw)
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
         draw = ImageDraw.Draw(img)
         for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
@@ -438,12 +435,12 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x8398, 'max_length': 56}, 'value': str()},
         }
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
         LOG.debug(f'Mode: {self.mode}')
         getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=1)
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
         LOG.debug(f'Mode: {self.mode}')
         getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=2)
@@ -583,7 +580,7 @@ class A10C(Aircraft):
               f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")}'
         return uhf, vhfam, vhffm
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog or A-10C II Tank Killer for Mono LCD."""
         draw = ImageDraw.Draw(img)
         uhf, vhfam, vhffm = self._generate_freq_values()
@@ -592,7 +589,7 @@ class A10C(Aircraft):
             offset = i * 10
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog or A-10C II Tank Killer for Color LCD."""
         draw = ImageDraw.Draw(img)
         uhf, vhfam, vhffm = self._generate_freq_values()
@@ -623,11 +620,11 @@ class F14B(Aircraft):
     def _draw_common_data(self, draw: ImageDraw) -> None:
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img))
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img))
 
@@ -692,11 +689,11 @@ class AV8BNA(Aircraft):
                       text=f'{i}{self.get_bios(f"AV8BNA_ODU_{i}_SELECT")}{self.get_bios(f"AV8BNA_ODU_{i}_Text")}')
         return draw
 
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AV-8B N/A for Mono LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
 
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for AV-8B N/A for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
 
