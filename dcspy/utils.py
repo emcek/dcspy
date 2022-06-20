@@ -9,7 +9,7 @@ from requests import get
 from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
-ConfigDict = Dict[str, Union[str, int]]
+ConfigDict = Dict[str, Union[str, int, bool]]
 default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
 
 
