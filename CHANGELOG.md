@@ -6,6 +6,7 @@
 * Internal:
   * use Pythonic way using temporary directory
   * speed-up tests - cache json files instead of downloading from internet
+  * use Enum for LCD type
 
 ## 1.7.0
 * Support for **AH-64D Apache** with 3 modes:
