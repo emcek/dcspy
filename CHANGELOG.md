@@ -1,3 +1,12 @@
+## 1.7.1
+* New config settings:
+  * `auto_start` - run DCSpy atomically after start
+  * `verbose` - show more logs in terminal/console window
+* Fixing handling of `dcsbios` settings from `config.yaml`
+* Internal:
+  * use Pythonic way using temporary directory
+  * speed-up tests - cache json files instead of downloading from internet
+
 ## 1.7.0
 * Support for **AH-64D Apache** with 3 modes:
   * `IDM` - Squeeze and shows radios frequencies (from Radio Area), IDM and RTS rocker are used to scroll down 
