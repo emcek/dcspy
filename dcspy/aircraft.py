@@ -2,10 +2,11 @@ from enum import Enum
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
-from os import environ, path
+from os import path
 from pprint import pformat
 from re import search
 from string import whitespace
+from tempfile import gettempdir
 from typing import Dict, Union, Optional, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw
@@ -67,7 +68,7 @@ class Aircraft:
         try:
             img = img_for_lcd[self.lcd.type]()
             getattr(self, f'draw_for_lcd_type_{self.lcd.type}')(img)
-            img.save(path.join(environ.get('TEMP', ''), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
+            img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
             return img
         except KeyError as err:
             LOG.debug(f'Wrong LCD type: {self.lcd} or key: {err}')
