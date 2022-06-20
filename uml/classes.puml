@@ -86,8 +86,8 @@ class Aircraft {
     + set_bios(selector: str, value: str)
     + get_bios(selector: str) -> Union[str, int]
     + get_next_value_for_button(btn_name: str) -> int
-    + {abstract} draw_for_lcd_type_1(img: Image)
-    + {abstract} draw_for_lcd_type_2(img: Image)
+    + {abstract} draw_for_lcd_mono(img: Image)
+    + {abstract} draw_for_lcd_color(img: Image)
 }
 
 class ApacheEufdMode <<(E,yellow)>> {
@@ -108,7 +108,7 @@ class BIOS_VALUE <<(T,orange)>> {
 class LcdInfo <<(D,orchid)>> {
     + height : int
     + width : int
-    + type : int
+    + type : LcdType
     + foreground : Union[int, Sequence[int]]
     + background : Union[int, Sequence[int]]
     + mode: str
@@ -116,6 +116,13 @@ class LcdInfo <<(D,orchid)>> {
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
 }
+
+class LcdType <<(E,yellow)>> {
+    + mono = 0
+    + color = 1
+}
+
+LcdType --* LcdInfo
 
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {

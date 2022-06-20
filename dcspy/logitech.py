@@ -44,7 +44,7 @@ class LogitechKeyboard:
         self.buttons: Tuple[int, ...] = (0,)
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
-        lcd_sdk.logi_lcd_init('DCS World', self.lcd.type)
+        lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
         self.plane = Aircraft(self.lcd)
         self.vert_space = 0
 

@@ -2,6 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
+from dcspy import LcdType
 from dcspy.logitech import KeyboardColor, KeyboardMono
 
 
@@ -52,8 +53,8 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
     assert keyboard_mono.plane_detected is detect
 
 
-@mark.parametrize('mode, size,  lcd_type, keyboard', [('1', (160, 43), 1, KeyboardMono),
-                                                      ('RGBA', (320, 240), 2, KeyboardColor)])
+@mark.parametrize('mode, size,  lcd_type, keyboard', [('1', (160, 43), LcdType.mono, KeyboardMono),
+                                                      ('RGBA', (320, 240), LcdType.color, KeyboardColor)])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
     from dcspy.aircraft import Aircraft
     from dcspy.sdk import lcd_sdk
