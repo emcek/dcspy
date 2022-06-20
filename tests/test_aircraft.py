@@ -46,16 +46,6 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
                     aircraft.prepare_image()
 
 
-def test_aircraft_base_class_other_lcd(aircraft):
-    from dcspy import LcdInfo
-    from PIL import ImageFont
-
-    font = ImageFont.truetype('consola.ttf', 10)
-    aircraft.lcd = LcdInfo(width=3, height=3, type=3, foreground=0, background=128, mode='2', font_xs=font, font_s=font, font_l=font)
-    img = aircraft.prepare_image()
-    assert img is None
-
-
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
 @mark.parametrize('plane, button, result', [('hornet_mono', 0, '\n'),
                                             ('hornet_mono', 16, '\n'),
