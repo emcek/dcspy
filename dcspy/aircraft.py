@@ -314,27 +314,6 @@ class Ka50(Aircraft):
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
 
-    def button_request(self, button: int, request: str = '\n') -> str:
-        """
-        Prepare Ka-50 Black Shark specific DCS-BIOS request for button pressed.
-
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-        If button is out of scope new line is return.
-        :param button: possible values 1-4
-        :param request: valid DCS-BIOS command as string
-        :return: ready to send DCS-BIOS request
-        """
-        action = {1: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-                  2: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-                  3: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-                  4: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
-                  9: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-                  10: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-                  14: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-                  13: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
-        return super().button_request(button, action.get(button, '\n'))
-
     def _auto_pilot_switch_1(self, draw_obj: ImageDraw) -> None:
         """
         Draw rectangle and add text for autopilot channels in correct coordinates.
@@ -404,6 +383,27 @@ class Ka50(Aircraft):
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         return line1, line2
+
+    def button_request(self, button: int, request: str = '\n') -> str:
+        """
+        Prepare Ka-50 Black Shark specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        If button is out of scope new line is return.
+        :param button: possible values 1-4
+        :param request: valid DCS-BIOS command as string
+        :return: ready to send DCS-BIOS request
+        """
+        action = {1: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
+                  2: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
+                  3: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
+                  4: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
+                  9: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
+                  10: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
+                  14: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
+                  13: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
+        return super().button_request(button, action.get(button, '\n'))
 
 
 class ApacheEufdMode(Enum):
@@ -620,6 +620,17 @@ class F14B(Aircraft):
             'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
             'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
 
+    def _draw_common_data(self, draw: ImageDraw) -> None:
+        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
+
+    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
+        """Prepare image for F-14B Tomcat for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img))
+
+    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
+        """Prepare image for F-14B Tomcat for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img))
+
     def button_request(self, button: int, request: str = '\n') -> str:
         """
         Prepare F-14 Tomcat specific DCS-BIOS request for button pressed.
@@ -640,17 +651,6 @@ class F14B(Aircraft):
                   14: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
                   13: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
         return super().button_request(button, action.get(button, '\n'))
-
-    def _draw_common_data(self, draw: ImageDraw) -> None:
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
-
-    def draw_for_lcd_type_1(self, img: Image.Image) -> None:
-        """Prepare image for F-14B Tomcat for Mono LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img))
-
-    def draw_for_lcd_type_2(self, img: Image.Image) -> None:
-        """Prepare image for F-14B Tomcat for Color LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img))
 
 
 class AV8BNA(Aircraft):
