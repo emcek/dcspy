@@ -35,8 +35,8 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * more to come....
 
 ## Requirements
-* [Python 3.10](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.1-amd64.exe.  
-* [Logitech Gaming Software 9.02.65](https://support.logitech.com/software/lgs)
+* [Python 3.10](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see installation) should be fine, please choose Windows x86-64 version, file should be python-3.10.5-amd64.exe.  
+* [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.45](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 
 **Notes:**
