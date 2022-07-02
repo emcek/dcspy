@@ -3,6 +3,7 @@
   * `auto_start` - run DCSpy atomically after start
   * `verbose` - show more logs in terminal/console window
 * Fixing handling of `dcsbios` settings from `config.yaml`
+* F-16C DED: replace `*` with  inverse white circle character
 * Internal:
   * use Pythonic way using temporary directory
   * speed-up tests - cache json files instead of downloading from internet

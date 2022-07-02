@@ -267,6 +267,7 @@ class F16C50(Aircraft):
             value = value.replace('\u0002', '')  # List - 7
             value = value.replace('\x80', '')  # 1 T-ILS
             value = value.replace('\x08', '')  # 7 MARK
+            value = value.replace('*', '\u25d9')  # INVERSE WHITE CIRCLE
         super().set_bios(selector, value)
 
     def button_request(self, button: int, request: str = '\n') -> str:
