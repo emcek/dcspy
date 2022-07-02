@@ -237,17 +237,18 @@ class DcspyGui(tk.Frame):
         return result
 
     def _stop(self) -> None:
-        self.status_txt.set('Close will shutdown DCSpy')
+        self.status_txt.set('Start again or close DCSpy')
         self.event.set()
 
     def start_dcspy(self) -> None:
         """Run real application."""
+        self.event = Event()
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
         app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
-        LOG.debug(f'Starting thread for: {app_params}')
         app_thread.name = 'dcspy-app'
+        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.status_txt.set('You can close GUI')
         app_thread.start()
