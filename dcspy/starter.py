@@ -109,4 +109,3 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
     lcd.display = ['Logitech LCD OK', 'DCSpy stopped', '', f'v{__version__}']
-
