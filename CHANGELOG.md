@@ -4,14 +4,15 @@
   * `verbose` - show more logs in terminal/console window
 * Fixing handling of `dcsbios` settings from `config.yaml`
 * Start and stop buttons can be used several times without closing GUI
-* **F-16C Viper**DED: replace `*` with  inverse white circle character
-* G19 And **F/A-18C Hornet**
+* **F-16C Viper** DED: replace `*` with inverse white circle character
+* G19 and **F/A-18C Hornet**
   * Push **Menu** and **Cancel** toggle cockpit button down, push it again toggles button up (Integrated Fuel/Engine Indicator - IFEI).
   * Add handling **Ok** as Attitude Selector Switch, INS/AUTO/STBY
 * Internal:
   * use Pythonic way using temporary directory
   * speed-up tests - cache json files instead of downloading from internet
   * use Enum for LCD type
+  * use Enum for LCD buttons
 
 ## 1.7.0
 * Support for **AH-64D Apache** with 3 modes:
