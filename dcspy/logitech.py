@@ -1,14 +1,13 @@
 from functools import partial
 from importlib import import_module
 from logging import getLogger
-from math import log2
 from pprint import pformat
 from socket import socket
 from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR, LcdButton
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
@@ -41,7 +40,7 @@ class LogitechKeyboard:
         self.plane_name = ''
         self.plane_detected = False
         self.already_pressed = False
-        self.buttons: Tuple[int, ...] = (0,)
+        self.buttons: Tuple[LcdButton, ...] = (LcdButton.none,)
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
@@ -113,22 +112,20 @@ class LogitechKeyboard:
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
             buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 
-    def check_buttons(self) -> int:
+    def check_buttons(self) -> LcdButton:
         """
-        Check if button was pressed and return it`s number.
+        Check if button was pressed and return it`s enum.
 
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-        :return: number of pressed button
+        :return: LcdButton enum of pressed button
         """
         for btn in self.buttons:
-            if lcd_sdk.logi_lcd_is_button_pressed(btn):
+            if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
                 if not self.already_pressed:
                     self.already_pressed = True
-                    return int(log2(btn)) + 1
-                return 0
+                    return LcdButton(btn)
+                return LcdButton.none
         self.already_pressed = False
-        return 0
+        return LcdButton.none
 
     def button_handle(self, sock: socket) -> None:
         """
@@ -136,11 +133,11 @@ class LogitechKeyboard:
 
         * detect if button was pressed
         * fetch DCS-BIOS request from current plane
-        * sent it action to DCS-BIOS via. network socket
+        * sent action to DCS-BIOS via. network socket
         :param sock: network socket
         """
         button = self.check_buttons()
-        if button:
+        if button.value:
             sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)
 
     def clear(self, true_clear=False):
@@ -182,7 +179,7 @@ class KeyboardMono(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         """
         super().__init__(parser_hook, lcd_type=LcdMono)
-        self.buttons = (lcd_sdk.MONO_BUTTON_0, lcd_sdk.MONO_BUTTON_1, lcd_sdk.MONO_BUTTON_2, lcd_sdk.MONO_BUTTON_3)
+        self.buttons = (LcdButton.one, LcdButton.two, LcdButton.three, LcdButton.four)
         self.vert_space = 10
 
 
@@ -195,7 +192,5 @@ class KeyboardColor(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         """
         super().__init__(parser_hook, lcd_type=LcdColor)
-        self.buttons = (lcd_sdk.COLOR_BUTTON_LEFT, lcd_sdk.COLOR_BUTTON_RIGHT, lcd_sdk.COLOR_BUTTON_OK,
-                        lcd_sdk.COLOR_BUTTON_CANCEL, lcd_sdk.COLOR_BUTTON_UP, lcd_sdk.COLOR_BUTTON_DOWN,
-                        lcd_sdk.COLOR_BUTTON_MENU)
+        self.buttons = (LcdButton.left, LcdButton.right, LcdButton.up, LcdButton.down, LcdButton.ok, LcdButton.cancel, LcdButton.menu)
         self.vert_space = 40

@@ -24,6 +24,21 @@ class LcdType(Enum):
     color = lcd_sdk.TYPE_COLOR
 
 
+class LcdButton(Enum):
+    none = 0x0
+    one = 0x1
+    two = 0x2
+    three = 0x4
+    four = 0x8
+    left = 0x100
+    right = 0x200
+    ok = 0x400
+    cancel = 0x800
+    up = 0x1000
+    down = 0x2000
+    menu = 0x4000
+
+
 @dataclass
 class LcdInfo:
     width: int

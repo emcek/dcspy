@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy import LcdType
+from dcspy import LcdType, LcdButton
 from dcspy.logitech import KeyboardColor, KeyboardMono
 
 
@@ -21,9 +21,9 @@ def test_keyboard_base_basic_check(keyboard_base):
 
 
 @mark.parametrize('pressed1, effect, chk_btn, calls, pressed2',
-                  [(False, [False, False, False, True], 4, [call(1), call(2), call(4), call(8)], True),
-                   (True, [True, False, False, False], 0, [call(1)], True),
-                   (False, [False, False, False, False], 0, [call(1), call(2), call(4), call(8)], False)])
+                  [(False, [False, False, False, True], LcdButton.four, [call(1), call(2), call(4), call(8)], True),
+                   (True, [True, False, False, False], LcdButton.none, [call(1)], True),
+                   (False, [False, False, False, False], LcdButton.none, [call(1), call(2), call(4), call(8)], False)])
 def test_keyboard_mono_check_buttons(pressed1, effect, chk_btn, calls, pressed2, keyboard_mono):
     from dcspy.sdk import lcd_sdk
     keyboard_mono.already_pressed = pressed1

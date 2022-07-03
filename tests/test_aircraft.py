@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from pytest import mark, raises
 
-from dcspy import LcdColor, LcdMono
+from dcspy import LcdColor, LcdMono, LcdButton
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'AV8BNA']
 
@@ -47,65 +47,48 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
-@mark.parametrize('plane, button, result', [('hornet_mono', 0, '\n'),
-                                            ('hornet_mono', 16, '\n'),
-                                            ('hornet_mono', 'a', '\n'),
-                                            ('hornet_mono', 1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                            ('hornet_mono', 4, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
-                                            ('hornet_color', 0, '\n'),
-                                            ('hornet_color', 16, '\n'),
-                                            ('hornet_color', ' ', '\n'),
-                                            ('hornet_color', 9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                            ('hornet_color', 14, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
-                                            ('harrier_mono', 0, '\n'),
-                                            ('harrier_mono', 16, '\n'),
-                                            ('harrier_mono', 'g', '\n'),
-                                            ('harrier_mono', 2, 'UFC_COM1_SEL 3200\n'),
-                                            ('harrier_mono', 3, 'UFC_COM2_SEL -3200\n'),
-                                            ('harrier_color', 0, '\n'),
-                                            ('harrier_color', 16, '\n'),
-                                            ('harrier_color', '.', '\n'),
-                                            ('harrier_color', 10, 'UFC_COM1_SEL 3200\n'),
-                                            ('harrier_color', 13, 'UFC_COM2_SEL 3200\n'),
-                                            ('black_shark_mono', 0, '\n'),
-                                            ('black_shark_mono', 16, '\n'),
-                                            ('black_shark_mono', 2, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
-                                            ('black_shark_mono', 3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
-                                            ('black_shark_color', 'a', '\n'),
-                                            ('black_shark_color', 9, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
-                                            ('black_shark_color', 13, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
-                                            ('tomcat_mono', -1, '\n'),
-                                            ('tomcat_mono', 44, '\n'),
-                                            ('tomcat_mono', 3, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
-                                            ('tomcat_mono', 4, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
-                                            ('tomcat_color', '*', '\n'),
-                                            ('tomcat_color', 9, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
-                                            ('tomcat_color', 10, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
-                                            ('viper_mono', 2, 'IFF_ENABLE_SW 1\n'),
-                                            ('viper_mono', 3, 'IFF_M4_CODE_SW 1\n'),
-                                            ('viper_mono', 4, 'IFF_M4_REPLY_SW 1\n'),
-                                            ('viper_color', 9, 'IFF_MASTER_KNB 1\n'),
-                                            ('viper_color', 10, 'IFF_ENABLE_SW 1\n'),
-                                            ('viper_color', 14, 'IFF_M4_CODE_SW 1\n'),
-                                            ('apache_mono', 0, '\n'),
-                                            ('apache_mono', 16, '\n'),
-                                            ('apache_mono', 'a', '\n'),
-                                            ('apache_mono', 1, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
-                                            ('apache_mono', 2, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
-                                            ('apache_mono', 3, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
-                                            ('apache_mono', 4, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+@mark.parametrize('plane, button, result', [('hornet_mono', LcdButton.none, '\n'),
+                                            ('hornet_mono', LcdButton.one, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                            ('hornet_mono', LcdButton.four, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
+                                            ('hornet_color', LcdButton.none, '\n'),
+                                            ('hornet_color', LcdButton.left, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                            ('hornet_color', LcdButton.down, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
+                                            ('harrier_mono', LcdButton.none, '\n'),
+                                            ('harrier_mono', LcdButton.two, 'UFC_COM1_SEL 3200\n'),
+                                            ('harrier_mono', LcdButton.three, 'UFC_COM2_SEL -3200\n'),
+                                            ('harrier_color', LcdButton.none, '\n'),
+                                            ('harrier_color', LcdButton.right, 'UFC_COM1_SEL 3200\n'),
+                                            ('harrier_color', LcdButton.up, 'UFC_COM2_SEL 3200\n'),
+                                            ('black_shark_mono', LcdButton.none, '\n'),
+                                            ('black_shark_mono', LcdButton.two, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
+                                            ('black_shark_mono', LcdButton.three, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
+                                            ('black_shark_color', LcdButton.left, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
+                                            ('black_shark_color', LcdButton.up, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
+                                            ('tomcat_mono', LcdButton.three, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
+                                            ('tomcat_mono', LcdButton.four, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
+                                            ('tomcat_color', LcdButton.left, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
+                                            ('tomcat_color', LcdButton.right, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
+                                            ('viper_mono', LcdButton.two, 'IFF_ENABLE_SW 1\n'),
+                                            ('viper_mono', LcdButton.three, 'IFF_M4_CODE_SW 1\n'),
+                                            ('viper_mono', LcdButton.four, 'IFF_M4_REPLY_SW 1\n'),
+                                            ('viper_color', LcdButton.left, 'IFF_MASTER_KNB 1\n'),
+                                            ('viper_color', LcdButton.right, 'IFF_ENABLE_SW 1\n'),
+                                            ('viper_color', LcdButton.down, 'IFF_M4_CODE_SW 1\n'),
+                                            ('apache_mono', LcdButton.none, '\n'),
+                                            ('apache_mono', LcdButton.one, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+                                            ('apache_mono', LcdButton.two, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+                                            ('apache_mono', LcdButton.three, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+                                            ('apache_mono', LcdButton.four, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_plane(plane, button, result, request):
     plane = request.getfixturevalue(plane)
     assert plane.button_request(button) == result
 
 
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (16, '\n'),
-                                     (' ', '\n'),
-                                     (9, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
-                                     (10, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
-                                     (14, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
-                                     (13, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+@mark.parametrize('button, result', [(LcdButton.none, '\n'),
+                                     (LcdButton.left, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
+                                     (LcdButton.right, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+                                     (LcdButton.down, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+                                     (LcdButton.up, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_apache_color(button, result, apache_color):
     from dcspy.aircraft import ApacheEufdMode
     apache_color.mode = ApacheEufdMode.WCA
@@ -114,30 +97,30 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
 
 def test_get_next_value_for_button_in_viper(viper_color):
     from itertools import cycle
-    btn9, name9 = 9, 'IFF_MASTER_KNB'
+    btn_left, btn_name = LcdButton.left, 'IFF_MASTER_KNB'
     assert not all([v for v in viper_color.cycle_buttons.values()])
-    assert viper_color.button_request(btn9) == f'{name9} 1\n'
-    assert viper_color.button_request(btn9) == f'{name9} 2\n'
-    assert viper_color.button_request(btn9) == f'{name9} 3\n'
-    assert viper_color.button_request(btn9) == f'{name9} 4\n'
-    assert viper_color.button_request(btn9) == f'{name9} 3\n'
-    assert viper_color.button_request(btn9) == f'{name9} 2\n'
-    assert viper_color.button_request(btn9) == f'{name9} 1\n'
-    assert viper_color.button_request(btn9) == f'{name9} 0\n'
-    assert viper_color.button_request(btn9) == f'{name9} 1\n'
-    assert isinstance(viper_color.cycle_buttons[name9], cycle)
+    assert viper_color.button_request(btn_left) == f'{btn_name} 1\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 2\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 3\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 4\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 3\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 2\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 1\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 0\n'
+    assert viper_color.button_request(btn_left) == f'{btn_name} 1\n'
+    assert isinstance(viper_color.cycle_buttons[btn_name], cycle)
 
 
 def test_get_next_value_for_button_in_hornet(hornet_color):
     from itertools import cycle
-    btn11, name11 = 11, 'HUD_ATT_SW'
+    btn_ok, btn_name = LcdButton.ok, 'HUD_ATT_SW'
     assert not all([v for v in hornet_color.cycle_buttons.values()])
-    assert hornet_color.button_request(btn11) == f'{name11} 1\n'
-    assert hornet_color.button_request(btn11) == f'{name11} 2\n'
-    assert hornet_color.button_request(btn11) == f'{name11} 1\n'
-    assert hornet_color.button_request(btn11) == f'{name11} 0\n'
-    assert hornet_color.button_request(btn11) == f'{name11} 1\n'
-    assert isinstance(hornet_color.cycle_buttons[name11], cycle)
+    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
+    assert hornet_color.button_request(btn_ok) == f'{btn_name} 2\n'
+    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
+    assert hornet_color.button_request(btn_ok) == f'{btn_name} 0\n'
+    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
+    assert isinstance(hornet_color.cycle_buttons[btn_name], cycle)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
