@@ -7,7 +7,7 @@ from pprint import pformat
 from re import search
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Union, Optional, Iterator, Sequence, List
+from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw
 

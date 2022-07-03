@@ -104,4 +104,8 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(lcd)}')
     LOG.debug(f'Loading: {repr(lcd)}')
-    _handle_connection(lcd, parser, _prepare_socket(), event)
+    dcs_sock = _prepare_socket()
+    _handle_connection(lcd, parser, dcs_sock, event)
+    dcs_sock.close()
+    LOG.info('DCSpy stopped.')
+    lcd.display = ['Logitech LCD OK', 'DCSpy stopped', '', f'v{__version__}']
