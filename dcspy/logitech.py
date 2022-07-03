@@ -8,7 +8,7 @@ from typing import List, Tuple
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR
+from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR, LcdButton
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk
@@ -113,22 +113,22 @@ class LogitechKeyboard:
             buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
             buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 
-    def check_buttons(self) -> int:
+    def check_buttons(self) -> LcdButton:
         """
-        Check if button was pressed and return it`s number.
+        Check if button was pressed and return it`s enum.
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-        :return: number of pressed button
+        :return: LcdButton enum of pressed button
         """
         for btn in self.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn):
                 if not self.already_pressed:
                     self.already_pressed = True
-                    return int(log2(btn)) + 1
-                return 0
+                    return LcdButton(int(log2(btn)) + 1)
+                return LcdButton.none
         self.already_pressed = False
-        return 0
+        return LcdButton.none
 
     def button_handle(self, sock: socket) -> None:
         """
@@ -140,7 +140,7 @@ class LogitechKeyboard:
         :param sock: network socket
         """
         button = self.check_buttons()
-        if button:
+        if button.value:
             sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)
 
     def clear(self, true_clear=False):
