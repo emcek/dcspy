@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy import LcdType
+from dcspy import LcdType, LcdButton
 from dcspy.logitech import KeyboardColor, KeyboardMono
 
 
@@ -28,7 +28,7 @@ def test_keyboard_mono_check_buttons(pressed1, effect, chk_btn, calls, pressed2,
     from dcspy.sdk import lcd_sdk
     keyboard_mono.already_pressed = pressed1
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
-        assert keyboard_mono.check_buttons() == chk_btn
+        assert keyboard_mono.check_buttons() == LcdButton(chk_btn)
     lcd_btn_pressed.assert_has_calls(calls)
     assert keyboard_mono.already_pressed is pressed2
 
