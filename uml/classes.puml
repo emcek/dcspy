@@ -122,7 +122,25 @@ class LcdType <<(E,yellow)>> {
     + color = 1
 }
 
+class LcdButton <<(E,yellow)>> {
+    + none = 0
+    + one = 1
+    + two = 2
+    + three = 3
+    + four = 4
+    + left = 9
+    + right = 10
+    + ok = 11
+    + cancel = 12
+    + up = 13
+    + down = 14
+    + menu = 15
+}
+
+
 LcdType --* LcdInfo
+LcdButton ---* LogitechKeyboard
+LcdButton ---* Aircraft
 
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
@@ -165,7 +183,7 @@ LogitechKeyboard *-- lcd_sdk
 KeyboardMono *-- lcd_sdk
 KeyboardColor *-- lcd_sdk
 
-LcdInfo -* Aircraft
+LcdInfo --* Aircraft
 Aircraft *-- StringBuffer
 Aircraft *-- IntegerBuffer
 Aircraft *-- lcd_sdk
