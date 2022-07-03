@@ -4,7 +4,9 @@
   * `verbose` - show more logs in terminal/console window
 * Fixing handling of `dcsbios` settings from `config.yaml`
 * Start and stop buttons can be used several times without closing GUI
-* **F-16C Viper** DED: replace `*` with inverse white circle character
+* **F-16C Viper** 
+  * replace `*` with inverse white circle character at DED
+  * Fix unhandled buttons for G19 (menu, ok and cancel)
 * G19 and **F/A-18C Hornet**
   * Push **Menu** and **Cancel** toggle cockpit button down, push it again toggles button up (Integrated Fuel/Engine Indicator - IFEI).
   * Add handling **Ok** as Attitude Selector Switch, INS/AUTO/STBY
