@@ -47,52 +47,52 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
 
 
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
-@mark.parametrize('plane, button, result', [('hornet_mono', 0, '\n'),
-                                            ('hornet_mono', 1, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                            ('hornet_mono', 4, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
-                                            ('hornet_color', 0, '\n'),
-                                            ('hornet_color', 9, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                            ('hornet_color', 14, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
-                                            ('harrier_mono', 0, '\n'),
-                                            ('harrier_mono', 2, 'UFC_COM1_SEL 3200\n'),
-                                            ('harrier_mono', 3, 'UFC_COM2_SEL -3200\n'),
-                                            ('harrier_color', 0, '\n'),
-                                            ('harrier_color', 10, 'UFC_COM1_SEL 3200\n'),
-                                            ('harrier_color', 13, 'UFC_COM2_SEL 3200\n'),
-                                            ('black_shark_mono', 0, '\n'),
-                                            ('black_shark_mono', 2, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
-                                            ('black_shark_mono', 3, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
-                                            ('black_shark_color', 9, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
-                                            ('black_shark_color', 13, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
-                                            ('tomcat_mono', 3, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
-                                            ('tomcat_mono', 4, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
-                                            ('tomcat_color', 9, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
-                                            ('tomcat_color', 10, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
-                                            ('viper_mono', 2, 'IFF_ENABLE_SW 1\n'),
-                                            ('viper_mono', 3, 'IFF_M4_CODE_SW 1\n'),
-                                            ('viper_mono', 4, 'IFF_M4_REPLY_SW 1\n'),
-                                            ('viper_color', 9, 'IFF_MASTER_KNB 1\n'),
-                                            ('viper_color', 10, 'IFF_ENABLE_SW 1\n'),
-                                            ('viper_color', 14, 'IFF_M4_CODE_SW 1\n'),
-                                            ('apache_mono', 0, '\n'),
-                                            ('apache_mono', 1, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
-                                            ('apache_mono', 2, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
-                                            ('apache_mono', 3, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
-                                            ('apache_mono', 4, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+@mark.parametrize('plane, button, result', [('hornet_mono', LcdButton.none, '\n'),
+                                            ('hornet_mono', LcdButton.one, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                            ('hornet_mono', LcdButton.four, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
+                                            ('hornet_color', LcdButton.none, '\n'),
+                                            ('hornet_color', LcdButton.left, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+                                            ('hornet_color', LcdButton.down, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
+                                            ('harrier_mono', LcdButton.none, '\n'),
+                                            ('harrier_mono', LcdButton.two, 'UFC_COM1_SEL 3200\n'),
+                                            ('harrier_mono', LcdButton.three, 'UFC_COM2_SEL -3200\n'),
+                                            ('harrier_color', LcdButton.none, '\n'),
+                                            ('harrier_color', LcdButton.right, 'UFC_COM1_SEL 3200\n'),
+                                            ('harrier_color', LcdButton.up, 'UFC_COM2_SEL 3200\n'),
+                                            ('black_shark_mono', LcdButton.none, '\n'),
+                                            ('black_shark_mono', LcdButton.two, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
+                                            ('black_shark_mono', LcdButton.three, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
+                                            ('black_shark_color', LcdButton.left, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
+                                            ('black_shark_color', LcdButton.up, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
+                                            ('tomcat_mono', LcdButton.three, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
+                                            ('tomcat_mono', LcdButton.four, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
+                                            ('tomcat_color', LcdButton.left, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
+                                            ('tomcat_color', LcdButton.right, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
+                                            ('viper_mono', LcdButton.two, 'IFF_ENABLE_SW 1\n'),
+                                            ('viper_mono', LcdButton.three, 'IFF_M4_CODE_SW 1\n'),
+                                            ('viper_mono', LcdButton.four, 'IFF_M4_REPLY_SW 1\n'),
+                                            ('viper_color', LcdButton.left, 'IFF_MASTER_KNB 1\n'),
+                                            ('viper_color', LcdButton.right, 'IFF_ENABLE_SW 1\n'),
+                                            ('viper_color', LcdButton.down, 'IFF_M4_CODE_SW 1\n'),
+                                            ('apache_mono', LcdButton.none, '\n'),
+                                            ('apache_mono', LcdButton.one, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+                                            ('apache_mono', LcdButton.two, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+                                            ('apache_mono', LcdButton.three, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+                                            ('apache_mono', LcdButton.four, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_plane(plane, button, result, request):
     plane = request.getfixturevalue(plane)
-    assert plane.button_request(LcdButton(button)) == result
+    assert plane.button_request(button) == result
 
 
-@mark.parametrize('button, result', [(0, '\n'),
-                                     (9, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
-                                     (10, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
-                                     (14, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
-                                     (13, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+@mark.parametrize('button, result', [(LcdButton.none, '\n'),
+                                     (LcdButton.left, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
+                                     (LcdButton.right, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+                                     (LcdButton.down, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+                                     (LcdButton.up, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
 def test_button_pressed_for_apache_color(button, result, apache_color):
     from dcspy.aircraft import ApacheEufdMode
     apache_color.mode = ApacheEufdMode.WCA
-    assert apache_color.button_request(LcdButton(button)) == result
+    assert apache_color.button_request(button) == result
 
 
 def test_get_next_value_for_button_in_viper(viper_color):
