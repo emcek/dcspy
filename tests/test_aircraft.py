@@ -128,6 +128,18 @@ def test_get_next_value_for_button_in_viper(viper_color):
     assert isinstance(viper_color.cycle_buttons[name9], cycle)
 
 
+def test_get_next_value_for_button_in_hornet(hornet_color):
+    from itertools import cycle
+    btn11, name11 = 11, 'HUD_ATT_SW'
+    assert not all([v for v in hornet_color.cycle_buttons.values()])
+    assert hornet_color.button_request(btn11) == f'{name11} 1\n'
+    assert hornet_color.button_request(btn11) == f'{name11} 2\n'
+    assert hornet_color.button_request(btn11) == f'{name11} 1\n'
+    assert hornet_color.button_request(btn11) == f'{name11} 0\n'
+    assert hornet_color.button_request(btn11) == f'{name11} 1\n'
+    assert isinstance(hornet_color.cycle_buttons[name11], cycle)
+
+
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
 @mark.parametrize('plane, selector, value, result', [('hornet_mono', 'UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
                                                      ('hornet_mono', 'UFC_COMM1_DISPLAY', '``', '11'),
