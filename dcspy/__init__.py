@@ -25,18 +25,18 @@ class LcdType(Enum):
 
 
 class LcdButton(Enum):
-    one = lcd_sdk.MONO_BUTTON_1
-    two = lcd_sdk.MONO_BUTTON_2
-    three = lcd_sdk.MONO_BUTTON_3
-    four = lcd_sdk.MONO_BUTTON_4
-    left = lcd_sdk.COLOR_BUTTON_LEFT
-    right = lcd_sdk.COLOR_BUTTON_RIGHT
-    ok = lcd_sdk.COLOR_BUTTON_OK
-    cancel = lcd_sdk.COLOR_BUTTON_CANCEL
-    up = lcd_sdk.COLOR_BUTTON_UP
-    down = lcd_sdk.COLOR_BUTTON_DOWN
-    menu = lcd_sdk.COLOR_BUTTON_MENU
     none = 0x0
+    one = 0x1
+    two = 0x2
+    three = 0x4
+    four = 0x8
+    left = 0x100
+    right = 0x200
+    ok = 0x400
+    cancel = 0x800
+    up = 0x1000
+    down = 0x2000
+    menu = 0x4000
 
 
 @dataclass
