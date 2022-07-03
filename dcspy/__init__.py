@@ -36,7 +36,7 @@ class LcdButton(Enum):
     up = lcd_sdk.COLOR_BUTTON_UP
     down = lcd_sdk.COLOR_BUTTON_DOWN
     menu = lcd_sdk.COLOR_BUTTON_MENU
-    none = 0
+    none = 0x0
 
 
 @dataclass
