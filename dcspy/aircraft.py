@@ -207,7 +207,7 @@ class FA18Chornet(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        button_map = {11: 'HUD_ATT_SW',  12: 'IFEI_UP_BTN', 15: 'IFEI_DWN_BTN'}
+        button_map = {11: 'HUD_ATT_SW', 12: 'IFEI_UP_BTN', 15: 'IFEI_DWN_BTN'}
         settings = 0
         button_bios_name = ''
         if button in button_map:
