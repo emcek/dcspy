@@ -146,7 +146,11 @@ class FA18Chornet(Aircraft):
             'UFC_OPTION_CUEING_4': {'class': 'StringBuffer', 'args': {'address': 0x742e, 'max_length': 1}, 'value': str()},
             'UFC_OPTION_CUEING_5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'max_length': 1}, 'value': str()},
             'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 6}, 'value': str()},
-            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': str()}}
+            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': str()},
+            'HUD_ATT_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
+            'IFEI_DWN_BTN': {'class': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
+            'IFEI_UP_BTN': {'class': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
+        self.cycle_buttons = {'HUD_ATT_SW': '', 'IFEI_DWN_BTN': '', 'IFEI_UP_BTN': ''}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
         scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
@@ -203,6 +207,12 @@ class FA18Chornet(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
+        button_map = {11: 'HUD_ATT_SW',  12: 'IFEI_UP_BTN', 15: 'IFEI_DWN_BTN'}
+        settings = 0
+        button_bios_name = ''
+        if button in button_map:
+            button_bios_name = button_map[button]
+            settings = self.get_next_value_for_button(button_bios_name)
         action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
                   2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
                   3: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
@@ -211,8 +221,9 @@ class FA18Chornet(Aircraft):
                   10: 'UFC_COMM1_CHANNEL_SELECT INC\n',
                   14: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
                   13: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-                  15: 'IFEI_DWN_BTN 1\nIFEI_DWN_BTN 0\n',
-                  12: 'IFEI_UP_BTN 1\nIFEI_UP_BTN 0\n'}
+                  15: f'{button_bios_name} {settings}\n',
+                  12: f'{button_bios_name} {settings}\n',
+                  11: f'{button_bios_name} {settings}\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
