@@ -298,9 +298,20 @@ class F16C50(Aircraft):
                       LcdButton.right: 'IFF_ENABLE_SW',
                       LcdButton.down: 'IFF_M4_CODE_SW',
                       LcdButton.up: 'IFF_M4_REPLY_SW'}
-        button_bios_name = button_map[button]
-        setting = self.get_next_value_for_button(button_bios_name)
-        return super().button_request(button, f'{button_bios_name} {setting}\n')
+        settings = 0
+        button_bios_name = ''
+        if button in button_map:
+            button_bios_name = button_map[button]
+            settings = self.get_next_value_for_button(button_bios_name)
+        action = {LcdButton.one: f'{button_bios_name} {settings}\n',
+                  LcdButton.two: f'{button_bios_name} {settings}\n',
+                  LcdButton.three: f'{button_bios_name} {settings}\n',
+                  LcdButton.four: f'{button_bios_name} {settings}\n',
+                  LcdButton.left: f'{button_bios_name} {settings}\n',
+                  LcdButton.right: f'{button_bios_name} {settings}\n',
+                  LcdButton.down: f'{button_bios_name} {settings}\n',
+                  LcdButton.up: f'{button_bios_name} {settings}\n'}
+        return super().button_request(button, action.get(button, '\n'))
 
 
 class Ka50(Aircraft):
