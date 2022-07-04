@@ -3,7 +3,7 @@ from importlib import import_module
 from logging import getLogger
 from pprint import pformat
 from socket import socket
-from typing import List, Tuple
+from typing import List
 
 from PIL import Image, ImageDraw
 
@@ -40,7 +40,6 @@ class LogitechKeyboard:
         self.plane_name = ''
         self.plane_detected = False
         self.already_pressed = False
-        self.buttons: Tuple[LcdButton, ...] = (LcdButton.none,)
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
@@ -118,7 +117,7 @@ class LogitechKeyboard:
 
         :return: LcdButton enum of pressed button
         """
-        for btn in self.buttons:
+        for btn in self.lcd.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
                 if not self.already_pressed:
                     self.already_pressed = True
@@ -179,7 +178,6 @@ class KeyboardMono(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         """
         super().__init__(parser_hook, lcd_type=LcdMono)
-        self.buttons = (LcdButton.one, LcdButton.two, LcdButton.three, LcdButton.four)
         self.vert_space = 10
 
 
@@ -192,5 +190,4 @@ class KeyboardColor(LogitechKeyboard):
         :param parser_hook: BSC-BIOS parser
         """
         super().__init__(parser_hook, lcd_type=LcdColor)
-        self.buttons = (LcdButton.left, LcdButton.right, LcdButton.up, LcdButton.down, LcdButton.ok, LcdButton.cancel, LcdButton.menu)
         self.vert_space = 40
