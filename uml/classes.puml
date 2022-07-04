@@ -39,8 +39,8 @@ class LogitechKeyboard {
     + plane_name = '' : str
     + plane_detected = False : bool
     + already_pressed = False : bool
-    + buttons : Tuple[int]
     + lcd : LcdInfo
+    + self.vert_space = 0 : int
     + dislay(message : List[str]) -> List[str]
     # {abstract} _prepare_image() -> Image
     + detecting_plane()
@@ -52,12 +52,12 @@ class LogitechKeyboard {
 }
 
 class KeyboardMono {
-    + buttons : Tuple[int]
+    + self.vert_space = 10 : int
     # _prepare_image() -> Image
 }
 
 class KeyboardColor {
-    + buttons : Tuple[int]
+    + self.vert_space = 40 : int
     # _prepare_image() -> Image
 }
 
@@ -109,6 +109,7 @@ class LcdInfo <<(D,orchid)>> {
     + height : int
     + width : int
     + type : LcdType
+    + buttons: Sequence[LcdButton]
     + foreground : Union[int, Sequence[int]]
     + background : Union[int, Sequence[int]]
     + mode: str
@@ -139,8 +140,8 @@ class LcdButton <<(E,yellow)>> {
 
 
 LcdType --* LcdInfo
-LcdButton ---* LogitechKeyboard
-LcdButton ---* Aircraft
+LcdButton --* LcdInfo
+LcdButton --* Aircraft
 
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
@@ -179,9 +180,6 @@ LogitechKeyboard *- Aircraft
 LcdInfo -* LogitechKeyboard
 LogitechKeyboard *--- ProtocolParser
 LogitechKeyboard *-- lcd_sdk
-
-KeyboardMono *-- lcd_sdk
-KeyboardColor *-- lcd_sdk
 
 LcdInfo --* Aircraft
 Aircraft *-- StringBuffer
