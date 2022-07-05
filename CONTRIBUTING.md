@@ -52,14 +52,14 @@ sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 777
 ```
 * Correct action is define in aircraft instance `button_request()` method:
 ```python
-action = {LcdButton.one: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          LcdButton.two: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          LcdButton.three: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          LcdButton.four: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-          LcdButton.left: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          LcdButton.right: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          LcdButton.down: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          LcdButton.up: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
+action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+          LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+          LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+          LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+          LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+          LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+          LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+          LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
 return super().button_request(button, action.get(button, '\n'))
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
