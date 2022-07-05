@@ -42,6 +42,13 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
 
 
 @mark.parametrize('plane_str, plane, display, detect', [('FA-18C_hornet', 'FA18Chornet', [], True),
+                                                        ('F-16C_50', 'F16C50', [], True),
+                                                        ('Ka-50', 'Ka50', [], True),
+                                                        ('AH-64D', 'AH64D', [], True),
+                                                        ('A-10C', 'A10C', [], True),
+                                                        ('A-10C_2', 'A10C2', [], True),
+                                                        ('F-14B', 'F14B', [], True),
+                                                        ('AV8BNA', 'AV8BNA', [], True),
                                                         ('F-114_Nighthawk', 'F114Nighthawk', ['Not supported yet!'], False)])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy.sdk import lcd_sdk
