@@ -138,11 +138,6 @@ class LcdButton <<(E,yellow)>> {
     + menu = 0x4000
 }
 
-
-LcdType --* LcdInfo
-LcdButton --* LcdInfo
-LcdButton --* Aircraft
-
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
         + logi_lcd_init()
@@ -176,6 +171,10 @@ package sdk{
     }
 }
 
+LcdType --* LcdInfo
+LcdButton --* LcdInfo
+LcdButton --* Aircraft
+
 LogitechKeyboard *- Aircraft
 LcdInfo -* LogitechKeyboard
 LogitechKeyboard *--- ProtocolParser
@@ -183,6 +182,6 @@ LogitechKeyboard *-- lcd_sdk
 
 LcdInfo --* Aircraft
 Aircraft *-- StringBuffer
-Aircraft *-- IntegerBuffer
+Aircraft *--- IntegerBuffer
 Aircraft *-- lcd_sdk
 @enduml
