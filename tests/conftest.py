@@ -132,8 +132,8 @@ def apache_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: AH-64D Apache instance
     """
-    from dcspy.aircraft import AH64DBLKII
-    return AH64DBLKII(lcd_mono)
+    from dcspy.aircraft import AH64D
+    return AH64D(lcd_mono)
 
 
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
@@ -210,8 +210,8 @@ def apache_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: AH-64D Apache instance
     """
-    from dcspy.aircraft import AH64DBLKII
-    return AH64DBLKII(lcd_color)
+    from dcspy.aircraft import AH64D
+    return AH64D(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
