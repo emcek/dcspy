@@ -4,6 +4,7 @@ from pytest import mark
 
 from dcspy import LcdType, LcdButton
 from dcspy.logitech import KeyboardColor, KeyboardMono
+from tests.helpers import all_plane_list
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -85,3 +86,16 @@ def test_check_keyboard_text(keyboard, protocol_parser):
     with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
         keyboard.text(['1', '2'])
         upd_txt.assert_called()
+
+
+@mark.parametrize('model', all_plane_list)
+def test_keyboard_mono_load_plane(model, keyboard_mono):
+    from dcspy.sdk import lcd_sdk
+    from dcspy.aircraft import Aircraft
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
+        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
+            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+                keyboard_mono.plane_name = model
+                keyboard_mono.load_new_plane()
+    assert isinstance(keyboard_mono.plane, Aircraft)
+    assert model in keyboard_mono.plane.__class__.__name__
