@@ -52,10 +52,10 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
                                                         ('F-114_Nighthawk', 'F114Nighthawk', ['Not supported yet!'], False)])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                keyboard_mono.detecting_plane(plane_str)
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        keyboard_mono.detecting_plane(plane_str)
     assert keyboard_mono.plane_name == plane
     assert keyboard_mono._display == ['Detected aircraft:'] + [plane] + display
     assert keyboard_mono.plane_detected is detect
@@ -99,10 +99,10 @@ def test_check_keyboard_text(keyboard, protocol_parser):
 def test_keyboard_mono_load_plane(model, keyboard_mono):
     from dcspy.sdk import lcd_sdk
     from dcspy.aircraft import Aircraft
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                keyboard_mono.plane_name = model
-                keyboard_mono.load_new_plane()
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        keyboard_mono.plane_name = model
+        keyboard_mono.load_new_plane()
     assert isinstance(keyboard_mono.plane, Aircraft)
     assert model in keyboard_mono.plane.__class__.__name__
