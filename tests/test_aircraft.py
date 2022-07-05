@@ -94,7 +94,7 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
     assert apache_color.button_request(button) == result
 
 
-@mark.parametrize('plane, btn_name, btn, loop', [
+@mark.parametrize('plane, btn_name, btn, values', [
     ('viper_mono', 'IFF_MASTER_KNB', LcdButton.ONE, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
     ('viper_mono', 'IFF_ENABLE_SW', LcdButton.TWO, (1, 2, 1, 0, 1)),
     ('viper_mono', 'IFF_M4_CODE_SW', LcdButton.THREE, (1, 2, 1, 0, 1)),
@@ -107,25 +107,13 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
     ('hornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
     ('hornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
 ])
-def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, loop, request):
+def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
     plane = request.getfixturevalue(plane)
     assert not all([cyc_btn for cyc_btn in plane.cycle_buttons.values()])
-    for val in loop:
+    for val in values:
         assert plane.button_request(btn) == f'{btn_name} {val}\n'
     assert isinstance(plane.cycle_buttons[btn_name], cycle)
-
-
-def test_get_next_value_for_button_in_hornet(hornet_color):
-    from itertools import cycle
-    btn_ok, btn_name = LcdButton.OK, 'HUD_ATT_SW'
-    assert not all([v for v in hornet_color.cycle_buttons.values()])
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 2\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 0\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
-    assert isinstance(hornet_color.cycle_buttons[btn_name], cycle)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
