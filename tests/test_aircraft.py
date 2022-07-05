@@ -24,13 +24,13 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
     assert aircraft.bios_data == {}
     aircraft.bios_data = {selector: data}
     aircraft.lcd = lcd
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect):
-        with patch.object(lcd_sdk, c_func, return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                assert aircraft.bios_data[selector]['value'] == ''
-                assert aircraft.get_bios('none') == ''
-                with raises(NotImplementedError):
-                    aircraft.set_bios(selector, value)
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect), \
+            patch.object(lcd_sdk, c_func, return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        assert aircraft.bios_data[selector]['value'] == ''
+        assert aircraft.get_bios('none') == ''
+        with raises(NotImplementedError):
+            aircraft.set_bios(selector, value)
 
 
 @mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
@@ -38,11 +38,11 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
 def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     aircraft.lcd = lcd
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, c_func, return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                with raises(NotImplementedError):
-                    aircraft.prepare_image()
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, c_func, return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True), \
+            raises(NotImplementedError):
+        aircraft.prepare_image()
 
 
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
@@ -185,11 +185,11 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
 def test_set_bios_for_airplane(plane, selector, value, result, request):
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                plane.set_bios(selector, value)
-                assert plane.bios_data[selector]['value'] == result
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        plane.set_bios(selector, value)
+        assert plane.bios_data[selector]['value'] == result
 
 
 @mark.parametrize('plane, selector, value, mode', [('apache_mono', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
@@ -215,11 +215,11 @@ def test_prepare_image_for_all_planes_mono(model, lcd_mono):
     aircraft_model = getattr(aircraft, model)(lcd_type=lcd_mono)
     if model == 'Ka50':
         from dcspy.sdk import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
-                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
+        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+                patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+                patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+            aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
+            aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
     assert isinstance(img, Image)
     assert img.size == (lcd_mono.width, lcd_mono.height)
@@ -233,11 +233,11 @@ def test_prepare_image_for_all_planes_color(model, lcd_color):
     aircraft_model = getattr(aircraft, model)(lcd_type=lcd_color)
     if model == 'Ka50':
         from dcspy.sdk import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
-                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
+        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+                patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True),\
+                patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+            aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
+            aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
     assert isinstance(img, Image)
     assert img.size == (lcd_color.width, lcd_color.height)
@@ -248,14 +248,14 @@ def test_prepare_image_for_apache_wca_mode(apache_mono, lcd_mono):
     from PIL.Image import Image
     from dcspy.aircraft import ApacheEufdMode
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
-                apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
-                apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
-                apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  ')
-                apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
+        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
+        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+        apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  ')
+        apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
     assert isinstance(img, Image)
