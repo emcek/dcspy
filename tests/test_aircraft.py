@@ -3,8 +3,7 @@ from unittest.mock import patch
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
-
-all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'AV8BNA']
+from tests.helpers import all_plane_list
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
