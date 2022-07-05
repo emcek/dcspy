@@ -64,8 +64,9 @@ class Aircraft:
         img_for_lcd = {'mono': partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.background),
                        'color': partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)}
 
-        img = img_for_lcd[self.lcd.type.name]()
-        getattr(self, f'draw_for_lcd_{self.lcd.type.name}')(img)
+        lcd_type = self.lcd.type.name.lower()
+        img = img_for_lcd[lcd_type]()
+        getattr(self, f'draw_for_lcd_{lcd_type}')(img)
         img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
         return img
 
@@ -205,23 +206,23 @@ class FA18Chornet(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        button_map = {LcdButton.ok: 'HUD_ATT_SW', LcdButton.cancel: 'IFEI_UP_BTN', LcdButton.menu: 'IFEI_DWN_BTN'}
+        button_map = {LcdButton.OK: 'HUD_ATT_SW', LcdButton.CANCEL: 'IFEI_UP_BTN', LcdButton.MENU: 'IFEI_DWN_BTN'}
         settings = 0
         button_bios_name = ''
         if button in button_map:
             button_bios_name = button_map[button]
             settings = self.get_next_value_for_button(button_bios_name)
-        action = {LcdButton.one: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-                  LcdButton.two: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-                  LcdButton.three: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-                  LcdButton.four: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-                  LcdButton.left: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-                  LcdButton.right: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-                  LcdButton.down: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-                  LcdButton.up: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-                  LcdButton.menu: f'{button_bios_name} {settings}\n',
-                  LcdButton.cancel: f'{button_bios_name} {settings}\n',
-                  LcdButton.ok: f'{button_bios_name} {settings}\n'}
+        action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+                  LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+                  LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+                  LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+                  LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+                  LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+                  LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+                  LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+                  LcdButton.MENU: f'{button_bios_name} {settings}\n',
+                  LcdButton.CANCEL: f'{button_bios_name} {settings}\n',
+                  LcdButton.OK: f'{button_bios_name} {settings}\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
@@ -290,27 +291,27 @@ class F16C50(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        button_map = {LcdButton.one: 'IFF_MASTER_KNB',
-                      LcdButton.two: 'IFF_ENABLE_SW',
-                      LcdButton.three: 'IFF_M4_CODE_SW',
-                      LcdButton.four: 'IFF_M4_REPLY_SW',
-                      LcdButton.left: 'IFF_MASTER_KNB',
-                      LcdButton.right: 'IFF_ENABLE_SW',
-                      LcdButton.down: 'IFF_M4_CODE_SW',
-                      LcdButton.up: 'IFF_M4_REPLY_SW'}
+        button_map = {LcdButton.ONE: 'IFF_MASTER_KNB',
+                      LcdButton.TWO: 'IFF_ENABLE_SW',
+                      LcdButton.THREE: 'IFF_M4_CODE_SW',
+                      LcdButton.FOUR: 'IFF_M4_REPLY_SW',
+                      LcdButton.LEFT: 'IFF_MASTER_KNB',
+                      LcdButton.RIGHT: 'IFF_ENABLE_SW',
+                      LcdButton.DOWN: 'IFF_M4_CODE_SW',
+                      LcdButton.UP: 'IFF_M4_REPLY_SW'}
         settings = 0
         button_bios_name = ''
         if button in button_map:
             button_bios_name = button_map[button]
             settings = self.get_next_value_for_button(button_bios_name)
-        action = {LcdButton.one: f'{button_bios_name} {settings}\n',
-                  LcdButton.two: f'{button_bios_name} {settings}\n',
-                  LcdButton.three: f'{button_bios_name} {settings}\n',
-                  LcdButton.four: f'{button_bios_name} {settings}\n',
-                  LcdButton.left: f'{button_bios_name} {settings}\n',
-                  LcdButton.right: f'{button_bios_name} {settings}\n',
-                  LcdButton.down: f'{button_bios_name} {settings}\n',
-                  LcdButton.up: f'{button_bios_name} {settings}\n'}
+        action = {LcdButton.ONE: f'{button_bios_name} {settings}\n',
+                  LcdButton.TWO: f'{button_bios_name} {settings}\n',
+                  LcdButton.THREE: f'{button_bios_name} {settings}\n',
+                  LcdButton.FOUR: f'{button_bios_name} {settings}\n',
+                  LcdButton.LEFT: f'{button_bios_name} {settings}\n',
+                  LcdButton.RIGHT: f'{button_bios_name} {settings}\n',
+                  LcdButton.DOWN: f'{button_bios_name} {settings}\n',
+                  LcdButton.UP: f'{button_bios_name} {settings}\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
@@ -420,14 +421,14 @@ class Ka50(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        action = {LcdButton.one: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-                  LcdButton.two: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-                  LcdButton.three: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-                  LcdButton.four: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
-                  LcdButton.left: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-                  LcdButton.right: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-                  LcdButton.down: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-                  LcdButton.up: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
+        action = {LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
+                  LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
+                  LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
+                  LcdButton.FOUR: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
+                  LcdButton.LEFT: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
+                  LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
+                  LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
+                  LcdButton.UP: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
@@ -565,14 +566,14 @@ class AH64DBLKII(Aircraft):
         if button in (1, 9) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
 
-        action = {LcdButton.one: wca_or_idm,
-                  LcdButton.two: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-                  LcdButton.three: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-                  LcdButton.four: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
-                  LcdButton.left: wca_or_idm,
-                  LcdButton.right: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-                  LcdButton.down: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-                  LcdButton.up: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'}
+        action = {LcdButton.ONE: wca_or_idm,
+                  LcdButton.TWO: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  LcdButton.THREE: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
+                  LcdButton.FOUR: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
+                  LcdButton.LEFT: wca_or_idm,
+                  LcdButton.RIGHT: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
+                  LcdButton.DOWN: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
+                  LcdButton.UP: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
@@ -667,14 +668,14 @@ class F14B(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        action = {LcdButton.one: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
-                  LcdButton.two: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
-                  LcdButton.three: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
-                  LcdButton.four: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n',
-                  LcdButton.left: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
-                  LcdButton.right: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
-                  LcdButton.down: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
-                  LcdButton.up: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
+        action = {LcdButton.ONE: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
+                  LcdButton.TWO: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
+                  LcdButton.THREE: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
+                  LcdButton.FOUR: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n',
+                  LcdButton.LEFT: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
+                  LcdButton.RIGHT: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
+                  LcdButton.DOWN: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
+                  LcdButton.UP: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
         return super().button_request(button, action.get(button, '\n'))
 
 
@@ -736,12 +737,12 @@ class AV8BNA(Aircraft):
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        action = {LcdButton.one: 'UFC_COM1_SEL -3200\n',
-                  LcdButton.two: 'UFC_COM1_SEL 3200\n',
-                  LcdButton.three: 'UFC_COM2_SEL -3200\n',
-                  LcdButton.four: 'UFC_COM2_SEL 3200\n',
-                  LcdButton.left: 'UFC_COM1_SEL -3200\n',
-                  LcdButton.right: 'UFC_COM1_SEL 3200\n',
-                  LcdButton.down: 'UFC_COM2_SEL -3200\n',
-                  LcdButton.up: 'UFC_COM2_SEL 3200\n'}
+        action = {LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
+                  LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
+                  LcdButton.THREE: 'UFC_COM2_SEL -3200\n',
+                  LcdButton.FOUR: 'UFC_COM2_SEL 3200\n',
+                  LcdButton.LEFT: 'UFC_COM1_SEL -3200\n',
+                  LcdButton.RIGHT: 'UFC_COM1_SEL 3200\n',
+                  LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
+                  LcdButton.UP: 'UFC_COM2_SEL 3200\n'}
         return super().button_request(button, action.get(button, '\n'))

@@ -122,9 +122,9 @@ class LogitechKeyboard:
                 if not self.already_pressed:
                     self.already_pressed = True
                     return LcdButton(btn)
-                return LcdButton.none
+                return LcdButton.NONE
         self.already_pressed = False
-        return LcdButton.none
+        return LcdButton.NONE
 
     def button_handle(self, sock: socket) -> None:
         """

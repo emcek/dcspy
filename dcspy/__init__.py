@@ -20,23 +20,23 @@ MULTICAST_IP = '239.255.50.10'
 
 
 class LcdType(Enum):
-    mono = lcd_sdk.TYPE_MONO
-    color = lcd_sdk.TYPE_COLOR
+    MONO = lcd_sdk.TYPE_MONO
+    COLOR = lcd_sdk.TYPE_COLOR
 
 
 class LcdButton(Enum):
-    none = 0x0
-    one = 0x1
-    two = 0x2
-    three = 0x4
-    four = 0x8
-    left = 0x100
-    right = 0x200
-    ok = 0x400
-    cancel = 0x800
-    up = 0x1000
-    down = 0x2000
-    menu = 0x4000
+    NONE = 0x0
+    ONE = 0x1
+    TWO = 0x2
+    THREE = 0x4
+    FOUR = 0x8
+    LEFT = 0x100
+    RIGHT = 0x200
+    OK = 0x400
+    CANCEL = 0x800
+    UP = 0x1000
+    DOWN = 0x2000
+    MENU = 0x4000
 
 
 @dataclass
@@ -55,13 +55,13 @@ class LcdInfo:
 
 config = set_defaults(load_cfg())
 
-LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.mono, foreground=255,
-                  buttons=(LcdButton.one, LcdButton.two, LcdButton.three, LcdButton.four),
+LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
+                  buttons=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
                   background=0, mode='1', font_s=ImageFont.truetype(config['font_name'], config['font_mono_s']),
                   font_l=ImageFont.truetype(config['font_name'], config['font_mono_l']),
                   font_xs=ImageFont.truetype(config['font_name'], config['font_mono_xs']))
-LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=LcdType.color, foreground=(0, 255, 0, 255),
-                   buttons=(LcdButton.left, LcdButton.right, LcdButton.up, LcdButton.down, LcdButton.ok, LcdButton.cancel, LcdButton.menu),
+LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
+                   buttons=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU),
                    background=(0, 0, 0, 0), mode='RGBA', font_s=ImageFont.truetype(config['font_name'], config['font_color_s']),
                    font_l=ImageFont.truetype(config['font_name'], config['font_color_l']),
                    font_xs=ImageFont.truetype(config['font_name'], config['font_color_xs']))
