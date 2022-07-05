@@ -20,8 +20,8 @@ MULTICAST_IP = '239.255.50.10'
 
 
 class LcdType(Enum):
-    mono = lcd_sdk.TYPE_MONO
-    color = lcd_sdk.TYPE_COLOR
+    MONO = lcd_sdk.TYPE_MONO
+    COLOR = lcd_sdk.TYPE_COLOR
 
 
 class LcdButton(Enum):
@@ -55,12 +55,12 @@ class LcdInfo:
 
 config = set_defaults(load_cfg())
 
-LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.mono, foreground=255,
+LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
                   buttons=(LcdButton.one, LcdButton.two, LcdButton.three, LcdButton.four),
                   background=0, mode='1', font_s=ImageFont.truetype(config['font_name'], config['font_mono_s']),
                   font_l=ImageFont.truetype(config['font_name'], config['font_mono_l']),
                   font_xs=ImageFont.truetype(config['font_name'], config['font_mono_xs']))
-LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=LcdType.color, foreground=(0, 255, 0, 255),
+LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
                    buttons=(LcdButton.left, LcdButton.right, LcdButton.up, LcdButton.down, LcdButton.ok, LcdButton.cancel, LcdButton.menu),
                    background=(0, 0, 0, 0), mode='RGBA', font_s=ImageFont.truetype(config['font_name'], config['font_color_s']),
                    font_l=ImageFont.truetype(config['font_name'], config['font_color_l']),
