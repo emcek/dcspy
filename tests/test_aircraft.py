@@ -1,9 +1,13 @@
+from os import path
 from unittest.mock import patch
 
+import PIL
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
 from tests.helpers import all_plane_list
+
+resources = path.join(path.dirname(path.abspath(__file__)), 'resources')
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
@@ -210,7 +214,6 @@ def test_mode_switch_idm_pre_for_apache(plane, selector, value, mode, request):
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
 @mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes_mono(model, lcd_mono):
-    from PIL.Image import Image
     from dcspy import aircraft
     aircraft_model = getattr(aircraft, model)(lcd_type=lcd_mono)
     if model == 'Ka50':
@@ -221,14 +224,13 @@ def test_prepare_image_for_all_planes_mono(model, lcd_mono):
             aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
             aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
-    assert isinstance(img, Image)
+    assert isinstance(img, PIL.Image.Image)
     assert img.size == (lcd_mono.width, lcd_mono.height)
     assert img.mode == '1'
 
 
 @mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes_color(model, lcd_color):
-    from PIL.Image import Image
     from dcspy import aircraft
     aircraft_model = getattr(aircraft, model)(lcd_type=lcd_color)
     if model == 'Ka50':
@@ -239,13 +241,12 @@ def test_prepare_image_for_all_planes_color(model, lcd_color):
             aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
             aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
     img = aircraft_model.prepare_image()
-    assert isinstance(img, Image)
+    assert isinstance(img, PIL.Image.Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
 
 
-def test_prepare_image_for_apache_wca_mode(apache_mono, lcd_mono):
-    from PIL.Image import Image
+def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
     from dcspy.aircraft import ApacheEufdMode
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -258,9 +259,8 @@ def test_prepare_image_for_apache_wca_mode(apache_mono, lcd_mono):
         apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
-    assert isinstance(img, Image)
-    assert img.size == (lcd_mono.width, lcd_mono.height)
-    assert img.mode == '1'
+    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+    assert img.tobytes() == ref_img.tobytes()
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -278,12 +278,15 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
     for i in range(1, 5):
         assert apache_mono.warning_line == i
         apache_mono.warning_line += 1
-        apache_mono.prepare_image()
+        img = apache_mono.prepare_image()
+        img.save(path.join(resources, 'apache_mono_wca_mode_%d.png' % i))
     assert apache_mono.warning_line == 1
+    img = apache_mono.prepare_image()
+    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+    assert img.tobytes() == ref_img.tobytes()
 
 
 def test_apache_mono_pre_mode(apache_mono, lcd_mono):
-    from PIL.Image import Image
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
@@ -301,6 +304,5 @@ def test_apache_mono_pre_mode(apache_mono, lcd_mono):
         apache_mono.set_bios('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
 
     img = apache_mono.prepare_image()
-    assert isinstance(img, Image)
-    assert img.size == (lcd_mono.width, lcd_mono.height)
-    assert img.mode == '1'
+    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_pre_mode.png'))
+    assert img.tobytes() == ref_img.tobytes()
