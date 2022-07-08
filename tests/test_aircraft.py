@@ -261,3 +261,46 @@ def test_prepare_image_for_apache_wca_mode(apache_mono, lcd_mono):
     assert isinstance(img, Image)
     assert img.size == (lcd_mono.width, lcd_mono.height)
     assert img.mode == '1'
+
+
+# <=><=><=><=><=> Apache special <=><=><=><=><=>
+def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
+    from dcspy.aircraft import ApacheEufdMode
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
+        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
+        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+    apache_mono.mode = ApacheEufdMode.WCA
+
+    for i in range(1, 5):
+        assert apache_mono.warning_line == i
+        apache_mono.warning_line += 1
+        apache_mono.prepare_image()
+    assert apache_mono.warning_line == 1
+
+
+def test_apache_mono_pre_mode(apache_mono, lcd_mono):
+    from PIL.Image import Image
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   ')
+        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE6', '                                     | FAAD     125.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE7', '                                     | JTAC     121.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+
+    img = apache_mono.prepare_image()
+    assert isinstance(img, Image)
+    assert img.size == (lcd_mono.width, lcd_mono.height)
+    assert img.mode == '1'
