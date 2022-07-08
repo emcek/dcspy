@@ -227,6 +227,9 @@ def test_prepare_image_for_all_planes_mono(model, lcd_mono):
     assert isinstance(img, PIL.Image.Image)
     assert img.size == (lcd_mono.width, lcd_mono.height)
     assert img.mode == '1'
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, f'mono_{model}.png'))
+        assert img.tobytes() == ref_img.tobytes()
 
 
 @mark.parametrize('model', all_plane_list)
@@ -244,6 +247,9 @@ def test_prepare_image_for_all_planes_color(model, lcd_color):
     assert isinstance(img, PIL.Image.Image)
     assert img.size == (lcd_color.width, lcd_color.height)
     assert img.mode == 'RGBA'
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, f'color_{model}.png'))
+        assert img.tobytes() == ref_img.tobytes()
 
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
@@ -280,8 +286,7 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
     for i in range(1, 5):
         assert apache_mono.warning_line == i
         apache_mono.warning_line += 1
-        img = apache_mono.prepare_image()
-        img.save(path.join(resources, 'apache_mono_wca_mode_%d.png' % i))
+        apache_mono.prepare_image()
     assert apache_mono.warning_line == 1
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
