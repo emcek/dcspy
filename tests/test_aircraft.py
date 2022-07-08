@@ -1,4 +1,4 @@
-from os import path
+from os import path, name
 from unittest.mock import patch
 
 import PIL
@@ -259,8 +259,10 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
         apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
-    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
-    assert img.tobytes() == ref_img.tobytes()
+    assert isinstance(img, PIL.Image.Image)
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+        assert img.tobytes() == ref_img.tobytes()
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -282,8 +284,10 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
         img.save(path.join(resources, 'apache_mono_wca_mode_%d.png' % i))
     assert apache_mono.warning_line == 1
     img = apache_mono.prepare_image()
-    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
-    assert img.tobytes() == ref_img.tobytes()
+    assert isinstance(img, PIL.Image.Image)
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+        assert img.tobytes() == ref_img.tobytes()
 
 
 def test_apache_mono_pre_mode(apache_mono, lcd_mono):
@@ -304,5 +308,7 @@ def test_apache_mono_pre_mode(apache_mono, lcd_mono):
         apache_mono.set_bios('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
 
     img = apache_mono.prepare_image()
-    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_pre_mode.png'))
-    assert img.tobytes() == ref_img.tobytes()
+    assert isinstance(img, PIL.Image.Image)
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_pre_mode.png'))
+        assert img.tobytes() == ref_img.tobytes()
