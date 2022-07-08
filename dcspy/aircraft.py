@@ -558,12 +558,12 @@ class AH64D(Aircraft):
         if self.mode == ApacheEufdMode.IDM:
             wca_or_idm = 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'
 
-        if button in (4, 13) and self.mode == ApacheEufdMode.IDM:
+        if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
-        elif button in (4, 13) and self.mode != ApacheEufdMode.IDM:
+        elif button in (LcdButton.FOUR, LcdButton.UP) and self.mode != ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.IDM
 
-        if button in (1, 9) and self.mode == ApacheEufdMode.WCA:
+        if button in (LcdButton.ONE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
 
         action = {LcdButton.ONE: wca_or_idm,
