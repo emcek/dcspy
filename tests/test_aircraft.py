@@ -5,7 +5,7 @@ import PIL
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
-from tests.helpers import all_plane_list
+from tests.helpers import all_plane_list, set_bios_during_test
 
 resources = path.join(path.dirname(path.abspath(__file__)), 'resources')
 
@@ -212,47 +212,35 @@ def test_mode_switch_idm_pre_for_apache(plane, selector, value, mode, request):
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
-@mark.parametrize('model', all_plane_list)
-def test_prepare_image_for_all_planes_mono(model, lcd_mono):
+@mark.parametrize('model, lcdtype, bios_pairs', [
+    ('FA18Chornet', 'lcd_mono', [('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'), ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'), ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'), ('UFC_OPTION_DISPLAY_1', '1234'), ('UFC_OPTION_DISPLAY_2', '2345'), ('UFC_OPTION_DISPLAY_3', '3456'), ('UFC_OPTION_DISPLAY_4', '4567'), ('UFC_OPTION_DISPLAY_5', '5678'), ('UFC_COMM1_DISPLAY', '11'), ('UFC_COMM2_DISPLAY', '22'), ('UFC_OPTION_CUEING_1', '1'), ('UFC_OPTION_CUEING_2', '2'), ('UFC_OPTION_CUEING_3', '3'), ('UFC_OPTION_CUEING_4', '4'), ('UFC_OPTION_CUEING_5', '5'), ('IFEI_FUEL_DOWN', '123456'), ('IFEI_FUEL_UP', '234567')]),
+    ('FA18Chornet', 'lcd_color', [('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'), ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'), ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'), ('UFC_OPTION_DISPLAY_1', '1234'), ('UFC_OPTION_DISPLAY_2', '2345'), ('UFC_OPTION_DISPLAY_3', '3456'), ('UFC_OPTION_DISPLAY_4', '4567'), ('UFC_OPTION_DISPLAY_5', '5678'), ('UFC_COMM1_DISPLAY', '11'), ('UFC_COMM2_DISPLAY', '22'), ('UFC_OPTION_CUEING_1', '1'), ('UFC_OPTION_CUEING_2', '2'), ('UFC_OPTION_CUEING_3', '3'), ('UFC_OPTION_CUEING_4', '4'), ('UFC_OPTION_CUEING_5', '5'), ('IFEI_FUEL_DOWN', '123456'), ('IFEI_FUEL_UP', '234567')]),
+    ('F16C50', 'lcd_mono', [('DED_LINE_1', 'a2345678901234567890123456789'), ('DED_LINE_2', 'b2345678901234567890123456789'), ('DED_LINE_3', 'c2345678901234567890123456789'), ('DED_LINE_4', 'd2345678901234567890123456789'), ('DED_LINE_5', 'f2345678901234567890123456789')]),
+    ('F16C50', 'lcd_color', [('DED_LINE_1', 'a2345678901234567890123456789'), ('DED_LINE_2', 'b2345678901234567890123456789'), ('DED_LINE_3', 'c2345678901234567890123456789'), ('DED_LINE_4', 'd2345678901234567890123456789'), ('DED_LINE_5', 'f2345678901234567890123456789')]),
+    ('Ka50', 'lcd_mono', [('PVI_LINE1_APOSTROPHE1', '`'), ('PVI_LINE1_APOSTROPHE2', '`'), ('PVI_LINE1_POINT', '1'), ('PVI_LINE1_SIGN', '-'), ('PVI_LINE1_TEXT', '123456'), ('PVI_LINE2_APOSTROPHE1', '`'), ('PVI_LINE2_APOSTROPHE2', '`'), ('PVI_LINE2_POINT', '2'), ('PVI_LINE2_SIGN', ' '), ('PVI_LINE2_TEXT', '654321'), ('AP_ALT_HOLD_LED', 1), ('AP_BANK_HOLD_LED', 0), ('AP_FD_LED', 1), ('AP_HDG_HOLD_LED', 0), ('AP_PITCH_HOLD_LED', 1)]),
+    ('Ka50', 'lcd_color', [('PVI_LINE1_APOSTROPHE1', '`'), ('PVI_LINE1_APOSTROPHE2', '`'), ('PVI_LINE1_POINT', '1'), ('PVI_LINE1_SIGN', '-'), ('PVI_LINE1_TEXT', '123456'), ('PVI_LINE2_APOSTROPHE1', '`'), ('PVI_LINE2_APOSTROPHE2', '`'), ('PVI_LINE2_POINT', '2'), ('PVI_LINE2_SIGN', ' '), ('PVI_LINE2_TEXT', '654321'), ('AP_ALT_HOLD_LED', 1), ('AP_BANK_HOLD_LED', 0), ('AP_FD_LED', 1), ('AP_HDG_HOLD_LED', 0), ('AP_PITCH_HOLD_LED', 1)]),
+    ('AH64D', 'lcd_mono', [('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '), ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '), ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '), ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '), ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')]),
+    ('AH64D', 'lcd_color', [('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '), ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '), ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '), ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '), ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')]),
+    ('A10C', 'lcd_mono', [('VHFAM_FREQ1', '20'), ('VHFAM_FREQ2', 1), ('VHFAM_FREQ3', 1), ('VHFAM_FREQ4', '30'), ('VHFFM_FREQ1', '40'), ('VHFFM_FREQ2', 2), ('VHFFM_FREQ3', 2), ('VHFFM_FREQ4', '50'), ('UHF_100MHZ_SEL', '5'), ('UHF_10MHZ_SEL', 3), ('UHF_1MHZ_SEL', 2), ('UHF_POINT1MHZ_SEL', 1), ('UHF_POINT25_SEL', '25')]),
+    ('A10C', 'lcd_color', [('VHFAM_FREQ1', '20'), ('VHFAM_FREQ2', 1), ('VHFAM_FREQ3', 1), ('VHFAM_FREQ4', '30'), ('VHFFM_FREQ1', '40'), ('VHFFM_FREQ2', 2), ('VHFFM_FREQ3', 2), ('VHFFM_FREQ4', '50'), ('UHF_100MHZ_SEL', '5'), ('UHF_10MHZ_SEL', 3), ('UHF_1MHZ_SEL', 2), ('UHF_POINT1MHZ_SEL', 1), ('UHF_POINT25_SEL', '25')]),
+    ('A10C2', 'lcd_mono', [('VHFAM_FREQ1', '20'), ('VHFAM_FREQ2', 1), ('VHFAM_FREQ3', 1), ('VHFAM_FREQ4', '30'), ('VHFFM_FREQ1', '40'), ('VHFFM_FREQ2', 2), ('VHFFM_FREQ3', 2), ('VHFFM_FREQ4', '50'), ('UHF_100MHZ_SEL', '5'), ('UHF_10MHZ_SEL', 3), ('UHF_1MHZ_SEL', 2), ('UHF_POINT1MHZ_SEL', 1), ('UHF_POINT25_SEL', '25')]),
+    ('A10C2', 'lcd_color', [('VHFAM_FREQ1', '20'), ('VHFAM_FREQ2', 1), ('VHFAM_FREQ3', 1), ('VHFAM_FREQ4', '30'), ('VHFFM_FREQ1', '40'), ('VHFFM_FREQ2', 2), ('VHFFM_FREQ3', 2), ('VHFFM_FREQ4', '50'), ('UHF_100MHZ_SEL', '5'), ('UHF_10MHZ_SEL', 3), ('UHF_1MHZ_SEL', 2), ('UHF_POINT1MHZ_SEL', 1), ('UHF_POINT25_SEL', '25')]),
+    ('F14B', 'lcd_mono', []),
+    ('F14B', 'lcd_color', []),
+    ('AV8BNA', 'lcd_mono', [('UFC_SCRATCHPAD', '123456789012'), ('UFC_COMM1_DISPLAY', '11'), ('UFC_COMM2_DISPLAY', '22'), ('AV8BNA_ODU_1_SELECT', '1'), ('AV8BNA_ODU_1_Text', '1234'), ('AV8BNA_ODU_2_SELECT', '2'), ('AV8BNA_ODU_2_Text', '2345'), ('AV8BNA_ODU_3_SELECT', '3'), ('AV8BNA_ODU_3_Text', '3456'), ('AV8BNA_ODU_4_SELECT', '4'), ('AV8BNA_ODU_4_Text', '4567'), ('AV8BNA_ODU_5_SELECT', '5'), ('AV8BNA_ODU_5_Text', '5678')]),
+    ('AV8BNA', 'lcd_color', [('UFC_SCRATCHPAD', '123456789012'), ('UFC_COMM1_DISPLAY', '11'), ('UFC_COMM2_DISPLAY', '22'), ('AV8BNA_ODU_1_SELECT', '1'), ('AV8BNA_ODU_1_Text', '1234'), ('AV8BNA_ODU_2_SELECT', '2'), ('AV8BNA_ODU_2_Text', '2345'), ('AV8BNA_ODU_3_SELECT', '3'), ('AV8BNA_ODU_3_Text', '3456'), ('AV8BNA_ODU_4_SELECT', '4'), ('AV8BNA_ODU_4_Text', '4567'), ('AV8BNA_ODU_5_SELECT', '5'), ('AV8BNA_ODU_5_Text', '5678')]),
+])
+def test_prepare_image_for_all_planes(model, lcdtype, bios_pairs, request):
     from dcspy import aircraft
-    aircraft_model = getattr(aircraft, model)(lcd_type=lcd_mono)
-    if model == 'Ka50':
-        from dcspy.sdk import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-                patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-                patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-            aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
-            aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
-            aircraft_model.set_bios('AP_BANK_HOLD_LED', '1')
-            aircraft_model.set_bios('AP_ALT_HOLD_LED', '1')
+    lcd = request.getfixturevalue(lcdtype)
+    aircraft_model = getattr(aircraft, model)(lcd_type=lcd)
+    set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    assert img.size == (lcd_mono.width, lcd_mono.height)
-    assert img.mode == '1'
+    assert img.size == (lcd.width, lcd.height)
+    assert img.mode == lcd.mode
     if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, f'mono_{model}.png'))
-        assert img.tobytes() == ref_img.tobytes()
-
-
-@mark.parametrize('model', all_plane_list)
-def test_prepare_image_for_all_planes_color(model, lcd_color):
-    from dcspy import aircraft
-    aircraft_model = getattr(aircraft, model)(lcd_type=lcd_color)
-    if model == 'Ka50':
-        from dcspy.sdk import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-                patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True),\
-                patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-            aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
-            aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
-            aircraft_model.set_bios('AP_BANK_HOLD_LED', 1)
-            aircraft_model.set_bios('AP_ALT_HOLD_LED', 1)
-    img = aircraft_model.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    assert img.size == (lcd_color.width, lcd_color.height)
-    assert img.mode == 'RGBA'
-    if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, f'color_{model}.png'))
+        ref_img = PIL.Image.open(path.join(resources, f'{lcdtype}_{model}.png'))
         assert img.tobytes() == ref_img.tobytes()
 
 
