@@ -4,6 +4,7 @@ from pytest import mark
 
 from dcspy import LcdType, LcdButton
 from dcspy.logitech import KeyboardColor, KeyboardMono
+from tests.helpers import all_plane_list
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -41,13 +42,20 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
 
 
 @mark.parametrize('plane_str, plane, display, detect', [('FA-18C_hornet', 'FA18Chornet', [], True),
+                                                        ('F-16C_50', 'F16C50', [], True),
+                                                        ('Ka-50', 'Ka50', [], True),
+                                                        ('AH-64D', 'AH64D', [], True),
+                                                        ('A-10C', 'A10C', [], True),
+                                                        ('A-10C_2', 'A10C2', [], True),
+                                                        ('F-14B', 'F14B', [], True),
+                                                        ('AV8BNA', 'AV8BNA', [], True),
                                                         ('F-114_Nighthawk', 'F114Nighthawk', ['Not supported yet!'], False)])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                keyboard_mono.detecting_plane(plane_str)
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        keyboard_mono.detecting_plane(plane_str)
     assert keyboard_mono.plane_name == plane
     assert keyboard_mono._display == ['Detected aircraft:'] + [plane] + display
     assert keyboard_mono.plane_detected is detect
@@ -85,3 +93,16 @@ def test_check_keyboard_text(keyboard, protocol_parser):
     with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
         keyboard.text(['1', '2'])
         upd_txt.assert_called()
+
+
+@mark.parametrize('model', all_plane_list)
+def test_keyboard_mono_load_plane(model, keyboard_mono):
+    from dcspy.sdk import lcd_sdk
+    from dcspy.aircraft import Aircraft
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        keyboard_mono.plane_name = model
+        keyboard_mono.load_new_plane()
+    assert isinstance(keyboard_mono.plane, Aircraft)
+    assert model in keyboard_mono.plane.__class__.__name__

@@ -1,3 +1,10 @@
+## 1.7.2
+* **AH-64D Apache**
+  * update name from `AH64DBLKII` to `AH64D`
+  * fix handling buttons
+* Internal:
+  * update unit test for better coverage and more use-cases
+
 ## 1.7.1
 * New config settings:
   * `auto_start` - run DCSpy atomically after start

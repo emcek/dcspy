@@ -1,10 +1,13 @@
+from os import path, name
 from unittest.mock import patch
 
+import PIL
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
+from tests.helpers import all_plane_list, set_bios_during_test
 
-all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'AV8BNA']
+resources = path.join(path.dirname(path.abspath(__file__)), 'resources')
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
@@ -25,13 +28,13 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
     assert aircraft.bios_data == {}
     aircraft.bios_data = {selector: data}
     aircraft.lcd = lcd
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect):
-        with patch.object(lcd_sdk, c_func, return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                assert aircraft.bios_data[selector]['value'] == ''
-                assert aircraft.get_bios('none') == ''
-                with raises(NotImplementedError):
-                    aircraft.set_bios(selector, value)
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect), \
+            patch.object(lcd_sdk, c_func, return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        assert aircraft.bios_data[selector]['value'] == ''
+        assert aircraft.get_bios('none') == ''
+        with raises(NotImplementedError):
+            aircraft.set_bios(selector, value)
 
 
 @mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
@@ -39,88 +42,127 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
 def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     aircraft.lcd = lcd
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, c_func, return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                with raises(NotImplementedError):
-                    aircraft.prepare_image()
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, c_func, return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True), \
+            raises(NotImplementedError):
+        aircraft.prepare_image()
 
 
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
-@mark.parametrize('plane, button, result', [('hornet_mono', LcdButton.NONE, '\n'),
-                                            ('hornet_mono', LcdButton.ONE, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                            ('hornet_mono', LcdButton.FOUR, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
-                                            ('hornet_color', LcdButton.NONE, '\n'),
-                                            ('hornet_color', LcdButton.LEFT, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
-                                            ('hornet_color', LcdButton.DOWN, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
-                                            ('harrier_mono', LcdButton.NONE, '\n'),
-                                            ('harrier_mono', LcdButton.TWO, 'UFC_COM1_SEL 3200\n'),
-                                            ('harrier_mono', LcdButton.THREE, 'UFC_COM2_SEL -3200\n'),
-                                            ('harrier_color', LcdButton.NONE, '\n'),
-                                            ('harrier_color', LcdButton.RIGHT, 'UFC_COM1_SEL 3200\n'),
-                                            ('harrier_color', LcdButton.UP, 'UFC_COM2_SEL 3200\n'),
-                                            ('black_shark_mono', LcdButton.NONE, '\n'),
-                                            ('black_shark_mono', LcdButton.TWO, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
-                                            ('black_shark_mono', LcdButton.THREE, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
-                                            ('black_shark_color', LcdButton.LEFT, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
-                                            ('black_shark_color', LcdButton.UP, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
-                                            ('tomcat_mono', LcdButton.THREE, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
-                                            ('tomcat_mono', LcdButton.FOUR, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
-                                            ('tomcat_color', LcdButton.LEFT, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
-                                            ('tomcat_color', LcdButton.RIGHT, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
-                                            ('viper_mono', LcdButton.TWO, 'IFF_ENABLE_SW 1\n'),
-                                            ('viper_mono', LcdButton.THREE, 'IFF_M4_CODE_SW 1\n'),
-                                            ('viper_mono', LcdButton.FOUR, 'IFF_M4_REPLY_SW 1\n'),
-                                            ('viper_color', LcdButton.LEFT, 'IFF_MASTER_KNB 1\n'),
-                                            ('viper_color', LcdButton.RIGHT, 'IFF_ENABLE_SW 1\n'),
-                                            ('viper_color', LcdButton.DOWN, 'IFF_M4_CODE_SW 1\n'),
-                                            ('apache_mono', LcdButton.NONE, '\n'),
-                                            ('apache_mono', LcdButton.ONE, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
-                                            ('apache_mono', LcdButton.TWO, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
-                                            ('apache_mono', LcdButton.THREE, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
-                                            ('apache_mono', LcdButton.FOUR, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+@mark.parametrize('plane, button, result', [
+    ('hornet_mono', LcdButton.NONE, '\n'),
+    ('hornet_mono', LcdButton.ONE, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+    ('hornet_mono', LcdButton.TWO, 'UFC_COMM1_CHANNEL_SELECT INC\n'),
+    ('hornet_mono', LcdButton.THREE, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
+    ('hornet_mono', LcdButton.FOUR, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
+    ('hornet_color', LcdButton.NONE, '\n'),
+    ('hornet_color', LcdButton.LEFT, 'UFC_COMM1_CHANNEL_SELECT DEC\n'),
+    ('hornet_color', LcdButton.RIGHT, 'UFC_COMM1_CHANNEL_SELECT INC\n'),
+    ('hornet_color', LcdButton.DOWN, 'UFC_COMM2_CHANNEL_SELECT DEC\n'),
+    ('hornet_color', LcdButton.UP, 'UFC_COMM2_CHANNEL_SELECT INC\n'),
+    ('hornet_color', LcdButton.MENU, 'IFEI_DWN_BTN 1\n'),
+    ('hornet_color', LcdButton.CANCEL, 'IFEI_UP_BTN 1\n'),
+    ('hornet_color', LcdButton.OK, 'HUD_ATT_SW 1\n'),
+    ('harrier_mono', LcdButton.NONE, '\n'),
+    ('harrier_mono', LcdButton.ONE, 'UFC_COM1_SEL -3200\n'),
+    ('harrier_mono', LcdButton.TWO, 'UFC_COM1_SEL 3200\n'),
+    ('harrier_mono', LcdButton.THREE, 'UFC_COM2_SEL -3200\n'),
+    ('harrier_mono', LcdButton.FOUR, 'UFC_COM2_SEL 3200\n'),
+    ('harrier_color', LcdButton.NONE, '\n'),
+    ('harrier_color', LcdButton.LEFT, 'UFC_COM1_SEL -3200\n'),
+    ('harrier_color', LcdButton.RIGHT, 'UFC_COM1_SEL 3200\n'),
+    ('harrier_color', LcdButton.DOWN, 'UFC_COM2_SEL -3200\n'),
+    ('harrier_color', LcdButton.UP, 'UFC_COM2_SEL 3200\n'),
+    ('harrier_color', LcdButton.MENU, '\n'),
+    ('harrier_color', LcdButton.CANCEL, '\n'),
+    ('harrier_color', LcdButton.OK, '\n'),
+    ('black_shark_mono', LcdButton.NONE, '\n'),
+    ('black_shark_mono', LcdButton.ONE, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
+    ('black_shark_mono', LcdButton.TWO, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
+    ('black_shark_mono', LcdButton.THREE, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
+    ('black_shark_mono', LcdButton.FOUR, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
+    ('black_shark_color', LcdButton.NONE, '\n'),
+    ('black_shark_color', LcdButton.LEFT, 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n'),
+    ('black_shark_color', LcdButton.RIGHT, 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n'),
+    ('black_shark_color', LcdButton.DOWN, 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n'),
+    ('black_shark_color', LcdButton.UP, 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'),
+    ('black_shark_color', LcdButton.MENU, '\n'),
+    ('black_shark_color', LcdButton.CANCEL, '\n'),
+    ('black_shark_color', LcdButton.OK, '\n'),
+    ('tomcat_mono', LcdButton.NONE, '\n'),
+    ('tomcat_mono', LcdButton.ONE, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
+    ('tomcat_mono', LcdButton.TWO, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
+    ('tomcat_mono', LcdButton.THREE, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
+    ('tomcat_mono', LcdButton.FOUR, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
+    ('tomcat_color', LcdButton.NONE, '\n'),
+    ('tomcat_color', LcdButton.LEFT, 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n'),
+    ('tomcat_color', LcdButton.RIGHT, 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n'),
+    ('tomcat_color', LcdButton.DOWN, 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n'),
+    ('tomcat_color', LcdButton.UP, 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'),
+    ('tomcat_color', LcdButton.MENU, '\n'),
+    ('tomcat_color', LcdButton.CANCEL, '\n'),
+    ('tomcat_color', LcdButton.OK, '\n'),
+    ('viper_mono', LcdButton.NONE, '\n'),
+    ('viper_mono', LcdButton.ONE, 'IFF_MASTER_KNB 1\n'),
+    ('viper_mono', LcdButton.TWO, 'IFF_ENABLE_SW 1\n'),
+    ('viper_mono', LcdButton.THREE, 'IFF_M4_CODE_SW 1\n'),
+    ('viper_mono', LcdButton.FOUR, 'IFF_M4_REPLY_SW 1\n'),
+    ('viper_color', LcdButton.NONE, '\n'),
+    ('viper_color', LcdButton.LEFT, 'IFF_MASTER_KNB 1\n'),
+    ('viper_color', LcdButton.RIGHT, 'IFF_ENABLE_SW 1\n'),
+    ('viper_color', LcdButton.DOWN, 'IFF_M4_CODE_SW 1\n'),
+    ('viper_color', LcdButton.UP, 'IFF_M4_REPLY_SW 1\n'),
+    ('viper_color', LcdButton.MENU, '\n'),
+    ('viper_color', LcdButton.CANCEL, '\n'),
+    ('viper_color', LcdButton.OK, '\n'),
+    ('apache_mono', LcdButton.NONE, '\n'),
+    ('apache_mono', LcdButton.ONE, 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'),
+    ('apache_mono', LcdButton.TWO, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+    ('apache_mono', LcdButton.THREE, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+    ('apache_mono', LcdButton.FOUR, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'),
+])
 def test_button_pressed_for_plane(plane, button, result, request):
     plane = request.getfixturevalue(plane)
     assert plane.button_request(button) == result
 
 
-@mark.parametrize('button, result', [(LcdButton.NONE, '\n'),
-                                     (LcdButton.LEFT, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
-                                     (LcdButton.RIGHT, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
-                                     (LcdButton.DOWN, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
-                                     (LcdButton.UP, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n')])
+@mark.parametrize('button, result', [
+    (LcdButton.NONE, '\n'),
+    (LcdButton.LEFT, 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'),
+    (LcdButton.RIGHT, 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n'),
+    (LcdButton.DOWN, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
+    (LcdButton.UP, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'),
+    (LcdButton.MENU, '\n'),
+    (LcdButton.CANCEL, '\n'),
+    (LcdButton.OK, '\n'),
+])
 def test_button_pressed_for_apache_color(button, result, apache_color):
     from dcspy.aircraft import ApacheEufdMode
     apache_color.mode = ApacheEufdMode.WCA
     assert apache_color.button_request(button) == result
 
 
-def test_get_next_value_for_button_in_viper(viper_color):
+@mark.parametrize('plane, btn_name, btn, values', [
+    ('viper_mono', 'IFF_MASTER_KNB', LcdButton.ONE, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
+    ('viper_mono', 'IFF_ENABLE_SW', LcdButton.TWO, (1, 2, 1, 0, 1)),
+    ('viper_mono', 'IFF_M4_CODE_SW', LcdButton.THREE, (1, 2, 1, 0, 1)),
+    ('viper_mono', 'IFF_M4_REPLY_SW', LcdButton.FOUR, (1, 2, 1, 0, 1)),
+    ('viper_color', 'IFF_MASTER_KNB', LcdButton.LEFT, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
+    ('viper_color', 'IFF_ENABLE_SW', LcdButton.RIGHT, (1, 2, 1, 0, 1)),
+    ('viper_color', 'IFF_M4_CODE_SW', LcdButton.DOWN, (1, 2, 1, 0, 1)),
+    ('viper_color', 'IFF_M4_REPLY_SW', LcdButton.UP, (1, 2, 1, 0, 1)),
+    ('hornet_color', 'HUD_ATT_SW', LcdButton.OK, (1, 2, 1, 0, 1)),
+    ('hornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
+    ('hornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
+])
+def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
-    btn_left, btn_name = LcdButton.LEFT, 'IFF_MASTER_KNB'
-    assert not all([v for v in viper_color.cycle_buttons.values()])
-    assert viper_color.button_request(btn_left) == f'{btn_name} 1\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 2\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 3\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 4\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 3\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 2\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 1\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 0\n'
-    assert viper_color.button_request(btn_left) == f'{btn_name} 1\n'
-    assert isinstance(viper_color.cycle_buttons[btn_name], cycle)
-
-
-def test_get_next_value_for_button_in_hornet(hornet_color):
-    from itertools import cycle
-    btn_ok, btn_name = LcdButton.OK, 'HUD_ATT_SW'
-    assert not all([v for v in hornet_color.cycle_buttons.values()])
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 2\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 0\n'
-    assert hornet_color.button_request(btn_ok) == f'{btn_name} 1\n'
-    assert isinstance(hornet_color.cycle_buttons[btn_name], cycle)
+    plane = request.getfixturevalue(plane)
+    assert not all([cyc_btn for cyc_btn in plane.cycle_buttons.values()])
+    for val in values:
+        assert plane.button_request(btn) == f'{btn_name} {val}\n'
+    assert isinstance(plane.cycle_buttons[btn_name], cycle)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
@@ -147,11 +189,11 @@ def test_get_next_value_for_button_in_hornet(hornet_color):
 def test_set_bios_for_airplane(plane, selector, value, result, request):
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                plane.set_bios(selector, value)
-                assert plane.bios_data[selector]['value'] == result
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        plane.set_bios(selector, value)
+        assert plane.bios_data[selector]['value'] == result
 
 
 @mark.parametrize('plane, selector, value, mode', [('apache_mono', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
@@ -170,56 +212,182 @@ def test_mode_switch_idm_pre_for_apache(plane, selector, value, mode, request):
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
-@mark.parametrize('model', all_plane_list)
-def test_prepare_image_for_all_planes_mono(model, lcd_mono):
-    from PIL.Image import Image
+hornet_bios = [
+    ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
+    ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'),
+    ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'),
+    ('UFC_OPTION_DISPLAY_1', '1234'),
+    ('UFC_OPTION_DISPLAY_2', '2345'),
+    ('UFC_OPTION_DISPLAY_3', '3456'),
+    ('UFC_OPTION_DISPLAY_4', '4567'),
+    ('UFC_OPTION_DISPLAY_5', '5678'),
+    ('UFC_COMM1_DISPLAY', '11'),
+    ('UFC_COMM2_DISPLAY', '22'),
+    ('UFC_OPTION_CUEING_1', '1'),
+    ('UFC_OPTION_CUEING_2', '2'),
+    ('UFC_OPTION_CUEING_3', '3'),
+    ('UFC_OPTION_CUEING_4', '4'),
+    ('UFC_OPTION_CUEING_5', '5'),
+    ('IFEI_FUEL_DOWN', '123456'),
+    ('IFEI_FUEL_UP', '234567')
+]
+viper_bios = [
+    ('DED_LINE_1', 'a2345678901234567890123456789'),
+    ('DED_LINE_2', 'b2345678901234567890123456789'),
+    ('DED_LINE_3', 'c2345678901234567890123456789'),
+    ('DED_LINE_4', 'd2345678901234567890123456789'),
+    ('DED_LINE_5', 'f2345678901234567890123456789')
+]
+shark_bios = [
+    ('PVI_LINE1_APOSTROPHE1', '`'),
+    ('PVI_LINE1_APOSTROPHE2', '`'),
+    ('PVI_LINE1_POINT', '1'),
+    ('PVI_LINE1_SIGN', '-'),
+    ('PVI_LINE1_TEXT', '123456'),
+    ('PVI_LINE2_APOSTROPHE1', '`'),
+    ('PVI_LINE2_APOSTROPHE2', '`'),
+    ('PVI_LINE2_POINT', '2'),
+    ('PVI_LINE2_SIGN', ' '),
+    ('PVI_LINE2_TEXT', '654321'),
+    ('AP_ALT_HOLD_LED', 1),
+    ('AP_BANK_HOLD_LED', 0),
+    ('AP_FD_LED', 1),
+    ('AP_HDG_HOLD_LED', 0),
+    ('AP_PITCH_HOLD_LED', 1)
+]
+apache_bios = [
+    ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
+    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
+    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
+    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
+    ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')
+]
+warthog_bios = [
+    ('VHFAM_FREQ1', '20'),
+    ('VHFAM_FREQ2', 1),
+    ('VHFAM_FREQ3', 1),
+    ('VHFAM_FREQ4', '30'),
+    ('VHFFM_FREQ1', '40'),
+    ('VHFFM_FREQ2', 2),
+    ('VHFFM_FREQ3', 2),
+    ('VHFFM_FREQ4', '50'),
+    ('UHF_100MHZ_SEL', '5'),
+    ('UHF_10MHZ_SEL', 3),
+    ('UHF_1MHZ_SEL', 2),
+    ('UHF_POINT1MHZ_SEL', 1),
+    ('UHF_POINT25_SEL', '25')
+]
+harrier_bios = [
+    ('UFC_SCRATCHPAD', '123456789012'),
+    ('UFC_COMM1_DISPLAY', '11'),
+    ('UFC_COMM2_DISPLAY', '22'),
+    ('AV8BNA_ODU_1_SELECT', '1'),
+    ('AV8BNA_ODU_1_Text', '1234'),
+    ('AV8BNA_ODU_2_SELECT', '2'),
+    ('AV8BNA_ODU_2_Text', '2345'),
+    ('AV8BNA_ODU_3_SELECT', '3'),
+    ('AV8BNA_ODU_3_Text', '3456'),
+    ('AV8BNA_ODU_4_SELECT', '4'),
+    ('AV8BNA_ODU_4_Text', '4567'),
+    ('AV8BNA_ODU_5_SELECT', '5'),
+    ('AV8BNA_ODU_5_Text', '5678')
+]
+
+
+@mark.parametrize('model, lcdtype, bios_pairs', [
+    ('FA18Chornet', 'lcd_mono', hornet_bios),
+    ('FA18Chornet', 'lcd_color', hornet_bios),
+    ('F16C50', 'lcd_mono', viper_bios),
+    ('F16C50', 'lcd_color', viper_bios),
+    ('Ka50', 'lcd_mono', shark_bios),
+    ('Ka50', 'lcd_color', shark_bios),
+    ('AH64D', 'lcd_mono', apache_bios),
+    ('AH64D', 'lcd_color', apache_bios),
+    ('A10C', 'lcd_mono', warthog_bios),
+    ('A10C', 'lcd_color', warthog_bios),
+    ('A10C2', 'lcd_mono', warthog_bios),
+    ('A10C2', 'lcd_color', warthog_bios),
+    ('F14B', 'lcd_mono', []),
+    ('F14B', 'lcd_color', []),
+    ('AV8BNA', 'lcd_mono', harrier_bios),
+    ('AV8BNA', 'lcd_color', harrier_bios),
+])
+def test_prepare_image_for_all_planes(model, lcdtype, bios_pairs, request):
     from dcspy import aircraft
-    aircraft_model = getattr(aircraft, model)(lcd_type=lcd_mono)
-    if model == 'Ka50':
-        from dcspy.sdk import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
-                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
+    lcd = request.getfixturevalue(lcdtype)
+    aircraft_model = getattr(aircraft, model)(lcd_type=lcd)
+    set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    assert isinstance(img, Image)
-    assert img.size == (lcd_mono.width, lcd_mono.height)
-    assert img.mode == '1'
+    assert isinstance(img, PIL.Image.Image)
+    assert img.size == (lcd.width, lcd.height)
+    assert img.mode == lcd.mode
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, f'{lcdtype}_{model}.png'))
+        assert img.tobytes() == ref_img.tobytes()
 
 
-@mark.parametrize('model', all_plane_list)
-def test_prepare_image_for_all_planes_color(model, lcd_color):
-    from PIL.Image import Image
-    from dcspy import aircraft
-    aircraft_model = getattr(aircraft, model)(lcd_type=lcd_color)
-    if model == 'Ka50':
-        from dcspy.sdk import lcd_sdk
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-                with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                    aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
-                    aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
-    img = aircraft_model.prepare_image()
-    assert isinstance(img, Image)
-    assert img.size == (lcd_color.width, lcd_color.height)
-    assert img.mode == 'RGBA'
-
-
-def test_prepare_image_for_apache_wca_mode(apache_mono, lcd_mono):
-    from PIL.Image import Image
+def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
     from dcspy.aircraft import ApacheEufdMode
     from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True):
-        with patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True):
-            with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-                apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
-                apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
-                apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
-                apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  ')
-                apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
+        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
+        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+        apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  ')
+        apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
-    assert isinstance(img, Image)
-    assert img.size == (lcd_mono.width, lcd_mono.height)
-    assert img.mode == '1'
+    assert isinstance(img, PIL.Image.Image)
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+        assert img.tobytes() == ref_img.tobytes()
+
+
+# <=><=><=><=><=> Apache special <=><=><=><=><=>
+def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
+    from dcspy.aircraft import ApacheEufdMode
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
+        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
+        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+    apache_mono.mode = ApacheEufdMode.WCA
+
+    for i in range(1, 5):
+        assert apache_mono.warning_line == i
+        apache_mono.warning_line += 1
+        apache_mono.prepare_image()
+    assert apache_mono.warning_line == 1
+    img = apache_mono.prepare_image()
+    assert isinstance(img, PIL.Image.Image)
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+        assert img.tobytes() == ref_img.tobytes()
+
+
+def test_apache_mono_pre_mode(apache_mono, lcd_mono):
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   ')
+        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE6', '                                     | FAAD     125.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE7', '                                     | JTAC     121.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 ')
+        apache_mono.set_bios('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+
+    img = apache_mono.prepare_image()
+    assert isinstance(img, PIL.Image.Image)
+    if name != 'nt':
+        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_pre_mode.png'))
+        assert img.tobytes() == ref_img.tobytes()

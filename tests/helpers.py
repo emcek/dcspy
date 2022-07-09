@@ -2,9 +2,12 @@ from datetime import datetime
 from json import loads
 from os import path
 from tempfile import gettempdir
-from typing import Tuple
+from typing import Tuple, List, Union
+from unittest.mock import patch
 
 from requests import get, exceptions
+
+from dcspy.aircraft import Aircraft
 
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=1)
@@ -12,6 +15,8 @@ try:
         dcsbios_ver = response.json()['tag_name']
 except exceptions.ConnectTimeout:
     dcsbios_ver = '0.7.45'
+
+all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64D', 'A10C', 'A10C2', 'F14B', 'AV8BNA']
 
 
 def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
@@ -72,3 +77,18 @@ def _recursive_lookup(k: str, d: dict):
             item = _recursive_lookup(k, v)
             if item:
                 return item
+
+
+def set_bios_during_test(aircraft_model: Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
+    """
+    Set BIOS values for a given aircraft model.
+
+    :param aircraft_model:
+    :param bios_pairs:
+    """
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        for selector, value in bios_pairs:
+            aircraft_model.set_bios(selector, value)

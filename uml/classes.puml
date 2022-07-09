@@ -65,13 +65,13 @@ package aircraft {
   Aircraft <|-- FA18Chornet
   Aircraft <|-- F16C50
   Aircraft <|-- Ka50
-  Aircraft <|-- AH64DBLKII
+  Aircraft <|-- AH64D
   Aircraft <|-- A10C
   A10C <|-- A10C2
   Aircraft <|-- F14B
   Aircraft <|-- AV8BNA
   class BIOS_VALUE
-  AH64DBLKII *-- ApacheEufdMode
+  AH64D *-- ApacheEufdMode
 }
 
 class Aircraft {
