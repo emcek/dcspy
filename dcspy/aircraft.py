@@ -340,7 +340,7 @@ class Ka50(Aircraft):
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
 
-    def _auto_pilot_switch_1(self, draw_obj: ImageDraw) -> None:
+    def _auto_pilot_switch_mono(self, draw_obj: ImageDraw) -> None:
         """
         Draw rectangle and add text for autopilot channels in correct coordinates.
 
@@ -353,7 +353,7 @@ class Ka50(Aircraft):
                                                     ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
             self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
 
-    def _auto_pilot_switch_2(self, draw_obj: ImageDraw) -> None:
+    def _auto_pilot_switch_color(self, draw_obj: ImageDraw) -> None:
         """
         Draw rectangle and add text for autopilot channels in correct coordinates.
 
@@ -382,7 +382,7 @@ class Ka50(Aircraft):
         line1, line2 = self._generate_pvi_lines()
         draw.text(xy=(2, 3), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
         draw.text(xy=(2, 24), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
-        self._auto_pilot_switch_1(draw)
+        self._auto_pilot_switch_mono(draw)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
@@ -392,7 +392,7 @@ class Ka50(Aircraft):
         line1, line2 = self._generate_pvi_lines()
         draw.text(xy=(4, 6), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
         draw.text(xy=(4, 48), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
-        self._auto_pilot_switch_2(draw)
+        self._auto_pilot_switch_color(draw)
 
     def _generate_pvi_lines(self) -> Sequence[str]:
         text1, text2 = '', ''
