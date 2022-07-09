@@ -245,8 +245,8 @@ def test_prepare_image_for_all_planes_color(model, lcd_color):
                 patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
             aircraft_model.set_bios('PVI_LINE1_TEXT', '123456789')
             aircraft_model.set_bios('PVI_LINE2_TEXT', '987654321')
-            aircraft_model.set_bios('AP_BANK_HOLD_LED', '1')
-            aircraft_model.set_bios('AP_ALT_HOLD_LED', '1')
+            aircraft_model.set_bios('AP_BANK_HOLD_LED', 1)
+            aircraft_model.set_bios('AP_ALT_HOLD_LED', 1)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
     assert img.size == (lcd_color.width, lcd_color.height)
