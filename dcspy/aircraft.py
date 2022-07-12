@@ -107,9 +107,9 @@ class Aircraft:
 
         :param btn_name: BIOS button name
         """
-        curr_val = int(self.get_bios(btn_name))
-        max_val = self.bios_data[btn_name]['max_value']
         if not self.cycle_buttons[btn_name]:
+            curr_val = int(self.get_bios(btn_name))
+            max_val = self.bios_data[btn_name]['max_value']
             full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
             seed = full_seed[curr_val + 1:2 * max_val + curr_val + 1]
             LOG.debug(f'{self.__class__.__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
