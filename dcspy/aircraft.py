@@ -515,7 +515,7 @@ class AH64D(Aircraft):
                       10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
         for i, xcord, ycord in zip(range(2, 12),
-                                   [0, 0, 0, 0, 0, 80, 80, 80, 80, 80],
+                                   [0, 0, 0, 0, 0, 80 * scale, 80 * scale, 80 * scale, 80 * scale, 80 * scale],
                                    [j * 8 * scale for j in range(0, 5)] * 2):
             mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
             if mat:
