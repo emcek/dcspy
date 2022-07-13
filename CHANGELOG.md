@@ -1,3 +1,7 @@
+## 1.7.3
+* **AH-64D Apache**
+  * add better support for G19 for PRE mode
+
 ## 1.7.2
 * **AH-64D Apache**
   * update name from `AH64DBLKII` to `AH64D`
