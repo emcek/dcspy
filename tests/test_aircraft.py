@@ -187,6 +187,7 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
                                                      ('apache_color', 'PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ', ' \u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
                                                      ('apache_color', 'PLT_EUFD_LINE12', ']==HF *    2.0000A -----    LOW         2.0000A -----   ', '\u2666\u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   ')])
 def test_set_bios_for_airplane(plane, selector, value, result, request):
+    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -202,6 +203,7 @@ def test_set_bios_for_airplane(plane, selector, value, result, request):
                                                    ('apache_color', 'PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
                                                    ('apache_color', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ', 'PRE')])
 def test_mode_switch_idm_pre_for_apache(plane, selector, value, mode, request):
+    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
     plane = request.getfixturevalue(plane)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -328,6 +330,7 @@ def test_prepare_image_for_all_planes(model, lcdtype, bios_pairs, request):
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
     from dcspy.aircraft import ApacheEufdMode
+    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
@@ -348,6 +351,7 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
     from dcspy.aircraft import ApacheEufdMode
+    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
@@ -371,6 +375,7 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
 
 def test_apache_mono_pre_mode(apache_mono, lcd_mono):
     from dcspy.sdk import lcd_sdk
+    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
@@ -395,6 +400,7 @@ def test_apache_mono_pre_mode(apache_mono, lcd_mono):
 
 def test_apache_color_pre_mode(apache_color, lcd_color):
     from dcspy.sdk import lcd_sdk
+    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, True, False, True, False, True, False, True,
                                                                      False, True, False, True, False, True, False, True,
                                                                      False, True, False, True, False, True]), \
