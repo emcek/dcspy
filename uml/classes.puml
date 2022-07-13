@@ -173,7 +173,7 @@ package sdk{
 
 LcdType --* LcdInfo
 LcdButton --* LcdInfo
-LcdButton --* Aircraft
+LcdButton -* Aircraft
 
 LogitechKeyboard *- Aircraft
 LcdInfo -* LogitechKeyboard
