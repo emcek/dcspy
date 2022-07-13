@@ -415,5 +415,5 @@ def test_apache_color_pre_mode(apache_color, lcd_color):
     img = apache_color.prepare_image()
     assert isinstance(img, PIL.Image.Image)
     if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_pre_mode.png'))
+        ref_img = PIL.Image.open(path.join(resources, 'apache_color_pre_mode.png'))
         assert img.tobytes() == ref_img.tobytes()
