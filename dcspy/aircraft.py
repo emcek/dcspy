@@ -531,7 +531,7 @@ class AH64D(Aircraft):
         for i, xcord, ycord in zip(range(2, 12), x, y):
             mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
-                draw.text(xy=(x, y), text=f'{mat.group(1):<9}{mat.group(2):>7}',
+                draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
     def set_bios(self, selector: str, value: str) -> None:
