@@ -3,9 +3,9 @@ import struct
 from collections import deque
 from importlib import import_module
 from logging import getLogger
+from threading import Event
 from time import time, gmtime
 from typing import Iterator
-from threading import Event
 
 from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
@@ -14,7 +14,7 @@ from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
-__version__ = '1.7.1'
+__version__ = '1.7.2'
 
 
 def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
