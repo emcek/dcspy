@@ -470,8 +470,8 @@ class AH64D(Aircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['x'] = [0, 0, 0, 0, 0, 80, 80, 80, 80, 80]
-            kwargs['y'] = [j * 8 for j in range(0, 5)] * 2
+            kwargs['xcords'] = [0, 0, 0, 0, 0, 80, 80, 80, 80, 80]
+            kwargs['ycords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
@@ -482,8 +482,8 @@ class AH64D(Aircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['x'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-            kwargs['y'] = [j * 24 for j in range(0, 10)]
+            kwargs['xcords'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            kwargs['ycords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
@@ -517,7 +517,7 @@ class AH64D(Aircraft):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
-    def _draw_for_pre(self, draw: ImageDraw.Draw, x: List[int], y: List[int], font: ImageFont.FreeTypeFont):
+    def _draw_for_pre(self, draw: ImageDraw.Draw, xcords: List[int], ycords: List[int], font: ImageFont.FreeTypeFont):
         match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
                       3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
@@ -528,7 +528,7 @@ class AH64D(Aircraft):
                       9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
-        for i, xcord, ycord in zip(range(2, 12), x, y):
+        for i, xcord, ycord in zip(range(2, 12), xcords, ycords):
             mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
                 draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
