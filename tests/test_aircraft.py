@@ -20,9 +20,10 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
     assert issubclass(airplane, aircraft.Aircraft)
 
 
-@mark.parametrize('selector, data, value, c_func, effect, lcd',
-                  [('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], LcdMono),
-                   ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], LcdColor)])
+@mark.parametrize('selector, data, value, c_func, effect, lcd', [
+    ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], LcdMono),
+    ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], LcdColor),
+])
 def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value, c_func, effect, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     assert aircraft.bios_data == {}
