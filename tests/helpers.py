@@ -86,9 +86,8 @@ def set_bios_during_test(aircraft_model: Aircraft, bios_pairs: List[Tuple[str, U
     :param aircraft_model:
     :param bios_pairs:
     """
-    from dcspy import LcdType
     from dcspy.sdk import lcd_sdk
-    if aircraft_model.lcd.type == LcdType.COLOR:
+    if aircraft_model.lcd.type.name == 'COLOR':
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, True] * len(bios_pairs)), \
                 patch.object(lcd_sdk, 'logi_lcd_color_set_background', return_value=True), \
                 patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
