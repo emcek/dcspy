@@ -318,7 +318,7 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
         assert img.tobytes() == ref_img.tobytes()
 
 
-def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
+def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
     from dcspy.aircraft import ApacheEufdMode
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
