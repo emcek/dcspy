@@ -197,20 +197,17 @@ def test_set_bios_for_airplane(plane, selector, value, result, request):
         assert plane.bios_data[selector]['value'] == result
 
 
-@mark.parametrize('plane, selector, value, mode', [('apache_mono', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
-                                                   ('apache_mono', 'PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |PRESET TUNE VHS ', 'PRE'),
-                                                   ('apache_color', 'PLT_EUFD_LINE1', '                  |                  |TAIL WHL LOCK SEL ', 'IDM'),
-                                                   ('apache_color', 'PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ', 'IDM'),
-                                                   ('apache_color', 'PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ', 'PRE')])
-def test_mode_switch_idm_pre_for_apache(plane, selector, value, mode, request):
-    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
+@mark.parametrize('plane, bios_pairs, mode', [
+    ('apache_mono', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
+    ('apache_mono', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |PRESET TUNE VHS ')], 'PRE'),
+    ('apache_color', [('PLT_EUFD_LINE1', '                  |                  |TAIL WHL LOCK SEL ')], 'IDM'),
+    ('apache_color', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
+    ('apache_color', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ')], 'PRE'),
+])
+def test_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
     plane = request.getfixturevalue(plane)
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-        plane.set_bios(selector, value)
-        assert plane.mode.name == mode
+    set_bios_during_test(plane, bios_pairs)
+    assert plane.mode.name == mode
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
