@@ -326,16 +326,14 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
     from dcspy.aircraft import ApacheEufdMode
-    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           ')
-        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL ')
-        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
-        apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  ')
-        apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  |                  ')
+    bios_pairs = [
+        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
+        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  '),
+        ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  '),
+        ('PLT_EUFD_LINE5', '                  |                  |                  ')
+    ]
+    set_bios_during_test(apache_mono, bios_pairs)
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
@@ -347,9 +345,11 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono, lcd_mono):
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 def test_apache_mono_wca_more_then_one_screen(apache_mono):
     from dcspy.aircraft import ApacheEufdMode
-    bios_pairs = [('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
-                  ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
-                  ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')]
+    bios_pairs = [
+        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
+        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+    ]
     set_bios_during_test(apache_mono, bios_pairs)
     apache_mono.mode = ApacheEufdMode.WCA
 
