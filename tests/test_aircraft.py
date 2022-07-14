@@ -166,35 +166,32 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
-@mark.parametrize('plane, selector, value, result', [('hornet_mono', 'UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~', '22'),
-                                                     ('hornet_mono', 'UFC_COMM1_DISPLAY', '``', '11'),
-                                                     ('hornet_mono', 'IFEI_FUEL_UP', '104T', '104T'),
-                                                     ('hornet_color', 'UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~', '22'),
-                                                     ('hornet_color', 'UFC_COMM1_DISPLAY', '``', '11'),
-                                                     ('hornet_color', 'IFEI_FUEL_UP', '1000T', '1000T'),
-                                                     ('viper_mono', 'DED_LINE_1', 'a', '\u2666'),
-                                                     ('viper_mono', 'DED_LINE_2', 'o', '\u00b0'),
-                                                     ('viper_color', 'DED_LINE_3', 'a', '\u2666'),
-                                                     ('viper_color', 'DED_LINE_4', 'o', '\u00b0'),
-                                                     ('viper_mono', 'DED_LINE_1', '       *      *CMD STRG  \x80@', '       \u25d9      \u25d9CMD STRG  '),
-                                                     ('viper_mono', 'DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04', '1DEST 2BNGO 3VIP  RINTG  '),
-                                                     ('viper_mono', 'DED_LINE_1', ' MARK *HUD *    26a      @', ' MARK \u25d9HUD \u25d9    26\u2666      '),
-                                                     ('viper_mono', 'DED_LINE_5', 'M3 :7000 *     *DCPL(9)  \x03\x82', 'M3 :7000 \u25d9     \u25d9DCPL(9)  '),
-                                                     ('apache_mono', 'PLT_EUFD_LINE8', '~=>VHF*  121.000   -----              121.500   -----   ', '\u25a0\u2219\u25b8VHF*  121.000   -----              121.500   -----   '),
-                                                     ('apache_mono', 'PLT_EUFD_LINE9', ' <=UHF*  305.000   -----              305.000   -----   ', ' \u25c2\u2219UHF*  305.000   -----              305.000   -----   '),
-                                                     ('apache_mono', 'PLT_EUFD_LINE10', ' <>FM1*   30.000   -----    NORM       30.000   -----   ', ' \u25c2\u25b8FM1*   30.000   -----    NORM       30.000   -----   '),
-                                                     ('apache_color', 'PLT_EUFD_LINE11', '[==FM2*   30.000   -----               30.000   -----   ', '\u25ca\u2219\u2219FM2*   30.000   -----               30.000   -----   '),
-                                                     ('apache_color', 'PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ', ' \u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
-                                                     ('apache_color', 'PLT_EUFD_LINE12', ']==HF *    2.0000A -----    LOW         2.0000A -----   ', '\u2666\u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   ')])
-def test_set_bios_for_airplane(plane, selector, value, result, request):
-    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
+@mark.parametrize('plane, bios_pairs, result', [
+    ('hornet_mono', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~')], '22'),
+    ('hornet_mono', [('UFC_COMM1_DISPLAY', '``')], '11'),
+    ('hornet_mono', [('IFEI_FUEL_UP', '104T')], '104T'),
+    ('hornet_color', [('UFC_SCRATCHPAD_STRING_1_DISPLAY', '~~')], '22'),
+    ('hornet_color', [('UFC_COMM1_DISPLAY', '``')], '11'),
+    ('hornet_color', [('IFEI_FUEL_UP', '1000T')], '1000T'),
+    ('viper_mono', [('DED_LINE_1', 'a')], '\u2666'),
+    ('viper_mono', [('DED_LINE_2', 'o')], '\u00b0'),
+    ('viper_color', [('DED_LINE_3', 'a')], '\u2666'),
+    ('viper_color', [('DED_LINE_4', 'o')], '\u00b0'),
+    ('viper_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
+    ('viper_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
+    ('viper_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
+    ('viper_mono', [('DED_LINE_5', 'M3 :7000 *     *DCPL(9)  \x03\x82')], 'M3 :7000 \u25d9     \u25d9DCPL(9)  '),
+    ('apache_mono', [('PLT_EUFD_LINE8', '~=>VHF*  121.000   -----              121.500   -----   ')], '\u25a0\u2219\u25b8VHF*  121.000   -----              121.500   -----   '),
+    ('apache_mono', [('PLT_EUFD_LINE9', ' <=UHF*  305.000   -----              305.000   -----   ')], ' \u25c2\u2219UHF*  305.000   -----              305.000   -----   '),
+    ('apache_mono', [('PLT_EUFD_LINE10', ' <>FM1*   30.000   -----    NORM       30.000   -----   ')], ' \u25c2\u25b8FM1*   30.000   -----    NORM       30.000   -----   '),
+    ('apache_color', [('PLT_EUFD_LINE11', '[==FM2*   30.000   -----               30.000   -----   ')], '\u25ca\u2219\u2219FM2*   30.000   -----               30.000   -----   '),
+    ('apache_color', [('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')], ' \u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
+    ('apache_color', [('PLT_EUFD_LINE12', ']==HF *    2.0000A -----    LOW         2.0000A -----   ')], '\u2666\u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
+])
+def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     plane = request.getfixturevalue(plane)
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-        plane.set_bios(selector, value)
-        assert plane.bios_data[selector]['value'] == result
+    set_bios_during_test(plane, bios_pairs)
+    assert plane.bios_data[bios_pairs[0][0]]['value'] == result
 
 
 @mark.parametrize('plane, bios_pairs, mode', [
