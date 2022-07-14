@@ -373,48 +373,43 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono, lcd_mono):
         assert img.tobytes() == ref_img.tobytes()
 
 
-def test_apache_mono_pre_mode(apache_mono, lcd_mono):
-    from dcspy.sdk import lcd_sdk
-    # todo: use set_bios_during_test() to patch set_bios list of tuples of (selector, value)
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-        apache_mono.set_bios('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   ')
-        apache_mono.set_bios('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE6', '                                     | FAAD     125.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE7', '                                     | JTAC     121.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 ')
-        apache_mono.set_bios('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+apache_pre_mono_bios = [
+    ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
+    ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
+    ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
+    ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
+    ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
+    ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
+    ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
+    ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
+    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
+    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
+    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+]
+apache_pre_color_bios = [
+    ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
+    ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
+    ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
+    ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
+    ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
+    ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
+    ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
+    ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
+    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
+    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
+    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+]
 
-    img = apache_mono.prepare_image()
+
+@mark.parametrize('model, bios_pairs, filename', [
+    ('apache_mono', apache_pre_mono_bios, 'apache_mono_pre_mode.png'),
+    ('apache_color', apache_pre_color_bios, 'apache_color_pre_mode.png')
+])
+def test_apache_pre_mode(model, bios_pairs, filename, request):
+    aircraft_model = request.getfixturevalue(model)
+    set_bios_during_test(aircraft_model, bios_pairs)
+    img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
     if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_pre_mode.png'))
-        assert img.tobytes() == ref_img.tobytes()
-
-
-def test_apache_color_pre_mode(apache_color, lcd_color):
-    apache_pre_bios = [
-        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
-        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
-        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
-        ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
-        ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
-        ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
-        ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
-        ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
-        ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
-        ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
-    ]
-    set_bios_during_test(apache_color, apache_pre_bios)
-    img = apache_color.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, 'apache_color_pre_mode.png'))
+        ref_img = PIL.Image.open(path.join(resources, filename))
         assert img.tobytes() == ref_img.tobytes()
