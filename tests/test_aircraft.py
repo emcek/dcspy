@@ -296,35 +296,31 @@ harrier_bios = [
 ]
 
 
-@mark.parametrize('model, lcdtype, bios_pairs', [
-    ('FA18Chornet', 'lcd_mono', hornet_bios),
-    ('FA18Chornet', 'lcd_color', hornet_bios),
-    ('F16C50', 'lcd_mono', viper_bios),
-    ('F16C50', 'lcd_color', viper_bios),
-    ('Ka50', 'lcd_mono', shark_bios),
-    ('Ka50', 'lcd_color', shark_bios),
-    ('AH64D', 'lcd_mono', apache_bios),
-    ('AH64D', 'lcd_color', apache_bios),
-    ('A10C', 'lcd_mono', warthog_bios),
-    ('A10C', 'lcd_color', warthog_bios),
-    ('A10C2', 'lcd_mono', warthog_bios),
-    ('A10C2', 'lcd_color', warthog_bios),
-    ('F14B', 'lcd_mono', []),
-    ('F14B', 'lcd_color', []),
-    ('AV8BNA', 'lcd_mono', harrier_bios),
-    ('AV8BNA', 'lcd_color', harrier_bios),
+@mark.parametrize('model, bios_pairs', [
+    ('hornet_mono', hornet_bios),
+    ('hornet_color', hornet_bios),
+    ('viper_mono', viper_bios),
+    ('viper_color', viper_bios),
+    ('shark_mono', shark_bios),
+    ('shark_color', shark_bios),
+    ('apache_mono', apache_bios),
+    ('apache_color', apache_bios),
+    ('warthog_mono', warthog_bios),
+    ('warthog_color', warthog_bios),
+    ('warthog2_mono', warthog_bios),
+    ('warthog2_color', warthog_bios),
+    ('tomcat_mono', []),
+    ('tomcat_color', []),
+    ('harrier_mono', harrier_bios),
+    ('harrier_color', harrier_bios),
 ])
-def test_prepare_image_for_all_planes(model, lcdtype, bios_pairs, request):
-    from dcspy import aircraft
-    lcd = request.getfixturevalue(lcdtype)
-    aircraft_model = getattr(aircraft, model)(lcd_type=lcd)
+def test_prepare_image_for_all_planes(model, bios_pairs, request):
+    aircraft_model = request.getfixturevalue(model)
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    assert img.size == (lcd.width, lcd.height)
-    assert img.mode == lcd.mode
     if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, f'{lcdtype}_{model}.png'))
+        ref_img = PIL.Image.open(path.join(resources, f'{model}_{aircraft_model.__class__.__name__}.png'))
         assert img.tobytes() == ref_img.tobytes()
 
 
