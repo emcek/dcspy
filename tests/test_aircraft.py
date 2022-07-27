@@ -334,11 +334,8 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
-    # assert img.tobytes() == ref_img.tobytes()
-    diff = ImageChops.difference(img, ref_img)
-    if platform == 'win32':
-        img.save(f'{platform}_apache_mono_wca_mode.png')
+    ref_img = PIL.Image.open(path.join(resources, f'{platform}_apache_mono_wca_mode.png'))
+    assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
 
@@ -360,11 +357,8 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono):
     assert apache_mono.warning_line == 1
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
-    diff = ImageChops.difference(img, ref_img)
-    if platform == 'win32':
-        img.save(f'{platform}_apache_mono_wca_mode.png')
-    # assert img.tobytes() == ref_img.tobytes()
+    ref_img = PIL.Image.open(path.join(resources, f'{platform}_apache_mono_wca_mode.png'))
+    assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
 
