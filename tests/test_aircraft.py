@@ -402,6 +402,6 @@ def test_apache_pre_mode(model, bios_pairs, filename, request):
     ref_img = PIL.Image.open(path.join(resources, filename))
     diff = ImageChops.difference(img, ref_img)
     if platform == 'win32':
-        img.save(f'{platform}_filename')
+        img.save(f'{platform}_{filename}')
     # assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
