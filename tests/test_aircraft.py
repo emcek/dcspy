@@ -338,7 +338,7 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
     # assert img.tobytes() == ref_img.tobytes()
     diff = ImageChops.difference(img, ref_img)
     if platform == 'win32':
-        diff.save(f'{platform}_apache_mono_wca_mode.png')
+        img.save(f'{platform}_apache_mono_wca_mode.png')
     assert not ImageChops.difference(img, ref_img).getbbox()
 
 
@@ -363,7 +363,7 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono):
     ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
     diff = ImageChops.difference(img, ref_img)
     if platform == 'win32':
-        diff.save(f'{platform}_apache_mono_wca_mode.png')
+        img.save(f'{platform}_apache_mono_wca_mode.png')
     # assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
@@ -408,6 +408,6 @@ def test_apache_pre_mode(model, bios_pairs, filename, request):
     ref_img = PIL.Image.open(path.join(resources, filename))
     diff = ImageChops.difference(img, ref_img)
     if platform == 'win32':
-        diff.save(f'{platform}_filename')
+        img.save(f'{platform}_filename')
     # assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
