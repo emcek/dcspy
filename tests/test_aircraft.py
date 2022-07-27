@@ -311,6 +311,7 @@ harrier_bios = [
     ('harrier_color', harrier_bios),
 ])
 def test_prepare_image_for_all_planes(model, bios_pairs, request):
+    from sys import platform
     aircraft_model = request.getfixturevalue(model)
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
@@ -319,6 +320,7 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     ref_img = PIL.Image.open(path.join(resources, f'{model}_{aircraft_model.__class__.__name__}.png'))
     # assert img.tobytes() == ref_img.tobytes()
     diff = ImageChops.difference(img, ref_img)
+    img.save(f'{platform}_{model}_{aircraft_model.__class__.__name__}.png')
     assert len(list(img.getdata())) == len(list(ref_img.getdata()))
     # assert list(img.getdata()) == list(ref_img.getdata())
     assert not diff.getbbox()
