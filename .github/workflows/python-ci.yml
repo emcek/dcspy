@@ -86,7 +86,6 @@ jobs:
           name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
           path: |
             dcspy.log
-            *.png
           retention-days: 5
       - name: Check pip-audit
         run: |
