@@ -399,6 +399,6 @@ def test_apache_pre_mode(model, bios_pairs, filename, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, f'{filename}'))
+    ref_img = PIL.Image.open(path.join(resources, platform, filename))
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
