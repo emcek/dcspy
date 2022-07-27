@@ -2,6 +2,7 @@ from os import path, name
 from unittest.mock import patch
 
 import PIL
+from PIL import ImageChops
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
@@ -314,9 +315,12 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, f'{model}_{aircraft_model.__class__.__name__}.png'))
-        assert img.tobytes() == ref_img.tobytes()
+    # if name != 'nt':
+    ref_img = PIL.Image.open(path.join(resources, f'{model}_{aircraft_model.__class__.__name__}.png'))
+    # assert img.tobytes() == ref_img.tobytes()
+    diff = ImageChops.difference(img, ref_img)
+    assert not diff.getbbox()
+    assert list(img.getdata()) == list(ref_img.getdata())
 
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
