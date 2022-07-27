@@ -1,4 +1,5 @@
-from os import path, name
+from os import path
+from sys import platform
 from unittest.mock import patch
 
 import PIL
@@ -311,19 +312,13 @@ harrier_bios = [
     ('harrier_color', harrier_bios),
 ])
 def test_prepare_image_for_all_planes(model, bios_pairs, request):
-    from sys import platform
     aircraft_model = request.getfixturevalue(model)
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    # if name != 'nt':
-    ref_img = PIL.Image.open(path.join(resources, f'{model}_{aircraft_model.__class__.__name__}.png'))
-    # assert img.tobytes() == ref_img.tobytes()
-    diff = ImageChops.difference(img, ref_img)
-    img.save(f'{platform}_{model}_{aircraft_model.__class__.__name__}.png')
-    assert len(list(img.getdata())) == len(list(ref_img.getdata()))
-    # assert list(img.getdata()) == list(ref_img.getdata())
-    assert not diff.getbbox()
+    ref_img = PIL.Image.open(path.join(resources, f'{platform}_{model}_{aircraft_model.__class__.__name__}.png'))
+    assert img.tobytes() == ref_img.tobytes()
+    assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
@@ -339,9 +334,11 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
-        assert img.tobytes() == ref_img.tobytes()
+    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+    assert img.tobytes() == ref_img.tobytes()
+    diff = ImageChops.difference(img, ref_img)
+    diff.save(f'{platform}_apache_mono_wca_mode.png')
+    assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -362,9 +359,11 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono):
     assert apache_mono.warning_line == 1
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
-        assert img.tobytes() == ref_img.tobytes()
+    ref_img = PIL.Image.open(path.join(resources, 'apache_mono_wca_mode.png'))
+    diff = ImageChops.difference(img, ref_img)
+    diff.save(f'{platform}_apache_mono_wca_mode.png')
+    assert img.tobytes() == ref_img.tobytes()
+    assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 apache_pre_mono_bios = [
@@ -404,6 +403,8 @@ def test_apache_pre_mode(model, bios_pairs, filename, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    if name != 'nt':
-        ref_img = PIL.Image.open(path.join(resources, filename))
-        assert img.tobytes() == ref_img.tobytes()
+    ref_img = PIL.Image.open(path.join(resources, filename))
+    diff = ImageChops.difference(img, ref_img)
+    diff.save(f'{platform}_filename')
+    assert img.tobytes() == ref_img.tobytes()
+    assert not ImageChops.difference(img, ref_img).getbbox()
