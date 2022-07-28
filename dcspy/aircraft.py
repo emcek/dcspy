@@ -470,7 +470,7 @@ class AH64D(Aircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['xcords'] = [0, 0, 0, 0, 0, 80, 80, 80, 80, 80]
+            kwargs['xcords'] = [0] * 5 + [80] * 5
             kwargs['ycords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
@@ -482,7 +482,7 @@ class AH64D(Aircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['xcords'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            kwargs['xcords'] = [0] * 10
             kwargs['ycords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
