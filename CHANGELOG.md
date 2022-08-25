@@ -1,3 +1,6 @@
+## 1.7.3
+* Show DCS version to logs
+
 ## 1.7.2
 * **AH-64D Apache**
   * update name from `AH64DBLKII` to `AH64D`
