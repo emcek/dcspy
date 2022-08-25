@@ -235,11 +235,11 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4504, 'max_length': 29}, 'value': str()},
-            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4522, 'max_length': 29}, 'value': str()},
-            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4540, 'max_length': 29}, 'value': str()},
-            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x455e, 'max_length': 29}, 'value': str()},
-            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x457c, 'max_length': 29}, 'value': str()},
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': str()},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': str()},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4546, 'max_length': 29}, 'value': str()},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'max_length': 29}, 'value': str()},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4582, 'max_length': 29}, 'value': str()},
             'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4},
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
