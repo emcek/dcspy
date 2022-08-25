@@ -235,11 +235,11 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x4504, 'max_length': 29}, 'value': str()},
-            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4522, 'max_length': 29}, 'value': str()},
-            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4540, 'max_length': 29}, 'value': str()},
-            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x455e, 'max_length': 29}, 'value': str()},
-            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x457c, 'max_length': 29}, 'value': str()},
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': str()},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': str()},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4546, 'max_length': 29}, 'value': str()},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'max_length': 29}, 'value': str()},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4582, 'max_length': 29}, 'value': str()},
             'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4},
             'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
@@ -449,19 +449,19 @@ class AH64D(Aircraft):
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8130, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x8168, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81d8, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8210, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x8248, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8280, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82b8, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x8398, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c2, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80fa, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8132, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x816a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a2, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81da, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8212, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x824a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8282, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82ba, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f2, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x839a, 'max_length': 56}, 'value': str()},
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
@@ -644,10 +644,10 @@ class A10C2(A10C):
     pass
 
 
-class F14B(Aircraft):
+class F14(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Create F-14B Tomcat.
+        Create F-14 Tomcat.
 
         :param lcd_type: LCD type
         """
@@ -659,14 +659,14 @@ class F14B(Aircraft):
             'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
 
     def _draw_common_data(self, draw: ImageDraw) -> None:
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2, 3), text='F-14 Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
-        """Prepare image for F-14B Tomcat for Mono LCD."""
+        """Prepare image for F-14 Tomcat for Mono LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img))
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
-        """Prepare image for F-14B Tomcat for Color LCD."""
+        """Prepare image for F-14 Tomcat for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img))
 
     def button_request(self, button: LcdButton, request: str = '\n') -> str:
