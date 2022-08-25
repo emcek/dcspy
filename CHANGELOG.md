@@ -1,4 +1,6 @@
 ## 1.7.3
+* Rename F-14B to F-14 due to DCS-BIOS changes
+* Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
 * Show DCS version to logs
 
 ## 1.7.2
