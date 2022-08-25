@@ -18,7 +18,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install MS Fonts
       run: |
-        wget https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
+        curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
         sudo mkdir -p /usr/share/fonts/truetype
         sudo mv consola.ttf /usr/share/fonts/truetype
         fc-cache -f -v
