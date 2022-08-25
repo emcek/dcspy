@@ -68,7 +68,7 @@ package aircraft {
   Aircraft <|-- AH64D
   Aircraft <|-- A10C
   A10C <|-- A10C2
-  Aircraft <|-- F-14
+  Aircraft <|-- F14
   Aircraft <|-- AV8BNA
   class BIOS_VALUE
   AH64D *-- ApacheEufdMode
