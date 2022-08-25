@@ -449,19 +449,19 @@ class AH64D(Aircraft):
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80f8, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8130, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x8168, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81d8, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8210, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x8248, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8280, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82b8, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f0, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x8328, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x8398, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c2, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80fa, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8132, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x816a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a2, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81da, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8212, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x824a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8282, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82ba, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f2, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x839a, 'max_length': 56}, 'value': str()},
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
