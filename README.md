@@ -37,7 +37,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 ## Requirements
 * [Python 3.10](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see [installation](https://github.com/emcek/dcspy/wiki/installation)) should be fine, please choose Windows x86-64 version, file should be python-3.10.5-amd64.exe.  
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
-* [DCS-BIOS 0.7.45](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS-BIOS 0.7.46](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
 * [DCS 2.7.17.29140](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.7.17.29140/) Open Beta - previous **2.7.16.28157** not working
 
 **Notes:**
