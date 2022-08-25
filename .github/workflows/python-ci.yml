@@ -126,6 +126,7 @@ jobs:
             covhtml/*
             coverage.xml
             dcspy.log
+            *.png
           retention-days: 4
       - name: Run codacy-coverage
         env:

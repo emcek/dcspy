@@ -315,6 +315,7 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     aircraft_model = request.getfixturevalue(model)
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
+    img.save(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}_2.png'))
     assert isinstance(img, PIL.Image.Image)
     ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
     assert img.tobytes() == ref_img.tobytes()
