@@ -1,6 +1,8 @@
 ## 1.7.3
 * **AH-64D Apache**
   * add better support for G19 for PRE mode
+* Rename F-14B to F-14 due to DCS-BIOS changes
+* Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
 
 ## 1.7.2
 * **AH-64D Apache**
