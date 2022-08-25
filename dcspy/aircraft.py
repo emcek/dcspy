@@ -632,10 +632,10 @@ class A10C2(A10C):
     pass
 
 
-class F14B(Aircraft):
+class F14(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Create F-14B Tomcat.
+        Create F-14 Tomcat.
 
         :param lcd_type: LCD type
         """
@@ -647,14 +647,14 @@ class F14B(Aircraft):
             'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
 
     def _draw_common_data(self, draw: ImageDraw) -> None:
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2, 3), text='F-14 Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
-        """Prepare image for F-14B Tomcat for Mono LCD."""
+        """Prepare image for F-14 Tomcat for Mono LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img))
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
-        """Prepare image for F-14B Tomcat for Color LCD."""
+        """Prepare image for F-14 Tomcat for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img))
 
     def button_request(self, button: LcdButton, request: str = '\n') -> str:
