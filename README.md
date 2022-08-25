@@ -29,7 +29,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark PVI-800 and autopilot channels
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
-* F-14B Tomcat - basic support for RIO CAP
+* F-14 Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display
 * more to come....
@@ -38,6 +38,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * [Python 3.10](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see [installation](https://github.com/emcek/dcspy/wiki/installation)) should be fine, please choose Windows x86-64 version, file should be python-3.10.5-amd64.exe.  
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.45](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
+* [DCS 2.7.17.29140](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.7.17.29140/) Open Beta - previous **2.7.16.28157** not working
 
 **Notes:**
 * If you upgrade DCSpy from 1.5.1 or older you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software).

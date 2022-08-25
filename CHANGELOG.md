@@ -91,7 +91,7 @@
 * **F/A-18C Hornet** shows Total Fuel instead of Total Internal Fuel
 
 ## 1.1.1
-* Basic support for **F-14B Tomcat** RIO CAP (Computer Address Panel):
+* Basic support for **F-14 Tomcat** RIO CAP (Computer Address Panel):
   * **CLEAR** - button 1
   * **S-W** - button 2
   * **N+E** - button 3
