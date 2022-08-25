@@ -154,3 +154,13 @@ def proc_is_running(name: str) -> int:
         if name in proc.info['name']:
             return proc.info['pid']
     return 0
+
+
+def check_dcs_ver() -> str:
+    """
+    Check DCS version.
+
+    Only OpenBeta is supported.
+    :return:
+    """
+    return ''

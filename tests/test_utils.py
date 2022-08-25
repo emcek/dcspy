@@ -68,3 +68,7 @@ def test_dummy_save_load_set_defaults():
 
     remove(test_tmp_yaml)
     rmdir('./tmp/')
+
+
+def test_check_dcs_ver():
+    assert utils.check_dcs_ver() == ''
