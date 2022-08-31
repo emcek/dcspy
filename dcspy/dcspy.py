@@ -16,7 +16,7 @@ def run():
     """Function to start DCSpy GUI."""
     if config['show_gui']:
         LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
-        LOG.info(f'DCS OB ver: {check_dcs_ver()}')
+        LOG.info(f'DCS OB ver: {check_dcs_ver(config["dcs"])}')
         root = tk.Tk()
         width, height = 210, 160
         root.geometry(f'{width}x{height}')

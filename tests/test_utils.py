@@ -53,6 +53,7 @@ def test_dummy_save_load_set_defaults():
     d_cfg = utils.set_defaults(d_cfg, test_tmp_yaml)
     assert d_cfg == {'keyboard': 'G13', 'show_gui': True, 'autostart': False,
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                      'verbose': False,
                      'font_name': 'consola.ttf',
                      'font_mono_s': 11,
@@ -72,17 +73,17 @@ def test_dummy_save_load_set_defaults():
 
 def test_check_dcs_ver_file_exists_with_ver(autoupdate1_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate1_cfg)):
-        dcs_ver = utils.check_dcs_ver()
+        dcs_ver = utils.check_dcs_ver('')
         assert dcs_ver == '2.7.16.28157'
 
 
 def test_check_dcs_ver_file_exists_without_ver(autoupdate2_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate2_cfg)):
-        dcs_ver = utils.check_dcs_ver()
+        dcs_ver = utils.check_dcs_ver('')
         assert dcs_ver == 'Unknown'
 
 
 def test_check_dcs_ver_file_not_exists():
     with patch('dcspy.utils.open', side_effect=FileNotFoundError):
-        dcs_ver = utils.check_dcs_ver()
+        dcs_ver = utils.check_dcs_ver('')
         assert dcs_ver == 'Unknown'

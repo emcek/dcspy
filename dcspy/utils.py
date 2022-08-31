@@ -61,6 +61,7 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     """
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                            'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                             'autostart': False,
                             'verbose': False,
                             'keyboard': 'G13',
@@ -158,7 +159,7 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver() -> str:
+def check_dcs_ver(dcs_path) -> str:
     """
     Check DCS version.
 
@@ -167,7 +168,7 @@ def check_dcs_ver() -> str:
     """
     result = 'Unknown'
     try:
-        with open(Path('C:\Program Files\Eagle Dynamics\DCS World OpenBeta\\autoupdate.cfg')) as autoupdate_cfg:
+        with open(Path(path.join(dcs_path, 'autoupdate.cfg'))) as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except FileNotFoundError as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
