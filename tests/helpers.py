@@ -16,7 +16,7 @@ try:
 except exceptions.ConnectTimeout:
     dcsbios_ver = '0.7.45'
 
-all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64D', 'A10C', 'A10C2', 'F14', 'AV8BNA']
+all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64D', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
 
 def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
@@ -52,6 +52,7 @@ def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict
 
 
 def _get_json_for_plane(plane: str) -> dict:
+    plane = 'F-14.json' if plane == 'F-14B.json' else plane  # todo: fix quick hack
     plane_path = path.join(gettempdir(), plane)
     try:
         m_time = path.getmtime(plane_path)
