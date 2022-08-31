@@ -1,5 +1,6 @@
 ## 1.7.3
 * Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
+* Basic support for F-14A Tomcat
 
 ## 1.7.2
 * **AH-64D Apache**
