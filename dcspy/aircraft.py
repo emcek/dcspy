@@ -679,6 +679,10 @@ class F14B(Aircraft):
         return super().button_request(button, action.get(button, '\n'))
 
 
+class F14A135GR(F14B):
+    pass
+
+
 class AV8BNA(Aircraft):
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
