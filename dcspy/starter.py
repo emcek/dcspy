@@ -10,7 +10,7 @@ from typing import Iterator
 from dcspy import RECV_ADDR, MULTICAST_IP
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
-from dcspy.utils import check_ver_at_github, check_dcs_ver
+from dcspy.utils import check_ver_at_github
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
@@ -101,7 +101,6 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     :param event: stop event for main loop
     """
     parser = ProtocolParser()
-    LOG.info(f'DCS OB ver: {check_dcs_ver()}')
     lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(lcd)}')
     LOG.debug(f'Loading: {repr(lcd)}')

@@ -6,6 +6,7 @@ from threading import Event
 from dcspy import config, LCD_TYPES
 from dcspy.starter import dcspy_run
 from dcspy.tk_gui import DcspyGui
+from dcspy.utils import check_dcs_ver
 
 LOG = getLogger(__name__)
 __version__ = '1.7.3'
@@ -15,6 +16,7 @@ def run():
     """Function to start DCSpy GUI."""
     if config['show_gui']:
         LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
+        LOG.info(f'DCS OB ver: {check_dcs_ver()}')
         root = tk.Tk()
         width, height = 210, 160
         root.geometry(f'{width}x{height}')
