@@ -16,7 +16,7 @@ from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
-__version__ = '1.7.2'
+__version__ = '1.7.3'
 LOG = getLogger(__name__)
 ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', Union[version.Version, version.LegacyVersion]), ('dl_url', str),
                                          ('published', str), ('release_type', str), ('archive_file', str)])

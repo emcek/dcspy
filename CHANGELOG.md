@@ -1,8 +1,10 @@
-## 1.7.3
+## 1.7.4
 * **AH-64D Apache**
   * add better support for G19 for PRE mode
-* Rename F-14B to F-14 due to DCS-BIOS changes
+
+## 1.7.3
 * Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
+* Basic support for F-14A Tomcat
 
 ## 1.7.2
 * **AH-64D Apache**
@@ -77,7 +79,7 @@
   * **IFF ENABLE Switch** - M1/M3 /OFF/ M3/MS
   * **IFF M-4 CODE Switch** - HOLD/ A/B /ZERO
   * **IFF MODE 4 REPLY Switch** - OUT/A/B
-* Fix alignment of (DCS-BIOS [v0.7.41](https://github.com/DCSFlightpanels/dcs-bios/releases/tag/v0.7.41)) for **F-14 Tomcat**
+* Fix alignment of (DCS-BIOS [v0.7.41](https://github.com/DCSFlightpanels/dcs-bios/releases/tag/v0.7.41)) for **F-14B Tomcat**
 * Internally all data fetch form DCS-BIOS is check against its specification. Sometimes due to changes DCS-BIOS protocol DCSpy couldn't fetch all data i.e. F-16 DED. It shouldn't happened anymore.
 
 ## 1.2.3
@@ -97,7 +99,7 @@
 * **F/A-18C Hornet** shows Total Fuel instead of Total Internal Fuel
 
 ## 1.1.1
-* Basic support for **F-14 Tomcat** RIO CAP (Computer Address Panel):
+* Basic support for **F-14B Tomcat** RIO CAP (Computer Address Panel):
   * **CLEAR** - button 1
   * **S-W** - button 2
   * **N+E** - button 3
