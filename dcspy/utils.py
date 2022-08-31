@@ -1,6 +1,8 @@
 from datetime import datetime
 from logging import getLogger
 from os import environ, makedirs, path
+from pathlib import Path
+from re import search
 from typing import Dict, Union, Tuple
 
 from packaging import version
@@ -163,4 +165,15 @@ def check_dcs_ver() -> str:
     Only OpenBeta is supported.
     :return:
     """
-    return ''
+    result = 'Unknown'
+    try:
+        with open(Path('C:\Program Files\Eagle Dynamics\DCS World OpenBeta\\autoupdate.cfg')) as autoupdate_cfg:
+            autoupdate_data = autoupdate_cfg.read()
+    except FileNotFoundError as err:
+        LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+    else:
+        dcs_ver = search(r'"version":\s"([\d.]*)"', autoupdate_data)
+        if dcs_ver:
+            result = dcs_ver.group(1)
+    finally:
+        return result
