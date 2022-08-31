@@ -48,6 +48,7 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
                                                         ('A-10C', 'A10C', [], True),
                                                         ('A-10C_2', 'A10C2', [], True),
                                                         ('F-14B', 'F14B', [], True),
+                                                        ('F14A135GR', 'F14A135GR', [], True),
                                                         ('AV8BNA', 'AV8BNA', [], True),
                                                         ('F-114_Nighthawk', 'F114Nighthawk', ['Not supported yet!'], False)])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
