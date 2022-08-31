@@ -29,7 +29,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark PVI-800 and autopilot channels
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
-* F-14 Tomcat - basic support for RIO CAP
+* F-14B Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display
 * more to come....

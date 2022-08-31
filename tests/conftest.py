@@ -106,12 +106,12 @@ def warthog2_mono(lcd_mono: LcdInfo):
 @fixture()
 def tomcat_mono(lcd_mono: LcdInfo):
     """
-    Return instance of F-14 Tomcat for Logitech mono LCD.
+    Return instance of F-14B Tomcat for Logitech mono LCD.
     :param lcd_mono:
-    :return: F-14 Tomcat instance
+    :return: F-14B Tomcat instance
     """
-    from dcspy.aircraft import F14
-    return F14(lcd_mono)
+    from dcspy.aircraft import F14B
+    return F14B(lcd_mono)
 
 
 @fixture()
@@ -184,12 +184,12 @@ def warthog2_color(lcd_color: LcdInfo):
 @fixture()
 def tomcat_color(lcd_color: LcdInfo):
     """
-    Return instance of F-14 Tomcat for Logitech color LCD.
+    Return instance of F-14B Tomcat for Logitech color LCD.
     :param lcd_color:
-    :return: F-14 Tomcat instance
+    :return: F-14B Tomcat instance
     """
-    from dcspy.aircraft import F14
-    return F14(lcd_color)
+    from dcspy.aircraft import F14B
+    return F14B(lcd_color)
 
 
 @fixture()

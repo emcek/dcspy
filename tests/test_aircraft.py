@@ -307,8 +307,8 @@ harrier_bios = [
     ('A10C', 'lcd_color', warthog_bios),
     ('A10C2', 'lcd_mono', warthog_bios),
     ('A10C2', 'lcd_color', warthog_bios),
-    ('F14', 'lcd_mono', []),
-    ('F14', 'lcd_color', []),
+    ('F14B', 'lcd_mono', []),
+    ('F14B', 'lcd_color', []),
     ('AV8BNA', 'lcd_mono', harrier_bios),
     ('AV8BNA', 'lcd_color', harrier_bios),
 ])
