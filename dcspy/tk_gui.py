@@ -86,7 +86,7 @@ class DcspyGui(tk.Frame):
         """Config and settings editor window."""
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 580, 250
+        width, height = 580, 270
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
 
