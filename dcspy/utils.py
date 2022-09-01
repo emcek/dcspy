@@ -1,6 +1,8 @@
 from datetime import datetime
 from logging import getLogger
 from os import environ, makedirs, path
+from pathlib import Path
+from re import search
 from typing import Dict, Union, Tuple
 
 from packaging import version
@@ -59,6 +61,7 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     """
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                            'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                             'autostart': False,
                             'verbose': False,
                             'keyboard': 'G13',
@@ -154,3 +157,26 @@ def proc_is_running(name: str) -> int:
         if name in proc.info['name']:
             return proc.info['pid']
     return 0
+
+
+def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
+    """
+    Check DCS version and release type.
+
+    :param dcs_path: path to DCS installation directory
+    :return: dcs type and version as strings
+    """
+    result_type, result_ver = 'Unknown', 'Unknown'
+    try:
+        with open(Path(path.join(dcs_path, 'autoupdate.cfg'))) as autoupdate_cfg:
+            autoupdate_data = autoupdate_cfg.read()
+    except FileNotFoundError as err:
+        LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+    else:
+        dcs_type = search(r'"branch":\s"([\w.]*)"', autoupdate_data)
+        if dcs_type:
+            result_type = str(dcs_type.group(1))
+        dcs_ver = search(r'"version":\s"([\d.]*)"', autoupdate_data)
+        if dcs_ver:
+            result_ver = str(dcs_ver.group(1))
+    return result_type, result_ver

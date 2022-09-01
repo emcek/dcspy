@@ -1,6 +1,5 @@
 ## 1.7.4
-* **AH-64D Apache**
-  * add better support for G19 for PRE mode
+* **AH-64D Apache* - add better support for G19 for PRE mode
 * Show DCS version to logs
 * Internal:
   * improve checking DCS-BIOS data
