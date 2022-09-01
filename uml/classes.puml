@@ -39,10 +39,9 @@ class LogitechKeyboard {
     + plane_name = '' : str
     + plane_detected = False : bool
     + already_pressed = False : bool
-    + buttons : Tuple[int]
     + lcd : LcdInfo
+    + vert_space = 0 : int
     + dislay(message : List[str]) -> List[str]
-    + vert_space : int
     # {abstract} _prepare_image() -> Image
     + detecting_plane()
     + load_new_plane(value : str)
@@ -53,14 +52,12 @@ class LogitechKeyboard {
 }
 
 class KeyboardMono {
-    + buttons : Tuple[int]
-    + vert_space = 10
+    + vert_space = 10 : int
     # _prepare_image() -> Image
 }
 
 class KeyboardColor {
-    + buttons : Tuple[int]
-    + vert_space = 40
+    + vert_space = 40 : int
     # _prepare_image() -> Image
 }
 
@@ -68,16 +65,18 @@ package aircraft {
   Aircraft <|-- FA18Chornet
   Aircraft <|-- F16C50
   Aircraft <|-- Ka50
+  Aircraft <|-- AH64D
   Aircraft <|-- A10C
   A10C <|-- A10C2
   Aircraft <|-- F14B
+  F14B <|-- F14A135GR
   Aircraft <|-- AV8BNA
-  BIOS *-- PROTO_STR
-  BIOS *-- PROTO_INT
+  class BIOS_VALUE
+  AH64D *-- ApacheEufdMode
 }
 
 class Aircraft {
-    + bios_data : Dict[str, BIOS]
+    + bios_data : Dict[str, BIOS_VALUE]
     + cycle_buttons : Dict[str, Iterator[int]]
     + lcd : LcdInfo
     + led_stack: OrderedDict[str, EffectInfo]
@@ -91,40 +90,56 @@ class Aircraft {
     + led_handler(selector: str, value: int, effect: EffectInfo)
     + get_next_value_for_button(btn_name: str) -> int
     # _popitem_and_reply_last_effect(selector: str)
-    + {abstract} draw_for_lcd_type_1(img: Image)
-    + {abstract} draw_for_lcd_type_2(img: Image)
+    + {abstract} draw_for_lcd_mono(img: Image)
+    + {abstract} draw_for_lcd_color(img: Image)
 }
 
-
-class PROTO_STR <<(T,orange)>> {
-    + address: int
-    + max_length: int
+class ApacheEufdMode <<(E,yellow)>> {
+    + UNK = 0
+    + IDM = 1
+    + WCA = 2
+    + PRE = 4
 }
 
-class PROTO_INT <<(T,orange)>> {
-    + address: int
-    + mask: int
-    + shift_by: int
-    + max_value': int
-}
-
-class BIOS <<(T,orange)>> {
+class BIOS_VALUE <<(T,orange)>> {
     + class : str
-    + args: Dict[PROTO_STR, PROTO_INT]
+    + args: Dict[str, int]
     + value: Union[int, str]
-    + callback: str
-    + callback_args: Dict[str, EffectInfo]
+    + max_value: int
+    - total=False
 }
 
 class LcdInfo <<(D,orchid)>> {
     + height : int
     + width : int
-    + type : int
+    + type : LcdType
+    + buttons: Sequence[LcdButton]
     + foreground : Union[int, Sequence[int]]
     + background : Union[int, Sequence[int]]
     + mode: str
+    + font_xs: ImageFont.FreeTypeFont
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
+}
+
+class LcdType <<(E,yellow)>> {
+    + mono = 0
+    + color = 1
+}
+
+class LcdButton <<(E,yellow)>> {
+    + none = 0x0
+    + one = 0x1
+    + two = 0x2
+    + three = 0x4
+    + four = 0x8
+    + left = 0x0100
+    + right = 0x0200
+    + ok = 0x0400
+    + cancel = 0x0800
+    + up = 0x1000
+    + down = 0x2000
+    + menu = 0x4000
 }
 
 package sdk{
@@ -166,17 +181,18 @@ package sdk{
     }
 }
 
+LcdType --* LcdInfo
+LcdButton --* LcdInfo
+LcdButton --* Aircraft
+
 LogitechKeyboard *- Aircraft
 LcdInfo -* LogitechKeyboard
 LogitechKeyboard *--- ProtocolParser
 LogitechKeyboard *-- lcd_sdk
 
-KeyboardMono *-- lcd_sdk
-KeyboardColor *-- lcd_sdk
-
-LcdInfo -* Aircraft
+LcdInfo --* Aircraft
 Aircraft *-- StringBuffer
-Aircraft *-- IntegerBuffer
+Aircraft *--- IntegerBuffer
 Aircraft *-- lcd_sdk
 Aircraft *-- EffectInfo
 BIOS *-- EffectInfo

@@ -1,7 +1,8 @@
 from datetime import datetime
 from logging import getLogger
-from os import environ, makedirs
-from sys import prefix, version_info
+from os import environ, makedirs, path
+from pathlib import Path
+from re import search
 from typing import Dict, Union, Tuple
 
 from packaging import version
@@ -11,14 +12,14 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
-default_yaml = f'{prefix}/dcspy_data/config.yaml'
+default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
 
 
 def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     Load configuration form yaml filename.
 
-    :param filename: path to yam file - default dcspy_data/config.yaml
+    :param filename: path to yam file - default <package_dir>/config.yaml
     :return: configuration dict
     """
     cfg_dict: ConfigDict = {}
@@ -41,7 +42,7 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
     Update yaml file with dict.
 
     :param cfg_dict: configuration dict
-    :param filename: path to yam file - default dcspy_data/config.yaml
+    :param filename: path to yam file - default <package_dir>/config.yaml
     """
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
@@ -50,25 +51,33 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: ConfigDict) -> ConfigDict:
+def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     """
     Set defaults to not existing config options.
 
     :param cfg: dict before migration
+    :param filename: path to yam file - default <package_dir>/config.yaml
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
     defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+                            'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+                            'autostart': False,
+                            'verbose': False,
                             'keyboard': 'G13',
                             'led_effect': True,
                             'show_gui': True,
                             'font_name': 'consola.ttf',
                             'font_mono_s': 11,
+                            'font_mono_xs': 9,
                             'font_mono_l': 16,
                             'font_color_s': 22,
+                            'font_color_xs': 18,
                             'font_color_l': 32}
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
-    save_cfg(migrated_cfg)
+    if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
+        migrated_cfg['dcsbios'] = defaults['dcsbios']
+    save_cfg(cfg_dict=migrated_cfg, filename=filename)
     return migrated_cfg
 
 
@@ -96,9 +105,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
             dict_json = response.json()
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
-            # quick hack for python3.6 - time zone has different code
-            frmt = '%Y-%m-%dT%H:%M:%S%z' if version_info.minor > 6 else '%Y-%m-%dT%H:%M:%SZ'
-            published = datetime.strptime(dict_json['published_at'], frmt).strftime('%d %B %Y')
+            published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
             asset_url = dict_json['assets'][0]['browser_download_url']
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             latest = _compare_versions(package, current_ver, online_version)
@@ -151,3 +158,26 @@ def proc_is_running(name: str) -> int:
         if name in proc.info['name']:
             return proc.info['pid']
     return 0
+
+
+def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
+    """
+    Check DCS version and release type.
+
+    :param dcs_path: path to DCS installation directory
+    :return: dcs type and version as strings
+    """
+    result_type, result_ver = 'Unknown', 'Unknown'
+    try:
+        with open(Path(path.join(dcs_path, 'autoupdate.cfg'))) as autoupdate_cfg:
+            autoupdate_data = autoupdate_cfg.read()
+    except FileNotFoundError as err:
+        LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+    else:
+        dcs_type = search(r'"branch":\s"([\w.]*)"', autoupdate_data)
+        if dcs_type:
+            result_type = str(dcs_type.group(1))
+        dcs_ver = search(r'"version":\s"([\d.]*)"', autoupdate_data)
+        if dcs_ver:
+            result_ver = str(dcs_ver.group(1))
+    return result_type, result_ver

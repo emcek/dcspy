@@ -1,10 +1,10 @@
 import tkinter as tk
 from functools import partial
 from logging import getLogger
-from os import path, environ
+from os import path
 from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
-from sys import prefix
+from tempfile import gettempdir
 from threading import Thread, Event
 from tkinter import messagebox
 from typing import NamedTuple, Union
@@ -16,6 +16,7 @@ from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
+__version__ = '1.7.3'
 LOG = getLogger(__name__)
 ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', Union[version.Version, version.LegacyVersion]), ('dl_url', str),
                                          ('published', str), ('release_type', str), ('archive_file', str)])
@@ -40,6 +41,9 @@ class DcspyGui(tk.Frame):
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.bios_path = ''
         self.event = Event()
+        self.status_txt.set(f'ver. {__version__}')
+        if config.get('autostart', False):
+            self.start_dcspy()
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -82,10 +86,9 @@ class DcspyGui(tk.Frame):
         """Config and settings editor window."""
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 580, 200
+        width, height = 580, 270
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
-        cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
 
         editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
         editor_status.pack(side=tk.TOP, fill=tk.X)
@@ -121,7 +124,6 @@ class DcspyGui(tk.Frame):
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar) -> None:
-        self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
@@ -149,6 +151,7 @@ class DcspyGui(tk.Frame):
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> ReleaseInfo:
+        self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
@@ -183,7 +186,7 @@ class DcspyGui(tk.Frame):
             self._update(rel_info=rel_info)
 
     def _update(self, rel_info: ReleaseInfo) -> None:
-        tmp_dir = environ.get('TEMP', 'C:\\')
+        tmp_dir = gettempdir()
         local_zip = path.join(tmp_dir, rel_info.archive_file)
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
@@ -234,16 +237,18 @@ class DcspyGui(tk.Frame):
         return result
 
     def _stop(self) -> None:
-        self.status_txt.set('Close will shutdown DCSpy')
+        self.status_txt.set('Start again or close DCSpy')
         self.event.set()
 
     def start_dcspy(self) -> None:
         """Run real application."""
+        self.event = Event()
+        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
         app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
-        LOG.debug(f'Starting thread for: {app_params}')
         app_thread.name = 'dcspy-app'
+        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.status_txt.set('You can close GUI')
         app_thread.start()
