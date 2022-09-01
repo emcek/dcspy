@@ -40,7 +40,7 @@ class LogitechKeyboard {
     + plane_detected = False : bool
     + already_pressed = False : bool
     + lcd : LcdInfo
-    + self.vert_space = 0 : int
+    + vert_space = 0 : int
     + dislay(message : List[str]) -> List[str]
     # {abstract} _prepare_image() -> Image
     + detecting_plane()
@@ -52,12 +52,12 @@ class LogitechKeyboard {
 }
 
 class KeyboardMono {
-    + self.vert_space = 10 : int
+    + vert_space = 10 : int
     # _prepare_image() -> Image
 }
 
 class KeyboardColor {
-    + self.vert_space = 40 : int
+    + vert_space = 40 : int
     # _prepare_image() -> Image
 }
 
