@@ -180,5 +180,4 @@ def check_dcs_ver(dcs_path) -> Tuple[str, str]:
         dcs_ver = search(r'"version":\s"([\d.]*)"', autoupdate_data)
         if dcs_ver:
             result_ver = str(dcs_ver.group(1))
-    finally:
-        return result_type, result_ver
+    return result_type, result_ver
