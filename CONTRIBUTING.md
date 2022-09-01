@@ -21,7 +21,11 @@ self.bios_data: Dict[str, BIOS_VALUE] = {
                        'value': str()},
     'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 
                         'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 
-                        'value': int()}}
+                        'value': int()},
+    'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 
+                       'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 
+                       'value': int(), 
+                       'max_value': 4}}
 ```
 which describe data to be fetched from DCS-BIOS with buffer class and its parameters. For required address and data max_length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 * Then after detecting current plane in DCS, `KeyboardMono` or `KeyboardColor` will load instance of aircraft as `plane`
@@ -48,14 +52,14 @@ sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 777
 ```
 * Correct action is define in aircraft instance `button_request()` method:
 ```python
-action = {1: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          2: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          3: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          4: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-          9: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          10: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          14: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          13: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
+action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+          LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+          LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+          LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+          LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+          LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+          LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+          LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
 return super().button_request(button, action.get(button, '\n'))
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
