@@ -1,6 +1,9 @@
 ## 1.7.4
 * **AH-64D Apache**
   * add better support for G19 for PRE mode
+* Show DCS version to logs
+* Internal:
+  * improve checking DCS-BIOS data
 
 ## 1.7.3
 * Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
