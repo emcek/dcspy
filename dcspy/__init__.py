@@ -12,8 +12,15 @@ from dcspy.log import config_logger
 from dcspy.sdk import lcd_sdk
 from dcspy.utils import load_cfg, set_defaults, default_yaml
 
-SUPPORTED_CRAFTS = {'FA18Chornet': 'FA-18C_hornet', 'Ka50': 'Ka-50', 'F16C50': 'F-16C_50', 'AH64D': 'AH-64D',
-                    'A10C': 'A-10C', 'A10C2': 'A-10C_2', 'F14A135GR': 'F14A135GR', 'F14B': 'F-14B', 'AV8BNA': 'AV8BNA'}
+SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
+                    'Ka50': {'name': 'Ka-50 Black Shark', 'bios': 'Ka-50'},
+                    'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
+                    'AH64D': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
+                    'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
+                    'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
+                    'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
+                    'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14'},
+                    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'}}
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
