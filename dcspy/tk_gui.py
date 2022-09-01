@@ -1,20 +1,24 @@
 import tkinter as tk
 from functools import partial
 from logging import getLogger
-from os import path, environ
+from os import path
 from re import search
-from shutil import unpack_archive, rmtree, copytree
-from sys import prefix
+from shutil import unpack_archive, rmtree, copy, copytree
+from tempfile import gettempdir
 from threading import Thread, Event
 from tkinter import messagebox
-from typing import NamedTuple
+from typing import NamedTuple, Union
+from webbrowser import open_new
+
+from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
 
+__version__ = '1.7.3'
 LOG = getLogger(__name__)
-ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', str), ('dl_url', str),
+ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', Union[version.Version, version.LegacyVersion]), ('dl_url', str),
                                          ('published', str), ('release_type', str), ('archive_file', str)])
 
 
@@ -33,10 +37,13 @@ class DcspyGui(tk.Frame):
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
         self._init_widgets()
-        self.l_bios = 'Not checked'
-        self.r_bios = 'Not checked'
+        self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
+        self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.bios_path = ''
         self.event = Event()
+        self.status_txt.set(f'ver. {__version__}')
+        if config.get('autostart', False):
+            self.start_dcspy()
 
     def _init_widgets(self) -> None:
         self.master.columnconfigure(index=0, weight=1)
@@ -79,10 +86,9 @@ class DcspyGui(tk.Frame):
         """Config and settings editor window."""
         cfg_edit = tk.Toplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 580, 200
+        width, height = 580, 270
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
-        cfg_edit.iconbitmap(f'{prefix}/dcspy_data/dcspy.ico')
 
         editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
         editor_status.pack(side=tk.TOP, fill=tk.X)
@@ -118,50 +124,51 @@ class DcspyGui(tk.Frame):
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar) -> None:
-        local_bios_info = self._check_local_bios()
+        self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        correct_local_bios_ver = isinstance(self.l_bios, version.Version)
+        correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
 
-        if all([local_bios_info.ver, remote_bios_info.ver, not dcs_runs]):
+        if all([correct_remote_bios_ver, not dcs_runs]):
             self._ask_to_update(rel_info=remote_bios_info)
         else:
-            msg = self._get_problem_desc(local_bios_info.ver, remote_bios_info.ver, bool(dcs_runs))
+            msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
             messagebox.showwarning('Update', msg)
 
-    def _get_problem_desc(self, local_bios: str, remote_bios: str, dcs: bool) -> str:
+    def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
         dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
         dcs_sta = 'running' if dcs else 'not running'
-        dcs_note = ' - Quit is recommended.' if dcs else ''
+        dcs_note = '\n     Quit is recommended.' if dcs else ''
         lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
-        lbios_note = '' if local_bios else ' - Check "dcsbios" path in config.'
+        lbios_note = '' if local_bios else '\n     Check "dcsbios" path in config'
         rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
-        rbios_note = '' if remote_bios else ' - Check internet connection.'
+        rbios_note = '' if remote_bios else '\n     Check internet connection.'
 
         return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
                f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> ReleaseInfo:
-        result = ReleaseInfo(False, '', '', '', '', '')
-        bios_path = load_cfg()['dcsbios']
-        self.l_bios = 'Unknown'
+        self.bios_path = load_cfg()['dcsbios']  # type: ignore
+        self.l_bios = version.parse('not installed')
+        result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(bios_path, 'lib\\CommonData.lua'), mode='r', encoding='utf-8') as cd_lua:  # type: ignore
+            with open(file=path.join(self.bios_path, 'lib\\CommonData.lua'), mode='r', encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
         else:
-            self.bios_path = bios_path  # type: ignore
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
-                self.l_bios = bios_re.group(1)
+                self.l_bios = version.parse(bios_re.group(1))
                 result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:
-        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=self.l_bios)
-        self.r_bios = release_info[1] if release_info[1] else 'Unknown'
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
+        self.r_bios = release_info[1]
         return ReleaseInfo(*release_info)
 
     def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
@@ -179,7 +186,7 @@ class DcspyGui(tk.Frame):
             self._update(rel_info=rel_info)
 
     def _update(self, rel_info: ReleaseInfo) -> None:
-        tmp_dir = environ.get('TEMP', 'C:\\')
+        tmp_dir = gettempdir()
         local_zip = path.join(tmp_dir, rel_info.archive_file)
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
@@ -187,22 +194,61 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
         LOG.debug(f'Remove: {self.bios_path} ')
-        rmtree(self.bios_path)
+        rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
-        messagebox.showinfo('Updated', 'Success. Done.')
+        install_result = self._handling_export_lua(tmp_dir)
+        if 'github' in install_result:
+            if messagebox.askyesno('Open browser', install_result):
+                open_new(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+        else:
+            messagebox.showinfo('Updated', install_result)
+
+    def _handling_export_lua(self, temp_dir: str) -> str:
+        result = 'Installation Success. Done.'
+        lua_dst_path = path.join(self.bios_path, '..')
+        lua = 'Export.lua'
+        try:
+            with open(file=path.join(lua_dst_path, lua), mode='r', encoding='utf-8') as lua_dst:  # type: ignore
+                lua_dst_data = lua_dst.read()
+        except FileNotFoundError as err:
+            LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+            copy(src=path.join(temp_dir, lua), dst=lua_dst_path)
+            LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
+        else:
+            result += self._check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
+        return result
+
+    @staticmethod
+    def _check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
+        result = '\n\nExport.lua exists.'
+        lua = 'Export.lua'
+        with open(file=path.join(temp_dir, lua), mode='r', encoding='utf-8') as lua_src:  # type: ignore
+            lua_src_data = lua_src.read()
+        export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
+        if not export_re:
+            with open(file=path.join(lua_dst_path, lua), mode='a+',
+                      encoding='utf-8') as exportlua_dst:  # type: ignore
+                exportlua_dst.write(f'\n{lua_src_data}')
+            LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
+            result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+        else:
+            result += '\n\nDCS-BIOS entry detected.'
+        return result
 
     def _stop(self) -> None:
-        self.status_txt.set('Close will shutdown DCSpy')
+        self.status_txt.set('Start again or close DCSpy')
         self.event.set()
 
     def start_dcspy(self) -> None:
         """Run real application."""
+        self.event = Event()
+        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
         app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
-        LOG.debug(f'Starting thread for: {app_params}')
         app_thread.name = 'dcspy-app'
+        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.status_txt.set('You can close GUI')
         app_thread.start()
