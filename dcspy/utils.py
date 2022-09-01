@@ -159,15 +159,14 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path) -> Tuple[str, str]:
+def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     """
-    Check DCS version.
+    Check DCS version and release type.
 
-    Only OpenBeta is supported.
-    :return:
+    :param dcs_path: path to DCS installation directory
+    :return: dcs type and version as strings
     """
-    result_type = 'Unknown'
-    result_ver = 'Unknown'
+    result_type, result_ver = 'Unknown', 'Unknown'
     try:
         with open(Path(path.join(dcs_path, 'autoupdate.cfg'))) as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
