@@ -382,7 +382,6 @@ class Ka50(Aircraft):
             'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
-            'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             # 'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'max_value': 1, 'callback': 'led_handler', 'callback_args': {'effect': red_pulse}},
             'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'max_value': 1, 'callback': 'set_bios', 'callback_args': {}},
             'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
