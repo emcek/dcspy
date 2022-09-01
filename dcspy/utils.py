@@ -99,7 +99,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
     latest, online_version, asset_url, published, pre_release = False, 'unknown', '', '', False
     package = repo.split('/')[1]
     try:
-        response = get(f'https://api.github.com/repos/{repo}/releases/latest')
+        response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
         if response.ok:
             dict_json = response.json()
             online_version = dict_json['tag_name']
@@ -132,7 +132,7 @@ def download_file(url: str, save_path: str) -> bool:
     :param url: URL address
     :param save_path: full path to save
     """
-    response = get(url=url, stream=True)
+    response = get(url=url, stream=True, timeout=5)
     if response.ok:
         LOG.debug(f'Download file from: {url}')
         with open(save_path, 'wb+') as dl_file:
@@ -168,7 +168,7 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     """
     result_type, result_ver = 'Unknown', 'Unknown'
     try:
-        with open(Path(path.join(dcs_path, 'autoupdate.cfg'))) as autoupdate_cfg:
+        with open(file=Path(path.join(dcs_path, 'autoupdate.cfg')), mode='r', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except FileNotFoundError as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
