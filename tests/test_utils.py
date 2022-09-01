@@ -74,16 +74,16 @@ def test_dummy_save_load_set_defaults():
 def test_check_dcs_ver_file_exists_with_ver(autoupdate1_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate1_cfg)):
         dcs_ver = utils.check_dcs_ver('')
-        assert dcs_ver == '2.7.16.28157'
+        assert dcs_ver == ('openbeta', '2.7.16.28157')
 
 
 def test_check_dcs_ver_file_exists_without_ver(autoupdate2_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate2_cfg)):
         dcs_ver = utils.check_dcs_ver('')
-        assert dcs_ver == 'Unknown'
+        assert dcs_ver == ('openbeta', 'Unknown')
 
 
 def test_check_dcs_ver_file_not_exists():
     with patch('dcspy.utils.open', side_effect=FileNotFoundError):
         dcs_ver = utils.check_dcs_ver('')
-        assert dcs_ver == 'Unknown'
+        assert dcs_ver == ('Unknown', 'Unknown')
