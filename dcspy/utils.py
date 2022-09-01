@@ -159,22 +159,26 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path) -> str:
+def check_dcs_ver(dcs_path) -> Tuple[str, str]:
     """
     Check DCS version.
 
     Only OpenBeta is supported.
     :return:
     """
-    result = 'Unknown'
+    result_type = 'Unknown'
+    result_ver = 'Unknown'
     try:
         with open(Path(path.join(dcs_path, 'autoupdate.cfg'))) as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except FileNotFoundError as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
     else:
+        dcs_type = search(r'"branch":\s"([\w.]*)"', autoupdate_data)
+        if dcs_type:
+            result_type = str(dcs_type.group(1))
         dcs_ver = search(r'"version":\s"([\d.]*)"', autoupdate_data)
         if dcs_ver:
-            result = dcs_ver.group(1)
+            result_ver = str(dcs_ver.group(1))
     finally:
-        return result
+        return result_type, result_ver
