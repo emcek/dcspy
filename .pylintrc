@@ -66,7 +66,8 @@ disable=broad-except,
         logging-fstring-interpolation,
         line-too-long,
         missing-class-docstring,
-        missing-module-docstring
+        missing-module-docstring,
+        E5110
 #          print-statement,
 #          parameter-unpacking,
 #          unpacking-in-except,
