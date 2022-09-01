@@ -22,7 +22,7 @@ try:
 except ImportError:
     from typing import TypedDict
 
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int}, total=False)
+BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int, 'callback': str, 'callback_args': Dict[str, led_sdk.EffectInfo]}, total=False)
 RED_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
 YELLOW_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
