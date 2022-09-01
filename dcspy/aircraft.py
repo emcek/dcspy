@@ -174,26 +174,26 @@ class FA18Chornet(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': str()},
-            'UFC_SCRATCHPAD_STRING_2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7450, 'max_length': 2}, 'value': str()},
-            'UFC_SCRATCHPAD_NUMBER_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7446, 'max_length': 8}, 'value': str()},
-            'UFC_OPTION_DISPLAY_1': {'class': 'StringBuffer', 'args': {'address': 0x7432, 'max_length': 4}, 'value': str()},
-            'UFC_OPTION_DISPLAY_2': {'class': 'StringBuffer', 'args': {'address': 0x7436, 'max_length': 4}, 'value': str()},
-            'UFC_OPTION_DISPLAY_3': {'class': 'StringBuffer', 'args': {'address': 0x743a, 'max_length': 4}, 'value': str()},
-            'UFC_OPTION_DISPLAY_4': {'class': 'StringBuffer', 'args': {'address': 0x743e, 'max_length': 4}, 'value': str()},
-            'UFC_OPTION_DISPLAY_5': {'class': 'StringBuffer', 'args': {'address': 0x7442, 'max_length': 4}, 'value': str()},
-            'UFC_COMM1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7424, 'max_length': 2}, 'value': str()},
-            'UFC_COMM2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7426, 'max_length': 2}, 'value': str()},
-            'UFC_OPTION_CUEING_1': {'class': 'StringBuffer', 'args': {'address': 0x7428, 'max_length': 1}, 'value': str()},
-            'UFC_OPTION_CUEING_2': {'class': 'StringBuffer', 'args': {'address': 0x742a, 'max_length': 1}, 'value': str()},
-            'UFC_OPTION_CUEING_3': {'class': 'StringBuffer', 'args': {'address': 0x742c, 'max_length': 1}, 'value': str()},
-            'UFC_OPTION_CUEING_4': {'class': 'StringBuffer', 'args': {'address': 0x742e, 'max_length': 1}, 'value': str()},
-            'UFC_OPTION_CUEING_5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'max_length': 1}, 'value': str()},
-            'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 6}, 'value': str()},
-            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': str()},
-            'HUD_ATT_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
-            'IFEI_DWN_BTN': {'class': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
-            'IFEI_UP_BTN': {'class': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1},
+            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_SCRATCHPAD_STRING_2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7450, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_SCRATCHPAD_NUMBER_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7446, 'max_length': 8}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_1': {'class': 'StringBuffer', 'args': {'address': 0x7432, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_2': {'class': 'StringBuffer', 'args': {'address': 0x7436, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_3': {'class': 'StringBuffer', 'args': {'address': 0x743a, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_4': {'class': 'StringBuffer', 'args': {'address': 0x743e, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_DISPLAY_5': {'class': 'StringBuffer', 'args': {'address': 0x7442, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7424, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7426, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_1': {'class': 'StringBuffer', 'args': {'address': 0x7428, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_2': {'class': 'StringBuffer', 'args': {'address': 0x742a, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_3': {'class': 'StringBuffer', 'args': {'address': 0x742c, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_4': {'class': 'StringBuffer', 'args': {'address': 0x742e, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_OPTION_CUEING_5': {'class': 'StringBuffer', 'args': {'address': 0x7430, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'IFEI_FUEL_DOWN': {'class': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'IFEI_FUEL_UP': {'class': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'HUD_ATT_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}},
+            'IFEI_DWN_BTN': {'class': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1, 'callback': 'set_bios', 'callback_args': {}},
+            'IFEI_UP_BTN': {'class': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1, 'callback': 'set_bios', 'callback_args': {}},
             'MASTER_CAUTION_LT': {'class': 'IntegerBuffer', 'args': {'address': 0x7408, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}}}
         self.cycle_buttons = {'HUD_ATT_SW': '', 'IFEI_DWN_BTN': '', 'IFEI_UP_BTN': ''}  # type: ignore
 
@@ -281,15 +281,15 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': str()},
-            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': str()},
-            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4546, 'max_length': 29}, 'value': str()},
-            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'max_length': 29}, 'value': str()},
-            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4582, 'max_length': 29}, 'value': str()},
-            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4},
-            'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
-            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
-            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2},
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4546, 'max_length': 29}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'max_length': 29}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4582, 'max_length': 29}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4, 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}},
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2, 'callback': 'set_bios', 'callback_args': {}},
             'MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x4400, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
             'LIGHT_MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x447a, 'mask': 0x1, 'shift_by': 0x0, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
@@ -372,25 +372,25 @@ class Ka50(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': str()},
-            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': str()},
-            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str()},
-            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str()},
-            'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
+            'PVI_LINE1_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE1_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_APOSTROPHE1': {'class': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_APOSTROPHE2': {'class': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_POINT': {'class': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_SIGN': {'class': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PVI_LINE2_TEXT': {'class': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             # 'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': red_pulse}},
             'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf, 'max_value': 1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
+            'AP_BANK_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             # 'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
             # 'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': yellow_pulse}},
             'AP_FD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9, 'max_value': 1}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
-            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
-            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
+            'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'SC_MASTER_CAUTION_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
             'SC_ROTOR_RPM_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1814, 'mask': 0x4000, 'shift_by': 0xe, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
 
@@ -503,19 +503,19 @@ class AH64D(Aircraft):
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c2, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80fa, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8132, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x816a, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a2, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81da, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8212, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x824a, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8282, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82ba, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f2, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': str()},
-            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x839a, 'max_length': 56}, 'value': str()},
+            'PLT_EUFD_LINE1': {'class': 'StringBuffer', 'args': {'address': 0x80c2, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE2': {'class': 'StringBuffer', 'args': {'address': 0x80fa, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE3': {'class': 'StringBuffer', 'args': {'address': 0x8132, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE4': {'class': 'StringBuffer', 'args': {'address': 0x816a, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE5': {'class': 'StringBuffer', 'args': {'address': 0x81a2, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE6': {'class': 'StringBuffer', 'args': {'address': 0x81da, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE7': {'class': 'StringBuffer', 'args': {'address': 0x8212, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE8': {'class': 'StringBuffer', 'args': {'address': 0x824a, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE9': {'class': 'StringBuffer', 'args': {'address': 0x8282, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE10': {'class': 'StringBuffer', 'args': {'address': 0x82ba, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE11': {'class': 'StringBuffer', 'args': {'address': 0x82f2, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE12': {'class': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'PLT_EUFD_LINE14': {'class': 'StringBuffer', 'args': {'address': 0x839a, 'max_length': 56}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
@@ -640,19 +640,19 @@ class A10C(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'VHFAM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x1190, 'max_length': 2}, 'value': str()},
-            'VHFAM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
-            'VHFAM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
-            'VHFAM_FREQ4': {'class': 'StringBuffer', 'args': {'address': 0x1192, 'max_length': 2}, 'value': str()},
-            'VHFFM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x119a, 'max_length': 2}, 'value': str()},
-            'VHFFM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf, 'shift_by': 0x0}, 'value': int()},
-            'VHFFM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
-            'VHFFM_FREQ4': {'class': 'StringBuffer', 'args': {'address': 0x119e, 'max_length': 2}, 'value': str()},
-            'UHF_100MHZ_SEL': {'class': 'StringBuffer', 'args': {'address': 0x1178, 'max_length': 1}, 'value': str()},
-            'UHF_10MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa}, 'value': int()},
-            'UHF_1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
-            'UHF_POINT1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}, 'value': int()},
-            'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': str()},
+            'VHFAM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x1190, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFAM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFAM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFAM_FREQ4': {'class': 'StringBuffer', 'args': {'address': 0x1192, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ1': {'class': 'StringBuffer', 'args': {'address': 0x119a, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ2': {'class': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf, 'shift_by': 0x0}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ3': {'class': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'VHFFM_FREQ4': {'class': 'StringBuffer', 'args': {'address': 0x119e, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_100MHZ_SEL': {'class': 'StringBuffer', 'args': {'address': 0x1178, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_10MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_POINT1MHZ_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x1012, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
 
     def _generate_freq_values(self) -> Sequence[str]:
@@ -696,10 +696,10 @@ class F14B(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
-            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
-            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
-            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
+            'RIO_CAP_CLEAR': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_NE': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
+            'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int(), 'callback': 'set_bios', 'callback_args': {}},
             'PLT_MASTER_CAUTION': {'class': 'IntegerBuffer', 'args': {'address': 0x12d4, 'mask': 0x80, 'shift_by': 0x7, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
             'RIO_MASTERCAUTION_LIGHT': {'class': 'IntegerBuffer', 'args': {'address': 0x12e4, 'mask': 0x800, 'shift_by': 0xb, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}}}
 
@@ -749,19 +749,19 @@ class AV8BNA(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'UFC_SCRATCHPAD': {'class': 'StringBuffer', 'args': {'address': 0x7984, 'max_length': 12}, 'value': str()},
-            'UFC_COMM1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7954, 'max_length': 2}, 'value': str()},
-            'UFC_COMM2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7956, 'max_length': 2}, 'value': str()},
-            'AV8BNA_ODU_1_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7966, 'max_length': 1}, 'value': str()},
-            'AV8BNA_ODU_1_Text': {'class': 'StringBuffer', 'args': {'address': 0x7968, 'max_length': 4}, 'value': str()},
-            'AV8BNA_ODU_2_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x796c, 'max_length': 1}, 'value': str()},
-            'AV8BNA_ODU_2_Text': {'class': 'StringBuffer', 'args': {'address': 0x796e, 'max_length': 4}, 'value': str()},
-            'AV8BNA_ODU_3_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7972, 'max_length': 1}, 'value': str()},
-            'AV8BNA_ODU_3_Text': {'class': 'StringBuffer', 'args': {'address': 0x7974, 'max_length': 4}, 'value': str()},
-            'AV8BNA_ODU_4_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7978, 'max_length': 1}, 'value': str()},
-            'AV8BNA_ODU_4_Text': {'class': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 4}, 'value': str()},
-            'AV8BNA_ODU_5_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': str()},
-            'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': str()},
+            'UFC_SCRATCHPAD': {'class': 'StringBuffer', 'args': {'address': 0x7984, 'max_length': 12}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM1_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7954, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'UFC_COMM2_DISPLAY': {'class': 'StringBuffer', 'args': {'address': 0x7956, 'max_length': 2}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_1_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7966, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_1_Text': {'class': 'StringBuffer', 'args': {'address': 0x7968, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_2_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x796c, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_2_Text': {'class': 'StringBuffer', 'args': {'address': 0x796e, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_3_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7972, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_3_Text': {'class': 'StringBuffer', 'args': {'address': 0x7974, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_4_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x7978, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_4_Text': {'class': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_5_SELECT': {'class': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
+            'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': str(), 'callback': 'set_bios', 'callback_args': {}},
             'MC_LIGHT': {'class': 'IntegerBuffer', 'args': {'address': 0x787c, 'mask': 0x4, 'shift_by': 0x2, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': RED_PULSE}},
             'MW_LIGHT': {'class': 'IntegerBuffer', 'args': {'address': 0x787c, 'mask': 0x8, 'shift_by': 0x3, 'max_value': 1}, 'value': int(), 'callback': 'led_handler', 'callback_args': {'effect': YELLOW_PULSE}}}
 
