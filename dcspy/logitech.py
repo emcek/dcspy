@@ -16,7 +16,7 @@ LOG = getLogger(__name__)
 
 
 class LogitechKeyboard:
-    def __init__(self, parser_hook: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         General keyboard with LCD from Logitech.
 
@@ -32,7 +32,7 @@ class LogitechKeyboard:
         Child class needs redefine:
         - pass lcd_type argument as LcdInfo to super constructor
 
-        :param parser_hook: DSC-BIOS parser
+        :param parser: DCS-BIOS parser instance
         """
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(parser_hook, 0x0000, 16, partial(self.detecting_plane))
         self.parser = parser_hook
@@ -169,24 +169,24 @@ class LogitechKeyboard:
 
 
 class KeyboardMono(LogitechKeyboard):
-    def __init__(self, parser_hook: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G510, G13, G15 (v1 and v2)
-        :param parser_hook: DSC-BIOS parser
+        :param parser: DCS-BIOS parser instance
         """
-        super().__init__(parser_hook, lcd_type=LcdMono)
+        super().__init__(parser, lcd_type=LcdMono)
         self.vert_space = 10
 
 
 class KeyboardColor(LogitechKeyboard):
-    def __init__(self, parser_hook: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser) -> None:
         """
         Logitech`s keyboard with color LCD.
 
         Support for: G19
-        :param parser_hook: DSC-BIOS parser
+        :param parser: DCS-BIOS parser instance
         """
-        super().__init__(parser_hook, lcd_type=LcdColor)
+        super().__init__(parser, lcd_type=LcdColor)
         self.vert_space = 40
