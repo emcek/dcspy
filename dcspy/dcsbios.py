@@ -1,6 +1,17 @@
+from enum import Enum, auto
 from functools import partial
 from struct import pack
 from typing import Callable, Set
+
+
+class BiosState(Enum):
+    ADDRESS_LOW = auto()
+    ADDRESS_HIGH = auto()
+    COUNT_LOW = auto()
+    COUNT_HIGH = auto()
+    DATA_LOW = auto()
+    DATA_HIGH = auto()
+    WAIT_FOR_SYNC = auto()
 
 
 class ProtocolParser:
