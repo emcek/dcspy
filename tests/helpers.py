@@ -69,12 +69,12 @@ def _get_json_for_plane(plane: str) -> dict:
         return loads(data.content)
 
 
-def _recursive_lookup(k: str, d: dict) -> dict:
-    if k in d:
-        return d[k]
-    for v in d.values():
-        if isinstance(v, dict):
-            item = _recursive_lookup(k, v)
+def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
+    if search_key in bios_dict:
+        return bios_dict[search_key]
+    for value in bios_dict.values():
+        if isinstance(value, dict):
+            item = _recursive_lookup(search_key, value)
             if item:
                 return item
 
