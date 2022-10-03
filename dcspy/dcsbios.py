@@ -1,12 +1,23 @@
+from enum import Enum, auto
 from functools import partial
 from struct import pack
 from typing import Callable, Set
 
 
+class ParserState(Enum):
+    ADDRESS_LOW = auto()
+    ADDRESS_HIGH = auto()
+    COUNT_LOW = auto()
+    COUNT_HIGH = auto()
+    DATA_LOW = auto()
+    DATA_HIGH = auto()
+    WAIT_FOR_SYNC = auto()
+
+
 class ProtocolParser:
     def __init__(self) -> None:
         """Basic constructor."""
-        self.state = 'WAIT_FOR_SYNC'
+        self.state = ParserState.WAIT_FOR_SYNC
         self.sync_byte_count = 0
         self.address = 0
         self.count = 0
@@ -18,11 +29,11 @@ class ProtocolParser:
         """
         State machine - processing of byte.
 
-        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
+        Allowed states are: ParserState
         :param int_byte:
         """
-        state_handling = getattr(self, f'_{self.state.lower()}')
-        if self.state == 'WAIT_FOR_SYNC':
+        state_handling = getattr(self, f'_{self.state.name.lower()}')
+        if self.state == ParserState.WAIT_FOR_SYNC:
             state_handling()
         else:
             state_handling(int_byte)
@@ -41,7 +52,7 @@ class ProtocolParser:
         :param int_byte: data to process
         """
         self.address = int_byte
-        self.state = 'ADDRESS_HIGH'
+        self.state = ParserState.ADDRESS_HIGH
 
     def _address_high(self, int_byte: int) -> None:
         """
@@ -51,9 +62,9 @@ class ProtocolParser:
         """
         self.address += int_byte * 256
         if self.address != 0x5555:
-            self.state = 'COUNT_LOW'
+            self.state = ParserState.COUNT_LOW
         else:
-            self.state = 'WAIT_FOR_SYNC'
+            self.state = ParserState.WAIT_FOR_SYNC
 
     def _count_low(self, int_byte: int) -> None:
         """
@@ -62,7 +73,7 @@ class ProtocolParser:
         :param int_byte: data to process
         """
         self.count = int_byte
-        self.state = 'COUNT_HIGH'
+        self.state = ParserState.COUNT_HIGH
 
     def _count_high(self, int_byte: int) -> None:
         """
@@ -71,7 +82,7 @@ class ProtocolParser:
         :param int_byte: data to process
         """
         self.count += 256 * int_byte
-        self.state = 'DATA_LOW'
+        self.state = ParserState.DATA_LOW
 
     def _data_low(self, int_byte: int) -> None:
         """
@@ -81,7 +92,7 @@ class ProtocolParser:
         """
         self.data = int_byte
         self.count -= 1
-        self.state = 'DATA_HIGH'
+        self.state = ParserState.DATA_HIGH
 
     def _data_high(self, int_byte: int) -> None:
         """
@@ -95,14 +106,14 @@ class ProtocolParser:
             callback(self.address, self.data)
         self.address += 2
         if self.count == 0:
-            self.state = 'ADDRESS_LOW'
+            self.state = ParserState.ADDRESS_LOW
         else:
-            self.state = 'DATA_LOW'
+            self.state = ParserState.DATA_LOW
 
     def _wait_for_sync(self) -> None:
         """Handling of WAIT_FOR_SYNC state."""
         if self.sync_byte_count == 4:
-            self.state = 'ADDRESS_LOW'
+            self.state = ParserState.ADDRESS_LOW
             self.sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()

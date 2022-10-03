@@ -26,6 +26,15 @@ package dcsbios {
         + __init__(parser, address, mask, shift_by, callback)
         + on_dcsbios_write(address, data)
     }
+    class ParserState <<(E,yellow)>> {
+        ADDRESS_LOW = 1
+        ADDRESS_HIGH = 2
+        COUNT_LOW = 3
+        COUNT_HIGH = 4
+        DATA_LOW = 5
+        DATA_HIGH = 6
+        WAIT_FOR_SYNC = 7
+    }
 }
 
 package logitech {
