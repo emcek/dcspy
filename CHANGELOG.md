@@ -1,7 +1,8 @@
 ## 1.7.4
-* Show DCS version to logs
+* Show DCS version in logs
 * Internal:
   * improve checking DCS-BIOS data
+  * introduce enum values for parser state
 
 ## 1.7.3
 * Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
