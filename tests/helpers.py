@@ -14,7 +14,7 @@ try:
     if response.status_code == 200:
         dcsbios_ver = response.json()['tag_name']
 except exceptions.ConnectTimeout:
-    dcsbios_ver = '0.7.45'
+    dcsbios_ver = '0.7.46'
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64D', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
@@ -69,7 +69,7 @@ def _get_json_for_plane(plane: str) -> dict:
         return loads(data.content)
 
 
-def _recursive_lookup(k: str, d: dict):
+def _recursive_lookup(k: str, d: dict) -> dict:
     if k in d:
         return d[k]
     for v in d.values():
