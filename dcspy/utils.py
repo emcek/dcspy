@@ -24,7 +24,7 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
     """
     cfg_dict: ConfigDict = {}
     try:
-        with open(file=filename, mode='r', encoding='utf-8') as yaml_file:
+        with open(file=filename, encoding='utf-8') as yaml_file:
             cfg_dict = load(yaml_file, Loader=FullLoader)
             if not isinstance(cfg_dict, dict):
                 cfg_dict, old_dict = {}, cfg_dict
@@ -168,7 +168,7 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     """
     result_type, result_ver = 'Unknown', 'Unknown'
     try:
-        with open(file=Path(path.join(dcs_path, 'autoupdate.cfg')), mode='r', encoding='utf-8') as autoupdate_cfg:
+        with open(file=Path(path.join(dcs_path, 'autoupdate.cfg')), encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except FileNotFoundError as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
