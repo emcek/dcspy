@@ -24,6 +24,7 @@ LOG = getLogger(__name__)
 
 
 class Aircraft:
+    """Common Aircraft."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create common aircraft.
@@ -121,6 +122,7 @@ class Aircraft:
 
 
 class FA18Chornet(Aircraft):
+    """F/A-18C Hornet."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F/A-18C Hornet.
@@ -152,6 +154,13 @@ class FA18Chornet(Aircraft):
         self.cycle_buttons = {'HUD_ATT_SW': '', 'IFEI_DWN_BTN': '', 'IFEI_UP_BTN': ''}  # type: ignore
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        :return: updated image to draw
+        """
         scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
         scratch_2 = self.get_bios("UFC_SCRATCHPAD_STRING_2_DISPLAY")
         scratch_num = self.get_bios("UFC_SCRATCHPAD_NUMBER_DISPLAY")
@@ -227,6 +236,7 @@ class FA18Chornet(Aircraft):
 
 
 class F16C50(Aircraft):
+    """F-16C Viper."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F-16C Viper.
@@ -247,6 +257,12 @@ class F16C50(Aircraft):
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
             draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.lcd.font_s)
@@ -316,6 +332,7 @@ class F16C50(Aircraft):
 
 
 class Ka50(Aircraft):
+    """Ka-50 Black Shark."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create Ka-50 Black Shark.
@@ -367,6 +384,15 @@ class Ka50(Aircraft):
             self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
 
     def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
+        """
+        Draw rectangles with autopilot channels.
+
+        :param ap_channel: channel name
+        :param c_rect: coordinates for rectangle
+        :param c_text: coordinates for name
+        :param draw_obj: ImageDraw instance
+        :param turn_on: channel on/off, fill on/off
+        """
         if turn_on:
             draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
             draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
@@ -395,6 +421,11 @@ class Ka50(Aircraft):
         self._auto_pilot_switch_color(draw)
 
     def _generate_pvi_lines(self) -> Sequence[str]:
+        """
+        Generate coordinate strings.
+
+        :return: tuple of string
+        """
         text1, text2 = '', ''
         line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
         line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
@@ -433,12 +464,14 @@ class Ka50(Aircraft):
 
 
 class ApacheEufdMode(Enum):
+    """Apache EUFD Mode."""
     IDM = 1
     WCA = 2
     PRE = 4
 
 
 class AH64D(Aircraft):
+    """AH-64D Apache."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AH-64D Apache.
@@ -578,6 +611,7 @@ class AH64D(Aircraft):
 
 
 class A10C(Aircraft):
+    """A-10C Warthog."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create A-10C Warthog or A-10C II Tank Killer.
@@ -629,10 +663,12 @@ class A10C(Aircraft):
 
 
 class A10C2(A10C):
+    """A-10C II Tank Killer."""
     pass
 
 
 class F14B(Aircraft):
+    """F-14B Tomcat."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F-14B Tomcat.
@@ -647,6 +683,11 @@ class F14B(Aircraft):
             'RIO_CAP_ENTER': {'class': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
 
     def _draw_common_data(self, draw: ImageDraw) -> None:
+        """
+        Draw common part for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        """
         draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
@@ -680,10 +721,12 @@ class F14B(Aircraft):
 
 
 class F14A135GR(F14B):
+    """F-14A-135-GR Tomcat."""
     pass
 
 
 class AV8BNA(Aircraft):
+    """AV-8B Night Attack."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AV-8B Night Attack.
@@ -707,6 +750,13 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_5_Text': {'class': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': ''}}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        :return: updated image to draw
+        """
         draw.text(xy=(50 * scale, 0), fill=self.lcd.foreground, font=self.lcd.font_l, text=f'{self.get_bios("UFC_SCRATCHPAD")}')
         draw.line(xy=(50 * scale, 20 * scale, 160 * scale, 20 * scale), fill=self.lcd.foreground, width=1)
 
