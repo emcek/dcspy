@@ -15,7 +15,7 @@ repos:
     rev: 1.5.0
     hooks:
       - id: interrogate
-        args: [--config=pyproject.toml]
+        args: [dcspy]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.3.0
