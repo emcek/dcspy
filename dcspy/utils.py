@@ -116,6 +116,14 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
+    """
+    Compare two version of package and return result.
+
+    :param package: package name
+    :param current_ver: current/local version
+    :param remote_ver: remote/online version
+    :return:
+    """
     latest = False
     if version.parse(remote_ver) > version.parse(current_ver):
         LOG.info(f'There is new version of {package}: {remote_ver}')
