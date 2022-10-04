@@ -20,6 +20,13 @@ all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'AH64D', 'A10C', 'A10C2', 'F1
 
 
 def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
+    """
+    Verify if all aircraft's data are correct with DCS-BIOS.
+
+    :param plane_bios: BIOS data from plane
+    :param plane_json: DCS-BIOS json filename
+    :return: result of checks and DCS-BIOS version
+    """
     results = {}
     local_json = _get_json_for_plane(plane_json)
     for bios_key in plane_bios:
@@ -38,6 +45,15 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
 
 
 def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict, results: dict) -> dict:
+    """
+    Compare DCS-BIOS and Plane data and return all differences.
+
+    :param bios_key: BIOS key
+    :param bios_outputs: DCS-BIOS outputs dict
+    :param plane_bios: BIOS data from plane
+    :param results: dict with differences
+    :return: updated dict with differences
+    """
     for args_key in plane_bios[bios_key]['args']:
         aircraft_value = plane_bios[bios_key]['args'][args_key]
         dcsbios_value = bios_outputs[args_key]
@@ -52,6 +68,16 @@ def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict
 
 
 def _get_json_for_plane(plane: str) -> dict:
+    """
+    Download json file for plane and write it to temporary directory.
+
+    Json is downloaded when:
+    * file doesn't exist
+    * file is older the one week
+
+    :param plane: DCS-BIOS json filename
+    :return: json as dict
+    """
     plane_path = path.join(gettempdir(), plane)
     try:
         m_time = path.getmtime(plane_path)
@@ -70,6 +96,13 @@ def _get_json_for_plane(plane: str) -> dict:
 
 
 def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
+    """
+    Search for search_key recursively in dict and return its value.
+
+    :param search_key: search value for this key
+    :param bios_dict: dict to be search
+    :return: value (dict) for search_key
+    """
     if search_key in bios_dict:
         return bios_dict[search_key]
     for value in bios_dict.values():
