@@ -16,6 +16,7 @@ LOG = getLogger(__name__)
 
 
 class LogitechKeyboard:
+    """General keyboard with LCD from Logitech."""
     def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         General keyboard with LCD from Logitech.
@@ -162,14 +163,25 @@ class LogitechKeyboard:
             draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
         return img
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Show basic info of LCD.
+
+        :return: string
+        """
         return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Show all datails of LCD.
+
+        :return: string
+        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class KeyboardMono(LogitechKeyboard):
+    """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: ProtocolParser) -> None:
         """
         Logitech`s keyboard with mono LCD.
@@ -182,6 +194,7 @@ class KeyboardMono(LogitechKeyboard):
 
 
 class KeyboardColor(LogitechKeyboard):
+    """ Logitech`s keyboard with color LCD."""
     def __init__(self, parser: ProtocolParser) -> None:
         """
         Logitech`s keyboard with color LCD.

@@ -44,6 +44,11 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
 
 
 def _load_new_plane_if_detected(lcd: LogitechKeyboard) -> None:
+    """
+    Load instance when new plane detected.
+
+    :param lcd: type of Logitech keyboard with LCD
+    """
     global LOOP_FLAG
     if lcd.plane_detected:
         lcd.load_new_plane()
@@ -51,6 +56,12 @@ def _load_new_plane_if_detected(lcd: LogitechKeyboard) -> None:
 
 
 def _supporters(text: str, width: int) -> Iterator[str]:
+    """
+    Scroll text with widow width.
+
+    :param text: text to scroll
+    :param width: width of window
+    """
     queue = deque(text)
     while True:
         yield ''.join(queue)[:width]
