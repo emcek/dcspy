@@ -39,7 +39,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
             start_time = time()
             _load_new_plane_if_detected(lcd)
             lcd.button_handle(sock)
-        except OSError as exp:
+        except socket.error as exp:
             _sock_err_handler(lcd, start_time, current_ver, support_banner, exp)
 
 
