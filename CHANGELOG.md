@@ -3,6 +3,7 @@
 * Internal:
   * improve checking DCS-BIOS data
   * introduce enum values for parser state
+  * improve CI process - add Python 3.11
 
 ## 1.7.3
 * Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
@@ -22,7 +23,7 @@
   * `verbose` - show more logs in terminal/console window
 * Fixing handling of `dcsbios` settings from `config.yaml`
 * Start and stop buttons can be used several times without closing GUI
-* **F-16C Viper** 
+* **F-16C Viper**
   * replace `*` with inverse white circle character at DED
   * Fix unhandled buttons for G19 (menu, ok and cancel)
 * G19 and **F/A-18C Hornet**
@@ -36,7 +37,7 @@
 
 ## 1.7.0
 * Support for **AH-64D Apache** with 3 modes:
-  * `IDM` - Squeeze and shows radios frequencies (from Radio Area), IDM and RTS rocker are used to scroll down 
+  * `IDM` - Squeeze and shows radios frequencies (from Radio Area), IDM and RTS rocker are used to scroll down
   * `WCA` - Enter button display warnings, cautions, and advisories, WCA rocker is used to scroll down
   * `PRE` - Preset button displays the preset menu for the selected radio, WCA rocker is used to scroll down
 * **F-16C Viper** DED clean-up extra characters

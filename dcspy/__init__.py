@@ -27,11 +27,13 @@ MULTICAST_IP = '239.255.50.10'
 
 
 class LcdType(Enum):
+    """LCD Type."""
     MONO = lcd_sdk.TYPE_MONO
     COLOR = lcd_sdk.TYPE_COLOR
 
 
 class LcdButton(Enum):
+    """LCD Buttons."""
     NONE = 0x0
     ONE = 0x1
     TWO = 0x2
@@ -48,6 +50,7 @@ class LcdButton(Enum):
 
 @dataclass
 class LcdInfo:
+    """LCD info."""
     width: int
     height: int
     type: LcdType

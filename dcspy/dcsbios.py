@@ -5,6 +5,7 @@ from typing import Callable, Set
 
 
 class ParserState(Enum):
+    """Protocol parser states."""
     ADDRESS_LOW = auto()
     ADDRESS_HIGH = auto()
     COUNT_LOW = auto()
@@ -15,6 +16,7 @@ class ParserState(Enum):
 
 
 class ProtocolParser:
+    """DCS_BIOS protocol parser."""
     def __init__(self) -> None:
         """Basic constructor."""
         self.state = ParserState.WAIT_FOR_SYNC
@@ -120,6 +122,7 @@ class ProtocolParser:
 
 
 class StringBuffer:
+    """String buffer for DCS-BIOS protocol."""
     def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable) -> None:
         """
         Basic constructor.
@@ -170,6 +173,7 @@ class StringBuffer:
 
 
 class IntegerBuffer:
+    """Integer buffer for DCS-BIOS protocol."""
     def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable) -> None:
         """
         Basic constructor.
