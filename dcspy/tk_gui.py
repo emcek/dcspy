@@ -18,6 +18,8 @@ from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, 
 
 __version__ = '1.7.3'
 LOG = getLogger(__name__)
+
+
 class ReleaseInfo(NamedTuple):
     latest: bool
     ver: Union[version.Version, version.LegacyVersion]
