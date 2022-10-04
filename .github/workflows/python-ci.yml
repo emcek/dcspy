@@ -28,7 +28,7 @@ jobs:
           pydocstyle --count dcspy
       - name: Check interrogate
         run: |
-          interrogate -c pyproject.toml dcspy
+          interrogate -c pyproject.toml -vv
       - name: Check PyLint
         run: |
           pylint dcspy || echo $(($? % 4))
