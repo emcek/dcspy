@@ -18,8 +18,13 @@ from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, 
 
 __version__ = '1.7.3'
 LOG = getLogger(__name__)
-ReleaseInfo = NamedTuple('ReleaseInfo', [('latest', bool), ('ver', Union[version.Version, version.LegacyVersion]), ('dl_url', str),
-                                         ('published', str), ('release_type', str), ('archive_file', str)])
+class ReleaseInfo(NamedTuple):
+    latest: bool
+    ver: Union[version.Version, version.LegacyVersion]
+    dl_url: str
+    published: str
+    release_type: str
+    archive_file: str
 
 
 class DcspyGui(tk.Frame):
@@ -116,7 +121,7 @@ class DcspyGui(tk.Frame):
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
         text_widget.delete('1.0', tk.END)
-        with open(file=self.cfg_file, mode='r', encoding='utf-8') as cfg_file:
+        with open(file=self.cfg_file, encoding='utf-8') as cfg_file:
             text_widget.insert(tk.END, cfg_file.read().strip())
 
     def _save_cfg(self, text_info: tk.Text) -> None:
@@ -155,7 +160,7 @@ class DcspyGui(tk.Frame):
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(self.bios_path, 'lib\\CommonData.lua'), mode='r', encoding='utf-8') as cd_lua:  # type: ignore
+            with open(file=path.join(self.bios_path, 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -209,7 +214,7 @@ class DcspyGui(tk.Frame):
         lua_dst_path = path.join(self.bios_path, '..')
         lua = 'Export.lua'
         try:
-            with open(file=path.join(lua_dst_path, lua), mode='r', encoding='utf-8') as lua_dst:  # type: ignore
+            with open(file=path.join(lua_dst_path, lua), encoding='utf-8') as lua_dst:  # type: ignore
                 lua_dst_data = lua_dst.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -223,7 +228,7 @@ class DcspyGui(tk.Frame):
     def _check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
         result = '\n\nExport.lua exists.'
         lua = 'Export.lua'
-        with open(file=path.join(temp_dir, lua), mode='r', encoding='utf-8') as lua_src:  # type: ignore
+        with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:  # type: ignore
             lua_src_data = lua_src.read()
         export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
         if not export_re:
