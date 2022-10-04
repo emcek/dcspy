@@ -3,6 +3,7 @@ check-manifest
 codacy-coverage
 coveralls
 flake8
+interrogate
 lxml
 mypy
 pip-audit

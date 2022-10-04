@@ -14,3 +14,5 @@ ignore-nested-functions = false
 ignore-nested-classes = true
 ignore-setters = false
 fail-under = 60
+verbose = 2
+quiet = false
