@@ -21,6 +21,7 @@ LOG = getLogger(__name__)
 
 
 class ReleaseInfo(NamedTuple):
+    """Tuple to store release related information."""
     latest: bool
     ver: Union[version.Version, version.LegacyVersion]
     dl_url: str
@@ -30,6 +31,7 @@ class ReleaseInfo(NamedTuple):
 
 
 class DcspyGui(tk.Frame):
+    """Tkinter GUI."""
     def __init__(self, master: tk.Tk, config_file: str) -> None:
         """
         Create basic GUI for dcspy application.
@@ -53,6 +55,7 @@ class DcspyGui(tk.Frame):
             self.start_dcspy()
 
     def _init_widgets(self) -> None:
+        """Init all GUI widgest."""
         self.master.columnconfigure(index=0, weight=1)
         self.master.columnconfigure(index=1, weight=1)
         self.master.rowconfigure(index=0, weight=1)
@@ -71,6 +74,7 @@ class DcspyGui(tk.Frame):
         self._add_buttons_mainwindow()
 
     def _add_buttons_mainwindow(self):
+        """Add buttons to GUI."""
         start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
         cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
         stop = tk.Button(master=self.master, text='Stop', width=6, command=self._stop)
@@ -105,6 +109,13 @@ class DcspyGui(tk.Frame):
         self._load_cfg(text_editor)
 
     def _create_text_editor(self, cfg_edit, scrollbar_y):
+        """
+        Create settings editor.
+
+        :param cfg_edit: aster widget
+        :param scrollbar_y: scrollbar
+        :return: editor widget
+        """
         text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
                               borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
@@ -122,15 +133,30 @@ class DcspyGui(tk.Frame):
         return text_editor
 
     def _load_cfg(self, text_widget: tk.Text) -> None:
+        """
+        Load configuration into settings editor.
+
+        :param text_widget: text widget
+        """
         text_widget.delete('1.0', tk.END)
         with open(file=self.cfg_file, encoding='utf-8') as cfg_file:
             text_widget.insert(tk.END, cfg_file.read().strip())
 
     def _save_cfg(self, text_info: tk.Text) -> None:
+        """
+        Save configuration from settings editor.
+
+        :param text_info: text widget
+        """
         with open(file=self.cfg_file, mode='w+', encoding='utf-8') as cfg_file:
             cfg_file.write(text_info.get('1.0', tk.END).strip())
 
     def _check_bios(self, bios_statusbar) -> None:
+        """
+        Check version and configuration of DCS-BIOS.
+
+        :param bios_statusbar: statusbar
+        """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
@@ -145,6 +171,14 @@ class DcspyGui(tk.Frame):
             messagebox.showwarning('Update', msg)
 
     def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
+        """
+        Describe issues with DCS-BIOS update.
+
+        :param local_bios: local BIOS version
+        :param remote_bios: remote BIOS version
+        :param dcs: DCS is running
+        :return: description as string
+        """
         dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
         dcs_sta = 'running' if dcs else 'not running'
         dcs_note = '\n     Quit is recommended.' if dcs else ''
@@ -158,6 +192,11 @@ class DcspyGui(tk.Frame):
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> ReleaseInfo:
+        """
+        Check version of local BIOS.
+
+        :return: release description info
+        """
         self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
@@ -174,11 +213,21 @@ class DcspyGui(tk.Frame):
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:
+        """
+        Check version of remote BIOS.
+
+        :return: release description info
+        """
         release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
         self.r_bios = release_info[1]
         return ReleaseInfo(*release_info)
 
     def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
+        """
+        Ask user if update BIOS or not.
+
+        :param rel_info: remote release information
+        """
         msg_txt = f'You are running latest {rel_info.ver} version.\n' \
                   f'Type: {rel_info.release_type}\n' \
                   f'Released: {rel_info.published}\n\n' \
@@ -193,6 +242,11 @@ class DcspyGui(tk.Frame):
             self._update(rel_info=rel_info)
 
     def _update(self, rel_info: ReleaseInfo) -> None:
+        """
+        Perform BIOS update and check configuration.
+
+        :param rel_info: remote release information
+        """
         tmp_dir = gettempdir()
         local_zip = path.join(tmp_dir, rel_info.archive_file)
         download_file(url=rel_info.dl_url, save_path=local_zip)
@@ -212,6 +266,14 @@ class DcspyGui(tk.Frame):
             messagebox.showinfo('Updated', install_result)
 
     def _handling_export_lua(self, temp_dir: str) -> str:
+        """
+        Check if Export.lua file exist and its content.
+
+        If not copy Export.lua from DCS-BIOS installation archive.
+
+        :param temp_dir: directory with DCS-BIOS archive
+        :return: result of checks
+        """
         result = 'Installation Success. Done.'
         lua_dst_path = path.join(self.bios_path, '..')
         lua = 'Export.lua'
@@ -228,6 +290,14 @@ class DcspyGui(tk.Frame):
 
     @staticmethod
     def _check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
+        """
+        Check DCS-BIOS entry in Export.lua file.
+
+        :param lua_dst_data: content of Export.lua
+        :param lua_dst_path: Export.lua path
+        :param temp_dir: directory with DCS-BIOS archive
+        :return: result of checks
+        """
         result = '\n\nExport.lua exists.'
         lua = 'Export.lua'
         with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:  # type: ignore
@@ -244,6 +314,7 @@ class DcspyGui(tk.Frame):
         return result
 
     def _stop(self) -> None:
+        """Set event to stop DCSpy."""
         self.status_txt.set('Start again or close DCSpy')
         self.event.set()
 
