@@ -117,7 +117,12 @@ class Aircraft:
             self.cycle_buttons[btn_name] = cycle(chain(seed))
         return next(self.cycle_buttons[btn_name])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Show all details of Aircraft.
+
+        :return: string
+        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
@@ -508,6 +513,12 @@ class AH64D(Aircraft):
         getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=2)
 
     def _draw_for_idm(self, draw, scale):
+        """
+        Draw image for IDM mode.
+
+        param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
             mat = search(r'(.*\*)\s+(\d+)([\.\dULCA]+)[-\sA-Z]*(\d+)([\.\dULCA]+)[\s-]+', self.get_bios(f'PLT_EUFD_LINE{i}'))
@@ -517,6 +528,12 @@ class AH64D(Aircraft):
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
     def _draw_for_wca(self, draw, scale):
+        """
+        Draw image for WCA mode.
+
+        param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
         warnings = self._fetch_warning_list()
         LOG.debug(f'Warnings: {warnings}')
         try:
@@ -529,6 +546,11 @@ class AH64D(Aircraft):
             self.warning_line = 1
 
     def _fetch_warning_list(self) -> List[str]:
+        """
+        Fetch all warnings and return as list.
+
+        :return: list of warnings (as strings)
+        """
         warn = []
         for i in range(1, 8):
             mat = search(r'(.*)\|(.*)\|(.*)', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
@@ -537,6 +559,12 @@ class AH64D(Aircraft):
         return warn
 
     def _draw_for_pre(self, draw, scale):
+        """
+        Draw image for PRE mode.
+
+        param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
         match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
                       3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
@@ -635,6 +663,11 @@ class A10C(Aircraft):
             'UHF_POINT25_SEL': {'class': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': ''}}
 
     def _generate_freq_values(self) -> Sequence[str]:
+        """
+        Generate frequency for all 3 radios (VHF AM, VHF FM and UHF).
+
+        :return: All 3 frequency settings as strings
+        """
         vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
                 f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")}'
         vhffm = f'{self.get_bios("VHFFM_FREQ1")}{self.get_bios("VHFFM_FREQ2")}.' \

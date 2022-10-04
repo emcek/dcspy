@@ -173,7 +173,7 @@ class LogitechKeyboard:
 
     def __repr__(self) -> str:
         """
-        Show all datails of LCD.
+        Show all details of LCD.
 
         :return: string
         """
