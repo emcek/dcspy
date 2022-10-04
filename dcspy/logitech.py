@@ -194,7 +194,7 @@ class KeyboardMono(LogitechKeyboard):
 
 
 class KeyboardColor(LogitechKeyboard):
-    """ Logitech`s keyboard with color LCD."""
+    """Logitech`s keyboard with color LCD."""
     def __init__(self, parser: ProtocolParser) -> None:
         """
         Logitech`s keyboard with color LCD.
