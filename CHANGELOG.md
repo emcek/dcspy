@@ -1,10 +1,12 @@
 ## 1.7.4
 * **AH-64D Apache* - add better support for G19 for PRE mode
 * Show DCS version in logs
+* Fix name of plane form F-14 Tomcat depending on model A or B
 * Internal:
   * improve checking DCS-BIOS data
   * introduce enum values for parser state
   * improve CI process - add Python 3.11
+  * force using Pillow 9.3.0
 
 ## 1.7.3
 * Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
