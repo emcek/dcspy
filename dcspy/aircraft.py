@@ -11,7 +11,7 @@ from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdInfo, LcdButton
+from dcspy import LcdInfo, LcdButton, SUPPORTED_CRAFTS
 from dcspy.sdk import lcd_sdk
 
 try:
@@ -721,7 +721,7 @@ class F14B(Aircraft):
 
         :param draw: ImageDraw instance
         """
-        draw.text(xy=(2, 3), text='F-14B Tomcat', fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2, 3), text=f'{SUPPORTED_CRAFTS[self.__class__.__name__]["name"]}', fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
