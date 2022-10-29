@@ -475,7 +475,7 @@ class ApacheEufdMode(Enum):
     PRE = 4
 
 
-class AH64D(Aircraft):
+class AH64DBLKII(Aircraft):
     """AH-64D Apache."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """

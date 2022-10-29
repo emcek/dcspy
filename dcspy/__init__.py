@@ -15,7 +15,7 @@ from dcspy.utils import load_cfg, set_defaults, default_yaml
 SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
                     'Ka50': {'name': 'Ka-50 Black Shark', 'bios': 'Ka-50'},
                     'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
-                    'AH64D': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
+                    'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
                     'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
                     'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
                     'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
