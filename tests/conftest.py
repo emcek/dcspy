@@ -71,7 +71,7 @@ def viper_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
-def black_shark_mono(lcd_mono: LcdInfo):
+def shark_mono(lcd_mono: LcdInfo):
     """
     Return instance of Ka-50 Black Shark for Logitech mono LCD.
     :param lcd_mono:
@@ -143,8 +143,8 @@ def apache_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: AH-64D Apache instance
     """
-    from dcspy.aircraft import AH64D
-    return AH64D(lcd_mono)
+    from dcspy.aircraft import AH64DBLKII
+    return AH64DBLKII(lcd_mono)
 
 
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
@@ -171,7 +171,7 @@ def viper_color(lcd_color: LcdInfo):
 
 
 @fixture()
-def black_shark_color(lcd_color: LcdInfo):
+def shark_color(lcd_color: LcdInfo):
     """
     Return instance of Ka-50 Black Shark for Logitech color LCD.
     :param lcd_color:
@@ -182,9 +182,20 @@ def black_shark_color(lcd_color: LcdInfo):
 
 
 @fixture()
+def warthog_color(lcd_color: LcdInfo):
+    """
+    Return instance of A-10C II Tank Killer for Logitech color LCD.
+    :param lcd_color:
+    :return: A-10C II Tank Killer instance
+    """
+    from dcspy.aircraft import A10C
+    return A10C(lcd_color)
+
+
+@fixture()
 def warthog2_color(lcd_color: LcdInfo):
     """
-    Return instance of A-10C II Tank Killer for Logitech mono LCD.
+    Return instance of A-10C Warthog for Logitech color LCD.
     :param lcd_color:
     :return: A-10C II Tank Killer instance
     """
@@ -232,8 +243,8 @@ def apache_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: AH-64D Apache instance
     """
-    from dcspy.aircraft import AH64D
-    return AH64D(lcd_color)
+    from dcspy.aircraft import AH64DBLKII
+    return AH64DBLKII(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>

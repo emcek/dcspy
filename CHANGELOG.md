@@ -1,4 +1,5 @@
 ## 1.7.4
+* **AH-64D Apache* - add better support for G19 for PRE mode
 * Show DCS version in logs
 * Fix name of plane form F-14 Tomcat depending on model A or B
 * Internal:

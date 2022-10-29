@@ -44,7 +44,7 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
 @mark.parametrize('plane_str, plane, display, detect', [('FA-18C_hornet', 'FA18Chornet', [], True),
                                                         ('F-16C_50', 'F16C50', [], True),
                                                         ('Ka-50', 'Ka50', [], True),
-                                                        ('AH-64D', 'AH64D', [], True),
+                                                        ('AH-64D_BLKII', 'AH64DBLKII', [], True),
                                                         ('A-10C', 'A10C', [], True),
                                                         ('A-10C_2', 'A10C2', [], True),
                                                         ('F-14B', 'F14B', [], True),

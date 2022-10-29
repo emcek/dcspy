@@ -9,7 +9,7 @@ from string import whitespace
 from tempfile import gettempdir
 from typing import Dict, Union, Iterator, Sequence, List
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import LcdInfo, LcdButton, SUPPORTED_CRAFTS
 from dcspy.sdk import lcd_sdk
@@ -475,7 +475,7 @@ class ApacheEufdMode(Enum):
     PRE = 4
 
 
-class AH64D(Aircraft):
+class AH64DBLKII(Aircraft):
     """AH-64D Apache."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -505,33 +505,47 @@ class AH64D(Aircraft):
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
         LOG.debug(f'Mode: {self.mode}')
-        getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=1)
+        kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
+        mode = self.mode.name.lower()
+        if mode == 'pre':
+            kwargs['xcords'] = [0] * 5 + [80] * 5
+            kwargs['ycords'] = [j * 8 for j in range(0, 5)] * 2
+            kwargs['font'] = self.lcd.font_xs
+            del kwargs['scale']
+        getattr(self, f'_draw_for_{mode}')(**kwargs)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
         LOG.debug(f'Mode: {self.mode}')
-        getattr(self, f'_draw_for_{self.mode.name.lower()}')(draw=ImageDraw.Draw(img), scale=2)
+        kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
+        mode = self.mode.name.lower()
+        if mode == 'pre':
+            kwargs['xcords'] = [0] * 10
+            kwargs['ycords'] = [j * 24 for j in range(0, 10)]
+            kwargs['font'] = self.lcd.font_l
+            del kwargs['scale']
+        getattr(self, f'_draw_for_{mode}')(**kwargs)
 
-    def _draw_for_idm(self, draw, scale):
+    def _draw_for_idm(self, draw: ImageDraw.Draw, scale: int):
         """
         Draw image for IDM mode.
 
-        param draw: ImageDraw instance
+        :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
         """
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
-            mat = search(r'(.*\*)\s+(\d+)([\.\dULCA]+)[-\sA-Z]*(\d+)([\.\dULCA]+)[\s-]+', self.get_bios(f'PLT_EUFD_LINE{i}'))
+            mat = search(r'(.*\*)\s+(\d+)([\.\dULCA]+)[-\sA-Z]*(\d+)([\.\dULCA]+)[\s-]+', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
                 spacer = ' ' * (6 - len(mat.group(3)))
                 text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
-    def _draw_for_wca(self, draw, scale):
+    def _draw_for_wca(self, draw: ImageDraw.Draw, scale: int):
         """
         Draw image for WCA mode.
 
-        param draw: ImageDraw instance
+        :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
         """
         warnings = self._fetch_warning_list()
@@ -558,11 +572,14 @@ class AH64D(Aircraft):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
-    def _draw_for_pre(self, draw, scale):
+    def _draw_for_pre(self, draw: ImageDraw.Draw, xcords: List[int], ycords: List[int], font: ImageFont.FreeTypeFont):
         """
         Draw image for PRE mode.
 
-        param draw: ImageDraw instance
+        :param draw: ImageDraw instance
+        :param xcords: list of X coordinates
+        :param ycords: list of Y coordinates
+        :param font: font instance
         :param scale: scaling factor (Mono 1, Color 2)
         """
         match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
@@ -575,13 +592,11 @@ class AH64D(Aircraft):
                       9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
                       11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
-        for i, xcord, ycord in zip(range(2, 12),
-                                   [0, 0, 0, 0, 0, 80 * scale, 80 * scale, 80 * scale, 80 * scale, 80 * scale],
-                                   [j * 8 * scale for j in range(0, 5)] * 2):
-            mat = search(match_dict[i], self.get_bios(f'PLT_EUFD_LINE{i}'))
+        for i, xcord, ycord in zip(range(2, 12), xcords, ycords):
+            mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
                 draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
-                          fill=self.lcd.foreground, font=self.lcd.font_xs)
+                          fill=self.lcd.foreground, font=font)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
