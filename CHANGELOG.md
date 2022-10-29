@@ -1,5 +1,6 @@
 ## 1.7.4
 * Show DCS version in logs
+* Fix name of plane form F-14 Tomcat depending on model A or B
 * Internal:
   * improve checking DCS-BIOS data
   * introduce enum values for parser state
