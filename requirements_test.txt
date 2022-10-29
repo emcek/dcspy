@@ -4,7 +4,8 @@ codacy-coverage
 coveralls
 flake8
 interrogate
-lxml<=4.9.0
+lxml<=4.9.0; platform_system == "Windows"
+lxml; platform_system == "Linux"
 mypy
 pip-audit
 pycodestyle
