@@ -1,5 +1,5 @@
 packaging
-Pillow==9.1.0
+Pillow==9.0.0
 psutil
 PyYAML
 requests
