@@ -60,8 +60,8 @@ jobs:
         exclude:
           - os: windows-latest
             python-version: '3.7'
-#          - os: windows-latest
-#            python-version: '3.11.0-rc.2'
+          - os: windows-latest
+            python-version: '3.11'
           - os: ubuntu-latest
             python-version: '3.11'
     steps:
