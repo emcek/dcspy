@@ -4,7 +4,7 @@ codacy-coverage
 coveralls
 flake8
 interrogate
-lxml
+lxml<=4.9.0
 mypy
 pip-audit
 pycodestyle
