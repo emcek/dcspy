@@ -94,7 +94,7 @@ jobs:
           retention-days: 5
       - name: Check pip-audit
         run: |
-          pip-audit -r requirements.txt --progress-spinner off
+          pip-audit -r requirements.txt --progress-spinner off --ignore-vuln OSV-2022-715
   coverage:
     name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
