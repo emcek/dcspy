@@ -5,6 +5,7 @@
 * Show DCS version in logs
 * Fix name of plane for **F-14 Tomcat** depending on model A or B
 * Toggle Start/Stop buttons
+* Do not show warning when plane's name is empty
 * Internal:
   * improve checking DCS-BIOS data
   * introduce enum values for parser state
