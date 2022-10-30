@@ -41,16 +41,19 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
     sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
 
-@mark.parametrize('plane_str, plane, display, detect', [('FA-18C_hornet', 'FA18Chornet', [], True),
-                                                        ('F-16C_50', 'F16C50', [], True),
-                                                        ('Ka-50', 'Ka50', [], True),
-                                                        ('AH-64D_BLKII', 'AH64DBLKII', [], True),
-                                                        ('A-10C', 'A10C', [], True),
-                                                        ('A-10C_2', 'A10C2', [], True),
-                                                        ('F-14B', 'F14B', [], True),
-                                                        ('F14A135GR', 'F14A135GR', [], True),
-                                                        ('AV8BNA', 'AV8BNA', [], True),
-                                                        ('F-114_Nighthawk', 'F114Nighthawk', ['Not supported yet!'], False)])
+@mark.parametrize('plane_str, plane, display, detect', [
+    ('FA-18C_hornet', 'FA18Chornet', ['Detected aircraft:', 'FA18Chornet'], True),
+    ('F-16C_50', 'F16C50', ['Detected aircraft:', 'F16C50'], True),
+    ('Ka-50', 'Ka50', ['Detected aircraft:', 'Ka50'], True),
+    ('AH-64D_BLKII', 'AH64DBLKII', ['Detected aircraft:', 'AH64DBLKII'], True),
+    ('A-10C', 'A10C', ['Detected aircraft:', 'A10C'], True),
+    ('A-10C_2', 'A10C2', ['Detected aircraft:', 'A10C2'], True),
+    ('F-14B', 'F14B', ['Detected aircraft:', 'F14B'], True),
+    ('F14A135GR', 'F14A135GR', ['Detected aircraft:', 'F14A135GR'], True),
+    ('AV8BNA', 'AV8BNA', ['Detected aircraft:', 'AV8BNA'], True),
+    ('F-114_Nighthawk', 'F114Nighthawk', ['Detected aircraft:', 'F114Nighthawk', 'Not supported yet!'], False),
+    ('', '', [], False),
+])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -58,7 +61,7 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
         keyboard_mono.detecting_plane(plane_str)
     assert keyboard_mono.plane_name == plane
-    assert keyboard_mono._display == ['Detected aircraft:'] + [plane] + display
+    assert keyboard_mono._display == display
     assert keyboard_mono.plane_detected is detect
 
 
