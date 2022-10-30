@@ -51,6 +51,8 @@ class DcspyGui(tk.Frame):
         self.bios_path = ''
         self.event = Event()
         self.status_txt.set(f'ver. {__version__}')
+        self.btn_start.config(state=tk.ACTIVE)
+        self.btn_stop.config(state=tk.DISABLED)
         if config.get('autostart', False):
             self.start_dcspy()
 
