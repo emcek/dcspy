@@ -75,14 +75,14 @@ class DcspyGui(tk.Frame):
 
     def _add_buttons_mainwindow(self):
         """Add buttons to GUI."""
-        start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
+        self.btn_start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
         cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
-        stop = tk.Button(master=self.master, text='Stop', width=6, command=self._stop)
+        self.btn_stop = tk.Button(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
         close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
         status = tk.Label(master=self.master, textvariable=self.status_txt)
-        start.grid(row=0, column=1, padx=2, pady=2)
+        self.btn_start.grid(row=0, column=1, padx=2, pady=2)
         cfg.grid(row=1, column=1, padx=2, pady=2)
-        stop.grid(row=2, column=1, padx=2, pady=2)
+        self.btn_stop.grid(row=2, column=1, padx=2, pady=2)
         close.grid(row=3, column=1, padx=2, pady=2)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
 
@@ -316,6 +316,8 @@ class DcspyGui(tk.Frame):
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
         self.status_txt.set('Start again or close DCSpy')
+        self.btn_start.config(state=tk.ACTIVE)
+        self.btn_stop.config(state=tk.DISABLED)
         self.event.set()
 
     def start_dcspy(self) -> None:
@@ -329,4 +331,6 @@ class DcspyGui(tk.Frame):
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.status_txt.set('You can close GUI')
+        self.btn_start.config(state=tk.DISABLED)
+        self.btn_stop.config(state=tk.ACTIVE)
         app_thread.start()
