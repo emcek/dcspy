@@ -94,7 +94,7 @@ class LogitechKeyboard:
                 LOG.info(f'Detected Aircraft: {value}')
                 self.display = ['Detected aircraft:', self.plane_name]
                 self.plane_detected = True
-            else:
+            elif self.plane_name not in SUPPORTED_CRAFTS and self.plane_name:
                 LOG.warning(f'Not supported aircraft: {value}')
                 self.display = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
 
