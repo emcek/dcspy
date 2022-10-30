@@ -316,9 +316,9 @@ class DcspyGui(tk.Frame):
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
         self.status_txt.set('Start again or close DCSpy')
+        self.btn_start.config(state=tk.ACTIVE)
+        self.btn_stop.config(state=tk.DISABLED)
         self.event.set()
-        self.btn_start.config(tk.ACTIVE)
-        self.btn_stop.config(tk.DISABLED)
 
     def start_dcspy(self) -> None:
         """Run real application."""
@@ -331,6 +331,6 @@ class DcspyGui(tk.Frame):
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.status_txt.set('You can close GUI')
+        self.btn_start.config(state=tk.DISABLED)
+        self.btn_stop.config(state=tk.ACTIVE)
         app_thread.start()
-        self.btn_start.config(tk.DISABLED)
-        self.btn_stop.config(tk.ACTIVE)
