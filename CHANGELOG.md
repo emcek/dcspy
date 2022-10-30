@@ -1,7 +1,9 @@
 ## 1.7.4
-* **AH-64D Apache* - add better support for G19 for PRE mode
+* **AH-64D Apache**
+  * add better support for G19 for PRE mode
+  * update name from `AH64D` to `AH64DBLKII`
 * Show DCS version in logs
-* Fix name of plane form F-14 Tomcat depending on model A or B
+* Fix name of plane for **F-14 Tomcat** depending on model A or B
 * Toggle Start/Stop buttons
 * Internal:
   * improve checking DCS-BIOS data
