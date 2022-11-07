@@ -137,8 +137,7 @@ class StringBuffer:
         self.__dirty = False
         self.buffer = bytearray(max_length)
         self.callbacks: Set[Callable] = set()
-        if callback:
-            self.callbacks.add(callback)
+        self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def set_char(self, index, char) -> None:
@@ -189,8 +188,7 @@ class IntegerBuffer:
         self.__shift_by = shift_by
         self.__value = int()
         self.callbacks: Set[Callable] = set()
-        if callback:
-            self.callbacks.add(callback)
+        self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
