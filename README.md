@@ -11,6 +11,8 @@
 [![BCH compliance](https://bettercodehub.com/edge/badge/emcek/dcspy?branch=master)](https://bettercodehub.com/)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6056/badge)](https://bestpractices.coreinfrastructure.org/projects/6056)
+[![Downloads](https://pepy.tech/badge/dcspy)](https://pepy.tech/project/dcspy)
+[![Rate this package](https://badges.openbase.com/python/rating/dcspy.svg?token=AZCVj1Hdbl6cC3I/gkVpgsigp22LtCOR0sB8lcODY9Y=)](https://openbase.com/python/dcspy?utm_source=embedded&amp;utm_medium=badge&amp;utm_campaign=rate-badge)
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
 ## DCSpy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
@@ -38,7 +40,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * [Python 3.11](https://www.python.org/downloads/) but 3.7+ (with tcl/tk support, see [installation](https://github.com/emcek/dcspy/wiki/installation)) should be fine, please choose Windows x86-64 version, file should be python-3.11.0-amd64.exe.
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [DCS-BIOS 0.7.46](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) (or newer)
-* [DCS 2.7.18.30765](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.7.18.30765/) or [2.8.0.32066](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.0.32066/) Open Beta
+* [DCS 2.7.18.30765](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.7.18.30765/), [2.8.0.32066](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.0.32066/) or [2.8.0.32235.1](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.0.32235.1/) Open Beta
 
 **Notes:**
 * If you upgrade DCSpy from 1.5.1 or older you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software).
