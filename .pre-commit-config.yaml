@@ -15,7 +15,7 @@ repos:
     rev: v3.2.0
     hooks:
       - id: pyupgrade
-        args: [--py36-plus]
+        args: [--py37-plus]
 
   - repo: https://github.com/econchick/interrogate
     rev: 1.5.0
