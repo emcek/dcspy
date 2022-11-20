@@ -1,5 +1,0 @@
-component_depth: 2
-languages:
-  - python
-exclude:
-  - .*/setup\.py
