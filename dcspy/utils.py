@@ -181,6 +181,7 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     except FileNotFoundError as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
     else:
+        result_type = 'stable'
         dcs_type = search(r'"branch":\s"([\w.]*)"', autoupdate_data)
         if dcs_type:
             result_type = str(dcs_type.group(1))
