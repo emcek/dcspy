@@ -83,6 +83,12 @@ def test_check_dcs_ver_file_exists_without_ver(autoupdate2_cfg):
         assert dcs_ver == ('openbeta', 'Unknown')
 
 
+def test_check_dcs_ver_file_exists_without_branch(autoupdate3_cfg):
+    with patch('dcspy.utils.open', mock_open(read_data=autoupdate3_cfg)):
+        dcs_ver = utils.check_dcs_ver('')
+        assert dcs_ver == ('stable', '2.7.18.28157')
+
+
 def test_check_dcs_ver_file_not_exists():
     with patch('dcspy.utils.open', side_effect=FileNotFoundError):
         dcs_ver = utils.check_dcs_ver('')
