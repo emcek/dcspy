@@ -1,3 +1,6 @@
+## 1.7.5
+* report DCS stable version correctly in logs during start
+
 ## 1.7.4
 * **AH-64D Apache**
   * add better support for G19 for PRE mode
