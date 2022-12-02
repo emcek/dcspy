@@ -1,5 +1,9 @@
 ## 1.7.5
 * report DCS stable version correctly in logs during start
+* Internal:
+  * rename starting script
+  * remove usage of McCabe
+  * add unit tests
 
 ## 1.7.4
 * **AH-64D Apache**
