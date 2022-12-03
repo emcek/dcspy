@@ -1,4 +1,5 @@
 import tkinter as tk
+import customtkinter
 from functools import partial
 from logging import getLogger
 from os import path
@@ -32,7 +33,7 @@ class ReleaseInfo(NamedTuple):
 
 class DcspyGui(tk.Frame):
     """Tkinter GUI."""
-    def __init__(self, master: tk.Tk, config_file: str) -> None:
+    def __init__(self, master: customtkinter.CTk, config_file: str) -> None:
         """
         Create basic GUI for dcspy application.
 
@@ -50,14 +51,17 @@ class DcspyGui(tk.Frame):
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.bios_path = ''
         self.event = Event()
-        self.status_txt.set(f'ver. {__version__}')
-        self.btn_start.config(state=tk.ACTIVE)
-        self.btn_stop.config(state=tk.DISABLED)
+        self.status_txt.set(f' ver. {__version__}')
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
         if config.get('autostart', False):
             self.start_dcspy()
 
+    def change_appearance_mode_event(self, new_appearance_mode: str):
+        customtkinter.set_appearance_mode(new_appearance_mode)
+
     def _init_widgets(self) -> None:
-        """Init all GUI widgest."""
+        """Init all GUI widgets."""
         self.master.columnconfigure(index=0, weight=1)
         self.master.columnconfigure(index=1, weight=1)
         self.master.rowconfigure(index=0, weight=1)
@@ -65,52 +69,55 @@ class DcspyGui(tk.Frame):
         self.master.rowconfigure(index=2, weight=1)
         self.master.rowconfigure(index=3, weight=1)
 
-        frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
+        # frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
+        frame = customtkinter.CTkFrame(master=self.master)
         frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
         for i, text in enumerate(LCD_TYPES):
-            rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
+            rb_lcd_type = customtkinter.CTkRadioButton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
-
         self._add_buttons_mainwindow()
 
     def _add_buttons_mainwindow(self):
         """Add buttons to GUI."""
-        self.btn_start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
-        cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
-        self.btn_stop = tk.Button(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
-        close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
-        status = tk.Label(master=self.master, textvariable=self.status_txt)
+        self.btn_start = customtkinter.CTkButton(master=self.master, text='Start', width=6, command=self.start_dcspy)
+        cfg = customtkinter.CTkButton(master=self.master, text='Config', width=6, command=self._config_editor)
+        self.btn_stop = customtkinter.CTkButton(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
+        close = customtkinter.CTkButton(master=self.master, text='Close', width=6, command=self.master.destroy)
+        appearance_mode_optionemenu = customtkinter.CTkOptionMenu(master=self.master, values=["Light", "Dark", "System"], command=self.change_appearance_mode_event)
+        status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         self.btn_start.grid(row=0, column=1, padx=2, pady=2)
         cfg.grid(row=1, column=1, padx=2, pady=2)
         self.btn_stop.grid(row=2, column=1, padx=2, pady=2)
         close.grid(row=3, column=1, padx=2, pady=2)
+        close.grid(row=3, column=1, padx=2, pady=2)
+        appearance_mode_optionemenu.grid(row=3, column=0)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
 
     def _lcd_type_selected(self) -> None:
         """Handling selected LCD type."""
         keyboard = self.lcd_type.get()
         LOG.debug(f'Logitech {keyboard} selected')
-        self.status_txt.set(f'Logitech {keyboard} selected')
+        self.status_txt.set(f' Logitech {keyboard} selected')
         save_cfg(cfg_dict={'keyboard': keyboard})
 
     def _config_editor(self) -> None:
         """Config and settings editor window."""
-        cfg_edit = tk.Toplevel(self.master)
+        cfg_edit = customtkinter.CTkToplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 580, 270
+        width, height = 580, 300
         cfg_edit.geometry(f'{width}x{height}')
         cfg_edit.minsize(width=250, height=150)
 
-        editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
+        editor_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
         editor_status.pack(side=tk.TOP, fill=tk.X)
-        scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
-        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        text_editor = self._create_text_editor(cfg_edit, scrollbar_y)
+        # scrollbar_y = customtkinter.CTkScrollbar(cfg_edit)
+        # scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
+        text_editor = self._create_text_editor(cfg_edit)
         self._load_cfg(text_editor)
 
-    def _create_text_editor(self, cfg_edit, scrollbar_y):
+    def _create_text_editor(self, cfg_edit):
         """
         Create settings editor.
 
@@ -118,15 +125,14 @@ class DcspyGui(tk.Frame):
         :param scrollbar_y: scrollbar
         :return: editor widget
         """
-        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
-                              borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
+        text_editor = customtkinter.CTkTextbox(master=cfg_edit, width=10, height=5, wrap=tk.CHAR, font=('Courier New', 14), undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
-        scrollbar_y.config(command=text_editor.yview)
-        load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
-        save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        bios_status = tk.Label(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}', anchor=tk.E)
-        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
-        close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
+        # scrollbar_y.configure(command=text_editor.yview)
+        load = customtkinter.CTkButton(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
+        save = customtkinter.CTkButton(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
+        bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}', anchor=tk.E)
+        check_bios = customtkinter.CTkButton(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
+        close = customtkinter.CTkButton(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
         save.pack(side=tk.LEFT)
         check_bios.pack(side=tk.LEFT)
@@ -134,7 +140,7 @@ class DcspyGui(tk.Frame):
         bios_status.pack(side=tk.BOTTOM, fill=tk.X)
         return text_editor
 
-    def _load_cfg(self, text_widget: tk.Text) -> None:
+    def _load_cfg(self, text_widget: customtkinter.CTkTextbox) -> None:
         """
         Load configuration into settings editor.
 
@@ -144,7 +150,7 @@ class DcspyGui(tk.Frame):
         with open(file=self.cfg_file, encoding='utf-8') as cfg_file:
             text_widget.insert(tk.END, cfg_file.read().strip())
 
-    def _save_cfg(self, text_info: tk.Text) -> None:
+    def _save_cfg(self, text_info: customtkinter.CTkTextbox) -> None:
         """
         Save configuration from settings editor.
 
@@ -161,7 +167,7 @@ class DcspyGui(tk.Frame):
         """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
-        bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        bios_statusbar.configure(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios} ')
         correct_local_bios_ver = isinstance(self.l_bios, version.Version)
         correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
@@ -317,9 +323,9 @@ class DcspyGui(tk.Frame):
 
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
-        self.status_txt.set('Start again or close DCSpy')
-        self.btn_start.config(state=tk.ACTIVE)
-        self.btn_stop.config(state=tk.DISABLED)
+        self.status_txt.set(' Start again or close DCSpy')
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
 
     def start_dcspy(self) -> None:
@@ -332,7 +338,7 @@ class DcspyGui(tk.Frame):
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
-        self.status_txt.set('You can close GUI')
-        self.btn_start.config(state=tk.DISABLED)
-        self.btn_stop.config(state=tk.ACTIVE)
+        self.status_txt.set(' You can close GUI')
+        self.btn_start.configure(state=tk.DISABLED)
+        self.btn_stop.configure(state=tk.ACTIVE)
         app_thread.start()
