@@ -57,9 +57,6 @@ class DcspyGui(tk.Frame):
         if config.get('autostart', False):
             self.start_dcspy()
 
-    def change_appearance_mode_event(self, new_appearance_mode: str):
-        customtkinter.set_appearance_mode(new_appearance_mode)
-
     def _init_widgets(self) -> None:
         """Init all GUI widgets."""
         self.master.columnconfigure(index=0, weight=1)
@@ -85,14 +82,14 @@ class DcspyGui(tk.Frame):
         cfg = customtkinter.CTkButton(master=self.master, text='Config', width=6, command=self._config_editor)
         self.btn_stop = customtkinter.CTkButton(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
         close = customtkinter.CTkButton(master=self.master, text='Close', width=6, command=self.master.destroy)
-        appearance_mode_optionemenu = customtkinter.CTkOptionMenu(master=self.master, values=["Light", "Dark", "System"], command=self.change_appearance_mode_event)
+        appearance_mode = customtkinter.CTkOptionMenu(master=self.master, values=["Light", "Dark", "System"], command=self._change_appearance)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         self.btn_start.grid(row=0, column=1, padx=2, pady=2)
         cfg.grid(row=1, column=1, padx=2, pady=2)
         self.btn_stop.grid(row=2, column=1, padx=2, pady=2)
         close.grid(row=3, column=1, padx=2, pady=2)
         close.grid(row=3, column=1, padx=2, pady=2)
-        appearance_mode_optionemenu.grid(row=3, column=0)
+        appearance_mode.grid(row=3, column=0)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
 
     def _lcd_type_selected(self) -> None:
@@ -327,6 +324,15 @@ class DcspyGui(tk.Frame):
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
+
+    @staticmethod
+    def _change_appearance(mode: str) -> None:
+        """
+        Change theme mode.
+
+        :param mode: "System" (standard), "Dark", "Light"
+        """
+        customtkinter.set_appearance_mode(mode)
 
     def start_dcspy(self) -> None:
         """Run real application."""
