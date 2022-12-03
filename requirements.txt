@@ -1,3 +1,4 @@
+customtkinter>=5.0.0
 packaging
 Pillow>=9.3.0
 psutil
