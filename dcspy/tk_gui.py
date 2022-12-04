@@ -48,7 +48,8 @@ class DcspyGui(tk.Frame):
         self._init_widgets()
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
-        self.bios_path = ''
+        self.bios_path = tk.StringVar()
+        self.dcs_path = tk.StringVar()
         self.event = Event()
         self.status_txt.set(f' ver. {__version__}')
 
@@ -184,12 +185,16 @@ class DcspyGui(tk.Frame):
         verbose.grid(column=1, row=2, sticky=tk.W, padx=(10, 0))
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W)
-        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390)
+        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
         dcs.grid(column=1, row=3, padx=(10, 0))
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
         bscbios_label.grid(column=0, row=4, sticky=tk.W)
-        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390)
+        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
         dcsbios.grid(column=1, row=4, padx=(10, 0))
+        # todo: workaround
+        self.autostart_switch.set(config['autostart'])
+        self.showgui_switch.set(config['show_gui'])
+        self.verbose_switch.set(config['verbose'])
 
     def _mono_settings(self, tabview):
         mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_l)
@@ -244,9 +249,12 @@ class DcspyGui(tk.Frame):
 
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
+        # todo: not working
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
         self.verbose_switch.set(config['verbose'])
+        self.dcs_path.set(config['dcs'])
+        self.bios_path.set(config['dcsbios'])
         self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
         self.mono_s.set(f'Font Mono S : {config["font_mono_s"]}')
         self.mono_xs.set(f'Font Mono Xs : {config["font_mono_xs"]}')
@@ -309,11 +317,10 @@ class DcspyGui(tk.Frame):
 
         :return: release description info
         """
-        self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(self.bios_path, 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
+            with open(file=path.join(self.bios_path.get(), 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -366,10 +373,10 @@ class DcspyGui(tk.Frame):
         rmtree(path=path.join(tmp_dir, 'DCS-BIOS'), ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.bios_path} ')
-        rmtree(path=self.bios_path, ignore_errors=True)
-        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
-        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
+        LOG.debug(f'Remove: {self.bios_path.get()} ')
+        rmtree(path=self.bios_path.get(), ignore_errors=True)
+        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path.get()} ')
+        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path.get())
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
             if messagebox.askyesno('Open browser', install_result):
@@ -387,7 +394,7 @@ class DcspyGui(tk.Frame):
         :return: result of checks
         """
         result = 'Installation Success. Done.'
-        lua_dst_path = path.join(self.bios_path, '..')
+        lua_dst_path = path.join(self.bios_path.get(), '..')
         lua = 'Export.lua'
         try:
             with open(file=path.join(lua_dst_path, lua), encoding='utf-8') as lua_dst:  # type: ignore
