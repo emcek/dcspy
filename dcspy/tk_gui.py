@@ -63,13 +63,6 @@ class DcspyGui(tk.Frame):
         self.color_s = tk.StringVar()
         self.color_xs = tk.StringVar()
 
-        self.mono_l.set('Font Mono L')
-        self.mono_s.set('Font Mono S')
-        self.mono_xs.set('Font Mono Xs')
-        self.color_l.set('Font Color L')
-        self.color_s.set('Font Color S')
-        self.color_xs.set('Font Color Xs')
-
         self.size_mono_l = tk.IntVar()
         self.size_mono_s = tk.IntVar()
         self.size_mono_xs = tk.IntVar()
@@ -77,8 +70,11 @@ class DcspyGui(tk.Frame):
         self.size_color_s = tk.IntVar()
         self.size_color_xs = tk.IntVar()
 
+        self.font_name = tk.StringVar()
+
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
+        self._load_cfg()
         if config.get('autostart', False):
             self.start_dcspy()
 
@@ -104,7 +100,7 @@ class DcspyGui(tk.Frame):
     def _add_buttons_mainwindow(self):
         """Add buttons to GUI."""
         self.btn_start = customtkinter.CTkButton(master=self.master, text='Start', width=6, command=self.start_dcspy)
-        cfg = customtkinter.CTkButton(master=self.master, text='Config', width=6, command=self._config_editor)
+        cfg = customtkinter.CTkButton(master=self.master, text='Config', width=6, command=self._open_settings)
         self.btn_stop = customtkinter.CTkButton(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
         close = customtkinter.CTkButton(master=self.master, text='Close', width=6, command=self.master.destroy)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
@@ -121,8 +117,8 @@ class DcspyGui(tk.Frame):
         self.status_txt.set(f' Logitech {keyboard} selected')
         save_cfg(cfg_dict={'keyboard': keyboard})
 
-    def _config_editor(self) -> None:
-        """Config and settings editor window."""
+    def _open_settings(self) -> None:
+        """Settings window."""
         cfg_edit = customtkinter.CTkToplevel(self.master)
         cfg_edit.title('Config Editor')
         width, height = 750, 450
@@ -211,6 +207,10 @@ class DcspyGui(tk.Frame):
         mono_xs = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
                                           command=partial(self._slider_event, 'mono_xs'), variable=self.size_mono_xs)
         mono_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
+        font_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), text='Font name:')
+        font_label.grid(column=0, row=3, sticky=tk.W, padx=10)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono: G13, G15, G510'), placeholder_text='font name', width=100, textvariable=self.font_name)
+        fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
     def _color_settings(self, tabview):
         color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_l)
@@ -228,6 +228,10 @@ class DcspyGui(tk.Frame):
         color_xs = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13,
                                            command=partial(self._slider_event, 'color_xs'), variable=self.size_color_xs)
         color_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
+        font_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), text='Font name:')
+        font_label.grid(column=0, row=3, sticky=tk.W, padx=10)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Color: G19'), placeholder_text='font name', width=100, textvariable=self.font_name)
+        fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
     def _slider_event(self, label: str, value: float):
         """
