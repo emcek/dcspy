@@ -108,8 +108,6 @@ class DcspyGui(tk.Frame):
 
         editor_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
         editor_status.pack(side=tk.TOP, fill=tk.X)
-        # scrollbar_y = customtkinter.CTkScrollbar(cfg_edit)
-        # scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
         text_editor = self._create_text_editor(cfg_edit)
         self._load_cfg(text_editor)
 
@@ -123,7 +121,6 @@ class DcspyGui(tk.Frame):
         """
         text_editor = customtkinter.CTkTextbox(master=cfg_edit, width=10, height=5, wrap=tk.CHAR, font=('Courier New', 14), undo=True)
         text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
-        # scrollbar_y.configure(command=text_editor.yview)
         load = customtkinter.CTkButton(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = customtkinter.CTkButton(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
         bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios} ', anchor=tk.E)
