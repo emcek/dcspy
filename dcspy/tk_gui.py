@@ -243,13 +243,26 @@ class DcspyGui(tk.Frame):
         getattr(self, label).set(f'Font {" ".join([word.capitalize() for word in label.split("_")])} : {int(value)}')
 
     def _load_cfg(self) -> None:
-        """Load configuration into settings editor."""
-        # todo: not finished
-        with open(file=self.cfg_file, encoding='utf-8') as cfg_file:
-            print(cfg_file)
+        """Load configuration into GUI."""
+        self.autostart_switch.set(config['autostart'])
+        self.showgui_switch.set(config['show_gui'])
+        self.verbose_switch.set(config['verbose'])
+        self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
+        self.mono_s.set(f'Font Mono S : {config["font_mono_s"]}')
+        self.mono_xs.set(f'Font Mono Xs : {config["font_mono_xs"]}')
+        self.color_l.set(f'Font Color L : {config["font_color_l"]}')
+        self.color_s.set(f'Font Color S : {config["font_color_s"]}')
+        self.color_xs.set(f'Font Color Xs : {config["font_color_xs"]}')
+        self.size_mono_l.set(config["font_mono_l"])
+        self.size_mono_s.set(config["font_mono_s"])
+        self.size_mono_xs.set(config["font_mono_xs"])
+        self.size_color_l.set(config["font_color_l"])
+        self.size_color_s.set(config["font_color_s"])
+        self.size_color_xs.set(config["font_color_xs"])
+        self.font_name.set(config['font_name'])
 
     def _save_cfg(self) -> None:
-        """Save configuration from settings editor."""
+        """Save configuration from GUI."""
         # todo: not finished
         with open(file=self.cfg_file, mode='w+', encoding='utf-8') as cfg_file:
             print(cfg_file)
