@@ -126,7 +126,7 @@ class DcspyGui(tk.Frame):
         # scrollbar_y.configure(command=text_editor.yview)
         load = customtkinter.CTkButton(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
         save = customtkinter.CTkButton(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}', anchor=tk.E)
+        bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios} ', anchor=tk.E)
         check_bios = customtkinter.CTkButton(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
         close = customtkinter.CTkButton(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
         load.pack(side=tk.LEFT)
