@@ -51,6 +51,32 @@ class DcspyGui(tk.Frame):
         self.bios_path = ''
         self.event = Event()
         self.status_txt.set(f' ver. {__version__}')
+
+        self.autostart_switch = customtkinter.BooleanVar()
+        self.showgui_switch = customtkinter.BooleanVar()
+        self.verbose_switch = customtkinter.BooleanVar()
+
+        self.mono_l = tk.StringVar()
+        self.mono_s = tk.StringVar()
+        self.mono_xs = tk.StringVar()
+        self.color_l = tk.StringVar()
+        self.color_s = tk.StringVar()
+        self.color_xs = tk.StringVar()
+
+        self.mono_l.set('Font Mono L')
+        self.mono_s.set('Font Mono S')
+        self.mono_xs.set('Font Mono Xs')
+        self.color_l.set('Font Color L')
+        self.color_s.set('Font Color S')
+        self.color_xs.set('Font Color Xs')
+
+        self.size_mono_l = tk.IntVar()
+        self.size_mono_s = tk.IntVar()
+        self.size_mono_xs = tk.IntVar()
+        self.size_color_l = tk.IntVar()
+        self.size_color_s = tk.IntVar()
+        self.size_color_xs = tk.IntVar()
+
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
         if config.get('autostart', False):
@@ -99,131 +125,136 @@ class DcspyGui(tk.Frame):
         """Config and settings editor window."""
         cfg_edit = customtkinter.CTkToplevel(self.master)
         cfg_edit.title('Config Editor')
-        width, height = 600, 450
+        width, height = 750, 450
         cfg_edit.geometry(f'{width}x{height}')
-        cfg_edit.minsize(width=600, height=450)
+        cfg_edit.minsize(width=750, height=450)
+        cfg_edit.grid_columnconfigure(index=0, weight=0)
+        cfg_edit.grid_columnconfigure(index=1, weight=1)
+        cfg_edit.grid_rowconfigure((0, 1, 2), weight=1)
 
-        editor_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
-        editor_status.pack(side=tk.TOP, fill=tk.X)
-        text_editor = self._create_text_editor(cfg_edit)
-        self._load_cfg(text_editor)
+        # todo: where to put it?
+        # editor_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Configuration file: {self.cfg_file}')
+        # editor_status.grid(column=1, row=0, sticky=tk.NE, padx=7)
 
-    def _create_text_editor(self, cfg_edit):
-        """
-        Create settings editor.
+        self.bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        self.bios_status.grid(column=1, row=2, sticky=tk.SE, padx=7)
 
-        :param cfg_edit: aster widget
-        :return: editor widget
-        """
-        sidebar_frame = customtkinter.CTkFrame(cfg_edit, width=60, corner_radius=0)
-        sidebar_frame.pack(fill=tk.Y, side=tk.LEFT)
+        self._sidebar(cfg_edit)
 
-        text_editor = customtkinter.CTkTextbox(master=cfg_edit, width=10, height=5, wrap=tk.CHAR, font=('Courier New', 14), undo=True)
-        bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios} ', anchor=tk.E)
-
-        logo_label = customtkinter.CTkLabel(sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
-        logo_label.pack(padx=20, pady=20)
-        load = customtkinter.CTkButton(sidebar_frame, text='Load', command=partial(self._load_cfg, text_editor))
-        load.pack(padx=20, pady=5)
-        save = customtkinter.CTkButton(sidebar_frame, text='Save', command=partial(self._save_cfg, text_editor))
-        save.pack(padx=20, pady=5)
-        check_bios = customtkinter.CTkButton(sidebar_frame, text='Check DCS-BIOS', command=partial(self._check_bios, bios_status))
-        check_bios.pack(padx=20, pady=5)
-        appearance_mode_label = customtkinter.CTkLabel(sidebar_frame, text='Appearance Mode:', anchor=tk.W)
-        appearance_mode_label.pack(padx=20, pady=2)
-        appearance_mode = customtkinter.CTkOptionMenu(sidebar_frame, values=['Light', 'Dark', 'System'], command=self._change_appearance)
-        appearance_mode.pack(padx=20, pady=2)
-        color_theme_label = customtkinter.CTkLabel(sidebar_frame, text='Color Theme:', anchor=tk.W)
-        color_theme_label.pack(padx=20, pady=2)
-        color_theme = customtkinter.CTkOptionMenu(sidebar_frame, values=['Blue', 'Green', 'Dark Blue'])
-        color_theme.pack(padx=20, pady=2)
-        close = customtkinter.CTkButton(sidebar_frame, text='Close', command=cfg_edit.destroy)
-        close.pack(padx=20, pady=5, side=tk.BOTTOM, anchor=tk.S)
-
-        tabview = customtkinter.CTkTabview(cfg_edit, width=250, state=tk.ACTIVE)
-        tabview.pack(padx=(20, 0), pady=(20, 0))
+        tabview = customtkinter.CTkTabview(master=cfg_edit, width=250, state=tk.ACTIVE)
+        tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('General')
         tabview.add('Mono: G13, G15, G510')
         tabview.add('Color: G19')
-        # tabview.set("Color: G19")
+        self._general_settings(tabview)
+        self._mono_settings(tabview)
+        self._color_settings(tabview)
 
-        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='Autostart')
-        autostart.pack()
-        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='Show GUI')
-        showgui.pack()
-        verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='Verbose')
-        verbose.pack()
-        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='dcs')
-        dcs.pack()
-        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='dcsbios')
-        dcsbios.pack()
+    def _sidebar(self, cfg_edit):
+        sidebar_frame = customtkinter.CTkFrame(master=cfg_edit, width=70, corner_radius=0)
+        sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
+        sidebar_frame.grid_rowconfigure(8, weight=1)
+        logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
+        logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
+        load.grid(row=1, column=0, padx=20, pady=10)
+        save = customtkinter.CTkButton(master=sidebar_frame, text='Save', command=self._save_cfg)
+        save.grid(row=2, column=0, padx=20, pady=10)
+        check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Check DCS-BIOS', command=self._check_bios)
+        check_bios.grid(row=3, column=0, padx=20, pady=10)
+        appearance_mode_label = customtkinter.CTkLabel(master=sidebar_frame, text='Appearance Mode:', anchor=tk.W)
+        appearance_mode_label.grid(row=4, column=0, padx=20, pady=(5, 0))
+        appearance_mode = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Light', 'Dark', 'System'], command=self._change_appearance)
+        appearance_mode.grid(row=5, column=0, padx=20, pady=(0, 10))
+        color_theme_label = customtkinter.CTkLabel(master=sidebar_frame, text='Color Theme:', anchor=tk.W)
+        color_theme_label.grid(row=6, column=0, padx=20, pady=(5, 0))
+        color_theme = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Blue', 'Green', 'Dark Blue'])
+        color_theme.grid(row=7, column=0, padx=20, pady=(0, 20))
+        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=cfg_edit.destroy)
+        close.grid(row=9, column=0, padx=20, pady=10)
 
-        self.mono_l = tk.IntVar()
-        self.mono_s = tk.IntVar()
-        self.mono_xs = tk.IntVar()
-        mono_l = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13, command=self.slider_event, variable=self.mono_l)
-        mono_l.pack()
-        mono_s = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13, command=self.slider_event, variable=self.mono_s)
-        mono_s.pack()
-        mono_xs = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13, command=self.slider_event, variable=self.mono_xs)
-        mono_xs.pack()
+    def _general_settings(self, tabview):
+        autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart:')
+        autostart_label.grid(column=0, row=0, sticky=tk.W)
+        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False)
+        autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0))
+        showgui_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show GUI:')
+        showgui_label.grid(column=0, row=1, sticky=tk.W)
+        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False)
+        showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0))
+        verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Verbose:')
+        verbose_label.grid(column=0, row=2, sticky=tk.W)
+        verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
+        verbose.grid(column=1, row=2, sticky=tk.W, padx=(10, 0))
+        dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
+        dcs_label.grid(column=0, row=3, sticky=tk.W)
+        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390)
+        dcs.grid(column=1, row=3, padx=(10, 0))
+        bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
+        bscbios_label.grid(column=0, row=4, sticky=tk.W)
+        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390)
+        dcsbios.grid(column=1, row=4, padx=(10, 0))
 
-        self.color_l = tk.IntVar()
-        self.color_s = tk.IntVar()
-        self.color_xs = tk.IntVar()
+    def _mono_settings(self, tabview):
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_l)
+        mono_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
+        mono_l = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
+                                         command=partial(self._slider_event, 'mono_l'), variable=self.size_mono_l)
+        mono_l.grid(column=1, row=0, sticky=tk.E, padx=10)
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_s)
+        mono_l_label.grid(column=0, row=1, sticky=tk.W, padx=10)
+        mono_s = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
+                                         command=partial(self._slider_event, 'mono_s'), variable=self.size_mono_s)
+        mono_s.grid(column=1, row=1, sticky=tk.E, padx=10)
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_xs)
+        mono_l_label.grid(column=0, row=2, sticky=tk.W, padx=10)
+        mono_xs = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
+                                          command=partial(self._slider_event, 'mono_xs'), variable=self.size_mono_xs)
+        mono_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
 
-        frame = customtkinter.CTkFrame(master=tabview.tab('Color: G19'))
-        frame.grid()
-        mono_l_label = customtkinter.CTkLabel(master=frame, textvariable=self.color_l)
-        mono_l_label.grid()
-        mono_l = customtkinter.CTkSlider(master=frame, from_=7, to=20, number_of_steps=13, command=self.slider_event, variable=self.color_l)
-        mono_l.grid()
+    def _color_settings(self, tabview):
+        color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_l)
+        color_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
+        color_l = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13, command=partial(self._slider_event, 'color_l'),
+                                          variable=self.size_color_l)
+        color_l.grid(column=1, row=0, sticky=tk.E, padx=10)
+        color_s_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_s)
+        color_s_label.grid(column=0, row=1, sticky=tk.W, padx=10)
+        color_s = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13, command=partial(self._slider_event, 'color_s'),
+                                          variable=self.size_color_s)
+        color_s.grid(column=1, row=1, sticky=tk.E, padx=10)
+        color_xs_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_xs)
+        color_xs_label.grid(column=0, row=2, sticky=tk.W, padx=10)
+        color_xs = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13,
+                                           command=partial(self._slider_event, 'color_xs'), variable=self.size_color_xs)
+        color_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
 
-        mono_s_label = customtkinter.CTkLabel(master=frame, textvariable=self.color_s)
-        mono_s_label.grid()
-        mono_s = customtkinter.CTkSlider(master=frame, from_=7, to=20, number_of_steps=13, command=self.slider_event, variable=self.color_s)
-        mono_s.grid()
-
-        mono_xs_label = customtkinter.CTkLabel(master=frame, textvariable=self.color_xs)
-        mono_xs_label.grid()
-        mono_xs = customtkinter.CTkSlider(master=frame, from_=7, to=20, number_of_steps=13, command=self.slider_event, variable=self.color_xs)
-        mono_xs.grid()
-
-        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
-        return text_editor
-
-    def slider_event(self, value):
-        # print(value)
-        pass
-
-    def _load_cfg(self, text_widget: customtkinter.CTkTextbox) -> None:
+    def _slider_event(self, label: str, value: float):
         """
-        Load configuration into settings editor.
+        Update correct label when slider is moved.
 
-        :param text_widget: text widget
+        :param label:
+        :param value:
         """
-        text_widget.delete('1.0', tk.END)
+        getattr(self, label).set(f'Font {" ".join([word.capitalize() for word in label.split("_")])} : {int(value)}')
+
+    def _load_cfg(self) -> None:
+        """Load configuration into settings editor."""
+        # todo: not finished
         with open(file=self.cfg_file, encoding='utf-8') as cfg_file:
-            text_widget.insert(tk.END, cfg_file.read().strip())
+            print(cfg_file)
 
-    def _save_cfg(self, text_info: customtkinter.CTkTextbox) -> None:
-        """
-        Save configuration from settings editor.
-
-        :param text_info: text widget
-        """
+    def _save_cfg(self) -> None:
+        """Save configuration from settings editor."""
+        # todo: not finished
         with open(file=self.cfg_file, mode='w+', encoding='utf-8') as cfg_file:
-            cfg_file.write(text_info.get('1.0', tk.END).strip())
+            print(cfg_file)
 
-    def _check_bios(self, bios_statusbar) -> None:
-        """
-        Check version and configuration of DCS-BIOS.
-
-        :param bios_statusbar: statusbar
-        """
+    def _check_bios(self) -> None:
+        """Check version and configuration of DCS-BIOS."""
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
-        bios_statusbar.configure(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios} ')
+        self.bios_status.configure(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = isinstance(self.l_bios, version.Version)
         correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
