@@ -1,5 +1,4 @@
 import tkinter as tk
-import customtkinter
 from functools import partial
 from logging import getLogger
 from os import path
@@ -11,6 +10,7 @@ from tkinter import messagebox
 from typing import NamedTuple, Union
 from webbrowser import open_new
 
+import customtkinter
 from packaging import version
 
 from dcspy import LCD_TYPES, config

@@ -1,7 +1,8 @@
-import customtkinter
 from logging import getLogger
 from os import path
 from threading import Event
+
+import customtkinter
 
 from dcspy import config, LCD_TYPES
 from dcspy.starter import dcspy_run
