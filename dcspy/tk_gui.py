@@ -15,7 +15,7 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running
 
 __version__ = '1.7.5'
 LOG = getLogger(__name__)
