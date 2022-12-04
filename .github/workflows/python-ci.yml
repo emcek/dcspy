@@ -11,9 +11,9 @@ jobs:
         os: [ubuntu-latest]
         python-version: ['3.11']
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
         run: |
           mypy dcspy
       - name: Upload mypy results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: mypy-${{ matrix.os }}-py${{ matrix.python-version }}
@@ -63,9 +63,9 @@ jobs:
           - os: windows-latest
             python-version: '3.11'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install MS Fonts
@@ -83,7 +83,7 @@ jobs:
         run: |
           python -m pytest --random -q --disable-warnings
       - name: Upload pytest test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
@@ -101,9 +101,9 @@ jobs:
         os: [ubuntu-latest]
         python-version: ['3.11']
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install MS Fonts
@@ -121,7 +121,7 @@ jobs:
         run: |
           python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
       - name: Upload pytest results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: test-${{ matrix.os }}-py${{ matrix.python-version }}
