@@ -220,17 +220,17 @@ class DcspyGui(tk.Frame):
     def _color_settings(self, tabview):
         color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_l)
         color_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
-        color_l = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13, command=partial(self._slider_event, 'color_l'),
+        color_l = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_l'),
                                           variable=self.size_color_l)
         color_l.grid(column=1, row=0, sticky=tk.E, padx=10)
         color_s_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_s)
         color_s_label.grid(column=0, row=1, sticky=tk.W, padx=10)
-        color_s = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13, command=partial(self._slider_event, 'color_s'),
+        color_s = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_s'),
                                           variable=self.size_color_s)
         color_s.grid(column=1, row=1, sticky=tk.E, padx=10)
         color_xs_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_xs)
         color_xs_label.grid(column=0, row=2, sticky=tk.W, padx=10)
-        color_xs = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=7, to=20, number_of_steps=13,
+        color_xs = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=15, to=40, number_of_steps=25,
                                            command=partial(self._slider_event, 'color_xs'), variable=self.size_color_xs)
         color_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
         font_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), text='Font name:')
