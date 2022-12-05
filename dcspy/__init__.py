@@ -77,7 +77,7 @@ LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=
                    font_xs=ImageFont.truetype(config['font_name'], config['font_color_xs']))
 
 LCD_TYPES = {
-    'G19': {'type': 'KeyboardColor', 'icon': 'C:\\Program Files\\Logitech Gaming Software\\Resources\\G19\\Images\\G19_thumbnail_normal.png',},
+    'G19': {'type': 'KeyboardColor', 'icon': 'C:\\Program Files\\Logitech Gaming Software\\Resources\\G19\\Images\\G19_thumbnail_normal.png'},
     'G510': {'type': 'KeyboardMono', 'icon': 'C:\\Program Files\\Logitech Gaming Software\\Resources\\G510\\Images\\G510_thumbnail_normal.png'},
     'G15 v1/v2': {'type': 'KeyboardMono', 'icon': 'C:\\Program Files\\Logitech Gaming Software\\Resources\\G15\\Images\\G15v1_thumbnail_normal.png'},
     'G13': {'type': 'KeyboardMono', 'icon': 'C:\\Program Files\\Logitech Gaming Software\\Resources\\G13\\Images\\G13_thumbnail_normal.png'},
