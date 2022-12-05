@@ -11,6 +11,7 @@ from typing import NamedTuple, Union
 from webbrowser import open_new
 
 import customtkinter
+from PIL import Image
 from packaging import version
 
 from dcspy import LCD_TYPES, config
@@ -88,12 +89,17 @@ class DcspyGui(tk.Frame):
         self.master.rowconfigure(index=2, weight=1)
         self.master.rowconfigure(index=3, weight=1)
 
-        # frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
         frame = customtkinter.CTkFrame(master=self.master)
         frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
         for i, text in enumerate(LCD_TYPES):
+            try:
+                icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
+                label = customtkinter.CTkLabel(master=frame, text='', image=icon)
+            except IOError:
+                label = customtkinter.CTkLabel(master=frame, text='')
+            label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
-            rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
+            rb_lcd_type.grid(row=i, column=1)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
         self._add_buttons_mainwindow()
@@ -454,7 +460,7 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
-        app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
+        app_params = {'lcd_type': LCD_TYPES[keyboard]['type'], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
