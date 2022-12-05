@@ -95,7 +95,7 @@ class DcspyGui(tk.Frame):
             try:
                 icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
                 label = customtkinter.CTkLabel(master=frame, text='', image=icon)
-            except IOError:
+            except OSError:
                 label = customtkinter.CTkLabel(master=frame, text='')
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
