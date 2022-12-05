@@ -31,7 +31,7 @@ def run():
         DcspyGui(master=root, config_file=path.join(here, 'config.yaml'))
         root.mainloop()
     else:
-        dcspy_run(lcd_type=LCD_TYPES[config['keyboard']], event=Event())
+        dcspy_run(lcd_type=LCD_TYPES[config['keyboard']['type']], event=Event())
 
 
 if __name__ == '__main__':
