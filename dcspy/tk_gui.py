@@ -255,7 +255,8 @@ class DcspyGui(tk.Frame):
 
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
-        # todo: not working
+        # todo: not working, add load as custom file
+        # todo: them style, color
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
         self.verbose_switch.set(config['verbose'])
@@ -277,9 +278,22 @@ class DcspyGui(tk.Frame):
 
     def _save_cfg(self) -> None:
         """Save configuration from GUI."""
-        # todo: not finished
-        with open(file=self.cfg_file, mode='w+', encoding='utf-8') as cfg_file:
-            print(cfg_file)
+        cfg = {
+            'autostart': self.autostart_switch.get(),
+            'show_gui': self.showgui_switch.get(),
+            'verbose': self.verbose_switch.get(),
+            'dcs': self.dcs_path.get(),
+            'dcsbios': self.bios_path.get(),
+            'font_mono_l': self.size_mono_l.get(),
+            'font_mono_s': self.size_mono_s.get(),
+            'font_mono_xs': self.size_mono_xs.get(),
+            'font_color_l': self.size_color_l.get(),
+            'font_color_s': self.size_color_s.get(),
+            'font_color_xs': self.size_color_xs.get(),
+            'font_name': self.font_name.get(),
+            # todo: them style, color
+        }
+        save_cfg(cfg_dict=cfg, filename=self.cfg_file)
 
     def _check_bios(self) -> None:
         """Check version and configuration of DCS-BIOS."""
