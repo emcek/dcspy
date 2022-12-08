@@ -277,8 +277,8 @@ class DcspyGui(tk.Frame):
         self.size_color_s.set(int(config["font_color_s"]))
         self.size_color_xs.set(int(config["font_color_xs"]))
         self.font_name.set(str(config['font_name']))
-        self.theme_mode.set(config['theme_mode'])
-        self.theme_color.set(config['theme_color'])
+        self.theme_mode.set(str(config['theme_mode']))
+        self.theme_color.set(str(config['theme_color']))
 
     def _save_cfg(self) -> None:
         """Save configuration from GUI."""
