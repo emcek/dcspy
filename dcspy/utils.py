@@ -72,7 +72,9 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
                             'font_mono_l': 16,
                             'font_color_s': 22,
                             'font_color_xs': 18,
-                            'font_color_l': 32}
+                            'font_color_l': 32,
+                            'theme_mode': 'System',
+                            'theme_color': 'blue'}
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
     if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
         migrated_cfg['dcsbios'] = defaults['dcsbios']

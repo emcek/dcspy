@@ -11,8 +11,8 @@ from dcspy.utils import check_dcs_ver
 
 LOG = getLogger(__name__)
 __version__ = '1.7.5'
-customtkinter.set_appearance_mode("Light")  # Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_default_color_theme("green")  # Themes: "blue" (standard), "green", "dark-blue"
+customtkinter.set_appearance_mode(config['theme_mode'])
+customtkinter.set_default_color_theme(config['theme_color'])
 
 
 def run():

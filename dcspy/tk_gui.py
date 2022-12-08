@@ -74,6 +74,9 @@ class DcspyGui(tk.Frame):
 
         self.font_name = tk.StringVar()
 
+        self.theme_color = tk.StringVar()
+        self.theme_mode = tk.StringVar()
+
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
         self._load_cfg()
@@ -167,11 +170,11 @@ class DcspyGui(tk.Frame):
         check_bios.grid(row=3, column=0, padx=20, pady=10)
         appearance_mode_label = customtkinter.CTkLabel(master=sidebar_frame, text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(row=4, column=0, padx=20, pady=(5, 0))
-        appearance_mode = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Light', 'Dark', 'System'], command=self._change_appearance)
+        appearance_mode = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_appearance)
         appearance_mode.grid(row=5, column=0, padx=20, pady=(0, 10))
         color_theme_label = customtkinter.CTkLabel(master=sidebar_frame, text='Color Theme:', anchor=tk.W)
         color_theme_label.grid(row=6, column=0, padx=20, pady=(5, 0))
-        color_theme = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Blue', 'Green', 'Dark Blue'])
+        color_theme = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color)
         color_theme.grid(row=7, column=0, padx=20, pady=(0, 20))
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=cfg_edit.destroy)
         close.grid(row=9, column=0, padx=20, pady=10)
@@ -256,7 +259,6 @@ class DcspyGui(tk.Frame):
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
         # todo: not working, add load as custom file
-        # todo: them style, color
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
         self.verbose_switch.set(config['verbose'])
@@ -275,6 +277,8 @@ class DcspyGui(tk.Frame):
         self.size_color_s.set(int(config["font_color_s"]))
         self.size_color_xs.set(int(config["font_color_xs"]))
         self.font_name.set(str(config['font_name']))
+        self.theme_mode.set(config['theme_mode'])
+        self.theme_color.set(config['theme_color'])
 
     def _save_cfg(self) -> None:
         """Save configuration from GUI."""
@@ -291,7 +295,8 @@ class DcspyGui(tk.Frame):
             'font_color_s': self.size_color_s.get(),
             'font_color_xs': self.size_color_xs.get(),
             'font_name': self.font_name.get(),
-            # todo: them style, color
+            'theme_mode': self.theme_mode.get().capitalize(),
+            'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
 
