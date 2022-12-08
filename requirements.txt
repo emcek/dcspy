@@ -1,5 +1,5 @@
 customtkinter>=5.0.0
-packaging
+packaging<=21.3
 Pillow>=9.3.0
 psutil
 PyYAML
