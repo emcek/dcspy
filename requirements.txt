@@ -1,4 +1,4 @@
-packaging
+packaging<=21.3
 Pillow>=9.3.0
 psutil
 PyYAML
