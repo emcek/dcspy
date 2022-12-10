@@ -149,9 +149,11 @@ class DcspyGui(tk.Frame):
 
         tabview = customtkinter.CTkTabview(master=cfg_edit, width=250, state=tk.ACTIVE)
         tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
+        tabview.add('Keyboards')
         tabview.add('General')
-        tabview.add('Mono: G13, G15, G510')
-        tabview.add('Color: G19')
+        tabview.add('Mono')
+        tabview.add('Color')
+        self._keyboards(tabview)
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
@@ -178,6 +180,19 @@ class DcspyGui(tk.Frame):
         color_theme.grid(row=7, column=0, padx=20, pady=(0, 20))
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=cfg_edit.destroy)
         close.grid(row=9, column=0, padx=20, pady=10)
+
+    def _keyboards(self, tabview):
+        for i, text in enumerate(LCD_TYPES):
+            try:
+                icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
+                label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
+            except OSError:
+                label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='')
+            label.grid(row=i, column=0)
+            rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
+            rb_lcd_type.grid(row=i, column=1)
+            if config.get('keyboard', 'G13') == text:
+                rb_lcd_type.select()
 
     def _general_settings(self, tabview):
         autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart:')
@@ -206,45 +221,45 @@ class DcspyGui(tk.Frame):
         self.verbose_switch.set(config['verbose'])
 
     def _mono_settings(self, tabview):
-        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_l)
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_l)
         mono_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
-        mono_l = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
+        mono_l = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
                                          command=partial(self._slider_event, 'mono_l'), variable=self.size_mono_l)
         mono_l.grid(column=1, row=0, sticky=tk.E, padx=10)
-        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_s)
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_s)
         mono_l_label.grid(column=0, row=1, sticky=tk.W, padx=10)
-        mono_s = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
+        mono_s = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
                                          command=partial(self._slider_event, 'mono_s'), variable=self.size_mono_s)
         mono_s.grid(column=1, row=1, sticky=tk.E, padx=10)
-        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), textvariable=self.mono_xs)
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_xs)
         mono_l_label.grid(column=0, row=2, sticky=tk.W, padx=10)
-        mono_xs = customtkinter.CTkSlider(master=tabview.tab('Mono: G13, G15, G510'), from_=7, to=20, number_of_steps=13,
+        mono_xs = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
                                           command=partial(self._slider_event, 'mono_xs'), variable=self.size_mono_xs)
         mono_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
-        font_label = customtkinter.CTkLabel(master=tabview.tab('Mono: G13, G15, G510'), text='Font name:')
+        font_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10)
-        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono: G13, G15, G510'), placeholder_text='font name', width=100, textvariable=self.font_name)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', width=100, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
     def _color_settings(self, tabview):
-        color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_l)
+        color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_l)
         color_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
-        color_l = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_l'),
+        color_l = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_l'),
                                           variable=self.size_color_l)
         color_l.grid(column=1, row=0, sticky=tk.E, padx=10)
-        color_s_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_s)
+        color_s_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_s)
         color_s_label.grid(column=0, row=1, sticky=tk.W, padx=10)
-        color_s = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_s'),
+        color_s = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_s'),
                                           variable=self.size_color_s)
         color_s.grid(column=1, row=1, sticky=tk.E, padx=10)
-        color_xs_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), textvariable=self.color_xs)
+        color_xs_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_xs)
         color_xs_label.grid(column=0, row=2, sticky=tk.W, padx=10)
-        color_xs = customtkinter.CTkSlider(master=tabview.tab('Color: G19'), from_=15, to=40, number_of_steps=25,
+        color_xs = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25,
                                            command=partial(self._slider_event, 'color_xs'), variable=self.size_color_xs)
         color_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
-        font_label = customtkinter.CTkLabel(master=tabview.tab('Color: G19'), text='Font name:')
+        font_label = customtkinter.CTkLabel(master=tabview.tab('Color'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10)
-        fontname = customtkinter.CTkEntry(master=tabview.tab('Color: G19'), placeholder_text='font name', width=100, textvariable=self.font_name)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=100, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
     def _slider_event(self, label: str, value: float):
