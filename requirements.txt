@@ -1,4 +1,4 @@
-customtkinter>=5.0.0
+customtkinter>=5.0.3
 packaging<=21.3
 Pillow>=9.3.0
 psutil
