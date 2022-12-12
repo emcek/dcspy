@@ -164,7 +164,7 @@ class DcspyGui(tk.Frame):
         color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
         color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
         color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
-        color_theme.grid( column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
+        color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure mono tab GUI."""
@@ -198,7 +198,7 @@ class DcspyGui(tk.Frame):
         color_l_label.grid(column=0, row=0, sticky=tk.W, padx=10, pady=5)
         color_l = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_l'),
                                           variable=self.size_color_l)
-        color_l.grid(column=1, row=0, sticky= tk.W + tk.E, padx=10, pady=5)
+        color_l.grid(column=1, row=0, sticky=tk.W + tk.E, padx=10, pady=5)
         color_s_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_s)
         color_s_label.grid(column=0, row=1, sticky=tk.W, padx=10, pady=5)
         color_s = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_s'),
