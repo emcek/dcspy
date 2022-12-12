@@ -155,7 +155,7 @@ class DcspyGui(tk.Frame):
 
     def _general_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure general tab GUI."""
-        autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart:')
+        autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart DCSpy:')
         autostart_label.grid(column=0, row=0, sticky=tk.W)
         autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False)
         autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0))
@@ -163,7 +163,7 @@ class DcspyGui(tk.Frame):
         showgui_label.grid(column=0, row=1, sticky=tk.W)
         showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False)
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0))
-        verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Verbose:')
+        verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show more logs:')
         verbose_label.grid(column=0, row=2, sticky=tk.W)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
         verbose.grid(column=1, row=2, sticky=tk.W, padx=(10, 0))
@@ -199,7 +199,7 @@ class DcspyGui(tk.Frame):
         mono_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
         font_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10)
-        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', width=100, textvariable=self.font_name)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', width=150, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
     def _color_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -221,7 +221,7 @@ class DcspyGui(tk.Frame):
         color_xs.grid(column=1, row=2, sticky=tk.E, padx=10)
         font_label = customtkinter.CTkLabel(master=tabview.tab('Color'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10)
-        fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=100, textvariable=self.font_name)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
     def _slider_event(self, label: str, value: float):
