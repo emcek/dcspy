@@ -116,8 +116,6 @@ class DcspyGui(tk.Frame):
         sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
         sidebar_frame.grid_rowconfigure(8, weight=1)
-
-
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
@@ -143,11 +141,8 @@ class DcspyGui(tk.Frame):
 
     def _keyboards(self, tabview):
         for i, text in enumerate(LCD_TYPES):
-            try:
-                icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
-                label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
-            except OSError:
-                label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='')
+            icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
+            label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=1)
