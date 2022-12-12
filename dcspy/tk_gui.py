@@ -256,8 +256,8 @@ class DcspyGui(tk.Frame):
         self.size_color_s.set(int(config["font_color_s"]))
         self.size_color_xs.set(int(config["font_color_xs"]))
         self.font_name.set(str(config['font_name']))
-        self.theme_mode.set(str(config['theme_mode']))
-        self.theme_color.set(str(config['theme_color']))
+        self.theme_mode.set(str(config['theme_mode'].capitalize()))
+        self.theme_color.set(str(config['theme_color'].replace('-', ' ').title()))
 
     def _save_cfg(self) -> None:
         """Save configuration from GUI."""
@@ -274,7 +274,7 @@ class DcspyGui(tk.Frame):
             'font_color_s': self.size_color_s.get(),
             'font_color_xs': self.size_color_xs.get(),
             'font_name': self.font_name.get(),
-            'theme_mode': self.theme_mode.get().capitalize(),
+            'theme_mode': self.theme_mode.get().lower(),
             'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
@@ -283,7 +283,7 @@ class DcspyGui(tk.Frame):
     def _set_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
         save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
-        messagebox.showwarning('Restart', 'DCSpy needs to be close. Please start again manually!')
+        messagebox.showwarning('Restart', 'DCSpy needs to be close.\nPlease start again manually!')
         self.master.destroy()
 
     def _check_bios(self) -> None:

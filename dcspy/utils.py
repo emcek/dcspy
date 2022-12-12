@@ -27,7 +27,7 @@ defaults_cfg: ConfigDict = {
     'font_color_s': 22,
     'font_color_xs': 18,
     'font_color_l': 32,
-    'theme_mode': 'System',
+    'theme_mode': 'system',
     'theme_color': 'blue',
 }
 
