@@ -22,11 +22,13 @@ def run():
         dcs_type, dcs_ver = check_dcs_ver(config["dcs"])
         LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
         root = customtkinter.CTk()
-        width, height = 750, 550
+        width, height = 750, 570
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
         here = path.abspath(path.dirname(__file__))
         root.iconbitmap(path.join(here, 'dcspy.ico'))
+        if config['theme_mode'] == 'Dark':
+            root.iconbitmap(path.join(here, 'dcspy_white.ico'))
         root.title('DCSpy')
         DcspyGui(master=root, config_file=path.join(here, 'config.yaml'))
         root.mainloop()
