@@ -177,10 +177,6 @@ class DcspyGui(tk.Frame):
         bscbios_label.grid(column=0, row=4, sticky=tk.W)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
         dcsbios.grid(column=1, row=4, padx=(10, 0))
-        # todo: workaround
-        self.autostart_switch.set(config['autostart'])
-        self.showgui_switch.set(config['show_gui'])
-        self.verbose_switch.set(config['verbose'])
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure mono tab GUI."""
