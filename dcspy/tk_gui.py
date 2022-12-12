@@ -114,7 +114,8 @@ class DcspyGui(tk.Frame):
         self.status_txt.set(f'Logitech {keyboard} selected')
         save_cfg(cfg_dict={'keyboard': keyboard})
 
-    def _sidebar(self):
+    def _sidebar(self) -> None:
+        """Configure sidebar of GUI."""
         sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
         sidebar_frame.grid_rowconfigure(8, weight=1)
@@ -141,7 +142,8 @@ class DcspyGui(tk.Frame):
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
         close.grid(row=11, column=0, padx=20, pady=10)
 
-    def _keyboards(self, tabview):
+    def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
             icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
@@ -151,7 +153,8 @@ class DcspyGui(tk.Frame):
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
 
-    def _general_settings(self, tabview):
+    def _general_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure general tab GUI."""
         autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart:')
         autostart_label.grid(column=0, row=0, sticky=tk.W)
         autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False)
@@ -177,7 +180,8 @@ class DcspyGui(tk.Frame):
         self.showgui_switch.set(config['show_gui'])
         self.verbose_switch.set(config['verbose'])
 
-    def _mono_settings(self, tabview):
+    def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure mono tab GUI."""
         mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_l)
         mono_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
         mono_l = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
@@ -198,7 +202,8 @@ class DcspyGui(tk.Frame):
         fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', width=100, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W, padx=10)
 
-    def _color_settings(self, tabview):
+    def _color_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure color tab GUI."""
         color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_l)
         color_l_label.grid(column=0, row=0, sticky=tk.W, padx=10)
         color_l = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_l'),
