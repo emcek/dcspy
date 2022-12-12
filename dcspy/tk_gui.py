@@ -104,7 +104,7 @@ class DcspyGui(tk.Frame):
         """Configure sidebar of GUI."""
         sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
-        sidebar_frame.grid_rowconfigure(8, weight=1)
+        sidebar_frame.grid_rowconfigure(4, weight=1)
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         # load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
@@ -116,11 +116,11 @@ class DcspyGui(tk.Frame):
         check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Check DCS-BIOS', command=self._check_bios)
         check_bios.grid(row=3, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
-        self.btn_start.grid(row=9, column=0, padx=20, pady=10)
+        self.btn_start.grid(row=5, column=0, padx=20, pady=10)
         self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
-        self.btn_stop.grid(row=10, column=0, padx=20, pady=10)
+        self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
-        close.grid(row=11, column=0, padx=20, pady=10)
+        close.grid(row=7, column=0, padx=20, pady=10)
 
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
