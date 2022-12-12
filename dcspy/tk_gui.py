@@ -125,7 +125,7 @@ class DcspyGui(tk.Frame):
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
+            icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), LCD_TYPES[text]['icon'])), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
