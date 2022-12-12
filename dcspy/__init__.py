@@ -79,7 +79,8 @@ LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=
 LCD_TYPES = {
     'G19': {'type': 'KeyboardColor', 'icon': 'G19.png'},
     'G510': {'type': 'KeyboardMono', 'icon': 'G510.png'},
-    'G15 v1/v2': {'type': 'KeyboardMono', 'icon': 'G15v1.png'},
+    'G15 v1': {'type': 'KeyboardMono', 'icon': 'G15v1.png'},
+    'G15 v2': {'type': 'KeyboardMono', 'icon': 'G15v2.png'},
     'G13': {'type': 'KeyboardMono', 'icon': 'G13.png'},
 }
 LOG = getLogger(__name__)
