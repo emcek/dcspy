@@ -451,13 +451,14 @@ class DcspyGui(tk.Frame):
         self.event.set()
 
     @staticmethod
-    def _change_mode(mode: str) -> None:
+    def _change_mode(theme_mode: str) -> None:
         """
         Change theme mode.
 
-        :param mode: "System" (standard), "Dark", "Light"
+        :param theme_mode: "System" (standard), "Dark", "Light"
         """
-        customtkinter.set_appearance_mode(mode)
+        save_cfg(cfg_dict={'theme_mode': theme_mode.lower()})
+        customtkinter.set_appearance_mode(theme_mode)
 
     def _change_color(self, theme_color: str) -> None:
         """
