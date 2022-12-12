@@ -4,8 +4,6 @@
   * Three colort theme (`Green`, `Blue` and `Dark Blue`)
   * All settings are configured from GUI vie widgets
   * One window for all configuration and buttons
-* Internal:
-  * align compatibility with new `packaging` package
 
 ## 1.7.5
 * report DCS stable version correctly in logs during start
