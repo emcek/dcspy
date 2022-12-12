@@ -22,7 +22,7 @@ def run():
         dcs_type, dcs_ver = check_dcs_ver(config["dcs"])
         LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
         root = customtkinter.CTk()
-        width, height = 750, 600
+        width, height = 770, 500
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
         here = path.abspath(path.dirname(__file__))
