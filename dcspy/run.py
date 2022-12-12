@@ -26,7 +26,7 @@ def run():
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
         here = path.abspath(path.dirname(__file__))
-        root.iconbitmap(default=path.join(here, 'dcspy.ico'))
+        root.iconbitmap(path.join(here, 'dcspy.ico'))
         root.title('DCSpy')
         DcspyGui(master=root, config_file=path.join(here, 'config.yaml'))
         root.mainloop()
