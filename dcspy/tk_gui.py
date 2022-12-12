@@ -46,13 +46,12 @@ class DcspyGui(tk.Frame):
         self.lcd_type = tk.StringVar()
         self.status_txt = tk.StringVar()
         self.cfg_file = config_file
-        self._init_widgets()
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.bios_path = tk.StringVar()
         self.dcs_path = tk.StringVar()
         self.event = Event()
-        self.status_txt.set(f' ver. {__version__}')
+        self.status_txt.set(f'ver. {__version__}')
 
         self.autostart_switch = customtkinter.BooleanVar()
         self.showgui_switch = customtkinter.BooleanVar()
@@ -77,6 +76,7 @@ class DcspyGui(tk.Frame):
         self.theme_color = tk.StringVar()
         self.theme_mode = tk.StringVar()
 
+        self._init_widgets()
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
         self._load_cfg()
@@ -85,69 +85,13 @@ class DcspyGui(tk.Frame):
 
     def _init_widgets(self) -> None:
         """Init all GUI widgets."""
-        self.master.columnconfigure(index=0, weight=1)
-        self.master.columnconfigure(index=1, weight=1)
-        self.master.rowconfigure(index=0, weight=1)
-        self.master.rowconfigure(index=1, weight=1)
-        self.master.rowconfigure(index=2, weight=1)
-        self.master.rowconfigure(index=3, weight=1)
+        self.master.grid_columnconfigure(index=0, weight=0)
+        self.master.grid_columnconfigure(index=1, weight=1)
+        self.master.grid_rowconfigure((0, 1, 2), weight=1)
 
-        frame = customtkinter.CTkFrame(master=self.master)
-        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
-        for i, text in enumerate(LCD_TYPES):
-            try:
-                icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
-                label = customtkinter.CTkLabel(master=frame, text='', image=icon)
-            except OSError:
-                label = customtkinter.CTkLabel(master=frame, text='')
-            label.grid(row=i, column=0)
-            rb_lcd_type = customtkinter.CTkRadioButton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
-            rb_lcd_type.grid(row=i, column=1)
-            if config.get('keyboard', 'G13') == text:
-                rb_lcd_type.select()
-        self._add_buttons_mainwindow()
+        self._sidebar()
 
-    def _add_buttons_mainwindow(self):
-        """Add buttons to GUI."""
-        self.btn_start = customtkinter.CTkButton(master=self.master, text='Start', width=6, command=self.start_dcspy)
-        cfg = customtkinter.CTkButton(master=self.master, text='Config', width=6, command=self._open_settings)
-        self.btn_stop = customtkinter.CTkButton(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
-        close = customtkinter.CTkButton(master=self.master, text='Close', width=6, command=self.master.destroy)
-        status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
-        self.btn_start.grid(row=0, column=1, padx=2, pady=2)
-        cfg.grid(row=1, column=1, padx=2, pady=2)
-        self.btn_stop.grid(row=2, column=1, padx=2, pady=2)
-        close.grid(row=3, column=1, padx=2, pady=2)
-        status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
-
-    def _lcd_type_selected(self) -> None:
-        """Handling selected LCD type."""
-        keyboard = self.lcd_type.get()
-        LOG.debug(f'Logitech {keyboard} selected')
-        self.status_txt.set(f' Logitech {keyboard} selected')
-        save_cfg(cfg_dict={'keyboard': keyboard})
-
-    def _open_settings(self) -> None:
-        """Settings window."""
-        cfg_edit = customtkinter.CTkToplevel(self.master)
-        cfg_edit.title('Config Editor')
-        width, height = 750, 450
-        cfg_edit.geometry(f'{width}x{height}')
-        cfg_edit.minsize(width=750, height=450)
-        cfg_edit.grid_columnconfigure(index=0, weight=0)
-        cfg_edit.grid_columnconfigure(index=1, weight=1)
-        cfg_edit.grid_rowconfigure((0, 1, 2), weight=1)
-
-        # todo: where to put it?
-        # editor_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Configuration file: {self.cfg_file}')
-        # editor_status.grid(column=1, row=0, sticky=tk.NE, padx=7)
-
-        self.bios_status = customtkinter.CTkLabel(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
-        self.bios_status.grid(column=1, row=2, sticky=tk.SE, padx=7)
-
-        self._sidebar(cfg_edit)
-
-        tabview = customtkinter.CTkTabview(master=cfg_edit, width=250, state=tk.ACTIVE)
+        tabview = customtkinter.CTkTabview(master=self.master, width=250, state=tk.ACTIVE)
         tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('Keyboards')
         tabview.add('General')
@@ -158,10 +102,22 @@ class DcspyGui(tk.Frame):
         self._mono_settings(tabview)
         self._color_settings(tabview)
 
-    def _sidebar(self, cfg_edit):
-        sidebar_frame = customtkinter.CTkFrame(master=cfg_edit, width=70, corner_radius=0)
+        status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
+        status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
+
+    def _lcd_type_selected(self) -> None:
+        """Handling selected LCD type."""
+        keyboard = self.lcd_type.get()
+        LOG.debug(f'Logitech {keyboard} selected')
+        self.status_txt.set(f'Logitech {keyboard} selected')
+        save_cfg(cfg_dict={'keyboard': keyboard})
+
+    def _sidebar(self):
+        sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
         sidebar_frame.grid_rowconfigure(8, weight=1)
+
+
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
@@ -178,8 +134,12 @@ class DcspyGui(tk.Frame):
         color_theme_label.grid(row=6, column=0, padx=20, pady=(5, 0))
         color_theme = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color)
         color_theme.grid(row=7, column=0, padx=20, pady=(0, 20))
-        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=cfg_edit.destroy)
-        close.grid(row=9, column=0, padx=20, pady=10)
+        self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
+        self.btn_start.grid(row=9, column=0, padx=20, pady=10)
+        self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
+        self.btn_stop.grid(row=10, column=0, padx=20, pady=10)
+        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
+        close.grid(row=11, column=0, padx=20, pady=10)
 
     def _keyboards(self, tabview):
         for i, text in enumerate(LCD_TYPES):
@@ -314,12 +274,13 @@ class DcspyGui(tk.Frame):
             'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
+        self.status_txt.set(f'Saved: {self.cfg_file}')
 
     def _check_bios(self) -> None:
         """Check version and configuration of DCS-BIOS."""
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
-        self.bios_status.configure(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        self.status_txt.set(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = isinstance(self.l_bios, version.Version)
         correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
@@ -474,7 +435,7 @@ class DcspyGui(tk.Frame):
 
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
-        self.status_txt.set(' Start again or close DCSpy')
+        self.status_txt.set('Start again or close DCSpy')
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
@@ -498,7 +459,7 @@ class DcspyGui(tk.Frame):
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
-        self.status_txt.set(' You can close GUI')
+        self.status_txt.set('You can close GUI')
         self.btn_start.configure(state=tk.DISABLED)
         self.btn_stop.configure(state=tk.ACTIVE)
         app_thread.start()
