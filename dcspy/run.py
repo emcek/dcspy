@@ -11,13 +11,13 @@ from dcspy.utils import check_dcs_ver
 
 LOG = getLogger(__name__)
 __version__ = '1.7.5'
-customtkinter.set_appearance_mode(config['theme_mode'])
-customtkinter.set_default_color_theme(config['theme_color'])
 
 
 def run():
     """Function to start DCSpy GUI."""
     if config['show_gui']:
+        customtkinter.set_appearance_mode(config['theme_mode'])
+        customtkinter.set_default_color_theme(config['theme_color'])
         LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
         dcs_type, dcs_ver = check_dcs_ver(config["dcs"])
         LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
