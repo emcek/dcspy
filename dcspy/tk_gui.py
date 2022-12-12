@@ -466,6 +466,7 @@ class DcspyGui(tk.Frame):
 
     def start_dcspy(self) -> None:
         """Run real application."""
+        self.event = Event()
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
