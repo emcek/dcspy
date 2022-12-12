@@ -43,42 +43,36 @@ class DcspyGui(tk.Frame):
         """
         super().__init__(master)
         self.master = master
-        self.lcd_type = tk.StringVar()
-        self.status_txt = tk.StringVar()
         self.cfg_file = config_file
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
+        self.event = Event()
+
+        self.status_txt = tk.StringVar()
+        self.status_txt.set(f'ver. {__version__}')
+        self.lcd_type = tk.StringVar()
         self.bios_path = tk.StringVar()
         self.dcs_path = tk.StringVar()
-        self.event = Event()
-        self.status_txt.set(f'ver. {__version__}')
-
         self.autostart_switch = customtkinter.BooleanVar()
         self.showgui_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
-
         self.mono_l = tk.StringVar()
         self.mono_s = tk.StringVar()
         self.mono_xs = tk.StringVar()
         self.color_l = tk.StringVar()
         self.color_s = tk.StringVar()
         self.color_xs = tk.StringVar()
-
         self.size_mono_l = tk.IntVar()
         self.size_mono_s = tk.IntVar()
         self.size_mono_xs = tk.IntVar()
         self.size_color_l = tk.IntVar()
         self.size_color_s = tk.IntVar()
         self.size_color_xs = tk.IntVar()
-
         self.font_name = tk.StringVar()
-
         self.theme_color = tk.StringVar()
         self.theme_mode = tk.StringVar()
 
         self._init_widgets()
-        self.btn_start.configure(state=tk.ACTIVE)
-        self.btn_stop.configure(state=tk.DISABLED)
         self._load_cfg()
         if config.get('autostart', False):
             self.start_dcspy()
@@ -90,9 +84,7 @@ class DcspyGui(tk.Frame):
         self.master.grid_rowconfigure(index=0, weight=1)
         self.master.grid_rowconfigure(index=1, weight=1)
         self.master.grid_rowconfigure(index=2, weight=1)
-
         self._sidebar()
-
         tabview = customtkinter.CTkTabview(master=self.master, width=250, height=400, state=tk.ACTIVE)
         tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('Keyboards')
@@ -103,16 +95,10 @@ class DcspyGui(tk.Frame):
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
-
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
-
-    def _lcd_type_selected(self) -> None:
-        """Handling selected LCD type."""
-        keyboard = self.lcd_type.get()
-        LOG.debug(f'Logitech {keyboard} selected')
-        self.status_txt.set(f'Logitech {keyboard} selected')
-        save_cfg(cfg_dict={'keyboard': keyboard})
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
 
     def _sidebar(self) -> None:
         """Configure sidebar of GUI."""
@@ -281,6 +267,33 @@ class DcspyGui(tk.Frame):
         messagebox.showwarning('Restart', 'DCSpy needs to be close.\nPlease start again manually!')
         self.master.destroy()
 
+    def _lcd_type_selected(self) -> None:
+        """Handling selected LCD type."""
+        keyboard = self.lcd_type.get()
+        LOG.debug(f'Logitech {keyboard} selected')
+        self.status_txt.set(f'Logitech {keyboard} selected')
+        save_cfg(cfg_dict={'keyboard': keyboard})
+
+    @staticmethod
+    def _change_mode(theme_mode: str) -> None:
+        """
+        Change theme mode.
+
+        :param theme_mode: "System" (standard), "Dark", "Light"
+        """
+        save_cfg(cfg_dict={'theme_mode': theme_mode.lower()})
+        customtkinter.set_appearance_mode(theme_mode)
+
+    def _change_color(self, theme_color: str) -> None:
+        """
+        Save color theme and show message box to restart DCSpy.
+
+        :param theme_color: value of color theme
+        """
+        save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
+        if messagebox.askokcancel('Change theme color', 'DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!'):
+            self.master.destroy()
+
     def _check_bios(self) -> None:
         """Check version and configuration of DCS-BIOS."""
         self._check_local_bios()
@@ -444,26 +457,6 @@ class DcspyGui(tk.Frame):
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
-
-    @staticmethod
-    def _change_mode(theme_mode: str) -> None:
-        """
-        Change theme mode.
-
-        :param theme_mode: "System" (standard), "Dark", "Light"
-        """
-        save_cfg(cfg_dict={'theme_mode': theme_mode.lower()})
-        customtkinter.set_appearance_mode(theme_mode)
-
-    def _change_color(self, theme_color: str) -> None:
-        """
-        Save color theme and show message box to restart DCSpy.
-
-        :param theme_color: value of color theme
-        """
-        save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
-        if messagebox.askokcancel('Change theme color', 'DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!'):
-            self.master.destroy()
 
     def start_dcspy(self) -> None:
         """Run real application."""
