@@ -87,7 +87,9 @@ class DcspyGui(tk.Frame):
         """Init all GUI widgets."""
         self.master.grid_columnconfigure(index=0, weight=0)
         self.master.grid_columnconfigure(index=1, weight=1)
-        self.master.grid_rowconfigure((0, 1, 2), weight=1)
+        self.master.grid_rowconfigure(index=0, weight=1)
+        self.master.grid_rowconfigure(index=1, weight=1)
+        self.master.grid_rowconfigure(index=2, weight=1)
 
         self._sidebar()
 
