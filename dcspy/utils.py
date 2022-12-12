@@ -13,6 +13,23 @@ from yaml import load, FullLoader, parser, dump
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
 default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
+defaults_cfg: ConfigDict = {
+    'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+    'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+    'autostart': False,
+    'verbose': False,
+    'keyboard': 'G13',
+    'show_gui': True,
+    'font_name': 'consola.ttf',
+    'font_mono_s': 11,
+    'font_mono_xs': 9,
+    'font_mono_l': 16,
+    'font_color_s': 22,
+    'font_color_xs': 18,
+    'font_color_l': 32,
+    'theme_mode': 'System',
+    'theme_color': 'blue',
+}
 
 
 def load_cfg(filename=default_yaml) -> ConfigDict:
@@ -60,24 +77,9 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     :return: dict after migration
     """
     LOG.debug(f'Before migration: {cfg}')
-    defaults: ConfigDict = {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-                            'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
-                            'autostart': False,
-                            'verbose': False,
-                            'keyboard': 'G13',
-                            'show_gui': True,
-                            'font_name': 'consola.ttf',
-                            'font_mono_s': 11,
-                            'font_mono_xs': 9,
-                            'font_mono_l': 16,
-                            'font_color_s': 22,
-                            'font_color_xs': 18,
-                            'font_color_l': 32,
-                            'theme_mode': 'System',
-                            'theme_color': 'blue'}
-    migrated_cfg = {key: cfg.get(key, value) for key, value in defaults.items()}
+    migrated_cfg = {key: cfg.get(key, value) for key, value in defaults_cfg.items()}
     if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
-        migrated_cfg['dcsbios'] = defaults['dcsbios']
+        migrated_cfg['dcsbios'] = defaults_cfg['dcsbios']
     save_cfg(cfg_dict=migrated_cfg, filename=filename)
     return migrated_cfg
 
