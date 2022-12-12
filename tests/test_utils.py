@@ -61,7 +61,9 @@ def test_dummy_save_load_set_defaults():
                      'font_mono_l': 16,
                      'font_color_s': 22,
                      'font_color_xs': 18,
-                     'font_color_l': 32}
+                     'font_color_l': 32,
+                     'theme_mode': 'system',
+                     'theme_color': 'blue'}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
     d_cfg = utils.load_cfg(test_tmp_yaml)

@@ -76,7 +76,13 @@ LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=
                    font_l=ImageFont.truetype(config['font_name'], config['font_color_l']),
                    font_xs=ImageFont.truetype(config['font_name'], config['font_color_xs']))
 
-LCD_TYPES = {'G19': 'KeyboardColor', 'G510': 'KeyboardMono', 'G15 v1/v2': 'KeyboardMono', 'G13': 'KeyboardMono'}
+LCD_TYPES = {
+    'G19': {'type': 'KeyboardColor', 'icon': 'G19.png'},
+    'G510': {'type': 'KeyboardMono', 'icon': 'G510.png'},
+    'G15 v1': {'type': 'KeyboardMono', 'icon': 'G15v1.png'},
+    'G15 v2': {'type': 'KeyboardMono', 'icon': 'G15v2.png'},
+    'G13': {'type': 'KeyboardMono', 'icon': 'G13.png'},
+}
 LOG = getLogger(__name__)
 config_logger(LOG, config['verbose'])
 

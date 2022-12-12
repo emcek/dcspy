@@ -10,11 +10,13 @@ from tkinter import messagebox
 from typing import NamedTuple, Union
 from webbrowser import open_new
 
+import customtkinter
+from PIL import Image
 from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, load_cfg, check_ver_at_github, download_file, proc_is_running
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg
 
 __version__ = '1.7.5'
 LOG = getLogger(__name__)
@@ -32,7 +34,7 @@ class ReleaseInfo(NamedTuple):
 
 class DcspyGui(tk.Frame):
     """Tkinter GUI."""
-    def __init__(self, master: tk.Tk, config_file: str) -> None:
+    def __init__(self, master: customtkinter.CTk, config_file: str) -> None:
         """
         Create basic GUI for dcspy application.
 
@@ -41,52 +43,235 @@ class DcspyGui(tk.Frame):
         """
         super().__init__(master)
         self.master = master
-        self.master.title('DCSpy')
-        self.lcd_type = tk.StringVar()
-        self.status_txt = tk.StringVar()
         self.cfg_file = config_file
-        self._init_widgets()
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
-        self.bios_path = ''
         self.event = Event()
+
+        self.status_txt = tk.StringVar()
         self.status_txt.set(f'ver. {__version__}')
-        self.btn_start.config(state=tk.ACTIVE)
-        self.btn_stop.config(state=tk.DISABLED)
+        self.lcd_type = tk.StringVar()
+        self.bios_path = tk.StringVar()
+        self.dcs_path = tk.StringVar()
+        self.autostart_switch = customtkinter.BooleanVar()
+        self.showgui_switch = customtkinter.BooleanVar()
+        self.verbose_switch = customtkinter.BooleanVar()
+        self.mono_l = tk.StringVar()
+        self.mono_s = tk.StringVar()
+        self.mono_xs = tk.StringVar()
+        self.color_l = tk.StringVar()
+        self.color_s = tk.StringVar()
+        self.color_xs = tk.StringVar()
+        self.size_mono_l = tk.IntVar()
+        self.size_mono_s = tk.IntVar()
+        self.size_mono_xs = tk.IntVar()
+        self.size_color_l = tk.IntVar()
+        self.size_color_s = tk.IntVar()
+        self.size_color_xs = tk.IntVar()
+        self.font_name = tk.StringVar()
+        self.theme_color = tk.StringVar()
+        self.theme_mode = tk.StringVar()
+
+        self._init_widgets()
+        self._load_cfg()
         if config.get('autostart', False):
             self.start_dcspy()
 
     def _init_widgets(self) -> None:
-        """Init all GUI widgest."""
-        self.master.columnconfigure(index=0, weight=1)
-        self.master.columnconfigure(index=1, weight=1)
-        self.master.rowconfigure(index=0, weight=1)
-        self.master.rowconfigure(index=1, weight=1)
-        self.master.rowconfigure(index=2, weight=1)
-        self.master.rowconfigure(index=3, weight=1)
+        """Init all GUI widgets."""
+        self.master.grid_columnconfigure(index=0, weight=0)
+        self.master.grid_columnconfigure(index=1, weight=1)
+        self.master.grid_rowconfigure(index=0, weight=1)
+        self.master.grid_rowconfigure(index=1, weight=1)
+        self.master.grid_rowconfigure(index=2, weight=1)
+        self._sidebar()
+        tabview = customtkinter.CTkTabview(master=self.master, width=250, height=400, state=tk.ACTIVE)
+        tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
+        tabview.add('Keyboards')
+        tabview.add('General')
+        tabview.add('Mono')
+        tabview.add('Color')
+        self._keyboards(tabview)
+        self._general_settings(tabview)
+        self._mono_settings(tabview)
+        self._color_settings(tabview)
+        status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
+        status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
 
-        frame = tk.Frame(master=self.master, relief=tk.GROOVE, borderwidth=2)
-        frame.grid(row=0, column=0, padx=2, pady=2, rowspan=3)
+    def _sidebar(self) -> None:
+        """Configure sidebar of GUI."""
+        sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
+        sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
+        sidebar_frame.grid_rowconfigure(4, weight=1)
+        logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
+        logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        # load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
+        # load.grid(row=1, column=0, padx=20, pady=10)
+        save = customtkinter.CTkButton(master=sidebar_frame, text='Save', command=self._save_cfg)
+        save.grid(row=1, column=0, padx=20, pady=10)
+        reset = customtkinter.CTkButton(master=sidebar_frame, text='Reset defaults', command=self._set_defaults_cfg)
+        reset.grid(row=2, column=0, padx=20, pady=10)
+        check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Check DCS-BIOS', command=self._check_bios)
+        check_bios.grid(row=3, column=0, padx=20, pady=10)
+        self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
+        self.btn_start.grid(row=5, column=0, padx=20, pady=10)
+        self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
+        self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
+        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
+        close.grid(row=7, column=0, padx=20, pady=10)
+
+    def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            rb_lcd_type = tk.Radiobutton(master=frame, text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
-            rb_lcd_type.grid(row=i, column=0, pady=0, padx=2, sticky=tk.W)
+            icon = customtkinter.CTkImage(Image.open(LCD_TYPES[text]['icon']), size=(103, 70))
+            label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
+            label.grid(row=i, column=0)
+            rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
+            rb_lcd_type.grid(row=i, column=1)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
 
-        self._add_buttons_mainwindow()
+    def _general_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure general tab GUI."""
+        tabview.tab('General').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('General').grid_columnconfigure(index=1, weight=1)
+        autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart DCSpy:')
+        autostart_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False)
+        autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        showgui_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show GUI:')
+        showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
+        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False)
+        showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show more logs:')
+        verbose_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
+        verbose.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
+        dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
+        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
+        dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
+        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
+        dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
+        appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
+        appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
+        appearance_mode.grid(column=1, row=5, sticky=tk.W, padx=(10, 0), pady=5)
+        color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
+        color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
+        color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
+        color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
 
-    def _add_buttons_mainwindow(self):
-        """Add buttons to GUI."""
-        self.btn_start = tk.Button(master=self.master, text='Start', width=6, command=self.start_dcspy)
-        cfg = tk.Button(master=self.master, text='Config', width=6, command=self._config_editor)
-        self.btn_stop = tk.Button(master=self.master, text='Stop', width=6, state=tk.DISABLED, command=self._stop)
-        close = tk.Button(master=self.master, text='Close', width=6, command=self.master.destroy)
-        status = tk.Label(master=self.master, textvariable=self.status_txt)
-        self.btn_start.grid(row=0, column=1, padx=2, pady=2)
-        cfg.grid(row=1, column=1, padx=2, pady=2)
-        self.btn_stop.grid(row=2, column=1, padx=2, pady=2)
-        close.grid(row=3, column=1, padx=2, pady=2)
-        status.grid(row=4, column=0, columnspan=2, sticky=tk.W)
+    def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure mono tab GUI."""
+        tabview.tab('Mono').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('Mono').grid_columnconfigure(index=1, weight=1)
+        mono_l_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_l)
+        mono_l_label.grid(column=0, row=0, sticky=tk.W, padx=10, pady=5)
+        mono_l = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
+                                         command=partial(self._slider_event, 'mono_l'), variable=self.size_mono_l)
+        mono_l.grid(column=1, row=0, sticky=tk.W + tk.E, padx=10, pady=5)
+        mono_s_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_s)
+        mono_s_label.grid(column=0, row=1, sticky=tk.W, padx=10, pady=5)
+        mono_s = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
+                                         command=partial(self._slider_event, 'mono_s'), variable=self.size_mono_s)
+        mono_s.grid(column=1, row=1, sticky=tk.W + tk.E, padx=10, pady=5)
+        mono_xs_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), textvariable=self.mono_xs)
+        mono_xs_label.grid(column=0, row=2, sticky=tk.W, padx=10, pady=5)
+        mono_xs = customtkinter.CTkSlider(master=tabview.tab('Mono'), from_=7, to=20, number_of_steps=13,
+                                          command=partial(self._slider_event, 'mono_xs'), variable=self.size_mono_xs)
+        mono_xs.grid(column=1, row=2, sticky=tk.W + tk.E, padx=10, pady=5)
+        font_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), text='Font name:')
+        font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', textvariable=self.font_name)
+        fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
+
+    def _color_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure color tab GUI."""
+        tabview.tab('Color').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('Color').grid_columnconfigure(index=1, weight=1)
+        color_l_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_l)
+        color_l_label.grid(column=0, row=0, sticky=tk.W, padx=10, pady=5)
+        color_l = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_l'),
+                                          variable=self.size_color_l)
+        color_l.grid(column=1, row=0, sticky=tk.W + tk.E, padx=10, pady=5)
+        color_s_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_s)
+        color_s_label.grid(column=0, row=1, sticky=tk.W, padx=10, pady=5)
+        color_s = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25, command=partial(self._slider_event, 'color_s'),
+                                          variable=self.size_color_s)
+        color_s.grid(column=1, row=1, sticky=tk.W + tk.E, padx=10, pady=5)
+        color_xs_label = customtkinter.CTkLabel(master=tabview.tab('Color'), textvariable=self.color_xs)
+        color_xs_label.grid(column=0, row=2, sticky=tk.W, padx=10, pady=5)
+        color_xs = customtkinter.CTkSlider(master=tabview.tab('Color'), from_=15, to=40, number_of_steps=25,
+                                           command=partial(self._slider_event, 'color_xs'), variable=self.size_color_xs)
+        color_xs.grid(column=1, row=2, sticky=tk.W + tk.E, padx=10, pady=5)
+        font_label = customtkinter.CTkLabel(master=tabview.tab('Color'), text='Font name:')
+        font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name)
+        fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
+
+    def _slider_event(self, label: str, value: float):
+        """
+        Update correct label when slider is moved.
+
+        :param label:
+        :param value:
+        """
+        getattr(self, label).set(f'Font {" ".join([word.capitalize() for word in label.split("_")])} : {int(value)}')
+
+    def _load_cfg(self) -> None:
+        """Load configuration into GUI."""
+        self.autostart_switch.set(config['autostart'])
+        self.showgui_switch.set(config['show_gui'])
+        self.verbose_switch.set(config['verbose'])
+        self.dcs_path.set(str(config['dcs']))
+        self.bios_path.set(str(config['dcsbios']))
+        self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
+        self.mono_s.set(f'Font Mono S : {config["font_mono_s"]}')
+        self.mono_xs.set(f'Font Mono Xs : {config["font_mono_xs"]}')
+        self.color_l.set(f'Font Color L : {config["font_color_l"]}')
+        self.color_s.set(f'Font Color S : {config["font_color_s"]}')
+        self.color_xs.set(f'Font Color Xs : {config["font_color_xs"]}')
+        self.size_mono_l.set(int(config["font_mono_l"]))
+        self.size_mono_s.set(int(config["font_mono_s"]))
+        self.size_mono_xs.set(int(config["font_mono_xs"]))
+        self.size_color_l.set(int(config["font_color_l"]))
+        self.size_color_s.set(int(config["font_color_s"]))
+        self.size_color_xs.set(int(config["font_color_xs"]))
+        self.font_name.set(str(config['font_name']))
+        self.theme_mode.set(str(config['theme_mode']).capitalize())
+        self.theme_color.set(str(config['theme_color']).replace('-', ' ').title())
+
+    def _save_cfg(self) -> None:
+        """Save configuration from GUI."""
+        cfg = {
+            'autostart': self.autostart_switch.get(),
+            'show_gui': self.showgui_switch.get(),
+            'verbose': self.verbose_switch.get(),
+            'dcs': self.dcs_path.get(),
+            'dcsbios': self.bios_path.get(),
+            'font_mono_l': self.size_mono_l.get(),
+            'font_mono_s': self.size_mono_s.get(),
+            'font_mono_xs': self.size_mono_xs.get(),
+            'font_color_l': self.size_color_l.get(),
+            'font_color_s': self.size_color_s.get(),
+            'font_color_xs': self.size_color_xs.get(),
+            'font_name': self.font_name.get(),
+            'theme_mode': self.theme_mode.get().lower(),
+            'theme_color': self.theme_color.get().lower().replace(' ', '-'),
+        }
+        save_cfg(cfg_dict=cfg, filename=self.cfg_file)
+        self.status_txt.set(f'Saved: {self.cfg_file}')
+
+    def _set_defaults_cfg(self) -> None:
+        """Set defaults and stop application."""
+        save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
+        messagebox.showwarning('Restart', 'DCSpy needs to be close.\nPlease start again manually!')
+        self.master.destroy()
 
     def _lcd_type_selected(self) -> None:
         """Handling selected LCD type."""
@@ -95,73 +280,31 @@ class DcspyGui(tk.Frame):
         self.status_txt.set(f'Logitech {keyboard} selected')
         save_cfg(cfg_dict={'keyboard': keyboard})
 
-    def _config_editor(self) -> None:
-        """Config and settings editor window."""
-        cfg_edit = tk.Toplevel(self.master)
-        cfg_edit.title('Config Editor')
-        width, height = 580, 270
-        cfg_edit.geometry(f'{width}x{height}')
-        cfg_edit.minsize(width=250, height=150)
-
-        editor_status = tk.Label(master=cfg_edit, text=f'Configuration file: {self.cfg_file}', anchor=tk.W)
-        editor_status.pack(side=tk.TOP, fill=tk.X)
-        scrollbar_y = tk.Scrollbar(cfg_edit, orient='vertical')
-        scrollbar_y.pack(side=tk.RIGHT, fill=tk.Y)
-        text_editor = self._create_text_editor(cfg_edit, scrollbar_y)
-        self._load_cfg(text_editor)
-
-    def _create_text_editor(self, cfg_edit, scrollbar_y):
+    @staticmethod
+    def _change_mode(theme_mode: str) -> None:
         """
-        Create settings editor.
+        Change theme mode.
 
-        :param cfg_edit: aster widget
-        :param scrollbar_y: scrollbar
-        :return: editor widget
+        :param theme_mode: "System" (standard), "Dark", "Light"
         """
-        text_editor = tk.Text(master=cfg_edit, width=10, height=5, yscrollcommand=scrollbar_y.set, wrap=tk.CHAR, relief=tk.GROOVE,
-                              borderwidth=2, font=('Courier New', 10), selectbackground='purple', selectforeground='white', undo=True)
-        text_editor.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
-        scrollbar_y.config(command=text_editor.yview)
-        load = tk.Button(master=cfg_edit, text='Load', width=6, command=partial(self._load_cfg, text_editor))
-        save = tk.Button(master=cfg_edit, text='Save', width=6, command=partial(self._save_cfg, text_editor))
-        bios_status = tk.Label(master=cfg_edit, text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}', anchor=tk.E)
-        check_bios = tk.Button(master=cfg_edit, text='Check DCS-BIOS', width=14, command=partial(self._check_bios, bios_status))
-        close = tk.Button(master=cfg_edit, text='Close', width=6, command=cfg_edit.destroy)
-        load.pack(side=tk.LEFT)
-        save.pack(side=tk.LEFT)
-        check_bios.pack(side=tk.LEFT)
-        close.pack(side=tk.LEFT)
-        bios_status.pack(side=tk.BOTTOM, fill=tk.X)
-        return text_editor
+        save_cfg(cfg_dict={'theme_mode': theme_mode.lower()})
+        customtkinter.set_appearance_mode(theme_mode)
 
-    def _load_cfg(self, text_widget: tk.Text) -> None:
+    def _change_color(self, theme_color: str) -> None:
         """
-        Load configuration into settings editor.
+        Save color theme and show message box to restart DCSpy.
 
-        :param text_widget: text widget
+        :param theme_color: value of color theme
         """
-        text_widget.delete('1.0', tk.END)
-        with open(file=self.cfg_file, encoding='utf-8') as cfg_file:
-            text_widget.insert(tk.END, cfg_file.read().strip())
+        save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
+        if messagebox.askokcancel('Change theme color', 'DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!'):
+            self.master.destroy()
 
-    def _save_cfg(self, text_info: tk.Text) -> None:
-        """
-        Save configuration from settings editor.
-
-        :param text_info: text widget
-        """
-        with open(file=self.cfg_file, mode='w+', encoding='utf-8') as cfg_file:
-            cfg_file.write(text_info.get('1.0', tk.END).strip())
-
-    def _check_bios(self, bios_statusbar) -> None:
-        """
-        Check version and configuration of DCS-BIOS.
-
-        :param bios_statusbar: statusbar
-        """
+    def _check_bios(self) -> None:
+        """Check version and configuration of DCS-BIOS."""
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
-        bios_statusbar.config(text=f'Local BIOS: {self.l_bios}  |  Remote BIOS: {self.r_bios}')
+        self.status_txt.set(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = isinstance(self.l_bios, version.Version)
         correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
@@ -199,11 +342,10 @@ class DcspyGui(tk.Frame):
 
         :return: release description info
         """
-        self.bios_path = load_cfg()['dcsbios']  # type: ignore
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(self.bios_path, 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
+            with open(file=path.join(self.bios_path.get(), 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -256,10 +398,10 @@ class DcspyGui(tk.Frame):
         rmtree(path=path.join(tmp_dir, 'DCS-BIOS'), ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.bios_path} ')
-        rmtree(path=self.bios_path, ignore_errors=True)
-        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
-        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path)
+        LOG.debug(f'Remove: {self.bios_path.get()} ')
+        rmtree(path=self.bios_path.get(), ignore_errors=True)
+        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path.get()} ')
+        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path.get())
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
             if messagebox.askyesno('Open browser', install_result):
@@ -277,7 +419,7 @@ class DcspyGui(tk.Frame):
         :return: result of checks
         """
         result = 'Installation Success. Done.'
-        lua_dst_path = path.join(self.bios_path, '..')
+        lua_dst_path = path.join(self.bios_path.get(), '..')
         lua = 'Export.lua'
         try:
             with open(file=path.join(lua_dst_path, lua), encoding='utf-8') as lua_dst:  # type: ignore
@@ -318,21 +460,20 @@ class DcspyGui(tk.Frame):
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
         self.status_txt.set('Start again or close DCSpy')
-        self.btn_start.config(state=tk.ACTIVE)
-        self.btn_stop.config(state=tk.DISABLED)
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
 
     def start_dcspy(self) -> None:
         """Run real application."""
-        self.event = Event()
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         save_cfg(cfg_dict={'keyboard': keyboard})
-        app_params = {'lcd_type': LCD_TYPES[keyboard], 'event': self.event}
+        app_params = {'lcd_type': LCD_TYPES[keyboard]['type'], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.status_txt.set('You can close GUI')
-        self.btn_start.config(state=tk.DISABLED)
-        self.btn_stop.config(state=tk.ACTIVE)
+        self.btn_start.configure(state=tk.DISABLED)
+        self.btn_stop.configure(state=tk.ACTIVE)
         app_thread.start()

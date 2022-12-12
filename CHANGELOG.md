@@ -1,3 +1,10 @@
+## 1.8.0
+* Major GUI redesign using `customtkinter` package, which provides new, modern widgets:
+  * appearance system mode (`Light`, `Dark`)
+  * Three colort theme (`Green`, `Blue` and `Dark Blue`)
+  * All settings are configured from GUI vie widgets
+  * One window for all configuration and buttons
+
 ## 1.7.5
 * report DCS stable version correctly in logs during start
 * Internal:
