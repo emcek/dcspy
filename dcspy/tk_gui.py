@@ -131,11 +131,11 @@ class DcspyGui(tk.Frame):
         check_bios.grid(row=4, column=0, padx=20, pady=10)
         appearance_mode_label = customtkinter.CTkLabel(master=sidebar_frame, text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(row=5, column=0, padx=20, pady=(5, 0))
-        appearance_mode = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_appearance)
+        appearance_mode = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
         appearance_mode.grid(row=6, column=0, padx=20, pady=(0, 10))
         color_theme_label = customtkinter.CTkLabel(master=sidebar_frame, text='Color Theme:', anchor=tk.W)
         color_theme_label.grid(row=7, column=0, padx=20, pady=(5, 0))
-        color_theme = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color)
+        color_theme = customtkinter.CTkOptionMenu(master=sidebar_frame, values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
         color_theme.grid(row=8, column=0, padx=20, pady=(0, 20))
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
         self.btn_start.grid(row=10, column=0, padx=20, pady=10)
@@ -451,13 +451,23 @@ class DcspyGui(tk.Frame):
         self.event.set()
 
     @staticmethod
-    def _change_appearance(mode: str) -> None:
+    def _change_mode(mode: str) -> None:
         """
         Change theme mode.
 
         :param mode: "System" (standard), "Dark", "Light"
         """
         customtkinter.set_appearance_mode(mode)
+
+    def _change_color(self, theme_color: str) -> None:
+        """
+        Save color theme and show message box to restart DCSpy.
+
+        :param theme_color: value of color theme
+        """
+        save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
+        if messagebox.askokcancel('Change theme color', 'DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!'):
+            self.master.destroy()
 
     def start_dcspy(self) -> None:
         """Run real application."""
