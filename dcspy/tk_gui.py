@@ -16,7 +16,7 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string
 
 __version__ = '1.7.5'
 LOG = getLogger(__name__)
@@ -39,9 +39,7 @@ class DcspyGui(tk.Frame):
         self.event = Event()
 
         self.status_txt = tk.StringVar()
-        result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
-        current_ver = 'latest' if result.latest else 'please update!'
-        self.status_txt.set(f'ver. {__version__} ({current_ver})')
+        self.status_txt.set(get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver']))
         self.lcd_type = tk.StringVar()
         self.bios_path = tk.StringVar()
         self.dcs_path = tk.StringVar()
