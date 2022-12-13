@@ -45,6 +45,7 @@ class DcspyGui(tk.Frame):
         self.dcs_path = tk.StringVar()
         self.autostart_switch = customtkinter.BooleanVar()
         self.showgui_switch = customtkinter.BooleanVar()
+        self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
         self.mono_l = tk.StringVar()
         self.mono_s = tk.StringVar()
@@ -135,26 +136,30 @@ class DcspyGui(tk.Frame):
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False)
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check version:')
+        checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False)
+        checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show more logs:')
-        verbose_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        verbose_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
-        verbose.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        verbose.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
-        dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
+        dcs_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
-        dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcs.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
-        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        bscbios_label.grid(column=0, row=5, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
-        dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcsbios.grid(column=1, row=5, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
-        appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
+        appearance_mode_label.grid(column=0, row=6, sticky=tk.W, pady=5)
         appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
-        appearance_mode.grid(column=1, row=5, sticky=tk.W, padx=(10, 0), pady=5)
+        appearance_mode.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
         color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
-        color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
+        color_theme_label.grid(column=0, row=7, sticky=tk.W, pady=5)
         color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
-        color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
+        color_theme.grid(column=1, row=7, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure mono tab GUI."""
@@ -217,6 +222,7 @@ class DcspyGui(tk.Frame):
         """Load configuration into GUI."""
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
+        self.checkver_switch.set(config['check_ver'])
         self.verbose_switch.set(config['verbose'])
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
@@ -241,6 +247,7 @@ class DcspyGui(tk.Frame):
         cfg = {
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
+            'check_ver': self.checkver_switch.get(),
             'verbose': self.verbose_switch.get(),
             'dcs': self.dcs_path.get(),
             'dcsbios': self.bios_path.get(),
