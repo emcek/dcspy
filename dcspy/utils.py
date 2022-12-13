@@ -147,6 +147,23 @@ def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
     return latest
 
 
+def get_version_string(repo: str, current_ver: str, check=True) -> str:
+    """
+    Generate formatted string with version number.
+
+    :param repo: format '<organization or user>/<package>'
+    :param current_ver: current local version
+    :param check: version online
+    :return: formatted version as string
+    """
+    ver_string = f'v{current_ver}'
+    if check:
+        result = check_ver_at_github(repo=repo, current_ver=current_ver)
+        _str = 'latest' if result.latest else 'please update!'
+        ver_string = f'v{current_ver} ({_str})'
+    return ver_string
+
+
 def download_file(url: str, save_path: str) -> bool:
     """
     Download file from URL and save to save_path.
