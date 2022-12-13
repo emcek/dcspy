@@ -3,7 +3,7 @@ from logging import getLogger
 from os import environ, makedirs, path
 from pathlib import Path
 from re import search
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, NamedTuple
 
 from packaging import version
 from psutil import process_iter
@@ -16,6 +16,7 @@ default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+    'check_ver': True,
     'autostart': False,
     'verbose': False,
     'keyboard': 'G13',
@@ -30,6 +31,16 @@ defaults_cfg: ConfigDict = {
     'theme_mode': 'system',
     'theme_color': 'blue',
 }
+
+
+class ReleaseInfo(NamedTuple):
+    """Tuple to store release related information."""
+    latest: bool
+    ver: Union[version.Version, version.LegacyVersion]
+    dl_url: str
+    published: str
+    release_type: str
+    archive_file: str
 
 
 def load_cfg(filename=default_yaml) -> ConfigDict:
@@ -84,7 +95,7 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     return migrated_cfg
 
 
-def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[version.Version, version.LegacyVersion], str, str, str, str]:
+def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
     """
     Check version of <organization>/<package> at GitHub.
 
@@ -98,7 +109,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
 
     :param repo: format '<organization or user>/<package>'
     :param current_ver: current local version
-    :return: tuple with information
+    :return: ReleaseInfo NamedTuple with information
     """
     latest, online_version, asset_url, published, pre_release = False, 'unknown', '', '', False
     package = repo.split('/')[1]
@@ -116,7 +127,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1]
+    return ReleaseInfo(latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1])
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
@@ -135,6 +146,29 @@ def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
         LOG.info(f'{package} is up-to-date version: {current_ver}')
         latest = True
     return latest
+
+
+def get_version_string(repo: str, current_ver: str, check=True) -> str:
+    """
+    Generate formatted string with version number.
+
+    :param repo: format '<organization or user>/<package>'
+    :param current_ver: current local version
+    :param check: version online
+    :return: formatted version as string
+    """
+    ver_string = f'v{current_ver}'
+    if check:
+        result = check_ver_at_github(repo=repo, current_ver=current_ver)
+        details = ''
+        if result.latest:
+            details = ' (latest)'
+        elif not result.latest and str(result.ver) != 'unknown':
+            details = ' (please update!)'
+        elif not result.latest and str(result.ver) == 'unknown':
+            details = ' (failed)'
+        ver_string = f'v{current_ver}{details}'
+    return ver_string
 
 
 def download_file(url: str, save_path: str) -> bool:

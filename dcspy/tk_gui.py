@@ -7,7 +7,7 @@ from shutil import unpack_archive, rmtree, copy, copytree
 from tempfile import gettempdir
 from threading import Thread, Event
 from tkinter import messagebox
-from typing import NamedTuple, Union
+from typing import Union
 from webbrowser import open_new
 
 import customtkinter
@@ -16,20 +16,10 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string
 
 __version__ = '1.7.5'
 LOG = getLogger(__name__)
-
-
-class ReleaseInfo(NamedTuple):
-    """Tuple to store release related information."""
-    latest: bool
-    ver: Union[version.Version, version.LegacyVersion]
-    dl_url: str
-    published: str
-    release_type: str
-    archive_file: str
 
 
 class DcspyGui(tk.Frame):
@@ -49,12 +39,13 @@ class DcspyGui(tk.Frame):
         self.event = Event()
 
         self.status_txt = tk.StringVar()
-        self.status_txt.set(f'ver. {__version__}')
+        self.status_txt.set(get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver']))
         self.lcd_type = tk.StringVar()
         self.bios_path = tk.StringVar()
         self.dcs_path = tk.StringVar()
         self.autostart_switch = customtkinter.BooleanVar()
         self.showgui_switch = customtkinter.BooleanVar()
+        self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
         self.mono_l = tk.StringVar()
         self.mono_s = tk.StringVar()
@@ -104,7 +95,7 @@ class DcspyGui(tk.Frame):
         """Configure sidebar of GUI."""
         sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
-        sidebar_frame.grid_rowconfigure(4, weight=1)
+        sidebar_frame.grid_rowconfigure(5, weight=1)
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         # load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
@@ -115,15 +106,17 @@ class DcspyGui(tk.Frame):
         reset.grid(row=2, column=0, padx=20, pady=10)
         check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Check DCS-BIOS', command=self._check_bios)
         check_bios.grid(row=3, column=0, padx=20, pady=10)
+        check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check version', command=self._check_version)
+        check_ver.grid(row=4, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
         logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
-        logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
-        self.btn_start.grid(row=5, column=0, padx=20, pady=10)
+        logo_label.grid(row=5, column=0, sticky=tk.W + tk.E)
+        self.btn_start.grid(row=6, column=0, padx=20, pady=10)
         self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
-        self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
+        self.btn_stop.grid(row=7, column=0, padx=20, pady=10)
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
-        close.grid(row=7, column=0, padx=20, pady=10)
+        close.grid(row=8, column=0, padx=20, pady=10)
 
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
@@ -148,26 +141,30 @@ class DcspyGui(tk.Frame):
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False)
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check version:')
+        checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False)
+        checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show more logs:')
-        verbose_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        verbose_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
-        verbose.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        verbose.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
-        dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
+        dcs_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
-        dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcs.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
-        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        bscbios_label.grid(column=0, row=5, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
-        dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcsbios.grid(column=1, row=5, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
-        appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
+        appearance_mode_label.grid(column=0, row=6, sticky=tk.W, pady=5)
         appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
-        appearance_mode.grid(column=1, row=5, sticky=tk.W, padx=(10, 0), pady=5)
+        appearance_mode.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
         color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
-        color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
+        color_theme_label.grid(column=0, row=7, sticky=tk.W, pady=5)
         color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
-        color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
+        color_theme.grid(column=1, row=7, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure mono tab GUI."""
@@ -230,6 +227,7 @@ class DcspyGui(tk.Frame):
         """Load configuration into GUI."""
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
+        self.checkver_switch.set(config['check_ver'])
         self.verbose_switch.set(config['verbose'])
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
@@ -254,6 +252,7 @@ class DcspyGui(tk.Frame):
         cfg = {
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
+            'check_ver': self.checkver_switch.get(),
             'verbose': self.verbose_switch.get(),
             'dcs': self.dcs_path.get(),
             'dcsbios': self.bios_path.get(),
@@ -302,6 +301,19 @@ class DcspyGui(tk.Frame):
         save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
         if messagebox.askokcancel('Change theme color', 'DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!'):
             self.master.destroy()
+
+    def _check_version(self) -> None:
+        """Check version of DCSpy and show message box."""
+        ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
+        self.status_txt.set(ver_string)
+        if 'please update' in ver_string:
+            self.master.clipboard_clear()
+            self.master.clipboard_append('pip install --upgrade dcspy')
+            messagebox.showinfo('New version', 'Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
+        elif 'latest' in ver_string:
+            messagebox.showinfo('No updates', 'You are running latest version')
+        elif 'failed' in ver_string:
+            messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
 
     def _check_bios(self) -> None:
         """Check version and configuration of DCS-BIOS."""
@@ -366,8 +378,8 @@ class DcspyGui(tk.Frame):
         :return: release description info
         """
         release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
-        self.r_bios = release_info[1]
-        return ReleaseInfo(*release_info)
+        self.r_bios = release_info.ver
+        return release_info
 
     def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
         """
