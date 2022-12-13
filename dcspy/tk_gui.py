@@ -64,6 +64,8 @@ class DcspyGui(tk.Frame):
         self.theme_mode = tk.StringVar()
 
         self._init_widgets()
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
         self._load_cfg()
         if config.get('autostart', False):
             self.start_dcspy()
@@ -88,8 +90,6 @@ class DcspyGui(tk.Frame):
         self._color_settings(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
-        self.btn_start.configure(state=tk.ACTIVE)
-        self.btn_stop.configure(state=tk.DISABLED)
 
     def _sidebar(self) -> None:
         """Configure sidebar of GUI."""
