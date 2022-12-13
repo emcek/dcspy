@@ -39,7 +39,9 @@ class DcspyGui(tk.Frame):
         self.event = Event()
 
         self.status_txt = tk.StringVar()
-        self.status_txt.set(f'ver. {__version__}')
+        result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
+        current_ver = 'latest' if result.latest else 'please update!'
+        self.status_txt.set(f'ver. {__version__} ({current_ver})')
         self.lcd_type = tk.StringVar()
         self.bios_path = tk.StringVar()
         self.dcs_path = tk.StringVar()
