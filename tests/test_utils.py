@@ -57,6 +57,7 @@ def test_dummy_save_load_set_defaults():
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                      'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                      'verbose': False,
+                     'check_ver': True,
                      'font_name': 'consola.ttf',
                      'font_mono_s': 11,
                      'font_mono_xs': 9,
