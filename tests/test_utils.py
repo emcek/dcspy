@@ -30,6 +30,28 @@ def test_check_ver_exception():
         assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == utils.ReleaseInfo(False, version.parse('unknown'), '', '', 'Regular', '')
 
 
+@mark.parametrize('online_tag, result', [
+    ('1.1.1', 'v1.1.1 (latest)'),
+    ('3.2.1', 'v1.1.1 (please update!)')
+])
+def test_get_version_string_is_possible(online_tag, result):
+    with patch.object(utils, 'get') as response_get:
+        type(response_get.return_value).ok = PropertyMock(return_value=True)
+        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
+                                                                       'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
+                                                                       'published_at': '2021-08-09T16:41:51Z'})
+        assert utils.get_version_string(repo='fake1/package1', current_ver='1.1.1', check=True) == result
+
+
+def test_get_version_string_without_checking():
+    assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=False) == 'v4.4.4'
+
+
+def test_get_version_string_exception():
+    with patch.object(utils, 'get', side_effect=Exception('Connection error')):
+        assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=True) == 'v4.4.4 (failed)'
+
+
 @mark.parametrize('response, result', [(False, False), (True, True)])
 def test_download_file(response, result, tmp_path):
     dl_file = str(tmp_path / 'tmp.txt')

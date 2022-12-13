@@ -117,6 +117,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
         if response.ok:
             dict_json = response.json()
+            raise Exception
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
             published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
@@ -160,8 +161,14 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
     ver_string = f'v{current_ver}'
     if check:
         result = check_ver_at_github(repo=repo, current_ver=current_ver)
-        _str = 'latest' if result.latest else 'please update!'
-        ver_string = f'v{current_ver} ({_str})'
+        _str = ''
+        if result.latest:
+            _str = ' (latest)'
+        elif not result.latest and str(result.ver) != 'unknown':
+            _str = ' (please update!)'
+        elif not result.latest and str(result.ver) == 'unknown':
+            _str = ' (failed)'
+        ver_string = f'v{current_ver}{_str}'
     return ver_string
 
 
