@@ -1,0 +1,22 @@
+@startuml
+hide empty members
+
+package run {
+    class run {}
+}
+
+package starter {
+    class dcspy_run {}
+}
+
+package tk_gui {
+    class DcspyGui {}
+    class start_dcspy {}
+}
+
+run --> DcspyGui :  show_gui = True
+run -> dcspy_run : show_gui = False
+DcspyGui --> start_dcspy
+start_dcspy -> dcspy_run
+
+@enduml
