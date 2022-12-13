@@ -303,12 +303,14 @@ class DcspyGui(tk.Frame):
         """Check version of DCSpy and show message box."""
         ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
         self.status_txt.set(ver_string)
-        self.master.clipboard_clear()
-        self.master.clipboard_append('pip install --upgrade dcspy')
         if 'please update' in ver_string:
+            self.master.clipboard_clear()
+            self.master.clipboard_append('pip install --upgrade dcspy')
             messagebox.showinfo('New version', 'Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
         elif 'latest' in ver_string:
             messagebox.showinfo('No updates', 'You are running latest version')
+        elif 'failed' in ver_string:
+            messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
 
     def _check_bios(self) -> None:
         """Check version and configuration of DCS-BIOS."""
