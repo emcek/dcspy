@@ -3,7 +3,7 @@ from logging import getLogger
 from os import environ, makedirs, path
 from pathlib import Path
 from re import search
-from typing import Dict, Union, Tuple
+from typing import Dict, Union, Tuple, NamedTuple
 
 from packaging import version
 from psutil import process_iter
@@ -30,6 +30,16 @@ defaults_cfg: ConfigDict = {
     'theme_mode': 'system',
     'theme_color': 'blue',
 }
+
+
+class ReleaseInfo(NamedTuple):
+    """Tuple to store release related information."""
+    latest: bool
+    ver: Union[version.Version, version.LegacyVersion]
+    dl_url: str
+    published: str
+    release_type: str
+    archive_file: str
 
 
 def load_cfg(filename=default_yaml) -> ConfigDict:
@@ -84,7 +94,7 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     return migrated_cfg
 
 
-def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[version.Version, version.LegacyVersion], str, str, str, str]:
+def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
     """
     Check version of <organization>/<package> at GitHub.
 
@@ -98,7 +108,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
 
     :param repo: format '<organization or user>/<package>'
     :param current_ver: current local version
-    :return: tuple with information
+    :return: ReleaseInfo NamedTuple with information
     """
     latest, online_version, asset_url, published, pre_release = False, 'unknown', '', '', False
     package = repo.split('/')[1]
@@ -116,7 +126,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> Tuple[bool, Union[versio
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1]
+    return ReleaseInfo(latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1])
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:

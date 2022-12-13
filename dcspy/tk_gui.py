@@ -7,7 +7,7 @@ from shutil import unpack_archive, rmtree, copy, copytree
 from tempfile import gettempdir
 from threading import Thread, Event
 from tkinter import messagebox
-from typing import NamedTuple, Union
+from typing import Union
 from webbrowser import open_new
 
 import customtkinter
@@ -16,20 +16,10 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo
 
 __version__ = '1.7.5'
 LOG = getLogger(__name__)
-
-
-class ReleaseInfo(NamedTuple):
-    """Tuple to store release related information."""
-    latest: bool
-    ver: Union[version.Version, version.LegacyVersion]
-    dl_url: str
-    published: str
-    release_type: str
-    archive_file: str
 
 
 class DcspyGui(tk.Frame):
