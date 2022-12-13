@@ -28,7 +28,7 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
     """
     start_time = time()
     result = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__)
-    current_ver = 'latest' if result[0] else 'please update!'
+    current_ver = 'latest' if result.latest else 'please update!'
     LOG.info('Waiting for DCS connection...')
     support_banner = _supporters(text='Huge thanks to: Sireyn, Nick Thain, BrotherBloat and others! For support and help! ', width=26)
     while not event.is_set():

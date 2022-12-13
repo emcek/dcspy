@@ -353,8 +353,8 @@ class DcspyGui(tk.Frame):
         :return: release description info
         """
         release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
-        self.r_bios = release_info[1]
-        return ReleaseInfo(*release_info)
+        self.r_bios = release_info.ver
+        return release_info
 
     def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
         """
