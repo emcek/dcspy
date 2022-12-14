@@ -18,7 +18,7 @@ from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string
 
-__version__ = '1.7.5'
+__version__ = '1.8.0'
 LOG = getLogger(__name__)
 
 
