@@ -99,7 +99,7 @@ def _prepare_socket() -> socket.socket:
     sock.bind(RECV_ADDR)
     mreq = struct.pack('=4sl', socket.inet_aton(MULTICAST_IP), socket.INADDR_ANY)
     sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
-    sock.settimeout(1)
+    sock.settimeout(0.5)
     return sock
 
 
