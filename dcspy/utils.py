@@ -163,9 +163,9 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
         details = ''
         if result.latest:
             details = ' (latest)'
-        elif not result.latest and str(result.ver) != 'unknown':
+        elif str(result.ver) != 'unknown':
             details = ' (please update!)'
-        elif not result.latest and str(result.ver) == 'unknown':
+        elif str(result.ver) == 'unknown':
             details = ' (failed)'
         ver_string = f'v{current_ver}{details}'
     return ver_string

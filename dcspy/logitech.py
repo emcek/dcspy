@@ -109,8 +109,8 @@ class LogitechKeyboard:
         LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]["name"]}')
         LOG.debug(f'{repr(self)}')
         for field_name, proto_data in self.plane.bios_data.items():
-            buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
-            buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
+            dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
+            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 
     def check_buttons(self) -> LcdButton:
         """

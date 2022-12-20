@@ -98,8 +98,6 @@ class DcspyGui(tk.Frame):
         sidebar_frame.grid_rowconfigure(5, weight=1)
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        # load = customtkinter.CTkButton(master=sidebar_frame, text='Load', command=self._load_cfg)
-        # load.grid(row=1, column=0, padx=20, pady=10)
         save = customtkinter.CTkButton(master=sidebar_frame, text='Save', command=self._save_cfg)
         save.grid(row=1, column=0, padx=20, pady=10)
         reset = customtkinter.CTkButton(master=sidebar_frame, text='Reset to defaults', command=self._set_defaults_cfg)

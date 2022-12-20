@@ -1,7 +1,7 @@
 ## 1.8.0
 * Major GUI redesign using `customtkinter` package, which provides new, modern widgets:
   * Appearance system mode (`Light`, `Dark`)
-  * Three color theme (`Green`, `Blue` and `Dark Blue`)
+  * Three colort theme (`Green`, `Blue` and `Dark Blue`)
   * All settings are configured from GUI vie widgets
   * One window for all configuration and buttons
   * Check version from GUI
@@ -29,8 +29,8 @@
   * force using Pillow 9.3.0
 
 ## 1.7.3
-* Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
-* Basic support for F-14A Tomcat
+* Align **F-16C Viper** DED and **AH-64D Apache** EUFD with DCS-BIOS 0.7.46 changes
+* Basic support for **F-14A Tomcat**
 
 ## 1.7.2
 * **AH-64D Apache**

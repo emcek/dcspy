@@ -57,7 +57,7 @@ def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict
     for args_key in plane_bios[bios_key]['args']:
         aircraft_value = plane_bios[bios_key]['args'][args_key]
         dcsbios_value = bios_outputs[args_key]
-        if not aircraft_value == dcsbios_value:
+        if aircraft_value != dcsbios_value:
             bios_issue = {args_key: f"dcspy: {aircraft_value} ({hex(aircraft_value)}) "
                                     f"bios: {dcsbios_value} ({hex(dcsbios_value)})"}
             if results.get(bios_key):
