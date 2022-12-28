@@ -1,4 +1,3 @@
-from platform import uname
 from pprint import pprint
 
 from pytest import mark
@@ -7,7 +6,7 @@ from dcspy import SUPPORTED_CRAFTS
 from tests.helpers import check_dcsbios_data
 
 
-@mark.skipif(condition=uname().node != 'ARMIKROG', reason='Not run locally')
+@mark.dcsbios
 @mark.parametrize('plane', ['hornet_mono', 'viper_mono', 'shark_mono', 'warthog_mono', 'tomcatb_mono', 'harrier_mono', 'apache_mono'])
 def test_bios_values_all_planes(plane, request):
     plane = request.getfixturevalue(plane)
