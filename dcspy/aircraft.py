@@ -468,6 +468,10 @@ class Ka50(Aircraft):
         return super().button_request(button, action.get(button, '\n'))
 
 
+class Ka503(Ka50):
+    pass
+
+
 class ApacheEufdMode(Enum):
     """Apache EUFD Mode."""
     IDM = 1
