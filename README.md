@@ -31,7 +31,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 ## Aircraft and instruments
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
-* Ka-50 Black Shark 2 and 3 - PVI-800 and autopilot channels
+* Ka-50 Black Shark II and III - PVI-800 and autopilot channels
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
 * F-14A and F-14B Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
