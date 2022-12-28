@@ -81,7 +81,7 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          python -m pytest --random -q --disable-warnings
+          python -m pytest --random -q --disable-warnings -m "not dcsbios"
       - name: Upload pytest test results
         uses: actions/upload-artifact@v3
         if: failure()
@@ -119,7 +119,7 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
+          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing -m "not dcsbios"
       - name: Upload pytest results
         uses: actions/upload-artifact@v3
         if: always()
