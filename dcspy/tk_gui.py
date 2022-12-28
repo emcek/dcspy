@@ -421,6 +421,7 @@ class DcspyGui(tk.Frame):
                 open_new(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
         else:
             messagebox.showinfo('Updated', install_result)
+            self.status_txt.set(f'Local BIOS: {self._check_local_bios()} | Remote BIOS: {self.r_bios}')
 
     def _handling_export_lua(self, temp_dir: str) -> str:
         """
