@@ -82,7 +82,7 @@ def shark_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
-def shark2_mono(lcd_mono: LcdInfo):
+def shark3_mono(lcd_mono: LcdInfo):
     """
     Return instance of Ka-50 Black Shark III for Logitech mono LCD.
     :param lcd_mono:
@@ -193,7 +193,7 @@ def shark_color(lcd_color: LcdInfo):
 
 
 @fixture()
-def shark2_color(lcd_color: LcdInfo):
+def shark3_color(lcd_color: LcdInfo):
     """
     Return instance of Ka-50 Black Shark III for Logitech color LCD.
     :param lcd_color:
