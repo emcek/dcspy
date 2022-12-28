@@ -73,9 +73,9 @@ def viper_mono(lcd_mono: LcdInfo):
 @fixture()
 def shark_mono(lcd_mono: LcdInfo):
     """
-    Return instance of Ka-50 Black Shark for Logitech mono LCD.
+    Return instance of Ka-50 Black Shark II for Logitech mono LCD.
     :param lcd_mono:
-    :return: Ka-50 Black Shark instance
+    :return: Ka-50 Black Shark II instance
     """
     from dcspy.aircraft import Ka50
     return Ka50(lcd_mono)
@@ -184,9 +184,9 @@ def viper_color(lcd_color: LcdInfo):
 @fixture()
 def shark_color(lcd_color: LcdInfo):
     """
-    Return instance of Ka-50 Black Shark for Logitech color LCD.
+    Return instance of Ka-50 Black Shark II for Logitech color LCD.
     :param lcd_color:
-    :return: Ka-50 Black Shark instance
+    :return: Ka-50 Black Shark II instance
     """
     from dcspy.aircraft import Ka50
     return Ka50(lcd_color)
