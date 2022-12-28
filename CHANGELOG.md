@@ -1,3 +1,11 @@
+## 1.8.1
+* Add support for Ka-50 Black Shark III
+* Update footer when checking DCS-BIOS version
+* Align with DCS 2.8.1.34667.2 and DCS-BIOS 0.7.47
+* Internal:
+  * add more unit tests
+  * mark some test as DCS-BIOS tests
+
 ## 1.8.0
 * Major GUI redesign using `customtkinter` package, which provides new, modern widgets:
   * Appearance system mode (`Light`, `Dark`)
