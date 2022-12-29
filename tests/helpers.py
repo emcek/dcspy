@@ -16,7 +16,7 @@ try:
 except exceptions.ConnectTimeout:
     dcsbios_ver = '0.7.47'
 
-all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
+all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
 
 def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
