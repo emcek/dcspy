@@ -472,6 +472,31 @@ class Ka503(Ka50):
     pass
 
 
+class Mi8MT(Aircraft):
+    """Mi-8MTV2 Magnificent Eight."""
+
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create Mi-8MTV2 Magnificent Eight.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'LMP_AP_HDG_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
+            'LMP_AP_HEIGHT_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
+            'LMP_AP_PITCH_ROLL_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
+        }
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for Mi-8MTV2 Magnificent Eight for Mono LCD."""
+        pass
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for Mi-8MTV2 Magnificent Eight for Color LCD."""
+        pass
+
+
 class ApacheEufdMode(Enum):
     """Apache EUFD Mode."""
     IDM = 1
