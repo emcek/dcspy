@@ -46,6 +46,8 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
     ('FA-18C_hornet', 'FA18Chornet', ['Detected aircraft:', 'FA18Chornet'], True),
     ('F-16C_50', 'F16C50', ['Detected aircraft:', 'F16C50'], True),
     ('Ka-50', 'Ka50', ['Detected aircraft:', 'Ka50'], True),
+    ('Ka-503', 'Ka503', ['Detected aircraft:', 'Ka503'], True),
+    ('Mi-8MT', 'Mi8MT', ['Detected aircraft:', 'Mi8MT'], True),
     ('AH-64D_BLKII', 'AH64DBLKII', ['Detected aircraft:', 'AH64DBLKII'], True),
     ('A-10C', 'A10C', ['Detected aircraft:', 'A10C'], True),
     ('A-10C_2', 'A10C2', ['Detected aircraft:', 'A10C2'], True),
