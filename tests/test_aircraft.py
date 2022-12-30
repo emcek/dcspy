@@ -280,6 +280,11 @@ shark_bios = [
     ('AP_HDG_HOLD_LED', 0),
     ('AP_PITCH_HOLD_LED', 1)
 ]
+hip_bios = [
+    ('LMP_AP_HDG_ON', 1),
+    ('LMP_AP_PITCH_ROLL_ON', 0),
+    ('LMP_AP_HEIGHT_ON', 1),
+]
 apache_bios = [
     ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
     ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
@@ -328,6 +333,8 @@ harrier_bios = [
     ('shark_color', shark_bios),
     ('shark3_mono', shark_bios),
     ('shark3_color', shark_bios),
+    ('hip_mono', hip_bios),
+    ('hip_color', hip_bios),
     ('apache_mono', apache_bios),
     ('apache_color', apache_bios),
     ('warthog_mono', warthog_bios),
@@ -346,9 +353,12 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    if 'hip' in model:
+        img.save(path.join(resources, platform, f'{platform}_{model}_{aircraft_model.__class__.__name__}.png'))
+    else:
+        ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
+        assert img.tobytes() == ref_img.tobytes()
+        assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
