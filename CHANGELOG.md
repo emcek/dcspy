@@ -1,9 +1,9 @@
 ## 1.9.0
-* Support for Mi-8MTV2 Magnificent Eight
+* Support for **Mi-8MTV2 Magnificent Eight**
   * Show Autopilot Channels
 
 ## 1.8.1
-* Add support for Ka-50 Black Shark III
+* Add support for **Ka-50 Black Shark III**
 * Update footer when checking DCS-BIOS version
 * Align with DCS 2.8.1.34667.2 and DCS-BIOS 0.7.47
 * Internal:
