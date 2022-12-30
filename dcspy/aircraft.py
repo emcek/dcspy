@@ -484,17 +484,25 @@ class Mi8MT(Aircraft):
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'LMP_AP_HDG_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
-            'LMP_AP_HEIGHT_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
             'LMP_AP_PITCH_ROLL_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
+            'LMP_AP_HEIGHT_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Mi-8MTV2 Magnificent Eight for Mono LCD."""
-        pass
+        draw = ImageDraw.Draw(img)
+        for c_rect, c_text, ap_channel, turn_on in (((111, 1, 124, 18), (114, 3), 'H', self.get_bios('LMP_AP_HDG_ON')),
+                                                    ((128, 1, 141, 18), (130, 3), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
+                                                    ((145, 1, 158, 18), (147, 3), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for Mi-8MTV2 Magnificent Eight for Color LCD."""
-        pass
+        draw = ImageDraw.Draw(img)
+        for c_rect, c_text, ap_channel, turn_on in (((222, 2, 248, 36), (228, 6), 'H', self.get_bios('LMP_AP_HDG_ON')),
+                                                    ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
+                                                    ((290, 2, 316, 36), (294, 6), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
 
 class ApacheEufdMode(Enum):
@@ -877,3 +885,22 @@ class AV8BNA(Aircraft):
                   LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
                   LcdButton.UP: 'UFC_COM2_SEL 3200\n'}
         return super().button_request(button, action.get(button, '\n'))
+
+
+def draw_autopilot_channels(lcd: LcdInfo, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
+    """
+    Draw rectangles with background for autopilot channels.
+
+    :param lcd: instance of LCD
+    :param ap_channel: channel name
+    :param c_rect: coordinates for rectangle
+    :param c_text: coordinates for name
+    :param draw_obj: ImageDraw instance
+    :param turn_on: channel on/off, fill on/off
+    """
+    if turn_on:
+        draw_obj.rectangle(c_rect, fill=lcd.foreground, outline=lcd.foreground)
+        draw_obj.text(xy=c_text, text=ap_channel, fill=lcd.background, font=lcd.font_l)
+    else:
+        draw_obj.rectangle(xy=c_rect, fill=lcd.background, outline=lcd.foreground)
+        draw_obj.text(xy=c_text, text=ap_channel, fill=lcd.foreground, font=lcd.font_l)
