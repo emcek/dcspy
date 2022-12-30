@@ -373,7 +373,7 @@ class Ka50(Aircraft):
                                                     ((145, 1, 158, 18), (147, 3), 'F', self.get_bios('AP_FD_LED')),
                                                     ((111, 22, 124, 39), (114, 24), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                                                     ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
-            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw_obj, turn_on)
 
     def _auto_pilot_switch_color(self, draw_obj: ImageDraw) -> None:
         """
@@ -386,24 +386,7 @@ class Ka50(Aircraft):
                                                     ((290, 2, 316, 36), (294, 6), 'F', self.get_bios('AP_FD_LED')),
                                                     ((222, 44, 248, 78), (228, 48), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                                                     ((256, 44, 282, 78), (260, 48), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
-            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
-
-    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
-        """
-        Draw rectangles with autopilot channels.
-
-        :param ap_channel: channel name
-        :param c_rect: coordinates for rectangle
-        :param c_text: coordinates for name
-        :param draw_obj: ImageDraw instance
-        :param turn_on: channel on/off, fill on/off
-        """
-        if turn_on:
-            draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
-            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
-        else:
-            draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
-            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=self.lcd.font_l)
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw_obj, turn_on)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
