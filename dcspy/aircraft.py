@@ -362,68 +362,24 @@ class Ka50(Aircraft):
             'AP_HDG_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
             'AP_PITCH_HOLD_LED': {'class': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
 
-    def _auto_pilot_switch_mono(self, draw_obj: ImageDraw) -> None:
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
         """
-        Draw rectangle and add text for autopilot channels in correct coordinates.
+        Draw common part (based on scale) for Mono and Color LCD.
 
-        :param draw_obj: ImageDraw object form PIL
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
         """
-        for c_rect, c_text, ap_channel, turn_on in (((111, 1, 124, 18), (114, 3), 'B', self.get_bios('AP_BANK_HOLD_LED')),
-                                                    ((128, 1, 141, 18), (130, 3), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
-                                                    ((145, 1, 158, 18), (147, 3), 'F', self.get_bios('AP_FD_LED')),
-                                                    ((111, 22, 124, 39), (114, 24), 'H', self.get_bios('AP_HDG_HOLD_LED')),
-                                                    ((128, 22, 141, 39), (130, 24), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
-            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
-
-    def _auto_pilot_switch_color(self, draw_obj: ImageDraw) -> None:
-        """
-        Draw rectangle and add text for autopilot channels in correct coordinates.
-
-        :param draw_obj: ImageDraw object form PIL
-        """
-        for c_rect, c_text, ap_channel, turn_on in (((222, 2, 248, 36), (228, 6), 'B', self.get_bios('AP_BANK_HOLD_LED')),
-                                                    ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
-                                                    ((290, 2, 316, 36), (294, 6), 'F', self.get_bios('AP_FD_LED')),
-                                                    ((222, 44, 248, 78), (228, 48), 'H', self.get_bios('AP_HDG_HOLD_LED')),
-                                                    ((256, 44, 282, 78), (260, 48), 'A', self.get_bios('AP_ALT_HOLD_LED'))):
-            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
-
-    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
-        """
-        Draw rectangles with autopilot channels.
-
-        :param ap_channel: channel name
-        :param c_rect: coordinates for rectangle
-        :param c_text: coordinates for name
-        :param draw_obj: ImageDraw instance
-        :param turn_on: channel on/off, fill on/off
-        """
-        if turn_on:
-            draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
-            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
-        else:
-            draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
-            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=self.lcd.font_l)
-
-    def draw_for_lcd_mono(self, img: Image.Image) -> None:
-        """Prepare image for Ka-50 Black Shark for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        for rect_xy in [(0, 1, 85, 18), (0, 22, 85, 39), (88, 1, 103, 18), (88, 22, 103, 39)]:
+        for rect_xy in [
+            (0 * scale, 1 * scale, 85 * scale, 18 * scale),
+            (0 * scale, 22 * scale, 85 * scale, 39 * scale),
+            (88 * scale, 1 * scale, 103 * scale, 18 * scale),
+            (88 * scale, 22 * scale, 103 * scale, 39 * scale),
+        ]:
             draw.rectangle(xy=rect_xy, fill=self.lcd.background, outline=self.lcd.foreground)
         line1, line2 = self._generate_pvi_lines()
-        draw.text(xy=(2, 3), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
-        draw.text(xy=(2, 24), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
-        self._auto_pilot_switch_mono(draw)
-
-    def draw_for_lcd_color(self, img: Image.Image) -> None:
-        """Prepare image for Ka-50 Black Shark for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        for rect_xy in [(0, 2, 170, 36), (0, 44, 170, 78), (176, 2, 206, 36), (176, 44, 203, 78)]:
-            draw.rectangle(xy=rect_xy, fill=self.lcd.background, outline=self.lcd.foreground)
-        line1, line2 = self._generate_pvi_lines()
-        draw.text(xy=(4, 6), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
-        draw.text(xy=(4, 48), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
-        self._auto_pilot_switch_color(draw)
+        draw.text(xy=(2 * scale, 3 * scale), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2 * scale, 24 * scale), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
+        self._auto_pilot_switch(draw,  scale)
 
     def _generate_pvi_lines(self) -> Sequence[str]:
         """
@@ -445,6 +401,47 @@ class Ka50(Aircraft):
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         return line1, line2
+
+    def _auto_pilot_switch(self, draw_obj: ImageDraw, scale: int) -> None:
+        """
+        Draw rectangle and add text for autopilot channels in correct coordinates.
+
+        :param draw_obj: ImageDraw object form PIL
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
+        for c_rect, c_text, ap_channel, turn_on in (
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (114 * scale, 3 * scale), 'B', self.get_bios('AP_BANK_HOLD_LED')),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'F', self.get_bios('AP_FD_LED')),
+                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (114 * scale, 24 * scale), 'H', self.get_bios('AP_HDG_HOLD_LED')),
+                ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'A', self.get_bios('AP_ALT_HOLD_LED')),
+        ):
+            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
+
+    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
+        """
+        Draw rectangles with autopilot channels.
+
+        :param ap_channel: channel name
+        :param c_rect: coordinates for rectangle
+        :param c_text: coordinates for name
+        :param draw_obj: ImageDraw instance
+        :param turn_on: channel on/off, fill on/off
+        """
+        if turn_on:
+            draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
+            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
+        else:
+            draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
+            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=self.lcd.font_l)
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for Ka-50 Black Shark for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for Ka-50 Black Shark for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
 
     def button_request(self, button: LcdButton, request: str = '\n') -> str:
         """
