@@ -476,30 +476,31 @@ class Mi8MT(Aircraft):
             'YADRO1A_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x2692, 'max_length': 7}, 'value': ''},
         }
 
-    def draw_for_lcd_mono(self, img: Image.Image) -> None:
-        """Prepare image for Mi-8MTV2 Magnificent Eight for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        for c_rect, c_text, ap_channel, turn_on in (((111, 1, 124, 18), (114, 3), 'H', self.get_bios('LMP_AP_HDG_ON')),
-                                                    ((128, 1, 141, 18), (130, 3), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
-                                                    ((145, 1, 158, 18), (147, 3), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
+        for c_rect, c_text, ap_channel, turn_on in (
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (114 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON')),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
         r868, r828, yadro = self._generate_radio_values()
         for i, line in enumerate([f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
-            offset = i * 10
+            offset = i * 10 * scale
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for Mi-8MTV2 Magnificent Eight for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for Mi-8MTV2 Magnificent Eight for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        for c_rect, c_text, ap_channel, turn_on in (((222, 2, 248, 36), (228, 6), 'H', self.get_bios('LMP_AP_HDG_ON')),
-                                                    ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
-                                                    ((290, 2, 316, 36), (294, 6), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
-            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
-        r868, r828, yadro = self._generate_radio_values()
-        for i, line in enumerate([f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
-            offset = i * 20
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
 
     def _generate_radio_values(self) -> Sequence[str]:
         """
