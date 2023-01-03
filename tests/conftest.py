@@ -215,7 +215,7 @@ def shark3_color(lcd_color: LcdInfo):
 
 
 @fixture()
-def hind_mono(lcd_color: LcdInfo):
+def hind_color(lcd_color: LcdInfo):
     """
     Return instance of Mi-24P Hind for Logitech color LCD.
     :param lcd_color:
