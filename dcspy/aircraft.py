@@ -469,6 +469,30 @@ class Ka503(Ka50):
     pass
 
 
+class Mi24P(Aircraft):
+    """Mi-24P Hind."""
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create Mi-24P Hind.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'PLT_UKT2_ROLL': {'class': 'IntegerBuffer', 'args': {'address': 0x6880, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_UKT2_PITCH': {'class': 'IntegerBuffer', 'args': {'address': 0x687e, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_UKT2_FAIL_FLG': {'class': 'IntegerBuffer', 'args': {'address': 0x6882, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+        }
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for Mi-24P Hind for Mono LCD."""
+        pass
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for Mi-24P Hind for Mono LCD."""
+        pass
+
+
 class ApacheEufdMode(Enum):
     """Apache EUFD Mode."""
     IDM = 1
