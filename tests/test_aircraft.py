@@ -284,6 +284,11 @@ hip_bios = [
     ('LMP_AP_HDG_ON', 1),
     ('LMP_AP_PITCH_ROLL_ON', 0),
     ('LMP_AP_HEIGHT_ON', 1),
+    ('R863_CNL_SEL', 9),
+    ('R863_MOD', 1),
+    ('R863_FREQ', "123.525"),
+    ('R828_PRST_CHAN_SEL', 9),
+    ('YADRO1A_FREQ', "09091.9"),
 ]
 apache_bios = [
     ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
