@@ -469,6 +469,11 @@ class Mi8MT(Aircraft):
             'LMP_AP_HDG_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
             'LMP_AP_PITCH_ROLL_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
             'LMP_AP_HEIGHT_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
+            'R863_CNL_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x268c, 'mask': 0x1f, 'shift_by': 0x0}, 'value': int()},
+            'R863_MOD': {'class': 'IntegerBuffer', 'args': {'address': 0x263a, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
+            'R863_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x2804, 'max_length': 7}, 'value': ''},
+            'R828_PRST_CHAN_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x268e, 'mask': 0x780, 'shift_by': 0x7}, 'value': int()},
+            'YADRO1A_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x2692, 'max_length': 7}, 'value': ''},
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
@@ -479,6 +484,11 @@ class Mi8MT(Aircraft):
                                                     ((145, 1, 158, 18), (147, 3), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
+        r868, r828, yadro = self._generate_radio_values()
+        for i, line in enumerate([f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
+            offset = i * 10
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for Mi-8MTV2 Magnificent Eight for Color LCD."""
         draw = ImageDraw.Draw(img)
@@ -486,6 +496,30 @@ class Mi8MT(Aircraft):
                                                     ((256, 2, 282, 36), (260, 6), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
                                                     ((290, 2, 316, 36), (294, 6), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
+        r868, r828, yadro = self._generate_radio_values()
+        for i, line in enumerate([f'R863: {r868}', f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
+            offset = i * 20
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def _generate_radio_values(self) -> Sequence[str]:
+        """
+        Generate string data about Hip R868, R828, YADRO1A radios settings.
+
+        :return: All 3 radios settings as strings
+        """
+        r863_mod = 'FM' if int(self.get_bios("R863_MOD")) else 'AM'
+        try:
+            r863_freq = float(self.get_bios("R863_FREQ"))
+        except ValueError:
+            r863_freq = 0.0
+        try:
+            yadro_freq = float(self.get_bios("YADRO1A_FREQ"))
+        except ValueError:
+            yadro_freq = 0.0
+        r868 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f} MHz'
+        r828 = f'Ch:{int(self.get_bios("R828_PRST_CHAN_SEL")) + 1:>2}'
+        yadro = f'{yadro_freq:>7.1f} MHz'
+        return r868, r828, yadro
 
 
 class ApacheEufdMode(Enum):
