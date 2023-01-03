@@ -379,7 +379,7 @@ class Ka50(Aircraft):
         line1, line2 = self._generate_pvi_lines()
         draw.text(xy=(2 * scale, 3 * scale), text=line1, fill=self.lcd.foreground, font=self.lcd.font_l)
         draw.text(xy=(2 * scale, 24 * scale), text=line2, fill=self.lcd.foreground, font=self.lcd.font_l)
-        self._auto_pilot_switch(draw,  scale)
+        self._auto_pilot_switch(draw, scale)
 
     def _generate_pvi_lines(self) -> Sequence[str]:
         """
