@@ -497,7 +497,7 @@ class Mi8MT(Aircraft):
                                                     ((290, 2, 316, 36), (294, 6), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
         r868, r828, yadro = self._generate_radio_values()
-        for i, line in enumerate([f'R863: {r868}', f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
+        for i, line in enumerate([f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
             offset = i * 20
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
