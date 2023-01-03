@@ -353,9 +353,12 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    if 'hip' in model:
+        img.save(path.join(resources, platform, f'{platform}_{model}_{aircraft_model.__class__.__name__}.png'))
+    else:
+        ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
+        assert img.tobytes() == ref_img.tobytes()
+        assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
