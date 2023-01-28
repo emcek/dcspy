@@ -21,7 +21,9 @@ SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_ho
                     'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
                     'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
                     'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14'},
-                    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'}}
+                    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
+                    'Mi8MT': {'name': 'Mi-8MTV2 Magnificent Eight', 'bios': 'Mi-8MT'},
+                    }
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'

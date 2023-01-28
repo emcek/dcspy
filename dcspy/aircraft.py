@@ -416,24 +416,7 @@ class Ka50(Aircraft):
                 ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (114 * scale, 24 * scale), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                 ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'A', self.get_bios('AP_ALT_HOLD_LED')),
         ):
-            self._draw_autopilot_channels(ap_channel, c_rect, c_text, draw_obj, turn_on)
-
-    def _draw_autopilot_channels(self, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
-        """
-        Draw rectangles with autopilot channels.
-
-        :param ap_channel: channel name
-        :param c_rect: coordinates for rectangle
-        :param c_text: coordinates for name
-        :param draw_obj: ImageDraw instance
-        :param turn_on: channel on/off, fill on/off
-        """
-        if turn_on:
-            draw_obj.rectangle(c_rect, fill=self.lcd.foreground, outline=self.lcd.foreground)
-            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.background, font=self.lcd.font_l)
-        else:
-            draw_obj.rectangle(xy=c_rect, fill=self.lcd.background, outline=self.lcd.foreground)
-            draw_obj.text(xy=c_text, text=ap_channel, fill=self.lcd.foreground, font=self.lcd.font_l)
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw_obj, turn_on)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Ka-50 Black Shark for Mono LCD."""
@@ -467,6 +450,74 @@ class Ka50(Aircraft):
 
 class Ka503(Ka50):
     pass
+
+
+class Mi8MT(Aircraft):
+    """Mi-8MTV2 Magnificent Eight."""
+
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create Mi-8MTV2 Magnificent Eight.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'LMP_AP_HDG_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
+            'LMP_AP_PITCH_ROLL_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
+            'LMP_AP_HEIGHT_ON': {'class': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
+            'R863_CNL_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x268c, 'mask': 0x1f, 'shift_by': 0x0}, 'value': int()},
+            'R863_MOD': {'class': 'IntegerBuffer', 'args': {'address': 0x263a, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
+            'R863_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x2804, 'max_length': 7}, 'value': ''},
+            'R828_PRST_CHAN_SEL': {'class': 'IntegerBuffer', 'args': {'address': 0x268e, 'mask': 0x780, 'shift_by': 0x7}, 'value': int()},
+            'YADRO1A_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x2692, 'max_length': 7}, 'value': ''},
+        }
+
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
+        for c_rect, c_text, ap_channel, turn_on in (
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (114 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON')),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
+
+        r868, r828, yadro = self._generate_radio_values()
+        for i, line in enumerate([f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
+            offset = i * 10 * scale
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for Mi-8MTV2 Magnificent Eight for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for Mi-8MTV2 Magnificent Eight for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+
+    def _generate_radio_values(self) -> Sequence[str]:
+        """
+        Generate string data about Hip R868, R828, YADRO1A radios settings.
+
+        :return: All 3 radios settings as strings
+        """
+        r863_mod = 'FM' if int(self.get_bios("R863_MOD")) else 'AM'
+        try:
+            r863_freq = float(self.get_bios("R863_FREQ"))
+        except ValueError:
+            r863_freq = 0.0
+        try:
+            yadro_freq = float(self.get_bios("YADRO1A_FREQ"))
+        except ValueError:
+            yadro_freq = 0.0
+        r868 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f} MHz'
+        r828 = f'Ch:{int(self.get_bios("R828_PRST_CHAN_SEL")) + 1:>2}'
+        yadro = f'{yadro_freq:>7.1f} MHz'
+        return r868, r828, yadro
 
 
 class ApacheEufdMode(Enum):
@@ -849,3 +900,22 @@ class AV8BNA(Aircraft):
                   LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
                   LcdButton.UP: 'UFC_COM2_SEL 3200\n'}
         return super().button_request(button, action.get(button, '\n'))
+
+
+def draw_autopilot_channels(lcd: LcdInfo, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
+    """
+    Draw rectangles with background for autopilot channels.
+
+    :param lcd: instance of LCD
+    :param ap_channel: channel name
+    :param c_rect: coordinates for rectangle
+    :param c_text: coordinates for name
+    :param draw_obj: ImageDraw instance
+    :param turn_on: channel on/off, fill on/off
+    """
+    if turn_on:
+        draw_obj.rectangle(c_rect, fill=lcd.foreground, outline=lcd.foreground)
+        draw_obj.text(xy=c_text, text=ap_channel, fill=lcd.background, font=lcd.font_l)
+    else:
+        draw_obj.rectangle(xy=c_rect, fill=lcd.background, outline=lcd.foreground)
+        draw_obj.text(xy=c_text, text=ap_channel, fill=lcd.foreground, font=lcd.font_l)

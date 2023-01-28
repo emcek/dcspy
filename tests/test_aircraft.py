@@ -280,6 +280,16 @@ shark_bios = [
     ('AP_HDG_HOLD_LED', 0),
     ('AP_PITCH_HOLD_LED', 1)
 ]
+hip_bios = [
+    ('LMP_AP_HDG_ON', 1),
+    ('LMP_AP_PITCH_ROLL_ON', 0),
+    ('LMP_AP_HEIGHT_ON', 1),
+    ('R863_CNL_SEL', 9),
+    ('R863_MOD', 1),
+    ('R863_FREQ', "123.525"),
+    ('R828_PRST_CHAN_SEL', 9),
+    ('YADRO1A_FREQ', "09091.9"),
+]
 apache_bios = [
     ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
     ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
@@ -328,6 +338,8 @@ harrier_bios = [
     ('shark_color', shark_bios),
     ('shark3_mono', shark_bios),
     ('shark3_color', shark_bios),
+    ('hip_mono', hip_bios),
+    ('hip_color', hip_bios),
     ('apache_mono', apache_bios),
     ('apache_color', apache_bios),
     ('warthog_mono', warthog_bios),
