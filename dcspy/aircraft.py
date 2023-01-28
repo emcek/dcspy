@@ -530,18 +530,47 @@ class Mi24P(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BIOS_VALUE] = {
-            'PLT_UKT2_ROLL': {'class': 'IntegerBuffer', 'args': {'address': 0x6880, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
-            'PLT_UKT2_PITCH': {'class': 'IntegerBuffer', 'args': {'address': 0x687e, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
-            'PLT_UKT2_FAIL_FLG': {'class': 'IntegerBuffer', 'args': {'address': 0x6882, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_R863_CHAN': {'class': 'IntegerBuffer', 'args': {'address': 0x69ec, 'mask': 0x3e0, 'shift_by': 0x5}, 'value': int()},
+            'PLT_R863_MODUL': {'class': 'IntegerBuffer', 'args': {'address': 0x69ec, 'mask': 0x2, 'shift_by': 0x1}, 'value': int()},
+            'PLT_R828_CHAN': {'class': 'IntegerBuffer', 'args': {'address': 0x69fe, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
+            'JADRO_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x6a04, 'max_length': 7}, 'value': ''},
         }
+
+    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param scale: scaling factor (Mono 1, Color 2)
+        """
+        r863, r828, yadro = self._generate_radio_values()
+        for i, line in enumerate([f'R828: {r828}', f'YADRO1I: {yadro}', f'R863: {r863}'], 1):
+            offset = i * 10 * scale
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Mi-24P Hind for Mono LCD."""
-        pass
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
-        """Prepare image for Mi-24P Hind for Mono LCD."""
-        pass
+        """Prepare image for Mi-24P Hind for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+
+    def _generate_radio_values(self) -> Sequence[str]:
+        """
+        Generate string data about Hind R863, R828, YADRO1I radios settings.
+
+        :return: All 3 radios settings as strings
+        """
+        r863_mod = 'FM' if int(self.get_bios("PLT_R863_MODUL")) else 'AM'
+        try:
+            yadro_freq = float(self.get_bios("JADRO_FREQ"))
+        except ValueError:
+            yadro_freq = 0.0
+        r863 = f'Ch:{int(self.get_bios("PLT_R863_CHAN")) + 1:>2} {r863_mod}'
+        r828 = f'Ch:{int(self.get_bios("PLT_R828_CHAN")) + 1:>2}'
+        yadro = f'{yadro_freq:>7.1f} MHz'
+        return r863, r828, yadro
 
 
 class ApacheEufdMode(Enum):
