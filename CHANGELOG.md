@@ -2,6 +2,8 @@
 * Support for **Mi-8MTV2 Magnificent Eight**
   * Autopilot Channels (Heading, Pitch/Bank and Altitude)
   * Radios: R868, R828, YADRO1A information
+* Support for **Mi-24P Hind**
+  * Radios: R868, R828, YADRO1I information
 
 ## 1.8.1
 * Add support for **Ka-50 Black Shark III**
