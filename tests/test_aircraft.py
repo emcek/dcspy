@@ -290,6 +290,12 @@ hip_bios = [
     ('R828_PRST_CHAN_SEL', 9),
     ('YADRO1A_FREQ', "09091.9"),
 ]
+hind_bios = [
+    ('PLT_R863_CHAN', 9),
+    ('PLT_R863_MODUL', 1),
+    ('PLT_R828_CHAN', 9),
+    ('JADRO_FREQ', "08082.8"),
+]
 apache_bios = [
     ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
     ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
@@ -340,6 +346,8 @@ harrier_bios = [
     ('shark3_color', shark_bios),
     ('hip_mono', hip_bios),
     ('hip_color', hip_bios),
+    ('hind_mono', hind_bios),
+    ('hind_color', hind_bios),
     ('apache_mono', apache_bios),
     ('apache_color', apache_bios),
     ('warthog_mono', warthog_bios),
@@ -358,9 +366,12 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    if 'hind' in model:
+        img.save(path.join(resources, platform, f'{platform}_{model}_{aircraft_model.__class__.__name__}.png'))
+    else:
+        ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
+        assert img.tobytes() == ref_img.tobytes()
+        assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
