@@ -361,7 +361,7 @@ class DcspyGui(tk.Frame):
             with open(file=path.join(self.bios_path.get(), 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
-            LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+            LOG.debug(f'While checking DCS-BIOS version {err.__class__.__name__}: {err.filename}')
         else:
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
