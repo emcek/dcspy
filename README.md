@@ -33,6 +33,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark II and III - PVI-800 and autopilot channels
 * Mi-8MTV2 Hip - autopilot channels and Radios information
+* Mi-24P Hind - Autopilot channels and modes and Radios information
 * A-10C Warthog and A-10C II Tank Killer - Radio frequency information
 * F-14A and F-14B Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
