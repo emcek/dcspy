@@ -104,6 +104,17 @@ def hip_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
+def hind_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of Mi-24P Hind for Logitech mono LCD.
+    :param lcd_mono:
+    :return: Mi-24P Hind instance
+    """
+    from dcspy.aircraft import Mi24P
+    return Mi24P(lcd_mono)
+
+
+@fixture()
 def warthog_mono(lcd_mono: LcdInfo):
     """
     Return instance of A-10C Warthog for Logitech mono LCD.
@@ -223,6 +234,17 @@ def hip_color(lcd_color: LcdInfo):
     """
     from dcspy.aircraft import Mi8MT
     return Mi8MT(lcd_color)
+
+
+@fixture()
+def hind_color(lcd_color: LcdInfo):
+    """
+    Return instance of Mi-24P Hind for Logitech color LCD.
+    :param lcd_color:
+    :return: Mi-24P Hind instance
+    """
+    from dcspy.aircraft import Mi24P
+    return Mi24P(lcd_color)
 
 
 @fixture()

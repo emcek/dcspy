@@ -2,6 +2,10 @@
 * Support for **Mi-8MTV2 Magnificent Eight**
   * Autopilot Channels (Heading, Pitch/Bank and Altitude)
   * Radios: R868, R828, YADRO1A information
+* Support for **Mi-24P Hind**
+  * Autopilot Channels (Yaw, Roll, Pitch and Altitude)
+  * Autopilot Modes (Hover, Route and Altitude)
+  * Radios: R868, R828, YADRO1I information
 * Add About tab with basic information
 
 ## 1.8.1

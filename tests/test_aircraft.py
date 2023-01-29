@@ -290,6 +290,19 @@ hip_bios = [
     ('R828_PRST_CHAN_SEL', 9),
     ('YADRO1A_FREQ', "09091.9"),
 ]
+hind_bios = [
+    ('PLT_R863_CHAN', 9),
+    ('PLT_R863_MODUL', 1),
+    ('PLT_R828_CHAN', 9),
+    ('JADRO_FREQ', "08082.8"),
+    ('PLT_SAU_HOVER_MODE_ON_L', 1),
+    ('PLT_SAU_ROUTE_MODE_ON_L', 0),
+    ('PLT_SAU_ALT_MODE_ON_L', 1),
+    ('PLT_SAU_H_ON_L', 0),
+    ('PLT_SAU_K_ON_L', 0),
+    ('PLT_SAU_T_ON_L', 0),
+    ('PLT_SAU_B_ON_L', 1),
+]
 apache_bios = [
     ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
     ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
@@ -340,6 +353,8 @@ harrier_bios = [
     ('shark3_color', shark_bios),
     ('hip_mono', hip_bios),
     ('hip_color', hip_bios),
+    ('hind_mono', hind_bios),
+    ('hind_color', hind_bios),
     ('apache_mono', apache_bios),
     ('apache_color', apache_bios),
     ('warthog_mono', warthog_bios),
