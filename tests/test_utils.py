@@ -116,7 +116,8 @@ def test_check_dcs_ver_file_exists_without_branch(autoupdate3_cfg):
         assert dcs_ver == ('stable', '2.7.18.28157')
 
 
-def test_check_dcs_ver_file_not_exists():
-    with patch('dcspy.utils.open', side_effect=FileNotFoundError):
+@mark.parametrize('side_effect', [FileNotFoundError, PermissionError])
+def test_check_dcs_ver_file_not_exists(side_effect):
+    with patch('dcspy.utils.open', side_effect=side_effect):
         dcs_ver = utils.check_dcs_ver('')
         assert dcs_ver == ('Unknown', 'Unknown')
