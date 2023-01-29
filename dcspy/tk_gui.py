@@ -2,6 +2,7 @@ import tkinter as tk
 from functools import partial
 from logging import getLogger
 from os import path
+from platform import architecture, uname, python_implementation, python_version
 from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
 from tempfile import gettempdir
@@ -16,7 +17,7 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver
 
 __version__ = '1.8.1'
 LOG = getLogger(__name__)
@@ -63,10 +64,10 @@ class DcspyGui(tk.Frame):
         self.theme_color = tk.StringVar()
         self.theme_mode = tk.StringVar()
 
+        self._load_cfg()
         self._init_widgets()
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
-        self._load_cfg()
         if config.get('autostart', False):
             self.start_dcspy()
 
@@ -84,10 +85,12 @@ class DcspyGui(tk.Frame):
         tabview.add('General')
         tabview.add('Mono')
         tabview.add('Color')
+        tabview.add('About')
         self._keyboards(tabview)
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
+        self._about(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
 
@@ -211,6 +214,62 @@ class DcspyGui(tk.Frame):
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
         fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
+
+    def _about(self, tabview: customtkinter.CTkTabview) -> None:
+        """About information."""
+        system, _, release, ver, _, proc = uname()
+        dcs_type, dcs_ver = check_dcs_ver(config["dcs"])
+
+        tabview.tab('About').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('About').grid_columnconfigure(index=1, weight=1)
+        python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
+        python1_label.grid(column=0, row=0, sticky=tk.W, padx=10, pady=5)
+        python2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{python_implementation()}-{python_version()}')
+        python2_label.grid(column=1, row=0, sticky=tk.W, padx=10, pady=5)
+        system1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='System:')
+        system1_label.grid(column=0, row=1, sticky=tk.W, padx=10, pady=5)
+        system2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{system}{release} ver. {ver} ({architecture()[0]})')
+        system2_label.grid(column=1, row=1, sticky=tk.W, padx=10, pady=5)
+        processor1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Processor:')
+        processor1_label.grid(column=0, row=2, sticky=tk.W, padx=10, pady=5)
+        processor2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{proc}')
+        processor2_label.grid(column=1, row=2, sticky=tk.W, padx=10, pady=5)
+        config1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Config:')
+        config1_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
+        config2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self.cfg_file}')
+        config2_label.grid(column=1, row=3, sticky=tk.W, padx=10, pady=5)
+        config2_label.bind('<Button-1>', lambda e: self._open_webpage(rf'file://{self.cfg_file}'))
+        dcsp1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCSpy:')
+        dcsp1_label.grid(column=0, row=4, sticky=tk.W, padx=10, pady=5)
+        dcsp2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{__version__}')
+        dcsp2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
+        dcsbios1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS-BIOS:')
+        dcsbios1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
+        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self._check_local_bios().ver}')
+        dcsbios2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
+        dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
+        dcsworld1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
+        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} ({dcs_type})')
+        dcsworld2_label.grid(column=1, row=6, sticky=tk.W, padx=10, pady=5)
+        homepage1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Home page:')
+        homepage1_label.grid(column=0, row=7, sticky=tk.W, padx=10, pady=5)
+        homepage2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://github.com/emcek/dcspy')
+        homepage2_label.grid(column=1, row=7, sticky=tk.W, padx=10, pady=5)
+        homepage2_label.bind('<Button-1>', lambda e: self._open_webpage('https://github.com/emcek/dcspy'))
+        discord1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Discord:')
+        discord1_label.grid(column=0, row=8, sticky=tk.W, padx=10, pady=5)
+        discord2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://discord.gg/SP5Yjx3')
+        discord2_label.grid(column=1, row=8, sticky=tk.W, padx=10, pady=5)
+        discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
+
+    @staticmethod
+    def _open_webpage(url: str) -> None:
+        """
+        Open default web browser URL page.
+
+        :param url: URL address of web page
+        """
+        open_new(url)
 
     def _slider_event(self, label: str, value: float):
         """
@@ -418,7 +477,7 @@ class DcspyGui(tk.Frame):
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
             if messagebox.askyesno('Open browser', install_result):
-                open_new(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+                self._open_webpage(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
         else:
             messagebox.showinfo('Updated', install_result)
             self.status_txt.set(f'Local BIOS: {self._check_local_bios().ver} | Remote BIOS: {self.r_bios}')
