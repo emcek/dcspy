@@ -410,10 +410,10 @@ class Ka50(Aircraft):
         :param scale: scaling factor (Mono 1, Color 2)
         """
         for c_rect, c_text, ap_channel, turn_on in (
-                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (114 * scale, 3 * scale), 'B', self.get_bios('AP_BANK_HOLD_LED')),
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'B', self.get_bios('AP_BANK_HOLD_LED')),
                 ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
                 ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'F', self.get_bios('AP_FD_LED')),
-                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (114 * scale, 24 * scale), 'H', self.get_bios('AP_HDG_HOLD_LED')),
+                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (113 * scale, 24 * scale), 'H', self.get_bios('AP_HDG_HOLD_LED')),
                 ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'A', self.get_bios('AP_ALT_HOLD_LED')),
         ):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw_obj, turn_on)
