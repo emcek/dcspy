@@ -62,12 +62,10 @@ class LogitechKeyboard {
 
 class KeyboardMono {
     + vert_space = 10 : int
-    # _prepare_image() -> Image
 }
 
 class KeyboardColor {
     + vert_space = 40 : int
-    # _prepare_image() -> Image
 }
 
 package aircraft {
@@ -93,7 +91,6 @@ class Aircraft {
     # _debug_img : Iterator[int]
     + __init__(lcd_type: LcdInfo)
     + button_request(button: int, request: str) -> str
-    + update_display(image : Image)
     + prepare_image() -> Image
     + set_bios(selector: str, value: str)
     + get_bios(selector: str) -> Union[str, int]
