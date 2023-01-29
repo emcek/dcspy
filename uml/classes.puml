@@ -76,6 +76,7 @@ package aircraft {
   Aircraft <|-- Ka50
   Ka50 <|-- Ka503
   Aircraft <|-- Mi8MT
+  Aircraft <|-- Mi24P
   Aircraft <|-- AH64D
   Aircraft <|-- A10C
   A10C <|-- A10C2
