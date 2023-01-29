@@ -111,6 +111,14 @@ class Aircraft:
             self.cycle_buttons[btn_name] = cycle(chain(seed))
         return next(self.cycle_buttons[btn_name])
 
+    def __repr__(self) -> str:
+        """
+        Show all details of Aircraft.
+
+        :return: string
+        """
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
+
 
 class FA18Chornet(Aircraft):
     """F/A-18C Hornet."""
