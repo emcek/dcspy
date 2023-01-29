@@ -218,7 +218,7 @@ class DcspyGui(tk.Frame):
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(config["dcs"])
+        dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
 
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
@@ -236,7 +236,7 @@ class DcspyGui(tk.Frame):
         processor2_label.grid(column=1, row=2, sticky=tk.W, padx=10, pady=5)
         config1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Config:')
         config1_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
-        config2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self.cfg_file}')
+        config2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self.cfg_file} (click to open)')
         config2_label.grid(column=1, row=3, sticky=tk.W, padx=10, pady=5)
         config2_label.bind('<Button-1>', lambda e: self._open_webpage(rf'file://{self.cfg_file}'))
         dcsp1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCSpy:')
@@ -249,16 +249,17 @@ class DcspyGui(tk.Frame):
         dcsbios2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
         dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
         dcsworld1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
-        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} ({dcs_type})')
+        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} ({dcs_type}) (click to open changelog)')
         dcsworld2_label.grid(column=1, row=6, sticky=tk.W, padx=10, pady=5)
+        dcsworld2_label.bind('<Button-1>', lambda e: self._open_webpage('https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.2.35759/'))
         homepage1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Home page:')
         homepage1_label.grid(column=0, row=7, sticky=tk.W, padx=10, pady=5)
-        homepage2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://github.com/emcek/dcspy')
+        homepage2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://github.com/emcek/dcspy (click to open)')
         homepage2_label.grid(column=1, row=7, sticky=tk.W, padx=10, pady=5)
         homepage2_label.bind('<Button-1>', lambda e: self._open_webpage('https://github.com/emcek/dcspy'))
         discord1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Discord:')
         discord1_label.grid(column=0, row=8, sticky=tk.W, padx=10, pady=5)
-        discord2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://discord.gg/SP5Yjx3')
+        discord2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://discord.gg/SP5Yjx3 (click to open)')
         discord2_label.grid(column=1, row=8, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
 
