@@ -51,11 +51,6 @@ class Aircraft:
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
-    @staticmethod
-    def update_display(image: Image.Image) -> None:
-        """Update display."""
-        lcd_sdk.update_display(image)
-
     def prepare_image(self) -> Image.Image:
         """
         Prepare image to be sent to correct type of LCD.
@@ -80,8 +75,7 @@ class Aircraft:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
-        lcd_image = self.prepare_image()
-        self.update_display(lcd_image)
+        lcd_sdk.update_display(self.prepare_image())
 
     def get_bios(self, selector: str) -> Union[str, int]:
         """
