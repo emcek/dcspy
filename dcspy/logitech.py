@@ -85,13 +85,12 @@ class LogitechKeyboard:
 
         :param value: data from DCS-BIOS
         """
-        value = value.replace('-', '').replace('_', '')
-        if self.plane_name != value:
-            self.plane_name = value
+        short_name = value.replace('-', '').replace('_', '')
+        if self.plane_name != short_name:
+            self.plane_name = short_name
             if self.plane_name in SUPPORTED_CRAFTS:
-                self.plane_name = value
                 LOG.info(f'Detected Aircraft: {value}')
-                self.display = ['Detected aircraft:', self.plane_name]
+                self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and self.plane_name:
                 LOG.warning(f'Not supported aircraft: {value}')
