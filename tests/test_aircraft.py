@@ -295,6 +295,13 @@ hind_bios = [
     ('PLT_R863_MODUL', 1),
     ('PLT_R828_CHAN', 9),
     ('JADRO_FREQ', "08082.8"),
+    ('PLT_SAU_HOVER_MODE_ON_L', 1),
+    ('PLT_SAU_ROUTE_MODE_ON_L', 0),
+    ('PLT_SAU_ALT_MODE_ON_L', 1),
+    ('PLT_SAU_H_ON_L', 0),
+    ('PLT_SAU_K_ON_L', 0),
+    ('PLT_SAU_T_ON_L', 0),
+    ('PLT_SAU_B_ON_L', 1),
 ]
 apache_bios = [
     ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
