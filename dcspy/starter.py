@@ -17,11 +17,11 @@ LOOP_FLAG = True
 __version__ = '1.8.1'
 
 
-def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
+def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
     """
     Main loop where all the magic is happened.
 
-    :param lcd: type of Logitech keyboard with LCD
+    :param logi_keyboard: type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
     :param sock: multi-cast UDP socket
     :param event: stop event for main loop
@@ -36,21 +36,21 @@ def _handle_connection(lcd: LogitechKeyboard, parser: ProtocolParser, sock: sock
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
             start_time = time()
-            _load_new_plane_if_detected(lcd)
-            lcd.button_handle(sock)
+            _load_new_plane_if_detected(logi_keyboard)
+            logi_keyboard.button_handle(sock)
         except OSError as exp:
-            _sock_err_handler(lcd, start_time, ver_string, support_banner, exp)
+            _sock_err_handler(logi_keyboard, start_time, ver_string, support_banner, exp)
 
 
-def _load_new_plane_if_detected(lcd: LogitechKeyboard) -> None:
+def _load_new_plane_if_detected(logi_keyboard: LogitechKeyboard) -> None:
     """
     Load instance when new plane detected.
 
-    :param lcd: type of Logitech keyboard with LCD
+    :param logi_keyboard: type of Logitech keyboard with LCD
     """
     global LOOP_FLAG
-    if lcd.plane_detected:
-        lcd.load_new_plane()
+    if logi_keyboard.plane_detected:
+        logi_keyboard.load_new_plane()
         LOOP_FLAG = True
 
 
@@ -67,11 +67,11 @@ def _supporters(text: str, width: int) -> Iterator[str]:
         queue.rotate(-1)
 
 
-def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, ver_string: str, support_iter: Iterator[str], exp: Exception) -> None:
+def _sock_err_handler(logi_keyboard: LogitechKeyboard, start_time: float, ver_string: str, support_iter: Iterator[str], exp: Exception) -> None:
     """
     Show basic data when DCS is disconnected.
 
-    :param lcd: type of Logitech keyboard with LCD
+    :param logi_keyboard: type of Logitech keyboard with LCD
     :param start_time: time when connection to DCS was lost
     :param ver_string: current version to show
     :param support_iter: iterator for banner supporters
@@ -82,10 +82,10 @@ def _sock_err_handler(lcd: LogitechKeyboard, start_time: float, ver_string: str,
         LOG.debug(f'Main loop socket error: {exp}')
         LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
-    lcd.display = ['Logitech LCD OK',
-                   f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
-                   f'{next(support_iter)}',
-                   ver_string]
+    logi_keyboard.display = ['Logitech LCD OK',
+                             f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                             f'{next(support_iter)}',
+                             ver_string]
 
 
 def _prepare_socket() -> socket.socket:
@@ -111,11 +111,11 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     :param event: stop event for main loop
     """
     parser = ProtocolParser()
-    lcd = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
-    LOG.info(f'Loading: {str(lcd)}')
-    LOG.debug(f'Loading: {repr(lcd)}')
+    logi_keyboard = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
+    LOG.info(f'Loading: {str(logi_keyboard)}')
+    LOG.debug(f'Loading: {repr(logi_keyboard)}')
     dcs_sock = _prepare_socket()
-    _handle_connection(lcd, parser, dcs_sock, event)
+    _handle_connection(logi_keyboard, parser, dcs_sock, event)
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
-    lcd.display = ['Logitech LCD OK', 'DCSpy stopped', '', f'v{__version__}']
+    logi_keyboard.display = ['Logitech LCD OK', 'DCSpy stopped', '', f'v{__version__}']

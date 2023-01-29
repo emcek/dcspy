@@ -51,11 +51,6 @@ class Aircraft:
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
-    @staticmethod
-    def update_display(image: Image.Image) -> None:
-        """Update display."""
-        lcd_sdk.update_display(image)
-
     def prepare_image(self) -> Image.Image:
         """
         Prepare image to be sent to correct type of LCD.
@@ -80,8 +75,7 @@ class Aircraft:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
-        lcd_image = self.prepare_image()
-        self.update_display(lcd_image)
+        lcd_sdk.update_display(self.prepare_image())
 
     def get_bios(self, selector: str) -> Union[str, int]:
         """
@@ -486,8 +480,8 @@ class Mi8MT(Aircraft):
                 ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
-        r868, r828, yadro = self._generate_radio_values()
-        for i, line in enumerate([f'R828 {r828}', f'YADRO1 {yadro}', f'R863 {r868}'], 1):
+        r863, r828, yadro = self._generate_radio_values()
+        for i, line in enumerate([f'R828 {r828}', f'YADRO1 {yadro}', f'R863 {r863}'], 1):
             offset = i * 10 * scale
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -501,7 +495,7 @@ class Mi8MT(Aircraft):
 
     def _generate_radio_values(self) -> Sequence[str]:
         """
-        Generate string data about Hip R868, R828, YADRO1A radios settings.
+        Generate string data about Hip R863, R828, YADRO1A radios settings.
 
         :return: All 3 radios settings as strings
         """
@@ -514,10 +508,10 @@ class Mi8MT(Aircraft):
             yadro_freq = float(self.get_bios("YADRO1A_FREQ"))
         except ValueError:
             yadro_freq = 0.0
-        r868 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f}'
+        r863 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f}'
         r828 = f'Ch:{int(self.get_bios("R828_PRST_CHAN_SEL")) + 1:>2}'
         yadro = f'{yadro_freq:>7.1f}'
-        return r868, r828, yadro
+        return r863, r828, yadro
 
 
 class Mi24P(Aircraft):

@@ -14,10 +14,10 @@ def test_sock_err_handler():
     from time import time
     ver_string = f'v{starter.__version__} (latest)'
     start_time = time()
-    with patch.object(starter, 'LogitechKeyboard') as lcd:
-        starter._sock_err_handler(lcd=lcd, start_time=start_time, ver_string=ver_string,
+    with patch.object(starter, 'LogitechKeyboard') as logi_key:
+        starter._sock_err_handler(logi_keyboard=logi_key, start_time=start_time, ver_string=ver_string,
                                   support_iter=(i for i in '12'), exp=Exception())
-        assert lcd.display == ['Logitech LCD OK', 'No data from DCS:   00:00', '1', ver_string]
+        assert logi_key.display == ['Logitech LCD OK', 'No data from DCS:   00:00', '1', ver_string]
 
 
 def test_supporters():

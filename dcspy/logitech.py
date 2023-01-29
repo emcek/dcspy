@@ -66,8 +66,7 @@ class LogitechKeyboard:
         :param message: List of strings to display, row by row.
         """
         self._display = message
-        img = self._prepare_image()
-        lcd_sdk.update_display(img)
+        lcd_sdk.update_display(self._prepare_image())
 
     @staticmethod
     def text(message: List[str]) -> None:

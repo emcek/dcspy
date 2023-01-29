@@ -216,7 +216,7 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     try:
         with open(file=Path(path.join(dcs_path, 'autoupdate.cfg')), encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
-    except FileNotFoundError as err:
+    except (FileNotFoundError, PermissionError) as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
     else:
         result_type = 'stable'
