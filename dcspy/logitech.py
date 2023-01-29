@@ -35,7 +35,7 @@ class LogitechKeyboard:
 
         :param parser: DCS-BIOS parser instance
         """
-        detect_plane = {'parser': parser, 'address': 0x0000, 'max_length': 16, 'callback': partial(self.detecting_plane)}
+        detect_plane = {'parser': parser, 'address': 0x0, 'max_length': 0x10, 'callback': partial(self.detecting_plane)}
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(**detect_plane)
         self.parser = parser
         self.plane_name = ''
