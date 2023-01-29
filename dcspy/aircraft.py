@@ -481,13 +481,13 @@ class Mi8MT(Aircraft):
         :param scale: scaling factor (Mono 1, Color 2)
         """
         for c_rect, c_text, ap_channel, turn_on in (
-                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (114 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON')),
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON')),
                 ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
                 ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
         r868, r828, yadro = self._generate_radio_values()
-        for i, line in enumerate([f'R828: {r828}', f'YADRO1A: {yadro}', f'R863: {r868}'], 1):
+        for i, line in enumerate([f'R828 {r828}', f'YADRO1 {yadro}', f'R863 {r868}'], 1):
             offset = i * 10 * scale
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -514,9 +514,9 @@ class Mi8MT(Aircraft):
             yadro_freq = float(self.get_bios("YADRO1A_FREQ"))
         except ValueError:
             yadro_freq = 0.0
-        r868 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f} MHz'
+        r868 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f}'
         r828 = f'Ch:{int(self.get_bios("R828_PRST_CHAN_SEL")) + 1:>2}'
-        yadro = f'{yadro_freq:>7.1f} MHz'
+        yadro = f'{yadro_freq:>7.1f}'
         return r868, r828, yadro
 
 
