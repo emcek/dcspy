@@ -83,8 +83,8 @@ def _sock_err_handler(logi_keyboard: LogitechKeyboard, start_time: float, ver_st
         LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
     logi_keyboard.display = ['Logitech LCD OK',
-                   f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
-                   f'{next(support_iter)}',
+                             f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                             f'{next(support_iter)}',
                              ver_string]
 
 
