@@ -534,6 +534,13 @@ class Mi24P(Aircraft):
             'PLT_R863_MODUL': {'class': 'IntegerBuffer', 'args': {'address': 0x69ec, 'mask': 0x2, 'shift_by': 0x1}, 'value': int()},
             'PLT_R828_CHAN': {'class': 'IntegerBuffer', 'args': {'address': 0x69fe, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
             'JADRO_FREQ': {'class': 'StringBuffer', 'args': {'address': 0x6a04, 'max_length': 7}, 'value': ''},
+            'PLT_SAU_HOVER_MODE_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
+            'PLT_SAU_ROUTE_MODE_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
+            'PLT_SAU_ALT_MODE_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x6902, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
+            'PLT_SAU_H_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
+            'PLT_SAU_K_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
+            'PLT_SAU_T_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
+            'PLT_SAU_B_ON_L': {'class': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
         }
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
@@ -543,8 +550,19 @@ class Mi24P(Aircraft):
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
         """
+        for c_rect, c_text, ap_channel, turn_on in (
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('PLT_SAU_HOVER_MODE_ON_L')),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'R', self.get_bios('PLT_SAU_ROUTE_MODE_ON_L')),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('PLT_SAU_ALT_MODE_ON_L')),
+                ((94 * scale, 22 * scale, 107 * scale, 39 * scale), (96 * scale, 24 * scale), 'Y', self.get_bios('PLT_SAU_H_ON_L')),
+                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (113 * scale, 24 * scale), 'R', self.get_bios('PLT_SAU_K_ON_L')),
+                ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'P', self.get_bios('PLT_SAU_T_ON_L')),
+                ((145 * scale, 22 * scale, 158 * scale, 39 * scale), (147 * scale, 24 * scale), 'A', self.get_bios('PLT_SAU_B_ON_L')),
+        ):
+            draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
+
         r863, r828, yadro = self._generate_radio_values()
-        for i, line in enumerate([f'R828: {r828}', f'YADRO1I: {yadro}', f'R863: {r863}'], 1):
+        for i, line in enumerate([f'R828 {r828}', f'R863 {r863}', f'YADRO1 {yadro}'], 1):
             offset = i * 10 * scale
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -569,7 +587,7 @@ class Mi24P(Aircraft):
             yadro_freq = 0.0
         r863 = f'Ch:{int(self.get_bios("PLT_R863_CHAN")) + 1:>2} {r863_mod}'
         r828 = f'Ch:{int(self.get_bios("PLT_R828_CHAN")) + 1:>2}'
-        yadro = f'{yadro_freq:>7.1f} MHz'
+        yadro = f'{yadro_freq:>7.1f}'
         return r863, r828, yadro
 
 
