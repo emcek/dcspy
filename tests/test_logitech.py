@@ -43,18 +43,19 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
 
 
 @mark.parametrize('plane_str, plane, display, detect', [
-    ('FA-18C_hornet', 'FA18Chornet', ['Detected aircraft:', 'FA18Chornet'], True),
-    ('F-16C_50', 'F16C50', ['Detected aircraft:', 'F16C50'], True),
-    ('Ka-50', 'Ka50', ['Detected aircraft:', 'Ka50'], True),
-    ('Ka-503', 'Ka503', ['Detected aircraft:', 'Ka503'], True),
-    ('Mi-8MT', 'Mi8MT', ['Detected aircraft:', 'Mi8MT'], True),
-    ('AH-64D_BLKII', 'AH64DBLKII', ['Detected aircraft:', 'AH64DBLKII'], True),
-    ('A-10C', 'A10C', ['Detected aircraft:', 'A10C'], True),
-    ('A-10C_2', 'A10C2', ['Detected aircraft:', 'A10C2'], True),
-    ('F-14B', 'F14B', ['Detected aircraft:', 'F14B'], True),
-    ('F14A135GR', 'F14A135GR', ['Detected aircraft:', 'F14A135GR'], True),
-    ('AV8BNA', 'AV8BNA', ['Detected aircraft:', 'AV8BNA'], True),
-    ('F-114_Nighthawk', 'F114Nighthawk', ['Detected aircraft:', 'F114Nighthawk', 'Not supported yet!'], False),
+    ('FA-18C_hornet', 'FA18Chornet', ['Detected aircraft:', 'F/A-18C Hornet'], True),
+    ('F-16C_50', 'F16C50', ['Detected aircraft:', 'F-16C Viper'], True),
+    ('Ka-50', 'Ka50', ['Detected aircraft:', 'Ka-50 Black Shark II'], True),
+    ('Ka-503', 'Ka503', ['Detected aircraft:', 'Ka-50 Black Shark III'], True),
+    ('Mi-8MT', 'Mi8MT', ['Detected aircraft:', 'Mi-8MTV2 Magnificent Eight'], True),
+    ('Mi-24P', 'Mi24P', ['Detected aircraft:', 'Mi-24P Hind'], True),
+    ('AH-64D_BLKII', 'AH64DBLKII', ['Detected aircraft:', 'AH-64D Apache'], True),
+    ('A-10C', 'A10C', ['Detected aircraft:', 'A-10C Warthog'], True),
+    ('A-10C_2', 'A10C2', ['Detected aircraft:', 'A-10C II Tank Killer'], True),
+    ('F-14B', 'F14B', ['Detected aircraft:', 'F-14B Tomcat'], True),
+    ('F14A135GR', 'F14A135GR', ['Detected aircraft:', 'F-14A Tomcat'], True),
+    ('AV8BNA', 'AV8BNA', ['Detected aircraft:', 'AV-8B N/A Harrier'], True),
+    ('F-117_Nighthawk', 'F117Nighthawk', ['Detected aircraft:', 'F117Nighthawk', 'Not supported yet!'], False),
     ('', '', [], False),
 ])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
