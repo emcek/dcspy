@@ -2,12 +2,12 @@ from datetime import datetime
 from json import loads
 from os import path
 from tempfile import gettempdir
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Dict
 from unittest.mock import patch
 
 from requests import get, exceptions
 
-from dcspy.aircraft import Aircraft
+from dcspy.aircraft import Aircraft, BIOS_VALUE
 
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
@@ -110,6 +110,37 @@ def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
             item = _recursive_lookup(search_key, value)
             if item:
                 return item
+
+
+def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str, BIOS_VALUE]:
+    """
+    generate dict of BIOS values for plane.
+
+    :param plane_bios: BIOS data from plane
+    :param plane_json: DCS-BIOS json filename
+    :return: dict of BIOS_VALUE for plane
+    """
+    results = {}
+    local_json = _get_json_for_plane(plane_json)
+    for bios_key in plane_bios:
+        bios_ref = _recursive_lookup(bios_key, local_json)
+        if not bios_ref:
+            results[bios_key] = f'Not found in DCS-BIOS {dcsbios_ver}'
+            continue
+        bios_outputs = [out for out in bios_ref['outputs']][0]
+        buff_type = f'{bios_outputs["type"].capitalize()}Buffer'
+        if 'String' in buff_type:
+            results[bios_key] = {'class': buff_type,
+                                 'args': {'address': hex(bios_outputs['address']),
+                                          'max_length': hex(bios_outputs['max_length'])},
+                                 'value': ''}
+        elif 'Integer' in buff_type:
+            results[bios_key] = {'class': buff_type,
+                                 'args': {'address': hex(bios_outputs['address']),
+                                          'mask': hex(bios_outputs['mask']),
+                                          'shift_by': hex(bios_outputs['shift_by'])},
+                                 'value': int()}
+    return results
 
 
 def set_bios_during_test(aircraft_model: Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:

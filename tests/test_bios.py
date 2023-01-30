@@ -3,7 +3,7 @@ from pprint import pprint
 from pytest import mark
 
 from dcspy import SUPPORTED_CRAFTS
-from tests.helpers import check_dcsbios_data
+from tests.helpers import check_dcsbios_data, generate_bios_data_for_plane
 
 
 @mark.dcsbios
@@ -15,3 +15,5 @@ def test_bios_values_all_planes(plane, request):
     print(f'\n{name} BIOS {dcsbios_ver}\n{"-" * (len(name) + 13)}')
     pprint(results if results else 'No issues found', width=100)
     assert not results
+    if results:
+        pprint(generate_bios_data_for_plane(plane.bios_data, f'{name}.json'), width=160)
