@@ -443,6 +443,7 @@ class Ka50(Aircraft):
 
 
 class Ka503(Ka50):
+    """Ka-50 Black Shark III."""
     pass
 
 
