@@ -219,7 +219,6 @@ class DcspyGui(tk.Frame):
         """About information."""
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
-
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
         python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
@@ -249,7 +248,7 @@ class DcspyGui(tk.Frame):
         dcsbios2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
         dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
         dcsworld1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
-        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} ({dcs_type}) (click to open changelog)')
+        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} {dcs_type} (click to open changelog)')
         dcsworld2_label.grid(column=1, row=6, sticky=tk.W, padx=10, pady=5)
         dcsworld2_label.bind('<Button-1>', lambda e: self._open_webpage('https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.2.35759/'))
         homepage1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Home page:')
