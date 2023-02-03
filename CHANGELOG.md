@@ -7,6 +7,9 @@
   * Autopilot Modes (Hover, Route and Altitude)
   * Radios: R868, R828, YADRO1I information
 * Add About tab with basic information
+* **F-16C Viper**:
+  * Add spacial font for DED (G19 only)
+  * Clean some extra characters from DED
 
 ## 1.8.1
 * Add support for **Ka-50 Black Shark III**
