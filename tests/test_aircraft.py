@@ -265,11 +265,11 @@ hornet_bios = [
     ('IFEI_FUEL_UP', '234567')
 ]
 viper_bios = [
-    ('DED_LINE_1', 'a2345678901234567890123456789'),
-    ('DED_LINE_2', 'b2345678901234567890123456789'),
-    ('DED_LINE_3', 'c2345678901234567890123456789'),
-    ('DED_LINE_4', 'd2345678901234567890123456789'),
-    ('DED_LINE_5', 'f2345678901234567890123456789')
+    ('DED_LINE_1', "  INS  08.0/ 6        1a "),
+    ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
+    ('DED_LINE_3', "  LNG  E040o34.2'        "),
+    ('DED_LINE_4', " SALT      74FT          "),
+    ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
 ]
 shark_bios = [
     ('PVI_LINE1_APOSTROPHE1', '`'),
