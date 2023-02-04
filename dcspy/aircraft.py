@@ -267,7 +267,7 @@ class F16C50(Aircraft):
         """Prepare image for F-16C Viper for Color LCD."""
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
-            offset = (i - 1) * 22
+            offset = (i - 1) * 24
             draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=DED_FONT)
 
     def set_bios(self, selector: str, value: str) -> None:
