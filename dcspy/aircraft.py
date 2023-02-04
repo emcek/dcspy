@@ -289,6 +289,9 @@ class F16C50(Aircraft):
             value = value.replace('\x0f', '')  # HMCS DISPLAY
             value = value.replace('\xfe', '')  # HMCS DISPLAY
             value = value.replace('\xfc', '')  # HMCS DISPLAY
+            value = value.replace('\x03', '')  # List - 6
+            value = value.replace('\xff', '')  # List - 6
+            value = value.replace('\xc0', '')  # List - 6
             if value and value[-1] == '@':
                 value = value.replace('@', '')  # List - 6
             if self.lcd.type == LcdType.MONO:
