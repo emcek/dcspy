@@ -84,12 +84,12 @@ jobs:
           python -m pytest --random -q --disable-warnings -m "not dcsbios"
       - name: Upload pytest test results
         uses: actions/upload-artifact@v3
-        if: failure()
+        if: always()
         with:
           name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
           path: |
             dcspy.log
-          retention-days: 5
+            tests/resources/*
       - name: Check pip-audit
         run: |
           pip-audit -r requirements.txt --progress-spinner off
