@@ -7,6 +7,8 @@
   * Autopilot Modes (Hover, Route and Altitude)
   * Radios: R868, R828, YADRO1I information
 * Add About tab with basic information
+* Internal:
+  * force update customtkinter to at least 5.1.0
 
 ## 1.8.1
 * Add support for **Ka-50 Black Shark III**
