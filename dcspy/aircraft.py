@@ -278,8 +278,8 @@ class F16C50(Aircraft):
         """
         if 'DED_LINE_' in selector:
             LOG.debug(f'{self.__class__.__name__} {selector} org  : "{value}"')
-            for ch in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
-                value = value.replace(ch, '')  # List page
+            for character in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
+                value = value.replace(character, '')  # List page
             if value and value[-1] == '@':
                 value = value.replace('@', '')  # List - 6
             if self.lcd.type == LcdType.MONO:
