@@ -8,7 +8,7 @@ from unittest.mock import patch
 from requests import get, exceptions
 
 from dcspy.aircraft import Aircraft, BIOS_VALUE
-
+from dcspy.sdk import lcd_sdk
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
     if response.status_code == 200:
@@ -150,7 +150,6 @@ def set_bios_during_test(aircraft_model: Aircraft, bios_pairs: List[Tuple[str, U
     :param aircraft_model:
     :param bios_pairs:
     """
-    from dcspy.sdk import lcd_sdk
     if aircraft_model.lcd.type.name == 'COLOR':
         with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, True] * len(bios_pairs)), \
                 patch.object(lcd_sdk, 'logi_lcd_color_set_background', return_value=True), \
