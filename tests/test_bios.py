@@ -14,6 +14,7 @@ def test_bios_values_all_planes(plane, request):
     results, dcsbios_ver = check_dcsbios_data(plane.bios_data, f'{name}.json')
     print(f'\n{name} BIOS {dcsbios_ver}\n{"-" * (len(name) + 13)}')
     pprint(results if results else 'No issues found', width=100)
-    assert not results
     if results:
+        print('----- Full BIOS entry -----')
         pprint(generate_bios_data_for_plane(plane.bios_data, f'{name}.json'), width=160)
+    assert not results
