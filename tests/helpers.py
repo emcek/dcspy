@@ -126,7 +126,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str,
         if not bios_ref:
             results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
             continue
-        bios_outputs = [out for out in bios_ref['outputs']][0]
+        bios_outputs =bios_ref['outputs'][0]
         buff_type = f'{bios_outputs["type"].capitalize()}Buffer'
         if 'String' in buff_type:
             results[bios_key] = {'class': buff_type,
