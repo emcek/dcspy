@@ -12,9 +12,9 @@ from dcspy.sdk import lcd_sdk
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
     if response.status_code == 200:
-        dcsbios_ver = response.json()['tag_name']
+        DCS_BIOS_VER = response.json()['tag_name']
 except exceptions.ConnectTimeout:
-    dcsbios_ver = '0.7.47'
+    DCS_BIOS_VER = '0.7.47'
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
@@ -32,7 +32,7 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
     for bios_key in plane_bios:
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
-            results[bios_key] = f'Not found in DCS-BIOS {dcsbios_ver}'
+            results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
             continue
         output_type = plane_bios[bios_key]['class'].split('Buffer')[0].lower()
         try:
@@ -41,7 +41,7 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
             results[bios_key] = f'Wrong output type: {output_type}'
             continue
         results = _compare_dcspy_with_bios(bios_key, bios_outputs, plane_bios, results)
-    return results, dcsbios_ver
+    return results, DCS_BIOS_VER
 
 
 def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict, results: dict) -> dict:
@@ -125,7 +125,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str,
     for bios_key in plane_bios:
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
-            results[bios_key] = f'Not found in DCS-BIOS {dcsbios_ver}'
+            results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
             continue
         bios_outputs = [out for out in bios_ref['outputs']][0]
         buff_type = f'{bios_outputs["type"].capitalize()}Buffer'
