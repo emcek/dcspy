@@ -65,9 +65,9 @@ class DcspyGui(tk.Frame):
         self.theme_mode = tk.StringVar()
 
         self._load_cfg()
+        self.btn_start: customtkinter.CTkButton
+        self.btn_stop: customtkinter.CTkButton
         self._init_widgets()
-        self.btn_start.configure(state=tk.ACTIVE)
-        self.btn_stop.configure(state=tk.DISABLED)
         if config.get('autostart', False):
             self.start_dcspy()
 
@@ -118,6 +118,8 @@ class DcspyGui(tk.Frame):
         self.btn_stop.grid(row=7, column=0, padx=20, pady=10)
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
         close.grid(row=8, column=0, padx=20, pady=10)
+        self.btn_start.configure(state=tk.ACTIVE)
+        self.btn_stop.configure(state=tk.DISABLED)
 
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
