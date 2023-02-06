@@ -56,6 +56,5 @@ You are welcome [dcspy Discord](https://discord.gg/SP5Yjx3) server.
 ## Contributing
 You want contribute, perfect see: [contributing](./CONTRIBUTING.md) guide.
 
-
 ## Credits
 More details [here](https://github.com/emcek/dcspy/wiki/Information#credits).
