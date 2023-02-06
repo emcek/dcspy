@@ -67,7 +67,8 @@ disable=broad-except,
         line-too-long,
         missing-class-docstring,
         missing-module-docstring,
-        E5110
+        E5110,
+        W0107
 #          print-statement,
 #          parameter-unpacking,
 #          unpacking-in-except,
