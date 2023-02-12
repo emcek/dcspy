@@ -221,7 +221,7 @@ class DcspyGui(tk.Frame):
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _special_settings(self, tabview: customtkinter.CTkTabview) -> None:
-        """Configure general tab GUI."""
+        """Configure special tab GUI."""
         tabview.tab('Special').grid_columnconfigure(index=0, weight=0)
         tabview.tab('Special').grid_columnconfigure(index=1, weight=1)
         dedfont_label = customtkinter.CTkLabel(master=tabview.tab('Special'), text='F-16 DED Font (only G19):')
