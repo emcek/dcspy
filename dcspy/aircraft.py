@@ -262,6 +262,7 @@ class F16C50(Aircraft):
     def _draw_common_data(self, draw: ImageDraw, separation: int) -> None:
         """
         Draw common part (based on scale) for Mono and Color LCD.
+
         :param draw: ImageDraw instance
         :param separation: between lines
         """
