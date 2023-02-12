@@ -12,7 +12,7 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
-default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
+default_yaml = path.join(path.abspath(path.dirname(__file__)), 'resources', 'config.yaml')
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
