@@ -258,19 +258,23 @@ class F16C50(Aircraft):
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
+    def _draw_common_data(self, draw: ImageDraw, separation: int) -> None:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+        :param draw: ImageDraw instance
+        :param separation: between lines
+        """
+        for i in range(1, 6):
+            offset = (i - 1) * separation
+            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.font)
+
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        for i in range(1, 6):
-            offset = (i - 1) * 8
-            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.lcd.font_s)
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=8)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        for i in range(1, 6):
-            offset = (i - 1) * 24
-            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=DED_FONT)
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
