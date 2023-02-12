@@ -264,7 +264,7 @@ class F16C50(Aircraft):
         Draw common part (based on scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
-        :param separation: between lines
+        :param separation: between lines in pixels
         """
         for i in range(1, 6):
             offset = (i - 1) * separation
