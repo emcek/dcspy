@@ -48,6 +48,7 @@ class DcspyGui(tk.Frame):
         self.showgui_switch = customtkinter.BooleanVar()
         self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
+        self.dedfont_switch = customtkinter.BooleanVar()
         self.mono_l = tk.StringVar()
         self.mono_s = tk.StringVar()
         self.mono_xs = tk.StringVar()
@@ -85,11 +86,13 @@ class DcspyGui(tk.Frame):
         tabview.add('General')
         tabview.add('Mono')
         tabview.add('Color')
+        tabview.add('Special')
         tabview.add('About')
         self._keyboards(tabview)
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
+        self._special_settings(tabview)
         self._about(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
@@ -217,6 +220,15 @@ class DcspyGui(tk.Frame):
         fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
+    def _special_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure special tab GUI."""
+        tabview.tab('Special').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('Special').grid_columnconfigure(index=1, weight=1)
+        dedfont_label = customtkinter.CTkLabel(master=tabview.tab('Special'), text='F-16 DED Font (only G19):')
+        dedfont_label.grid(column=0, row=1, sticky=tk.W, pady=5)
+        dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False)
+        dedfont.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
@@ -288,6 +300,7 @@ class DcspyGui(tk.Frame):
         self.showgui_switch.set(config['show_gui'])
         self.checkver_switch.set(config['check_ver'])
         self.verbose_switch.set(config['verbose'])
+        self.dedfont_switch.set(config['f16_ded_font'])
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
         self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
@@ -313,6 +326,7 @@ class DcspyGui(tk.Frame):
             'show_gui': self.showgui_switch.get(),
             'check_ver': self.checkver_switch.get(),
             'verbose': self.verbose_switch.get(),
+            'f16_ded_font': self.dedfont_switch.get(),
             'dcs': self.dcs_path.get(),
             'dcsbios': self.bios_path.get(),
             'font_mono_l': self.size_mono_l.get(),

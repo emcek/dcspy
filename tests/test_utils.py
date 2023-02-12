@@ -87,6 +87,7 @@ def test_dummy_save_load_set_defaults():
                      'font_color_s': 22,
                      'font_color_xs': 18,
                      'font_color_l': 32,
+                     'f16_ded_font': True,
                      'theme_mode': 'system',
                      'theme_color': 'blue'}
     with open(test_tmp_yaml, 'w+') as f:

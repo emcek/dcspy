@@ -4,14 +4,14 @@ from itertools import chain, cycle
 from logging import getLogger
 from os import path
 from pprint import pformat
-from re import search
+from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
 from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import LcdInfo, LcdButton, SUPPORTED_CRAFTS
+from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, config
 from dcspy.sdk import lcd_sdk
 
 try:
@@ -243,6 +243,10 @@ class F16C50(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
+        self.font = self.lcd.font_s
+        self.ded_font = config['f16_ded_font']
+        if self.ded_font and self.lcd.type == LcdType.COLOR:
+            self.font = DED_FONT
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
             'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},
@@ -255,44 +259,57 @@ class F16C50(Aircraft):
             'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+    def _draw_common_data(self, draw: ImageDraw, separation: int) -> None:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
-        :param scale: scaling factor (Mono 1, Color 2)
+        :param separation: between lines in pixels
         """
         for i in range(1, 6):
-            offset = (i - 1) * 8 * scale
-            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.lcd.font_s)
+            offset = (i - 1) * separation
+            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.font)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), scale=1)
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=8)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Color LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
     def set_bios(self, selector: str, value: str) -> None:
         """
-        Set new data.
+        Catch BIOS changes and remove garbage characters and replace with correct ones.
 
-        :param selector:
-        :param value:
+        :param selector: selector name
+        :param value: value form DCS-BIOS
         """
         if 'DED_LINE_' in selector:
-            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
-            # replace 'o' to degree sign and 'a' with up-down arrow 2195 or black diamond 2666
-            value = value.replace('o', '\u00b0').replace('a', '\u2666')
-            value = value.replace('A\x10\x04', '')  # List page
-            value = value.replace('\x82', '')  # List - R
-            value = value.replace('\x03', '')
-            value = value.replace('@', '')  # List - 6
-            value = value.replace('\u0002', '')  # List - 7
-            value = value.replace('\x80', '')  # 1 T-ILS
-            value = value.replace('\x08', '')  # 7 MARK
-            value = value.replace('*', '\u25d9')  # INVERSE WHITE CIRCLE
+            LOG.debug(f'{self.__class__.__name__} {selector} org  : "{value}"')
+            for character in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
+                value = value.replace(character, '')  # List page
+            if value and value[-1] == '@':
+                value = value.replace('@', '')  # List - 6
+            if self.lcd.type == LcdType.MONO:
+                value = value.replace('o', '\u00b0')  # 'o' to degree sign
+                value = value.replace('a', '\u2666')  # 'a' to up-down arrow 2195 or black diamond 2666
+                value = value.replace('*', '\u25d9')  # INVERSE WHITE CIRCLE
+            elif self.ded_font and self.lcd.type == LcdType.COLOR:
+                value = value.replace('o', '\u005e')  # replace 'o' to degree sign
+                value = value.replace('a', '\u0040')  # fix up-down triangle arrow
+                value = value.replace('*', '\u00d7')  # fix to inverse star
+                value = sub(r'1DEST\s2BNGO\s3VIP\s{2}RINTG', '\u00c1DEST \u00c2BNGO \u00c3VIP  \u0072INTG', value)
+                value = sub(r'4NAV\s{2}5MAN\s{2}6INS\s{2}EDLNK', '\u00c4NAV  \u00c5MAN  \u00c6INS  \u0065DLNK', value)
+                value = sub(r'7CMDS\s8MODE\s9VRP\s{2}0MISC', '\u00c7CMDS \u00c8MODE \u00c9VRP  \u00c0MISC', value)
+                value = sub(r'1CORR\s2MAGV\s3OFP\s{2}RHMCS', '\u00c1CORR \u00c2MAGV \u00c3OFP  \u0072HMCS', value)
+                value = sub(r'4INSM\s5LASR\s6GPS\s{2}E', '\u00c4INSM \u00c5LASR \u00c6GPS  \u0065', value)
+                value = sub(r'7DRNG\s8BULL\s9\s{5}0', '\u00c7DRNG \u00c8BULL \u00c9     \u00c0', value)
+                value = sub(r'(M1\s:\d+\s+)M4(\s+\(\d\).*)', r'\1mÄ\2', value)
+                value = sub(r'M1(\s:\d+\s+)M4(\s+:\s+\(\d\).*)', r'mÁ\1mÄ\2', value)
+                value = sub(r'M3(\s+:\d+\s+×\s+\d×[A-Z]+\(\d\).*)', r'mÃ\1', value)
+                value = sub(r'(\s[\s|×])HUD BLNK([×|\s]\s+)', r'\1hud blnk\2', value)
+                value = sub(r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2', value)
         super().set_bios(selector, value)
 
     def button_request(self, button: LcdButton, request: str = '\n') -> str:

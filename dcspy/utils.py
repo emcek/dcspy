@@ -30,6 +30,7 @@ defaults_cfg: ConfigDict = {
     'font_color_l': 32,
     'theme_mode': 'system',
     'theme_color': 'blue',
+    'f16_ded_font': True
 }
 
 

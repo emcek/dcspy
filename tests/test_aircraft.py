@@ -204,8 +204,19 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
     ('hornet_color', [('IFEI_FUEL_UP', '1000T')], '1000T'),
     ('viper_mono', [('DED_LINE_1', 'a')], '\u2666'),
     ('viper_mono', [('DED_LINE_2', 'o')], '\u00b0'),
-    ('viper_color', [('DED_LINE_3', 'a')], '\u2666'),
-    ('viper_color', [('DED_LINE_4', 'o')], '\u00b0'),
+    ('viper_mono', [('DED_LINE_3', '*')], '\u25d9'),
+    ('viper_mono', [('DED_LINE_5', '\x07')], ''),
+    ('viper_mono', [('DED_LINE_4', '\x10')], ''),
+    ('viper_mono', [('DED_LINE_2', '   @')], '   '),
+    ('viper_color', [('DED_LINE_3', 'a')], '\u0040'),
+    ('viper_color', [('DED_LINE_4', 'o')], '\u005e'),
+    ('viper_color', [('DED_LINE_3', '*')], '\u00d7'),
+    ('viper_color', [('DED_LINE_5', '\xfe')], ''),
+    ('viper_color', [('DED_LINE_1', '\xfc')], ''),
+    ('viper_color', [('DED_LINE_2', '   @')], '   '),
+    ('viper_color', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], "ÁDEST ÂBNGO ÃVIP  rINTG  "),
+    ('viper_color', [('DED_LINE_3', '4NAV  5MAN  6INS  EDLNK  A\x10\x04')], "ÄNAV  ÅMAN  ÆINS  eDLNK  "),
+    ('viper_color', [('DED_LINE_4', '7CMDS 8MODE 9VRP  0MISC  A\x10\x04')], "ÇCMDS ÈMODE ÉVRP  ÀMISC  "),
     ('viper_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
     ('viper_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
     ('viper_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
@@ -257,11 +268,11 @@ hornet_bios = [
     ('IFEI_FUEL_UP', '234567')
 ]
 viper_bios = [
-    ('DED_LINE_1', 'a2345678901234567890123456789'),
-    ('DED_LINE_2', 'b2345678901234567890123456789'),
-    ('DED_LINE_3', 'c2345678901234567890123456789'),
-    ('DED_LINE_4', 'd2345678901234567890123456789'),
-    ('DED_LINE_5', 'f2345678901234567890123456789')
+    ('DED_LINE_1', "  INS  08.0/ 6        1a "),
+    ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
+    ('DED_LINE_3', "  LNG  E040o34.2'        "),
+    ('DED_LINE_4', " SALT      74FT          "),
+    ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
 ]
 shark_bios = [
     ('PVI_LINE1_APOSTROPHE1', '`'),
