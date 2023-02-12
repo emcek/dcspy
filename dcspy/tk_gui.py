@@ -93,6 +93,7 @@ class DcspyGui(tk.Frame):
         self._about(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
+        # todo: add specific setting for planes, new tab
 
     def _sidebar(self) -> None:
         """Configure sidebar of GUI."""
