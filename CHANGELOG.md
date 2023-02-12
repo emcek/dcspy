@@ -1,3 +1,6 @@
+## 2.0.0
+* Allow use/update DCS-BIOS directly form GitHub (master branch) 
+
 ## 1.9.0
 * Support for **Mi-8MTV2 Magnificent Eight**
   * Autopilot Channels (Heading, Pitch/Bank and Altitude)
