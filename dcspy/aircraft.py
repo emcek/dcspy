@@ -244,8 +244,8 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.font = self.lcd.font_s
-        if config['f16_ded_font'] and self.lcd.type == LcdType.COLOR:
-            # todo: thing if allow DED font for Mono
+        self.ded_font = config['f16_ded_font']
+        if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = DED_FONT
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
@@ -285,7 +285,6 @@ class F16C50(Aircraft):
         :param selector: selector name
         :param value: value form DCS-BIOS
         """
-        # todo: needs to be updated base of font/LcdType
         if 'DED_LINE_' in selector:
             LOG.debug(f'{self.__class__.__name__} {selector} org  : "{value}"')
             for character in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
@@ -296,7 +295,7 @@ class F16C50(Aircraft):
                 value = value.replace('o', '\u00b0')  # 'o' to degree sign
                 value = value.replace('a', '\u2666')  # 'a' to up-down arrow 2195 or black diamond 2666
                 value = value.replace('*', '\u25d9')  # INVERSE WHITE CIRCLE
-            elif self.lcd.type == LcdType.COLOR:
+            elif self.ded_font and self.lcd.type == LcdType.COLOR:
                 value = value.replace('o', '\u005e')  # replace 'o' to degree sign
                 value = value.replace('a', '\u0040')  # fix up-down triangle arrow
                 value = value.replace('*', '\u00d7')  # fix to inverse star
