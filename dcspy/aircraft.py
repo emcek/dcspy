@@ -11,7 +11,7 @@ from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT
+from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, config
 from dcspy.sdk import lcd_sdk
 
 try:
@@ -243,6 +243,9 @@ class F16C50(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
+        self.font = self.lcd.font_s
+        if config['f16_ded_font'] and self.lcd.type == LcdType.COLOR:
+            self.font = DED_FONT
         self.bios_data: Dict[str, BIOS_VALUE] = {
             'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
             'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},
