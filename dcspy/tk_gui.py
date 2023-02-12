@@ -113,7 +113,7 @@ class DcspyGui(tk.Frame):
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check version', command=self._check_version)
         check_ver.grid(row=4, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
-        logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'dcspy.png')), size=(130, 60))
+        logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'resources', 'dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=5, column=0, sticky=tk.W + tk.E)
         self.btn_start.grid(row=6, column=0, padx=20, pady=10)
@@ -127,7 +127,7 @@ class DcspyGui(tk.Frame):
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), LCD_TYPES[text]['icon'])), size=(103, 70))
+            icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'resources', LCD_TYPES[text]['icon'])), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
