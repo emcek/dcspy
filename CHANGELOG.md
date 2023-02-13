@@ -1,4 +1,7 @@
-## 1.9.1
+## 1.9.2
+* Fix path for DED_FONT
+
+* ## 1.9.1
 * Hot bugfix release
 
 ## 1.9.0
