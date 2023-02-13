@@ -1,9 +1,3 @@
-## 1.9.2
-* Fix path for DED_FONT
-
-## 1.9.1
-* Hot bugfix release
-
 ## 1.9.0
 * Support for **Mi-8MTV2 Magnificent Eight**
   * Autopilot Channels (Heading, Pitch/Bank and Altitude)
