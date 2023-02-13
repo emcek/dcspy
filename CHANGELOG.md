@@ -1,7 +1,7 @@
 ## 2.0.0
 * Allow use/update DCS-BIOS directly form GitHub (master branch)
 
-## 1.9.0
+## 1.9.5
 * Support for **Mi-8MTV2 Magnificent Eight**
   * Autopilot Channels (Heading, Pitch/Bank and Altitude)
   * Radios: R868, R828, YADRO1A information
@@ -15,7 +15,6 @@
   * Clean some extra characters from DED
 * Internal:
   * force update customtkinter to at least 5.1.0
-  * Clean-up package - move not-python files into resources directory
 
 ## 1.8.1
 * Add support for **Ka-50 Black Shark III**
