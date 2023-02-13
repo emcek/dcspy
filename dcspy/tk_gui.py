@@ -19,7 +19,7 @@ from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver
 
-__version__ = '1.8.1'
+__version__ = '1.9.0'
 LOG = getLogger(__name__)
 
 
@@ -48,6 +48,7 @@ class DcspyGui(tk.Frame):
         self.showgui_switch = customtkinter.BooleanVar()
         self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
+        self.dedfont_switch = customtkinter.BooleanVar()
         self.mono_l = tk.StringVar()
         self.mono_s = tk.StringVar()
         self.mono_xs = tk.StringVar()
@@ -85,11 +86,13 @@ class DcspyGui(tk.Frame):
         tabview.add('General')
         tabview.add('Mono')
         tabview.add('Color')
+        tabview.add('Special')
         tabview.add('About')
         self._keyboards(tabview)
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
+        self._special_settings(tabview)
         self._about(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
@@ -110,7 +113,7 @@ class DcspyGui(tk.Frame):
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check version', command=self._check_version)
         check_ver.grid(row=4, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
-        logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'dcspy.png')), size=(130, 60))
+        logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'resources', 'dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=5, column=0, sticky=tk.W + tk.E)
         self.btn_start.grid(row=6, column=0, padx=20, pady=10)
@@ -124,7 +127,7 @@ class DcspyGui(tk.Frame):
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), LCD_TYPES[text]['icon'])), size=(103, 70))
+            icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'resources', LCD_TYPES[text]['icon'])), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
@@ -217,6 +220,15 @@ class DcspyGui(tk.Frame):
         fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name)
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
+    def _special_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure special tab GUI."""
+        tabview.tab('Special').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('Special').grid_columnconfigure(index=1, weight=1)
+        dedfont_label = customtkinter.CTkLabel(master=tabview.tab('Special'), text='F-16 DED Font (only G19):')
+        dedfont_label.grid(column=0, row=1, sticky=tk.W, pady=5)
+        dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False)
+        dedfont.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
@@ -288,6 +300,7 @@ class DcspyGui(tk.Frame):
         self.showgui_switch.set(config['show_gui'])
         self.checkver_switch.set(config['check_ver'])
         self.verbose_switch.set(config['verbose'])
+        self.dedfont_switch.set(config['f16_ded_font'])
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
         self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
@@ -313,6 +326,7 @@ class DcspyGui(tk.Frame):
             'show_gui': self.showgui_switch.get(),
             'check_ver': self.checkver_switch.get(),
             'verbose': self.verbose_switch.get(),
+            'f16_ded_font': self.dedfont_switch.get(),
             'dcs': self.dcs_path.get(),
             'dcsbios': self.bios_path.get(),
             'font_mono_l': self.size_mono_l.get(),

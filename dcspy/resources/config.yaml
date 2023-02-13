@@ -1,7 +1,8 @@
 autostart: false
-check_ver: true
+check_ver: false
 dcs: C:\Program Files\Eagle Dynamics\DCS World OpenBeta
-dcsbios: D:\Users\UNKNOWN\Saved Games\DCS.openbeta\Scripts\DCS-BIOS
+dcsbios: D:\Users\mplic\Saved Games\DCS.openbeta\Scripts\DCS-BIOS
+f16_ded_font: true
 font_color_l: 32
 font_color_s: 22
 font_color_xs: 18
@@ -12,5 +13,5 @@ font_name: consola.ttf
 keyboard: G13
 show_gui: true
 theme_color: dark-blue
-theme_mode: system
-verbose: false
+theme_mode: light
+verbose: true
