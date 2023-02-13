@@ -1,4 +1,4 @@
-## 1.9.0
+## 1.9.5
 * Support for **Mi-8MTV2 Magnificent Eight**
   * Autopilot Channels (Heading, Pitch/Bank and Altitude)
   * Radios: R868, R828, YADRO1A information
