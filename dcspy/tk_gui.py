@@ -19,7 +19,7 @@ from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver
 
-__version__ = '1.9.1'
+__version__ = '1.9.2'
 LOG = getLogger(__name__)
 
 
