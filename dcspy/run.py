@@ -26,11 +26,11 @@ def run():
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
         here = path.abspath(path.dirname(__file__))
-        root.iconbitmap(path.join(here, 'resources', 'dcspy.ico'))
+        root.iconbitmap(path.join(here, 'dcspy.ico'))
         if config['theme_mode'] == 'dark':
-            root.iconbitmap(path.join(here, 'resources', 'dcspy_white.ico'))
+            root.iconbitmap(path.join(here, 'dcspy_white.ico'))
         root.title('DCSpy')
-        DcspyGui(master=root, config_file=path.join(here, 'resources', 'config.yaml'))
+        DcspyGui(master=root, config_file=path.join(here, 'config.yaml'))
         root.mainloop()
     else:
         dcspy_run(lcd_type=LCD_TYPES[config['keyboard']]['type'], event=Event())
