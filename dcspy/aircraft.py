@@ -13,11 +13,14 @@ from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, config
 from dcspy.sdk import lcd_sdk
-
 try:
-    from typing import TypedDict, NotRequired
+    from typing import NotRequired
 except ImportError:
-    from typing_extensions import TypedDict, NotRequired
+    from typing_extensions import NotRequired
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
 
 
 class IntBuffArgs(TypedDict):
