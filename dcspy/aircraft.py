@@ -61,7 +61,7 @@ class Aircraft:
         img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
         return img
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: str) -> None:
         """
         Set value for DCS-BIOS selector.
 
@@ -186,7 +186,7 @@ class FA18Chornet(Aircraft):
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
         draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: str) -> None:
         """
         Set new data.
 
@@ -273,7 +273,7 @@ class F16C50(Aircraft):
         """Prepare image for F-16C Viper for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: str) -> None:
         """
         Catch BIOS changes and remove garbage characters and replace with correct ones.
 
@@ -728,7 +728,7 @@ class AH64DBLKII(Aircraft):
                 draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: str) -> None:
         """
         Set new data.
 
