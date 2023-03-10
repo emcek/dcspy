@@ -670,7 +670,7 @@ class AH64DBLKII(Aircraft):
         """
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
-            mat = search(r'(.*\*)\s+(\d+)([\.\dULCA]+)[-\sA-Z]*(\d+)([\.\dULCA]+)[\s-]+', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
+            mat = search(r'(.*\*)\s+(\d+)([.\dULCA]+)[-\sA-Z]*(\d+)([.\dULCA]+)[\s-]+', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
                 spacer = ' ' * (6 - len(mat.group(3)))
                 text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
