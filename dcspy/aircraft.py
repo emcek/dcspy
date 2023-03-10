@@ -630,7 +630,6 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE10': {'klass': 'StringBuffer', 'args': {'address': 0x82ba, 'max_length': 56}, 'value': ''},
             'PLT_EUFD_LINE11': {'klass': 'StringBuffer', 'args': {'address': 0x82f2, 'max_length': 56}, 'value': ''},
             'PLT_EUFD_LINE12': {'klass': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE14': {'klass': 'StringBuffer', 'args': {'address': 0x839a, 'max_length': 56}, 'value': ''},
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
