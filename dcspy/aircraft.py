@@ -15,9 +15,9 @@ from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, confi
 from dcspy.sdk import lcd_sdk
 
 try:
-    from typing_extensions import TypedDict, NotRequired
-except ImportError:
     from typing import TypedDict, NotRequired
+except ImportError:
+    from typing_extensions import TypedDict, NotRequired
 
 
 class IntBuffArgs(TypedDict):
