@@ -88,10 +88,10 @@ def _get_json_for_plane(plane: str) -> dict:
             return loads(data)
         raise ValueError('File is outdated')
     except (FileNotFoundError, ValueError):
-        data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{DCS_BIOS_VER}/Scripts/DCS-BIOS/doc/json/{plane}')
+        json_data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{DCS_BIOS_VER}/Scripts/DCS-BIOS/doc/json/{plane}')
         with open(plane_path, 'wb+') as plane_json_file:
-            plane_json_file.write(data.content)
-        return loads(data.content)
+            plane_json_file.write(json_data.content)
+        return loads(json_data.content)
 
 
 def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
