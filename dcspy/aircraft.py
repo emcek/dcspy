@@ -715,7 +715,6 @@ class AH64DBLKII(Aircraft):
         :param xcords: list of X coordinates
         :param ycords: list of Y coordinates
         :param font: font instance
-        :param scale: scaling factor (Mono 1, Color 2)
         """
         match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
                       3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
