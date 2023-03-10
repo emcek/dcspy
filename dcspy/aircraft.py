@@ -116,7 +116,7 @@ class Aircraft:
 
         :param btn_name: BIOS button name
         """
-        if not self.cycle_buttons[btn_name]:
+        if not isinstance(self.cycle_buttons[btn_name], cycle):
             curr_val = int(self.get_bios(btn_name))
             max_val = self.bios_data[btn_name]['max_value']
             full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
@@ -164,7 +164,7 @@ class FA18Chornet(Aircraft):
             'HUD_ATT_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
             'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
             'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
-        self.cycle_buttons = {'HUD_ATT_SW': '', 'IFEI_DWN_BTN': '', 'IFEI_UP_BTN': ''}  # type: ignore
+        self.cycle_buttons = {'HUD_ATT_SW': iter([0]), 'IFEI_DWN_BTN': iter([0]), 'IFEI_UP_BTN': iter([0])}
 
     def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
         """
@@ -271,7 +271,7 @@ class F16C50(Aircraft):
             'IFF_ENABLE_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
             'IFF_M4_REPLY_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
-        self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
+        self.cycle_buttons = {'IFF_MASTER_KNB': iter([0]), 'IFF_ENABLE_SW': iter([0]), 'IFF_M4_CODE_SW': iter([0]), 'IFF_M4_REPLY_SW': iter([0])}
 
     def _draw_common_data(self, draw: ImageDraw, separation: int) -> None:
         """
