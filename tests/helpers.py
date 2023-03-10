@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from requests import get, exceptions
 
-from dcspy.aircraft import Aircraft, BIOS_VALUE
+from dcspy.aircraft import Aircraft, BiosValue
 from dcspy.sdk import lcd_sdk
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
@@ -34,7 +34,7 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
         if not bios_ref:
             results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
             continue
-        output_type = plane_bios[bios_key]['class'].split('Buffer')[0].lower()
+        output_type = plane_bios[bios_key]['klass'].split('Buffer')[0].lower()
         try:
             bios_outputs = [out for out in bios_ref['outputs'] if output_type == out['type']][0]
         except IndexError:
@@ -111,7 +111,7 @@ def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
                 return item
 
 
-def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str, BIOS_VALUE]:
+def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str, BiosValue]:
     """
     generate dict of BIOS values for plane.
 
@@ -129,12 +129,12 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str,
         bios_outputs = bios_ref['outputs'][0]
         buff_type = f'{bios_outputs["type"].capitalize()}Buffer'
         if 'String' in buff_type:
-            results[bios_key] = {'class': buff_type,
+            results[bios_key] = {'klass': buff_type,
                                  'args': {'address': hex(bios_outputs['address']),
                                           'max_length': hex(bios_outputs['max_length'])},
                                  'value': ''}
         elif 'Integer' in buff_type:
-            results[bios_key] = {'class': buff_type,
+            results[bios_key] = {'klass': buff_type,
                                  'args': {'address': hex(bios_outputs['address']),
                                           'mask': hex(bios_outputs['mask']),
                                           'shift_by': hex(bios_outputs['shift_by'])},
