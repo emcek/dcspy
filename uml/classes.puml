@@ -83,14 +83,14 @@ package aircraft {
     Aircraft <|-- AV8BNA
     AH64D *-- ApacheEufdMode
     class Aircraft {
-        + bios_data : Dict[str, BIOS_VALUE]
+        + bios_data : Dict[str, BiosValue]
         + cycle_buttons : Dict[str, Iterator[int]]
         + lcd : LcdInfo
         # _debug_img : Iterator[int]
         + __init__(lcd_type: LcdInfo)
         + button_request(button: int, request: str) -> str
         + prepare_image() -> Image
-        + set_bios(selector: str, value: str)
+        + set_bios(selector: str, value: Union[str, int])
         + get_bios(selector: str) -> Union[str, int]
         + get_next_value_for_button(btn_name: str) -> int
         + {abstract} draw_for_lcd_mono(img: Image)
