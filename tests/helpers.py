@@ -89,7 +89,7 @@ def _get_json_for_plane(plane: str) -> dict:
         raise ValueError('File is outdated')
     except (FileNotFoundError, ValueError):
         data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{DCS_BIOS_VER}/Scripts/DCS-BIOS/doc/json/{plane}')
-        with open(plane_path, 'wb+', encoding='utf-8') as plane_json_file:
+        with open(plane_path, 'wb+') as plane_json_file:
             plane_json_file.write(data.content)
         return loads(data.content)
 
