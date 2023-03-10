@@ -11,6 +11,15 @@ from PIL import ImageFont
 from dcspy.log import config_logger
 from dcspy.sdk import lcd_sdk
 from dcspy.utils import load_cfg, set_defaults, default_yaml
+try:
+    from typing import NotRequired
+except ImportError:
+    from typing_extensions import NotRequired
+try:
+    from typing import TypedDict
+except ImportError:
+    from typing_extensions import TypedDict
+
 
 SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
                     'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
@@ -94,3 +103,21 @@ LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'{uname()}')
 LOG.info(f'Configuration: {config} from: {default_yaml}')
+
+
+class IntBuffArgs(TypedDict):
+    address: int
+    mask: int
+    shift_by: int
+
+
+class StrBuffArgs(TypedDict):
+    address: int
+    max_length: int
+
+
+class BiosValue(TypedDict):
+    klass: str
+    args: Union[StrBuffArgs, IntBuffArgs]
+    value: Union[int, str]
+    max_value: NotRequired[int]

@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from requests import get, exceptions
 
-from dcspy.aircraft import Aircraft, BiosValue
+from dcspy import aircraft, BiosValue
 from dcspy.sdk import lcd_sdk
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
@@ -142,7 +142,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str,
     return results
 
 
-def set_bios_during_test(aircraft_model: Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
+def set_bios_during_test(aircraft_model: aircraft.Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
     """
     Set BIOS values for a given aircraft model.
 
