@@ -13,15 +13,18 @@ Main modules of DCSpy:
 If you want to modify or write something by yourself, here's a quick walk-through:
 * Each plane has special dict:
 ```python
-class BuffArgs(TypedDict):
+class IntBuffArgs(TypedDict):
     address: int
-    max_length: NotRequired[int]
-    mask: NotRequired[int]
-    shift_by: NotRequired[int]
+    mask: int
+    shift_by: int
+
+class StrBuffArgs(TypedDict):
+    address: int
+    max_length: int
 
 class BiosValue(TypedDict):
     klass: str
-    args: BuffArgs
+    args: Union[StrBuffArgs, IntBuffArgs]
     value: Union[int, str]
     max_value: NotRequired[int]
 
