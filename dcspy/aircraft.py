@@ -61,7 +61,7 @@ class Aircraft:
         img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
         return img
 
-    def set_bios(self, selector: str, value: str) -> None:
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
         Set value for DCS-BIOS selector.
 
@@ -186,7 +186,7 @@ class FA18Chornet(Aircraft):
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
         draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def set_bios(self, selector: str, value: str) -> None:
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
         Set new data.
 
@@ -195,7 +195,7 @@ class FA18Chornet(Aircraft):
         """
         if selector in ('UFC_SCRATCHPAD_STRING_1_DISPLAY', 'UFC_SCRATCHPAD_STRING_2_DISPLAY',
                         'UFC_COMM1_DISPLAY', 'UFC_COMM2_DISPLAY'):
-            value = value.replace('`', '1').replace('~', '2')
+            value = str(value).replace('`', '1').replace('~', '2')
         super().set_bios(selector, value)
 
     def button_request(self, button: LcdButton, request: str = '\n') -> str:
@@ -273,7 +273,7 @@ class F16C50(Aircraft):
         """Prepare image for F-16C Viper for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
-    def set_bios(self, selector: str, value: str) -> None:
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
         Catch BIOS changes and remove garbage characters and replace with correct ones.
 
@@ -281,6 +281,7 @@ class F16C50(Aircraft):
         :param value: value form DCS-BIOS
         """
         if 'DED_LINE_' in selector:
+            value = str(value)
             LOG.debug(f'{self.__class__.__name__} {selector} org  : "{value}"')
             for character in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
                 value = value.replace(character, '')  # List page
@@ -728,7 +729,7 @@ class AH64DBLKII(Aircraft):
                 draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
-    def set_bios(self, selector: str, value: str) -> None:
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
         Set new data.
 
@@ -736,17 +737,17 @@ class AH64DBLKII(Aircraft):
         :param value:
         """
         if selector == 'PLT_EUFD_LINE1':
-            match = search(r'.*\|.*\|(PRESET TUNE)\s\w+', value)
+            match = search(r'.*\|.*\|(PRESET TUNE)\s\w+', str(value))
             self.mode = ApacheEufdMode.IDM
             if match:
                 self.mode = ApacheEufdMode.PRE
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
             LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
-            value = value.replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0').\
+            value = str(value).replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0'). \
                 replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
         if 'PLT_EUFD_LINE' in selector:
             LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
-            value = value.replace('!', '\u2192')  # replace ! with ->
+            value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
     def button_request(self, button: LcdButton, request: str = '\n') -> str:
