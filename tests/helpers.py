@@ -14,7 +14,7 @@ try:
     if response.status_code == 200:
         DCS_BIOS_VER = response.json()['tag_name']
 except exceptions.ConnectTimeout:
-    DCS_BIOS_VER = '0.7.47'
+    DCS_BIOS_VER = 'v0.7.47'
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
