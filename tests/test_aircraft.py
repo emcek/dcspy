@@ -188,7 +188,7 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
     plane = request.getfixturevalue(plane)
-    assert not all([cyc_btn for cyc_btn in plane.cycle_buttons.values()])
+    assert not all([isinstance(cyc_btn, cycle) for cyc_btn in plane.cycle_buttons.values()])
     for val in values:
         assert plane.button_request(btn) == f'{btn_name} {val}\n'
     assert isinstance(plane.cycle_buttons[btn_name], cycle)

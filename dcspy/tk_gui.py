@@ -433,7 +433,7 @@ class DcspyGui(tk.Frame):
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(self.bios_path.get(), 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:  # type: ignore
+            with open(file=path.join(self.bios_path.get(), 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'While checking DCS-BIOS version {err.__class__.__name__}: {err.filename}')
@@ -511,7 +511,7 @@ class DcspyGui(tk.Frame):
         lua_dst_path = path.join(self.bios_path.get(), '..')
         lua = 'Export.lua'
         try:
-            with open(file=path.join(lua_dst_path, lua), encoding='utf-8') as lua_dst:  # type: ignore
+            with open(file=path.join(lua_dst_path, lua), encoding='utf-8') as lua_dst:
                 lua_dst_data = lua_dst.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -533,12 +533,12 @@ class DcspyGui(tk.Frame):
         """
         result = '\n\nExport.lua exists.'
         lua = 'Export.lua'
-        with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:  # type: ignore
+        with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:
             lua_src_data = lua_src.read()
         export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
         if not export_re:
             with open(file=path.join(lua_dst_path, lua), mode='a+',
-                      encoding='utf-8') as exportlua_dst:  # type: ignore
+                      encoding='utf-8') as exportlua_dst:
                 exportlua_dst.write(f'\n{lua_src_data}')
             LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
             result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
