@@ -15,9 +15,9 @@ from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, confi
 from dcspy.sdk import lcd_sdk
 
 try:
-    from typing import TypedDict
-except ImportError:
     from typing_extensions import TypedDict
+except ImportError:
+    from typing import TypedDict
 
 BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int}, total=False)
 LOG = getLogger(__name__)
