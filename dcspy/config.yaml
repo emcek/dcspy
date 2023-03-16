@@ -10,6 +10,8 @@ font_mono_l: 16
 font_mono_s: 11
 font_mono_xs: 9
 font_name: consola.ttf
+git_bios: true
+git_bios_ref: master
 keyboard: G13
 show_gui: true
 theme_color: dark-blue
