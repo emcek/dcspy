@@ -64,10 +64,15 @@ class DcspyGui(tk.Frame):
         self.font_name = tk.StringVar()
         self.theme_color = tk.StringVar()
         self.theme_mode = tk.StringVar()
+        self.bios_git_switch = customtkinter.BooleanVar()
+        self.bios_git_ref = tk.StringVar()
 
         self._load_cfg()
         self.btn_start: customtkinter.CTkButton
         self.btn_stop: customtkinter.CTkButton
+        self.git_bios_switch: customtkinter.CTkSwitch
+        self.bios_git_label: customtkinter.CTkLabel
+        self.bios_git: customtkinter.CTkEntry
         self._init_widgets()
         if config.get('autostart', False):
             self.start_dcspy()
@@ -87,12 +92,14 @@ class DcspyGui(tk.Frame):
         tabview.add('Mono')
         tabview.add('Color')
         tabview.add('Special')
+        tabview.add('Advanced')
         tabview.add('About')
         self._keyboards(tabview)
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
         self._special_settings(tabview)
+        self._advanced_settings(tabview)
         self._about(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
@@ -151,26 +158,22 @@ class DcspyGui(tk.Frame):
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False)
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
-        verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show more logs:')
-        verbose_label.grid(column=0, row=3, sticky=tk.W, pady=5)
-        verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
-        verbose.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
-        dcs_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
-        dcs.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
-        bscbios_label.grid(column=0, row=5, sticky=tk.W, pady=5)
+        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
-        dcsbios.grid(column=1, row=5, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
-        appearance_mode_label.grid(column=0, row=6, sticky=tk.W, pady=5)
+        appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
         appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
-        appearance_mode.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
+        appearance_mode.grid(column=1, row=5, sticky=tk.W, padx=(10, 0), pady=5)
         color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
-        color_theme_label.grid(column=0, row=7, sticky=tk.W, pady=5)
+        color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
         color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
-        color_theme.grid(column=1, row=7, sticky=tk.W, padx=(10, 0), pady=5)
+        color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure mono tab GUI."""
@@ -228,6 +231,27 @@ class DcspyGui(tk.Frame):
         dedfont_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False)
         dedfont.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+
+    def _advanced_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure advanced tab GUI."""
+        tabview.tab('Advanced').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('Advanced').grid_columnconfigure(index=1, weight=1)
+        verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
+        verbose_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
+        verbose.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='DCS-BIOS git version:')
+        git_bios_label.grid(column=0, row=1, sticky=tk.W, pady=5)
+        self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False, command=self._bios_git_switch)
+        self.git_bios_switch.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        entry_state, label_state = tk.DISABLED, tk.DISABLED
+        if self.bios_git_switch.get():
+            entry_state = tk.NORMAL
+            label_state = tk.NORMAL
+        self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=label_state, text='DCS-BIOS Git reference:', )
+        self.bios_git_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=entry_state, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
+        self.bios_git.grid(column=1, row=2, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
@@ -294,6 +318,15 @@ class DcspyGui(tk.Frame):
         """
         getattr(self, label).set(f'Font {" ".join([word.capitalize() for word in label.split("_")])} : {int(value)}')
 
+    def _bios_git_switch(self) -> None:
+        """Change state of DSC-BIOS git version controls."""
+        if self.git_bios_switch.get():
+            self.bios_git_label.configure(state=tk.ACTIVE)
+            self.bios_git.configure(state=tk.NORMAL)
+        else:
+            self.bios_git_label.configure(state=tk.DISABLED)
+            self.bios_git.configure(state=tk.DISABLED)
+
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
         self.autostart_switch.set(config['autostart'])
@@ -303,6 +336,8 @@ class DcspyGui(tk.Frame):
         self.dedfont_switch.set(config['f16_ded_font'])
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
+        self.bios_git_switch.set(config['git_bios'])
+        self.bios_git_ref.set(str(config['git_bios_ref']))
         self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
         self.mono_s.set(f'Font Mono S : {config["font_mono_s"]}')
         self.mono_xs.set(f'Font Mono Xs : {config["font_mono_xs"]}')
@@ -336,6 +371,8 @@ class DcspyGui(tk.Frame):
             'font_color_s': self.size_color_s.get(),
             'font_color_xs': self.size_color_xs.get(),
             'font_name': self.font_name.get(),
+            'git_bios': self.bios_git_switch.get(),
+            'git_bios_ref': self.bios_git_ref.get(),
             'theme_mode': self.theme_mode.get().lower(),
             'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
