@@ -40,79 +40,69 @@ package dcsbios {
 package logitech {
     LogitechKeyboard <|-- KeyboardMono
     LogitechKeyboard <|-- KeyboardColor
-}
 
-class LogitechKeyboard {
-    + parser : ProtocolParser
-    + plane : Aircraft
-    + plane_name = '' : str
-    + plane_detected = False : bool
-    + already_pressed = False : bool
-    + lcd : LcdInfo
-    + vert_space = 0 : int
-    + dislay(message : List[str]) -> List[str]
-    # {abstract} _prepare_image() -> Image
-    + detecting_plane()
-    + load_new_plane(value : str)
-    + check_buttons() -> int
-    + button_handle(sock : socket)
-    + clear()
-    + text(List[str])
-}
+    class LogitechKeyboard {
+        + parser : ProtocolParser
+        + plane : Aircraft
+        + plane_name = '' : str
+        + plane_detected = False : bool
+        + already_pressed = False : bool
+        + lcd : LcdInfo
+        + vert_space = 0 : int
+        + dislay(message : List[str]) -> List[str]
+        # {abstract} _prepare_image() -> Image
+        + detecting_plane()
+        + load_new_plane(value : str)
+        + check_buttons() -> int
+        + button_handle(sock : socket)
+        + clear()
+        + text(List[str])
+    }
 
-class KeyboardMono {
-    + vert_space = 10 : int
-}
+    class KeyboardMono {
+        + vert_space = 10 : int
+    }
 
-class KeyboardColor {
-    + vert_space = 40 : int
+    class KeyboardColor {
+        + vert_space = 40 : int
+    }
 }
 
 package aircraft {
-  Aircraft <|-- FA18Chornet
-  Aircraft <|-- F16C50
-  Aircraft <|-- Ka50
-  Ka50 <|-- Ka503
-  Aircraft <|-- Mi8MT
-  Aircraft <|-- Mi24P
-  Aircraft <|-- AH64D
-  Aircraft <|-- A10C
-  A10C <|-- A10C2
-  Aircraft <|-- F14B
-  F14B <|-- F14A135GR
-  Aircraft <|-- AV8BNA
-  class BIOS_VALUE
-  AH64D *-- ApacheEufdMode
-}
+    Aircraft <|-- FA18Chornet
+    Aircraft <|-- F16C50
+    Aircraft <|-- Ka50
+    Ka50 <|-- Ka503
+    Aircraft <|-- Mi8MT
+    Aircraft <|-- Mi24P
+    Aircraft <|-- AH64D
+    Aircraft <|-- A10C
+    A10C <|-- A10C2
+    Aircraft <|-- F14B
+    F14B <|-- F14A135GR
+    Aircraft <|-- AV8BNA
+    AH64D *-- ApacheEufdMode
+    class Aircraft {
+        + bios_data : Dict[str, BiosValue]
+        + cycle_buttons : Dict[str, Iterator[int]]
+        + lcd : LcdInfo
+        # _debug_img : Iterator[int]
+        + __init__(lcd_type: LcdInfo)
+        + button_request(button: int, request: str) -> str
+        + prepare_image() -> Image
+        + set_bios(selector: str, value: Union[str, int])
+        + get_bios(selector: str) -> Union[str, int]
+        + get_next_value_for_button(btn_name: str) -> int
+        + {abstract} draw_for_lcd_mono(img: Image)
+        + {abstract} draw_for_lcd_color(img: Image)
+    }
 
-class Aircraft {
-    + bios_data : Dict[str, BIOS_VALUE]
-    + cycle_buttons : Dict[str, Iterator[int]]
-    + lcd : LcdInfo
-    # _debug_img : Iterator[int]
-    + __init__(lcd_type: LcdInfo)
-    + button_request(button: int, request: str) -> str
-    + prepare_image() -> Image
-    + set_bios(selector: str, value: str)
-    + get_bios(selector: str) -> Union[str, int]
-    + get_next_value_for_button(btn_name: str) -> int
-    + {abstract} draw_for_lcd_mono(img: Image)
-    + {abstract} draw_for_lcd_color(img: Image)
-}
-
-class ApacheEufdMode <<(E,yellow)>> {
-    + UNK = 0
-    + IDM = 1
-    + WCA = 2
-    + PRE = 4
-}
-
-class BIOS_VALUE <<(T,orange)>> {
-    + class : str
-    + args: Dict[str, int]
-    + value: Union[int, str]
-    + max_value: int
-    - total=False
+    class ApacheEufdMode <<(E,yellow)>> {
+        + UNK = 0
+        + IDM = 1
+        + WCA = 2
+        + PRE = 4
+    }
 }
 
 class LcdInfo <<(D,orchid)>> {
@@ -180,6 +170,31 @@ package sdk{
         + start_led_pulse()
     }
 }
+
+class IntBuffArgs <<(T,orange)>> {
+    + address: int
+    + mask: int
+    + shift_by: int
+}
+
+class StrBuffArgs <<(T,orange)>> {
+    + address: int
+    + max_length: int
+}
+
+class BiosValue <<(T,orange)>> {
+    + klass : str
+    + args: Union[IntBuffArgs, StrBuffArgs]
+    + value: Union[int, str]
+    + max_value: int
+}
+
+TypedDict <- IntBuffArgs
+TypedDict <- StrBuffArgs
+TypedDict <-- BiosValue
+
+BiosValue *-- IntBuffArgs
+BiosValue *-- StrBuffArgs
 
 LcdType --* LcdInfo
 LcdButton --* LcdInfo

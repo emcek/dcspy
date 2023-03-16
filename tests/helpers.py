@@ -7,14 +7,14 @@ from unittest.mock import patch
 
 from requests import get, exceptions
 
-from dcspy.aircraft import Aircraft, BIOS_VALUE
+from dcspy import aircraft, BiosValue
 from dcspy.sdk import lcd_sdk
 try:
     response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
     if response.status_code == 200:
         DCS_BIOS_VER = response.json()['tag_name']
 except exceptions.ConnectTimeout:
-    DCS_BIOS_VER = '0.7.47'
+    DCS_BIOS_VER = 'v0.7.47'
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
@@ -34,7 +34,7 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
         if not bios_ref:
             results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
             continue
-        output_type = plane_bios[bios_key]['class'].split('Buffer')[0].lower()
+        output_type = plane_bios[bios_key]['klass'].split('Buffer')[0].lower()
         try:
             bios_outputs = [out for out in bios_ref['outputs'] if output_type == out['type']][0]
         except IndexError:
@@ -88,10 +88,10 @@ def _get_json_for_plane(plane: str) -> dict:
             return loads(data)
         raise ValueError('File is outdated')
     except (FileNotFoundError, ValueError):
-        data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{DCS_BIOS_VER}/Scripts/DCS-BIOS/doc/json/{plane}')
-        with open(plane_path, 'wb+', encoding='utf-8') as plane_json_file:
-            plane_json_file.write(data.content)
-        return loads(data.content)
+        json_data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{DCS_BIOS_VER}/Scripts/DCS-BIOS/doc/json/{plane}')
+        with open(plane_path, 'wb+') as plane_json_file:
+            plane_json_file.write(json_data.content)
+        return loads(json_data.content)
 
 
 def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
@@ -111,7 +111,7 @@ def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
                 return item
 
 
-def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str, BIOS_VALUE]:
+def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str, BiosValue]:
     """
     generate dict of BIOS values for plane.
 
@@ -129,12 +129,12 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str,
         bios_outputs = bios_ref['outputs'][0]
         buff_type = f'{bios_outputs["type"].capitalize()}Buffer'
         if 'String' in buff_type:
-            results[bios_key] = {'class': buff_type,
+            results[bios_key] = {'klass': buff_type,
                                  'args': {'address': hex(bios_outputs['address']),
                                           'max_length': hex(bios_outputs['max_length'])},
                                  'value': ''}
         elif 'Integer' in buff_type:
-            results[bios_key] = {'class': buff_type,
+            results[bios_key] = {'klass': buff_type,
                                  'args': {'address': hex(bios_outputs['address']),
                                           'mask': hex(bios_outputs['mask']),
                                           'shift_by': hex(bios_outputs['shift_by'])},
@@ -142,7 +142,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str,
     return results
 
 
-def set_bios_during_test(aircraft_model: Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
+def set_bios_during_test(aircraft_model: aircraft.Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
     """
     Set BIOS values for a given aircraft model.
 

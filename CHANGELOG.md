@@ -1,5 +1,7 @@
 ## 2.0.0
 * Allow use/update DCS-BIOS directly form GitHub (master branch)
+* Internal:
+  * improve type checking
 
 ## 1.9.5
 * Support for **Mi-8MTV2 Magnificent Eight**
