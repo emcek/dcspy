@@ -28,6 +28,8 @@ defaults_cfg: ConfigDict = {
     'font_color_s': 22,
     'font_color_xs': 18,
     'font_color_l': 32,
+    'git_bios': False,
+    'git_bios_ref': 'master',
     'theme_mode': 'system',
     'theme_color': 'blue',
     'f16_ded_font': True
