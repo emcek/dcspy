@@ -126,8 +126,8 @@ def test_check_dcs_ver_file_not_exists(side_effect):
         assert dcs_ver == ('Unknown', 'Unknown')
 
 
-def test_is_git_repo(tmppath):
+def test_is_git_repo(tmpdir):
     from git import Repo
-    assert utils.is_git_repo(tmppath) is False
-    Repo.init(tmppath)
-    assert utils.is_git_repo(tmppath) is True
+    assert utils.is_git_repo(tmpdir) is False
+    Repo.init(tmpdir)
+    assert utils.is_git_repo(tmpdir) is True
