@@ -267,12 +267,13 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
         try:
             bios_repo.git.checkout(self.bios_git_ref.get())
-            sha = bios_repo.active_branch.name
-            h_com = bios_repo.head.commit
+            branch = bios_repo.active_branch.name
+            head_commit = bios_repo.head.commit
+            sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
         except (git.exc.GitCommandError, TypeError):
-            h_com = bios_repo.head.commit
-            sha = h_com.hexsha[0:9]
-        LOG.debug(f"Checkout: {h_com.committed_datetime} | {h_com.message} | by: {h_com.author}")
+            head_commit = bios_repo.head.commit
+            sha = f'{head_commit.hexsha[0:9]}: {head_commit.committed_datetime} by: {head_commit.author}'
+        LOG.debug(f"Checkout: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")
         self.status_txt.set(sha)
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
