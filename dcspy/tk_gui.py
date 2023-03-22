@@ -12,6 +12,7 @@ from typing import Union
 from webbrowser import open_new
 
 import customtkinter
+import git
 from PIL import Image
 from packaging import version
 
@@ -251,6 +252,35 @@ class DcspyGui(tk.Frame):
             self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
         self.bios_git_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=2, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        update_git = customtkinter.CTkButton(master=tabview.tab('Advanced'), text='Update BIOS', state=tk.ACTIVE, command=self._update_git)
+        update_git.grid(column=1, row=4, padx=20, pady=10)
+
+    @staticmethod
+    def is_git_repo(dirpath):
+        try:
+            _ = git.Repo(dirpath).git_dir
+            return True
+        except git.exc.InvalidGitRepositoryError:
+            return False
+
+    def _update_git(self):
+        repo_dir = path.join(gettempdir(), 'dcsbios_git')
+        if DcspyGui.is_git_repo(repo_dir):
+            bios_repo = git.Repo(repo_dir)
+            bios_repo.git.checkout('master')
+        else:
+            bios_repo = git.Repo.clone_from(url='https://github.com/DCSFlightpanels/dcs-bios.git', to_path=repo_dir)
+        f_info = bios_repo.remotes[0].pull()
+        LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
+        try:
+            bios_repo.git.checkout(self.bios_git_ref.get())
+            sha = bios_repo.active_branch.name
+            h_com = bios_repo.head.commit
+        except (git.exc.GitCommandError, TypeError):
+            h_com = bios_repo.head.commit
+            sha = h_com.hexsha[0:9]
+        LOG.debug(f"Checkout: {h_com.committed_datetime} | {h_com.message} | by: {h_com.author}")
+        self.status_txt.set(sha)
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
