@@ -127,7 +127,7 @@ def test_check_dcs_ver_file_not_exists(side_effect):
 
 
 def test_is_git_repo(tmppath):
-    import git
+    from git import Repo
     assert utils.is_git_repo(tmppath) is False
-    git.Repo.init(tmppath)
+    Repo.init(tmppath)
     assert utils.is_git_repo(tmppath) is True
