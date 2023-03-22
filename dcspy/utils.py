@@ -5,7 +5,8 @@ from pathlib import Path
 from re import search
 from typing import Dict, Union, Tuple, NamedTuple
 
-import git
+from git import Repo
+from git.exc import InvalidGitRepositoryError
 from packaging import version
 from psutil import process_iter
 from requests import get
@@ -241,7 +242,7 @@ def is_git_repo(dir_path: str) -> bool:
     :return: true if dir is git repo
     """
     try:
-        _ = git.Repo(dir_path).git_dir
+        _ = Repo(dir_path).git_dir
         return True
-    except git.exc.InvalidGitRepositoryError:
+    except InvalidGitRepositoryError:
         return False
