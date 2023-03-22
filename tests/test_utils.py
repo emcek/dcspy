@@ -124,3 +124,10 @@ def test_check_dcs_ver_file_not_exists(side_effect):
     with patch('dcspy.utils.open', side_effect=side_effect):
         dcs_ver = utils.check_dcs_ver('')
         assert dcs_ver == ('Unknown', 'Unknown')
+
+
+def test_is_git_repo(tmppath):
+    import git
+    assert utils.is_git_repo(tmppath) is False
+    git.Repo.init(tmppath)
+    assert utils.is_git_repo(tmppath) is True
