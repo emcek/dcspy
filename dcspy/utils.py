@@ -5,6 +5,7 @@ from pathlib import Path
 from re import search
 from typing import Dict, Union, Tuple, NamedTuple
 
+from git import exc, Repo
 from packaging import version
 from psutil import process_iter
 from requests import get
@@ -230,3 +231,17 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
         if dcs_ver:
             result_ver = str(dcs_ver.group(1))
     return result_type, result_ver
+
+
+def is_git_repo(dir_path: str) -> bool:
+    """
+    Check if dir_path ios Git repository.
+
+    :param dir_path: path as string
+    :return: true if dir is git repo
+    """
+    try:
+        _ = Repo(dir_path).git_dir
+        return True
+    except exc.InvalidGitRepositoryError:
+        return False

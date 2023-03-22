@@ -18,7 +18,7 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, is_git_repo
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -255,17 +255,10 @@ class DcspyGui(tk.Frame):
         update_git = customtkinter.CTkButton(master=tabview.tab('Advanced'), text='Update BIOS', state=tk.ACTIVE, command=self._update_git)
         update_git.grid(column=1, row=4, padx=20, pady=10)
 
-    @staticmethod
-    def is_git_repo(dirpath):
-        try:
-            _ = git.Repo(dirpath).git_dir
-            return True
-        except git.exc.InvalidGitRepositoryError:
-            return False
-
     def _update_git(self):
+        """Update DCS-BIOS git repository."""
         repo_dir = path.join(gettempdir(), 'dcsbios_git')
-        if DcspyGui.is_git_repo(repo_dir):
+        if is_git_repo(repo_dir):
             bios_repo = git.Repo(repo_dir)
             bios_repo.git.checkout('master')
         else:
