@@ -260,26 +260,36 @@ class DcspyGui(tk.Frame):
         update_git = customtkinter.CTkButton(master=tabview.tab('Advanced'), text='Update BIOS', state=tk.ACTIVE, command=self._update_git)
         update_git.grid(column=1, row=4, padx=20, pady=10)
 
-    def _update_git(self):
-        """Update DCS-BIOS git repository."""
+    def _update_git(self, update=True) -> str:
+        """
+        Update DCS-BIOS git repository.
+        Return SHA of latest commit.
+
+        :param update: perform update process
+        """
         repo_dir = path.join(gettempdir(), 'dcsbios_git')
         if is_git_repo(repo_dir):
             bios_repo = git.Repo(repo_dir)
             bios_repo.git.checkout('master')
         else:
             bios_repo = git.Repo.clone_from(url='https://github.com/DCSFlightpanels/dcs-bios.git', to_path=repo_dir)
-        f_info = bios_repo.remotes[0].pull()
-        LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
-        try:
-            bios_repo.git.checkout(self.bios_git_ref.get())
-            branch = bios_repo.active_branch.name
+        if update:
+            f_info = bios_repo.remotes[0].pull()
+            LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
+            try:
+                bios_repo.git.checkout(self.bios_git_ref.get())
+                branch = bios_repo.active_branch.name
+                head_commit = bios_repo.head.commit
+                sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
+            except (git.exc.GitCommandError, TypeError):
+                head_commit = bios_repo.head.commit
+                sha = f'{head_commit.hexsha[0:9]}: {head_commit.committed_datetime} by: {head_commit.author}'
+            LOG.debug(f"Checkout: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")
+            self.status_txt.set(sha)
+        else:
             head_commit = bios_repo.head.commit
-            sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
-        except (git.exc.GitCommandError, TypeError):
-            head_commit = bios_repo.head.commit
-            sha = f'{head_commit.hexsha[0:9]}: {head_commit.committed_datetime} by: {head_commit.author}'
-        LOG.debug(f"Checkout: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")
-        self.status_txt.set(sha)
+            sha = f'{head_commit.hexsha[0:9]} {head_commit.committed_datetime}'
+        return sha
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
