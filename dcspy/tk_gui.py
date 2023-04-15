@@ -295,6 +295,10 @@ class DcspyGui(tk.Frame):
         """About information."""
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
+        self._update_bios()
+        bios_ver = self._check_local_bios().ver
+        sha_commit = f'SHA: {self._update_git(update=False)}' if self.bios_git_switch.get() else ''
+        dcs_bios_ver = f'{bios_ver}{sha_commit}'
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
         python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
