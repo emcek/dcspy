@@ -140,7 +140,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str, git_bios: bo
     bios_ver = _get_dcs_bios_version(use_git=git_bios)
     local_json = _get_json_for_plane(plane=plane_json, bios_ver=bios_ver)
     for bios_key in plane_bios:
-        bios_ref = _recursive_lookup(bios_key, local_json)
+        bios_ref = _recursive_lookup(search_key=bios_key, bios_dict=local_json)
         if not bios_ref:
             results[bios_key] = f'Not found in DCS-BIOS {bios_ver}'
             continue
