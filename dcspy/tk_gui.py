@@ -262,7 +262,7 @@ class DcspyGui(tk.Frame):
         """About information."""
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
-        self._update_bios()
+        self._update_bios(silence=True)
         bios_ver = self._check_local_bios().ver
         sha_commit = f' SHA: {check_git_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
@@ -436,8 +436,12 @@ class DcspyGui(tk.Frame):
         elif 'failed' in ver_string:
             messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
 
-    def _update_bios(self):
-        """Update Git or stable DCS-BIOS version."""
+    def _update_bios(self, silence=False):
+        """
+        Update Git or stable DCS-BIOS version.
+
+        :param silence: perform action with silence
+        """
         if self.update_bios.get():
             if self.git_bios_switch.get():
                 repo_dir = path.join(gettempdir(), 'dcsbios_git')
@@ -446,9 +450,13 @@ class DcspyGui(tk.Frame):
                 rmtree(path=self.bios_path.get(), ignore_errors=True)
                 LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
                 copytree(src=path.join(repo_dir, 'Scripts', 'DCS-BIOS'), dst=self.bios_path.get())
+                local_bios = self._check_local_bios()
                 self.status_txt.set(sha)
+                if not silence:
+                    install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
+                    messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
             else:
-                self._check_bios(silence=True)
+                self._check_bios(silence=silence)
 
     def _check_bios(self, silence=False) -> None:
         """Check version and configuration of DCS-BIOS."""
@@ -560,8 +568,9 @@ class DcspyGui(tk.Frame):
             if messagebox.askyesno('Open browser', install_result):
                 self._open_webpage(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
         else:
-            messagebox.showinfo('Updated', install_result)
-            self.status_txt.set(f'Local BIOS: {self._check_local_bios().ver} | Remote BIOS: {self.r_bios}')
+            local_bios = self._check_local_bios()
+            self.status_txt.set(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
 
     def _handling_export_lua(self, temp_dir: str) -> str:
         """
