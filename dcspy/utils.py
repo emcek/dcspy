@@ -260,6 +260,7 @@ def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), '
     :param update: perform update process
     :param repo_dir: local directory for repository
     """
+    makedirs(name=repo_dir, exist_ok=True)
     if is_git_repo(repo_dir):
         bios_repo = git.Repo(repo_dir)
         bios_repo.git.checkout('master')
@@ -275,9 +276,9 @@ def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), '
             sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
         except (git.exc.GitCommandError, TypeError):
             head_commit = bios_repo.head.commit
-            sha = f'{head_commit.hexsha[0:9]}: {head_commit.committed_datetime} by: {head_commit.author}'
+            sha = f'{head_commit.hexsha[0:9]} from:{head_commit.committed_datetime} by: {head_commit.author}'
         LOG.debug(f"Checkout: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")
     else:
         head_commit = bios_repo.head.commit
-        sha = f'{head_commit.hexsha[0:9]} {head_commit.committed_datetime}'
+        sha = f'{head_commit.hexsha[0:9]} from: {head_commit.committed_datetime}'
     return sha
