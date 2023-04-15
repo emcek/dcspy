@@ -18,7 +18,7 @@ from packaging import version
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
-    check_git_repo
+    check_github_repo
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -264,7 +264,7 @@ class DcspyGui(tk.Frame):
         dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
         self._update_bios(silence=True)
         bios_ver = self._check_local_bios().ver
-        sha_commit = f' SHA: {check_git_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
+        sha_commit = f' SHA: {check_github_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
@@ -445,7 +445,7 @@ class DcspyGui(tk.Frame):
         if self.update_bios.get():
             if self.git_bios_switch.get():
                 repo_dir = path.join(gettempdir(), 'dcsbios_git')
-                sha = check_git_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
+                sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
                 LOG.debug(f'Remove: {self.bios_path.get()} ')
                 rmtree(path=self.bios_path.get(), ignore_errors=True)
                 LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')

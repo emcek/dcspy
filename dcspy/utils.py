@@ -251,7 +251,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), 'dcsbios_git')) -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=path.join(gettempdir(), 'dcsbios_git')) -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -259,6 +259,7 @@ def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), '
 
     :param git_ref: any Git reference as string
     :param update: perform update process
+    :param repo: GitHub repository
     :param repo_dir: local directory for repository
     """
     makedirs(name=repo_dir, exist_ok=True)
@@ -266,7 +267,7 @@ def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), '
         bios_repo = git.Repo(repo_dir)
         bios_repo.git.checkout('master')
     else:
-        bios_repo = git.Repo.clone_from(url='https://github.com/DCSFlightpanels/dcs-bios.git', to_path=repo_dir)
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir)
     if update:
         f_info = bios_repo.remotes[0].pull()
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
