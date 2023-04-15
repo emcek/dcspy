@@ -440,7 +440,12 @@ class DcspyGui(tk.Frame):
         """Update Git or stable DCS-BIOS version."""
         if self.update_bios.get():
             if self.git_bios_switch.get():
-                sha = check_git_repo(git_ref=self.bios_git_ref.get(), update=True)
+                repo_dir = path.join(gettempdir(), 'dcsbios_git')
+                sha = check_git_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
+                LOG.debug(f'Remove: {self.bios_path.get()} ')
+                rmtree(path=self.bios_path.get(), ignore_errors=True)
+                LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
+                copytree(src=path.join(repo_dir, 'Scripts', 'DCS-BIOS'), dst=self.bios_path.get())
                 self.status_txt.set(sha)
             else:
                 self._check_bios(silence=True)
