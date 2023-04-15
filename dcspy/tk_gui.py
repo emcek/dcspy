@@ -42,40 +42,6 @@ class DcspyGui(tk.Frame):
 
         self.status_txt = tk.StringVar()
         self.status_txt.set(get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver']))
-        self.lcd_type = tk.StringVar()
-        self.bios_path = tk.StringVar()
-        self.dcs_path = tk.StringVar()
-        self.autostart_switch = customtkinter.BooleanVar()
-        self.showgui_switch = customtkinter.BooleanVar()
-        self.checkver_switch = customtkinter.BooleanVar()
-        self.verbose_switch = customtkinter.BooleanVar()
-        self.dedfont_switch = customtkinter.BooleanVar()
-        self.update_bios = customtkinter.BooleanVar()
-        self.mono_l = tk.StringVar()
-        self.mono_s = tk.StringVar()
-        self.mono_xs = tk.StringVar()
-        self.color_l = tk.StringVar()
-        self.color_s = tk.StringVar()
-        self.color_xs = tk.StringVar()
-        self.size_mono_l = tk.IntVar()
-        self.size_mono_s = tk.IntVar()
-        self.size_mono_xs = tk.IntVar()
-        self.size_color_l = tk.IntVar()
-        self.size_color_s = tk.IntVar()
-        self.size_color_xs = tk.IntVar()
-        self.font_name = tk.StringVar()
-        self.theme_color = tk.StringVar()
-        self.theme_mode = tk.StringVar()
-        self.bios_git_switch = customtkinter.BooleanVar()
-        self.bios_git_ref = tk.StringVar()
-
-        self._load_cfg()
-        self.btn_start: customtkinter.CTkButton
-        self.btn_stop: customtkinter.CTkButton
-        self.git_bios_switch: customtkinter.CTkSwitch
-        self.bios_git_label: customtkinter.CTkLabel
-        self.bios_git: customtkinter.CTkEntry
-        self._init_widgets()
         if config.get('autostart', False):
             self.start_dcspy()
 
