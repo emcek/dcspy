@@ -3,8 +3,10 @@ from logging import getLogger
 from os import environ, makedirs, path
 from pathlib import Path
 from re import search
+from tempfile import gettempdir
 from typing import Dict, Union, Tuple, NamedTuple
 
+import git
 from git import Repo
 from git.exc import InvalidGitRepositoryError
 from packaging import version
@@ -247,3 +249,35 @@ def is_git_repo(dir_path: str) -> bool:
         return True
     except InvalidGitRepositoryError:
         return False
+
+
+def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), 'dcsbios_git')) -> str:
+    """
+    Update DCS-BIOS git repository.
+    Return SHA of latest commit.
+
+    :param git_ref: any Git reference as string
+    :param update: perform update process
+    :param repo_dir: local directory for repository
+    """
+    if is_git_repo(repo_dir):
+        bios_repo = git.Repo(repo_dir)
+        bios_repo.git.checkout('master')
+    else:
+        bios_repo = git.Repo.clone_from(url='https://github.com/DCSFlightpanels/dcs-bios.git', to_path=repo_dir)
+    if update:
+        f_info = bios_repo.remotes[0].pull()
+        LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
+        try:
+            bios_repo.git.checkout(git_ref)
+            branch = bios_repo.active_branch.name
+            head_commit = bios_repo.head.commit
+            sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
+        except (git.exc.GitCommandError, TypeError):
+            head_commit = bios_repo.head.commit
+            sha = f'{head_commit.hexsha[0:9]}: {head_commit.committed_datetime} by: {head_commit.author}'
+        LOG.debug(f"Checkout: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")
+    else:
+        head_commit = bios_repo.head.commit
+        sha = f'{head_commit.hexsha[0:9]} {head_commit.committed_datetime}'
+    return sha

@@ -12,13 +12,13 @@ from typing import Union
 from webbrowser import open_new
 
 import customtkinter
-import git
 from PIL import Image
 from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, is_git_repo
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
+    check_git_repo
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -258,44 +258,13 @@ class DcspyGui(tk.Frame):
         self.bios_git_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=2, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
 
-    def _update_git(self, update=True) -> str:
-        """
-        Update DCS-BIOS git repository.
-        Return SHA of latest commit.
-
-        :param update: perform update process
-        """
-        repo_dir = path.join(gettempdir(), 'dcsbios_git')
-        if is_git_repo(repo_dir):
-            bios_repo = git.Repo(repo_dir)
-            bios_repo.git.checkout('master')
-        else:
-            bios_repo = git.Repo.clone_from(url='https://github.com/DCSFlightpanels/dcs-bios.git', to_path=repo_dir)
-        if update:
-            f_info = bios_repo.remotes[0].pull()
-            LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
-            try:
-                bios_repo.git.checkout(self.bios_git_ref.get())
-                branch = bios_repo.active_branch.name
-                head_commit = bios_repo.head.commit
-                sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
-            except (git.exc.GitCommandError, TypeError):
-                head_commit = bios_repo.head.commit
-                sha = f'{head_commit.hexsha[0:9]}: {head_commit.committed_datetime} by: {head_commit.author}'
-            LOG.debug(f"Checkout: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")
-            self.status_txt.set(sha)
-        else:
-            head_commit = bios_repo.head.commit
-            sha = f'{head_commit.hexsha[0:9]} {head_commit.committed_datetime}'
-        return sha
-
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
         self._update_bios()
         bios_ver = self._check_local_bios().ver
-        sha_commit = f'SHA: {self._update_git(update=False)}' if self.bios_git_switch.get() else ''
+        sha_commit = f'SHA: {check_git_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
@@ -471,7 +440,8 @@ class DcspyGui(tk.Frame):
         """Update Git or stable DCS-BIOS version."""
         if self.update_bios.get():
             if self.git_bios_switch.get():
-                self._update_git(update=True)
+                sha = check_git_repo(git_ref=self.bios_git_ref.get(), update=True)
+                self.status_txt.set(sha)
             else:
                 self._check_bios(silence=True)
 
