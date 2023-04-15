@@ -436,7 +436,7 @@ class DcspyGui(tk.Frame):
         elif 'failed' in ver_string:
             messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
 
-    def _update_bios(self, silence=False):
+    def _update_bios(self, silence=False) -> None:
         """
         Update Git or stable DCS-BIOS version.
 
