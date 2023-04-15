@@ -254,6 +254,7 @@ def is_git_repo(dir_path: str) -> bool:
 def check_git_repo(git_ref: str, update=True, repo_dir=path.join(gettempdir(), 'dcsbios_git')) -> str:
     """
     Update DCS-BIOS git repository.
+
     Return SHA of latest commit.
 
     :param git_ref: any Git reference as string
