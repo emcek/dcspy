@@ -537,7 +537,7 @@ class DcspyGui(tk.Frame):
 
         :param rel_info: remote release information
         """
-        msg_txt = f'You are running latest {rel_info.ver} version.\n' \
+        msg_txt = f'You are running {self.l_bios} version.\n' \
                   f'Type: {rel_info.release_type}\n' \
                   f'Released: {rel_info.published}\n\n' \
                   f'Would you like to download {rel_info.archive_file} and overwrite update?'
