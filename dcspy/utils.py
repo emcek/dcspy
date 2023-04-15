@@ -18,6 +18,7 @@ default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+    'check_bios': True,
     'check_ver': True,
     'autostart': False,
     'verbose': False,
