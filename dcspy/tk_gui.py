@@ -257,8 +257,6 @@ class DcspyGui(tk.Frame):
             self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
         self.bios_git_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=2, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
-        update_git = customtkinter.CTkButton(master=tabview.tab('Advanced'), text='Update BIOS', state=tk.ACTIVE, command=self._update_git)
-        update_git.grid(column=1, row=4, padx=20, pady=10)
 
     def _update_git(self, update=True) -> str:
         """
@@ -324,7 +322,7 @@ class DcspyGui(tk.Frame):
         dcsp2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
         dcsbios1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS-BIOS:')
         dcsbios1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
-        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self._check_local_bios().ver}')
+        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_bios_ver}')
         dcsbios2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
         dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
         dcsworld1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
@@ -473,7 +471,7 @@ class DcspyGui(tk.Frame):
         """Update Git or stable DCS-BIOS version."""
         if self.update_bios.get():
             if self.git_bios_switch.get():
-                self._update_git()
+                self._update_git(update=True)
             else:
                 self._check_bios(silence=True)
 
