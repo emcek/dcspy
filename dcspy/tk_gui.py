@@ -365,6 +365,7 @@ class DcspyGui(tk.Frame):
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
         self.bios_git_switch.set(config['git_bios'])
+        self.update_bios.set(config['check_bios'])
         self.bios_git_ref.set(str(config['git_bios_ref']))
         self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
         self.mono_s.set(f'Font Mono S : {config["font_mono_s"]}')
@@ -388,6 +389,7 @@ class DcspyGui(tk.Frame):
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
             'check_ver': self.checkver_switch.get(),
+            'check_bios': self.update_bios.get(),
             'verbose': self.verbose_switch.get(),
             'f16_ded_font': self.dedfont_switch.get(),
             'dcs': self.dcs_path.get(),
