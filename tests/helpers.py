@@ -9,30 +9,27 @@ from requests import get, exceptions
 
 from dcspy import aircraft, BiosValue
 from dcspy.sdk import lcd_sdk
-try:
-    response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
-    if response.status_code == 200:
-        DCS_BIOS_VER = response.json()['tag_name']
-except exceptions.ConnectTimeout:
-    DCS_BIOS_VER = 'v0.7.47'
+
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
 
-def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
+def check_dcsbios_data(plane_bios: dict, plane_json: str, git_bios: bool) -> Tuple[dict, str]:
     """
     Verify if all aircraft's data are correct with DCS-BIOS.
 
     :param plane_bios: BIOS data from plane
     :param plane_json: DCS-BIOS json filename
+    :param git_bios: use live/git DCS-BIOS version
     :return: result of checks and DCS-BIOS version
     """
     results = {}
-    local_json = _get_json_for_plane(plane_json)
+    bios_ver = _get_dcs_bios_version(use_git=git_bios)
+    local_json = _get_json_for_plane(plane=plane_json, bios_ver=bios_ver)
     for bios_key in plane_bios:
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
-            results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
+            results[bios_key] = f'Not found in DCS-BIOS {bios_ver}'
             continue
         output_type = plane_bios[bios_key]['klass'].split('Buffer')[0].lower()
         try:
@@ -41,7 +38,25 @@ def check_dcsbios_data(plane_bios: dict, plane_json: str) -> Tuple[dict, str]:
             results[bios_key] = f'Wrong output type: {output_type}'
             continue
         results = _compare_dcspy_with_bios(bios_key, bios_outputs, plane_bios, results)
-    return results, DCS_BIOS_VER
+    return results, bios_ver
+
+
+def _get_dcs_bios_version(use_git) -> str:
+    """
+    Fetch stable or live DCS-BIOS version.
+
+    :param use_git: use live/git version
+    :return: version as string
+    """
+    bios_ver = 'master'
+    if not use_git:
+        try:
+            response = get(url='https://api.github.com/repos/DCSFlightpanels/dcs-bios/releases/latest', timeout=2)
+            if response.status_code == 200:
+                bios_ver = response.json()['tag_name']
+        except exceptions.ConnectTimeout:
+            bios_ver = 'v0.7.47'
+    return bios_ver
 
 
 def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict, results: dict) -> dict:
@@ -67,7 +82,7 @@ def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict
     return results
 
 
-def _get_json_for_plane(plane: str) -> dict:
+def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
     """
     Download json file for plane and write it to temporary directory.
 
@@ -76,6 +91,7 @@ def _get_json_for_plane(plane: str) -> dict:
     * file is older the one week
 
     :param plane: DCS-BIOS json filename
+    :param bios_ver: DCS-BIOS version
     :return: json as dict
     """
     plane_path = path.join(gettempdir(), plane)
@@ -88,7 +104,7 @@ def _get_json_for_plane(plane: str) -> dict:
             return loads(data)
         raise ValueError('File is outdated')
     except (FileNotFoundError, ValueError):
-        json_data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{DCS_BIOS_VER}/Scripts/DCS-BIOS/doc/json/{plane}')
+        json_data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{bios_ver}/Scripts/DCS-BIOS/doc/json/{plane}')
         with open(plane_path, 'wb+') as plane_json_file:
             plane_json_file.write(json_data.content)
         return loads(json_data.content)
@@ -111,20 +127,22 @@ def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
                 return item
 
 
-def generate_bios_data_for_plane(plane_bios: dict, plane_json: str) -> Dict[str, BiosValue]:
+def generate_bios_data_for_plane(plane_bios: dict, plane_json: str, git_bios: bool) -> Dict[str, BiosValue]:
     """
-    generate dict of BIOS values for plane.
+    Generate dict of BIOS values for plane.
 
     :param plane_bios: BIOS data from plane
     :param plane_json: DCS-BIOS json filename
+    :param git_bios: use live/git DCS-BIOS version
     :return: dict of BIOS_VALUE for plane
     """
     results = {}
-    local_json = _get_json_for_plane(plane_json)
+    bios_ver = _get_dcs_bios_version(use_git=git_bios)
+    local_json = _get_json_for_plane(plane=plane_json, bios_ver=bios_ver)
     for bios_key in plane_bios:
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
-            results[bios_key] = f'Not found in DCS-BIOS {DCS_BIOS_VER}'
+            results[bios_key] = f'Not found in DCS-BIOS {bios_ver}'
             continue
         bios_outputs = bios_ref['outputs'][0]
         buff_type = f'{bios_outputs["type"].capitalize()}Buffer'
