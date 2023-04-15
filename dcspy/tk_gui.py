@@ -455,7 +455,15 @@ class DcspyGui(tk.Frame):
         elif 'failed' in ver_string:
             messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
 
-    def _check_bios(self) -> None:
+    def _update_bios(self):
+        """Update Git or stable DCS-BIOS version."""
+        if self.update_bios.get():
+            if self.git_bios_switch.get():
+                self._update_git()
+            else:
+                self._check_bios(silence=True)
+
+    def _check_bios(self, silence=False) -> None:
         """Check version and configuration of DCS-BIOS."""
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
@@ -463,10 +471,13 @@ class DcspyGui(tk.Frame):
         correct_local_bios_ver = isinstance(self.l_bios, version.Version)
         correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
+        ready_to_update = all([correct_remote_bios_ver, not dcs_runs])
 
-        if all([correct_remote_bios_ver, not dcs_runs]):
+        if silence and ready_to_update and not remote_bios_info.latest:
+            self._update(rel_info=remote_bios_info)
+        elif not silence and ready_to_update:
             self._ask_to_update(rel_info=remote_bios_info)
-        else:
+        elif not all([silence, ready_to_update]):
             msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
             messagebox.showwarning('Update', msg)
 
