@@ -459,7 +459,11 @@ class DcspyGui(tk.Frame):
                 self._check_bios(silence=silence)
 
     def _check_bios(self, silence=False) -> None:
-        """Check version and configuration of DCS-BIOS."""
+        """
+        Check version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         self.status_txt.set(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
