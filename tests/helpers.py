@@ -99,7 +99,7 @@ def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
         m_time = path.getmtime(plane_path)
         week = datetime.fromtimestamp(int(m_time)).strftime('%U')
         if week == datetime.now().strftime('%U'):
-            with open(plane_path) as plane_json_file:
+            with open(plane_path, encoding='utf-8') as plane_json_file:
                 data = plane_json_file.read()
             return loads(data)
         raise ValueError('File is outdated')
