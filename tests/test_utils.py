@@ -145,3 +145,35 @@ def test_check_github_repo(tmpdir):
     sha = utils.check_github_repo(git_ref='branch', update=False, repo='emcek/dcspy', repo_dir=tmpdir)
     match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}', sha)
     assert match.group(1)
+
+
+def test_check_dcs_bios_entry_no_entry(tmpdir):
+    from os import makedirs, path
+    install_dir = path.join(tmpdir, 'install')
+    makedirs(install_dir)
+    lua = 'Export.lua'
+    lua_dst_data = ''
+
+    with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
+        lua_from_zip.write('anything')
+    with open(file=path.join(install_dir, lua), mode='a+', encoding='utf-8') as lua_dst:
+        lua_dst.write(lua_dst_data)
+
+    result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
+    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+
+
+def test_check_dcs_bios_entry_ok(tmpdir):
+    from os import makedirs, path
+    install_dir = path.join(tmpdir, 'install')
+    makedirs(install_dir)
+    lua = 'Export.lua'
+    lua_dst_data = 'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])'
+
+    with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
+        lua_from_zip.write('anything')
+    with open(file=path.join(install_dir, lua), mode='a+', encoding='utf-8') as lua_dst:
+        lua_dst.write(lua_dst_data)
+
+    result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
+    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
