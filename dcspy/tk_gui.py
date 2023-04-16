@@ -346,6 +346,7 @@ class DcspyGui(tk.Frame):
         """Load configuration into GUI."""
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
+        self.savelcd_switch.set(config['save_lcd'])
         self.checkver_switch.set(config['check_ver'])
         self.verbose_switch.set(config['verbose'])
         self.dedfont_switch.set(config['f16_ded_font'])
@@ -375,6 +376,7 @@ class DcspyGui(tk.Frame):
         cfg = {
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
+            'save_lcd': self.savelcd_switch.get(),
             'check_ver': self.checkver_switch.get(),
             'check_bios': self.update_bios.get(),
             'verbose': self.verbose_switch.get(),
