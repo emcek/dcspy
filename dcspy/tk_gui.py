@@ -453,20 +453,28 @@ class DcspyGui(tk.Frame):
         :param silence: perform action with silence
         """
         if self.git_bios_switch.get():
-            repo_dir = path.join(gettempdir(), 'dcsbios_git')
-            sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
-            LOG.debug(f'Remove: {self.bios_path.get()} ')
-            rmtree(path=self.bios_path.get(), ignore_errors=True)
-            LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
-            copytree(src=path.join(repo_dir, 'Scripts', 'DCS-BIOS'), dst=self.bios_path.get())
-            local_bios = self._check_local_bios()
-            self.status_txt.set(sha)
-            if not silence:
-                install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
-                install_result = f'{install_result}\n\nUsing Git/Live version.'
-                messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
+            self._check_bios_git(silence=silence)
         else:
             self._check_bios_release(silence=silence)
+
+    def _check_bios_git(self, silence=False) -> None:
+        """
+        Check git/live version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
+        repo_dir = path.join(gettempdir(), 'dcsbios_git')
+        sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
+        LOG.debug(f'Remove: {self.bios_path.get()} ')
+        rmtree(path=self.bios_path.get(), ignore_errors=True)
+        LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
+        copytree(src=path.join(repo_dir, 'Scripts', 'DCS-BIOS'), dst=self.bios_path.get())
+        local_bios = self._check_local_bios()
+        self.status_txt.set(sha)
+        if not silence:
+            install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
+            install_result = f'{install_result}\n\nUsing Git/Live version.'
+            messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
 
     def _check_bios_release(self, silence=False) -> None:
         """
