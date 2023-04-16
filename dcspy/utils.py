@@ -304,8 +304,7 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) ->
         lua_src_data = lua_src.read()
     export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
     if not export_re:
-        with open(file=path.join(lua_dst_path, lua), mode='a+',
-                  encoding='utf-8') as exportlua_dst:
+        with open(file=path.join(lua_dst_path, lua), mode='a+', encoding='utf-8') as exportlua_dst:
             exportlua_dst.write(f'\n{lua_src_data}')
         LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
         result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
