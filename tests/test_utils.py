@@ -79,6 +79,7 @@ def test_dummy_save_load_set_defaults():
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                      'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                      'verbose': False,
+                     'check_bios': True,
                      'check_ver': True,
                      'font_name': 'consola.ttf',
                      'font_mono_s': 11,
@@ -88,6 +89,8 @@ def test_dummy_save_load_set_defaults():
                      'font_color_xs': 18,
                      'font_color_l': 32,
                      'f16_ded_font': True,
+                     'git_bios': False,
+                     'git_bios_ref': 'master',
                      'theme_mode': 'system',
                      'theme_color': 'blue'}
     with open(test_tmp_yaml, 'w+') as f:
@@ -122,3 +125,55 @@ def test_check_dcs_ver_file_not_exists(side_effect):
     with patch('dcspy.utils.open', side_effect=side_effect):
         dcs_ver = utils.check_dcs_ver('')
         assert dcs_ver == ('Unknown', 'Unknown')
+
+
+def test_is_git_repo(tmpdir):
+    from git import Repo
+    assert utils.is_git_repo(tmpdir) is False
+    Repo.init(tmpdir)
+    assert utils.is_git_repo(tmpdir) is True
+
+
+def test_check_github_repo(tmpdir):
+    from re import search
+    sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/dcspy', repo_dir=tmpdir)
+    match = search(r'(master):\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}\sby:\s.*', sha)
+    assert match.group(1) == 'master'
+    sha = utils.check_github_repo(git_ref='branch', update=True, repo='emcek/dcspy', repo_dir=tmpdir)
+    match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}\sby:\s.*', sha)
+    assert match.group(1)
+    sha = utils.check_github_repo(git_ref='branch', update=False, repo='emcek/dcspy', repo_dir=tmpdir)
+    match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}', sha)
+    assert match.group(1)
+
+
+def test_check_dcs_bios_entry_no_entry(tmpdir):
+    from os import makedirs, path
+    install_dir = path.join(tmpdir, 'install')
+    makedirs(install_dir)
+    lua = 'Export.lua'
+    lua_dst_data = ''
+
+    with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
+        lua_from_zip.write('anything')
+    with open(file=path.join(install_dir, lua), mode='a+', encoding='utf-8') as lua_dst:
+        lua_dst.write(lua_dst_data)
+
+    result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
+    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+
+
+def test_check_dcs_bios_entry_ok(tmpdir):
+    from os import makedirs, path
+    install_dir = path.join(tmpdir, 'install')
+    makedirs(install_dir)
+    lua = 'Export.lua'
+    lua_dst_data = r'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])'
+
+    with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
+        lua_from_zip.write('anything')
+    with open(file=path.join(install_dir, lua), mode='a+', encoding='utf-8') as lua_dst:
+        lua_dst.write(lua_dst_data)
+
+    result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
+    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'

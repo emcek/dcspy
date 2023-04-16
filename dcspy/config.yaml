@@ -1,4 +1,5 @@
 autostart: false
+check_bios: true
 check_ver: true
 dcs: C:\Program Files\Eagle Dynamics\DCS World OpenBeta
 dcsbios: D:\Users\UNKNOWN\Saved Games\DCS.openbeta\Scripts\DCS-BIOS
@@ -10,6 +11,8 @@ font_mono_l: 16
 font_mono_s: 11
 font_mono_xs: 9
 font_name: consola.ttf
+git_bios: false
+git_bios_ref: master
 keyboard: G13
 show_gui: true
 theme_color: dark-blue

@@ -17,7 +17,8 @@ from packaging import version
 
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver
+from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
+    check_github_repo, check_dcs_bios_entry
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -40,7 +41,6 @@ class DcspyGui(tk.Frame):
         self.event = Event()
 
         self.status_txt = tk.StringVar()
-        self.status_txt.set(get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver']))
         self.lcd_type = tk.StringVar()
         self.bios_path = tk.StringVar()
         self.dcs_path = tk.StringVar()
@@ -49,6 +49,7 @@ class DcspyGui(tk.Frame):
         self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
         self.dedfont_switch = customtkinter.BooleanVar()
+        self.update_bios = customtkinter.BooleanVar()
         self.mono_l = tk.StringVar()
         self.mono_s = tk.StringVar()
         self.mono_xs = tk.StringVar()
@@ -64,11 +65,17 @@ class DcspyGui(tk.Frame):
         self.font_name = tk.StringVar()
         self.theme_color = tk.StringVar()
         self.theme_mode = tk.StringVar()
+        self.bios_git_switch = customtkinter.BooleanVar()
+        self.bios_git_ref = tk.StringVar()
 
         self._load_cfg()
         self.btn_start: customtkinter.CTkButton
         self.btn_stop: customtkinter.CTkButton
+        self.git_bios_switch: customtkinter.CTkSwitch
+        self.bios_git_label: customtkinter.CTkLabel
+        self.bios_git: customtkinter.CTkEntry
         self._init_widgets()
+        self.status_txt.set(get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver']))
         if config.get('autostart', False):
             self.start_dcspy()
 
@@ -87,12 +94,14 @@ class DcspyGui(tk.Frame):
         tabview.add('Mono')
         tabview.add('Color')
         tabview.add('Special')
+        tabview.add('Advanced')
         tabview.add('About')
         self._keyboards(tabview)
         self._general_settings(tabview)
         self._mono_settings(tabview)
         self._color_settings(tabview)
         self._special_settings(tabview)
+        self._advanced_settings(tabview)
         self._about(tabview)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
@@ -108,7 +117,7 @@ class DcspyGui(tk.Frame):
         save.grid(row=1, column=0, padx=20, pady=10)
         reset = customtkinter.CTkButton(master=sidebar_frame, text='Reset to defaults', command=self._set_defaults_cfg)
         reset.grid(row=2, column=0, padx=20, pady=10)
-        check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Check DCS-BIOS', command=self._check_bios)
+        check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Update DCS-BIOS', command=self._update_bios)
         check_bios.grid(row=3, column=0, padx=20, pady=10)
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check version', command=self._check_version)
         check_ver.grid(row=4, column=0, padx=20, pady=10)
@@ -151,26 +160,22 @@ class DcspyGui(tk.Frame):
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False)
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
-        verbose_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show more logs:')
-        verbose_label.grid(column=0, row=3, sticky=tk.W, pady=5)
-        verbose = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
-        verbose.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
-        dcs_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
-        dcs.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
-        bscbios_label.grid(column=0, row=5, sticky=tk.W, pady=5)
+        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
-        dcsbios.grid(column=1, row=5, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
-        appearance_mode_label.grid(column=0, row=6, sticky=tk.W, pady=5)
+        appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
         appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
-        appearance_mode.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
+        appearance_mode.grid(column=1, row=5, sticky=tk.W, padx=(10, 0), pady=5)
         color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
-        color_theme_label.grid(column=0, row=7, sticky=tk.W, pady=5)
+        color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
         color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
-        color_theme.grid(column=1, row=7, sticky=tk.W, padx=(10, 0), pady=5)
+        color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure mono tab GUI."""
@@ -229,10 +234,38 @@ class DcspyGui(tk.Frame):
         dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False)
         dedfont.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
 
+    def _advanced_settings(self, tabview: customtkinter.CTkTabview) -> None:
+        """Configure advanced tab GUI."""
+        tabview.tab('Advanced').grid_columnconfigure(index=0, weight=0)
+        tabview.tab('Advanced').grid_columnconfigure(index=1, weight=1)
+        verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
+        verbose_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
+        verbose.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        update_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Auto Update DCS-BIOS:')
+        update_bios_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False)
+        update_bios.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Use live DCS-BIOS version:')
+        git_bios_label.grid(column=0, row=1, sticky=tk.W, pady=5)
+        self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False, command=self._bios_git_switch)
+        self.git_bios_switch.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.DISABLED, text='DCS-BIOS Git reference:', )
+        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
+        if self.bios_git_switch.get():
+            self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.ACTIVE, text='DCS-BIOS Git reference:', )
+            self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
+        self.bios_git_label.grid(column=0, row=2, sticky=tk.W, pady=5)
+        self.bios_git.grid(column=1, row=2, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
+        self._auto_update_bios(silence=True)
+        bios_ver = self._check_local_bios().ver
+        sha_commit = f' SHA: {check_github_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
+        dcs_bios_ver = f'{bios_ver}{sha_commit}'
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
         python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
@@ -258,7 +291,7 @@ class DcspyGui(tk.Frame):
         dcsp2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
         dcsbios1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS-BIOS:')
         dcsbios1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
-        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self._check_local_bios().ver}')
+        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_bios_ver}')
         dcsbios2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
         dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
         dcsworld1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
@@ -294,6 +327,16 @@ class DcspyGui(tk.Frame):
         """
         getattr(self, label).set(f'Font {" ".join([word.capitalize() for word in label.split("_")])} : {int(value)}')
 
+    def _bios_git_switch(self) -> None:
+        """Change state of DSC-BIOS git version controls."""
+        if self.git_bios_switch.get():
+            self.bios_git_label.configure(state=tk.ACTIVE)
+            self.bios_git.configure(state=tk.NORMAL)
+        else:
+            self.bios_git_label.configure(state=tk.DISABLED)
+            self.bios_git.configure(state=tk.DISABLED)
+        self._update_bios(silence=False)
+
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
         self.autostart_switch.set(config['autostart'])
@@ -303,6 +346,9 @@ class DcspyGui(tk.Frame):
         self.dedfont_switch.set(config['f16_ded_font'])
         self.dcs_path.set(str(config['dcs']))
         self.bios_path.set(str(config['dcsbios']))
+        self.bios_git_switch.set(config['git_bios'])
+        self.update_bios.set(config['check_bios'])
+        self.bios_git_ref.set(str(config['git_bios_ref']))
         self.mono_l.set(f'Font Mono L : {config["font_mono_l"]}')
         self.mono_s.set(f'Font Mono S : {config["font_mono_s"]}')
         self.mono_xs.set(f'Font Mono Xs : {config["font_mono_xs"]}')
@@ -325,6 +371,7 @@ class DcspyGui(tk.Frame):
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
             'check_ver': self.checkver_switch.get(),
+            'check_bios': self.update_bios.get(),
             'verbose': self.verbose_switch.get(),
             'f16_ded_font': self.dedfont_switch.get(),
             'dcs': self.dcs_path.get(),
@@ -336,6 +383,8 @@ class DcspyGui(tk.Frame):
             'font_color_s': self.size_color_s.get(),
             'font_color_xs': self.size_color_xs.get(),
             'font_name': self.font_name.get(),
+            'git_bios': self.bios_git_switch.get(),
+            'git_bios_ref': self.bios_git_ref.get(),
             'theme_mode': self.theme_mode.get().lower(),
             'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
@@ -388,19 +437,66 @@ class DcspyGui(tk.Frame):
         elif 'failed' in ver_string:
             messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
 
-    def _check_bios(self) -> None:
-        """Check version and configuration of DCS-BIOS."""
+    def _auto_update_bios(self, silence=False) -> None:
+        """
+        Auto update DCS-BIOS version.
+
+        :param silence: perform action with silence
+        """
+        if self.update_bios.get():
+            self._update_bios(silence=silence)
+
+    def _update_bios(self, silence=False) -> None:
+        """
+        Do real update Git or stable DCS-BIOS version.
+
+        :param silence: perform action with silence
+        """
+        if self.git_bios_switch.get():
+            self._check_bios_git(silence=silence)
+        else:
+            self._check_bios_release(silence=silence)
+
+    def _check_bios_git(self, silence=False) -> None:
+        """
+        Check git/live version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
+        repo_dir = path.join(gettempdir(), 'dcsbios_git')
+        sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
+        LOG.debug(f'Remove: {self.bios_path.get()} ')
+        rmtree(path=self.bios_path.get(), ignore_errors=True)
+        LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
+        copytree(src=path.join(repo_dir, 'Scripts', 'DCS-BIOS'), dst=self.bios_path.get())
+        local_bios = self._check_local_bios()
+        self.status_txt.set(sha)
+        if not silence:
+            install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
+            install_result = f'{install_result}\n\nUsing Git/Live version.'
+            messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
+
+    def _check_bios_release(self, silence=False) -> None:
+        """
+        Check release version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         self.status_txt.set(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = isinstance(self.l_bios, version.Version)
         correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
         dcs_runs = proc_is_running(name='DCS.exe')
+        ready_to_update = all([correct_remote_bios_ver, not dcs_runs])
 
-        if all([correct_remote_bios_ver, not dcs_runs]):
+        if silence and ready_to_update and not remote_bios_info.latest:
+            self._update_release_bios(rel_info=remote_bios_info)
+        elif not silence and ready_to_update:
             self._ask_to_update(rel_info=remote_bios_info)
-        else:
+        elif not all([silence, ready_to_update]):
             msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
+            msg = f'{msg}\n\nUsing stable release version.'
             messagebox.showwarning('Update', msg)
 
     def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
@@ -460,22 +556,21 @@ class DcspyGui(tk.Frame):
 
         :param rel_info: remote release information
         """
-        msg_txt = f'You are running latest {rel_info.ver} version.\n' \
-                  f'Type: {rel_info.release_type}\n' \
-                  f'Released: {rel_info.published}\n\n' \
-                  f'Would you like to download {rel_info.archive_file} and overwrite update?'
+        msg_txt = f'You are running {self.l_bios} version.\n\n' \
+                  f'Would you like to download\n' \
+                  f'stable release:\n\n{rel_info.archive_file}\n\n' \
+                  f'and overwrite update?'
         if not rel_info.latest:
             msg_txt = f'You are running {self.l_bios} version.\n' \
                       f'New version {rel_info.ver} available.\n' \
-                      f'Type: {rel_info.release_type}\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
-            self._update(rel_info=rel_info)
+            self._update_release_bios(rel_info=rel_info)
 
-    def _update(self, rel_info: ReleaseInfo) -> None:
+    def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
         """
-        Perform BIOS update and check configuration.
+        Perform update of release version of BIOS and check configuration.
 
         :param rel_info: remote release information
         """
@@ -495,8 +590,9 @@ class DcspyGui(tk.Frame):
             if messagebox.askyesno('Open browser', install_result):
                 self._open_webpage(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
         else:
-            messagebox.showinfo('Updated', install_result)
-            self.status_txt.set(f'Local BIOS: {self._check_local_bios().ver} | Remote BIOS: {self.r_bios}')
+            local_bios = self._check_local_bios()
+            self.status_txt.set(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
 
     def _handling_export_lua(self, temp_dir: str) -> str:
         """
@@ -518,32 +614,7 @@ class DcspyGui(tk.Frame):
             copy(src=path.join(temp_dir, lua), dst=lua_dst_path)
             LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
         else:
-            result += self._check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
-        return result
-
-    @staticmethod
-    def _check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
-        """
-        Check DCS-BIOS entry in Export.lua file.
-
-        :param lua_dst_data: content of Export.lua
-        :param lua_dst_path: Export.lua path
-        :param temp_dir: directory with DCS-BIOS archive
-        :return: result of checks
-        """
-        result = '\n\nExport.lua exists.'
-        lua = 'Export.lua'
-        with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:
-            lua_src_data = lua_src.read()
-        export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
-        if not export_re:
-            with open(file=path.join(lua_dst_path, lua), mode='a+',
-                      encoding='utf-8') as exportlua_dst:
-                exportlua_dst.write(f'\n{lua_src_data}')
-            LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
-            result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
-        else:
-            result += '\n\nDCS-BIOS entry detected.'
+            result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
     def _stop(self) -> None:

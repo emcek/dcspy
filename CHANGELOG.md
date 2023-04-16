@@ -1,4 +1,5 @@
 ## 2.0.0
+* Allow use/update DCS-BIOS directly form GitHub (master branch)
 * Internal:
   * improve type checking
 
