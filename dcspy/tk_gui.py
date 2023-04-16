@@ -46,6 +46,7 @@ class DcspyGui(tk.Frame):
         self.dcs_path = tk.StringVar()
         self.autostart_switch = customtkinter.BooleanVar()
         self.showgui_switch = customtkinter.BooleanVar()
+        self.savelcd_switch = customtkinter.BooleanVar()
         self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
         self.dedfont_switch = customtkinter.BooleanVar()
@@ -238,6 +239,10 @@ class DcspyGui(tk.Frame):
         """Configure advanced tab GUI."""
         tabview.tab('Advanced').grid_columnconfigure(index=0, weight=0)
         tabview.tab('Advanced').grid_columnconfigure(index=1, weight=1)
+        save_lcd_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Save LCD screenshot:')
+        save_lcd_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False)
+        save_lcd.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
         verbose_label.grid(column=0, row=0, sticky=tk.W, pady=5)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
