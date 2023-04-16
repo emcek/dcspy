@@ -26,6 +26,7 @@ defaults_cfg: ConfigDict = {
     'autostart': False,
     'verbose': False,
     'keyboard': 'G13',
+    'save_lcd': False,
     'show_gui': True,
     'font_name': 'consola.ttf',
     'font_mono_s': 11,

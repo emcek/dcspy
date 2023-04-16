@@ -46,6 +46,7 @@ class DcspyGui(tk.Frame):
         self.dcs_path = tk.StringVar()
         self.autostart_switch = customtkinter.BooleanVar()
         self.showgui_switch = customtkinter.BooleanVar()
+        self.savelcd_switch = customtkinter.BooleanVar()
         self.checkver_switch = customtkinter.BooleanVar()
         self.verbose_switch = customtkinter.BooleanVar()
         self.dedfont_switch = customtkinter.BooleanVar()
@@ -238,25 +239,29 @@ class DcspyGui(tk.Frame):
         """Configure advanced tab GUI."""
         tabview.tab('Advanced').grid_columnconfigure(index=0, weight=0)
         tabview.tab('Advanced').grid_columnconfigure(index=1, weight=1)
+        save_lcd_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Save LCD screenshot:')
+        save_lcd_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False)
+        save_lcd.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
-        verbose_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        verbose_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
-        verbose.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        verbose.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
         update_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Auto Update DCS-BIOS:')
-        update_bios_label.grid(column=0, row=0, sticky=tk.W, pady=5)
+        update_bios_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False)
-        update_bios.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        update_bios.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Use live DCS-BIOS version:')
-        git_bios_label.grid(column=0, row=1, sticky=tk.W, pady=5)
+        git_bios_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False, command=self._bios_git_switch)
-        self.git_bios_switch.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        self.git_bios_switch.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.DISABLED, text='DCS-BIOS Git reference:', )
         self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
         if self.bios_git_switch.get():
             self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.ACTIVE, text='DCS-BIOS Git reference:', )
             self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
-        self.bios_git_label.grid(column=0, row=2, sticky=tk.W, pady=5)
-        self.bios_git.grid(column=1, row=2, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        self.bios_git_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        self.bios_git.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
@@ -341,6 +346,7 @@ class DcspyGui(tk.Frame):
         """Load configuration into GUI."""
         self.autostart_switch.set(config['autostart'])
         self.showgui_switch.set(config['show_gui'])
+        self.savelcd_switch.set(config['save_lcd'])
         self.checkver_switch.set(config['check_ver'])
         self.verbose_switch.set(config['verbose'])
         self.dedfont_switch.set(config['f16_ded_font'])
@@ -370,6 +376,7 @@ class DcspyGui(tk.Frame):
         cfg = {
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
+            'save_lcd': self.savelcd_switch.get(),
             'check_ver': self.checkver_switch.get(),
             'check_bios': self.update_bios.get(),
             'verbose': self.verbose_switch.get(),
