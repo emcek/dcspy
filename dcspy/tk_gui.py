@@ -7,11 +7,11 @@ from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
 from tempfile import gettempdir
 from threading import Thread, Event
-from tkinter import messagebox
 from typing import Union
 from webbrowser import open_new
 
 import customtkinter
+from CTkMessagebox import CTkMessagebox
 from PIL import Image
 from packaging import version
 
@@ -401,7 +401,7 @@ class DcspyGui(tk.Frame):
     def _set_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
         save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
-        messagebox.showwarning('Restart', 'DCSpy needs to be close.\nPlease start again manually!')
+        CTkMessagebox(title='Restart', message='DCSpy needs to be close.\nPlease start again manually!', icon='warning', option_1='OK')
         self.master.destroy()
 
     def _lcd_type_selected(self) -> None:
@@ -428,7 +428,8 @@ class DcspyGui(tk.Frame):
         :param theme_color: value of color theme
         """
         save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
-        if messagebox.askokcancel('Change theme color', 'DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!'):
+        msg = CTkMessagebox(title='Change theme color', message='DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!', icon='question', option_1='Yes', option_2='No')
+        if msg.get() == 'Yes':
             self.master.destroy()
 
     def _check_version(self) -> None:
@@ -438,11 +439,11 @@ class DcspyGui(tk.Frame):
         if 'please update' in ver_string:
             self.master.clipboard_clear()
             self.master.clipboard_append('pip install --upgrade dcspy')
-            messagebox.showinfo('New version', 'Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
+            CTkMessagebox(title='New version', message='Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
         elif 'latest' in ver_string:
-            messagebox.showinfo('No updates', 'You are running latest version')
+            CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:
-            messagebox.showwarning('Warning', 'Unable to check DCSpy version online')
+            CTkMessagebox(title='Warning', message='Unable to check DCSpy version online', icon='warning', option_1='OK')
 
     def _auto_update_bios(self, silence=False) -> None:
         """
@@ -481,7 +482,7 @@ class DcspyGui(tk.Frame):
         if not silence:
             install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
             install_result = f'{install_result}\n\nUsing Git/Live version.'
-            messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
+            CTkMessagebox(title=f'Updated {local_bios.ver}', message=install_result)
 
     def _check_bios_release(self, silence=False) -> None:
         """
@@ -504,7 +505,7 @@ class DcspyGui(tk.Frame):
         elif not all([silence, ready_to_update]):
             msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
             msg = f'{msg}\n\nUsing stable release version.'
-            messagebox.showwarning('Update', msg)
+            CTkMessagebox(title='Update', message=msg, icon='warning', option_1='OK')
 
     def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
         """
@@ -572,7 +573,8 @@ class DcspyGui(tk.Frame):
                       f'New version {rel_info.ver} available.\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
-        if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
+        msg = CTkMessagebox(title='Update DCS-BIOS', message=msg_txt, icon='question', option_1='Yes', option_2='No')
+        if msg.get() == 'Yes':
             self._update_release_bios(rel_info=rel_info)
 
     def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
@@ -594,12 +596,14 @@ class DcspyGui(tk.Frame):
         copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path.get())
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
-            if messagebox.askyesno('Open browser', install_result):
+            msg = CTkMessagebox(title='Open browser', message=install_result, icon='question', option_1='Yes', option_2='No')
+            if msg.get() == 'Yes':
                 self._open_webpage(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
         else:
             local_bios = self._check_local_bios()
             self.status_txt.set(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
-            messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
+            install_result = f'{install_result}\n\nUsing stable release version.'
+            CTkMessagebox(title=f'Updated {local_bios.ver}', message=install_result)
 
     def _handling_export_lua(self, temp_dir: str) -> str:
         """
