@@ -463,6 +463,7 @@ class DcspyGui(tk.Frame):
             self.status_txt.set(sha)
             if not silence:
                 install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
+                install_result = f'{install_result}\n\nUsing Git/Live version.'
                 messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
         else:
             self._check_bios_release(silence=silence)
@@ -546,14 +547,13 @@ class DcspyGui(tk.Frame):
 
         :param rel_info: remote release information
         """
-        msg_txt = f'You are running {self.l_bios} version.\n' \
-                  f'Type: {rel_info.release_type}\n' \
-                  f'Released: {rel_info.published}\n\n' \
-                  f'Would you like to download {rel_info.archive_file} and overwrite update?'
+        msg_txt = f'You are running {self.l_bios} version.\n\n' \
+                  f'Would you like to download\n' \
+                  f'stable release:\n\n{rel_info.archive_file}\n\n' \
+                  f'and overwrite update?'
         if not rel_info.latest:
             msg_txt = f'You are running {self.l_bios} version.\n' \
                       f'New version {rel_info.ver} available.\n' \
-                      f'Type: {rel_info.release_type}\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
