@@ -464,11 +464,11 @@ class DcspyGui(tk.Frame):
                 install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
                 messagebox.showinfo(f'Updated {local_bios.ver}', install_result)
         else:
-            self._check_bios(silence=silence)
+            self._check_bios_release(silence=silence)
 
-    def _check_bios(self, silence=False) -> None:
+    def _check_bios_release(self, silence=False) -> None:
         """
-        Check version and configuration of DCS-BIOS.
+        Check release version and configuration of DCS-BIOS.
 
         :param silence: perform action with silence
         """
@@ -481,7 +481,7 @@ class DcspyGui(tk.Frame):
         ready_to_update = all([correct_remote_bios_ver, not dcs_runs])
 
         if silence and ready_to_update and not remote_bios_info.latest:
-            self._update(rel_info=remote_bios_info)
+            self._update_release_bios(rel_info=remote_bios_info)
         elif not silence and ready_to_update:
             self._ask_to_update(rel_info=remote_bios_info)
         elif not all([silence, ready_to_update]):
@@ -556,11 +556,11 @@ class DcspyGui(tk.Frame):
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
         if messagebox.askokcancel('Update DCS-BIOS', msg_txt):
-            self._update(rel_info=rel_info)
+            self._update_release_bios(rel_info=rel_info)
 
-    def _update(self, rel_info: ReleaseInfo) -> None:
+    def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
         """
-        Perform BIOS update and check configuration.
+        Perform update of release version of BIOS and check configuration.
 
         :param rel_info: remote release information
         """
