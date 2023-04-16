@@ -427,9 +427,9 @@ class DcspyGui(tk.Frame):
 
         :param theme_color: value of color theme
         """
-        save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
         msg = CTkMessagebox(title='Change theme color', message='DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!', icon='question', option_1='Yes', option_2='No')
         if msg.get() == 'Yes':
+            save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
             self.master.destroy()
 
     def _check_version(self) -> None:
