@@ -18,7 +18,7 @@ from packaging import version
 from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
-    check_github_repo
+    check_github_repo, check_dcs_bios_entry
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -604,32 +604,7 @@ class DcspyGui(tk.Frame):
             copy(src=path.join(temp_dir, lua), dst=lua_dst_path)
             LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
         else:
-            result += self._check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
-        return result
-
-    @staticmethod
-    def _check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
-        """
-        Check DCS-BIOS entry in Export.lua file.
-
-        :param lua_dst_data: content of Export.lua
-        :param lua_dst_path: Export.lua path
-        :param temp_dir: directory with DCS-BIOS archive
-        :return: result of checks
-        """
-        result = '\n\nExport.lua exists.'
-        lua = 'Export.lua'
-        with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:
-            lua_src_data = lua_src.read()
-        export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
-        if not export_re:
-            with open(file=path.join(lua_dst_path, lua), mode='a+',
-                      encoding='utf-8') as exportlua_dst:
-                exportlua_dst.write(f'\n{lua_src_data}')
-            LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
-            result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
-        else:
-            result += '\n\nDCS-BIOS entry detected.'
+            result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
     def _stop(self) -> None:

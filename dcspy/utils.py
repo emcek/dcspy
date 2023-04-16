@@ -284,3 +284,28 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
         head_commit = bios_repo.head.commit
         sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime}'
     return sha
+
+
+def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
+    """
+    Check DCS-BIOS entry in Export.lua file.
+
+    :param lua_dst_data: content of Export.lua
+    :param lua_dst_path: Export.lua path
+    :param temp_dir: directory with DCS-BIOS archive
+    :return: result of checks
+    """
+    result = '\n\nExport.lua exists.'
+    lua = 'Export.lua'
+    with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:
+        lua_src_data = lua_src.read()
+    export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
+    if not export_re:
+        with open(file=path.join(lua_dst_path, lua), mode='a+',
+                  encoding='utf-8') as exportlua_dst:
+            exportlua_dst.write(f'\n{lua_src_data}')
+        LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
+        result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+    else:
+        result += '\n\nDCS-BIOS entry detected.'
+    return result
