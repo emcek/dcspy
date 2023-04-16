@@ -58,7 +58,8 @@ class Aircraft:
         lcd_type = self.lcd.type.name.lower()
         img = img_for_lcd[lcd_type]()
         getattr(self, f'draw_for_lcd_{lcd_type}')(img)
-        img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
+        if config.get('save_lcd', False):
+            img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
         return img
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
