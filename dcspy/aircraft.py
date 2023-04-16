@@ -239,7 +239,7 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.font = self.lcd.font_s
-        self.ded_font = config['f16_ded_font']
+        self.ded_font = config.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = DED_FONT
         self.bios_data: Dict[str, BiosValue] = {
