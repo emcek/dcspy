@@ -335,6 +335,7 @@ class DcspyGui(tk.Frame):
         else:
             self.bios_git_label.configure(state=tk.DISABLED)
             self.bios_git.configure(state=tk.DISABLED)
+        self._update_bios(silence=False)
 
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
