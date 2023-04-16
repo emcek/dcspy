@@ -117,7 +117,7 @@ class DcspyGui(tk.Frame):
         save.grid(row=1, column=0, padx=20, pady=10)
         reset = customtkinter.CTkButton(master=sidebar_frame, text='Reset to defaults', command=self._set_defaults_cfg)
         reset.grid(row=2, column=0, padx=20, pady=10)
-        check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Check DCS-BIOS', command=self._update_bios)
+        check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Update DCS-BIOS', command=self._update_bios)
         check_bios.grid(row=3, column=0, padx=20, pady=10)
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check version', command=self._check_version)
         check_ver.grid(row=4, column=0, padx=20, pady=10)
