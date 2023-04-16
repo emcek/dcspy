@@ -168,7 +168,7 @@ def test_check_dcs_bios_entry_ok(tmpdir):
     install_dir = path.join(tmpdir, 'install')
     makedirs(install_dir)
     lua = 'Export.lua'
-    lua_dst_data = 'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])'
+    lua_dst_data = r'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])'
 
     with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
         lua_from_zip.write('anything')
