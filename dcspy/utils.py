@@ -3,6 +3,7 @@ from logging import getLogger
 from os import environ, makedirs, path
 from pathlib import Path
 from re import search
+from shutil import rmtree
 from tempfile import gettempdir
 from typing import Dict, Union, Tuple, NamedTuple
 
@@ -267,6 +268,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
         bios_repo = git.Repo(repo_dir)
         bios_repo.git.checkout('master')
     else:
+        rmtree(path=repo_dir, ignore_errors=True)
         bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir)
     if update:
         f_info = bios_repo.remotes[0].pull()
