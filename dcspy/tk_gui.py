@@ -496,6 +496,7 @@ class DcspyGui(tk.Frame):
             self._ask_to_update(rel_info=remote_bios_info)
         elif not all([silence, ready_to_update]):
             msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
+            msg = f'{msg}\n\nUsing stable release version.'
             messagebox.showwarning('Update', msg)
 
     def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
