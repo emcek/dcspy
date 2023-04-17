@@ -2,6 +2,7 @@
 * Allow use/update DCS-BIOS directly from GitHub (master branch)
 * Allow run DCSpy without console
 * Auto screenshot of LCD during operation
+* Auto save change options from GUI
 * Internal:
   * improve type checking
   * verbose setting will impact both console and file logs
