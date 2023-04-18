@@ -67,7 +67,6 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
             if not isinstance(cfg_dict, dict):
                 cfg_dict, old_dict = {}, cfg_dict
                 raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
-            LOG.debug(f'Load: {cfg_dict}')
     except (FileNotFoundError, parser.ParserError, AttributeError) as err:
         makedirs(name=filename.rpartition('/')[0], exist_ok=True)
         LOG.warning(f'{err.__class__.__name__}: {filename}. Default configuration will be used.')
@@ -84,7 +83,6 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
     """
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
-    LOG.debug(f'Save: {curr_dict}')
     with open(file=filename, mode='w', encoding='utf-8') as yaml_file:
         dump(curr_dict, yaml_file)
 
@@ -102,6 +100,7 @@ def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
     if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
         migrated_cfg['dcsbios'] = defaults_cfg['dcsbios']
     save_cfg(cfg_dict=migrated_cfg, filename=filename)
+    LOG.debug(f'Save: {migrated_cfg}')
     return migrated_cfg
 
 
