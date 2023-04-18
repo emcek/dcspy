@@ -111,26 +111,24 @@ class DcspyGui(tk.Frame):
         """Configure sidebar of GUI."""
         sidebar_frame = customtkinter.CTkFrame(master=self.master, width=70, corner_radius=0)
         sidebar_frame.grid(row=0, column=0, rowspan=4, sticky=tk.N + tk.S + tk.W)
-        sidebar_frame.grid_rowconfigure(5, weight=1)
+        sidebar_frame.grid_rowconfigure(4, weight=1)
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='Settings', font=customtkinter.CTkFont(size=20, weight='bold'))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-        save = customtkinter.CTkButton(master=sidebar_frame, text='Save', command=self._save_cfg)
-        save.grid(row=1, column=0, padx=20, pady=10)
         reset = customtkinter.CTkButton(master=sidebar_frame, text='Reset to defaults', command=self._set_defaults_cfg)
-        reset.grid(row=2, column=0, padx=20, pady=10)
+        reset.grid(row=1, column=0, padx=20, pady=10)
         check_bios = customtkinter.CTkButton(master=sidebar_frame, text='Update DCS-BIOS', command=self._update_bios)
-        check_bios.grid(row=3, column=0, padx=20, pady=10)
-        check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check version', command=self._check_version)
-        check_ver.grid(row=4, column=0, padx=20, pady=10)
+        check_bios.grid(row=2, column=0, padx=20, pady=10)
+        check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check DCSpy version', command=self._check_version)
+        check_ver.grid(row=3, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
         logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
-        logo_label.grid(row=5, column=0, sticky=tk.W + tk.E)
-        self.btn_start.grid(row=6, column=0, padx=20, pady=10)
+        logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
+        self.btn_start.grid(row=5, column=0, padx=20, pady=10)
         self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
-        self.btn_stop.grid(row=7, column=0, padx=20, pady=10)
+        self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
         close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
-        close.grid(row=8, column=0, padx=20, pady=10)
+        close.grid(row=7, column=0, padx=20, pady=10)
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
 
@@ -151,15 +149,15 @@ class DcspyGui(tk.Frame):
         tabview.tab('General').grid_columnconfigure(index=1, weight=1)
         autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart DCSpy:')
         autostart_label.grid(column=0, row=0, sticky=tk.W, pady=5)
-        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False)
+        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
         showgui_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show GUI:')
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
-        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False)
+        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
         checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check version:')
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
-        checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False)
+        checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
@@ -232,7 +230,7 @@ class DcspyGui(tk.Frame):
         tabview.tab('Special').grid_columnconfigure(index=1, weight=1)
         dedfont_label = customtkinter.CTkLabel(master=tabview.tab('Special'), text='F-16 DED Font (only G19):')
         dedfont_label.grid(column=0, row=1, sticky=tk.W, pady=5)
-        dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False)
+        dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         dedfont.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _advanced_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -241,15 +239,15 @@ class DcspyGui(tk.Frame):
         tabview.tab('Advanced').grid_columnconfigure(index=1, weight=1)
         save_lcd_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Save LCD screenshot:')
         save_lcd_label.grid(column=0, row=0, sticky=tk.W, pady=5)
-        save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False)
+        save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         save_lcd.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
         verbose_label.grid(column=0, row=1, sticky=tk.W, pady=5)
-        verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False)
+        verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         verbose.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
         update_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Auto Update DCS-BIOS:')
         update_bios_label.grid(column=0, row=2, sticky=tk.W, pady=5)
-        update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False)
+        update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         update_bios.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Use live DCS-BIOS version:')
         git_bios_label.grid(column=0, row=3, sticky=tk.W, pady=5)
@@ -331,6 +329,7 @@ class DcspyGui(tk.Frame):
         :param value:
         """
         getattr(self, label).set(f'Font {" ".join([word.capitalize() for word in label.split("_")])} : {int(value)}')
+        self._save_cfg()
 
     def _bios_git_switch(self) -> None:
         """Change state of DSC-BIOS git version controls."""
@@ -341,6 +340,7 @@ class DcspyGui(tk.Frame):
             self.bios_git_label.configure(state=tk.DISABLED)
             self.bios_git.configure(state=tk.DISABLED)
         self._update_bios(silence=False)
+        self._save_cfg()
 
     def _load_cfg(self) -> None:
         """Load configuration into GUI."""
@@ -374,6 +374,7 @@ class DcspyGui(tk.Frame):
     def _save_cfg(self) -> None:
         """Save configuration from GUI."""
         cfg = {
+            'keyboard': self.lcd_type.get(),
             'autostart': self.autostart_switch.get(),
             'show_gui': self.showgui_switch.get(),
             'save_lcd': self.savelcd_switch.get(),
@@ -409,17 +410,16 @@ class DcspyGui(tk.Frame):
         keyboard = self.lcd_type.get()
         LOG.debug(f'Logitech {keyboard} selected')
         self.status_txt.set(f'Logitech {keyboard} selected')
-        save_cfg(cfg_dict={'keyboard': keyboard})
+        self._save_cfg()
 
-    @staticmethod
-    def _change_mode(theme_mode: str) -> None:
+    def _change_mode(self, theme_mode: str) -> None:
         """
         Change theme mode.
 
         :param theme_mode: "System" (standard), "Dark", "Light"
         """
-        save_cfg(cfg_dict={'theme_mode': theme_mode.lower()})
         customtkinter.set_appearance_mode(theme_mode)
+        self._save_cfg()
 
     def _change_color(self, theme_color: str) -> None:
         """
@@ -429,7 +429,8 @@ class DcspyGui(tk.Frame):
         """
         msg = CTkMessagebox(title='Change theme color', message='DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!', icon='question', option_1='Yes', option_2='No')
         if msg.get() == 'Yes':
-            save_cfg(cfg_dict={'theme_color': theme_color.lower().replace(' ', '-')})
+            self._save_cfg()
+            LOG.debug(f'Select: {theme_color}')
             self.master.destroy()
 
     def _check_version(self) -> None:
@@ -640,7 +641,7 @@ class DcspyGui(tk.Frame):
         self.event = Event()
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
-        save_cfg(cfg_dict={'keyboard': keyboard})
+        self._save_cfg()
         app_params = {'lcd_type': LCD_TYPES[keyboard]['type'], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
