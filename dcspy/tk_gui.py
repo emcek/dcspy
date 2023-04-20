@@ -161,11 +161,13 @@ class DcspyGui(tk.Frame):
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
-        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path)
+        dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path,
+                                     validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
         dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
         bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
-        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path)
+        dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path,
+                                         validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
         dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
@@ -197,7 +199,8 @@ class DcspyGui(tk.Frame):
         mono_xs.grid(column=1, row=2, sticky=tk.W + tk.E, padx=10, pady=5)
         font_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
-        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', textvariable=self.font_name)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', textvariable=self.font_name, validate='key',
+                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _color_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -221,7 +224,8 @@ class DcspyGui(tk.Frame):
         color_xs.grid(column=1, row=2, sticky=tk.W + tk.E, padx=10, pady=5)
         font_label = customtkinter.CTkLabel(master=tabview.tab('Color'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
-        fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name)
+        fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name, validate='key',
+                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _special_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -254,10 +258,13 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False, command=self._bios_git_switch)
         self.git_bios_switch.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.DISABLED, text='DCS-BIOS Git reference:', )
-        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
+        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
+                                               validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
         if self.bios_git_switch.get():
             self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.ACTIVE, text='DCS-BIOS Git reference:', )
-            self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref)
+            self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
+                                                   validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+
         self.bios_git_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
 
@@ -432,6 +439,18 @@ class DcspyGui(tk.Frame):
             self._save_cfg()
             LOG.debug(f'Select: {theme_color}')
             self.master.destroy()
+
+    def _save_entry_text(self, what, widget) -> bool:
+        """
+        This is hack to be able to trigger save method, when text is changed.
+
+        :param what: change text
+        :param widget: widget name
+        :return: always True
+        """
+        self._save_cfg()
+        LOG.debug(f'{widget} {what}')
+        return True
 
     def _check_version(self) -> None:
         """Check version of DCSpy and show message box."""
