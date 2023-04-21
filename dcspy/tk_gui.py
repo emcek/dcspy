@@ -442,7 +442,7 @@ class DcspyGui(tk.Frame):
 
     def _save_entry_text(self, what, widget) -> bool:
         """
-        This is hack to be able to trigger save method, when text is changed.
+        Hacking way to be able to trigger save method, when text of entry widget is changed.
 
         :param what: change text
         :param widget: widget name
