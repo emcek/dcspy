@@ -448,7 +448,7 @@ class DcspyGui(tk.Frame):
         :return: always True
         """
         self._save_cfg()
-        LOG.debug(f'{widget} {what}')
+        LOG.debug(f'Widget: {".".join(widget.split(".!")[2:-1])} content: {what}')
         return True
 
     def _check_version(self) -> None:
