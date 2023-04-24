@@ -261,9 +261,8 @@ class DcspyGui(tk.Frame):
         self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
                                                validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
         if self.bios_git_switch.get():
-            self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.ACTIVE, text='DCS-BIOS Git reference:', )
-            self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.NORMAL, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
-                                                   validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+            self.bios_git_label.configure(state=tk.ACTIVE)
+            self.bios_git.configure(state=tk.NORMAL)
 
         self.bios_git_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
