@@ -12,7 +12,7 @@ a = Analysis(
            ('venv311/Lib/site-packages/CTkMessagebox', 'CTkMessagebox'),
            ('dcspy/dcspy.ico', '.'),
            ('dcspy/dcspy_white.ico', '.'),
-           # ('dcspy/config.yaml', 'dcspy'),
+           ('dcspy/config.yaml', 'dcspy'),
            ('dcspy/falconded.ttf', 'dcspy'),
            ('dcspy/dcspy.png', 'dcspy'),
            ('dcspy/G13.png', 'dcspy'),
