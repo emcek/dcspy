@@ -9,7 +9,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[('D:/dcspy_dev/venv311/Lib/site-packages/customtkinter', 'customtkinter'),
-          # ('D:/dcspy_dev/venv311/Lib/site-packages/CTkMessagebox', 'CTkMessagebox'),
+           ('D:/dcspy_dev/venv311/Lib/site-packages/CTkMessagebox', 'CTkMessagebox'),
            ('dcspy/dcspy.ico', '.'),
            ('dcspy/dcspy_white.ico', '.'),
            ('dcspy/license.txt', '.'),
