@@ -26,16 +26,15 @@ LOG = getLogger(__name__)
 
 class DcspyGui(tk.Frame):
     """Tkinter GUI."""
-    def __init__(self, master: customtkinter.CTk, config_file: str) -> None:
+    def __init__(self, master: customtkinter.CTk) -> None:
         """
         Create basic GUI for dcspy application.
 
         :param master: Top level widget
-        :param config_file: path to configuration yaml file
         """
         super().__init__(master)
         self.master = master
-        self.cfg_file = config_file
+        self.cfg_file = path.abspath(path.join(path.dirname(__file__), 'config.yaml'))
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.event = Event()

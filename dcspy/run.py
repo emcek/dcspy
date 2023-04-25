@@ -30,7 +30,7 @@ def run():
         if config['theme_mode'] == 'dark':
             root.iconbitmap(path.join(here, 'dcspy_white.ico'))
         root.title('DCSpy')
-        DcspyGui(master=root, config_file=path.join(here, 'config.yaml'))
+        DcspyGui(master=root)
         root.mainloop()
     else:
         dcspy_run(lcd_type=LCD_TYPES[config['keyboard']]['type'], event=Event())
