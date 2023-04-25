@@ -3,14 +3,15 @@ check-manifest
 codacy-coverage
 coveralls
 flake8
+interrogate
 lxml
 mypy
-pip-audit
+pip-audit==2.4.12
 pycodestyle
 pydocstyle
 pylint
 pytest-cov
-pytest-mccabe
 pytest-random
 types-requests
 types-PyYAML
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability

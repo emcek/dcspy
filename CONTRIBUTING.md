@@ -1,7 +1,7 @@
 ## Development
-DCSpy use multicast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).  
+DCSpy use multicast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).
 Main modules of DCSpy:
-* `dcspy.py` main script - it starts GUI in tkinter
+* `run.py` main script - it starts GUI in tkinter
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.
 * `log.py` dumb simple logger configuration
 * `logitech.py` handling Logitech keyboards with LCD and buttons, loading dynamically current aircraft
@@ -13,18 +13,31 @@ Main modules of DCSpy:
 If you want to modify or write something by yourself, here's a quick walk-through:
 * Each plane has special dict:
 ```python
-BIOS_VALUE = TypedDict('BIOS_VALUE', {'class': str, 'args': Dict[str, int], 'value': Union[int, str], 'max_value': int}, total=False)
+class IntBuffArgs(TypedDict):
+    address: int
+    mask: int
+    shift_by: int
 
-self.bios_data: Dict[str, BIOS_VALUE] = {
-    'PVI_LINE2_TEXT': {'class': 'StringBuffer',
+class StrBuffArgs(TypedDict):
+    address: int
+    max_length: int
+
+class BiosValue(TypedDict):
+    klass: str
+    args: Union[StrBuffArgs, IntBuffArgs]
+    value: Union[int, str]
+    max_value: NotRequired[int]
+
+self.bios_data: Dict[str, BiosValue] = {
+    'PVI_LINE2_TEXT': {'klass': 'StringBuffer',
                        'args': {'address': 0x192a, 'max_length': 6},
                        'value': str()},
-    'AP_ALT_HOLD_LED': {'class': 'IntegerBuffer', 
-                        'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 
+    'AP_ALT_HOLD_LED': {'klass': 'IntegerBuffer',
+                        'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf},
                         'value': int()},
-    'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 
-                       'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 
-                       'value': int(), 
+    'IFF_MASTER_KNB': {'klass': 'IntegerBuffer',
+                       'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1},
+                       'value': int(),
                        'max_value': 4}}
 ```
 which describe data to be fetched from DCS-BIOS with buffer class and its parameters. For required address and data max_length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
@@ -35,7 +48,7 @@ self.plane: Aircraft = getattr(import_module('dcspy.aircraft'), self.plane_name)
 * and "subscribe" for changes with callback for all fields defined in `plane` instance
 ```python
 for field_name, proto_data in self.plane.bios_data.items():
-    buffer = getattr(import_module('dcspy.dcsbios'), proto_data['class'])
+    buffer = getattr(import_module('dcspy.dcsbios'), proto_data['klass'])
     buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 ```
 * when, receive bytes, parser will process data:

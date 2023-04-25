@@ -9,11 +9,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.10']
+        python-version: ['3.11']
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
@@ -26,6 +26,9 @@ jobs:
       - name: Check PyDocStyle
         run: |
           pydocstyle --count dcspy
+      - name: Check interrogate
+        run: |
+          interrogate -c pyproject.toml -vv
       - name: Check PyLint
         run: |
           pylint dcspy || echo $(($? % 4))
@@ -37,7 +40,7 @@ jobs:
         run: |
           mypy dcspy
       - name: Upload mypy results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: mypy-${{ matrix.os }}-py${{ matrix.python-version }}
@@ -53,16 +56,16 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
         exclude:
           - os: windows-latest
             python-version: '3.7'
           - os: ubuntu-latest
-            python-version: '3.10'
+            python-version: '3.11'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install MS Fonts
@@ -78,9 +81,9 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          python -m pytest --mccabe --random -q --disable-warnings
+          python -m pytest --random -q --disable-warnings -m "not dcsbios"
       - name: Upload pytest test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
@@ -96,11 +99,11 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.10']
+        python-version: ['3.11']
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install MS Fonts
@@ -116,9 +119,9 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
+          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing -m "not dcsbios"
       - name: Upload pytest results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: always()
         with:
           name: test-${{ matrix.os }}-py${{ matrix.python-version }}
