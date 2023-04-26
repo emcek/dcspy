@@ -2,6 +2,7 @@ import tkinter as tk
 from functools import partial
 from logging import getLogger
 from os import path
+from pathlib import Path
 from platform import architecture, uname, python_implementation, python_version
 from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
@@ -495,10 +496,35 @@ class DcspyGui(tk.Frame):
 
         :param silence: perform action with silence
         """
+        if not self._check_dcs_bios_path():
+            return
+
         if self.git_bios_switch.get():
             self._check_bios_git(silence=silence)
         else:
             self._check_bios_release(silence=silence)
+
+    def _check_dcs_bios_path(self) -> bool:
+        """
+        Check if DCS-BIOS path fulfill two conditions:
+        - not empty
+        - drive letter exists in system
+
+        In this case return True, False otherwise.
+
+        :return: True if path to DCS-BIOS is correct
+        """
+        bios_path = str(self.bios_path.get())
+        result = True
+        if bios_path:
+            drive_letter = Path(str(self.bios_path.get())).parts[0]
+            if not Path(drive_letter).exists():
+                CTkMessagebox(title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
+                result = False
+        else:
+            CTkMessagebox(title='Warning', message=f'Empty path.\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
+            result = False
+        return result
 
     def _check_bios_git(self, silence=False) -> None:
         """
