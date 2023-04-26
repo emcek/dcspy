@@ -506,11 +506,12 @@ class DcspyGui(tk.Frame):
 
     def _check_dcs_bios_path(self) -> bool:
         """
-        Check if DCS-BIOS path fulfill two conditions:
-        - not empty
+        Check if DCS-BIOS path fulfill two conditions.
+
+        - path is not empty
         - drive letter exists in system
 
-        In this case return True, False otherwise.
+        If those two are met return True, False otherwise.
 
         :return: True if path to DCS-BIOS is correct
         """
