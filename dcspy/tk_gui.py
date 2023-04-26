@@ -7,7 +7,7 @@ from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
 from tempfile import gettempdir
 from threading import Thread, Event
-from typing import Union
+from typing import Union, Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -377,8 +377,12 @@ class DcspyGui(tk.Frame):
         self.theme_mode.set(str(config['theme_mode']).capitalize())
         self.theme_color.set(str(config['theme_color']).replace('-', ' ').title())
 
-    def _save_cfg(self) -> None:
-        """Save configuration from GUI."""
+    def _save_cfg(self, conf: Optional[dict] = None) -> None:
+        """
+        Save configuration from GUI.
+
+        :param conf: optional dict with configuration
+        """
         cfg = {
             'keyboard': self.lcd_type.get(),
             'autostart': self.autostart_switch.get(),
@@ -402,6 +406,8 @@ class DcspyGui(tk.Frame):
             'theme_mode': self.theme_mode.get().lower(),
             'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
+        if conf:
+            cfg.update(conf)
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
         self.status_txt.set(f'Saved: {self.cfg_file}')
 
