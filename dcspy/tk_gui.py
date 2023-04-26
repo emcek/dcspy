@@ -269,7 +269,7 @@ class DcspyGui(tk.Frame):
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(Path(config["dcs"]))
+        dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
         self._auto_update_bios(silence=True)
         bios_ver = self._check_local_bios().ver
         sha_commit = f' SHA: {check_github_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
