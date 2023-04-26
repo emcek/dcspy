@@ -3,9 +3,11 @@
 * Allow run DCSpy without console
 * Auto screenshot of LCD during operation
 * Auto save change options from GUI
+* Generate standalone version with PyInstaller
 * Internal:
   * improve type checking
   * verbose setting will impact both console and file logs
+  * use pathlib for path manipulation
 
 ## 1.9.5
 * Support for **Mi-8MTV2 Magnificent Eight**
