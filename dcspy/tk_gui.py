@@ -162,12 +162,12 @@ class DcspyGui(tk.Frame):
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path,
-                                     validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                     validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
         bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path,
-                                         validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                         validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
@@ -200,7 +200,7 @@ class DcspyGui(tk.Frame):
         font_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
         fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', textvariable=self.font_name, validate='key',
-                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _color_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -225,7 +225,7 @@ class DcspyGui(tk.Frame):
         font_label = customtkinter.CTkLabel(master=tabview.tab('Color'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
         fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name, validate='key',
-                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _special_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -259,7 +259,7 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.DISABLED, text='DCS-BIOS Git reference:', )
         self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
-                                               validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                               validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.ACTIVE)
             self.bios_git.configure(state=tk.NORMAL)
@@ -445,16 +445,25 @@ class DcspyGui(tk.Frame):
             LOG.debug(f'Select: {theme_color}')
             self.master.destroy()
 
-    def _save_entry_text(self, what, widget) -> bool:
+    def _save_entry_text(self, what: str, widget: str, trigger: str) -> bool:
         """
         Hacking way to be able to trigger save method, when text of entry widget is changed.
 
-        :param what: change text
-        :param widget: widget name
+        :param what: Value of the entry if the modification is allowed
+        :param widget: The name of the Entry widget
+        :param trigger: Type of validation that triggered the action
         :return: always True
         """
-        self._save_cfg()
-        LOG.debug(f'Widget: {".".join(widget.split(".!")[2:-1])} content: {what}')
+        raw_widget = ".".join(widget.split(".!")[2:-1])
+        map_tk_to_cfg_value = {
+            'ctkframe2.ctkentry': 'dcs',
+            'ctkframe2.ctkentry2': 'dcsbios',
+            'ctkframe3.ctkentry': 'font_name',
+            'ctkframe4.ctkentry': 'font_name',
+            'ctkframe6.ctkentry': 'git_bios_ref',
+        }
+        self._save_cfg(conf={map_tk_to_cfg_value[raw_widget]: what})
+        LOG.debug(f'Key: {map_tk_to_cfg_value[raw_widget]} Content: {what} Trigger: {trigger} Widget: {raw_widget}')
         return True
 
     def _check_version(self) -> None:
