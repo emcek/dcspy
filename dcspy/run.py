@@ -1,5 +1,5 @@
 from logging import getLogger
-from os import path
+from pathlib import Path
 from threading import Event
 
 import customtkinter
@@ -25,10 +25,9 @@ def run():
         width, height = 770, 500
         root.geometry(f'{width}x{height}')
         root.minsize(width=width, height=height)
-        here = path.abspath(path.dirname(__file__))
-        root.iconbitmap(path.join(here, 'dcspy.ico'))
+        root.iconbitmap(Path(__file__).resolve().with_name('dcspy.ico'))
         if config['theme_mode'] == 'dark':
-            root.iconbitmap(path.join(here, 'dcspy_white.ico'))
+            root.iconbitmap(Path(__file__).resolve().with_name('dcspy_white.ico'))
         root.title('DCSpy')
         DcspyGui(master=root)
         root.mainloop()
