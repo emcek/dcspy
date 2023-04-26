@@ -1,6 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
+from pathlib import Path
+from sys import prefix
 
-
+packages = ['customtkinter', 'CTkMessagebox']
+resources = ['dcspy.ico', 'dcspy_white.ico', 'config.yaml', 'falconded.ttf', 'dcspy.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'license.txt']
+files = [(f'dcspy/{r}', 'dcspy') for r in resources]
+gui_packages = [(Path(prefix) / 'Lib' / 'site-packages' / f'{p}', p) for p in packages]
 block_cipher = None
 
 
@@ -8,19 +13,7 @@ a = Analysis(
     ['dcs_py.py'],
     pathex=[],
     binaries=[],
-    datas=[('venv311/Lib/site-packages/customtkinter', 'customtkinter'),
-           ('venv311/Lib/site-packages/CTkMessagebox', 'CTkMessagebox'),
-           ('dcspy/dcspy.ico', 'dcspy'),
-           ('dcspy/dcspy_white.ico', 'dcspy'),
-           ('dcspy/config.yaml', 'dcspy'),
-           ('dcspy/falconded.ttf', 'dcspy'),
-           ('dcspy/dcspy.png', 'dcspy'),
-           ('dcspy/G13.png', 'dcspy'),
-           ('dcspy/G19.png', 'dcspy'),
-           ('dcspy/G510.png', 'dcspy'),
-           ('dcspy/G15v1.png', 'dcspy'),
-           ('dcspy/G15v2.png', 'dcspy'),
-           ('dcspy/license.txt', 'dcspy')],
+    datas=files + gui_packages,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
