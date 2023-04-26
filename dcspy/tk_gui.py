@@ -523,7 +523,7 @@ class DcspyGui(tk.Frame):
                 CTkMessagebox(title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
                 result = False
         else:
-            CTkMessagebox(title='Warning', message=f'Empty path.\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
+            CTkMessagebox(title='Warning', message='Empty path.\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
             result = False
         return result
 
