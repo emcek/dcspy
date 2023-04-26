@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['dcspy\\run.py'],
+    ['dcs_py.py'],
     pathex=[],
     binaries=[],
     datas=[('venv311/Lib/site-packages/customtkinter', 'customtkinter'),
@@ -38,7 +38,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='DCSpy',
+    name='dcs_py',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
