@@ -258,11 +258,11 @@ class DcspyGui(tk.Frame):
         git_bios_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False, command=self._bios_git_switch)
         self.git_bios_switch.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
-        self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.DISABLED, text='DCS-BIOS Git reference:', )
-        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
+        self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='DCS-BIOS Git reference:', state=tk.DISABLED)
+        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), placeholder_text='git reference', width=390, textvariable=self.bios_git_ref, state=tk.DISABLED,
                                                validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         if self.bios_git_switch.get():
-            self.bios_git_label.configure(state=tk.ACTIVE)
+            self.bios_git_label.configure(state=tk.NORMAL)
             self.bios_git.configure(state=tk.NORMAL)
 
         self.bios_git_label.grid(column=0, row=4, sticky=tk.W, pady=5)
