@@ -1,6 +1,6 @@
 from datetime import datetime
 from logging import getLogger
-from os import environ, makedirs, path
+from os import environ, makedirs
 from pathlib import Path
 from re import search
 from shutil import rmtree
@@ -17,7 +17,7 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
-default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
+default_yaml = Path(__file__).resolve().with_name('config.yaml')
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
@@ -180,7 +180,7 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
     return ver_string
 
 
-def download_file(url: str, save_path: str) -> bool:
+def download_file(url: str, save_path: Path) -> bool:
     """
     Download file from URL and save to save_path.
 
@@ -214,7 +214,7 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
+def check_dcs_ver(dcs_path: Path) -> Tuple[str, str]:
     """
     Check DCS version and release type.
 
@@ -223,7 +223,7 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     """
     result_type, result_ver = 'Unknown', 'Unknown'
     try:
-        with open(file=Path(path.join(dcs_path, 'autoupdate.cfg')), encoding='utf-8') as autoupdate_cfg:
+        with open(file=dcs_path / 'autoupdate.cfg', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except (FileNotFoundError, PermissionError) as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -252,7 +252,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=path.join(gettempdir(), 'dcsbios_git')) -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -264,7 +264,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     :param repo_dir: local directory for repository
     """
     makedirs(name=repo_dir, exist_ok=True)
-    if is_git_repo(repo_dir):
+    if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
         bios_repo.git.checkout('master')
     else:
@@ -288,7 +288,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     return sha
 
 
-def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
+def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
     """
     Check DCS-BIOS entry in Export.lua file.
 
@@ -299,11 +299,11 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) ->
     """
     result = '\n\nExport.lua exists.'
     lua = 'Export.lua'
-    with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:
+    with open(file=temp_dir / lua, encoding='utf-8') as lua_src:
         lua_src_data = lua_src.read()
     export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
     if not export_re:
-        with open(file=path.join(lua_dst_path, lua), mode='a+', encoding='utf-8') as exportlua_dst:
+        with open(file=lua_dst_path / lua, mode='a+', encoding='utf-8') as exportlua_dst:
             exportlua_dst.write(f'\n{lua_src_data}')
         LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
         result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
