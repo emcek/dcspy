@@ -454,7 +454,6 @@ class DcspyGui(tk.Frame):
         :param trigger: Type of validation that triggered the action
         :return: always True
         """
-        raw_widget = ".".join(widget.split(".!")[2:-1])
         map_tk_to_cfg_value = {
             'ctkframe2.ctkentry': 'dcs',
             'ctkframe2.ctkentry2': 'dcsbios',
@@ -462,8 +461,10 @@ class DcspyGui(tk.Frame):
             'ctkframe4.ctkentry': 'font_name',
             'ctkframe6.ctkentry': 'git_bios_ref',
         }
+        LOG.debug(f'Content: {what} Trigger: {trigger} Raw: {widget}')
+        raw_widget = ".".join(widget.split(".!")[2:-1])
+        LOG.debug(f'Key: {map_tk_to_cfg_value[raw_widget]} Widget: {raw_widget}')
         self._save_cfg(conf={map_tk_to_cfg_value[raw_widget]: what})
-        LOG.debug(f'Key: {map_tk_to_cfg_value[raw_widget]} Content: {what} Trigger: {trigger} Widget: {raw_widget}')
         return True
 
     def _check_version(self) -> None:
