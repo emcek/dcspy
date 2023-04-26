@@ -3,6 +3,7 @@
 * Allow run DCSpy without console
 * Auto screenshot of LCD during operation
 * Auto save change options from GUI
+* Fix problem when DCS-BIOS is empty or drive letter not exists
 * Generate standalone version with PyInstaller
 * Internal:
   * improve type checking
