@@ -1,6 +1,6 @@
 from datetime import datetime
 from json import loads
-from os import path
+from pathlib import Path
 from tempfile import gettempdir
 from typing import Tuple, List, Union, Dict
 from unittest.mock import patch
@@ -94,9 +94,9 @@ def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
     :param bios_ver: DCS-BIOS version
     :return: json as dict
     """
-    plane_path = path.join(gettempdir(), plane)
+    plane_path = Path(gettempdir()) / plane
     try:
-        m_time = path.getmtime(plane_path)
+        m_time = plane_path.stat().st_mtime
         week = datetime.fromtimestamp(int(m_time)).strftime('%U')
         if week == datetime.now().strftime('%U'):
             with open(plane_path, encoding='utf-8') as plane_json_file:
