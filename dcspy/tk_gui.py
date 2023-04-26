@@ -2,12 +2,13 @@ import tkinter as tk
 from functools import partial
 from logging import getLogger
 from os import path
+from pathlib import Path
 from platform import architecture, uname, python_implementation, python_version
 from re import search
 from shutil import unpack_archive, rmtree, copy, copytree
 from tempfile import gettempdir
 from threading import Thread, Event
-from typing import Union
+from typing import Union, Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -162,12 +163,12 @@ class DcspyGui(tk.Frame):
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path,
-                                     validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                     validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
         bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path,
-                                         validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                         validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
@@ -200,7 +201,7 @@ class DcspyGui(tk.Frame):
         font_label = customtkinter.CTkLabel(master=tabview.tab('Mono'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
         fontname = customtkinter.CTkEntry(master=tabview.tab('Mono'), placeholder_text='font name', textvariable=self.font_name, validate='key',
-                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _color_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -225,7 +226,7 @@ class DcspyGui(tk.Frame):
         font_label = customtkinter.CTkLabel(master=tabview.tab('Color'), text='Font name:')
         font_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
         fontname = customtkinter.CTkEntry(master=tabview.tab('Color'), placeholder_text='font name', width=150, textvariable=self.font_name, validate='key',
-                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                          validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         fontname.grid(column=1, row=3, sticky=tk.W + tk.E, padx=10, pady=5)
 
     def _special_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -259,7 +260,7 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), state=tk.DISABLED, text='DCS-BIOS Git reference:', )
         self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), state=tk.DISABLED, placeholder_text='git reference', width=390, textvariable=self.bios_git_ref,
-                                               validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W'))
+                                               validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.ACTIVE)
             self.bios_git.configure(state=tk.NORMAL)
@@ -377,8 +378,12 @@ class DcspyGui(tk.Frame):
         self.theme_mode.set(str(config['theme_mode']).capitalize())
         self.theme_color.set(str(config['theme_color']).replace('-', ' ').title())
 
-    def _save_cfg(self) -> None:
-        """Save configuration from GUI."""
+    def _save_cfg(self, conf: Optional[dict] = None) -> None:
+        """
+        Save configuration from GUI.
+
+        :param conf: optional dict with configuration
+        """
         cfg = {
             'keyboard': self.lcd_type.get(),
             'autostart': self.autostart_switch.get(),
@@ -402,6 +407,8 @@ class DcspyGui(tk.Frame):
             'theme_mode': self.theme_mode.get().lower(),
             'theme_color': self.theme_color.get().lower().replace(' ', '-'),
         }
+        if conf:
+            cfg.update(conf)
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
         self.status_txt.set(f'Saved: {self.cfg_file}')
 
@@ -439,16 +446,26 @@ class DcspyGui(tk.Frame):
             LOG.debug(f'Select: {theme_color}')
             self.master.destroy()
 
-    def _save_entry_text(self, what, widget) -> bool:
+    def _save_entry_text(self, what: str, widget: str, trigger: str) -> bool:
         """
         Hacking way to be able to trigger save method, when text of entry widget is changed.
 
-        :param what: change text
-        :param widget: widget name
+        :param what: Value of the entry if the modification is allowed
+        :param widget: The name of the Entry widget
+        :param trigger: Type of validation that triggered the action
         :return: always True
         """
-        self._save_cfg()
-        LOG.debug(f'Widget: {".".join(widget.split(".!")[2:-1])} content: {what}')
+        map_tk_to_cfg_value = {
+            'ctkframe2.ctkentry': 'dcs',
+            'ctkframe2.ctkentry2': 'dcsbios',
+            'ctkframe3.ctkentry': 'font_name',
+            'ctkframe4.ctkentry': 'font_name',
+            'ctkframe6.ctkentry': 'git_bios_ref',
+        }
+        LOG.debug(f'Content: {what} Trigger: {trigger} Raw: {widget}')
+        raw_widget = ".".join(widget.split(".!")[2:-1])
+        LOG.debug(f'Key: {map_tk_to_cfg_value[raw_widget]} Widget: {raw_widget}')
+        self._save_cfg(conf={map_tk_to_cfg_value[raw_widget]: what})
         return True
 
     def _check_version(self) -> None:
@@ -479,10 +496,36 @@ class DcspyGui(tk.Frame):
 
         :param silence: perform action with silence
         """
+        if not self._check_dcs_bios_path():
+            return
+
         if self.git_bios_switch.get():
             self._check_bios_git(silence=silence)
         else:
             self._check_bios_release(silence=silence)
+
+    def _check_dcs_bios_path(self) -> bool:
+        """
+        Check if DCS-BIOS path fulfill two conditions.
+
+        - path is not empty
+        - drive letter exists in system
+
+        If those two are met return True, False otherwise.
+
+        :return: True if path to DCS-BIOS is correct
+        """
+        bios_path = str(self.bios_path.get())
+        result = True
+        if bios_path:
+            drive_letter = Path(str(self.bios_path.get())).parts[0]
+            if not Path(drive_letter).exists():
+                CTkMessagebox(title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
+                result = False
+        else:
+            CTkMessagebox(title='Warning', message='Empty path.\n\nCheck DCS-BIOS path.', icon='warning', option_1='OK')
+            result = False
+        return result
 
     def _check_bios_git(self, silence=False) -> None:
         """

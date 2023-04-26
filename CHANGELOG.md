@@ -3,6 +3,7 @@
 * Allow run DCSpy without console
 * Auto screenshot of LCD during operation
 * Auto save change options from GUI
+* Fix problem when DCS-BIOS is empty or drive letter not exists
 * Internal:
   * improve type checking
   * verbose setting will impact both console and file logs
