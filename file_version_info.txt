@@ -37,7 +37,7 @@ VSVersionInfo(
         StringStruct('OriginalFilename', 'dcs_py.exe'),
         StringStruct('ProductName', 'DCSpy'),
         StringStruct('ProductVersion', '1.9.6 (6bbd8808)')])
-      ]), 
+      ]),
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
   ]
 )
