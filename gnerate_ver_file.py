@@ -38,6 +38,7 @@ def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> v
 
 
 if __name__ == '__main__':
+    """Params: v1.9.5 40 6bbd8808 file_version_info.txt"""
     ver, bld, sha, ver_f = argv[1:]
     if ver.startswith('v'):
         ver = ver[1:]
