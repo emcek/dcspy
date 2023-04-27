@@ -46,12 +46,15 @@ def main(arguments: List[str]) -> None:
 
     :param arguments: list of CLI arguments
     """
-    ver, bld, sha, ver_f = arguments
-    if ver.startswith('v'):
-        ver = ver[1:]
-    version = _generate(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha)
-    with open(ver_f, mode='w+', encoding='utf-8') as f:
-        f.write(str(version))
+    try:
+        ver, bld, sha, ver_f = arguments
+        if ver.startswith('v'):
+            ver = ver[1:]
+        version = _generate(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha)
+        with open(ver_f, mode='w+', encoding='utf-8') as f:
+            f.write(str(version))
+    except ValueError:
+        print("Use: v1.9.5 40 6bbd8808 file_version_info.txt")
 
 
 if __name__ == '__main__':
