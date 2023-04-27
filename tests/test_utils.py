@@ -67,15 +67,14 @@ def test_proc_is_running():
     assert not utils.proc_is_running('wrong_python')
 
 
-def test_dummy_save_load_set_defaults():
-    from os import makedirs, remove, rmdir, environ
-    makedirs(name='./tmp', exist_ok=True)
-    test_tmp_yaml = './tmp/c.yaml'
+def test_dummy_save_load_set_defaults(tmpdir):
+    from os import environ
+    test_tmp_yaml = Path(tmpdir) / 'c.yml'
 
-    utils.save_cfg({'font_mono_xs': 9}, test_tmp_yaml)
-    d_cfg = utils.load_cfg(test_tmp_yaml)
+    utils.save_cfg(cfg_dict={'font_mono_xs': 9}, filename=test_tmp_yaml)
+    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
-    d_cfg = utils.set_defaults(d_cfg, test_tmp_yaml)
+    d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
     assert d_cfg == {'keyboard': 'G13',
                      'save_lcd': False,
                      'show_gui': True,
@@ -99,11 +98,8 @@ def test_dummy_save_load_set_defaults():
                      'theme_color': 'blue'}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
-    d_cfg = utils.load_cfg(test_tmp_yaml)
+    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
     assert len(d_cfg) == 0
-
-    remove(test_tmp_yaml)
-    rmdir('./tmp/')
 
 
 def test_check_dcs_ver_file_exists_with_ver(autoupdate1_cfg):
