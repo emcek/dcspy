@@ -38,8 +38,10 @@ def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> v
 
 
 if __name__ == '__main__':
-    ma, mi, pat, bld, sha, ver_f = argv[1:]
-    ver = _generate(int(ma), int(mi), int(pat), int(bld), sha)
+    ver, bld, sha, ver_f = argv[1:]
+    if ver.startswith('v'):
+        ver = ver[1:]
+    version = _generate(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha)
 
-    with open(ver_f, 'w+', encoding='utf-8') as f:
-        f.write(str(ver))
+    with open(ver_f, mode='w+', encoding='utf-8') as f:
+        f.write(str(version))
