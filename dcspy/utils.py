@@ -176,10 +176,10 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
     """
     Generate formatted string with version number.
 
-    :param repo: format '<organization or user>/<package>'
-    :param current_ver: current local version
-    :param check: version online
-    :return: formatted version as string
+    :param repo: format '<organization or user>/<package>'.
+    :param current_ver: current local version.
+    :param check: version online.
+    :return: formatted version as string.
     """
     ver_string = f'v{current_ver}'
     if check:
