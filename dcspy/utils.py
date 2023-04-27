@@ -68,7 +68,7 @@ class ReleaseInfo(NamedTuple):
     archive_file: str
 
 
-def load_cfg(filename=default_yaml) -> ConfigDict:
+def load_cfg(filename: Path) -> ConfigDict:
     """
     Load configuration form yaml filename.
 
@@ -83,13 +83,13 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
                 cfg_dict, old_dict = {}, cfg_dict
                 raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
     except (FileNotFoundError, parser.ParserError, AttributeError) as err:
-        makedirs(name=filename.rpartition('/')[0], exist_ok=True)
+        makedirs(name=filename.parent, exist_ok=True)
         LOG.warning(f'{err.__class__.__name__}: {filename}. Default configuration will be used.')
         LOG.debug(f'{err}')
     return cfg_dict
 
 
-def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
+def save_cfg(cfg_dict: ConfigDict, filename: Path) -> None:
     """
     Update yaml file with dict.
 
@@ -102,7 +102,7 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
+def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
     """
     Set defaults to not existing config options.
 
