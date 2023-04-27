@@ -1,4 +1,5 @@
 from sys import argv
+from typing import List
 
 from PyInstaller.utils.win32 import versioninfo
 
@@ -37,12 +38,21 @@ def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> v
     return ver_info
 
 
-if __name__ == '__main__':
-    # Params: v1.9.5 40 6bbd8808 file_version_info.txt
-    ver, bld, sha, ver_f = argv[1:]
+def main(arguments: List[str]) -> None:
+    """
+    Save generated version file based on list of strings.
+
+    Example of params: v1.9.5 40 6bbd8808 file_version_info.txt
+
+    :param arguments: list of CLI arguments
+    """
+    ver, bld, sha, ver_f = arguments
     if ver.startswith('v'):
         ver = ver[1:]
     version = _generate(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha)
-
     with open(ver_f, mode='w+', encoding='utf-8') as f:
         f.write(str(version))
+
+
+if __name__ == '__main__':
+    main(arguments=argv[1:])
