@@ -341,7 +341,7 @@ class DcspyGui(tk.Frame):
     def _bios_git_switch(self) -> None:
         """Change state of DSC-BIOS git version controls."""
         if self.git_bios_switch.get():
-            self.bios_git_label.configure(state=tk.ACTIVE)
+            self.bios_git_label.configure(state=tk.NORMAL)
             self.bios_git.configure(state=tk.NORMAL)
         else:
             self.bios_git_label.configure(state=tk.DISABLED)
