@@ -1,12 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
-from pathlib import Path
-from sys import prefix
 
-# packages = ['customtkinter', 'CTkMessagebox']
 resources = ['dcspy.ico', 'dcspy_white.ico', 'config.yaml', 'falconded.ttf', 'dcspy.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'license.txt']
 files = [(f'dcspy/{r}', 'dcspy') for r in resources]
-# gui_packages = [(Path(prefix) / 'Lib' / 'site-packages' / f'{p}', p) for p in packages]
 gui_packages = collect_data_files('customtkinter') + collect_data_files('CTkMessagebox')
 block_cipher = None
 
@@ -15,7 +11,7 @@ a = Analysis(
     ['dcs_py.py'],
     pathex=[],
     binaries=[],
-    datas=files + gui_packages + [('dcspy/sdk/LogitechLcd.dll', 'dcspy/sdk')],
+    datas=files + gui_packages,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
