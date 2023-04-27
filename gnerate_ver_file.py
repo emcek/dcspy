@@ -26,14 +26,14 @@ def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> v
             subtype=0x0,
             date=(0, 0)),
         kids=[versioninfo.StringFileInfo([versioninfo.StringTable('040904B0', [
-                versioninfo.StringStruct('CompanyName', 'Michał Plichta'),
-                versioninfo.StringStruct('FileDescription', 'Integrating DCS Planes with Logitech keyboards with LCD'),
-                versioninfo.StringStruct('FileVersion', f'{major}.{minor}.{patch}'),
-                versioninfo.StringStruct('InternalName', 'dcs_py'),
-                versioninfo.StringStruct('LegalCopyright', '© Michał Plichta. All rights reserved.'),
-                versioninfo.StringStruct('OriginalFilename', 'dcs_py.exe'),
-                versioninfo.StringStruct('ProductName', 'DCSpy'),
-                versioninfo.StringStruct('ProductVersion', f'{major}.{minor}.{patch} ({git_sha})')])]),
+              versioninfo.StringStruct('CompanyName', 'Michał Plichta'),
+              versioninfo.StringStruct('FileDescription', 'Integrating DCS Planes with Logitech keyboards with LCD'),
+              versioninfo.StringStruct('FileVersion', f'{major}.{minor}.{patch}'),
+              versioninfo.StringStruct('InternalName', 'dcs_py'),
+              versioninfo.StringStruct('LegalCopyright', '© Michał Plichta. All rights reserved.'),
+              versioninfo.StringStruct('OriginalFilename', 'dcs_py.exe'),
+              versioninfo.StringStruct('ProductName', 'DCSpy'),
+              versioninfo.StringStruct('ProductVersion', f'{major}.{minor}.{patch} ({git_sha})')])]),
               versioninfo.VarFileInfo([versioninfo.VarStruct('Translation', [1033, 1200])])])
     return ver_info
 
