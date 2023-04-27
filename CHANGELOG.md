@@ -5,6 +5,7 @@
 * Auto save change options from GUI
 * Fix problem when DCS-BIOS is empty or drive letter not exists
 * Generate standalone version with PyInstaller
+* Save configuration in user local directory (save between updates)
 * Internal:
   * improve type checking
   * verbose setting will impact both console and file logs
