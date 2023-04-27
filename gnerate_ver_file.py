@@ -4,7 +4,17 @@ from PyInstaller.utils.win32 import versioninfo
 
 
 def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> versioninfo.VSVersionInfo:
-    version = versioninfo.VSVersionInfo(
+    """
+    Generate version information object.
+
+    :param major: version major part
+    :param minor: version minor part
+    :param patch: version patch part
+    :param build: GitHub build number
+    :param git_sha: Git SHA hash
+    :return: VSVersionInfo object
+    """
+    ver_info = versioninfo.VSVersionInfo(
         ffi=versioninfo.FixedFileInfo(
             filevers=(major, minor, patch, build),
             prodvers=(major, minor, patch, build),
@@ -24,7 +34,7 @@ def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> v
                 versioninfo.StringStruct('ProductName', 'DCSpy'),
                 versioninfo.StringStruct('ProductVersion', f'{major}.{minor}.{patch} ({git_sha})')])]),
               versioninfo.VarFileInfo([versioninfo.VarStruct('Translation', [1033, 1200])])])
-    return version
+    return ver_info
 
 
 if __name__ == '__main__':
