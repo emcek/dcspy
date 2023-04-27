@@ -17,7 +17,6 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
-default_yaml = Path(__file__).resolve().with_name('config.yaml')
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
@@ -41,6 +40,22 @@ defaults_cfg: ConfigDict = {
     'theme_color': 'blue',
     'f16_ded_font': True
 }
+
+
+def get_default_yaml(local_appdata=False) -> Path:
+    """
+    Return full path to default configuration file.
+
+    :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
+    :return: Path like object
+    """
+    if local_appdata:
+        local_appdata = Path(environ['localappdata']) / 'dcspy'
+        makedirs(name=local_appdata, exist_ok=True)
+        cfg_yml = local_appdata / 'config.yaml'
+        if not cfg_yml.exists():
+            save_cfg(cfg_dict=defaults_cfg, filename=cfg_yml)
+    return Path(__file__).resolve().with_name('config.yaml')
 
 
 class ReleaseInfo(NamedTuple):
