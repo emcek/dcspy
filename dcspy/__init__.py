@@ -22,19 +22,20 @@ except ImportError:
     from typing_extensions import TypedDict
 
 
-SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
-                    'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
-                    'Ka503': {'name': 'Ka-50 Black Shark III', 'bios': 'Ka-50'},
-                    'Mi8MT': {'name': 'Mi-8MTV2 Magnificent Eight', 'bios': 'Mi-8MT'},
-                    'Mi24P': {'name': 'Mi-24P Hind', 'bios': 'Mi-24P'},
-                    'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
-                    'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
-                    'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
-                    'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
-                    'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
-                    'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14'},
-                    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
-                    }
+SUPPORTED_CRAFTS = {
+    'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
+    'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
+    'Ka503': {'name': 'Ka-50 Black Shark III', 'bios': 'Ka-50'},
+    'Mi8MT': {'name': 'Mi-8MTV2 Magnificent Eight', 'bios': 'Mi-8MT'},
+    'Mi24P': {'name': 'Mi-24P Hind', 'bios': 'Mi-24P'},
+    'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
+    'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
+    'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
+    'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
+    'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
+    'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14'},
+    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
+}
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
