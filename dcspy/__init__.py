@@ -38,7 +38,7 @@ SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_ho
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
-LOCAL_APPDATA = False
+LOCAL_APPDATA = True
 
 
 class LcdType(Enum):
