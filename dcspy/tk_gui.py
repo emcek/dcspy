@@ -15,10 +15,10 @@ from CTkMessagebox import CTkMessagebox
 from PIL import Image
 from packaging import version
 
-from dcspy import LCD_TYPES, config
+from dcspy import LOCAL_APPDATA, LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
-    check_github_repo, check_dcs_bios_entry
+    check_github_repo, check_dcs_bios_entry, get_default_yaml
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -34,7 +34,7 @@ class DcspyGui(tk.Frame):
         """
         super().__init__(master)
         self.master = master
-        self.cfg_file = Path(__file__).resolve().with_name('config.yaml')
+        self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.event = Event()
