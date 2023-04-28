@@ -49,13 +49,15 @@ def get_default_yaml(local_appdata=False) -> Path:
     :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
     :return: Path like object
     """
+    cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
     if local_appdata:
-        local_appdata = Path(environ['localappdata']) / 'dcspy'
-        makedirs(name=local_appdata, exist_ok=True)
-        cfg_yml = local_appdata / 'config.yaml'
+        user_appdata = Path(environ['localappdata']) / 'dcspy'
+        makedirs(name=user_appdata, exist_ok=True)
+        cfg_yml = user_appdata / 'config.yaml'
         if not cfg_yml.exists():
             save_cfg(cfg_dict=defaults_cfg, filename=cfg_yml)
-    return Path(__file__).resolve().with_name('config.yaml')
+        cfg_ful_path = cfg_yml.resolve()
+    return cfg_ful_path
 
 
 class ReleaseInfo(NamedTuple):
