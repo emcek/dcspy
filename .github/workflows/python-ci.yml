@@ -137,7 +137,7 @@ jobs:
           python-codacy-coverage -r coverage.xml
       - name: Test Coveralls
         env:
-          GITHUB_TOKEN: ${{ secrets.DCSPY_TOKEN }}
+          COVERALLS_REPO_TOKEN: ${{ secrets.DCSPY_TOKEN }}
           COVERALLS_SERVICE_NAME: github
         run: |
            coveralls
