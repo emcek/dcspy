@@ -55,6 +55,7 @@ def main(arguments: List[str]) -> None:
             f.write(str(version))
     except ValueError:
         print("Use: v1.9.5 40 6bbd8808 file_version_info.txt")
+    print(f'{arguments=}')
 
 
 if __name__ == '__main__':
