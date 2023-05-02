@@ -1,10 +1,11 @@
+from os import environ
 from sys import argv
-from typing import List
+from typing import Sequence
 
 from PyInstaller.utils.win32 import versioninfo
 
 
-def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> versioninfo.VSVersionInfo:
+def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: str) -> versioninfo.VSVersionInfo:
     """
     Generate version information object.
 
@@ -38,25 +39,29 @@ def _generate(major: int, minor: int, patch: int, build: int, git_sha: str) -> v
     return ver_info
 
 
-def main(arguments: List[str]) -> None:
+def save_ver_file(ver=environ.get('GITHUB_REF_NAME'), bld=environ.get('GITHUB_RUN_NUMBER'),
+                  sha=environ.get('GITHUB_SHA'), ver_f='file_version_info.txt') -> Sequence[str]:
     """
     Save generated version file based on list of strings.
 
     Example of params: v1.9.5 40 6bbd8808 file_version_info.txt
 
-    :param arguments: list of CLI arguments
+    :param ver: version name or tag name
+    :param bld: GitHub build number
+    :param sha: Git SHA hash
+    :param ver_f: file name of version file
+    :return: input parameters
     """
-    try:
-        ver, bld, sha, ver_f = arguments
+    if all([ver, bld, sha, ver_f]):
         if ver.startswith('v'):
             ver = ver[1:]
-        version = _generate(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha)
+        info_ver = generate_ver_info(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha)
         with open(ver_f, mode='w+', encoding='utf-8') as f:
-            f.write(str(version))
-    except ValueError:
+            f.write(str(info_ver))
+    else:
         print("Use: v1.9.5 40 6bbd8808 file_version_info.txt")
-    print(f'{arguments=}')
+    return ver, bld, sha, ver_f
 
 
 if __name__ == '__main__':
-    main(arguments=argv[1:])
+    print(save_ver_file(*argv[1:]))
