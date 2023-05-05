@@ -81,8 +81,6 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          pip install -e .
-          python dcspy/run.py
           python -m pytest --random -q --disable-warnings -m "not dcsbios"
       - name: Upload pytest test results
         uses: actions/upload-artifact@v3
