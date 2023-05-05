@@ -21,10 +21,11 @@ def test_keyboard_base_basic_check(keyboard_base):
         keyboard_base.clear()
 
 
-@mark.parametrize('pressed1, effect, chk_btn, calls, pressed2',
-                  [(False, [False, False, False, True], LcdButton.FOUR, [call(1), call(2), call(4), call(8)], True),
-                   (True, [True, False, False, False], LcdButton.NONE, [call(1)], True),
-                   (False, [False, False, False, False], LcdButton.NONE, [call(1), call(2), call(4), call(8)], False)])
+@mark.parametrize('pressed1, effect, chk_btn, calls, pressed2', [
+    (False, [False, False, False, True], LcdButton.FOUR, [call(1), call(2), call(4), call(8)], True),
+    (True, [True, False, False, False], LcdButton.NONE, [call(1)], True),
+    (False, [False, False, False, False], LcdButton.NONE, [call(1), call(2), call(4), call(8)], False),
+])
 def test_keyboard_mono_check_buttons(pressed1, effect, chk_btn, calls, pressed2, keyboard_mono):
     from dcspy.sdk import lcd_sdk
     keyboard_mono.already_pressed = pressed1
@@ -41,16 +42,22 @@ def test_keyboard_color_button_handle(keyboard_color, sock):
     sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
 
-@mark.parametrize('plane_str, plane, display, detect', [('FA-18C_hornet', 'FA18Chornet', [], True),
-                                                        ('F-16C_50', 'F16C50', [], True),
-                                                        ('Ka-50', 'Ka50', [], True),
-                                                        ('AH-64D', 'AH64D', [], True),
-                                                        ('A-10C', 'A10C', [], True),
-                                                        ('A-10C_2', 'A10C2', [], True),
-                                                        ('F-14B', 'F14B', [], True),
-                                                        ('F14A135GR', 'F14A135GR', [], True),
-                                                        ('AV8BNA', 'AV8BNA', [], True),
-                                                        ('F-114_Nighthawk', 'F114Nighthawk', ['Not supported yet!'], False)])
+@mark.parametrize('plane_str, plane, display, detect', [
+    ('FA-18C_hornet', 'FA18Chornet', ['Detected aircraft:', 'F/A-18C Hornet'], True),
+    ('F-16C_50', 'F16C50', ['Detected aircraft:', 'F-16C Viper'], True),
+    ('Ka-50', 'Ka50', ['Detected aircraft:', 'Ka-50 Black Shark II'], True),
+    ('Ka-503', 'Ka503', ['Detected aircraft:', 'Ka-50 Black Shark III'], True),
+    ('Mi-8MT', 'Mi8MT', ['Detected aircraft:', 'Mi-8MTV2 Magnificent Eight'], True),
+    ('Mi-24P', 'Mi24P', ['Detected aircraft:', 'Mi-24P Hind'], True),
+    ('AH-64D_BLKII', 'AH64DBLKII', ['Detected aircraft:', 'AH-64D Apache'], True),
+    ('A-10C', 'A10C', ['Detected aircraft:', 'A-10C Warthog'], True),
+    ('A-10C_2', 'A10C2', ['Detected aircraft:', 'A-10C II Tank Killer'], True),
+    ('F-14B', 'F14B', ['Detected aircraft:', 'F-14B Tomcat'], True),
+    ('F14A135GR', 'F14A135GR', ['Detected aircraft:', 'F-14A Tomcat'], True),
+    ('AV8BNA', 'AV8BNA', ['Detected aircraft:', 'AV-8B N/A Harrier'], True),
+    ('F-117_Nighthawk', 'F117Nighthawk', ['Detected aircraft:', 'F117Nighthawk', 'Not supported yet!'], False),
+    ('', '', [], False),
+])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -58,7 +65,7 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
         keyboard_mono.detecting_plane(plane_str)
     assert keyboard_mono.plane_name == plane
-    assert keyboard_mono._display == ['Detected aircraft:'] + [plane] + display
+    assert keyboard_mono._display == display
     assert keyboard_mono.plane_detected is detect
 
 

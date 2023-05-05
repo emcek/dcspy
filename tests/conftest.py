@@ -71,14 +71,47 @@ def viper_mono(lcd_mono: LcdInfo):
 
 
 @fixture()
-def black_shark_mono(lcd_mono: LcdInfo):
+def shark_mono(lcd_mono: LcdInfo):
     """
-    Return instance of Ka-50 Black Shark for Logitech mono LCD.
+    Return instance of Ka-50 Black Shark II for Logitech mono LCD.
     :param lcd_mono:
-    :return: Ka-50 Black Shark instance
+    :return: Ka-50 Black Shark II instance
     """
     from dcspy.aircraft import Ka50
     return Ka50(lcd_mono)
+
+
+@fixture()
+def shark3_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of Ka-50 Black Shark III for Logitech mono LCD.
+    :param lcd_mono:
+    :return: Ka-50 Black Shark III instance
+    """
+    from dcspy.aircraft import Ka503
+    return Ka503(lcd_mono)
+
+
+@fixture()
+def hip_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of Mi-8MTV2 Magnificent Eight for Logitech mono LCD.
+    :param lcd_mono:
+    :return: Mi-8MTV2 Magnificent Eight instance
+    """
+    from dcspy.aircraft import Mi8MT
+    return Mi8MT(lcd_mono)
+
+
+@fixture()
+def hind_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of Mi-24P Hind for Logitech mono LCD.
+    :param lcd_mono:
+    :return: Mi-24P Hind instance
+    """
+    from dcspy.aircraft import Mi24P
+    return Mi24P(lcd_mono)
 
 
 @fixture()
@@ -143,8 +176,8 @@ def apache_mono(lcd_mono: LcdInfo):
     :param lcd_mono:
     :return: AH-64D Apache instance
     """
-    from dcspy.aircraft import AH64D
-    return AH64D(lcd_mono)
+    from dcspy.aircraft import AH64DBLKII
+    return AH64DBLKII(lcd_mono)
 
 
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
@@ -171,20 +204,64 @@ def viper_color(lcd_color: LcdInfo):
 
 
 @fixture()
-def black_shark_color(lcd_color: LcdInfo):
+def shark_color(lcd_color: LcdInfo):
     """
-    Return instance of Ka-50 Black Shark for Logitech color LCD.
+    Return instance of Ka-50 Black Shark II for Logitech color LCD.
     :param lcd_color:
-    :return: Ka-50 Black Shark instance
+    :return: Ka-50 Black Shark II instance
     """
     from dcspy.aircraft import Ka50
     return Ka50(lcd_color)
 
 
 @fixture()
+def shark3_color(lcd_color: LcdInfo):
+    """
+    Return instance of Ka-50 Black Shark III for Logitech color LCD.
+    :param lcd_color:
+    :return: Ka-50 Black Shark III instance
+    """
+    from dcspy.aircraft import Ka503
+    return Ka503(lcd_color)
+
+
+@fixture()
+def hip_color(lcd_color: LcdInfo):
+    """
+    Return instance of Mi-8MTV2 Magnificent Eight for Logitech color LCD.
+    :param lcd_color:
+    :return: Mi-8MTV2 Magnificent Eight instance
+    """
+    from dcspy.aircraft import Mi8MT
+    return Mi8MT(lcd_color)
+
+
+@fixture()
+def hind_color(lcd_color: LcdInfo):
+    """
+    Return instance of Mi-24P Hind for Logitech color LCD.
+    :param lcd_color:
+    :return: Mi-24P Hind instance
+    """
+    from dcspy.aircraft import Mi24P
+    return Mi24P(lcd_color)
+
+
+@fixture()
+def warthog_color(lcd_color: LcdInfo):
+    """
+    Return instance of A-10C II Tank Killer for Logitech color LCD.
+    :param lcd_color:
+    :return: A-10C II Tank Killer instance
+    """
+    from dcspy.aircraft import A10C
+    return A10C(lcd_color)
+
+
+@fixture()
 def warthog2_color(lcd_color: LcdInfo):
     """
-    Return instance of A-10C II Tank Killer for Logitech mono LCD.
+    Return instance of A-10C Warthog for Logitech color LCD.
     :param lcd_color:
     :return: A-10C II Tank Killer instance
     """
@@ -232,13 +309,19 @@ def apache_color(lcd_color: LcdInfo):
     :param lcd_color:
     :return: AH-64D Apache instance
     """
-    from dcspy.aircraft import AH64D
-    return AH64D(lcd_color)
+    from dcspy.aircraft import AH64DBLKII
+    return AH64DBLKII(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
 def keyboard_base(protocol_parser):
+    """
+    Return instance of LogitechKeyboard.
+
+    :param protocol_parser: instance of ProtocolParser
+    :return: LogitechKeyboard
+    """
     from dcspy.logitech import LogitechKeyboard
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
@@ -247,6 +330,12 @@ def keyboard_base(protocol_parser):
 
 @fixture()
 def keyboard_mono(protocol_parser):
+    """
+    Return instance of KeyboardMono.
+
+    :param protocol_parser: instance of ProtocolParser
+    :return: KeyboardMono
+    """
     from dcspy.logitech import KeyboardMono
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
@@ -255,6 +344,12 @@ def keyboard_mono(protocol_parser):
 
 @fixture()
 def keyboard_color(protocol_parser):
+    """
+    Return instance of KeyboardColor.
+
+    :param protocol_parser: instance of ProtocolParser
+    :return: KeyboardColor
+    """
     from dcspy.logitech import KeyboardColor
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
@@ -264,11 +359,13 @@ def keyboard_color(protocol_parser):
 # <=><=><=><=><=> others <=><=><=><=><=>
 @fixture()
 def sock():
+    """Socket mock instance."""
     return MagicMock()
 
 
 @fixture()
 def autoupdate1_cfg():
+    """Mock for correct autoupdate_cfg"""
     return """{
  "WARNING": "DO NOT EDIT this file. You may break your install!",
  "branch": "openbeta",
@@ -289,9 +386,30 @@ def autoupdate1_cfg():
 
 @fixture()
 def autoupdate2_cfg():
+    """Mock for wrong autoupdate_cfg"""
     return """{
  "WARNING": "DO NOT EDIT this file. You may break your install!",
  "branch": "openbeta",
+ "timestamp": "20220729-154039",
+ "arch": "x86_64",
+ "lang": "EN",
+ "modules": [
+  "WORLD",
+  "FA-18C",
+  "NS430_MI-8MTV2",
+  "NS430",
+  "MI-8MTV2",
+  "UH-1H",
+  "A-10C",
+"""
+
+
+@fixture()
+def autoupdate3_cfg():
+    """Mock for wrong autoupdate_cfg"""
+    return """{
+ "WARNING": "DO NOT EDIT this file. You may break your install!",
+ "version": "2.7.18.28157",
  "timestamp": "20220729-154039",
  "arch": "x86_64",
  "lang": "EN",

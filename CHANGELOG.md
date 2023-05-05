@@ -1,11 +1,69 @@
+## 2.0.0
+* Allow use/update DCS-BIOS directly from GitHub (master branch)
+* Allow run DCSpy without console
+* Auto screenshot of LCD during operation
+* Auto save change options from GUI
+* Fix problem when DCS-BIOS is empty or drive letter not exists
+* Internal:
+  * improve type checking
+  * verbose setting will impact both console and file logs
+
+## 1.9.5
+* Support for **Mi-8MTV2 Magnificent Eight**
+  * Autopilot Channels (Heading, Pitch/Bank and Altitude)
+  * Radios: R868, R828, YADRO1A information
+* Support for **Mi-24P Hind**
+  * Autopilot Channels (Yaw, Roll, Pitch and Altitude)
+  * Autopilot Modes (Hover, Route and Altitude)
+  * Radios: R868, R828, YADRO1I information
+* Add About tab with basic information
+* **F-16C Viper**:
+  * Add spacial font for DED (G19 only)
+  * Clean some extra characters from DED
+* Internal:
+  * force update customtkinter to at least 5.1.0
+
+## 1.8.1
+* Add support for **Ka-50 Black Shark III**
+* Update footer when checking DCS-BIOS version
+* Align with DCS 2.8.1.34667.2 and DCS-BIOS 0.7.47
+* Internal:
+  * add more unit tests
+  * mark some test as DCS-BIOS tests
+
+## 1.8.0
+* Major GUI redesign using `customtkinter` package, which provides new, modern widgets:
+  * Appearance system mode (`Light`, `Dark`)
+  * Three colort theme (`Green`, `Blue` and `Dark Blue`)
+  * All settings are configured from GUI vie widgets
+  * One window for all configuration and buttons
+  * Check version from GUI
+  * Add configuration flag to check for new version during start
+
+## 1.7.5
+* report DCS stable version correctly in logs during start
+* Internal:
+  * rename starting script
+  * remove usage of McCabe
+  * add unit tests
+
 ## 1.7.4
-* Show DCS version to logs
+* **AH-64D Apache**
+  * add better support for G19 for PRE mode
+  * update name from `AH64D` to `AH64DBLKII`
+* Show DCS version in logs
+* Fix name of plane for **F-14 Tomcat** depending on model A or B
+* Toggle Start/Stop buttons
+* Do not show warning when plane's name is empty
 * Internal:
   * improve checking DCS-BIOS data
+  * introduce enum values for parser state
+  * improve CI process - add Python 3.11
+  * force using Pillow 9.3.0
 
 ## 1.7.3
-* Align F-16C DED and AH-64D EUFD with DCS-BIOS 0.7.46 changes
-* Basic support for F-14A Tomcat
+* Align **F-16C Viper** DED and **AH-64D Apache** EUFD with DCS-BIOS 0.7.46 changes
+* Basic support for **F-14A Tomcat**
 
 ## 1.7.2
 * **AH-64D Apache**
@@ -21,7 +79,7 @@
   * `verbose` - show more logs in terminal/console window
 * Fixing handling of `dcsbios` settings from `config.yaml`
 * Start and stop buttons can be used several times without closing GUI
-* **F-16C Viper** 
+* **F-16C Viper**
   * replace `*` with inverse white circle character at DED
   * Fix unhandled buttons for G19 (menu, ok and cancel)
 * G19 and **F/A-18C Hornet**
@@ -35,7 +93,7 @@
 
 ## 1.7.0
 * Support for **AH-64D Apache** with 3 modes:
-  * `IDM` - Squeeze and shows radios frequencies (from Radio Area), IDM and RTS rocker are used to scroll down 
+  * `IDM` - Squeeze and shows radios frequencies (from Radio Area), IDM and RTS rocker are used to scroll down
   * `WCA` - Enter button display warnings, cautions, and advisories, WCA rocker is used to scroll down
   * `PRE` - Preset button displays the preset menu for the selected radio, WCA rocker is used to scroll down
 * **F-16C Viper** DED clean-up extra characters
