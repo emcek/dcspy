@@ -81,7 +81,7 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          python -m pytest --random -q --disable-warnings -m "not dcsbios"
+          python -m pytest -s -vv -m "not dcsbios"
       - name: Upload pytest test results
         uses: actions/upload-artifact@v3
         if: failure()
