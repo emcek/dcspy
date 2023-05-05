@@ -17,3 +17,7 @@ fail-under = 90
 verbose = 1
 quiet = false
 exclude = ['setup.py', 'tests/test_*']
+
+[tool.ruff]
+line-length = 250
+ignore = ["E501"]
