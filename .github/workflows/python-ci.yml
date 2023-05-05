@@ -81,15 +81,7 @@ jobs:
           pip install -Ur requirements_test.txt
       - name: Test with pytest
         run: |
-          python -m pytest -s -vv -m "not dcsbios"
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
-          path: |
-            dcspy.log
-          retention-days: 5
+          python -m pytest --random -q -m "not dcsbios"
 #      - name: Check pip-audit
 #        run: |
 #          pip-audit -r requirements.txt --progress-spinner off
