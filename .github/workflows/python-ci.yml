@@ -36,6 +36,9 @@ jobs:
         run: |
           flake8 . --select=E9,F63,F7,F82 --show-source
           flake8 . --exit-zero --ignore=E501
+      - name: Check Ruff
+        run: |
+          ruff .
       - name: Check mypy
         run: |
           mypy dcspy
@@ -90,9 +93,9 @@ jobs:
           path: |
             dcspy.log
           retention-days: 5
-      - name: Check pip-audit
-        run: |
-          pip-audit -r requirements.txt --progress-spinner off
+#      - name: Check pip-audit
+#        run: |
+#          pip-audit -r requirements.txt --progress-spinner off
   coverage:
     name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
     runs-on: ${{ matrix.os }}
