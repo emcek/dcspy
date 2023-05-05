@@ -10,8 +10,11 @@ from typing import Union, Sequence
 from PIL import ImageFont
 
 from dcspy.log import config_logger
-from dcspy.sdk import lcd_sdk
 from dcspy.utils import load_cfg, set_defaults, get_default_yaml
+LOCAL_APPDATA = True
+default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
+print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', default_yaml, '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+from dcspy.sdk import lcd_sdk
 try:
     from typing import NotRequired
 except ImportError:
@@ -39,7 +42,7 @@ SUPPORTED_CRAFTS = {
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
-LOCAL_APPDATA = True
+
 
 
 class LcdType(Enum):
@@ -79,7 +82,7 @@ class LcdInfo:
     font_l: ImageFont.FreeTypeFont
 
 
-default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
+
 config = set_defaults(load_cfg(filename=default_yaml), filename=default_yaml)
 LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
                   buttons=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
