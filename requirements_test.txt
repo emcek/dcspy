@@ -12,6 +12,7 @@ pydocstyle
 pylint
 pytest-cov
 pytest-random
+ruff
 types-requests
 types-PyYAML
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
