@@ -13,3 +13,7 @@ jobs:
   coverage:
     needs: [style]
     uses: ./.github/workflows/coverage.yml
+    env:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      COVERALLS_SERVICE_NAME: github
+      CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
