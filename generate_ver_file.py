@@ -55,13 +55,14 @@ def save_ver_file(ver=environ.get('GITHUB_REF_NAME'), bld=environ.get('GITHUB_RU
     if all([ver, bld, sha, ver_f]):
         if ver.startswith('v'):
             ver = ver[1:]
-        info_ver = generate_ver_info(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha[:7])
-        with open(ver_f, mode='w+', encoding='utf-8') as f:
-            f.write(str(info_ver))
+        info_ver_data = generate_ver_info(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha[:7])
+        with open(ver_f, mode='w+', encoding='utf-8') as file_ver_info:
+            file_ver_info.write(str(info_ver_data))
     else:
         print("Use: v1.9.5 40 a43c77649cad77204c075b431f38d03dbc75cbdd file_version_info.txt")
     return ver, bld, sha[:7], ver_f
 
 
 if __name__ == '__main__':
-    print(save_ver_file(*argv[1:]))
+    str_ver, github_build, tag_sha = argv[1:]
+    print(save_ver_file(str_ver, github_build, tag_sha))
