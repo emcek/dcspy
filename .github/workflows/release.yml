@@ -60,7 +60,7 @@ jobs:
       - name: "Create Release"
         uses: softprops/action-gh-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.PYI_REL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REL_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           name: dcspy ${{ steps.version.outputs.number }}
