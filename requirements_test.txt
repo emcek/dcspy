@@ -9,7 +9,6 @@ mypy
 pip-audit==2.4.12
 pycodestyle
 pydocstyle
-pyinstaller; sys_platform == 'win32'
 pylint
 pytest-cov
 pytest-random
