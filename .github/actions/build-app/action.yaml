@@ -1,0 +1,34 @@
+name: Build dcspy binary packages
+description: Assembles the full dcspy application.
+runs:
+  using: composite
+  steps:
+    - name: "Compile and install PyInstaller"
+      shell: bash
+      run: |
+        git clone https://github.com/pyinstaller/pyinstaller.git
+        pyi_tag=$(python latest_tag.py pyinstaller 1)
+        pyi_ver=$(python latest_tag.py pyinstaller 0)
+        cd pyinstaller/bootloader
+        git checkout $pyi_tag
+        python.exe ./waf -v all
+        cd ..
+        python.exe setup.py bdist_wheel
+        pip install dist/pyinstaller-$pyi_ver-py3-none-any.whl
+
+    - name: "Generate version info file"
+      shell: bash
+      run: |
+        python generate_ver_file.py
+
+    - name: "Build dcspy package"
+      shell: bash
+      run: |
+        python setup.py sdist bdist_wheel
+        python -m twine check dist/*
+
+    - name: "Build dcspy binaries"
+      shell: bash
+      run: |
+        pyinstaller --clean --noconfirm --log-level DEBUG dcspy.spec
+        pyinstaller --clean --noconfirm --log-level DEBUG dcspy_cli.spec
