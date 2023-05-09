@@ -35,15 +35,15 @@ jobs:
             dcspy.log
           retention-days: 4
 
-      - name: Run codacy-coverage
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        run: |
-          python-codacy-coverage -r coverage.xml
-
       - name: Test Coveralls
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_SERVICE_NAME: github
         run: |
            coveralls
+
+      - name: Run codacy-coverage
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: |
+          python-codacy-coverage -r coverage.xml
