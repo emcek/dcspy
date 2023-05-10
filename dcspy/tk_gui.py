@@ -431,7 +431,6 @@ class DcspyGui(tk.Frame):
         if conf:
             cfg.update(conf)
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
-        self.status_txt.set(f'Saved: {self.cfg_file}')
 
     def _set_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
