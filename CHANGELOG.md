@@ -10,6 +10,7 @@
   * improve type checking
   * verbose setting will impact both console and file logs
   * use pathlib for path manipulation
+  * improve CI/CD process
 
 ## 1.9.5
 * Support for **Mi-8MTV2 Magnificent Eight**
