@@ -34,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: test-${{ matrix.os }}-py${{ matrix.python-version }}
+          name: coverage_3_11
           path: |
             covhtml/*
             coverage.xml
