@@ -336,7 +336,7 @@ class DcspyGui(tk.Frame):
         :param bios_ver: version string
         :return: full BIOS version
         """
-        sha_commit = f' SHA: {check_github_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
+        sha_commit = f' SHA: {check_github_repo(git_ref=self.bios_git_ref.get(), update=False)}' if self.bios_git_switch.get() else ''
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         return dcs_bios_ver
 
