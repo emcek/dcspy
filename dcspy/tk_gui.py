@@ -20,7 +20,7 @@ from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
     check_github_repo, check_dcs_bios_entry, get_default_yaml
 
-__version__ = '1.9.5'
+__version__ = '2.0.0'
 LOG = getLogger(__name__)
 
 
