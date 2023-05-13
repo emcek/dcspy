@@ -153,7 +153,7 @@ class DcspyGui(tk.Frame):
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
-        checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check version:')
+        checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check DCSpy version:')
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
