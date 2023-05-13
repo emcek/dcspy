@@ -1,6 +1,6 @@
 from datetime import datetime
 from logging import getLogger
-from os import environ, makedirs, path
+from os import environ, makedirs
 from pathlib import Path
 from re import search
 from shutil import rmtree
@@ -17,7 +17,6 @@ from yaml import load, FullLoader, parser, dump
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
-default_yaml = path.join(path.abspath(path.dirname(__file__)), 'config.yaml')
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
@@ -43,6 +42,24 @@ defaults_cfg: ConfigDict = {
 }
 
 
+def get_default_yaml(local_appdata=False) -> Path:
+    """
+    Return full path to default configuration file.
+
+    :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
+    :return: Path like object
+    """
+    cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
+    if local_appdata:
+        localappdata = environ.get('localappdata', None)
+        user_appdata = Path(localappdata) / 'dcspy' if localappdata else cfg_ful_path.parent
+        makedirs(name=user_appdata, exist_ok=True)
+        cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
+        if not cfg_ful_path.exists():
+            save_cfg(cfg_dict=defaults_cfg, filename=cfg_ful_path)
+    return cfg_ful_path
+
+
 class ReleaseInfo(NamedTuple):
     """Tuple to store release related information."""
     latest: bool
@@ -53,7 +70,7 @@ class ReleaseInfo(NamedTuple):
     archive_file: str
 
 
-def load_cfg(filename=default_yaml) -> ConfigDict:
+def load_cfg(filename: Path) -> ConfigDict:
     """
     Load configuration form yaml filename.
 
@@ -68,13 +85,13 @@ def load_cfg(filename=default_yaml) -> ConfigDict:
                 cfg_dict, old_dict = {}, cfg_dict
                 raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
     except (FileNotFoundError, parser.ParserError, AttributeError) as err:
-        makedirs(name=filename.rpartition('/')[0], exist_ok=True)
+        makedirs(name=filename.parent, exist_ok=True)
         LOG.warning(f'{err.__class__.__name__}: {filename}. Default configuration will be used.')
         LOG.debug(f'{err}')
     return cfg_dict
 
 
-def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
+def save_cfg(cfg_dict: ConfigDict, filename: Path) -> None:
     """
     Update yaml file with dict.
 
@@ -87,7 +104,7 @@ def save_cfg(cfg_dict: ConfigDict, filename=default_yaml) -> None:
         dump(curr_dict, yaml_file)
 
 
-def set_defaults(cfg: ConfigDict, filename=default_yaml) -> ConfigDict:
+def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
     """
     Set defaults to not existing config options.
 
@@ -161,10 +178,10 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
     """
     Generate formatted string with version number.
 
-    :param repo: format '<organization or user>/<package>'
-    :param current_ver: current local version
-    :param check: version online
-    :return: formatted version as string
+    :param repo: format '<organization or user>/<package>'.
+    :param current_ver: current local version.
+    :param check: version online.
+    :return: formatted version as string.
     """
     ver_string = f'v{current_ver}'
     if check:
@@ -180,7 +197,7 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
     return ver_string
 
 
-def download_file(url: str, save_path: str) -> bool:
+def download_file(url: str, save_path: Path) -> bool:
     """
     Download file from URL and save to save_path.
 
@@ -214,7 +231,7 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
+def check_dcs_ver(dcs_path: Path) -> Tuple[str, str]:
     """
     Check DCS version and release type.
 
@@ -223,7 +240,7 @@ def check_dcs_ver(dcs_path: str) -> Tuple[str, str]:
     """
     result_type, result_ver = 'Unknown', 'Unknown'
     try:
-        with open(file=Path(path.join(dcs_path, 'autoupdate.cfg')), encoding='utf-8') as autoupdate_cfg:
+        with open(file=dcs_path / 'autoupdate.cfg', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except (FileNotFoundError, PermissionError) as err:
         LOG.debug(f'{err.__class__.__name__}: {err.filename}')
@@ -252,7 +269,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=path.join(gettempdir(), 'dcsbios_git')) -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -264,7 +281,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     :param repo_dir: local directory for repository
     """
     makedirs(name=repo_dir, exist_ok=True)
-    if is_git_repo(repo_dir):
+    if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
         bios_repo.git.checkout('master')
     else:
@@ -288,7 +305,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     return sha
 
 
-def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) -> str:
+def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
     """
     Check DCS-BIOS entry in Export.lua file.
 
@@ -299,11 +316,11 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: str, temp_dir: str) ->
     """
     result = '\n\nExport.lua exists.'
     lua = 'Export.lua'
-    with open(file=path.join(temp_dir, lua), encoding='utf-8') as lua_src:
+    with open(file=temp_dir / lua, encoding='utf-8') as lua_src:
         lua_src_data = lua_src.read()
     export_re = search(r'dofile\(lfs.writedir\(\)\.\.\[\[Scripts\\DCS-BIOS\\BIOS\.lua\]\]\)', lua_dst_data)
     if not export_re:
-        with open(file=path.join(lua_dst_path, lua), mode='a+', encoding='utf-8') as exportlua_dst:
+        with open(file=lua_dst_path / lua, mode='a+', encoding='utf-8') as exportlua_dst:
             exportlua_dst.write(f'\n{lua_src_data}')
         LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
         result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'

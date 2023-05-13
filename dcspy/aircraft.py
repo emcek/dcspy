@@ -2,7 +2,7 @@ from enum import Enum
 from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
-from os import path
+from pathlib import Path
 from pprint import pformat
 from re import search, sub
 from string import whitespace
@@ -59,7 +59,7 @@ class Aircraft:
         img = img_for_lcd[lcd_type]()
         getattr(self, f'draw_for_lcd_{lcd_type}')(img)
         if config.get('save_lcd', False):
-            img.save(path.join(gettempdir(), f'{self.__class__.__name__}_{next(self._debug_img)}.png'), 'PNG')
+            img.save(Path(gettempdir()) / f'{self.__class__.__name__}_{next(self._debug_img)}.png', 'PNG')
         return img
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:

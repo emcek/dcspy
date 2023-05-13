@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch, PropertyMock, MagicMock, mock_open
 
 from packaging import version
@@ -66,15 +67,14 @@ def test_proc_is_running():
     assert not utils.proc_is_running('wrong_python')
 
 
-def test_dummy_save_load_set_defaults():
-    from os import makedirs, remove, rmdir, environ
-    makedirs(name='./tmp', exist_ok=True)
-    test_tmp_yaml = './tmp/c.yaml'
+def test_dummy_save_load_set_defaults(tmpdir):
+    from os import environ
+    test_tmp_yaml = Path(tmpdir) / 'c.yml'
 
-    utils.save_cfg({'font_mono_xs': 9}, test_tmp_yaml)
-    d_cfg = utils.load_cfg(test_tmp_yaml)
+    utils.save_cfg(cfg_dict={'font_mono_xs': 9}, filename=test_tmp_yaml)
+    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
-    d_cfg = utils.set_defaults(d_cfg, test_tmp_yaml)
+    d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
     assert d_cfg == {'keyboard': 'G13',
                      'save_lcd': False,
                      'show_gui': True,
@@ -98,35 +98,32 @@ def test_dummy_save_load_set_defaults():
                      'theme_color': 'blue'}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
-    d_cfg = utils.load_cfg(test_tmp_yaml)
+    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
     assert len(d_cfg) == 0
-
-    remove(test_tmp_yaml)
-    rmdir('./tmp/')
 
 
 def test_check_dcs_ver_file_exists_with_ver(autoupdate1_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate1_cfg)):
-        dcs_ver = utils.check_dcs_ver('')
+        dcs_ver = utils.check_dcs_ver(Path(''))
         assert dcs_ver == ('openbeta', '2.7.16.28157')
 
 
 def test_check_dcs_ver_file_exists_without_ver(autoupdate2_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate2_cfg)):
-        dcs_ver = utils.check_dcs_ver('')
+        dcs_ver = utils.check_dcs_ver(Path(''))
         assert dcs_ver == ('openbeta', 'Unknown')
 
 
 def test_check_dcs_ver_file_exists_without_branch(autoupdate3_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate3_cfg)):
-        dcs_ver = utils.check_dcs_ver('')
+        dcs_ver = utils.check_dcs_ver(Path(''))
         assert dcs_ver == ('stable', '2.7.18.28157')
 
 
 @mark.parametrize('side_effect', [FileNotFoundError, PermissionError])
 def test_check_dcs_ver_file_not_exists(side_effect):
     with patch('dcspy.utils.open', side_effect=side_effect):
-        dcs_ver = utils.check_dcs_ver('')
+        dcs_ver = utils.check_dcs_ver(Path(''))
         assert dcs_ver == ('Unknown', 'Unknown')
 
 
@@ -151,15 +148,15 @@ def test_check_github_repo(tmpdir):
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):
-    from os import makedirs, path
-    install_dir = path.join(tmpdir, 'install')
+    from os import makedirs
+    install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'
     lua_dst_data = ''
 
-    with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
+    with open(file=tmpdir / lua, mode='a+', encoding='utf-8') as lua_from_zip:
         lua_from_zip.write('anything')
-    with open(file=path.join(install_dir, lua), mode='a+', encoding='utf-8') as lua_dst:
+    with open(file=install_dir / lua, mode='a+', encoding='utf-8') as lua_dst:
         lua_dst.write(lua_dst_data)
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
@@ -167,15 +164,15 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
 
 
 def test_check_dcs_bios_entry_ok(tmpdir):
-    from os import makedirs, path
-    install_dir = path.join(tmpdir, 'install')
+    from os import makedirs
+    install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'
     lua_dst_data = r'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])'
 
-    with open(file=path.join(tmpdir, lua), mode='a+', encoding='utf-8') as lua_from_zip:
+    with open(file=tmpdir / lua, mode='a+', encoding='utf-8') as lua_from_zip:
         lua_from_zip.write('anything')
-    with open(file=path.join(install_dir, lua), mode='a+', encoding='utf-8') as lua_dst:
+    with open(file=install_dir / lua, mode='a+', encoding='utf-8') as lua_dst:
         lua_dst.write(lua_dst_data)
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)

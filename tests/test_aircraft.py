@@ -1,4 +1,4 @@
-from os import path
+from pathlib import Path
 from sys import platform
 from unittest.mock import patch
 
@@ -9,7 +9,7 @@ from pytest import mark, raises
 from dcspy import LcdColor, LcdMono, LcdButton
 from tests.helpers import all_plane_list, set_bios_during_test
 
-resources = path.join(path.dirname(path.abspath(__file__)), 'resources')
+resources = Path(__file__).resolve().with_name('resources')
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
@@ -384,7 +384,7 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
+    ref_img = PIL.Image.open(resources / platform / f'{model}_{aircraft_model.__class__.__name__}.png')
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
@@ -402,7 +402,7 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
     apache_mono.mode = ApacheEufdMode.WCA
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, 'apache_mono_wca_mode.png'))
+    ref_img = PIL.Image.open(resources / platform / 'apache_mono_wca_mode.png')
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
@@ -425,7 +425,7 @@ def test_apache_mono_wca_more_then_one_screen(apache_mono):
     assert apache_mono.warning_line == 1
     img = apache_mono.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, 'apache_mono_wca_mode.png'))
+    ref_img = PIL.Image.open(resources / platform / 'apache_mono_wca_mode.png')
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
@@ -467,6 +467,6 @@ def test_apache_pre_mode(model, bios_pairs, filename, request):
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, filename))
+    ref_img = PIL.Image.open(resources / platform / filename)
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()

@@ -1,7 +1,6 @@
 import tkinter as tk
 from functools import partial
 from logging import getLogger
-from os import path
 from pathlib import Path
 from platform import architecture, uname, python_implementation, python_version
 from re import search
@@ -16,10 +15,10 @@ from CTkMessagebox import CTkMessagebox
 from PIL import Image
 from packaging import version
 
-from dcspy import LCD_TYPES, config
+from dcspy import LOCAL_APPDATA, LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
-    check_github_repo, check_dcs_bios_entry
+    check_github_repo, check_dcs_bios_entry, get_default_yaml
 
 __version__ = '1.9.5'
 LOG = getLogger(__name__)
@@ -27,16 +26,15 @@ LOG = getLogger(__name__)
 
 class DcspyGui(tk.Frame):
     """Tkinter GUI."""
-    def __init__(self, master: customtkinter.CTk, config_file: str) -> None:
+    def __init__(self, master: customtkinter.CTk) -> None:
         """
         Create basic GUI for dcspy application.
 
         :param master: Top level widget
-        :param config_file: path to configuration yaml file
         """
         super().__init__(master)
         self.master = master
-        self.cfg_file = config_file
+        self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.event = Event()
@@ -77,7 +75,6 @@ class DcspyGui(tk.Frame):
         self.bios_git_label: customtkinter.CTkLabel
         self.bios_git: customtkinter.CTkEntry
         self._init_widgets()
-        self.status_txt.set(get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver']))
         if config.get('autostart', False):
             self.start_dcspy()
 
@@ -122,7 +119,7 @@ class DcspyGui(tk.Frame):
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check DCSpy version', command=self._check_version)
         check_ver.grid(row=3, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
-        logo_icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), 'dcspy.png')), size=(130, 60))
+        logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name('dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
         self.btn_start.grid(row=5, column=0, padx=20, pady=10)
@@ -136,7 +133,7 @@ class DcspyGui(tk.Frame):
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            icon = customtkinter.CTkImage(Image.open(path.join(path.abspath(path.dirname(__file__)), LCD_TYPES[text]['icon'])), size=(103, 70))
+            icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name(LCD_TYPES[text]['icon'])), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
@@ -271,11 +268,12 @@ class DcspyGui(tk.Frame):
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(str(config["dcs"]))
+        dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
         self._auto_update_bios(silence=True)
-        bios_ver = self._check_local_bios().ver
-        sha_commit = f' SHA: {check_github_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
-        dcs_bios_ver = f'{bios_ver}{sha_commit}'
+        bios_ver = str(self._check_local_bios().ver)
+        self._show_status_versions(bios_ver, dcspy_ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver)
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
         python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
@@ -297,7 +295,7 @@ class DcspyGui(tk.Frame):
         config2_label.bind('<Button-1>', lambda e: self._open_webpage(rf'file://{self.cfg_file}'))
         dcsp1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCSpy:')
         dcsp1_label.grid(column=0, row=4, sticky=tk.W, padx=10, pady=5)
-        dcsp2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{__version__}')
+        dcsp2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcspy_ver}')
         dcsp2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
         dcsbios1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS-BIOS:')
         dcsbios1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
@@ -318,6 +316,29 @@ class DcspyGui(tk.Frame):
         discord2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://discord.gg/SP5Yjx3 (click to open)')
         discord2_label.grid(column=1, row=8, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
+
+    def _show_status_versions(self, bios_ver: str, dcspy_ver: str) -> None:
+        """
+        Check dcspy and BIOS versions and update status bar.
+
+        :param bios_ver: Bios version
+        :param dcspy_ver: Dcspy version
+        """
+        status_ver = ''
+        status_ver += f"Dcspy: {dcspy_ver} " if config['check_ver'] else ''
+        status_ver += f"BIOS: {bios_ver}" if config['check_bios'] else ''
+        self.status_txt.set(status_ver)
+
+    def _get_bios_full_version(self, bios_ver: str) -> str:
+        """
+        Get full with SHA and git details DCS-BIOS version as string.
+
+        :param bios_ver: version string
+        :return: full BIOS version
+        """
+        sha_commit = f' SHA: {check_github_repo(git_ref="", update=False)}' if self.bios_git_switch.get() else ''
+        dcs_bios_ver = f'{bios_ver}{sha_commit}'
+        return dcs_bios_ver
 
     @staticmethod
     def _open_webpage(url: str) -> None:
@@ -410,7 +431,6 @@ class DcspyGui(tk.Frame):
         if conf:
             cfg.update(conf)
         save_cfg(cfg_dict=cfg, filename=self.cfg_file)
-        self.status_txt.set(f'Saved: {self.cfg_file}')
 
     def _set_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
@@ -533,16 +553,17 @@ class DcspyGui(tk.Frame):
 
         :param silence: perform action with silence
         """
-        repo_dir = path.join(gettempdir(), 'dcsbios_git')
+        repo_dir = Path(gettempdir()) / 'dcsbios_git'
         sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
         LOG.debug(f'Remove: {self.bios_path.get()} ')
         rmtree(path=self.bios_path.get(), ignore_errors=True)
         LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
-        copytree(src=path.join(repo_dir, 'Scripts', 'DCS-BIOS'), dst=self.bios_path.get())
+        copytree(src=repo_dir / 'Scripts' / 'DCS-BIOS', dst=self.bios_path.get())
         local_bios = self._check_local_bios()
         self.status_txt.set(sha)
+        LOG.info(f'Git DCS-BIOS: {sha}')
         if not silence:
-            install_result = self._handling_export_lua(temp_dir=path.join(repo_dir, 'Scripts'))
+            install_result = self._handling_export_lua(temp_dir=repo_dir / 'Scripts')
             install_result = f'{install_result}\n\nUsing Git/Live version.'
             CTkMessagebox(title=f'Updated {local_bios.ver}', message=install_result)
 
@@ -599,7 +620,7 @@ class DcspyGui(tk.Frame):
         self.l_bios = version.parse('not installed')
         result = ReleaseInfo(False, self.l_bios, '', '', '', '')
         try:
-            with open(file=path.join(self.bios_path.get(), 'lib\\CommonData.lua'), encoding='utf-8') as cd_lua:
+            with open(file=Path(self.bios_path.get()) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
             LOG.debug(f'While checking DCS-BIOS version {err.__class__.__name__}: {err.filename}')
@@ -645,17 +666,17 @@ class DcspyGui(tk.Frame):
 
         :param rel_info: remote release information
         """
-        tmp_dir = gettempdir()
-        local_zip = path.join(tmp_dir, rel_info.archive_file)
+        tmp_dir = Path(gettempdir())
+        local_zip = tmp_dir / rel_info.archive_file
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
-        rmtree(path=path.join(tmp_dir, 'DCS-BIOS'), ignore_errors=True)
+        rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
         LOG.debug(f'Remove: {self.bios_path.get()} ')
         rmtree(path=self.bios_path.get(), ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path.get()} ')
-        copytree(src=path.join(tmp_dir, 'DCS-BIOS'), dst=self.bios_path.get())
+        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path.get())
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
             msg = CTkMessagebox(title='Open browser', message=install_result, icon='question', option_1='Yes', option_2='No')
@@ -667,7 +688,7 @@ class DcspyGui(tk.Frame):
             install_result = f'{install_result}\n\nUsing stable release version.'
             CTkMessagebox(title=f'Updated {local_bios.ver}', message=install_result)
 
-    def _handling_export_lua(self, temp_dir: str) -> str:
+    def _handling_export_lua(self, temp_dir: Path) -> str:
         """
         Check if Export.lua file exist and its content.
 
@@ -677,14 +698,14 @@ class DcspyGui(tk.Frame):
         :return: result of checks
         """
         result = 'Installation Success. Done.'
-        lua_dst_path = path.join(self.bios_path.get(), '..')
+        lua_dst_path = Path(self.bios_path.get()).parent
         lua = 'Export.lua'
         try:
-            with open(file=path.join(lua_dst_path, lua), encoding='utf-8') as lua_dst:
+            with open(file=lua_dst_path / lua, encoding='utf-8') as lua_dst:
                 lua_dst_data = lua_dst.read()
         except FileNotFoundError as err:
             LOG.debug(f'{err.__class__.__name__}: {err.filename}')
-            copy(src=path.join(temp_dir, lua), dst=lua_dst_path)
+            copy(src=temp_dir / lua, dst=lua_dst_path)
             LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
         else:
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)

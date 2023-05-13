@@ -4,143 +4,15 @@ on: [push]
 
 jobs:
   style:
-    name: style ${{ matrix.os }} (py${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.11']
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install -Ur requirements_test.txt
-      - name: Check PyCodeStyle
-        run: |
-          pycodestyle --statistics --count dcspy
-      - name: Check PyDocStyle
-        run: |
-          pydocstyle --count dcspy
-      - name: Check interrogate
-        run: |
-          interrogate -c pyproject.toml -vv
-      - name: Check PyLint
-        run: |
-          pylint dcspy || echo $(($? % 4))
-      - name: Check flake8
-        run: |
-          flake8 . --select=E9,F63,F7,F82 --show-source
-          flake8 . --exit-zero --ignore=E501
-      - name: Check Ruff
-        run: |
-          ruff .
-      - name: Check mypy
-        run: |
-          mypy dcspy
-      - name: Upload mypy results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: mypy-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: |
-            mypyhtml/*
-          retention-days: 4
-      - name: Check MANIFEST
-        run: |
-          check-manifest -q || echo $(($? -1))
+    uses: ./.github/workflows/style.yml
+
   test:
-    name: test ${{ matrix.os }} (py${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
-        exclude:
-          - os: windows-latest
-            python-version: '3.7'
-          - os: ubuntu-latest
-            python-version: '3.11'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install MS Fonts
-        if: ${{ contains( matrix.os, 'ubuntu') }}
-        run: |
-          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
-          sudo mkdir -p /usr/share/fonts/truetype
-          sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f -v
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install -Ur requirements_test.txt
-      - name: Test with pytest
-        run: |
-          python -m pytest --random -q --disable-warnings -m "not dcsbios"
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
-          path: |
-            dcspy.log
-          retention-days: 5
-#      - name: Check pip-audit
-#        run: |
-#          pip-audit -r requirements.txt --progress-spinner off
+    needs: [style]
+    uses: ./.github/workflows/test.yml
+
   coverage:
-    name: cov ${{ matrix.os }} (py${{ matrix.python-version }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        python-version: ['3.11']
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.os }} ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install MS Fonts
-        if: ${{ contains( matrix.os, 'ubuntu') }}
-        run: |
-          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
-          sudo mkdir -p /usr/share/fonts/truetype
-          sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install -Ur requirements_test.txt
-      - name: Test with pytest
-        run: |
-          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing -m "not dcsbios"
-      - name: Upload pytest results
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: test-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: |
-            covhtml/*
-            coverage.xml
-            dcspy.log
-          retention-days: 4
-      - name: Run codacy-coverage
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        run: |
-          python-codacy-coverage -r coverage.xml
-      - name: Test Coveralls
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
-        run: |
-          coveralls
+    needs: [style]
+    uses: ./.github/workflows/coverage.yml
+    secrets:
+      COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
