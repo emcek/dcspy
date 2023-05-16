@@ -39,8 +39,8 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: s
     return ver_info
 
 
-def save_ver_file(ver=environ.get('GITHUB_REF_NAME'), bld=environ.get('GITHUB_RUN_NUMBER'),
-                  sha=environ.get('GITHUB_SHA'), ver_f='file_version_info.txt') -> Sequence[str]:
+def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '1.1.1'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
+                  sha=environ.get('GITHUB_SHA', 'deadbeef'), ver_f='file_version_info.txt') -> Sequence[str]:
     """
     Save generated version file based on list of strings.
 
@@ -64,5 +64,4 @@ def save_ver_file(ver=environ.get('GITHUB_REF_NAME'), bld=environ.get('GITHUB_RU
 
 
 if __name__ == '__main__':
-    str_ver, github_build, tag_sha = argv[1:]
-    print(save_ver_file(str_ver, github_build, tag_sha))
+    print(save_ver_file(*argv[1:]))
