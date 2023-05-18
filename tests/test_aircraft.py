@@ -1,19 +1,29 @@
-from os import path
+from pathlib import Path
 from sys import platform
 from unittest.mock import patch
 
-import PIL
-from PIL import ImageChops
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
-from tests.helpers import all_plane_list, set_bios_during_test
+from tests.helpers import all_plane_list, set_bios_during_test, compare_images
 
-resources = path.join(path.dirname(path.abspath(__file__)), 'resources')
+resources = Path(__file__).resolve().with_name('resources')
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
-@mark.parametrize('model', all_plane_list)
+@mark.parametrize('model', all_plane_list, ids=[
+    'FA-18 Hornet',
+    'F-16C Viper',
+    'Ka-50 Black Shark II',
+    'Ka-50 Black Shark III',
+    'Mi-8MT Hip',
+    'Mi-24P Hind',
+    'AH-64D Apache',
+    'A-10C Warthog',
+    'A-10C II Tank Killer',
+    'F-14A',
+    'F-14B',
+    'AV-8B N/A Harrier'])
 def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
     from dcspy import aircraft
     airplane = getattr(aircraft, model)
@@ -25,8 +35,8 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
 @mark.parametrize('selector, data, value, c_func, effect, lcd', [
     ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], LcdMono),
     ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], LcdColor),
-])
-def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value, c_func, effect, lcd, aircraft):
+], ids=['Mono LCD', 'Color LCD'])
+def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     assert aircraft.bios_data == {}
     aircraft.bios_data = {selector: data}
@@ -40,9 +50,11 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
             aircraft.set_bios(selector, value)
 
 
-@mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
-                                        ('RGBA', 'logi_lcd_color_set_background', LcdColor)])
-def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
+@mark.parametrize('mode, c_func, lcd', [
+    ('1', 'logi_lcd_mono_set_background', LcdMono),
+    ('RGBA', 'logi_lcd_color_set_background', LcdColor),
+], ids=['Mono LCD', 'Color LCD'])
+def test_aircraft_base_class_prepare_img(mode, c_func, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     aircraft.lcd = lcd
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -151,7 +163,7 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
     ('apache_mono', LcdButton.THREE, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
     ('apache_mono', LcdButton.FOUR, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'),
 ])
-def test_button_pressed_for_plane(plane, button, result, request):
+def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
     assert plane.button_request(button) == result
 
@@ -165,7 +177,7 @@ def test_button_pressed_for_plane(plane, button, result, request):
     (LcdButton.MENU, '\n'),
     (LcdButton.CANCEL, '\n'),
     (LcdButton.OK, '\n'),
-])
+], ids=['NONE', 'LEFT', 'RIGHT', 'DOWN', 'UP', 'MENU', 'CANCEL', 'OK'])
 def test_button_pressed_for_apache_color(button, result, apache_color):
     from dcspy.aircraft import ApacheEufdMode
     apache_color.mode = ApacheEufdMode.WCA
@@ -184,6 +196,18 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
     ('hornet_color', 'HUD_ATT_SW', LcdButton.OK, (1, 2, 1, 0, 1)),
     ('hornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
     ('hornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
+], ids=[
+    'ONE - Viper Mono',
+    'TWO - Viper Mono',
+    'THREE - Viper Mono',
+    'FOUR - Viper Mono',
+    'LEFT - Viper Color',
+    'RIGHT - Viper Color',
+    'DOWN - Viper Color',
+    'UP - Viper Color',
+    'OK - Hornet Color',
+    'MENU - Hornet Color',
+    'CANCEL - Hornet Color',
 ])
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
@@ -240,157 +264,31 @@ def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     ('apache_color', [('PLT_EUFD_LINE1', '                  |                  |TAIL WHL LOCK SEL ')], 'IDM'),
     ('apache_color', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
     ('apache_color', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ')], 'PRE'),
-])
-def test_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
+], ids=['Mono IDM', 'Mono PRE', 'Color IDM 1', 'Color IDM 2', 'Color PRE'])
+def test_apatch_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
     assert plane.mode.name == mode
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
-hornet_bios = [
-    ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
-    ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'),
-    ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'),
-    ('UFC_OPTION_DISPLAY_1', '1234'),
-    ('UFC_OPTION_DISPLAY_2', '2345'),
-    ('UFC_OPTION_DISPLAY_3', '3456'),
-    ('UFC_OPTION_DISPLAY_4', '4567'),
-    ('UFC_OPTION_DISPLAY_5', '5678'),
-    ('UFC_COMM1_DISPLAY', '11'),
-    ('UFC_COMM2_DISPLAY', '22'),
-    ('UFC_OPTION_CUEING_1', '1'),
-    ('UFC_OPTION_CUEING_2', '2'),
-    ('UFC_OPTION_CUEING_3', '3'),
-    ('UFC_OPTION_CUEING_4', '4'),
-    ('UFC_OPTION_CUEING_5', '5'),
-    ('IFEI_FUEL_DOWN', '123456'),
-    ('IFEI_FUEL_UP', '234567')
-]
-viper_bios = [
-    ('DED_LINE_1', "  INS  08.0/ 6        1a "),
-    ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
-    ('DED_LINE_3', "  LNG  E040o34.2'        "),
-    ('DED_LINE_4', " SALT      74FT          "),
-    ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
-]
-shark_bios = [
-    ('PVI_LINE1_APOSTROPHE1', '`'),
-    ('PVI_LINE1_APOSTROPHE2', '`'),
-    ('PVI_LINE1_POINT', '1'),
-    ('PVI_LINE1_SIGN', '-'),
-    ('PVI_LINE1_TEXT', '123456'),
-    ('PVI_LINE2_APOSTROPHE1', '`'),
-    ('PVI_LINE2_APOSTROPHE2', '`'),
-    ('PVI_LINE2_POINT', '2'),
-    ('PVI_LINE2_SIGN', ' '),
-    ('PVI_LINE2_TEXT', '654321'),
-    ('AP_ALT_HOLD_LED', 1),
-    ('AP_BANK_HOLD_LED', 0),
-    ('AP_FD_LED', 1),
-    ('AP_HDG_HOLD_LED', 0),
-    ('AP_PITCH_HOLD_LED', 1)
-]
-hip_bios = [
-    ('LMP_AP_HDG_ON', 1),
-    ('LMP_AP_PITCH_ROLL_ON', 0),
-    ('LMP_AP_HEIGHT_ON', 1),
-    ('R863_CNL_SEL', 9),
-    ('R863_MOD', 1),
-    ('R863_FREQ', "123.525"),
-    ('R828_PRST_CHAN_SEL', 9),
-    ('YADRO1A_FREQ', "09091.9"),
-]
-hind_bios = [
-    ('PLT_R863_CHAN', 9),
-    ('PLT_R863_MODUL', 1),
-    ('PLT_R828_CHAN', 9),
-    ('JADRO_FREQ', "08082.8"),
-    ('PLT_SAU_HOVER_MODE_ON_L', 1),
-    ('PLT_SAU_ROUTE_MODE_ON_L', 0),
-    ('PLT_SAU_ALT_MODE_ON_L', 1),
-    ('PLT_SAU_H_ON_L', 0),
-    ('PLT_SAU_K_ON_L', 0),
-    ('PLT_SAU_T_ON_L', 0),
-    ('PLT_SAU_B_ON_L', 1),
-]
-apache_bios = [
-    ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
-    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
-    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
-    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
-    ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')
-]
-warthog_bios = [
-    ('VHFAM_FREQ1', '20'),
-    ('VHFAM_FREQ2', 1),
-    ('VHFAM_FREQ3', 1),
-    ('VHFAM_FREQ4', '30'),
-    ('VHFFM_FREQ1', '40'),
-    ('VHFFM_FREQ2', 2),
-    ('VHFFM_FREQ3', 2),
-    ('VHFFM_FREQ4', '50'),
-    ('UHF_100MHZ_SEL', '5'),
-    ('UHF_10MHZ_SEL', 3),
-    ('UHF_1MHZ_SEL', 2),
-    ('UHF_POINT1MHZ_SEL', 1),
-    ('UHF_POINT25_SEL', '25')
-]
-harrier_bios = [
-    ('UFC_SCRATCHPAD', '123456789012'),
-    ('UFC_COMM1_DISPLAY', '11'),
-    ('UFC_COMM2_DISPLAY', '22'),
-    ('AV8BNA_ODU_1_SELECT', '1'),
-    ('AV8BNA_ODU_1_Text', '1234'),
-    ('AV8BNA_ODU_2_SELECT', '2'),
-    ('AV8BNA_ODU_2_Text', '2345'),
-    ('AV8BNA_ODU_3_SELECT', '3'),
-    ('AV8BNA_ODU_3_Text', '3456'),
-    ('AV8BNA_ODU_4_SELECT', '4'),
-    ('AV8BNA_ODU_4_Text', '4567'),
-    ('AV8BNA_ODU_5_SELECT', '5'),
-    ('AV8BNA_ODU_5_Text', '5678')
-]
 
-
-@mark.parametrize('model, bios_pairs', [
-    ('hornet_mono', hornet_bios),
-    ('hornet_color', hornet_bios),
-    ('viper_mono', viper_bios),
-    ('viper_color', viper_bios),
-    ('shark_mono', shark_bios),
-    ('shark_color', shark_bios),
-    ('shark3_mono', shark_bios),
-    ('shark3_color', shark_bios),
-    ('hip_mono', hip_bios),
-    ('hip_color', hip_bios),
-    ('hind_mono', hind_bios),
-    ('hind_color', hind_bios),
-    ('apache_mono', apache_bios),
-    ('apache_color', apache_bios),
-    ('warthog_mono', warthog_bios),
-    ('warthog_color', warthog_bios),
-    ('warthog2_mono', warthog_bios),
-    ('warthog2_color', warthog_bios),
-    # ('tomcata_mono', []),
-    # ('tomcata_color', []),
-    # ('tomcatb_mono', []),
-    # ('tomcatb_color', []),
-    ('harrier_mono', harrier_bios),
-    ('harrier_color', harrier_bios),
-])
-def test_prepare_image_for_all_planes(model, bios_pairs, request):
-    aircraft_model = request.getfixturevalue(model)
+@mark.parametrize('lcd', ['mono', 'color'])
+@mark.parametrize('model', ['hornet', 'viper', 'shark', 'shark3', 'hip', 'hind', 'apache', 'warthog', 'warthog2',
+                            # 'tomcata', 'tomcatb',
+                            'harrier'])
+def test_prepare_image_for_all_planes(model, lcd, request):
+    aircraft_model = request.getfixturevalue(f'{model}_{lcd}')
+    bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, f'{model}_{aircraft_model.__class__.__name__}.png'))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
 
 
-def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
+@mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
+def test_prepare_image_for_apache_wca_mode(model, request):
     from dcspy.aircraft import ApacheEufdMode
+    apache = request.getfixturevalue(model)
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
@@ -398,75 +296,37 @@ def test_prepare_image_for_apache_mono_wca_mode(apache_mono):
         ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  '),
         ('PLT_EUFD_LINE5', '                  |                  |                  ')
     ]
-    set_bios_during_test(apache_mono, bios_pairs)
-    apache_mono.mode = ApacheEufdMode.WCA
-    img = apache_mono.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, 'apache_mono_wca_mode.png'))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    set_bios_during_test(apache, bios_pairs)
+    apache.mode = ApacheEufdMode.WCA
+    img = apache.prepare_image()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
-def test_apache_mono_wca_more_then_one_screen(apache_mono):
+@mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
+def test_apache_wca_more_then_one_screen_scrolled(model, request):
     from dcspy.aircraft import ApacheEufdMode
+    apache = request.getfixturevalue(model)
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
         ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
     ]
-    set_bios_during_test(apache_mono, bios_pairs)
-    apache_mono.mode = ApacheEufdMode.WCA
+    set_bios_during_test(apache, bios_pairs)
+    apache.mode = ApacheEufdMode.WCA
 
-    for i in range(1, 5):
-        assert apache_mono.warning_line == i
-        apache_mono.warning_line += 1
-        apache_mono.prepare_image()
-    assert apache_mono.warning_line == 1
-    img = apache_mono.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, 'apache_mono_wca_mode.png'))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    for i in range(1, 3):
+        assert apache.warning_line == i
+        apache.warning_line += 1
+        apache.prepare_image()
+    assert apache.warning_line == 3
+    img = apache.prepare_image()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png')
 
 
-apache_pre_mono_bios = [
-    ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
-    ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
-    ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
-    ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
-    ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
-    ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
-    ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
-    ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
-    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
-    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
-]
-apache_pre_color_bios = [
-    ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
-    ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
-    ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
-    ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
-    ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
-    ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
-    ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
-    ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
-    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
-    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
-]
-
-
-@mark.parametrize('model, bios_pairs, filename', [
-    ('apache_mono', apache_pre_mono_bios, 'apache_mono_pre_mode.png'),
-    ('apache_color', apache_pre_color_bios, 'apache_color_pre_mode.png')
-])
-def test_apache_pre_mode(model, bios_pairs, filename, request):
-    aircraft_model = request.getfixturevalue(model)
-    set_bios_during_test(aircraft_model, bios_pairs)
-    img = aircraft_model.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(path.join(resources, platform, filename))
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+@mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
+def test_apache_pre_mode(model, apache_pre_mode_bios_data, request):
+    apache = request.getfixturevalue(model)
+    set_bios_during_test(apache, apache_pre_mode_bios_data)
+    img = apache.prepare_image()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png')

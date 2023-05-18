@@ -1,15 +1,16 @@
 from datetime import datetime
 from json import loads
-from os import path
+from pathlib import Path
 from tempfile import gettempdir
 from typing import Tuple, List, Union, Dict
 from unittest.mock import patch
 
+import PIL
+from PIL import ImageChops
 from requests import get, exceptions
 
 from dcspy import aircraft, BiosValue
 from dcspy.sdk import lcd_sdk
-
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
@@ -94,9 +95,9 @@ def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
     :param bios_ver: DCS-BIOS version
     :return: json as dict
     """
-    plane_path = path.join(gettempdir(), plane)
+    plane_path = Path(gettempdir()) / plane
     try:
-        m_time = path.getmtime(plane_path)
+        m_time = plane_path.stat().st_mtime
         week = datetime.fromtimestamp(int(m_time)).strftime('%U')
         if week == datetime.now().strftime('%U'):
             with open(plane_path, encoding='utf-8') as plane_json_file:
@@ -179,3 +180,18 @@ def set_bios_during_test(aircraft_model: aircraft.Aircraft, bios_pairs: List[Tup
                 patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
             for selector, value in bios_pairs:
                 aircraft_model.set_bios(selector, value)
+
+
+def compare_images(img: PIL.Image.Image, file_path: Path) -> bool:
+    """
+    Comparing generated image with saved file.
+
+    :param img: Generated image
+    :param file_path: path to reference image
+    :return: Treu if images are the same
+    """
+    instance = isinstance(img, PIL.Image.Image)
+    ref_img = PIL.Image.open(file_path)
+    all_bytes = img.tobytes() == ref_img.tobytes()
+    pixel_diff = not ImageChops.difference(img, ref_img).getbbox()
+    return all([instance, all_bytes, pixel_diff])

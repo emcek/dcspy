@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
 from logging import getLogger
-from os import name, path
+from os import name
+from pathlib import Path
 from platform import architecture, uname, python_implementation, python_version
 from sys import platform
 from typing import Union, Sequence
@@ -10,7 +11,7 @@ from PIL import ImageFont
 
 from dcspy.log import config_logger
 from dcspy.sdk import lcd_sdk
-from dcspy.utils import load_cfg, set_defaults, default_yaml
+from dcspy.utils import load_cfg, set_defaults, get_default_yaml
 try:
     from typing import NotRequired
 except ImportError:
@@ -21,22 +22,24 @@ except ImportError:
     from typing_extensions import TypedDict
 
 
-SUPPORTED_CRAFTS = {'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
-                    'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
-                    'Ka503': {'name': 'Ka-50 Black Shark III', 'bios': 'Ka-50'},
-                    'Mi8MT': {'name': 'Mi-8MTV2 Magnificent Eight', 'bios': 'Mi-8MT'},
-                    'Mi24P': {'name': 'Mi-24P Hind', 'bios': 'Mi-24P'},
-                    'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
-                    'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
-                    'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
-                    'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
-                    'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
-                    'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14'},
-                    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
-                    }
+SUPPORTED_CRAFTS = {
+    'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
+    'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
+    'Ka503': {'name': 'Ka-50 Black Shark III', 'bios': 'Ka-50'},
+    'Mi8MT': {'name': 'Mi-8MTV2 Magnificent Eight', 'bios': 'Mi-8MT'},
+    'Mi24P': {'name': 'Mi-24P Hind', 'bios': 'Mi-24P'},
+    'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
+    'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
+    'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
+    'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
+    'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F14'},
+    'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14'},
+    'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
+}
 SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
+LOCAL_APPDATA = True
 
 
 class LcdType(Enum):
@@ -76,8 +79,8 @@ class LcdInfo:
     font_l: ImageFont.FreeTypeFont
 
 
-config = set_defaults(load_cfg())
-
+default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
+config = set_defaults(load_cfg(filename=default_yaml), filename=default_yaml)
 LcdMono = LcdInfo(width=lcd_sdk.MONO_WIDTH, height=lcd_sdk.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
                   buttons=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
                   background=0, mode='1', font_s=ImageFont.truetype(config['font_name'], config['font_mono_s']),
@@ -88,7 +91,7 @@ LcdColor = LcdInfo(width=lcd_sdk.COLOR_WIDTH, height=lcd_sdk.COLOR_HEIGHT, type=
                    background=(0, 0, 0, 0), mode='RGBA', font_s=ImageFont.truetype(config['font_name'], config['font_color_s']),
                    font_l=ImageFont.truetype(config['font_name'], config['font_color_l']),
                    font_xs=ImageFont.truetype(config['font_name'], config['font_color_xs']))
-DED_FONT = ImageFont.truetype(f'{path.abspath(path.dirname(__file__))}/falconded.ttf', 25)
+DED_FONT = ImageFont.truetype(str(Path(__file__).resolve().with_name('falconded.ttf')), 25)
 LCD_TYPES = {
     'G19': {'type': 'KeyboardColor', 'icon': 'G19.png'},
     'G510': {'type': 'KeyboardMono', 'icon': 'G510.png'},

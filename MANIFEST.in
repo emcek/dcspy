@@ -1,5 +1,5 @@
 include *.md
 include *.txt
-include *.yml
+include *.yaml
 include *.ico
 include *.png
