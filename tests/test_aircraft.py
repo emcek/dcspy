@@ -266,8 +266,8 @@ def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     ('apache_color', [('PLT_EUFD_LINE1', '                  |                  |TAIL WHL LOCK SEL ')], 'IDM'),
     ('apache_color', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
     ('apache_color', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ')], 'PRE'),
-])
-def test_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
+], ids=['Mono IDM', 'Mono PRE', 'Color IDM 1', 'Color IDM 2', 'Color PRE'])
+def test_apatch_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
     assert plane.mode.name == mode
