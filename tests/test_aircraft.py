@@ -297,13 +297,13 @@ def test_prepare_image_for_apache_wca_mode(model, request):
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
     img = apache.prepare_image()
-    # img.save(resources / platform / f'{platform}_{model}_apache_wca_mode1.png')
+    # img.save(resources / platform / f'{platform}_{model}_wca_mode1.png')
     assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_wca_more_then_one_screen(model, request):
+def test_apache_wca_more_then_one_screen_scrolled(model, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -318,10 +318,10 @@ def test_apache_wca_more_then_one_screen(model, request):
         assert apache.warning_line == i
         apache.warning_line += 1
         apache.prepare_image()
-    # assert apache.warning_line == 1
+    assert apache.warning_line == 3
     img = apache.prepare_image()
-    img.save(resources / platform / f'{platform}_{model}_apache_wca_mode2.png')
-    # assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
+    # img.save(resources / platform / f'{platform}_{model}_wca_mode_scroll.png')
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png')
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
