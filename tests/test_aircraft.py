@@ -2,12 +2,10 @@ from pathlib import Path
 from sys import platform
 from unittest.mock import patch
 
-import PIL
-from PIL import ImageChops
 from pytest import mark, raises
 
 from dcspy import LcdColor, LcdMono, LcdButton
-from tests.helpers import all_plane_list, set_bios_during_test
+from tests.helpers import all_plane_list, set_bios_during_test, compare_images
 
 resources = Path(__file__).resolve().with_name('resources')
 
@@ -282,10 +280,7 @@ def test_prepare_image_for_all_planes(model, lcd, request):
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
@@ -303,10 +298,7 @@ def test_prepare_image_for_apache_wca_mode(model, request):
     apache.mode = ApacheEufdMode.WCA
     img = apache.prepare_image()
     # img.save(resources / platform / f'{platform}_{model}_apache_wca_mode1.png')
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(resources / platform / f'{model}_wca_mode.png')
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -329,10 +321,7 @@ def test_apache_wca_more_then_one_screen(model, request):
     assert apache.warning_line == 1
     img = apache.prepare_image()
     # img.save(resources / platform / f'{platform}_{model}_apache_wca_mode2.png')
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(resources / platform / f'{model}_wca_mode.png')
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
@@ -340,7 +329,4 @@ def test_apache_pre_mode(model, apache_pre_mode_bios_data, request):
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
-    assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(resources / platform / f'{model}_pre_mode.png')
-    assert img.tobytes() == ref_img.tobytes()
-    assert not ImageChops.difference(img, ref_img).getbbox()
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png')
