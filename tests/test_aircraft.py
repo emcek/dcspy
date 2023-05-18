@@ -37,7 +37,7 @@ def test_check_all_aircraft_inherit_from_correct_base_class(model, lcd_mono):
 @mark.parametrize('selector, data, value, c_func, effect, lcd', [
     ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], LcdMono),
     ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], LcdColor),
-], ids=['LcdMono', 'LcdColor'])
+], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     assert aircraft.bios_data == {}
@@ -55,7 +55,7 @@ def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, lcd
 @mark.parametrize('mode, c_func, lcd', [
     ('1', 'logi_lcd_mono_set_background', LcdMono),
     ('RGBA', 'logi_lcd_color_set_background', LcdColor),
-], ids=['LcdMono', 'LcdColor'])
+], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_prepare_img(mode, c_func, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     aircraft.lcd = lcd
