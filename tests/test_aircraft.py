@@ -52,9 +52,11 @@ def test_aircraft_base_class_set_bios_with_mono_color_lcd(selector, data, value,
             aircraft.set_bios(selector, value)
 
 
-@mark.parametrize('mode, c_func, lcd', [('1', 'logi_lcd_mono_set_background', LcdMono),
-                                        ('RGBA', 'logi_lcd_color_set_background', LcdColor)])
-def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, aircraft):
+@mark.parametrize('mode, c_func, lcd', [
+    ('1', 'logi_lcd_mono_set_background', LcdMono),
+    ('RGBA', 'logi_lcd_color_set_background', LcdColor),
+], ids=['LcdMono', 'LcdColor'])
+def test_aircraft_base_class_prepare_img(mode, c_func, lcd, aircraft):
     from dcspy.sdk import lcd_sdk
     aircraft.lcd = lcd
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -163,7 +165,7 @@ def test_aircraft_base_class_prepare_img_with_mono_color_lcd(mode, c_func, lcd, 
     ('apache_mono', LcdButton.THREE, 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n'),
     ('apache_mono', LcdButton.FOUR, 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'),
 ])
-def test_button_pressed_for_plane(plane, button, result, request):
+def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
     assert plane.button_request(button) == result
 
