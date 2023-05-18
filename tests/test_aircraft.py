@@ -402,7 +402,7 @@ def test_prepare_image_for_all_planes(model, bios_pairs, request):
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_prepare_image_for_apache_mono_wca_mode(model, request):
+def test_prepare_image_for_apache_wca_mode(model, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -415,16 +415,16 @@ def test_prepare_image_for_apache_mono_wca_mode(model, request):
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
     img = apache.prepare_image()
-    img.save(resources / platform / f'{platform}_{model}_apache_wca_mode1.png')
-    # assert isinstance(img, PIL.Image.Image)
-    # ref_img = PIL.Image.open(resources / platform / 'apache_mono_wca_mode.png')
-    # assert img.tobytes() == ref_img.tobytes()
-    # assert not ImageChops.difference(img, ref_img).getbbox()
+    # img.save(resources / platform / f'{platform}_{model}_apache_wca_mode1.png')
+    assert isinstance(img, PIL.Image.Image)
+    ref_img = PIL.Image.open(resources / platform / f'{model}_wca_mode.png')
+    assert img.tobytes() == ref_img.tobytes()
+    assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_mono_wca_more_then_one_screen(model, request):
+def test_apache_wca_more_then_one_screen(model, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -441,11 +441,11 @@ def test_apache_mono_wca_more_then_one_screen(model, request):
         apache.prepare_image()
     assert apache.warning_line == 1
     img = apache.prepare_image()
-    img.save(resources / platform / f'{platform}_{model}_apache_wca_mode2.png')
-    # assert isinstance(img, PIL.Image.Image)
-    # ref_img = PIL.Image.open(resources / platform / 'apache_mono_wca_mode.png')
-    # assert img.tobytes() == ref_img.tobytes()
-    # assert not ImageChops.difference(img, ref_img).getbbox()
+    # img.save(resources / platform / f'{platform}_{model}_apache_wca_mode2.png')
+    assert isinstance(img, PIL.Image.Image)
+    ref_img = PIL.Image.open(resources / platform / f'{model}_wca_mode.png')
+    assert img.tobytes() == ref_img.tobytes()
+    assert not ImageChops.difference(img, ref_img).getbbox()
 
 
 apache_pre_bios = [
