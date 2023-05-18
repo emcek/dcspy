@@ -10,7 +10,7 @@ from dcspy import utils
 @mark.parametrize('online_tag, result', [
     ('1.1.1', utils.ReleaseInfo(True, version.parse('1.1.1'), 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz')),
     ('3.2.1', utils.ReleaseInfo(False, version.parse('3.2.1'), 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz'))
-])
+], ids=['No update', 'New version'])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
@@ -34,7 +34,7 @@ def test_check_ver_exception():
 @mark.parametrize('online_tag, result', [
     ('1.1.1', 'v1.1.1 (latest)'),
     ('3.2.1', 'v1.1.1 (please update!)')
-])
+], ids=['No update', 'New version'])
 def test_get_version_string_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
@@ -53,7 +53,7 @@ def test_get_version_string_exception():
         assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=True) == 'v4.4.4 (failed)'
 
 
-@mark.parametrize('response, result', [(False, False), (True, True)])
+@mark.parametrize('response, result', [(False, False), (True, True)], ids=['Download failed', 'Download success'])
 def test_download_file(response, result, tmp_path):
     dl_file = str(tmp_path / 'tmp.txt')
     with patch.object(utils, 'get') as response_get:
