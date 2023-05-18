@@ -511,9 +511,11 @@ def shark_mono_bios():
 def shark_color_bios(shark_mono_bios):
     return shark_mono_bios
 
+
 @fixture()
 def shark3_mono_bios(shark_mono_bios):
     return shark_mono_bios
+
 
 @fixture()
 def shark3_color_bios(shark_mono_bios):
@@ -648,6 +650,7 @@ def tomcata_color_bios(tomcata_mono_bios):
 @fixture()
 def tomcatb_mono_bios(tomcata_mono_bios):
     return tomcata_mono_bios
+
 
 @fixture()
 def tomcatb_color_bios(tomcata_mono_bios):
