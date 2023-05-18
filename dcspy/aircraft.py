@@ -11,7 +11,7 @@ from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, config, BiosValue
+from dcspy import LcdInfo, LcdButton, LcdType, DED_FONT, config, BiosValue
 from dcspy.sdk import lcd_sdk
 
 
@@ -854,7 +854,12 @@ class F14B(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
+        # todo - add IAS (kph/mach), wing swept indication
         self.bios_data: Dict[str, BiosValue] = {
+            'PLT_AIRSPEED_INNER': {'klass': 'IntegerBuffer', 'args': {'address': 0x1304, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_AIRSPEED_NEEDLE': {'klass': 'IntegerBuffer', 'args': {'address': 0x1302, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_AIRSPEED_POINTER1': {'klass': 'IntegerBuffer', 'args': {'address': 0x1306, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
+            'PLT_AIRSPEED_POINTER2': {'klass': 'IntegerBuffer', 'args': {'address': 0x1308, 'mask': 0xffff, 'shift_by': 0x0}, 'value': int()},
             'RIO_CAP_CLEAR': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
             'RIO_CAP_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
             'RIO_CAP_NE': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
@@ -866,7 +871,14 @@ class F14B(Aircraft):
 
         :param draw: ImageDraw instance
         """
-        draw.text(xy=(2, 3), text=f'{SUPPORTED_CRAFTS[self.__class__.__name__]["name"]}', fill=self.lcd.foreground, font=self.lcd.font_l)
+        as1 = self.get_bios('PLT_AIRSPEED_INNER')
+        as2 = self.get_bios('PLT_AIRSPEED_NEEDLE')
+        as3 = self.get_bios('PLT_AIRSPEED_POINTER1')
+        as4 = self.get_bios('PLT_AIRSPEED_POINTER2')
+
+        for i, line in enumerate([as1, as2, as3, as4]):
+            offset = i * 10
+            draw.text(xy=(0, offset), text=str(line), fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
