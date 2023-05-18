@@ -440,3 +440,215 @@ def apache_pre_mode_bios_data():
         ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
         ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
     ]
+
+
+@fixture()
+def hornet_mono_bios():
+    return [
+        ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
+        ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'),
+        ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'),
+        ('UFC_OPTION_DISPLAY_1', '1234'),
+        ('UFC_OPTION_DISPLAY_2', '2345'),
+        ('UFC_OPTION_DISPLAY_3', '3456'),
+        ('UFC_OPTION_DISPLAY_4', '4567'),
+        ('UFC_OPTION_DISPLAY_5', '5678'),
+        ('UFC_COMM1_DISPLAY', '11'),
+        ('UFC_COMM2_DISPLAY', '22'),
+        ('UFC_OPTION_CUEING_1', '1'),
+        ('UFC_OPTION_CUEING_2', '2'),
+        ('UFC_OPTION_CUEING_3', '3'),
+        ('UFC_OPTION_CUEING_4', '4'),
+        ('UFC_OPTION_CUEING_5', '5'),
+        ('IFEI_FUEL_DOWN', '123456'),
+        ('IFEI_FUEL_UP', '234567')
+    ]
+
+
+@fixture()
+def hornet_color_bios(hornet_mono_bios):
+    return hornet_mono_bios
+
+
+@fixture()
+def viper_mono_bios():
+    return [
+        ('DED_LINE_1', "  INS  08.0/ 6        1a "),
+        ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
+        ('DED_LINE_3', "  LNG  E040o34.2'        "),
+        ('DED_LINE_4', " SALT      74FT          "),
+        ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
+    ]
+
+
+@fixture()
+def viper_color_bios(viper_mono_bios):
+    return viper_mono_bios
+
+
+@fixture()
+def shark_mono_bios():
+    return [
+        ('PVI_LINE1_APOSTROPHE1', '`'),
+        ('PVI_LINE1_APOSTROPHE2', '`'),
+        ('PVI_LINE1_POINT', '1'),
+        ('PVI_LINE1_SIGN', '-'),
+        ('PVI_LINE1_TEXT', '123456'),
+        ('PVI_LINE2_APOSTROPHE1', '`'),
+        ('PVI_LINE2_APOSTROPHE2', '`'),
+        ('PVI_LINE2_POINT', '2'),
+        ('PVI_LINE2_SIGN', ' '),
+        ('PVI_LINE2_TEXT', '654321'),
+        ('AP_ALT_HOLD_LED', 1),
+        ('AP_BANK_HOLD_LED', 0),
+        ('AP_FD_LED', 1),
+        ('AP_HDG_HOLD_LED', 0),
+        ('AP_PITCH_HOLD_LED', 1)
+    ]
+
+
+@fixture()
+def shark_color_bios(shark_mono_bios):
+    return shark_mono_bios
+
+@fixture()
+def shark3_mono_bios(shark_mono_bios):
+    return shark_mono_bios
+
+@fixture()
+def shark3_color_bios(shark_mono_bios):
+    return shark_mono_bios
+
+
+@fixture()
+def hip_mono_bios():
+    return [
+        ('LMP_AP_HDG_ON', 1),
+        ('LMP_AP_PITCH_ROLL_ON', 0),
+        ('LMP_AP_HEIGHT_ON', 1),
+        ('R863_CNL_SEL', 9),
+        ('R863_MOD', 1),
+        ('R863_FREQ', "123.525"),
+        ('R828_PRST_CHAN_SEL', 9),
+        ('YADRO1A_FREQ', "09091.9"),
+    ]
+
+
+@fixture()
+def hip_color_bios(hip_mono_bios):
+    return hip_mono_bios
+
+
+@fixture()
+def hind_mono_bios():
+    return [
+        ('PLT_R863_CHAN', 9),
+        ('PLT_R863_MODUL', 1),
+        ('PLT_R828_CHAN', 9),
+        ('JADRO_FREQ', "08082.8"),
+        ('PLT_SAU_HOVER_MODE_ON_L', 1),
+        ('PLT_SAU_ROUTE_MODE_ON_L', 0),
+        ('PLT_SAU_ALT_MODE_ON_L', 1),
+        ('PLT_SAU_H_ON_L', 0),
+        ('PLT_SAU_K_ON_L', 0),
+        ('PLT_SAU_T_ON_L', 0),
+        ('PLT_SAU_B_ON_L', 1),
+    ]
+
+
+@fixture()
+def hind_color_bios(hind_mono_bios):
+    return hind_mono_bios
+
+
+@fixture()
+def apache_mono_bios():
+    return [
+        ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
+        ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
+        ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
+        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')
+    ]
+
+
+@fixture()
+def apache_color_bios(apache_mono_bios):
+    return apache_mono_bios
+
+
+@fixture()
+def warthog_mono_bios():
+    return [
+        ('VHFAM_FREQ1', '20'),
+        ('VHFAM_FREQ2', 1),
+        ('VHFAM_FREQ3', 1),
+        ('VHFAM_FREQ4', '30'),
+        ('VHFFM_FREQ1', '40'),
+        ('VHFFM_FREQ2', 2),
+        ('VHFFM_FREQ3', 2),
+        ('VHFFM_FREQ4', '50'),
+        ('UHF_100MHZ_SEL', '5'),
+        ('UHF_10MHZ_SEL', 3),
+        ('UHF_1MHZ_SEL', 2),
+        ('UHF_POINT1MHZ_SEL', 1),
+        ('UHF_POINT25_SEL', '25')
+    ]
+
+
+@fixture()
+def warthog_color_bios(warthog_mono_bios):
+    return warthog_mono_bios
+
+
+@fixture()
+def warthog2_mono_bios(warthog_mono_bios):
+    return warthog_mono_bios
+
+
+@fixture()
+def warthog2_color_bios(warthog_mono_bios):
+    return warthog_mono_bios
+
+
+@fixture()
+def harrier_mono_bios():
+    return [
+        ('UFC_SCRATCHPAD', '123456789012'),
+        ('UFC_COMM1_DISPLAY', '11'),
+        ('UFC_COMM2_DISPLAY', '22'),
+        ('AV8BNA_ODU_1_SELECT', '1'),
+        ('AV8BNA_ODU_1_Text', '1234'),
+        ('AV8BNA_ODU_2_SELECT', '2'),
+        ('AV8BNA_ODU_2_Text', '2345'),
+        ('AV8BNA_ODU_3_SELECT', '3'),
+        ('AV8BNA_ODU_3_Text', '3456'),
+        ('AV8BNA_ODU_4_SELECT', '4'),
+        ('AV8BNA_ODU_4_Text', '4567'),
+        ('AV8BNA_ODU_5_SELECT', '5'),
+        ('AV8BNA_ODU_5_Text', '5678')
+    ]
+
+
+@fixture()
+def harrier_color_bios(harrier_mono_bios):
+    return harrier_mono_bios
+
+
+@fixture()
+def tomcata_mono_bios():
+    return []
+
+
+@fixture()
+def tomcata_color_bios(tomcata_mono_bios):
+    return tomcata_mono_bios
+
+
+@fixture()
+def tomcatb_mono_bios(tomcata_mono_bios):
+    return tomcata_mono_bios
+
+@fixture()
+def tomcatb_color_bios(tomcata_mono_bios):
+    return tomcata_mono_bios

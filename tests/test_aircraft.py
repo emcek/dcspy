@@ -260,143 +260,16 @@ def test_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
-hornet_bios = [
-    ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
-    ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'),
-    ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'),
-    ('UFC_OPTION_DISPLAY_1', '1234'),
-    ('UFC_OPTION_DISPLAY_2', '2345'),
-    ('UFC_OPTION_DISPLAY_3', '3456'),
-    ('UFC_OPTION_DISPLAY_4', '4567'),
-    ('UFC_OPTION_DISPLAY_5', '5678'),
-    ('UFC_COMM1_DISPLAY', '11'),
-    ('UFC_COMM2_DISPLAY', '22'),
-    ('UFC_OPTION_CUEING_1', '1'),
-    ('UFC_OPTION_CUEING_2', '2'),
-    ('UFC_OPTION_CUEING_3', '3'),
-    ('UFC_OPTION_CUEING_4', '4'),
-    ('UFC_OPTION_CUEING_5', '5'),
-    ('IFEI_FUEL_DOWN', '123456'),
-    ('IFEI_FUEL_UP', '234567')
-]
-viper_bios = [
-    ('DED_LINE_1', "  INS  08.0/ 6        1a "),
-    ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
-    ('DED_LINE_3', "  LNG  E040o34.2'        "),
-    ('DED_LINE_4', " SALT      74FT          "),
-    ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
-]
-shark_bios = [
-    ('PVI_LINE1_APOSTROPHE1', '`'),
-    ('PVI_LINE1_APOSTROPHE2', '`'),
-    ('PVI_LINE1_POINT', '1'),
-    ('PVI_LINE1_SIGN', '-'),
-    ('PVI_LINE1_TEXT', '123456'),
-    ('PVI_LINE2_APOSTROPHE1', '`'),
-    ('PVI_LINE2_APOSTROPHE2', '`'),
-    ('PVI_LINE2_POINT', '2'),
-    ('PVI_LINE2_SIGN', ' '),
-    ('PVI_LINE2_TEXT', '654321'),
-    ('AP_ALT_HOLD_LED', 1),
-    ('AP_BANK_HOLD_LED', 0),
-    ('AP_FD_LED', 1),
-    ('AP_HDG_HOLD_LED', 0),
-    ('AP_PITCH_HOLD_LED', 1)
-]
-hip_bios = [
-    ('LMP_AP_HDG_ON', 1),
-    ('LMP_AP_PITCH_ROLL_ON', 0),
-    ('LMP_AP_HEIGHT_ON', 1),
-    ('R863_CNL_SEL', 9),
-    ('R863_MOD', 1),
-    ('R863_FREQ', "123.525"),
-    ('R828_PRST_CHAN_SEL', 9),
-    ('YADRO1A_FREQ', "09091.9"),
-]
-hind_bios = [
-    ('PLT_R863_CHAN', 9),
-    ('PLT_R863_MODUL', 1),
-    ('PLT_R828_CHAN', 9),
-    ('JADRO_FREQ', "08082.8"),
-    ('PLT_SAU_HOVER_MODE_ON_L', 1),
-    ('PLT_SAU_ROUTE_MODE_ON_L', 0),
-    ('PLT_SAU_ALT_MODE_ON_L', 1),
-    ('PLT_SAU_H_ON_L', 0),
-    ('PLT_SAU_K_ON_L', 0),
-    ('PLT_SAU_T_ON_L', 0),
-    ('PLT_SAU_B_ON_L', 1),
-]
-apache_bios = [
-    ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
-    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
-    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
-    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
-    ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')
-]
-warthog_bios = [
-    ('VHFAM_FREQ1', '20'),
-    ('VHFAM_FREQ2', 1),
-    ('VHFAM_FREQ3', 1),
-    ('VHFAM_FREQ4', '30'),
-    ('VHFFM_FREQ1', '40'),
-    ('VHFFM_FREQ2', 2),
-    ('VHFFM_FREQ3', 2),
-    ('VHFFM_FREQ4', '50'),
-    ('UHF_100MHZ_SEL', '5'),
-    ('UHF_10MHZ_SEL', 3),
-    ('UHF_1MHZ_SEL', 2),
-    ('UHF_POINT1MHZ_SEL', 1),
-    ('UHF_POINT25_SEL', '25')
-]
-harrier_bios = [
-    ('UFC_SCRATCHPAD', '123456789012'),
-    ('UFC_COMM1_DISPLAY', '11'),
-    ('UFC_COMM2_DISPLAY', '22'),
-    ('AV8BNA_ODU_1_SELECT', '1'),
-    ('AV8BNA_ODU_1_Text', '1234'),
-    ('AV8BNA_ODU_2_SELECT', '2'),
-    ('AV8BNA_ODU_2_Text', '2345'),
-    ('AV8BNA_ODU_3_SELECT', '3'),
-    ('AV8BNA_ODU_3_Text', '3456'),
-    ('AV8BNA_ODU_4_SELECT', '4'),
-    ('AV8BNA_ODU_4_Text', '4567'),
-    ('AV8BNA_ODU_5_SELECT', '5'),
-    ('AV8BNA_ODU_5_Text', '5678')
-]
 
-
-@mark.parametrize('model, bios_pairs', [
-    ('hornet_mono', hornet_bios),
-    ('hornet_color', hornet_bios),
-    ('viper_mono', viper_bios),
-    ('viper_color', viper_bios),
-    ('shark_mono', shark_bios),
-    ('shark_color', shark_bios),
-    ('shark3_mono', shark_bios),
-    ('shark3_color', shark_bios),
-    ('hip_mono', hip_bios),
-    ('hip_color', hip_bios),
-    ('hind_mono', hind_bios),
-    ('hind_color', hind_bios),
-    ('apache_mono', apache_bios),
-    ('apache_color', apache_bios),
-    ('warthog_mono', warthog_bios),
-    ('warthog_color', warthog_bios),
-    ('warthog2_mono', warthog_bios),
-    ('warthog2_color', warthog_bios),
-    ('tomcata_mono', []),
-    ('tomcata_color', []),
-    ('tomcatb_mono', []),
-    ('tomcatb_color', []),
-    ('harrier_mono', harrier_bios),
-    ('harrier_color', harrier_bios),
-])
-def test_prepare_image_for_all_planes(model, bios_pairs, request):
-    aircraft_model = request.getfixturevalue(model)
+@mark.parametrize('model', ['hornet', 'viper', 'shark', 'shark3', 'hip', 'hind', 'apache', 'warthog', 'warthog2', 'tomcata', 'tomcatb', 'harrier'])
+@mark.parametrize('lcd', ['mono', 'color'])
+def test_prepare_image_for_all_planes(model, lcd, request):
+    aircraft_model = request.getfixturevalue(f'{model}_{lcd}')
+    bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(resources / platform / f'{model}_{aircraft_model.__class__.__name__}.png')
+    ref_img = PIL.Image.open(resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
 
