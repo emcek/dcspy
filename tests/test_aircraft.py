@@ -177,7 +177,7 @@ def test_button_pressed_for_plane(plane, button, result, request):
     (LcdButton.MENU, '\n'),
     (LcdButton.CANCEL, '\n'),
     (LcdButton.OK, '\n'),
-])
+], ids=['NONE', 'LEFT', 'RIGHT', 'DOWN', 'UP', 'MENU', 'CANCEL', 'OK'])
 def test_button_pressed_for_apache_color(button, result, apache_color):
     from dcspy.aircraft import ApacheEufdMode
     apache_color.mode = ApacheEufdMode.WCA
@@ -196,6 +196,18 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
     ('hornet_color', 'HUD_ATT_SW', LcdButton.OK, (1, 2, 1, 0, 1)),
     ('hornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
     ('hornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
+], ids=[
+    'ONE - viper_mono',
+    'TWO - viper_mono',
+    'THREE - viper_mono',
+    'FOUR - viper_mono',
+    'LEFT - viper_color',
+    'RIGHT - viper_color',
+    'DOWN - viper_color',
+    'UP - viper_color',
+    'OK - hornet_color',
+    'MENU - hornet_color',
+    'CANCEL - hornet_color',
 ])
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
