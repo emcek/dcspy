@@ -448,20 +448,7 @@ def test_apache_mono_wca_more_then_one_screen(model, request):
     # assert not ImageChops.difference(img, ref_img).getbbox()
 
 
-apache_pre_mono_bios = [
-    ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
-    ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
-    ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
-    ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
-    ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
-    ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
-    ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
-    ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
-    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
-    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
-]
-apache_pre_color_bios = [
+apache_pre_bios = [
     ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
     ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
     ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
@@ -476,15 +463,12 @@ apache_pre_color_bios = [
 ]
 
 
-@mark.parametrize('model, bios_pairs, filename', [
-    ('apache_mono', apache_pre_mono_bios, 'apache_mono_pre_mode.png'),
-    ('apache_color', apache_pre_color_bios, 'apache_color_pre_mode.png')
-], ids=['Mono LCD', 'Color LCD'])
-def test_apache_pre_mode(model, bios_pairs, filename, request):
+@mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
+def test_apache_pre_mode(model, request):
     aircraft_model = request.getfixturevalue(model)
-    set_bios_during_test(aircraft_model, bios_pairs)
+    set_bios_during_test(aircraft_model, apache_pre_bios)
     img = aircraft_model.prepare_image()
     assert isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(resources / platform / filename)
+    ref_img = PIL.Image.open(resources / platform / f'{model}_pre_mode.png')
     assert img.tobytes() == ref_img.tobytes()
     assert not ImageChops.difference(img, ref_img).getbbox()
