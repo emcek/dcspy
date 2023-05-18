@@ -11,7 +11,7 @@ from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, config, BiosValue
+from dcspy import LcdInfo, LcdButton, LcdType, DED_FONT, config, BiosValue
 from dcspy.sdk import lcd_sdk
 
 
