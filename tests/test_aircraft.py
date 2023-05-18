@@ -448,25 +448,10 @@ def test_apache_wca_more_then_one_screen(model, request):
     assert not ImageChops.difference(img, ref_img).getbbox()
 
 
-apache_pre_bios = [
-    ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
-    ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
-    ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
-    ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
-    ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
-    ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
-    ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
-    ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
-    ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
-    ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-    ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
-]
-
-
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_pre_mode(model, request):
+def test_apache_pre_mode(model, apache_pre_mode_bios_data, request):
     apache = request.getfixturevalue(model)
-    set_bios_during_test(apache, apache_pre_bios)
+    set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
     assert isinstance(img, PIL.Image.Image)
     ref_img = PIL.Image.open(resources / platform / f'{model}_pre_mode.png')

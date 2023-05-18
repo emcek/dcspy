@@ -422,3 +422,21 @@ def autoupdate3_cfg():
   "UH-1H",
   "A-10C",
 """
+
+
+@fixture()
+def apache_pre_mode_bios_data():
+    """Bios values for AH-64D Apache PRE mode."""
+    return [
+        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
+        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!CO CMD   127.000 '),
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | D/1/227  135.000 '),
+        ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | JAAT     136.000 '),
+        ('PLT_EUFD_LINE5', '                  |                  | BDE/HIG  127.000 '),
+        ('PLT_EUFD_LINE6', '                                     | FAAD     125.000 '),
+        ('PLT_EUFD_LINE7', '                                     | JTAC     121.000 '),
+        ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
+        ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
+        ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+    ]
