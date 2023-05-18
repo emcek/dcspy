@@ -199,17 +199,17 @@ def test_button_pressed_for_apache_color(button, result, apache_color):
     ('hornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
     ('hornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
 ], ids=[
-    'ONE - viper_mono',
-    'TWO - viper_mono',
-    'THREE - viper_mono',
-    'FOUR - viper_mono',
-    'LEFT - viper_color',
-    'RIGHT - viper_color',
-    'DOWN - viper_color',
-    'UP - viper_color',
-    'OK - hornet_color',
-    'MENU - hornet_color',
-    'CANCEL - hornet_color',
+    'ONE - Viper Mono',
+    'TWO - Viper Mono',
+    'THREE - Viper Mono',
+    'FOUR - Viper Mono',
+    'LEFT - Viper Color',
+    'RIGHT - Viper Color',
+    'DOWN - Viper Color',
+    'UP - Viper Color',
+    'OK - Hornet Color',
+    'MENU - Hornet Color',
+    'CANCEL - Hornet Color',
 ])
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
