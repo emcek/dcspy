@@ -465,9 +465,9 @@ apache_pre_bios = [
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
 def test_apache_pre_mode(model, request):
-    aircraft_model = request.getfixturevalue(model)
-    set_bios_during_test(aircraft_model, apache_pre_bios)
-    img = aircraft_model.prepare_image()
+    apache = request.getfixturevalue(model)
+    set_bios_during_test(apache, apache_pre_bios)
+    img = apache.prepare_image()
     assert isinstance(img, PIL.Image.Image)
     ref_img = PIL.Image.open(resources / platform / f'{model}_pre_mode.png')
     assert img.tobytes() == ref_img.tobytes()
