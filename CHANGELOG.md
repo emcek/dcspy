@@ -1,6 +1,7 @@
 ## 2.1.0
 * Internal:
   * Add more unit tests
+  * Use toml instead of cfg for packing
 
 ## 2.0.0
 * Allow use/update [live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios) directly from GitHub (master branch)
