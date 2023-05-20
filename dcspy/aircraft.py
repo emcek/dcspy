@@ -11,7 +11,7 @@ from typing import Dict, Union, Iterator, Sequence, List
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import LcdInfo, LcdButton, LcdType, SUPPORTED_CRAFTS, DED_FONT, config, BiosValue
+from dcspy import LcdInfo, LcdButton, LcdType, LcdMode, SUPPORTED_CRAFTS, DED_FONT, config, BiosValue
 from dcspy.sdk import lcd_sdk
 
 
@@ -52,8 +52,8 @@ class Aircraft:
 
         :return: image instance ready display on LCD
         """
-        img_for_lcd = {'mono': partial(Image.new, mode='1', size=(self.lcd.width, self.lcd.height), color=self.lcd.background),
-                       'color': partial(Image.new, mode='RGBA', size=(self.lcd.width, self.lcd.height), color=self.lcd.background)}
+        img_for_lcd = {'mono': partial(Image.new, mode=LcdMode.BLACK_WHITE.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background),
+                       'color': partial(Image.new, mode=LcdMode.TRUE_COLOR.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)}
 
         lcd_type = self.lcd.type.name.lower()
         img = img_for_lcd[lcd_type]()
