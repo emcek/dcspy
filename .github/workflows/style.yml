@@ -53,7 +53,7 @@ jobs:
 
       - name: "Check Ruff"
         run: |
-          ruff .
+          ruff check dscpy
 
   mypy:
     runs-on: ubuntu-latest
