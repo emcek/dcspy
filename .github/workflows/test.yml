@@ -43,16 +43,6 @@ jobs:
           python -m pytest --random -q -m "not dcsbios"
 
       - name: "Check pip-audit"
-        if: ${{ contains( matrix.os, 'ubuntu') }}
-        uses: pypa/gh-action-pip-audit@v1.0.7
-        with:
-          local: true
-          ignore-vulns: |
-            PYSEC-2022-42969
-#          inputs: requirements.txt
-
-      - name: "Check pip-audit (windows)"
-        if: ${{ contains( matrix.os, 'windows') }}
         run: |
           pip install -U pip-audit
-          pip-audit -lv --progress-spinner off
+          pip-audit -lv --progress-spinner off --ignore-vuln 'PYSEC-2022-42969'
