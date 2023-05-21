@@ -39,3 +39,8 @@ repos:
     hooks:
       -   id: pip-audit
           args: [--local]
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.12.1
+    hooks:
+      - id: validate-pyproject
