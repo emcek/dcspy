@@ -1,6 +1,7 @@
 ---
 ci:
   autoupdate_schedule: monthly
+  skip: [pip-audit]
 
 default_language_version:
   python: python3.11
@@ -31,3 +32,9 @@ repos:
       - id: debug-statements
       - id: check-toml
       - id: check-yaml
+
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.5.5
+    hooks:
+      -   id: pip-audit
+          args: [--local]
