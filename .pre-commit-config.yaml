@@ -11,7 +11,7 @@ repos:
     rev: 6.0.0
     hooks:
       - id: flake8
-        args: [--exclude tests]
+        exclude: tests
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.3.2
