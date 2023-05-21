@@ -124,3 +124,7 @@ exclude = ['tests/test_*']
 [tool.ruff]
 line-length = 250
 ignore = ['E501']
+
+[tool.mypy]
+ignore_missing_imports = true
+html_report = 'mypyhtml'
