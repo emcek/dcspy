@@ -25,7 +25,7 @@ LCD_DLL = load_dll('LCD')
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
     """
-    Function makes necessary initializations.
+    Make necessary initializations.
 
     You must call this function prior to any other function in the library.
     :param name: the name of your applet, you can't change it after initialization
@@ -42,7 +42,7 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
 
 def logi_lcd_is_connected(lcd_type: int) -> bool:
     """
-    Function checks if a device of the type specified by the parameter is connected.
+    Check if a device of the type specified by the parameter is connected.
 
     :param lcd_type: defines the type of your applet lcd target
     :return: result
@@ -57,7 +57,7 @@ def logi_lcd_is_connected(lcd_type: int) -> bool:
 
 def logi_lcd_is_button_pressed(button: int) -> bool:
     """
-    Function checks if the button specified by the parameter is being pressed.
+    Check if the button specified by the parameter is being pressed.
 
     :param button: defines the button to check on
     :return: result
@@ -71,7 +71,7 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
 
 
 def logi_lcd_update() -> None:
-    """Function updates the LCD."""
+    """Update the LCD."""
     if LCD_DLL:
         logilcdupdate = LCD_DLL['LogiLcdUpdate']
         logilcdupdate.restype = None
@@ -79,7 +79,7 @@ def logi_lcd_update() -> None:
 
 
 def logi_lcd_shutdown() -> None:
-    """Function kills the applet and frees memory used by the SDK."""
+    """Kill the applet and frees memory used by the SDK."""
     if LCD_DLL:
         logilcdshutdown = LCD_DLL['LogiLcdShutdown']
         logilcdshutdown.restype = None
@@ -88,7 +88,7 @@ def logi_lcd_shutdown() -> None:
 
 def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     """
-    The array of pixels is organized as a rectangular area, 160 bytes wide and 43 bytes high.
+    Set pixels as a rectangular area, 160 bytes wide and 43 bytes high.
 
     Despite the display being monochrome, 8 bits per pixel are used here for simple
     manipulation of individual pixels.
@@ -110,7 +110,7 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
 
 def logi_lcd_mono_set_text(line_no: int, text: str):
     """
-    Function sets the specified text in the requested line on the monochrome lcd device connected.
+    Set the specified text in the requested line on the monochrome lcd device connected.
 
     :param line_no: The monochrome LCD has 4 lines, so this parameter can be any number from 0 to 3
     :param text: defines the text you want to display
@@ -126,7 +126,7 @@ def logi_lcd_mono_set_text(line_no: int, text: str):
 
 def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bool:
     """
-    The array of pixels is organized as a rectangular area, 320 bytes wide and 240 bytes high.
+    Set array of pixels as a rectangular area, 320 bytes wide and 240 bytes high.
 
     Since the color lcd can display the full RGB gamma, 32 bits per pixel (4 bytes) are used.
     The size of the colorBitmap array has to be 320x240x4 = 307200 therefore.
@@ -145,7 +145,7 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
 
 def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 255)):
     """
-    Function sets the specified text in the first line on the color lcd device connected.
+    Set the specified text in the first line on the color lcd device connected.
 
     The font size that will be displayed is bigger than the one used in the other lines,
     so you can use this function to set the title of your applet/page.
@@ -164,7 +164,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
 
 def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)):
     """
-    Function sets the specified text in the requested line on the color lcd device connected.
+    Set the specified text in the requested line on the color lcd device connected.
 
     If you don't specify any color, your title will be white.
     :param line_no: The color LCD has 8 lines for standard text, so this parameter can be any number from 0 to 7
