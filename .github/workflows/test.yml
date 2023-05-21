@@ -42,6 +42,11 @@ jobs:
         run: |
           python -m pytest --random -q -m "not dcsbios"
 
+      - name: "Check pip-audit"
+        uses: pypa/gh-action-pip-audit@v1.0.7
+        with:
+          inputs: requirements.txt
+
 #      - name: "Check pip-audit"
 #        run: |
 #          pip-audit -r requirements.txt --progress-spinner off
