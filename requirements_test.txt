@@ -1,12 +1,10 @@
 -r requirements.txt
-check-manifest
 codacy-coverage
 coveralls
 flake8
 interrogate
 lxml
 mypy
-pip-audit==2.4.12
 pycodestyle
 pydocstyle
 pytest-cov
