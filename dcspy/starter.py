@@ -19,7 +19,7 @@ __version__ = '2.0.0'
 
 def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
     """
-    Main loop where all the magic is happened.
+    Handle main loop where all the magic is happened.
 
     :param logi_keyboard: type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
@@ -90,7 +90,7 @@ def _sock_err_handler(logi_keyboard: LogitechKeyboard, start_time: float, ver_st
 
 def _prepare_socket() -> socket.socket:
     """
-    Preparing multi-cast UDP socket for DCS-BIOS communication.
+    Prepare multi-cast UDP socket for DCS-BIOS communication.
 
     :return: socket object
     """
