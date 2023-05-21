@@ -46,10 +46,11 @@ jobs:
         if: ${{ contains( matrix.os, 'ubuntu') }}
         uses: pypa/gh-action-pip-audit@v1.0.7
         with:
-          inputs: requirements.txt
+          local: true
+#          inputs: requirements.txt
 
       - name: "Check pip-audit (windows)"
         if: ${{ contains( matrix.os, 'windows') }}
         run: |
           pip install -U pip-audit
-          pip-audit -r requirements.txt --progress-spinner off
+          pip-audit -lv --progress-spinner off
