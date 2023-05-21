@@ -200,7 +200,7 @@ def update_text(txt: List[str]) -> None:
         LOG.warning('LCD is not connected')
 
 
-def update_display(image: Image) -> None:
+def update_display(image: Image.Image) -> None:
     """
     Update display LCD with image.
 
