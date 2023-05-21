@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 from pytest import mark, raises
 
-from dcspy import LcdColor, LcdMono, LcdButton
-from tests.helpers import all_plane_list, set_bios_during_test, compare_images
+from dcspy import LcdButton, LcdColor, LcdMono
+from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 resources = Path(__file__).resolve().with_name('resources')
 

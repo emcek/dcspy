@@ -64,10 +64,11 @@ def test_all_success_cases(py_func, c_func, args, result):
 
 
 def test_start_led_pulse():
-    from dcspy.sdk import led_sdk
     from concurrent.futures import ThreadPoolExecutor
     from threading import Event
     from time import sleep
+
+    from dcspy.sdk import led_sdk
 
     rgb = (100, 0, 0)
     duration = 1

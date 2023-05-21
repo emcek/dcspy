@@ -1,4 +1,4 @@
-from unittest.mock import Mock, patch, call
+from unittest.mock import Mock, call, patch
 
 from pytest import mark
 
@@ -68,8 +68,9 @@ def test_all_success_cases(py_func, c_func, args, result):
     ('logi_lcd_color_set_background', [False, True], 2, (32, 24))
 ], ids=['Mono', 'Color'])
 def test_update_display(c_func, effect, lcd, size):
-    from dcspy.sdk import lcd_sdk
     from PIL import Image
+
+    from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect) as connected, \
             patch.object(lcd_sdk, c_func, return_value=True) as set_background, \
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):

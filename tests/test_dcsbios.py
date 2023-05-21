@@ -115,6 +115,7 @@ def test_simple_instance_of_buffers(class_name, params, protocol_parser):
 
 def test_integer_buffer_callback(protocol_parser):
     from functools import partial
+
     from dcspy.dcsbios import IntegerBuffer
 
     def _callback(*args, **kwargs):
@@ -131,6 +132,7 @@ def test_integer_buffer_callback(protocol_parser):
 
 def test_string_buffer_callback(protocol_parser):
     from functools import partial
+
     from dcspy.dcsbios import StringBuffer
 
     def _callback(*args, **kwargs):
