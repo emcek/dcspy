@@ -119,5 +119,5 @@ html_report = 'mypyhtml'
 
 [tool.pydocstyle]
 inherit = false
-ignore = ['D100','D101','D104','D105','D203','D204','D212','D401']
+ignore = ['D100', 'D101','D104', 'D203', 'D204', 'D212']
 match = '.*\.py'
