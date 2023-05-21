@@ -42,7 +42,7 @@ jobs:
         run: |
           python -m pytest --random -q -m "not dcsbios"
 
-      - name: "Check pip-audit (linux)"
+      - name: "Check pip-audit"
         if: ${{ contains( matrix.os, 'ubuntu') }}
         uses: pypa/gh-action-pip-audit@v1.0.7
         with:
@@ -51,4 +51,5 @@ jobs:
       - name: "Check pip-audit (windows)"
         if: ${{ contains( matrix.os, 'windows') }}
         run: |
+          pip install -U pip-audit
           pip-audit -r requirements.txt --progress-spinner off
