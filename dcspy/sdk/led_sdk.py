@@ -18,7 +18,7 @@ LED_DLL = load_dll('LED')
 
 def logi_led_init() -> bool:
     """
-    The function makes sure there isn't already another instance running and then makes necessary initializations.
+    Make sure there isn't already another instance running and then makes necessary initializations.
 
     It saves the current lighting for all connected and supported devices. This function will also stop any effect
     currently going on the connected devices.
@@ -33,7 +33,7 @@ def logi_led_init() -> bool:
 
 def logi_led_init_with_name(name: str) -> bool:
     """
-    The function makes sure there isn't already another instance running and then makes necessary initializations.
+    Make sure there isn't already another instance running and then makes necessary initializations.
 
     It saves the current lighting for all connected and supported devices.
     This function will also stop any effect currently going on the connected devices. Passing a name into this
@@ -52,7 +52,7 @@ def logi_led_init_with_name(name: str) -> bool:
 
 def logi_led_set_target_device(target_device: int) -> bool:
     """
-    The function sets the target device type for future calls.
+    Set the target device type for future calls.
 
     The default target device is LOGI_DEVICETYPE_ALL, therefore, if no call is made to LogiLedSetTargetDevice
     the SDK will apply any function to all the connected devices.
@@ -70,7 +70,7 @@ def logi_led_set_target_device(target_device: int) -> bool:
 
 def logi_led_save_current_lighting() -> bool:
     """
-    The function saves the current lighting so that it can be restored after a temporary effect is finished.
+    Save the current lighting so that it can be restored after a temporary effect is finished.
 
     For example if flashing a red warning sign for a few seconds, you would call the logi_led_save_current_lighting()
     function just before starting the warning effect.
@@ -85,7 +85,7 @@ def logi_led_save_current_lighting() -> bool:
 
 def logi_led_restore_lighting() -> bool:
     """
-    The function restores the last saved lighting.
+    Restore the last saved lighting.
 
     It should be called after a temporary effect is finished.
     For example if flashing a red warning sign for a few seconds, you would call this function right
@@ -101,7 +101,7 @@ def logi_led_restore_lighting() -> bool:
 
 def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
     """
-    The function sets the lighting on connected and supported devices.
+    Set the lighting on connected and supported devices.
 
     Do not call this function immediately after logi_led_init(). Instead of leave a little of time after logi_led_init().
     For devices that only support a single color, the highest percentage value given of the three colors will
@@ -121,7 +121,7 @@ def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
 
 def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
     """
-    The function saves the current lighting, plays the flashing effect on the targeted devices.
+    Save the current lighting, plays the flashing effect on the targeted devices.
 
     Finally, restores the saved lighting.
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
@@ -140,7 +140,7 @@ def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
 
 def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
     """
-    The function saves the current lighting, plays the pulsing effect on the targeted devices.
+    Save the current lighting, plays the pulsing effect on the targeted devices.
 
     Finally, restores the saved lighting.
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
@@ -159,7 +159,7 @@ def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
 
 def logi_led_stop_effects() -> bool:
     """
-    The function stops any of the presets effects.
+    Stop any of the presets effects.
 
     Started from logi_led_flash_lighting() or logi_led_pulse_lighting().
     :return: result
@@ -172,7 +172,7 @@ def logi_led_stop_effects() -> bool:
 
 
 def logi_led_shutdown() -> None:
-    """The function restores the last saved lighting and frees memory used by the SDK."""
+    """Restore the last saved lighting and frees memory used by the SDK."""
     if LED_DLL:
         logiledshutdown = LED_DLL['LogiLedShutdown']
         logiledshutdown.restype = c_bool
@@ -181,7 +181,7 @@ def logi_led_shutdown() -> None:
 
 def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event):
     """
-    The function start the pulsing red effect in thread on the keyboard.
+    Start the pulsing red effect in thread on the keyboard.
 
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :param duration: duration of the effect in milliseconds this parameter can be set to 0 (zero)
