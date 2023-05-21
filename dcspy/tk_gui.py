@@ -439,7 +439,7 @@ class DcspyGui(tk.Frame):
         self.master.destroy()
 
     def _lcd_type_selected(self) -> None:
-        """Handling selected LCD type."""
+        """Handle selected LCD type."""
         keyboard = self.lcd_type.get()
         LOG.debug(f'Logitech {keyboard} selected')
         self.status_txt.set(f'Logitech {keyboard} selected')
