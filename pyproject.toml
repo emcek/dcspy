@@ -1,16 +1,14 @@
 [build-system]
-requires = ['setuptools', 'wheel', 'setuptools-scm']
-build-backend = "setuptools.build_meta"
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'dcspy'
-#version = 2.0.0
-author = 'Michal Plichta'
-maintainer = 'Michal Plichta'
+authors = [{name = 'Michal Plichta'}]
+maintainers = [{name = 'Michal Plichta'}]
 description = 'Integrating DCS (Digital Combat Simulator) planes with Logitech G13/G15/G510/G19 LCD'
-long_description = file: README.md, CHANGELOG.md, LICENSE.md
-license = {text = 'MIT'}
-license_files = 'LICENSE.md'
+license = {text = 'MIT License'}
+requires-python = '>=3.7'
 classifiers = [
     'Development :: Status :: 5 - Production/Stable',
     'Environment :: Console',
@@ -29,18 +27,83 @@ classifiers = [
     'Topic :: System :: Hardware',
     'Topic :: Utilities',
 ]
-keywords = logitech, logitech-sdk, logitech-keyboards, logitech-gaming, logitech-gaming-keyboard, dcs-world, dcs, g13, g15, g510, g19
-platforms = win32, nt, Windows
-url = https://github.com/emcek/dcspy
-project_urls =
-    Bug Reports = https://github.com/emcek/dcspy/issues
-    Source = https://github.com/emcek/dcspy
-
+keywords = ['logitech', 'logitech sdk', 'logitech keyboards', 'logitech gaming', 'logitech gaming keyboard', 'dcsworld', 'dcs', 'g13', 'g15', 'g510', 'g19']
 dynamic = ['version', 'readme']
+dependencies = [
+    'CTkMessagebox',
+    'customtkinter >= 5.0.3',
+    'GitPython',
+    'packaging <= 21.3',
+    'Pillow >= 9.3.0',
+    'psutil',
+    'PyYAML',
+    'requests',
+    'typing-extensions; python_version < "3.11"',
+]
+
+[project.urls]
+Homepage = 'https://github.com/emcek/dcspy'
+Documentation = 'https://github.com/emcek/dcspy/wiki'
+Repository = 'https://github.com/emcek/dcspy.git'
+Changelog = 'https://github.com/emcek/dcspy/CHANGELOG.md'
+
+[project.scripts]
+dcspy_cli = 'dcspy.run:run'
+
+[project.gui-scripts]
+dcspy = 'dcspy.run:run'
+
+[project.optional-dependencies]
+test = [
+    'pytest',
+    'pytest-random',
+    'tox',
+    'pyinstaller; sys_platform=="win32"',
+]
+dev = [
+    'check-manifest',
+    'codacy-coverage',
+    'coveralls',
+    'flake8',
+    'interrogate',
+    'lxml',
+    'mypy',
+    'pip-audit==2.4.12',
+    'pycodestyle',
+    'pydocstyle',
+    'pytest-cov',
+    'pytest-random',
+    'ruff',
+    'types-requests',
+    'types-PyYAML',
+]
 
 [tool.setuptools.dynamic]
-version = {attr = 'dcspy.__version__'}
+version = {attr = 'dcspy.run.__version__'}
 readme = {file = ['README.md']}
+
+[tool.setuptools.packages.find]
+include = ['dcspy*']
+exclude = [
+    'dcspy.tests*',
+    'dcspy.examples*',
+    'venv*',
+    'venv311*',
+]
+
+[tool.setuptools.package-data]
+dcspy = [
+    '*.txt',
+    '*.yaml',
+    '*.ico',
+    '*.png',
+    'py.typed',
+]
+
+[tool.pytest.ini_options]
+addopts = ['--random', '-q']
+testpaths = ['tests']
+markers = ['dcsbios: marks tests for DCS-BIOS (deselect with -m "not dcsbios")']
 
 [tool.interrogate]
 ignore-init-method = false
@@ -56,8 +119,8 @@ ignore-setters = false
 fail-under = 90
 verbose = 1
 quiet = false
-exclude = ['setup.py', 'tests/test_*']
+exclude = ['tests/test_*']
 
 [tool.ruff]
 line-length = 250
-ignore = ["E501"]
+ignore = ['E501']
