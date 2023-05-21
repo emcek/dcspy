@@ -56,26 +56,19 @@ dcspy = 'dcspy.run:run'
 [project.optional-dependencies]
 test = [
     'pytest',
-    'pytest-random',
-    'tox',
-    'pyinstaller; sys_platform=="win32"',
-]
-dev = [
-    'check-manifest',
-    'codacy-coverage',
-    'coveralls',
-    'flake8',
-    'interrogate',
-    'lxml',
     'mypy',
-    'pip-audit==2.4.12',
-    'pycodestyle',
-    'pydocstyle',
-    'pytest-cov',
+    'lxml',
     'pytest-random',
-    'ruff',
+    'pytest-cov',
     'types-requests',
     'types-PyYAML',
+    'ruff',
+    'interrogate',
+    'pycodestyle',
+    'pydocstyle[toml]',
+    'flake8',
+    'coveralls',
+    'codacy-coverage',
 ]
 
 [tool.setuptools.dynamic]
@@ -86,7 +79,7 @@ readme = {file = ['README.md']}
 include = ['dcspy*']
 exclude = [
     'dcspy.tests*',
-    'dcspy.examples*',
+    'examples*',
     'venv*',
     'venv311*',
 ]
@@ -119,7 +112,7 @@ ignore-setters = false
 fail-under = 90
 verbose = 1
 quiet = false
-exclude = ['tests/test_*']
+exclude = ['tests/test_*', 'tests/conftest.py']
 
 [tool.ruff]
 line-length = 250
@@ -128,3 +121,8 @@ ignore = ['E501']
 [tool.mypy]
 ignore_missing_imports = true
 html_report = 'mypyhtml'
+
+[tool.pydocstyle]
+inherit = false
+ignore = ['D100','D101','D104','D105','D203','D204','D212','D401']
+match = '.*\.py'
