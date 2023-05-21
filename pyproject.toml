@@ -110,8 +110,12 @@ quiet = false
 exclude = ['tests/test_*', 'tests/conftest.py']
 
 [tool.ruff]
-line-length = 250
-ignore = ['E501']
+line-length = 160
+select = ['E', 'F', 'C90', 'D', 'RUF']
+ignore = ['D100', 'D101','D104', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
+
+[tool.ruff.mccabe]
+max-complexity = 6
 
 [tool.mypy]
 ignore_missing_imports = true
