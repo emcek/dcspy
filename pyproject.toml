@@ -69,6 +69,7 @@ test = [
     'flake8',
     'coveralls',
     'codacy-coverage',
+    'pip-audit==2.4.12',
 ]
 
 [tool.setuptools.dynamic]

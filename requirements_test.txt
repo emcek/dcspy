@@ -5,8 +5,10 @@ flake8
 interrogate
 lxml
 mypy
+pip-audit==2.4.12
 pycodestyle
 pydocstyle
+pytest
 pytest-cov
 pytest-random
 ruff
