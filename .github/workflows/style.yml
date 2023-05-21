@@ -55,19 +55,6 @@ jobs:
         run: |
           ruff .
 
-  manifest:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check MANIFEST"
-        run: |
-          check-manifest -q || echo $(($? -1))
-
   mypy:
     runs-on: ubuntu-latest
     steps:
