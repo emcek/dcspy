@@ -5,7 +5,7 @@ from pathlib import Path
 from re import search
 from shutil import rmtree
 from tempfile import gettempdir
-from typing import Dict, Union, Tuple, NamedTuple
+from typing import Dict, NamedTuple, Tuple, Union
 
 import git
 from git import Repo
@@ -13,7 +13,7 @@ from git.exc import InvalidGitRepositoryError
 from packaging import version
 from psutil import process_iter
 from requests import get
-from yaml import load, FullLoader, parser, dump
+from yaml import FullLoader, dump, load, parser
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
