@@ -10,7 +10,7 @@ LOG = getLogger(__name__)
 
 def _init_dll(lib_type: str) -> CDLL:
     """
-    Initialization of C dynamic linking library.
+    Initialize C dynamic linking library.
 
     :param lib_type: LCD or LED
     :return: C DLL instance
@@ -25,7 +25,7 @@ def _init_dll(lib_type: str) -> CDLL:
 
 def load_dll(lib_type: str) -> Optional[CDLL]:
     """
-    Initialization and loading of C dynamic linking library.
+    Initialize and load of C dynamic linking library.
 
     :param lib_type: library to load: LCD or LED
     :return: C DLL instance
