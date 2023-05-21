@@ -77,12 +77,7 @@ readme = {file = ['README.md']}
 
 [tool.setuptools.packages.find]
 include = ['dcspy*']
-exclude = [
-    'dcspy.tests*',
-    'examples*',
-    'venv*',
-    'venv311*',
-]
+exclude = ['dcspy.tests*']
 
 [tool.setuptools.package-data]
 dcspy = [
@@ -96,7 +91,7 @@ dcspy = [
 [tool.pytest.ini_options]
 addopts = ['--random', '-q']
 testpaths = ['tests']
-markers = ['dcsbios: marks tests for DCS-BIOS (deselect with -m "not dcsbios")']
+markers = ['dcsbios: marks tests for verfification of DCS-BIOS data']
 
 [tool.interrogate]
 ignore-init-method = false
