@@ -2,23 +2,25 @@ import tkinter as tk
 from functools import partial
 from logging import getLogger
 from pathlib import Path
-from platform import architecture, uname, python_implementation, python_version
+from platform import architecture, python_implementation, python_version, uname
 from re import search
-from shutil import unpack_archive, rmtree, copy, copytree
+from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
-from threading import Thread, Event
-from typing import Union, Optional
+from threading import Event, Thread
+from typing import Optional, Union
 from webbrowser import open_new
 
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-from PIL import Image
 from packaging import version
+from PIL import Image
 
-from dcspy import LOCAL_APPDATA, LCD_TYPES, config
+from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
-    check_github_repo, check_dcs_bios_entry, get_default_yaml
+from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
+                         check_github_repo, check_ver_at_github, defaults_cfg,
+                         download_file, get_default_yaml, get_version_string,
+                         proc_is_running, save_cfg)
 
 __version__ = '2.0.0'
 LOG = getLogger(__name__)

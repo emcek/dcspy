@@ -1,5 +1,5 @@
 from pathlib import Path
-from unittest.mock import patch, PropertyMock, MagicMock, mock_open
+from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
 from packaging import version
 from pytest import mark
