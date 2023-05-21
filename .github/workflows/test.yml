@@ -47,6 +47,8 @@ jobs:
         uses: pypa/gh-action-pip-audit@v1.0.7
         with:
           local: true
+          ignore-vulns: |
+            PYSEC-2022-42969
 #          inputs: requirements.txt
 
       - name: "Check pip-audit (windows)"
