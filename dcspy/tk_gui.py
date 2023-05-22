@@ -2,23 +2,25 @@ import tkinter as tk
 from functools import partial
 from logging import getLogger
 from pathlib import Path
-from platform import architecture, uname, python_implementation, python_version
+from platform import architecture, python_implementation, python_version, uname
 from re import search
-from shutil import unpack_archive, rmtree, copy, copytree
+from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
-from threading import Thread, Event
-from typing import Union, Optional
+from threading import Event, Thread
+from typing import Optional, Union
 from webbrowser import open_new
 
 import customtkinter
 from CTkMessagebox import CTkMessagebox
-from PIL import Image
 from packaging import version
+from PIL import Image
 
-from dcspy import LOCAL_APPDATA, LCD_TYPES, config
+from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import save_cfg, check_ver_at_github, download_file, proc_is_running, defaults_cfg, ReleaseInfo, get_version_string, check_dcs_ver, \
-    check_github_repo, check_dcs_bios_entry, get_default_yaml
+from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
+                         check_github_repo, check_ver_at_github, defaults_cfg,
+                         download_file, get_default_yaml, get_version_string,
+                         proc_is_running, save_cfg)
 
 __version__ = '2.0.0'
 LOG = getLogger(__name__)
@@ -136,7 +138,8 @@ class DcspyGui(tk.Frame):
             icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name(LCD_TYPES[text]['icon'])), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
-            rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text, command=self._lcd_type_selected)
+            rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text,
+                                                       command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=1)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
@@ -147,15 +150,18 @@ class DcspyGui(tk.Frame):
         tabview.tab('General').grid_columnconfigure(index=1, weight=1)
         autostart_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Autostart DCSpy:')
         autostart_label.grid(column=0, row=0, sticky=tk.W, pady=5)
-        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False,
+                                            command=partial(self._save_cfg))
         autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
         showgui_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show GUI:')
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
-        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False,
+                                          command=partial(self._save_cfg))
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
         checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check DCSpy version:')
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
-        checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False,
+                                           command=partial(self._save_cfg))
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
@@ -169,11 +175,13 @@ class DcspyGui(tk.Frame):
         dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
-        appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode, command=self._change_mode)
+        appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode,
+                                                      command=self._change_mode)
         appearance_mode.grid(column=1, row=5, sticky=tk.W, padx=(10, 0), pady=5)
         color_theme_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Color Theme:', anchor=tk.W)
         color_theme_label.grid(column=0, row=6, sticky=tk.W, pady=5)
-        color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color, command=self._change_color)
+        color_theme = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Blue', 'Green', 'Dark Blue'], variable=self.theme_color,
+                                                  command=self._change_color)
         color_theme.grid(column=1, row=6, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _mono_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -232,7 +240,8 @@ class DcspyGui(tk.Frame):
         tabview.tab('Special').grid_columnconfigure(index=1, weight=1)
         dedfont_label = customtkinter.CTkLabel(master=tabview.tab('Special'), text='F-16 DED Font (only G19):')
         dedfont_label.grid(column=0, row=1, sticky=tk.W, pady=5)
-        dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        dedfont = customtkinter.CTkSwitch(master=tabview.tab('Special'), text='', variable=self.dedfont_switch, onvalue=True, offvalue=False,
+                                          command=partial(self._save_cfg))
         dedfont.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
 
     def _advanced_settings(self, tabview: customtkinter.CTkTabview) -> None:
@@ -241,23 +250,27 @@ class DcspyGui(tk.Frame):
         tabview.tab('Advanced').grid_columnconfigure(index=1, weight=1)
         save_lcd_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Save LCD screenshot:')
         save_lcd_label.grid(column=0, row=0, sticky=tk.W, pady=5)
-        save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False,
+                                           command=partial(self._save_cfg))
         save_lcd.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
         verbose_label.grid(column=0, row=1, sticky=tk.W, pady=5)
-        verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False,
+                                          command=partial(self._save_cfg))
         verbose.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
         update_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Auto Update DCS-BIOS:')
         update_bios_label.grid(column=0, row=2, sticky=tk.W, pady=5)
-        update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False, command=partial(self._save_cfg))
+        update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False,
+                                              command=partial(self._save_cfg))
         update_bios.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
         git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Use live DCS-BIOS version:')
         git_bios_label.grid(column=0, row=3, sticky=tk.W, pady=5)
-        self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False, command=self._bios_git_switch)
+        self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False,
+                                                       command=self._bios_git_switch)
         self.git_bios_switch.grid(column=1, row=3, sticky=tk.W, padx=(10, 0), pady=5)
         self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='DCS-BIOS Git reference:', state=tk.DISABLED)
-        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), placeholder_text='git reference', width=390, textvariable=self.bios_git_ref, state=tk.DISABLED,
-                                               validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
+        self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'),
+                                               placeholder_text='git reference', width=390, textvariable=self.bios_git_ref, state=tk.DISABLED, validate='key')
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.NORMAL)
             self.bios_git.configure(state=tk.NORMAL)
@@ -439,7 +452,7 @@ class DcspyGui(tk.Frame):
         self.master.destroy()
 
     def _lcd_type_selected(self) -> None:
-        """Handling selected LCD type."""
+        """Handle selected LCD type."""
         keyboard = self.lcd_type.get()
         LOG.debug(f'Logitech {keyboard} selected')
         self.status_txt.set(f'Logitech {keyboard} selected')
@@ -460,7 +473,8 @@ class DcspyGui(tk.Frame):
 
         :param theme_color: value of color theme
         """
-        msg = CTkMessagebox(title='Change theme color', message='DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!', icon='question', option_1='Yes', option_2='No')
+        msg = CTkMessagebox(title='Change theme color', icon='question', option_1='Yes', option_2='No',
+                            message='DCSpy needs to be close.\nIn order to apply color changes.\n\nPlease start again manually!')
         if msg.get() == 'Yes':
             self._save_cfg()
             LOG.debug(f'Select: {theme_color}')
@@ -495,7 +509,8 @@ class DcspyGui(tk.Frame):
         if 'please update' in ver_string:
             self.master.clipboard_clear()
             self.master.clipboard_append('pip install --upgrade dcspy')
-            CTkMessagebox(title='New version', message='Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
+            CTkMessagebox(title='New version',
+                          message='Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
         elif 'latest' in ver_string:
             CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:

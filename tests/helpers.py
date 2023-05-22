@@ -2,14 +2,14 @@ from datetime import datetime
 from json import loads
 from pathlib import Path
 from tempfile import gettempdir
-from typing import Tuple, List, Union, Dict
+from typing import Dict, List, Tuple, Union
 from unittest.mock import patch
 
 import PIL
 from PIL import ImageChops
-from requests import get, exceptions
+from requests import exceptions, get
 
-from dcspy import aircraft, BiosValue
+from dcspy import BiosValue, aircraft
 from dcspy.sdk import lcd_sdk
 
 all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']

@@ -4,7 +4,7 @@ from threading import Event
 
 import customtkinter
 
-from dcspy import config, LCD_TYPES
+from dcspy import LCD_TYPES, config
 from dcspy.starter import dcspy_run
 from dcspy.tk_gui import DcspyGui
 from dcspy.utils import check_dcs_ver
@@ -14,7 +14,7 @@ __version__ = '2.0.0'
 
 
 def run():
-    """Function to start DCSpy GUI."""
+    """Start DCSpy GUI."""
     if config['show_gui']:
         customtkinter.set_appearance_mode(config['theme_mode'])
         customtkinter.set_default_color_theme(config['theme_color'])

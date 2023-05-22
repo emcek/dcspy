@@ -1,6 +1,97 @@
 [build-system]
-requires = ["setuptools>=42.0.0", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'dcspy'
+authors = [{name = 'Michal Plichta'}]
+maintainers = [{name = 'Michal Plichta'}]
+description = 'Integrating DCS (Digital Combat Simulator) planes with Logitech G13/G15/G510/G19 LCD'
+license = {text = 'MIT License'}
+requires-python = '>=3.7'
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Environment :: Win32 (MS Windows)',
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: Microsoft :: Windows :: Windows 10',
+    'Topic :: Games/Entertainment',
+    'Topic :: Games/Entertainment :: Simulation',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: System :: Hardware',
+    'Topic :: Utilities',
+]
+keywords = ['logitech', 'logitech sdk', 'logitech keyboards', 'logitech gaming', 'logitech gaming keyboard', 'dcsworld', 'dcs', 'g13', 'g15', 'g510', 'g19']
+dynamic = ['version', 'readme']
+dependencies = [
+    'CTkMessagebox',
+    'customtkinter >= 5.0.3',
+    'GitPython',
+    'packaging <= 21.3',
+    'Pillow >= 9.3.0',
+    'psutil',
+    'PyYAML',
+    'requests',
+    'typing-extensions; python_version < "3.11"',
+]
+
+[project.urls]
+Homepage = 'https://github.com/emcek/dcspy'
+Documentation = 'https://github.com/emcek/dcspy/wiki'
+Repository = 'https://github.com/emcek/dcspy.git'
+Changelog = 'https://github.com/emcek/dcspy/CHANGELOG.md'
+
+[project.scripts]
+dcspy_cli = 'dcspy.run:run'
+
+[project.gui-scripts]
+dcspy = 'dcspy.run:run'
+
+[project.optional-dependencies]
+test = [
+    'pytest',
+    'mypy',
+    'lxml',
+    'pytest-random',
+    'pytest-cov',
+    'types-requests',
+    'types-PyYAML',
+    'ruff',
+    'interrogate',
+    'pycodestyle',
+    'pydocstyle[toml]',
+    'flake8',
+    'coveralls',
+    'codacy-coverage',
+]
+
+[tool.setuptools.dynamic]
+version = {attr = 'dcspy.run.__version__'}
+readme = {file = ['README.md']}
+
+[tool.setuptools.packages.find]
+include = ['dcspy*']
+exclude = ['dcspy.tests*']
+
+[tool.setuptools.package-data]
+dcspy = [
+    '*.txt',
+    '*.yaml',
+    '*.ico',
+    '*.png',
+    'py.typed',
+]
+
+[tool.pytest.ini_options]
+addopts = ['--random', '-q']
+testpaths = ['tests']
+markers = ['dcsbios: marks tests for verfification of DCS-BIOS data']
 
 [tool.interrogate]
 ignore-init-method = false
@@ -16,8 +107,21 @@ ignore-setters = false
 fail-under = 90
 verbose = 1
 quiet = false
-exclude = ['setup.py', 'tests/test_*']
+exclude = ['tests/test_*', 'tests/conftest.py']
 
 [tool.ruff]
-line-length = 250
-ignore = ["E501"]
+line-length = 160
+select = ['E', 'F', 'C90', 'D', 'RUF']
+ignore = ['D100', 'D101','D104', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
+
+[tool.ruff.mccabe]
+max-complexity = 6
+
+[tool.mypy]
+ignore_missing_imports = true
+html_report = 'mypyhtml'
+
+[tool.pydocstyle]
+inherit = false
+ignore = ['D100', 'D101','D104', 'D203', 'D204', 'D212']
+match = '.*\.py'

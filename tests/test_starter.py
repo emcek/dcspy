@@ -10,8 +10,9 @@ def test_load_new_plane_if_detected():
 
 
 def test_sock_err_handler():
-    from dcspy import starter
     from time import time
+
+    from dcspy import starter
     ver_string = f'v{starter.__version__} (latest)'
     start_time = time()
     with patch.object(starter, 'LogitechKeyboard') as logi_key:

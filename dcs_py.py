@@ -1,4 +1,5 @@
 from dcspy.run import run
+
 try:
     import pyi_splash
     pyi_splash.close()

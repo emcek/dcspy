@@ -42,6 +42,7 @@ jobs:
         run: |
           python -m pytest --random -q -m "not dcsbios"
 
-#      - name: "Check pip-audit"
-#        run: |
-#          pip-audit -r requirements.txt --progress-spinner off
+      - name: "Check pip-audit"
+        run: |
+          pip install -U pip-audit
+          pip-audit -lv --progress-spinner off --ignore-vuln 'PYSEC-2022-42969'

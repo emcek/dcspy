@@ -1,5 +1,5 @@
 from datetime import datetime
-from logging import DEBUG, StreamHandler, INFO, Formatter, Logger
+from logging import DEBUG, INFO, Formatter, Logger, StreamHandler
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from tempfile import gettempdir

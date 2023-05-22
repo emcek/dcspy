@@ -7,13 +7,13 @@ from pprint import pformat
 from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Union, Iterator, Sequence, List
+from typing import Dict, Iterator, List, Sequence, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import LcdInfo, LcdButton, LcdType, LcdMode, SUPPORTED_CRAFTS, DED_FONT, config, BiosValue
+from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, LcdButton, LcdInfo,
+                   LcdMode, LcdType, config)
 from dcspy.sdk import lcd_sdk
-
 
 LOG = getLogger(__name__)
 

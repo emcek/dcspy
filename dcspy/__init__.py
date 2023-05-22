@@ -3,14 +3,15 @@ from enum import Enum
 from logging import getLogger
 from os import name
 from pathlib import Path
-from platform import architecture, uname, python_implementation, python_version
+from platform import architecture, python_implementation, python_version, uname
 from sys import platform
-from typing import Union, Sequence
+from typing import Sequence, Union
 
 from PIL import ImageFont
 
 from dcspy.log import config_logger
-from dcspy.utils import load_cfg, set_defaults, get_default_yaml
+from dcspy.utils import get_default_yaml, load_cfg, set_defaults
+
 try:
     from typing import NotRequired
 except ImportError:

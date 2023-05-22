@@ -7,7 +7,7 @@ from typing import List
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono, SUPPORTED_CRAFTS, SEND_ADDR, LcdButton
+from dcspy import SEND_ADDR, SUPPORTED_CRAFTS, LcdButton, LcdColor, LcdMono
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import lcd_sdk

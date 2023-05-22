@@ -42,19 +42,6 @@ jobs:
         run: |
           interrogate -c pyproject.toml -vv
 
-  pylint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check PyLint"
-        run: |
-          pylint dcspy || echo $(($? % 4))
-
   ruff:
     runs-on: ubuntu-latest
     steps:
@@ -66,20 +53,7 @@ jobs:
 
       - name: "Check Ruff"
         run: |
-          ruff .
-
-  manifest:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check MANIFEST"
-        run: |
-          check-manifest -q || echo $(($? -1))
+          ruff check dcspy
 
   mypy:
     runs-on: ubuntu-latest
@@ -114,5 +88,4 @@ jobs:
 
       - name: "Check flake8"
         run: |
-          flake8 . --select=E9,F63,F7,F82 --show-source
-          flake8 . --exit-zero --ignore=E501
+          flake8 .
