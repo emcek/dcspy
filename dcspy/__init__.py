@@ -5,7 +5,7 @@ from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import platform
-from typing import Sequence, Union
+from typing import Sequence, Tuple, Union
 
 from PIL import ImageFont
 
@@ -89,8 +89,8 @@ class LcdInfo:
     height: int
     type: LcdType
     buttons: Sequence[LcdButton]
-    foreground: Union[int, Sequence[int]]
-    background: Union[int, Sequence[int]]
+    foreground: Union[int, Tuple[int, int, int, int]]
+    background: Union[int, Tuple[int, int, int, int]]
     mode: LcdMode
     font_xs: ImageFont.FreeTypeFont
     font_s: ImageFont.FreeTypeFont
