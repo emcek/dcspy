@@ -29,7 +29,7 @@ def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, 
     start_time = time()
     ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
     LOG.info('Waiting for DCS connection...')
-    support_banner = _supporters(text='Huge thanks to: Sireyn, Nick Thain, BrotherBloat and others! For support and help! ', width=26)
+    support_banner = _supporters(text='Huge thanks to: Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ', width=26)
     while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
