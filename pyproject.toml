@@ -36,6 +36,7 @@ dependencies = [
     'packaging <= 21.3',
     'Pillow >= 9.3.0',
     'psutil',
+    'pystray',
     'PyYAML',
     'requests',
     'typing-extensions; python_version < "3.11"',
