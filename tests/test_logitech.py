@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy import LcdButton, LcdType, LcdMode
+from dcspy import LcdButton, LcdMode, LcdType
 from dcspy.logitech import KeyboardColor, KeyboardMono
 from tests.helpers import all_plane_list
 

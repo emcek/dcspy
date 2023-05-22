@@ -1,4 +1,4 @@
-from ctypes import CDLL, sizeof, c_void_p
+from ctypes import CDLL, c_void_p, sizeof
 from logging import getLogger
 from os import environ
 from platform import architecture

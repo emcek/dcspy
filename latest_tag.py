@@ -1,8 +1,8 @@
 from re import match
 from sys import argv
 
-from packaging import version
 import git
+from packaging import version
 
 
 def latest_version(repo_path: str, as_tag=1) -> str:

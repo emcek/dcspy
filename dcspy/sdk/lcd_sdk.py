@@ -1,10 +1,11 @@
-from ctypes import c_bool, c_wchar_p, c_int, c_ubyte
+from ctypes import c_bool, c_int, c_ubyte, c_wchar_p
 from logging import getLogger
 from typing import List, Tuple
 
 from PIL import Image
 
-from dcspy import TYPE_MONO, MONO_WIDTH, MONO_HEIGHT, TYPE_COLOR, COLOR_WIDTH, COLOR_HEIGHT
+from dcspy import (COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH,
+                   TYPE_COLOR, TYPE_MONO)
 from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)

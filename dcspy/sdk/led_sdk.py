@@ -1,4 +1,4 @@
-from ctypes import c_bool, c_wchar_p, c_int
+from ctypes import c_bool, c_int, c_wchar_p
 from logging import getLogger
 from threading import Event
 from time import sleep
