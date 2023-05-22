@@ -101,14 +101,14 @@ default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 config = set_defaults(load_cfg(filename=default_yaml), filename=default_yaml)
 LcdMono = LcdInfo(width=MONO_WIDTH, height=MONO_HEIGHT, type=LcdType.MONO, foreground=255,
                   buttons=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
-                  background=0, mode=LcdMode.BLACK_WHITE, font_s=ImageFont.truetype(config['font_name'], config['font_mono_s']),
-                  font_l=ImageFont.truetype(config['font_name'], config['font_mono_l']),
-                  font_xs=ImageFont.truetype(config['font_name'], config['font_mono_xs']))
+                  background=0, mode=LcdMode.BLACK_WHITE, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_mono_s'])),
+                  font_l=ImageFont.truetype(str(config['font_name']), int(config['font_mono_l'])),
+                  font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_mono_xs'])))
 LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
                    buttons=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU),
-                   background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR, font_s=ImageFont.truetype(config['font_name'], config['font_color_s']),
-                   font_l=ImageFont.truetype(config['font_name'], config['font_color_l']),
-                   font_xs=ImageFont.truetype(config['font_name'], config['font_color_xs']))
+                   background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_color_s'])),
+                   font_l=ImageFont.truetype(str(config['font_name']), int(config['font_color_l'])),
+                   font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_color_xs'])))
 DED_FONT = ImageFont.truetype(str(Path(__file__).resolve().with_name('falconded.ttf')), 25)
 LCD_TYPES = {
     'G19': {'type': 'KeyboardColor', 'icon': 'G19.png'},
