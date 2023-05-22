@@ -110,12 +110,17 @@ class LcdInfo <<(D,orchid)>> {
     + width : int
     + type : LcdType
     + buttons: Sequence[LcdButton]
-    + foreground : Union[int, Sequence[int]]
-    + background : Union[int, Sequence[int]]
-    + mode: str
+    + foreground : Union[int, Tuple[int, int, int, int]]
+    + background : Union[int, Tuple[int, int, int, int]]
+    + mode: LcdMode
     + font_xs: ImageFont.FreeTypeFont
     + font_s: ImageFont.FreeTypeFont
     + font_l: ImageFont.FreeTypeFont
+}
+
+class LcdMode <<(E,yellow)>> {
+    + BLACK_WHITE = '1'
+    + TRUE_COLOR = 'RGBA'
 }
 
 class LcdType <<(E,yellow)>> {
@@ -197,6 +202,7 @@ BiosValue *-- IntBuffArgs
 BiosValue *-- StrBuffArgs
 
 LcdType --* LcdInfo
+LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LcdButton -* Aircraft
 
