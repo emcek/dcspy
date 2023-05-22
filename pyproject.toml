@@ -38,7 +38,7 @@ dependencies = [
     'psutil',
     'pystray',
     'PyYAML',
-    'requests',
+    'requests>=2.31.0',
     'typing-extensions; python_version < "3.11"',
 ]
 
