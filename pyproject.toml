@@ -55,20 +55,22 @@ dcspy = 'dcspy.run:run'
 
 [project.optional-dependencies]
 test = [
-    'pytest',
-    'mypy',
-    'lxml',
-    'pytest-random',
-    'pytest-cov',
-    'types-requests',
-    'types-PyYAML',
-    'ruff',
+    'codacy-coverage',
+    'coveralls',
+    'flake8',
     'interrogate',
+    'lxml',
+    'mypy',
     'pycodestyle',
     'pydocstyle[toml]',
-    'flake8',
-    'coveralls',
-    'codacy-coverage',
+    'pytest',
+    'pytest-cov',
+    'pytest-random',
+    'ruff',
+    'types-Pillow',
+    'types-psutil',
+    'types-PyYAML',
+    'types-requests',
 ]
 
 [tool.setuptools.dynamic]
