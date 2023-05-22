@@ -1,4 +1,5 @@
 ## 2.1.0
+* System tray icon
 * Internal:
   * Add more unit tests
   * Use toml instead of cfg for packing
