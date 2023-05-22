@@ -1,5 +1,4 @@
 from enum import Enum
-from functools import partial
 from itertools import chain, cycle
 from logging import getLogger
 from pathlib import Path
@@ -12,7 +11,7 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, LcdButton, LcdInfo,
-                   LcdMode, LcdType, config)
+                   LcdType, config)
 from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
@@ -52,12 +51,8 @@ class Aircraft:
 
         :return: image instance ready display on LCD
         """
-        img_for_lcd = {'mono': partial(Image.new, mode=LcdMode.BLACK_WHITE.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background),
-                       'color': partial(Image.new, mode=LcdMode.TRUE_COLOR.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)}
-
-        lcd_type = self.lcd.type.name.lower()
-        img = img_for_lcd[lcd_type]()
-        getattr(self, f'draw_for_lcd_{lcd_type}')(img)
+        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
+        getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
         if config.get('save_lcd', False):
             img.save(Path(gettempdir()) / f'{self.__class__.__name__}_{next(self._debug_img)}.png', 'PNG')
         return img
