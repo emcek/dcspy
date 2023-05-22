@@ -7,7 +7,7 @@ from pprint import pformat
 from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Iterator, List, Sequence, Union
+from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -148,7 +148,7 @@ class FA18Chornet(Aircraft):
             'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
         self.cycle_buttons = {'HUD_ATT_SW': iter([0]), 'IFEI_DWN_BTN': iter([0]), 'IFEI_UP_BTN': iter([0])}
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
@@ -164,18 +164,18 @@ class FA18Chornet(Aircraft):
         draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=self.lcd.foreground, width=1)
 
         draw.rectangle(xy=(0, 29 * scale, 20 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(2 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2 * scale, 29 * scale), text=str(self.get_bios('UFC_COMM1_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         offset = 44 * scale
         draw.rectangle(xy=(139 * scale - offset, 29 * scale, 159 * scale - offset, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(140 * scale - offset, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(140 * scale - offset, 29 * scale), text=str(self.get_bios('UFC_COMM2_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
             draw.text(xy=(120 * scale, offset), fill=self.lcd.foreground, font=self.lcd.font_s,
                       text=f'{i}{self.get_bios(f"UFC_OPTION_CUEING_{i}")}{self.get_bios(f"UFC_OPTION_DISPLAY_{i}")}')
 
-        draw.text(xy=(36 * scale, 29 * scale), text=self.get_bios('IFEI_FUEL_UP'), fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(36 * scale, 29 * scale), text=str(self.get_bios('IFEI_FUEL_UP')), fill=self.lcd.foreground, font=self.lcd.font_l)
         return draw
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
@@ -185,7 +185,7 @@ class FA18Chornet(Aircraft):
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F/A-18C Hornet for Color LCD."""
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
-        draw.text(xy=(72, 100), text=self.get_bios('IFEI_FUEL_DOWN'), fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(72, 100), text=str(self.get_bios('IFEI_FUEL_DOWN')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
@@ -255,7 +255,7 @@ class F16C50(Aircraft):
             'IFF_M4_REPLY_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
         self.cycle_buttons = {'IFF_MASTER_KNB': iter([0]), 'IFF_ENABLE_SW': iter([0]), 'IFF_M4_CODE_SW': iter([0]), 'IFF_M4_REPLY_SW': iter([0])}
 
-    def _draw_common_data(self, draw: ImageDraw, separation: int) -> None:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
@@ -264,7 +264,7 @@ class F16C50(Aircraft):
         """
         for i in range(1, 6):
             offset = (i - 1) * separation
-            draw.text(xy=(0, offset), text=self.get_bios(f'DED_LINE_{i}'), fill=self.lcd.foreground, font=self.font)
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'DED_LINE_{i}')), fill=self.lcd.foreground, font=self.font)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-16C Viper for Mono LCD."""
@@ -370,7 +370,7 @@ class Ka50(Aircraft):
             'AP_HDG_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
             'AP_PITCH_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
@@ -410,7 +410,7 @@ class Ka50(Aircraft):
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
         return line1, line2
 
-    def _auto_pilot_switch(self, draw_obj: ImageDraw, scale: int) -> None:
+    def _auto_pilot_switch(self, draw_obj: ImageDraw.ImageDraw, scale: int) -> None:
         """
         Draw rectangle and add text for autopilot channels in correct coordinates.
 
@@ -482,7 +482,7 @@ class Mi8MT(Aircraft):
             'YADRO1A_FREQ': {'klass': 'StringBuffer', 'args': {'address': 0x2692, 'max_length': 7}, 'value': ''},
         }
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
@@ -552,7 +552,7 @@ class Mi24P(Aircraft):
             'PLT_SAU_B_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
         }
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> None:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
@@ -657,7 +657,7 @@ class AH64DBLKII(Aircraft):
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
 
-    def _draw_for_idm(self, draw: ImageDraw.Draw, scale: int):
+    def _draw_for_idm(self, draw: ImageDraw.ImageDraw, scale: int):
         """
         Draw image for IDM mode.
 
@@ -672,7 +672,7 @@ class AH64DBLKII(Aircraft):
                 text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
-    def _draw_for_wca(self, draw: ImageDraw.Draw, scale: int):
+    def _draw_for_wca(self, draw: ImageDraw.ImageDraw, scale: int):
         """
         Draw image for WCA mode.
 
@@ -703,7 +703,7 @@ class AH64DBLKII(Aircraft):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
-    def _draw_for_pre(self, draw: ImageDraw.Draw, xcords: List[int], ycords: List[int], font: ImageFont.FreeTypeFont):
+    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, xcords: List[int], ycords: List[int], font: ImageFont.FreeTypeFont) -> None:
         """
         Draw image for PRE mode.
 
@@ -860,7 +860,7 @@ class F14B(Aircraft):
             'RIO_CAP_NE': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
             'RIO_CAP_ENTER': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
 
-    def _draw_common_data(self, draw: ImageDraw) -> None:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
         Draw common part for Mono and Color LCD.
 
@@ -927,7 +927,7 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_5_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': ''},
             'AV8BNA_ODU_5_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': ''}}
 
-    def _draw_common_data(self, draw: ImageDraw, scale: int) -> ImageDraw:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
         Draw common part (based on scale) for Mono and Color LCD.
 
@@ -939,10 +939,10 @@ class AV8BNA(Aircraft):
         draw.line(xy=(50 * scale, 20 * scale, 160 * scale, 20 * scale), fill=self.lcd.foreground, width=1)
 
         draw.rectangle(xy=(50 * scale, 29 * scale, 70 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(52 * scale, 29 * scale), text=self.get_bios('UFC_COMM1_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(52 * scale, 29 * scale), text=str(self.get_bios('UFC_COMM1_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         draw.rectangle(xy=(139 * scale, 29 * scale, 159 * scale, 42 * scale), fill=self.lcd.background, outline=self.lcd.foreground)
-        draw.text(xy=(140 * scale, 29 * scale), text=self.get_bios('UFC_COMM2_DISPLAY'), fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(140 * scale, 29 * scale), text=str(self.get_bios('UFC_COMM2_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
@@ -980,7 +980,12 @@ class AV8BNA(Aircraft):
         return super().button_request(button, action.get(button, '\n'))
 
 
-def draw_autopilot_channels(lcd: LcdInfo, ap_channel: str, c_rect: Sequence[int], c_text: Sequence[int], draw_obj: ImageDraw, turn_on: Union[str, int]) -> None:
+def draw_autopilot_channels(lcd: LcdInfo,
+                            ap_channel: str,
+                            c_rect: Tuple[float, float, float, float],
+                            c_text: Tuple[float, float],
+                            draw_obj: ImageDraw.ImageDraw,
+                            turn_on: Union[str, int]) -> None:
     """
     Draw rectangles with background for autopilot channels.
 
