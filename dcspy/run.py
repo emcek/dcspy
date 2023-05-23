@@ -28,7 +28,6 @@ def _quit_window(window: customtkinter.CTk, icon: Icon, menu: MenuItem):
     icon.visible = False
     icon.stop()
     window.quit()
-    window.destroy()
 
 
 def _show_window(window: customtkinter.CTk, icon: Icon, menu: MenuItem):
@@ -72,8 +71,8 @@ def run():
         image = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
         menu = (MenuItem('Quit', partial(_quit_window, root)), MenuItem('Show', partial(_show_window, root)))
         icon = Icon('dcspy', image, 'DCSpy', menu)
-        icon.run_detached()
         root.protocol('WM_DELETE_WINDOW', partial(_withdraw_window, root))
+        icon.run_detached()
 
         DcspyGui(master=root)
         root.mainloop()
