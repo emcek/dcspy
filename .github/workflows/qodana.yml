@@ -1,9 +1,11 @@
 name: Qodana
 on:
   workflow_dispatch:
+  pull_request:
   push:
-    branches: ["*"]
-    tags-ignore: ["v*"]
+    branches:
+      - main
+      - 'releases/*'
 
 jobs:
   qodana:
