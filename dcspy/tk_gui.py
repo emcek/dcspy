@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import tkinter as tk
 from functools import partial
 from logging import getLogger

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from functools import partial
 from logging import getLogger
 from pathlib import Path

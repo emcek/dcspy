@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from functools import partial
 from importlib import import_module
 from logging import getLogger

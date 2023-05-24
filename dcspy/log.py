@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from datetime import datetime
 from logging import DEBUG, INFO, Formatter, Logger, StreamHandler
 from logging.handlers import RotatingFileHandler

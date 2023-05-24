@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from datetime import datetime
 from logging import getLogger
 from os import environ, makedirs

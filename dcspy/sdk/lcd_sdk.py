@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from ctypes import c_bool, c_int, c_ubyte, c_wchar_p
 from logging import getLogger
 from typing import List, Tuple

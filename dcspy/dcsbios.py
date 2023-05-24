@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from enum import Enum, auto
 from functools import partial
 from struct import pack
