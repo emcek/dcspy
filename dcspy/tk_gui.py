@@ -87,10 +87,15 @@ class DcspyGui(tk.Frame):
     def _setup_system_tray(self):
         """Configure system tray icon and its menu callbacks."""
         icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
-        menu = (MenuItem('Show', self._show_window), MenuItem('Quit', self._close))
+        menu = (MenuItem('Show', self._show_gui), MenuItem('Quit', self._close_gui))
         self.sys_tray_icon = Icon('dcspy', icon, 'DCSpy', menu)
-        self.master.protocol('WM_DELETE_WINDOW', self.master.withdraw)
+        self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
         self.sys_tray_icon.run_detached()
+
+    def _withdraw_gui(self):
+        """Withdraw application and show notification."""
+        self.sys_tray_icon.notify('Still running at system tray.', 'DCSpy')
+        self.master.withdraw()
 
     def _init_widgets(self) -> None:
         """Init all GUI widgets."""
@@ -738,7 +743,7 @@ class DcspyGui(tk.Frame):
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
-    def _show_window(self):
+    def _show_gui(self):
         """Show main GUI application window from system tray."""
         self.master.after(0, self.master.deiconify)
 
@@ -749,7 +754,7 @@ class DcspyGui(tk.Frame):
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
 
-    def _close(self):
+    def _close_gui(self):
         """
         Quit DCSpy application.
 
