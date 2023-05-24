@@ -737,7 +737,7 @@ class DcspyGui(tk.Frame):
         return result
 
     def _show_window(self):
-        """Show main GUI application window."""
+        """Show main GUI application window from system tray."""
         self.master.after(0, self.master.deiconify)
 
     def _stop(self) -> None:
