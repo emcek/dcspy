@@ -77,20 +77,24 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch: customtkinter.CTkSwitch
         self.bios_git_label: customtkinter.CTkLabel
         self.bios_git: customtkinter.CTkEntry
-        self._setup_system_tray()
+        self.sys_tray_icon = self._setup_system_tray()
+        self.sys_tray_icon.run_detached()
         self._init_widgets()
         if config.get('autostart', False):
             self._start_dcspy()
         if self.master.state() == 'withdrawn':
             self.sys_tray_icon.notify('Running at system tray.', 'DCSpy')
 
-    def _setup_system_tray(self):
-        """Configure system tray icon and its menu callbacks."""
+    def _setup_system_tray(self) -> Icon:
+        """
+        Configure system tray icon and its menu callbacks.
+
+        :return: system ray icon instance
+        """
         icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
         menu = (MenuItem('Show', self._show_gui), MenuItem('Quit', self._close_gui))
-        self.sys_tray_icon = Icon('dcspy', icon, 'DCSpy', menu)
         self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
-        self.sys_tray_icon.run_detached()
+        return Icon('dcspy', icon, 'DCSpy', menu)
 
     def _withdraw_gui(self):
         """Withdraw application and show notification."""
