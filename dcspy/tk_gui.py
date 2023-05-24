@@ -531,7 +531,9 @@ class DcspyGui(tk.Frame):
             self.master.clipboard_clear()
             self.master.clipboard_append('pip install --upgrade dcspy')
             CTkMessagebox(title='New version',
-                          message='Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
+                          message='OLD WAY\n1. Open Windows Command Prompt (cmd) and type:\n2. pip install --upgrade dcspy\n'
+                                  '3. Note: command copied to clipboard.\n\nNEW WAY:\n1. Download new executable from: github.com/emcek/dcspy')
+            self.sys_tray_icon.notify(f'New version: {ver_string}', 'DCSpy')
         elif 'latest' in ver_string:
             CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:
