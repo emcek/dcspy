@@ -82,7 +82,7 @@ class DcspyGui(tk.Frame):
         self._init_widgets()
         if config.get('autostart', False):
             self._start_dcspy()
-        if self.master.state() == 'withdrawn':
+        if not config.get('show_gui', False):
             self.sys_tray_icon.notify('Running in background.', 'DCSpy')
 
     def _setup_system_tray(self) -> Icon:
