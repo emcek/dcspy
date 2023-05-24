@@ -28,14 +28,14 @@ LOG = getLogger(__name__)
 
 class DcspyGui(tk.Frame):
     """Tkinter GUI."""
-    def __init__(self, master: customtkinter.CTk) -> None:
+    def __init__(self, master: tk.Tk) -> None:
         """
         Create basic GUI for dcspy application.
 
         :param master: Top level widget
         """
         super().__init__(master)
-        self.master = master
+        self.master: tk.Tk = master
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
