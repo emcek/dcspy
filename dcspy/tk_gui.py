@@ -83,7 +83,7 @@ class DcspyGui(tk.Frame):
             self._start_dcspy()
 
     def _setup_system_tray(self):
-        """Setup system tray icon and its menu callbacks."""
+        """Configure system tray icon and its menu callbacks."""
         icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
         menu = (MenuItem('Show', self._show_window), MenuItem('Quit', self._close))
         self.sys_tray_icon = Icon('dcspy', icon, 'DCSpy', menu)
@@ -739,6 +739,7 @@ class DcspyGui(tk.Frame):
     def _show_window(self):
         """Show main GUI application window from system tray."""
         self.master.after(0, self.master.deiconify)
+        self.sys_tray_icon.notify()
 
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
