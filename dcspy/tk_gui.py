@@ -92,7 +92,7 @@ class DcspyGui(tk.Frame):
         :return: system ray icon instance
         """
         icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
-        menu = (MenuItem('Show', self._show_gui), MenuItem('Quit', self._close_gui))
+        menu = (MenuItem('Show', self._show_gui), MenuItem('Stop', self._stop), MenuItem('Quit', self._close_gui),)
         self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
         return Icon('dcspy', icon, 'DCSpy', menu)
 
