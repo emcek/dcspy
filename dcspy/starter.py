@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import socket
 import struct
 from collections import deque

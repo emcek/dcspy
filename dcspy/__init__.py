@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from dataclasses import dataclass
 from enum import Enum
 from logging import getLogger

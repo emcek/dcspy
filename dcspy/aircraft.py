@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from enum import Enum
 from itertools import chain, cycle
 from logging import getLogger

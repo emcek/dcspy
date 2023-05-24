@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from ctypes import c_bool, c_int, c_wchar_p
 from logging import getLogger
 from threading import Event

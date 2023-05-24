@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from ctypes import CDLL, c_void_p, sizeof
 from logging import getLogger
 from os import environ
