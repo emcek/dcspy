@@ -1,5 +1,7 @@
 ## 2.1.0
-* System tray icon
+* Add System tray icon:
+  * Notification when DCSpy is hidden and running in background.
+  * New version notification
 * Internal:
   * Add more unit tests
   * Use toml instead of cfg for packing
