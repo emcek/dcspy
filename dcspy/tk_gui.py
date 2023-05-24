@@ -137,7 +137,7 @@ class DcspyGui(tk.Frame):
         self.btn_start.grid(row=5, column=0, padx=20, pady=10)
         self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
         self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
-        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
+        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self._close)
         close.grid(row=7, column=0, padx=20, pady=10)
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
@@ -743,8 +743,21 @@ class DcspyGui(tk.Frame):
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
 
-    def start_dcspy(self) -> None:
-        """Run real application."""
+    def _close(self):
+        """
+        Quit DCSpy application.
+
+        * Stop system tray
+        * Stop dcspy thread
+        * Quit GUI window
+        """
+        self.sys_tray_icon.visible = False
+        self.sys_tray_icon.stop()
+        self.event.set()
+        self.master.quit()
+
+    def _start_dcspy(self) -> None:
+        """Run real application in thread."""
         self.event = Event()
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
