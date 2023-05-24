@@ -77,10 +77,12 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch: customtkinter.CTkSwitch
         self.bios_git_label: customtkinter.CTkLabel
         self.bios_git: customtkinter.CTkEntry
-        self._init_widgets()
         self._setup_system_tray()
+        self._init_widgets()
         if config.get('autostart', False):
             self._start_dcspy()
+        if self.master.state() == 'withdrawn':
+            self.sys_tray_icon.notify('Running at system tray.', 'DCSpy')
 
     def _setup_system_tray(self):
         """Configure system tray icon and its menu callbacks."""
@@ -137,7 +139,7 @@ class DcspyGui(tk.Frame):
         self.btn_start.grid(row=5, column=0, padx=20, pady=10)
         self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
         self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
-        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self._close)
+        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self._close_gui)
         close.grid(row=7, column=0, padx=20, pady=10)
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
@@ -739,7 +741,6 @@ class DcspyGui(tk.Frame):
     def _show_window(self):
         """Show main GUI application window from system tray."""
         self.master.after(0, self.master.deiconify)
-        self.sys_tray_icon.notify()
 
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
