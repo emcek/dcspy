@@ -1,2 +1,3 @@
 version: 1.0
 bootstrap: pip install -r requirements.txt
+linter: jetbrains/qodana-python
