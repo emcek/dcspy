@@ -14,6 +14,7 @@ import customtkinter
 from CTkMessagebox import CTkMessagebox
 from packaging import version
 from PIL import Image
+from pystray import Icon, MenuItem
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
@@ -77,8 +78,17 @@ class DcspyGui(tk.Frame):
         self.bios_git_label: customtkinter.CTkLabel
         self.bios_git: customtkinter.CTkEntry
         self._init_widgets()
+        self._setup_system_tray()
         if config.get('autostart', False):
-            self.start_dcspy()
+            self._start_dcspy()
+
+    def _setup_system_tray(self):
+        """Setup system tray icon and its menu callbacks."""
+        icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
+        menu = (MenuItem('Show', self._show_window), MenuItem('Quit', self._close))
+        self.sys_tray_icon = Icon('dcspy', icon, 'DCSpy', menu)
+        self.master.protocol('WM_DELETE_WINDOW', self.master.withdraw)
+        self.sys_tray_icon.run_detached()
 
     def _init_widgets(self) -> None:
         """Init all GUI widgets."""
