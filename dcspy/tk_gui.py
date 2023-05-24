@@ -736,6 +736,10 @@ class DcspyGui(tk.Frame):
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
+    def _show_window(self):
+        """Show main GUI application window."""
+        self.master.after(0, self.master.deiconify)
+
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
         self.status_txt.set('Start again or close DCSpy')
@@ -766,7 +770,6 @@ class DcspyGui(tk.Frame):
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
-        self.status_txt.set('You can close GUI')
         self.btn_start.configure(state=tk.DISABLED)
         self.btn_stop.configure(state=tk.ACTIVE)
         app_thread.start()
