@@ -130,7 +130,7 @@ class DcspyGui(tk.Frame):
         check_bios.grid(row=2, column=0, padx=20, pady=10)
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check DCSpy version', command=self._check_version)
         check_ver.grid(row=3, column=0, padx=20, pady=10)
-        self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
+        self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self._start_dcspy)
         logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name('dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
