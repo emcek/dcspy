@@ -42,6 +42,14 @@ jobs:
         run: |
           python -m pytest --random -q -m "not dcsbios"
 
+      - name: "Upload test results"
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
+          path: |
+            tests/resources/*
+
       - name: "Check pip-audit"
         run: |
           pip install -U pip-audit

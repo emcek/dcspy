@@ -110,7 +110,7 @@ ignore-setters = false
 fail-under = 90
 verbose = 1
 quiet = false
-exclude = ['tests/test_*', 'tests/conftest.py']
+exclude = ['tests/test_*']
 
 [tool.ruff]
 line-length = 160

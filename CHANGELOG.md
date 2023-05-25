@@ -4,6 +4,7 @@
   * New version notification
 * Internal:
   * Add more unit tests
+  * Make unit test configurable from CLI
   * Use toml instead of cfg for packing
   * Improve type hinting
 

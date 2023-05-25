@@ -652,7 +652,7 @@ class AH64DBLKII(Aircraft):
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
 
-    def _draw_for_idm(self, draw: ImageDraw.ImageDraw, scale: int):
+    def _draw_for_idm(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
         Draw image for IDM mode.
 
@@ -667,7 +667,7 @@ class AH64DBLKII(Aircraft):
                 text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
 
-    def _draw_for_wca(self, draw: ImageDraw.ImageDraw, scale: int):
+    def _draw_for_wca(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
         Draw image for WCA mode.
 

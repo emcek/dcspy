@@ -138,7 +138,7 @@ class LogitechKeyboard:
         if button.value:
             sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), SEND_ADDR)
 
-    def clear(self, true_clear=False):
+    def clear(self, true_clear=False) -> None:
         """
         Clear LCD.
 

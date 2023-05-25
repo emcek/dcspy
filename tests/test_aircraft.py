@@ -265,7 +265,7 @@ def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     ('apache_color', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
     ('apache_color', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |PRESET TUNE FM1 ')], 'PRE'),
 ], ids=['Mono IDM', 'Mono PRE', 'Color IDM 1', 'Color IDM 2', 'Color PRE'])
-def test_apatch_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
+def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
     assert plane.mode.name == mode
@@ -275,16 +275,16 @@ def test_apatch_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', ['hornet', 'viper', 'shark', 'shark3', 'hip', 'hind', 'apache', 'warthog', 'warthog2', 'tomcata', 'tomcatb', 'harrier'])
-def test_prepare_image_for_all_planes(model, lcd, request):
+def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
     aircraft_model = request.getfixturevalue(f'{model}_{lcd}')
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_prepare_image_for_apache_wca_mode(model, request):
+def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -297,12 +297,12 @@ def test_prepare_image_for_apache_wca_mode(model, request):
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_wca_more_then_one_screen_scrolled(model, request):
+def test_apache_wca_more_then_one_screen_scrolled(model, img_precision, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -319,12 +319,12 @@ def test_apache_wca_more_then_one_screen_scrolled(model, request):
         apache.prepare_image()
     assert apache.warning_line == 3
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png')
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_pre_mode(model, apache_pre_mode_bios_data, request):
+def test_apache_pre_mode(model, apache_pre_mode_bios_data, img_precision, request):
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png')
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png', precision=img_precision)
