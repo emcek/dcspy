@@ -297,7 +297,7 @@ def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
     img = apache.prepare_image()
-    assert compare_images(img=img,  file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -319,7 +319,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, img_precision, request)
         apache.prepare_image()
     assert apache.warning_line == 3
     img = apache.prepare_image()
-    assert compare_images(img=img,  file_path=resources / platform / f'{model}_wca_mode_scroll.png', precision=img_precision)
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
