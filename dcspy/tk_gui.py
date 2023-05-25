@@ -96,7 +96,7 @@ class DcspyGui(tk.Frame):
         self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
         return Icon('dcspy', icon, 'DCSpy', menu)
 
-    def _withdraw_gui(self):
+    def _withdraw_gui(self) -> None:
         """Withdraw application and show notification."""
         self.sys_tray_icon.notify('Still running at system tray.', 'DCSpy')
         self.master.withdraw()
@@ -383,7 +383,7 @@ class DcspyGui(tk.Frame):
         """
         open_new(url)
 
-    def _slider_event(self, label: str, value: float):
+    def _slider_event(self, label: str, value: float) -> None:
         """
         Update correct label when slider is moved.
 
@@ -749,7 +749,7 @@ class DcspyGui(tk.Frame):
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
-    def _show_gui(self):
+    def _show_gui(self) -> None:
         """Show main GUI application window from system tray."""
         self.master.after(0, self.master.deiconify)
 
@@ -760,7 +760,7 @@ class DcspyGui(tk.Frame):
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
 
-    def _close_gui(self):
+    def _close_gui(self) -> None:
         """
         Quit DCSpy application.
 
