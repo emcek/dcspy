@@ -1,13 +1,11 @@
-from dcspy.run import run, __version__
+from dcspy.run import run
 
 try:
     import pyi_splash
-
     pyi_splash.close()
 except ImportError:
     pass
 
-ver = __version__
 
 if __name__ == '__main__':
     run()
