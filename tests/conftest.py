@@ -489,6 +489,7 @@ def apache_pre_mode_bios_data():
 
 @fixture()
 def hornet_mono_bios():
+    """Bios values for F/A-18C Hornet for Logitech mono LCD."""
     return [
         ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
         ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'),
@@ -512,11 +513,13 @@ def hornet_mono_bios():
 
 @fixture()
 def hornet_color_bios(hornet_mono_bios):
+    """Bios values for F/A-18C Hornet for Logitech color LCD."""
     return hornet_mono_bios
 
 
 @fixture()
 def viper_mono_bios():
+    """Bios values for F16C Viper for Logitech mono LCD."""
     return [
         ('DED_LINE_1', "  INS  08.0/ 6        1a "),
         ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
@@ -528,11 +531,13 @@ def viper_mono_bios():
 
 @fixture()
 def viper_color_bios(viper_mono_bios):
+    """Bios values for F16C Viper for Logitech color LCD."""
     return viper_mono_bios
 
 
 @fixture()
 def shark_mono_bios():
+    """Bios values for Ka-50 Black Shark II for Logitech mono LCD."""
     return [
         ('PVI_LINE1_APOSTROPHE1', '`'),
         ('PVI_LINE1_APOSTROPHE2', '`'),
@@ -554,21 +559,25 @@ def shark_mono_bios():
 
 @fixture()
 def shark_color_bios(shark_mono_bios):
+    """Bios values for Ka-50 Black Shark II for Logitech color LCD."""
     return shark_mono_bios
 
 
 @fixture()
 def shark3_mono_bios(shark_mono_bios):
+    """Bios values for Ka-50 Black Shark III for Logitech mono LCD."""
     return shark_mono_bios
 
 
 @fixture()
 def shark3_color_bios(shark_mono_bios):
+    """Bios values for Ka-50 Black Shark III for Logitech color LCD."""
     return shark_mono_bios
 
 
 @fixture()
 def hip_mono_bios():
+    """Bios values for Mi-8MTV2 Magnificent Eight for Logitech mono LCD."""
     return [
         ('LMP_AP_HDG_ON', 1),
         ('LMP_AP_PITCH_ROLL_ON', 0),
@@ -583,11 +592,13 @@ def hip_mono_bios():
 
 @fixture()
 def hip_color_bios(hip_mono_bios):
+    """Bios values for Mi-8MTV2 Magnificent Eight for Logitech color LCD."""
     return hip_mono_bios
 
 
 @fixture()
 def hind_mono_bios():
+    """Bios values for Mi-24P Hind for Logitech mono LCD."""
     return [
         ('PLT_R863_CHAN', 9),
         ('PLT_R863_MODUL', 1),
@@ -605,11 +616,13 @@ def hind_mono_bios():
 
 @fixture()
 def hind_color_bios(hind_mono_bios):
+    """Bios values for Mi-24P Hind for Logitech color LCD."""
     return hind_mono_bios
 
 
 @fixture()
 def apache_mono_bios():
+    """Bios values for AH-64D Apache for Logitech mono LCD."""
     return [
         ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
         ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
@@ -621,11 +634,13 @@ def apache_mono_bios():
 
 @fixture()
 def apache_color_bios(apache_mono_bios):
+    """Bios values for AH-64D Apache for Logitech color LCD."""
     return apache_mono_bios
 
 
 @fixture()
 def warthog_mono_bios():
+    """Bios values for A-10C Warthog for Logitech mono LCD."""
     return [
         ('VHFAM_FREQ1', '20'),
         ('VHFAM_FREQ2', 1),
@@ -645,21 +660,25 @@ def warthog_mono_bios():
 
 @fixture()
 def warthog_color_bios(warthog_mono_bios):
+    """Bios values for A-10C Warthog for Logitech color LCD."""
     return warthog_mono_bios
 
 
 @fixture()
 def warthog2_mono_bios(warthog_mono_bios):
+    """Bios values for A-10C II Tank Killer for Logitech mono LCD."""
     return warthog_mono_bios
 
 
 @fixture()
 def warthog2_color_bios(warthog_mono_bios):
+    """Bios values for A-10C II Tank Killer for Logitech color LCD."""
     return warthog_mono_bios
 
 
 @fixture()
 def harrier_mono_bios():
+    """Bios values for AV-8B N/A Harrier for Logitech mono LCD."""
     return [
         ('UFC_SCRATCHPAD', '123456789012'),
         ('UFC_COMM1_DISPLAY', '11'),
@@ -679,24 +698,29 @@ def harrier_mono_bios():
 
 @fixture()
 def harrier_color_bios(harrier_mono_bios):
+    """Bios values for AV-8B N/A Harrier for Logitech color LCD."""
     return harrier_mono_bios
 
 
 @fixture()
 def tomcata_mono_bios():
+    """Bios values for F-14A-135-GR Tomcat for Logitech mono LCD."""
     return []
 
 
 @fixture()
 def tomcata_color_bios(tomcata_mono_bios):
+    """Bios values for F-14A-135-GR Tomcat for Logitech color LCD."""
     return tomcata_mono_bios
 
 
 @fixture()
 def tomcatb_mono_bios(tomcata_mono_bios):
+    """Bios values for F-14B Tomcat for Logitech mono LCD."""
     return tomcata_mono_bios
 
 
 @fixture()
 def tomcatb_color_bios(tomcata_mono_bios):
+    """Bios values for F-14B Tomcat for Logitech color LCD."""
     return tomcata_mono_bios
