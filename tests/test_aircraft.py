@@ -280,7 +280,10 @@ def test_prepare_image_for_all_planes(model, lcd, request):
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
+    per, len_diff, img_diff = compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{aircraft_model.__class__.__name__}.png')
+    if per > 0.0 or len_diff > 0:
+        img_diff.save(f'{model}_{lcd}_{aircraft_model.__class__.__name__}_diff.png')
+    assert not all([per, len_diff, img_diff.getbbox()])
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
@@ -297,7 +300,10 @@ def test_prepare_image_for_apache_wca_mode(model, request):
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png')
+    per, len_diff, img_diff = compare_images(img=img,  file_path=resources / platform / f'{model}_wca_mode.png')
+    if per > 0.0 or len_diff > 0:
+        img_diff.save(f'{model}_wca_mode_diff.png')
+    assert not all([per, len_diff, img_diff.getbbox()])
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -319,7 +325,10 @@ def test_apache_wca_more_then_one_screen_scrolled(model, request):
         apache.prepare_image()
     assert apache.warning_line == 3
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png')
+    per, len_diff, img_diff = compare_images(img=img,  file_path=resources / platform / f'{model}_wca_mode_scroll.png')
+    if per > 0.0 or len_diff > 0:
+        img_diff.save(f'{model}_wca_mode_scroll_diff.png')
+    assert not all([per, len_diff, img_diff.getbbox()])
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
@@ -327,4 +336,7 @@ def test_apache_pre_mode(model, apache_pre_mode_bios_data, request):
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png')
+    per, len_diff, img_diff = compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png')
+    if per > 0.0 or len_diff > 0:
+        img_diff.save(f'{model}_pre_mode.png')
+    assert not all([per, len_diff, img_diff.getbbox()])
