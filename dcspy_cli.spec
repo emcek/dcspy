@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-resources = ['dcspy.ico', 'dcspy_white.ico', 'config.yaml', 'falconded.ttf', 'dcspy.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'license.txt']
+resources = ['dcspy.ico', 'dcspy_white.ico', 'config.yaml', 'falconded.ttf', 'dcspy.png', 'splash.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'license.txt']
 files = [(f'dcspy/{r}', 'dcspy') for r in resources]
 gui_packages = collect_data_files('customtkinter') + collect_data_files('CTkMessagebox')
 __version__ = '2.0.0'
@@ -25,7 +25,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'dcspy/dcspy.png',
+    'dcspy/splash.png',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,
