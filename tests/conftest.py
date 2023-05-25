@@ -5,6 +5,26 @@ from pytest import fixture
 from dcspy import LcdInfo
 
 
+def pytest_addoption(parser) -> None:
+    """
+    Register img_precision CLI argument.
+
+    :param parser:
+    """
+    parser.addoption('--img_precision', action='store',  type=int, default=0)
+
+
+@fixture(scope='session')
+def img_precision(pytestconfig):
+    """
+    Get value of img_precision parameter form command line.
+
+    :param pytestconfig:
+    :return: value from command line
+    """
+    return pytestconfig.getoption('img_precision')
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
