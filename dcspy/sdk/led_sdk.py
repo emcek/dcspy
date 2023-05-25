@@ -179,7 +179,7 @@ def logi_led_shutdown() -> None:
         logiledshutdown()
 
 
-def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event):
+def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event) -> None:
     """
     Start the pulsing red effect in thread on the keyboard.
 
