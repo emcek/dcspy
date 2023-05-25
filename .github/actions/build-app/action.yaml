@@ -30,5 +30,11 @@ runs:
     - name: "Build dcspy binaries"
       shell: bash
       run: |
+        export SOURCE_DATE_EPOCH=1674687685
+        export PYTHONHASHSEED=1674687685
         pyinstaller --clean --noconfirm --log-level DEBUG dcspy.spec
         pyinstaller --clean --noconfirm --log-level DEBUG dcspy_cli.spec
+        Get-FileHash .\dist\* -Algorithm MD5
+        unset PYTHONHASHSEED
+        unset SOURCE_DATE_EPOCH
+        pyi-bindepend dist/*.exe
