@@ -97,7 +97,7 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     return False
 
 
-def logi_lcd_mono_set_text(line_no: int, text: str):
+def logi_lcd_mono_set_text(line_no: int, text: str) -> bool:
     """
     Set the specified text in the requested line on the monochrome lcd device connected.
 
@@ -132,7 +132,7 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     return False
 
 
-def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 255)):
+def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 255)) -> bool:
     """
     Set the specified text in the first line on the color lcd device connected.
 
@@ -151,7 +151,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
     return False
 
 
-def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)):
+def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)) -> bool:
     """
     Set the specified text in the requested line on the color lcd device connected.
 
@@ -218,7 +218,7 @@ def clear_display(true_clear=False) -> None:
     logi_lcd_update()
 
 
-def _clear_mono(true_clear):
+def _clear_mono(true_clear) -> None:
     """
     Clear mono display.
 
@@ -230,7 +230,7 @@ def _clear_mono(true_clear):
             logi_lcd_mono_set_text(i, '')
 
 
-def _clear_color(true_clear):
+def _clear_color(true_clear) -> None:
     """
     Clear color display.
 
