@@ -33,7 +33,7 @@ runs:
         export SOURCE_DATE_EPOCH=1674687685
         export PYTHONHASHSEED=1674687685
         pyinstaller --clean --noconfirm --log-level DEBUG dcspy.spec
-        Get-FileHash .\dist\* -Algorithm MD5
+        md5sum dist/*.exe
         unset PYTHONHASHSEED
         unset SOURCE_DATE_EPOCH
         pyi-bindepend dist/*.exe
