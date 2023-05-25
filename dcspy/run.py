@@ -11,7 +11,7 @@ LOG = getLogger(__name__)
 __version__ = '2.0.0'
 
 
-def run():
+def run() -> None:
     """Start DCSpy GUI."""
     customtkinter.set_appearance_mode(config['theme_mode'])
     customtkinter.set_default_color_theme(config['theme_color'])
