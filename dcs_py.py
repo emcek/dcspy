@@ -1,4 +1,4 @@
-from dcspy.run import run, __version__
+from dcspy.run import __version__, run
 
 try:
     import pyi_splash
