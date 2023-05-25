@@ -1,7 +1,11 @@
 ## 2.1.0
+* Add System tray icon:
+  * Notification when DCSpy is hidden and running in background.
+  * New version notification
 * Internal:
   * Add more unit tests
   * Use toml instead of cfg for packing
+  * Improve type hinting
 
 ## 2.0.0
 * Allow use/update [live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios) directly from GitHub (master branch)

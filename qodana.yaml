@@ -1,0 +1,11 @@
+version: 1.0
+bootstrap: pip install -r requirements.txt
+linter: jetbrains/qodana-python
+include:
+  - name: CheckDependencyLicenses
+licenseRules:
+  - keys:
+      - "MIT"
+    allowed:
+      - "MIT"
+      - "Apache-2.0"

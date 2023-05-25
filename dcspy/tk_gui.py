@@ -14,6 +14,7 @@ import customtkinter
 from CTkMessagebox import CTkMessagebox
 from packaging import version
 from PIL import Image
+from pystray import Icon, MenuItem
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
@@ -28,14 +29,14 @@ LOG = getLogger(__name__)
 
 class DcspyGui(tk.Frame):
     """Tkinter GUI."""
-    def __init__(self, master: customtkinter.CTk) -> None:
+    def __init__(self, master: tk.Tk) -> None:
         """
         Create basic GUI for dcspy application.
 
         :param master: Top level widget
         """
         super().__init__(master)
-        self.master = master
+        self.master: tk.Tk = master
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
         self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
@@ -76,9 +77,29 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch: customtkinter.CTkSwitch
         self.bios_git_label: customtkinter.CTkLabel
         self.bios_git: customtkinter.CTkEntry
+        self.sys_tray_icon = self._setup_system_tray()
+        self.sys_tray_icon.run_detached()
         self._init_widgets()
         if config.get('autostart', False):
-            self.start_dcspy()
+            self._start_dcspy()
+        if not config.get('show_gui', False):
+            self.sys_tray_icon.notify('Running in background.', 'DCSpy')
+
+    def _setup_system_tray(self) -> Icon:
+        """
+        Configure system tray icon and its menu callbacks.
+
+        :return: system ray icon instance
+        """
+        icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
+        menu = (MenuItem('Show', self._show_gui), MenuItem('Stop', self._stop), MenuItem('Quit', self._close_gui),)
+        self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
+        return Icon('dcspy', icon, 'DCSpy', menu)
+
+    def _withdraw_gui(self):
+        """Withdraw application and show notification."""
+        self.sys_tray_icon.notify('Still running at system tray.', 'DCSpy')
+        self.master.withdraw()
 
     def _init_widgets(self) -> None:
         """Init all GUI widgets."""
@@ -120,14 +141,14 @@ class DcspyGui(tk.Frame):
         check_bios.grid(row=2, column=0, padx=20, pady=10)
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check DCSpy version', command=self._check_version)
         check_ver.grid(row=3, column=0, padx=20, pady=10)
-        self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self.start_dcspy)
+        self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self._start_dcspy)
         logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name('dcspy.png')), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
         self.btn_start.grid(row=5, column=0, padx=20, pady=10)
         self.btn_stop = customtkinter.CTkButton(master=sidebar_frame, text='Stop', state=tk.DISABLED, command=self._stop)
         self.btn_stop.grid(row=6, column=0, padx=20, pady=10)
-        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self.master.destroy)
+        close = customtkinter.CTkButton(master=sidebar_frame, text='Close', command=self._close_gui)
         close.grid(row=7, column=0, padx=20, pady=10)
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
@@ -510,7 +531,9 @@ class DcspyGui(tk.Frame):
             self.master.clipboard_clear()
             self.master.clipboard_append('pip install --upgrade dcspy')
             CTkMessagebox(title='New version',
-                          message='Open Windows Command Prompt (cmd) and type:\n\npip install --upgrade dcspy\n\nNote: command copied to clipboard.')
+                          message='OLD WAY\n1. Open Windows Command Prompt (cmd) and type:\n2. pip install --upgrade dcspy\n'
+                                  '3. Note: command copied to clipboard.\n\nNEW WAY:\n1. Download new executable from: github.com/emcek/dcspy')
+            self.sys_tray_icon.notify(f'New version: {ver_string}', 'DCSpy')
         elif 'latest' in ver_string:
             CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:
@@ -726,6 +749,10 @@ class DcspyGui(tk.Frame):
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
+    def _show_gui(self):
+        """Show main GUI application window from system tray."""
+        self.master.after(0, self.master.deiconify)
+
     def _stop(self) -> None:
         """Set event to stop DCSpy."""
         self.status_txt.set('Start again or close DCSpy')
@@ -733,8 +760,21 @@ class DcspyGui(tk.Frame):
         self.btn_stop.configure(state=tk.DISABLED)
         self.event.set()
 
-    def start_dcspy(self) -> None:
-        """Run real application."""
+    def _close_gui(self):
+        """
+        Quit DCSpy application.
+
+        * Stop system tray
+        * Stop dcspy thread
+        * Quit GUI window
+        """
+        self.sys_tray_icon.visible = False
+        self.sys_tray_icon.stop()
+        self.event.set()
+        self.master.quit()
+
+    def _start_dcspy(self) -> None:
+        """Run real application in thread."""
         self.event = Event()
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
@@ -743,7 +783,6 @@ class DcspyGui(tk.Frame):
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
-        self.status_txt.set('You can close GUI')
         self.btn_start.configure(state=tk.DISABLED)
         self.btn_stop.configure(state=tk.ACTIVE)
         app_thread.start()
