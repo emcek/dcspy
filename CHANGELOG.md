@@ -2,6 +2,7 @@
 * Add System tray icon:
   * Notification when DCSpy is hidden and running in background.
   * New version notification
+* Make splashscreen nicer
 * Internal:
   * Add more unit tests
   * Make unit test configurable from CLI
