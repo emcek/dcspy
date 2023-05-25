@@ -5,8 +5,7 @@ from tempfile import gettempdir
 from typing import Dict, List, Tuple, Union
 from unittest.mock import patch
 
-import PIL
-from PIL import ImageChops
+from PIL import Image, ImageChops
 from requests import exceptions, get
 
 from dcspy import BiosValue, aircraft
@@ -182,16 +181,33 @@ def set_bios_during_test(aircraft_model: aircraft.Aircraft, bios_pairs: List[Tup
                 aircraft_model.set_bios(selector, value)
 
 
-def compare_images(img: PIL.Image.Image, file_path: Path) -> bool:
+def compare_images(img: Image.Image, file_path: Path) -> Tuple[float, int, Image.Image]:
     """
-    Comparing generated image with saved file.
+    Compare generated image with saved file.
 
     :param img: Generated image
     :param file_path: path to reference image
-    :return: Treu if images are the same
+    :return: tuple with comparing result, float of percentage and difference in size
     """
-    instance = isinstance(img, PIL.Image.Image)
-    ref_img = PIL.Image.open(file_path)
-    all_bytes = img.tobytes() == ref_img.tobytes()
-    pixel_diff = not ImageChops.difference(img, ref_img).getbbox()
-    return all([instance, all_bytes, pixel_diff])
+    ref_img = Image.open(file_path)
+    percents, len_diff = assert_bytes(test_bytes=img.tobytes(), ref_bytes=ref_img.tobytes())
+    pixel_diff = ImageChops.difference(img, ref_img)
+    return percents, len_diff, pixel_diff
+
+
+def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> Tuple[float, int]:
+    """
+    Compare bytes and return percentage of differences and differences in size.
+
+    :param test_bytes: bytes to compare
+    :param ref_bytes: referenced bytes
+    :return: tuple with float of percentage and difference in size
+    """
+    percents = 0
+    try:
+        for i, b in enumerate(ref_bytes):
+            if b != test_bytes[i]:
+                percents += 1
+    except IndexError:
+        pass
+    return float(f'{percents / len(ref_bytes) * 100:.2f}'), len(ref_bytes) - len(test_bytes)
