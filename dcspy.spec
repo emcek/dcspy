@@ -4,6 +4,7 @@ from PyInstaller.utils.hooks import collect_data_files
 resources = ['dcspy.ico', 'dcspy_white.ico', 'config.yaml', 'falconded.ttf', 'dcspy.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'license.txt']
 files = [(f'dcspy/{r}', 'dcspy') for r in resources]
 gui_packages = collect_data_files('customtkinter') + collect_data_files('CTkMessagebox')
+__version__ = '2.0.0'
 block_cipher = None
 
 
@@ -42,7 +43,7 @@ exe = EXE(
     splash,
     splash.binaries,
     [],
-    name='dcs_py',
+    name=f'dcspy_{__version__}',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
