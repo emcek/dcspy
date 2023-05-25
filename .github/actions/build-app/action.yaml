@@ -11,7 +11,7 @@ runs:
         pyi_ver=$(python latest_tag.py pyinstaller 0)
         cd pyinstaller/bootloader
         git checkout $pyi_tag
-        python.exe ./waf -v all
+        python.exe ./waf all
         cd ..
         python.exe setup.py bdist_wheel
         pip install dist/pyinstaller-$pyi_ver-py3-none-any.whl
