@@ -181,18 +181,23 @@ def set_bios_during_test(aircraft_model: aircraft.Aircraft, bios_pairs: List[Tup
                 aircraft_model.set_bios(selector, value)
 
 
-def compare_images(img: Image.Image, file_path: Path) -> Tuple[float, int, Image.Image]:
+def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
     """
     Compare generated image with saved file.
 
     :param img: Generated image
     :param file_path: path to reference image
-    :return: tuple with comparing result, float of percentage and difference in size
+    :param precision: allowed precision of image differences
+    :return: True if images are the same
     """
     ref_img = Image.open(file_path)
     percents, len_diff = assert_bytes(test_bytes=img.tobytes(), ref_bytes=ref_img.tobytes())
     pixel_diff = ImageChops.difference(img, ref_img)
-    return percents, len_diff, pixel_diff
+
+    if percents >= precision or len_diff > 0:
+        pixel_diff.save(f'{file_path}_diff.png')
+        print(f'\nDiff percentage: {percents}\nDiff len: {len_diff}\nDiff size: {pixel_diff.getbbox()}')
+    return not any([percents >= precision, len_diff, pixel_diff.getbbox()])
 
 
 def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> Tuple[float, int]:
