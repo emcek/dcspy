@@ -194,10 +194,10 @@ def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
     percents, len_diff = assert_bytes(test_bytes=img.tobytes(), ref_bytes=ref_img.tobytes())
     pixel_diff = ImageChops.difference(img, ref_img)
 
-    if percents >= precision or len_diff > 0:
+    if percents > precision or len_diff > 0:
         pixel_diff.save(f'{file_path}_diff.png')
         print(f'\nDiff percentage: {percents}\nDiff len: {len_diff}\nDiff size: {pixel_diff.getbbox()}')
-    return not any([percents >= precision, len_diff, pixel_diff.getbbox()])
+    return not any([percents > precision, len_diff, pixel_diff.getbbox()])
 
 
 def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> Tuple[float, int]:
