@@ -88,6 +88,7 @@ dcspy = [
     '*.yaml',
     '*.ico',
     '*.png',
+    '*.ttf',
     'py.typed',
 ]
 
