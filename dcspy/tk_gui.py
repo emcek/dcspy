@@ -23,7 +23,7 @@ from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
                          download_file, get_default_yaml, get_version_string,
                          proc_is_running, save_cfg)
 
-__version__ = '2.0.0'
+__version__ = '2.1.0'
 LOG = getLogger(__name__)
 
 
