@@ -55,7 +55,7 @@ def _get_dcs_bios_version(use_git) -> str:
             if response.status_code == 200:
                 bios_ver = response.json()['tag_name']
         except exceptions.ConnectTimeout:
-            bios_ver = 'v0.7.47'
+            bios_ver = 'v0.7.48'
     return bios_ver
 
 
