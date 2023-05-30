@@ -3,6 +3,7 @@
   * Notification when DCSpy is hidden and running in background.
   * New version notification
 * Make splashscreen nicer
+* Update DCS-BIOS (master) data for Mi-24P Hind
 * Internal:
   * Add more unit tests
   * Make unit test configurable from CLI
