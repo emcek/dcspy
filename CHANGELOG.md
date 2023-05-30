@@ -1,3 +1,6 @@
+## 2.1.1
+* Add missing `falconded.ttf` in Python package
+
 ## 2.1.0
 * Add System tray icon:
   * Notification when DCSpy is hidden and running in background.
