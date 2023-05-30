@@ -197,7 +197,7 @@ def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
     if percents > precision or len_diff > 0:
         pixel_diff.save(f'{file_path}_diff.png')
         print(f'\nDiff percentage: {percents}\nDiff len: {len_diff}\nDiff size: {pixel_diff.getbbox()}')
-    return all([percents < precision, len_diff])
+    return all([percents <= precision, not len_diff])
 
 
 def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> Tuple[float, int]:
