@@ -361,5 +361,6 @@ def is_git_exec_present() -> bool:
     try:
         import git
         return bool(git.GIT_OK)
-    except ImportError:
+    except ImportError as err:
+        LOG.debug(err.__class__.__name__, exc_info=True)
         return False
