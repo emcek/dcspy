@@ -21,7 +21,7 @@ from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
                          check_github_repo, check_ver_at_github, defaults_cfg,
                          download_file, get_default_yaml, get_version_string,
-                         proc_is_running, save_cfg)
+                         is_git_exec_present, proc_is_running, save_cfg)
 
 __version__ = '2.1.1'
 LOG = getLogger(__name__)
@@ -72,6 +72,7 @@ class DcspyGui(tk.Frame):
         self.bios_git_ref = tk.StringVar()
 
         self._load_cfg()
+        self.git_exec = is_git_exec_present()
         self.btn_start: customtkinter.CTkButton
         self.btn_stop: customtkinter.CTkButton
         self.git_bios_switch: customtkinter.CTkSwitch
@@ -292,6 +293,12 @@ class DcspyGui(tk.Frame):
         self.bios_git_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='DCS-BIOS Git reference:', state=tk.DISABLED)
         self.bios_git = customtkinter.CTkEntry(master=tabview.tab('Advanced'), validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'),
                                                placeholder_text='git reference', width=390, textvariable=self.bios_git_ref, state=tk.DISABLED, validate='key')
+        if not self.git_exec:
+            self.bios_git_switch.set(False)
+            self.git_bios_switch.configure(state=tk.DISABLED)
+            git_bios_label.configure(state=tk.DISABLED)
+            # todo: set tooltip git not available
+
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.NORMAL)
             self.bios_git.configure(state=tk.NORMAL)
@@ -370,7 +377,9 @@ class DcspyGui(tk.Frame):
         :param bios_ver: version string
         :return: full BIOS version
         """
-        sha_commit = f' SHA: {check_github_repo(git_ref=self.bios_git_ref.get(), update=False)}' if self.bios_git_switch.get() else ''
+        sha_commit = ''
+        if self.git_exec and self.bios_git_switch.get():
+            sha_commit = f' SHA: {check_github_repo(git_ref=self.bios_git_ref.get(), update=False)}'
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         return dcs_bios_ver
 
