@@ -341,6 +341,6 @@ def is_git_exec_present() -> bool:
     """
     try:
         import git
-        return git.GIT_OK
+        return bool(git.GIT_OK)
     except ImportError:
         return False
