@@ -316,10 +316,7 @@ def _checkout_master(repo: str, repo_dir: Path) -> 'git.Repo':
     :param repo_dir: local repository directory
     :return: Repo object to repository
     """
-    try:
-        import git
-    except ImportError:
-        raise OSError('Git executable is not available!')
+    import git
 
     makedirs(name=repo_dir, exist_ok=True)
     if is_git_repo(str(repo_dir)):
