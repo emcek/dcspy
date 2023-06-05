@@ -17,6 +17,7 @@ from PIL import Image
 from pystray import Icon, MenuItem
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, config
+from dcspy.CTkToolTip import CTkToolTip
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
                          check_github_repo, check_ver_at_github, defaults_cfg,
@@ -298,6 +299,10 @@ class DcspyGui(tk.Frame):
             self.git_bios_switch.configure(state=tk.DISABLED)
             git_bios_label.configure(state=tk.DISABLED)
             # todo: set tooltip git not available
+            CTkToolTip(self.git_bios_switch, border_color='black', border_width=2, alpha=0.9,
+                       message='Git is missing, download:\nhttps://git-scm.com/download/win')
+            CTkToolTip(git_bios_label, border_color='black', border_width=2, alpha=0.9,
+                       message='Git is missing, download:\nhttps://git-scm.com/download/win')
 
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.NORMAL)
