@@ -6,10 +6,6 @@ from re import search
 from shutil import rmtree
 from tempfile import gettempdir
 from typing import Dict, NamedTuple, Tuple, Union
-
-import git
-from git import Repo
-from git.exc import InvalidGitRepositoryError
 from packaging import version
 from psutil import process_iter
 from requests import get
@@ -262,10 +258,11 @@ def is_git_repo(dir_path: str) -> bool:
     :param dir_path: path as string
     :return: true if dir is git repo
     """
+    import git
     try:
-        _ = Repo(dir_path).git_dir
+        _ = git.Repo(dir_path).git_dir
         return True
-    except InvalidGitRepositoryError:
+    except git.InvalidGitRepositoryError:
         return False
 
 
@@ -280,6 +277,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     :param repo: GitHub repository
     :param repo_dir: local directory for repository
     """
+    import git
     makedirs(name=repo_dir, exist_ok=True)
     if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
