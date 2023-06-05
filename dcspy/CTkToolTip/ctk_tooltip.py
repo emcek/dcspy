@@ -1,7 +1,8 @@
-import time
 import sys
+import time
+from tkinter import Frame, Toplevel
+
 import customtkinter
-from tkinter import Toplevel, Frame
 
 
 class CTkToolTip(Toplevel):
