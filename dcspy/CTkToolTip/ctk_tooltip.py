@@ -11,7 +11,23 @@ class CTkToolTip(Toplevel):
     def __init__(self, widget: any = None, message: str = None, delay: float = 0.2, follow: bool = True, x_offset: int = +20, y_offset: int = +10,
                  bg_color: str = None, corner_radius: int = 10, border_width: int = 0, border_color: str = None, alpha: float = 0.8, padding: tuple = (10, 2),
                  **message_kwargs):
+        """
+        Create ToolTip instance.
 
+        :param widget:
+        :param message:
+        :param delay:
+        :param follow:
+        :param x_offset:
+        :param y_offset:
+        :param bg_color:
+        :param corner_radius:
+        :param border_width:
+        :param border_color:
+        :param alpha:
+        :param padding:
+        :param message_kwargs:
+        """
         super().__init__()
         self.widget = widget
         self.withdraw()
