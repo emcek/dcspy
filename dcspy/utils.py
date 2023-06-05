@@ -6,6 +6,7 @@ from re import search
 from shutil import rmtree
 from tempfile import gettempdir
 from typing import Dict, NamedTuple, Tuple, Union
+
 from packaging import version
 from psutil import process_iter
 from requests import get
@@ -326,3 +327,16 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
     else:
         result += '\n\nDCS-BIOS entry detected.'
     return result
+
+
+def is_git_exec_present() -> bool:
+    """
+    Check if git executable is present in system.
+
+    :return: True if git.exe is available
+    """
+    try:
+        import git
+        return git.GIT_OK
+    except ImportError:
+        return False
