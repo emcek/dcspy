@@ -105,8 +105,9 @@ class CTkToolTip(Toplevel):
         self.disable = False
 
     def on_enter(self, event) -> None:
-        """Processes motion within the widget including entering and moving."""
-        if self.disable: return
+        """Process motion within the widget including entering and moving."""
+        if self.disable:
+            return
         self.last_moved = time.time()
 
         # Set the status as inside for the very first time
@@ -126,12 +127,13 @@ class CTkToolTip(Toplevel):
 
     def on_leave(self, event=None) -> None:
         """Hides the ToolTip temporarily."""
-        if self.disable: return
+        if self.disable:
+            return
         self.status = "outside"
         self.withdraw()
 
     def _show(self) -> None:
-        """Displays the ToolTip."""
+        """Display the ToolTip."""
         if not self.widget.winfo_exists():
             self.hide()
             self.destroy()
@@ -152,13 +154,15 @@ class CTkToolTip(Toplevel):
         return self.disable
 
     def get(self) -> str:
-        """Returns the text on the tooltip."""
+        """Return the text on the tooltip."""
         return self.messageVar.get()
 
     def configure(self, message: str = None, delay: float = None, bg_color: str = None, **kwargs) -> None:
         """Set new message or configure the label parameters."""
-        if delay: self.delay = delay
-        if bg_color: self.frame.configure(fg_color=bg_color)
+        if delay:
+            self.delay = delay
+        if bg_color:
+            self.frame.configure(fg_color=bg_color)
 
         self.messageVar.set(message)
         self.message_label.configure(**kwargs)
