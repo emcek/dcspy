@@ -278,7 +278,11 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     :param repo: GitHub repository
     :param repo_dir: local directory for repository
     """
-    import git
+    try:
+        import git
+    except ImportError:
+        raise OSError('Git executable is not available!')
+
     makedirs(name=repo_dir, exist_ok=True)
     if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
