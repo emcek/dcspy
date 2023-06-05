@@ -124,7 +124,7 @@ max-complexity = 6
 [tool.mypy]
 ignore_missing_imports = true
 html_report = 'mypyhtml'
-exclude = 'CTkToolTip/*'
+exclude = 'ctk_tooltip.py'
 
 [tool.pydocstyle]
 inherit = false
