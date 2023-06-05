@@ -13,7 +13,7 @@ from requests import get
 from yaml import FullLoader, dump, load, parser
 
 try:
-    from git import Repo
+    import git
 except ImportError:
     pass
 
@@ -308,7 +308,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     return sha
 
 
-def _checkout_master(repo: str, repo_dir: Path) -> 'Repo':
+def _checkout_master(repo: str, repo_dir: Path) -> 'git.Repo':
     """
     Checkout repository at master branch or clone it when not exists in system.
 
