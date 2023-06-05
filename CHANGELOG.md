@@ -1,3 +1,6 @@
+## 2.1.2
+* Fix problem when git executable is not available (for DCS-BIOS live)
+
 ## 2.1.1
 * Add missing `falconded.ttf` in Python package
 

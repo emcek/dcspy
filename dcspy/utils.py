@@ -7,13 +7,15 @@ from shutil import rmtree
 from tempfile import gettempdir
 from typing import Dict, NamedTuple, Tuple, Union
 
-import git
-from git import Repo
-from git.exc import InvalidGitRepositoryError
 from packaging import version
 from psutil import process_iter
 from requests import get
 from yaml import FullLoader, dump, load, parser
+
+try:
+    import git
+except ImportError:
+    pass
 
 LOG = getLogger(__name__)
 ConfigDict = Dict[str, Union[str, int, bool]]
@@ -262,10 +264,11 @@ def is_git_repo(dir_path: str) -> bool:
     :param dir_path: path as string
     :return: true if dir is git repo
     """
+    import git
     try:
-        _ = Repo(dir_path).git_dir
+        _ = git.Repo(dir_path).git_dir
         return True
-    except InvalidGitRepositoryError:
+    except git.InvalidGitRepositoryError:
         return False
 
 
@@ -280,13 +283,12 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     :param repo: GitHub repository
     :param repo_dir: local directory for repository
     """
-    makedirs(name=repo_dir, exist_ok=True)
-    if is_git_repo(str(repo_dir)):
-        bios_repo = git.Repo(repo_dir)
-        bios_repo.git.checkout('master')
-    else:
-        rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir)
+    try:
+        import git
+    except ImportError:
+        raise OSError('Git executable is not available!')
+
+    bios_repo = _checkout_master(repo, repo_dir)
     if update:
         f_info = bios_repo.remotes[0].pull()
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
@@ -304,6 +306,26 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
         head_commit = bios_repo.head.commit
         sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime}'
     return sha
+
+
+def _checkout_master(repo: str, repo_dir: Path) -> 'git.Repo':
+    """
+    Checkout repository at master branch or clone it when not exists in system.
+
+    :param repo: repository name
+    :param repo_dir: local repository directory
+    :return: Repo object to repository
+    """
+    import git
+
+    makedirs(name=repo_dir, exist_ok=True)
+    if is_git_repo(str(repo_dir)):
+        bios_repo = git.Repo(repo_dir)
+        bios_repo.git.checkout('master')
+    else:
+        rmtree(path=repo_dir, ignore_errors=True)
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir)
+    return bios_repo
 
 
 def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
@@ -328,3 +350,17 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
     else:
         result += '\n\nDCS-BIOS entry detected.'
     return result
+
+
+def is_git_exec_present() -> bool:
+    """
+    Check if git executable is present in system.
+
+    :return: True if git.exe is available
+    """
+    try:
+        import git
+        return bool(git.GIT_OK)
+    except ImportError as err:
+        LOG.debug(err.__class__.__name__, exc_info=True)
+        return False
