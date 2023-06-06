@@ -12,6 +12,7 @@ from webbrowser import open_new
 
 import customtkinter
 from CTkMessagebox import CTkMessagebox
+from CTkToolTip import CTkToolTip
 from packaging import version
 from PIL import Image
 from pystray import Icon, MenuItem
@@ -175,26 +176,36 @@ class DcspyGui(tk.Frame):
         autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False,
                                             command=partial(self._save_cfg))
         autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=autostart_label, message='Start dcspy process, after open GUI application')
+        self._set_tool_tip(widget=autostart, message='Start dcspy process, after open GUI application')
         showgui_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show GUI:')
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False,
                                           command=partial(self._save_cfg))
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=showgui_label, message='Show/hide GUI after start')
+        self._set_tool_tip(widget=showgui, message='Show/hide GUI after start')
         checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check DCSpy version:')
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False,
                                            command=partial(self._save_cfg))
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=checkver_label, message='Auto check DCSpy version during start')
+        self._set_tool_tip(widget=checkver, message='Auto check DCSpy version during start')
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path,
                                      validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
-        bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
-        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        self._set_tool_tip(widget=dcs_label, message='Location of installation DCS World (OpenBeta)')
+        self._set_tool_tip(widget=dcs, message='Location of installation DCS World (OpenBeta)')
+        dcsbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
+        dcsbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path,
                                          validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=dcsbios_label, message='Location of DCS-BIOS in Saved Games')
+        self._set_tool_tip(widget=dcsbios, message='Location of DCS-BIOS in Saved Games')
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
         appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode,
@@ -275,16 +286,22 @@ class DcspyGui(tk.Frame):
         save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False,
                                            command=partial(self._save_cfg))
         save_lcd.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=save_lcd_label, message='Make screenshot when LCD is updating\n(good for troubleshooting)')
+        self._set_tool_tip(widget=save_lcd, message='Make screenshot when LCD is updating\n(good for troubleshooting)')
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
         verbose_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False,
                                           command=partial(self._save_cfg))
         verbose.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=verbose_label, message='Log more data\n(good for troubleshooting)')
+        self._set_tool_tip(widget=verbose, message='Log more data\n(good for troubleshooting)')
         update_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Auto Update DCS-BIOS:')
         update_bios_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False,
                                               command=partial(self._save_cfg))
         update_bios.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=update_bios_label, message='Auto check DCS-BIOS version during start')
+        self._set_tool_tip(widget=update_bios, message='Auto check DCS-BIOS version during start')
         git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Use live DCS-BIOS version:')
         git_bios_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False,
@@ -295,9 +312,13 @@ class DcspyGui(tk.Frame):
                                                placeholder_text='git reference', width=390, textvariable=self.bios_git_ref, state=tk.DISABLED, validate='key')
         if not self.git_exec:
             self.bios_git_switch.set(False)
-            self.git_bios_switch.configure(state=tk.DISABLED)
             git_bios_label.configure(state=tk.DISABLED)
-            # todo: set tooltip git not available
+            self.git_bios_switch.configure(state=tk.DISABLED)
+            self._set_tool_tip(widget=self.git_bios_switch, message='Git is missing, download:\nhttps://git-scm.com/download/win')
+            self._set_tool_tip(widget=git_bios_label, message='Git is missing, download:\nhttps://git-scm.com/download/win')
+        else:
+            self._set_tool_tip(widget=git_bios_label, message='Regular release or live version (git needed)')
+            self._set_tool_tip(widget=self.git_bios_switch, message='Regular release or live version (git needed)')
 
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.NORMAL)
@@ -305,6 +326,8 @@ class DcspyGui(tk.Frame):
 
         self.bios_git_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=self.bios_git_label, message='Any valid Git reference: branch, tag, commit')
+        self._set_tool_tip(widget=self.bios_git, message='Any valid Git reference: branch, tag, commit')
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
@@ -315,6 +338,10 @@ class DcspyGui(tk.Frame):
         bios_ver = str(self._check_local_bios().ver)
         self._show_status_versions(bios_ver, dcspy_ver)
         dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        git_ver = 'Not installed'
+        if self.git_exec:
+            from git import cmd
+            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
         python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
@@ -331,32 +358,40 @@ class DcspyGui(tk.Frame):
         processor2_label.grid(column=1, row=2, sticky=tk.W, padx=10, pady=5)
         config1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Config:')
         config1_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
-        config2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self.cfg_file} (click to open)')
+        config2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{self.cfg_file}')
         config2_label.grid(column=1, row=3, sticky=tk.W, padx=10, pady=5)
         config2_label.bind('<Button-1>', lambda e: self._open_webpage(rf'file://{self.cfg_file}'))
+        self._set_tool_tip(widget=config2_label, message='Click to open')
         dcsp1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCSpy:')
-        dcsp1_label.grid(column=0, row=4, sticky=tk.W, padx=10, pady=5)
+        git1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Git:')
+        git1_label.grid(column=0, row=4, sticky=tk.W, padx=10, pady=5)
+        git2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{git_ver}')
+        git2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
+        dcsp1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
         dcsp2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcspy_ver}')
-        dcsp2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
+        dcsp2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
         dcsbios1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS-BIOS:')
-        dcsbios1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
+        dcsbios1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
         dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_bios_ver}')
-        dcsbios2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
+        dcsbios2_label.grid(column=1, row=6, sticky=tk.W, padx=10, pady=5)
         dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
-        dcsworld1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
-        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} {dcs_type} (click to open changelog)')
-        dcsworld2_label.grid(column=1, row=6, sticky=tk.W, padx=10, pady=5)
-        dcsworld2_label.bind('<Button-1>', lambda e: self._open_webpage('https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.2.35759/'))
+        dcsworld1_label.grid(column=0, row=7, sticky=tk.W, padx=10, pady=5)
+        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} {dcs_type}')
+        dcsworld2_label.grid(column=1, row=7, sticky=tk.W, padx=10, pady=5)
+        dcsworld2_label.bind('<Button-1>', lambda e: self._open_webpage('https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.5.40170/'))
+        self._set_tool_tip(widget=dcsworld2_label, message='Click to open changelog')
         homepage1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Home page:')
-        homepage1_label.grid(column=0, row=7, sticky=tk.W, padx=10, pady=5)
-        homepage2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://github.com/emcek/dcspy (click to open)')
-        homepage2_label.grid(column=1, row=7, sticky=tk.W, padx=10, pady=5)
+        homepage1_label.grid(column=0, row=8, sticky=tk.W, padx=10, pady=5)
+        homepage2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://github.com/emcek/dcspy')
+        homepage2_label.grid(column=1, row=8, sticky=tk.W, padx=10, pady=5)
         homepage2_label.bind('<Button-1>', lambda e: self._open_webpage('https://github.com/emcek/dcspy'))
+        self._set_tool_tip(widget=homepage2_label, message='Click to open')
         discord1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Discord:')
-        discord1_label.grid(column=0, row=8, sticky=tk.W, padx=10, pady=5)
-        discord2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://discord.gg/SP5Yjx3 (click to open)')
-        discord2_label.grid(column=1, row=8, sticky=tk.W, padx=10, pady=5)
+        discord1_label.grid(column=0, row=9, sticky=tk.W, padx=10, pady=5)
+        discord2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='https://discord.gg/SP5Yjx3')
+        discord2_label.grid(column=1, row=9, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
+        self._set_tool_tip(widget=discord2_label, message='Click to open')
 
     def _show_status_versions(self, bios_ver: str, dcspy_ver: str) -> None:
         """
@@ -391,6 +426,16 @@ class DcspyGui(tk.Frame):
         :param url: URL address of web page
         """
         open_new(url)
+
+    @staticmethod
+    def _set_tool_tip(widget: customtkinter.CTkBaseClass, message: str) -> None:
+        """
+        Set tooltip with message for widget.
+
+        :param widget: widget instance
+        :param message: as string
+        """
+        CTkToolTip(widget, border_color='black', border_width=2, alpha=0.9, message=message)
 
     def _slider_event(self, label: str, value: float) -> None:
         """

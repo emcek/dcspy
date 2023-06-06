@@ -1,4 +1,5 @@
 CTkMessagebox
+CTkToolTip
 customtkinter>=5.1.0
 GitPython
 packaging<=21.3

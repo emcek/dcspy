@@ -108,3 +108,19 @@ def test_clear_display(c_funcs, effect, lcd, clear, text):
         connected.assert_called_with(lcd)
         set_background.assert_called_once_with(clear)
         set_text.assert_has_calls(text)
+
+
+def test_update_text_no_lcd():
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, False]) as connected:
+        lcd_sdk.update_text(['1'])
+        connected.assert_has_calls([call(1), call(2)])
+
+
+def test_update_display_no_lcd():
+    from PIL import Image
+
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, False]) as connected:
+        lcd_sdk.update_display(Image.new('1', (16, 4), 0))
+        connected.assert_has_calls([call(1), call(2)])

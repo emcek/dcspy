@@ -19,7 +19,7 @@ def run() -> None:
     dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
     LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
     root = customtkinter.CTk()
-    width, height = 770, 500
+    width, height = 770, 520
     root.geometry(f'{width}x{height}')
     root.minsize(width=width, height=height)
     root.iconbitmap(Path(__file__).resolve().with_name('dcspy.ico'))
