@@ -88,7 +88,7 @@ def load_cfg(filename: Path) -> ConfigDict:
                 raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
     except (FileNotFoundError, parser.ParserError, AttributeError) as err:
         makedirs(name=filename.parent, exist_ok=True)
-        LOG.warning(f'{err.__class__.__name__}: {filename}. Default configuration will be used.')
+        LOG.warning(f'{type(err).__name__}: {filename}. Default configuration will be used.')
         LOG.debug(f'{err}')
     return cfg_dict
 
@@ -245,7 +245,7 @@ def check_dcs_ver(dcs_path: Path) -> Tuple[str, str]:
         with open(file=dcs_path / 'autoupdate.cfg', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except (FileNotFoundError, PermissionError) as err:
-        LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+        LOG.debug(f'{type(err).__name__}: {err.filename}')
     else:
         result_type = 'stable'
         dcs_type = search(r'"branch":\s"([\w.]*)"', autoupdate_data)
@@ -362,5 +362,5 @@ def is_git_exec_present() -> bool:
         import git
         return bool(git.GIT_OK)
     except ImportError as err:
-        LOG.debug(err.__class__.__name__, exc_info=True)
+        LOG.debug(type(err).__name__, exc_info=True)
         return False

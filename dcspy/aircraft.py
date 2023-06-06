@@ -41,7 +41,7 @@ class Aircraft:
         :param request: valid DCS-BIOS command as string
         :return: ready to send DCS-BIOS request
         """
-        LOG.debug(f'{self.__class__.__name__} Button: {button}')
+        LOG.debug(f'{type(self).__name__} Button: {button}')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
@@ -54,7 +54,7 @@ class Aircraft:
         img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
         if config.get('save_lcd', False):
-            img.save(Path(gettempdir()) / f'{self.__class__.__name__}_{next(self._debug_img)}.png', 'PNG')
+            img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
         return img
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
@@ -65,7 +65,7 @@ class Aircraft:
         :param value:
         """
         self.bios_data[selector]['value'] = value
-        LOG.debug(f'{self.__class__.__name__} {selector} value: "{value}"')
+        LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
         lcd_sdk.update_display(self.prepare_image())
 
     def get_bios(self, selector: str) -> Union[str, int]:
@@ -98,7 +98,7 @@ class Aircraft:
             max_val = self.bios_data[btn_name]['max_value']
             full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
             seed = full_seed[curr_val + 1:2 * max_val + curr_val + 1]
-            LOG.debug(f'{self.__class__.__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
+            LOG.debug(f'{type(self).__name__} {btn_name} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
             self.cycle_buttons[btn_name] = cycle(chain(seed))
         return next(self.cycle_buttons[btn_name])
 
@@ -278,7 +278,7 @@ class F16C50(Aircraft):
         """
         if 'DED_LINE_' in selector:
             value = str(value)
-            LOG.debug(f'{self.__class__.__name__} {selector} org  : "{value}"')
+            LOG.debug(f'{type(self).__name__} {selector} org  : "{value}"')
             for character in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
                 value = value.replace(character, '')  # List page
             if value and value[-1] == '@':
@@ -736,11 +736,11 @@ class AH64DBLKII(Aircraft):
             if match:
                 self.mode = ApacheEufdMode.PRE
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
-            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
+            LOG.debug(f'{type(self).__name__} {selector} original: "{value}"')
             value = str(value).replace(']', '\u2666').replace('[', '\u25ca').replace('~', '\u25a0'). \
                 replace('>', '\u25b8').replace('<', '\u25c2').replace('=', '\u2219')
         if 'PLT_EUFD_LINE' in selector:
-            LOG.debug(f'{self.__class__.__name__} {selector} original: "{value}"')
+            LOG.debug(f'{type(self).__name__} {selector} original: "{value}"')
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
@@ -861,7 +861,7 @@ class F14B(Aircraft):
 
         :param draw: ImageDraw instance
         """
-        draw.text(xy=(2, 3), text=f'{SUPPORTED_CRAFTS[self.__class__.__name__]["name"]}', fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2, 3), text=f'{SUPPORTED_CRAFTS[type(self).__name__]["name"]}', fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""

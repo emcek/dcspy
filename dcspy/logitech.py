@@ -167,7 +167,7 @@ class LogitechKeyboard:
 
         :return: string
         """
-        return f'{self.__class__.__name__}: {self.lcd.width}x{self.lcd.height}'
+        return f'{type(self).__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self) -> str:
         """

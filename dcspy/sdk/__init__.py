@@ -40,6 +40,6 @@ def load_dll(lib_type: str) -> Optional[CDLL]:
         header = '*' * 44
         error_string = 'ERROR!!!'
         LOG.error(f'\n{header}\n*{error_string:^42}*\n{header}\n'
-                  f'Loading of {lib_type} SDK failed: {err.__class__.__name__}', exc_info=True)
+                  f'Loading of {lib_type} SDK failed: {type(err).__name__}', exc_info=True)
         LOG.error(f'{header}')
         return None

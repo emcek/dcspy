@@ -715,7 +715,7 @@ class DcspyGui(tk.Frame):
             with open(file=Path(self.bios_path.get()) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
                 cd_lua_data = cd_lua.read()
         except FileNotFoundError as err:
-            LOG.debug(f'While checking DCS-BIOS version {err.__class__.__name__}: {err.filename}')
+            LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
         else:
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
@@ -796,7 +796,7 @@ class DcspyGui(tk.Frame):
             with open(file=lua_dst_path / lua, encoding='utf-8') as lua_dst:
                 lua_dst_data = lua_dst.read()
         except FileNotFoundError as err:
-            LOG.debug(f'{err.__class__.__name__}: {err.filename}')
+            LOG.debug(f'{type(err).__name__}: {err.filename}')
             copy(src=temp_dir / lua, dst=lua_dst_path)
             LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
         else:
