@@ -8,7 +8,7 @@ from dcspy.tk_gui import DcspyGui
 from dcspy.utils import check_dcs_ver
 
 LOG = getLogger(__name__)
-__version__ = '2.1.1'
+__version__ = '2.1.2'
 
 
 def run() -> None:
