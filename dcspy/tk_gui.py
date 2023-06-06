@@ -286,16 +286,22 @@ class DcspyGui(tk.Frame):
         save_lcd = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.savelcd_switch, onvalue=True, offvalue=False,
                                            command=partial(self._save_cfg))
         save_lcd.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=save_lcd_label, message='Make screenshot when LCD is updating\n(good for troubleshooting)')
+        self._set_tool_tip(widget=save_lcd, message='Make screenshot when LCD is updating\n(good for troubleshooting)')
         verbose_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Show more logs:')
         verbose_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         verbose = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.verbose_switch, onvalue=True, offvalue=False,
                                           command=partial(self._save_cfg))
         verbose.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=verbose_label, message='Log more data\n(good for troubleshooting)')
+        self._set_tool_tip(widget=verbose, message='Log more data\n(good for troubleshooting)')
         update_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Auto Update DCS-BIOS:')
         update_bios_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         update_bios = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.update_bios, onvalue=True, offvalue=False,
                                               command=partial(self._save_cfg))
         update_bios.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=update_bios_label, message='Auto check DCS-BIOS version during start')
+        self._set_tool_tip(widget=update_bios, message='Auto check DCS-BIOS version during start')
         git_bios_label = customtkinter.CTkLabel(master=tabview.tab('Advanced'), text='Use live DCS-BIOS version:')
         git_bios_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         self.git_bios_switch = customtkinter.CTkSwitch(master=tabview.tab('Advanced'), text='', variable=self.bios_git_switch, onvalue=True, offvalue=False,
@@ -306,10 +312,13 @@ class DcspyGui(tk.Frame):
                                                placeholder_text='git reference', width=390, textvariable=self.bios_git_ref, state=tk.DISABLED, validate='key')
         if not self.git_exec:
             self.bios_git_switch.set(False)
-            self.git_bios_switch.configure(state=tk.DISABLED)
             git_bios_label.configure(state=tk.DISABLED)
+            self.git_bios_switch.configure(state=tk.DISABLED)
             self._set_tool_tip(widget=self.git_bios_switch, message='Git is missing, download:\nhttps://git-scm.com/download/win')
             self._set_tool_tip(widget=git_bios_label, message='Git is missing, download:\nhttps://git-scm.com/download/win')
+        else:
+            self._set_tool_tip(widget=git_bios_label, message='Regular release or live version (git needed)')
+            self._set_tool_tip(widget=self.git_bios_switch, message='Regular release or live version (git needed)')
 
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.NORMAL)
@@ -317,6 +326,8 @@ class DcspyGui(tk.Frame):
 
         self.bios_git_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         self.bios_git.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=self.bios_git_label, message='Any valid Git reference: branch, tag, commit')
+        self._set_tool_tip(widget=self.bios_git, message='Any valid Git reference: branch, tag, commit')
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
