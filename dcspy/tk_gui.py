@@ -298,10 +298,8 @@ class DcspyGui(tk.Frame):
             self.bios_git_switch.set(False)
             self.git_bios_switch.configure(state=tk.DISABLED)
             git_bios_label.configure(state=tk.DISABLED)
-            CTkToolTip(self.git_bios_switch, border_color='black', border_width=2, alpha=0.9,
-                       message='Git is missing, download:\nhttps://git-scm.com/download/win')
-            CTkToolTip(git_bios_label, border_color='black', border_width=2, alpha=0.9,
-                       message='Git is missing, download:\nhttps://git-scm.com/download/win')
+            self._set_tool_tip(widget=self.git_bios_switch, message='Git is missing, download:\nhttps://git-scm.com/download/win')
+            self._set_tool_tip(widget=git_bios_label, message='Git is missing, download:\nhttps://git-scm.com/download/win')
 
         if self.bios_git_switch.get():
             self.bios_git_label.configure(state=tk.NORMAL)
@@ -395,6 +393,16 @@ class DcspyGui(tk.Frame):
         :param url: URL address of web page
         """
         open_new(url)
+
+    @staticmethod
+    def _set_tool_tip(widget: customtkinter.CTkBaseClass, message: str) -> None:
+        """
+        Set tooltip with message for widget.
+
+        :param widget: widget instance
+        :param message: as string
+        """
+        CTkToolTip(widget, border_color='black', border_width=2, alpha=0.9, message=message)
 
     def _slider_event(self, label: str, value: float) -> None:
         """
