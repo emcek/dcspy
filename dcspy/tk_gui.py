@@ -12,12 +12,12 @@ from webbrowser import open_new
 
 import customtkinter
 from CTkMessagebox import CTkMessagebox
+from CTkToolTip import CTkToolTip
 from packaging import version
 from PIL import Image
 from pystray import Icon, MenuItem
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, config
-from dcspy.ctk_tooltip import CTkToolTip
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
                          check_github_repo, check_ver_at_github, defaults_cfg,
