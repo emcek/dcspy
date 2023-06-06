@@ -176,26 +176,36 @@ class DcspyGui(tk.Frame):
         autostart = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.autostart_switch, onvalue=True, offvalue=False,
                                             command=partial(self._save_cfg))
         autostart.grid(column=1, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=autostart_label, message='Start dcspy process, after open GUI application')
+        self._set_tool_tip(widget=autostart, message='Start dcspy process, after open GUI application')
         showgui_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Show GUI:')
         showgui_label.grid(column=0, row=1, sticky=tk.W, pady=5)
         showgui = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.showgui_switch, onvalue=True, offvalue=False,
                                           command=partial(self._save_cfg))
         showgui.grid(column=1, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=showgui_label, message='Show/hide GUI after start')
+        self._set_tool_tip(widget=showgui, message='Show/hide GUI after start')
         checkver_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Check DCSpy version:')
         checkver_label.grid(column=0, row=2, sticky=tk.W, pady=5)
         checkver = customtkinter.CTkSwitch(master=tabview.tab('General'), text='', variable=self.checkver_switch, onvalue=True, offvalue=False,
                                            command=partial(self._save_cfg))
         checkver.grid(column=1, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=checkver_label, message='Auto check DCSpy version during start')
+        self._set_tool_tip(widget=checkver, message='Auto check DCSpy version during start')
         dcs_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS folder:')
         dcs_label.grid(column=0, row=3, sticky=tk.W, pady=5)
         dcs = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='DCS installation', width=390, textvariable=self.dcs_path,
                                      validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcs.grid(column=1, row=3, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
-        bscbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
-        bscbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
+        self._set_tool_tip(widget=dcs_label, message='Location of installation DCS World (OpenBeta)')
+        self._set_tool_tip(widget=dcs, message='Location of installation DCS World (OpenBeta)')
+        dcsbios_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='DCS-BIOS folder:')
+        dcsbios_label.grid(column=0, row=4, sticky=tk.W, pady=5)
         dcsbios = customtkinter.CTkEntry(master=tabview.tab('General'), placeholder_text='Path to DCS-BIOS', width=390, textvariable=self.bios_path,
                                          validate='key', validatecommand=(self.master.register(self._save_entry_text), '%P', '%W', '%V'))
         dcsbios.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
+        self._set_tool_tip(widget=dcsbios_label, message='Location of DCS-BIOS in Saved Games')
+        self._set_tool_tip(widget=dcsbios, message='Location of DCS-BIOS in Saved Games')
         appearance_mode_label = customtkinter.CTkLabel(master=tabview.tab('General'), text='Appearance Mode:', anchor=tk.W)
         appearance_mode_label.grid(column=0, row=5, sticky=tk.W, pady=5)
         appearance_mode = customtkinter.CTkOptionMenu(master=tabview.tab('General'), values=['Light', 'Dark', 'System'], variable=self.theme_mode,
