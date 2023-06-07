@@ -29,7 +29,7 @@ def test_keyboard_base_basic_check(keyboard_base):
     ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(1), call(2), call(4), call(8)], False),
     ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(256), call(512), call(4096), call(8192), call(1024), call(2048), call(16384)], False),
 ], ids=['Mono 4 Button', 'Color Ok Button', 'Mono None already_pressed', 'Color None already_pressed', 'Mono None Button', 'Color None Button'])
-def test_keyboard_mono_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
+def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
     keyboard.already_pressed = pressed1
@@ -40,7 +40,7 @@ def test_keyboard_mono_check_buttons(keyboard, pressed1, effect, chk_btn, calls,
 
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
-def test_keyboard_color_button_handle(keyboard, sock, request):
+def test_keyboard_button_handle(keyboard, sock, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=[True]):
