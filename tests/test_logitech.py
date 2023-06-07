@@ -146,4 +146,4 @@ def test_keyboard_mono_load_plane(model, keyboard_mono):
         keyboard_mono.plane_name = model
         keyboard_mono.load_new_plane()
     assert isinstance(keyboard_mono.plane, Aircraft)
-    assert model in keyboard_mono.plane.__class__.__name__
+    assert model in type(keyboard_mono.plane).__name__
