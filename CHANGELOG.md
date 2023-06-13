@@ -1,4 +1,4 @@
-## 2.1.3
+## 2.2.0
 * Internal:
   * Change way of handling buttons
 
