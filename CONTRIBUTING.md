@@ -97,9 +97,20 @@ def button_request(self, button: LcdButton, request: str = '\n') -> str:
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
 
-* If there is button/switch, with more then two state, you can cycle thru fore and back, by using `get_next_value_for_button()` in `button_request()`
+* If there is button/switch, with more then two state, you can add them additionally to `self.cycle_buttons` dict and then you can cycle thru fore and back, by using `get_next_value_for_button()` in `button_request()`
 
 ```python
+class FA18Chornet(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BiosValue] = {
+            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': ''},
+            ...
+            'HUD_ATT_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
+            'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
+            'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
+        self.cycle_buttons = {'HUD_ATT_SW': iter([0]), 'IFEI_DWN_BTN': iter([0]), 'IFEI_UP_BTN': iter([0])}
+        
 def button_request(self, button: LcdButton, request: str = '\n') -> str:
     button_map = {LcdButton.OK: 'HUD_ATT_SW', 
                   LcdButton.CANCEL: 'IFEI_UP_BTN', 
@@ -111,7 +122,6 @@ def button_request(self, button: LcdButton, request: str = '\n') -> str:
         settings = self.get_next_value_for_button(button_bios_name)
     action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
               ...
-              LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
               LcdButton.MENU: f'{button_bios_name} {settings}\n',
               LcdButton.CANCEL: f'{button_bios_name} {settings}\n',
               LcdButton.OK: f'{button_bios_name} {settings}\n'}
