@@ -4,11 +4,11 @@ Main modules of DCSpy:
 * `run.py` main script - it starts GUI in tkinter
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.
 * `log.py` dumb simple logger configuration
-* `logitech.py` handling Logitech keyboards with LCD and buttons, loading dynamically current aircraft
-* `aircraft.py` are define all supported aircraft with details how and what and display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons under LCD
+* `logitech.py` handling Logitech keyboards with LCD and buttons, loading dynamically aircraft used in DCS
+* `aircraft.py` define all supported aircraft with details how and what display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
 * `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
-* `utils.py` various useful tools - load and save config, check online version or download file
+* `utils.py` various useful tools - load and save config, check online version, download file, update DCS-BIOS using git, etc.
 
 If you want to modify or write something by yourself, here's a quick walk-through:
 * Each plane has special dict:
@@ -48,8 +48,8 @@ which describe data to be fetched from DCS-BIOS with buffer class and its parame
 ```python
 self.plane: Aircraft = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
 ```
-* and "subscribe" for changes with callback for all fields defined in `plane` instance.  
-  First line in for loop load `StringBuffer` or `IntegerBuffer` object for given `field_name` from plane's `bios_data` i.e `PVI_LINE2_TEXT`.  
+* and "subscribe" for changes with callback for all fields defined in `plane` instance.
+  First line in for loop load `StringBuffer` or `IntegerBuffer` object for given `field_name` from plane's `bios_data` i.e `PVI_LINE2_TEXT`.
   Second, create instance of buffer and pass `parser`, callback function )by default `set_bios` and rest of DCS-BIOS protocol arguments: `address` and `max_length` or `address`, `mask` and `shift_by`.
 ```python
 for field_name, proto_data in self.plane.bios_data.items():
@@ -110,10 +110,10 @@ class FA18Chornet(Aircraft):
             'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
             'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
         self.cycle_buttons = {'HUD_ATT_SW': iter([0]), 'IFEI_DWN_BTN': iter([0]), 'IFEI_UP_BTN': iter([0])}
-        
+
 def button_request(self, button: LcdButton, request: str = '\n') -> str:
-    button_map = {LcdButton.OK: 'HUD_ATT_SW', 
-                  LcdButton.CANCEL: 'IFEI_UP_BTN', 
+    button_map = {LcdButton.OK: 'HUD_ATT_SW',
+                  LcdButton.CANCEL: 'IFEI_UP_BTN',
                   LcdButton.MENU: 'IFEI_DWN_BTN'}
     settings = 0
     button_bios_name = ''
