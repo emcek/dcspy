@@ -29,7 +29,7 @@ class Aircraft:
         self.bios_data: Dict[str, BiosValue] = {}
         self.cycle_buttons: Dict[str, Iterator[int]] = {}
         self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
-        self.action: Dict[LcdButton, str] = {}
+        self.button_actions: Dict[LcdButton, str] = {}
         self.button_map: Dict[LcdButton, str] = {}
 
     def button_request(self, button: LcdButton) -> str:
@@ -43,7 +43,7 @@ class Aircraft:
         :return: ready to send DCS-BIOS request
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
-        request = self.action.get(button, '\n')
+        request = self.button_actions.get(button, '\n')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
@@ -154,7 +154,7 @@ class FA18Chornet(Aircraft):
             'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
             'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
         self.cycle_buttons = {'HUD_ATT_SW': iter([0]), 'IFEI_DWN_BTN': iter([0]), 'IFEI_UP_BTN': iter([0])}
-        self.action = {
+        self.button_actions = {
             LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
             LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
             LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
@@ -231,7 +231,7 @@ class FA18Chornet(Aircraft):
         """
         if button in self.button_map:
             button_bios_name, settings = self.get_cycle_values(button)
-            self.action[button] = f'{button_bios_name} {settings}\n'
+            self.button_actions[button] = f'{button_bios_name} {settings}\n'
         return super().button_request(button)
 
 
@@ -268,7 +268,7 @@ class F16C50(Aircraft):
             LcdButton.RIGHT: 'IFF_ENABLE_SW',
             LcdButton.DOWN: 'IFF_M4_CODE_SW',
             LcdButton.UP: 'IFF_M4_REPLY_SW'}
-        self.action = {
+        self.button_actions = {
             # LcdButton.ONE: f'{button_bios_name} {settings}\n',
             #       LcdButton.TWO: f'{button_bios_name} {settings}\n',
             #       LcdButton.THREE: f'{button_bios_name} {settings}\n',
@@ -345,7 +345,7 @@ class F16C50(Aircraft):
         """
         if button in self.button_map:
             button_bios_name, settings = self.get_cycle_values(button)
-            self.action[button] = f'{button_bios_name} {settings}\n'
+            self.button_actions[button] = f'{button_bios_name} {settings}\n'
         return super().button_request(button)
 
 
@@ -374,7 +374,7 @@ class Ka50(Aircraft):
             'AP_FD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
             'AP_HDG_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
             'AP_PITCH_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
-        self.action = {
+        self.button_actions = {
             LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
             LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
             LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
@@ -764,7 +764,7 @@ class AH64DBLKII(Aircraft):
         if button in (LcdButton.ONE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
 
-        self.action = {
+        self.button_actions = {
             LcdButton.ONE: wca_or_idm,
             LcdButton.TWO: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
             LcdButton.THREE: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
@@ -853,7 +853,7 @@ class F14B(Aircraft):
             'RIO_CAP_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
             'RIO_CAP_NE': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
             'RIO_CAP_ENTER': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
-        self.action = {
+        self.button_actions = {
             LcdButton.ONE: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
             LcdButton.TWO: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
             LcdButton.THREE: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
@@ -908,7 +908,7 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_4_Text': {'klass': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 4}, 'value': ''},
             'AV8BNA_ODU_5_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': ''},
             'AV8BNA_ODU_5_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': ''}}
-        self.action = {
+        self.button_actions = {
             LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
             LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
             LcdButton.THREE: 'UFC_COM2_SEL -3200\n',
