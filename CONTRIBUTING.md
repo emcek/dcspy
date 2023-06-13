@@ -103,7 +103,6 @@ Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2
 
 ```python
 class FA18Chornet(Aircraft):
-    """F/A-18C Hornet."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         self.bios_data: Dict[str, BiosValue] = {
             'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': ''},
