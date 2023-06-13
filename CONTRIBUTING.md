@@ -28,24 +28,29 @@ class BiosValue(TypedDict):
     value: Union[int, str]
     max_value: NotRequired[int]
 
-self.bios_data: Dict[str, BiosValue] = {
-    'PVI_LINE2_TEXT': {'klass': 'StringBuffer',
-                       'args': {'address': 0x192a, 'max_length': 6},
-                       'value': str()},
-    'AP_ALT_HOLD_LED': {'klass': 'IntegerBuffer',
-                        'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf},
-                        'value': int()},
-    'IFF_MASTER_KNB': {'klass': 'IntegerBuffer',
-                       'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1},
-                       'value': int(),
-                       'max_value': 4}}
+class Ka50(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BiosValue] = {
+            'PVI_LINE2_TEXT': {'klass': 'StringBuffer',
+                               'args': {'address': 0x192a, 'max_length': 6},
+                               'value': str()},
+            'AP_ALT_HOLD_LED': {'klass': 'IntegerBuffer',
+                                'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf},
+                                'value': int()},
+            'IFF_MASTER_KNB': {'klass': 'IntegerBuffer',
+                               'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1},
+                               'value': int(),
+                               'max_value': 4}}
 ```
 which describe data to be fetched from DCS-BIOS with buffer class and its parameters. For required address and data max_length, look up in `C:\Users\xxx\Saved Games\DCS.openbeta\Scripts\DCS-BIOS\doc\control-reference.html`
 * Then after detecting current plane in DCS, `KeyboardMono` or `KeyboardColor` will load instance of aircraft as `plane`
 ```python
 self.plane: Aircraft = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
 ```
-* and "subscribe" for changes with callback for all fields defined in `plane` instance
+* and "subscribe" for changes with callback for all fields defined in `plane` instance.  
+  First line in for loop load `StringBuffer` or `IntegerBuffer` object for given `field_name` from plane's `bios_data` i.e `PVI_LINE2_TEXT`.  
+  Second, create instance of buffer and pass `parser`, callback function )by default `set_bios` and rest of DCS-BIOS protocol arguments: `address` and `max_length` or `address`, `mask` and `shift_by`.
 ```python
 for field_name, proto_data in self.plane.bios_data.items():
     buffer = getattr(import_module('dcspy.dcsbios'), proto_data['klass'])
@@ -57,22 +62,58 @@ dcs_bios_resp = sock.recv(2048)
 for int_byte in dcs_bios_resp:
     parser.process_byte(int_byte)
 ```
-and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through LCD SDK to device display.
+and calls callback function `set_bios()` of current `plane` with received value and update display content, by creating bitmap and passing it through Logitech LCD SDK to device display.
 
-* You can also use 4 buttons below LCD (G13) and left, right, up and down buttons (G19), just check their state with `check_buttons()` of `KeyboardMono` which one is pressed and send request do DCS-BIOS.
+* You can also use 4 buttons for (G13/G15/G510) and 7 buttons (G19), just check their state with `check_buttons()`, which one is pressed and send request do DCS-BIOS.
 ```python
 sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 7778))
 ```
 * Correct action is define in aircraft instance `button_request()` method:
 ```python
-action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-          LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-          LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-          LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-          LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
-return super().button_request(button, action.get(button, '\n'))
+class LcdButton(Enum):
+    NONE = 0x0
+    ONE = 0x1
+    TWO = 0x2
+    THREE = 0x4
+    FOUR = 0x8
+    LEFT = 0x100
+    RIGHT = 0x200
+    OK = 0x400
+    CANCEL = 0x800
+    UP = 0x1000
+    DOWN = 0x2000
+    MENU = 0x4000
+
+def button_request(self, button: LcdButton, request: str = '\n') -> str:
+    action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+              LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+              LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+              LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+              LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+              LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+              LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+              LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
+    return super().button_request(button, action.get(button, '\n'))
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
+
+* If there is button/switch, with more then two state, you can cycle thru fore and back, by using `get_next_value_for_button()` in `button_request()`
+
+```python
+def button_request(self, button: LcdButton, request: str = '\n') -> str:
+    button_map = {LcdButton.OK: 'HUD_ATT_SW', 
+                  LcdButton.CANCEL: 'IFEI_UP_BTN', 
+                  LcdButton.MENU: 'IFEI_DWN_BTN'}
+    settings = 0
+    button_bios_name = ''
+    if button in button_map:
+        button_bios_name = button_map[button]
+        settings = self.get_next_value_for_button(button_bios_name)
+    action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+              ...
+              LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+              LcdButton.MENU: f'{button_bios_name} {settings}\n',
+              LcdButton.CANCEL: f'{button_bios_name} {settings}\n',
+              LcdButton.OK: f'{button_bios_name} {settings}\n'}
+    return super().button_request(button, action.get(button, '\n'))
+```
