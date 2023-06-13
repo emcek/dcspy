@@ -52,6 +52,8 @@ class Aircraft:
         :return: ready to send DCS-BIOS request
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
+        if button in self.cycle_buttons:
+            self.button_actions[button] = self.get_cycle_request(button)
         request = self.button_actions.get(button, '\n')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
@@ -232,20 +234,6 @@ class FA18Chornet(Aircraft):
             value = str(value).replace('`', '1').replace('~', '2')
         super().set_bios(selector, value)
 
-    def button_request(self, button: LcdButton) -> str:
-        """
-        Prepare F/A-18 Hornet specific DCS-BIOS request for button pressed.
-
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
-        :param button: LcdButton Enum
-        :return: ready to send DCS-BIOS request
-        """
-        if button in self.cycle_buttons:
-            self.button_actions[button] = self.get_cycle_request(button)
-        return super().button_request(button)
-
 
 class F16C50(Aircraft):
     """F-16C Viper."""
@@ -335,20 +323,6 @@ class F16C50(Aircraft):
                 value = sub(r'(\s[\s|×])HUD BLNK([×|\s]\s+)', r'\1hud blnk\2', value)
                 value = sub(r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2', value)
         super().set_bios(selector, value)
-
-    def button_request(self, button: LcdButton) -> str:
-        """
-        Prepare F-16C Viper specific DCS-BIOS request for button pressed.
-
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-
-        :param button: LcdButton Enum
-        :return: ready to send DCS-BIOS request
-        """
-        if button in self.cycle_buttons:
-            self.button_actions[button] = self.get_cycle_request(button)
-        return super().button_request(button)
 
 
 class Ka50(Aircraft):
