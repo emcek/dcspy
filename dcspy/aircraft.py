@@ -21,6 +21,11 @@ except ImportError:
 LOG = getLogger(__name__)
 
 
+class CycleButton(TypedDict):
+    bios: str
+    iter: Iterator[int]
+
+
 class Aircraft:
     """Common Aircraft."""
     def __init__(self, lcd_type: LcdInfo) -> None:
@@ -31,7 +36,7 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BiosValue] = {}
-        self.cycle_buttons: Dict[LcdButton, TypedDict('CycleButton', {'bios': str, 'iter': Iterator[int]})] = {}
+        self.cycle_buttons: Dict[LcdButton, CycleButton] = {}
         self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
         self.button_actions: Dict[LcdButton, str] = {}
 
