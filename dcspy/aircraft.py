@@ -112,15 +112,16 @@ class Aircraft:
         """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
-    def get_cycle_values(self, button: LcdButton) -> Tuple[str, int]:
+    def get_cycle_request(self, button: LcdButton) -> str:
         """
+        Get request for cycle button.
 
-        :param button:
-        :return:
+        :param button: LcdButton Enum
+        :return: ready to send DCS-BIOS request
         """
         button_bios_name = self.button_map[button]
         settings = self.get_next_value_for_button(button_bios_name)
-        return button_bios_name, settings
+        return f'{button_bios_name} {settings}\n'
 
 
 class FA18Chornet(Aircraft):
@@ -230,8 +231,7 @@ class FA18Chornet(Aircraft):
         :return: ready to send DCS-BIOS request
         """
         if button in self.button_map:
-            button_bios_name, settings = self.get_cycle_values(button)
-            self.button_actions[button] = f'{button_bios_name} {settings}\n'
+            self.button_actions[button] = self.get_cycle_request(button)
         return super().button_request(button)
 
 
@@ -344,8 +344,7 @@ class F16C50(Aircraft):
         :return: ready to send DCS-BIOS request
         """
         if button in self.button_map:
-            button_bios_name, settings = self.get_cycle_values(button)
-            self.button_actions[button] = f'{button_bios_name} {settings}\n'
+            self.button_actions[button] = self.get_cycle_request(button)
         return super().button_request(button)
 
 
