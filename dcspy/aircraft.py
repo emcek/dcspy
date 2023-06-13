@@ -53,7 +53,7 @@ class Aircraft:
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
         if button in self.cycle_buttons:
-            self.button_actions[button] = self.get_cycle_request(button)
+            self.button_actions[button] = self._get_cycle_request(button)
         request = self.button_actions.get(button, '\n')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
@@ -100,7 +100,7 @@ class Aircraft:
         """Prepare image for Aircraft for Color LCD."""
         raise NotImplementedError
 
-    def get_next_value_for_button(self, button: LcdButton) -> int:
+    def _get_next_value_for_button(self, button: LcdButton) -> int:
         """
         Get next int value (cycle fore and back) for button name.
 
@@ -116,7 +116,7 @@ class Aircraft:
             self.cycle_buttons[button]['iter'] = cycle(chain(seed))
         return next(self.cycle_buttons[button]['iter'])
 
-    def get_cycle_request(self, button: LcdButton) -> str:
+    def _get_cycle_request(self, button: LcdButton) -> str:
         """
         Get request for cycle button.
 
@@ -124,7 +124,7 @@ class Aircraft:
         :return: ready to send DCS-BIOS request
         """
         button_bios_name = self.cycle_buttons[button]['bios']
-        settings = self.get_next_value_for_button(button)
+        settings = self._get_next_value_for_button(button)
         return f'{button_bios_name} {settings}\n'
 
     def __repr__(self) -> str:
