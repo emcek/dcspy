@@ -163,7 +163,8 @@ class FA18Chornet(Aircraft):
             'IFEI_FUEL_UP': {'klass': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': ''},
             'HUD_ATT_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
             'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
-            'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
+            'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1},
+        }
         self.cycle_buttons = {
             LcdButton.OK: {'bios': 'HUD_ATT_SW', 'iter': iter([0])},
             LcdButton.MENU: {'bios': 'IFEI_DWN_BTN', 'iter': iter([0])},
@@ -268,7 +269,8 @@ class F16C50(Aircraft):
             'IFF_MASTER_KNB': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4},
             'IFF_ENABLE_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
             'IFF_M4_CODE_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
-            'IFF_M4_REPLY_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
+            'IFF_M4_REPLY_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2},
+        }
         self.cycle_buttons = {
             LcdButton.ONE: {'bios': 'IFF_MASTER_KNB', 'iter': iter([0])},
             LcdButton.TWO: {'bios': 'IFF_ENABLE_SW', 'iter': iter([0])},
@@ -373,7 +375,8 @@ class Ka50(Aircraft):
             'AP_BANK_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
             'AP_FD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
             'AP_HDG_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
-            'AP_PITCH_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()}}
+            'AP_PITCH_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
+        }
         self.button_actions = {
             LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
             LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
@@ -382,7 +385,8 @@ class Ka50(Aircraft):
             LcdButton.LEFT: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
             LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
             LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-            LcdButton.UP: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n'}
+            LcdButton.UP: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
+        }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -799,7 +803,8 @@ class A10C(Aircraft):
             'UHF_10MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa}, 'value': int()},
             'UHF_1MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
             'UHF_POINT1MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}, 'value': int()},
-            'UHF_POINT25_SEL': {'klass': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': ''}}
+            'UHF_POINT25_SEL': {'klass': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': ''},
+        }
 
     def _generate_freq_values(self) -> Sequence[str]:
         """
@@ -852,7 +857,8 @@ class F14B(Aircraft):
             'RIO_CAP_CLEAR': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
             'RIO_CAP_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
             'RIO_CAP_NE': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
-            'RIO_CAP_ENTER': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()}}
+            'RIO_CAP_ENTER': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
+        }
         self.button_actions = {
             LcdButton.ONE: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
             LcdButton.TWO: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
@@ -861,7 +867,8 @@ class F14B(Aircraft):
             LcdButton.LEFT: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
             LcdButton.RIGHT: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
             LcdButton.DOWN: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
-            LcdButton.UP: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n'}
+            LcdButton.UP: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n',
+        }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
@@ -907,7 +914,8 @@ class AV8BNA(Aircraft):
             'AV8BNA_ODU_4_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7978, 'max_length': 1}, 'value': ''},
             'AV8BNA_ODU_4_Text': {'klass': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 4}, 'value': ''},
             'AV8BNA_ODU_5_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_5_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': ''}}
+            'AV8BNA_ODU_5_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': ''},
+        }
         self.button_actions = {
             LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
             LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
@@ -916,7 +924,8 @@ class AV8BNA(Aircraft):
             LcdButton.LEFT: 'UFC_COM1_SEL -3200\n',
             LcdButton.RIGHT: 'UFC_COM1_SEL 3200\n',
             LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
-            LcdButton.UP: 'UFC_COM2_SEL 3200\n'}
+            LcdButton.UP: 'UFC_COM2_SEL 3200\n',
+        }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
