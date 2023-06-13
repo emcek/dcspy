@@ -13,6 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, LcdButton, LcdInfo,
                    LcdType, config)
 from dcspy.sdk import lcd_sdk
+
 try:
     from typing import TypedDict
 except ImportError:
