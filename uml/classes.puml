@@ -91,12 +91,12 @@ package aircraft {
         + lcd : LcdInfo
         # _debug_img : Iterator[int]
         + __init__(lcd_type: LcdInfo)
-        + button_request(button: int, request: str) -> str
+        + button_request(button: LcdButton) -> str
         + prepare_image() -> Image
         + set_bios(selector: str, value: Union[str, int])
         + get_bios(selector: str) -> Union[str, int]
-        + get_next_value_for_button(button: LcdButton) -> int
-        + get_cycle_request(button: LcdButton) -> str
+        # _get_next_value_for_button(button: LcdButton) -> int
+        # _get_cycle_request(button: LcdButton) -> str
         + {abstract} draw_for_lcd_mono(img: Image)
         + {abstract} draw_for_lcd_color(img: Image)
     }
