@@ -34,7 +34,6 @@ class Aircraft:
         self.cycle_buttons: Dict[LcdButton, TypedDict('CycleButton', {'bios': str, 'iter': Iterator[int]})] = {}
         self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
         self.button_actions: Dict[LcdButton, str] = {}
-        self.button_map: Dict[LcdButton, str] = {}
 
     def button_request(self, button: LcdButton) -> str:
         """
