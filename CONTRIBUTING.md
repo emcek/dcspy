@@ -116,7 +116,7 @@ class FA18Chornet(Aircraft):
             LcdButton.MENU: {'bios': 'IFEI_DWN_BTN', 'iter': iter([0])},
             LcdButton.CANCEL: {'bios': 'IFEI_UP_BTN', 'iter': iter([0])},
         }
-        
+
 def button_request(self, button: LcdButton) -> str:
         if button in self.cycle_buttons:
             self.button_actions[button] = self.get_cycle_request(button)
