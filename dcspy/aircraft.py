@@ -108,14 +108,6 @@ class Aircraft:
             self.cycle_buttons[button]['iter'] = cycle(chain(seed))
         return next(self.cycle_buttons[button]['iter'])
 
-    def __repr__(self) -> str:
-        """
-        Show all details of Aircraft.
-
-        :return: string
-        """
-        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
-
     def get_cycle_request(self, button: LcdButton) -> str:
         """
         Get request for cycle button.
@@ -126,6 +118,14 @@ class Aircraft:
         button_bios_name = self.cycle_buttons[button]['bios']
         settings = self.get_next_value_for_button(button)
         return f'{button_bios_name} {settings}\n'
+
+    def __repr__(self) -> str:
+        """
+        Show all details of Aircraft.
+
+        :return: string
+        """
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class FA18Chornet(Aircraft):
