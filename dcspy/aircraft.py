@@ -635,7 +635,7 @@ class AH64DBLKII(Aircraft):
             LcdButton.FOUR: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
             LcdButton.RIGHT: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
             LcdButton.DOWN: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-            LcdButton.UP: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n'
+            LcdButton.UP: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
