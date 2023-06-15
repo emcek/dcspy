@@ -710,7 +710,7 @@ class DcspyGui(tk.Frame):
         :return: release description info
         """
         self.l_bios = version.parse('0.0.0')
-        result = ReleaseInfo(False, self.l_bios, '', '', '', '')
+        result = ReleaseInfo(latest=False, ver=self.l_bios, dl_url='', published='', release_type='', archive_file='')
         try:
             with open(file=Path(self.bios_path.get()) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
                 cd_lua_data = cd_lua.read()
@@ -720,7 +720,7 @@ class DcspyGui(tk.Frame):
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = version.parse(bios_re.group(1))
-                result = ReleaseInfo(False, self.l_bios, '', '', '', '')
+                result = ReleaseInfo(latest=False, ver=self.l_bios, dl_url='', published='', release_type='', archive_file='')
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:

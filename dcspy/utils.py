@@ -155,7 +155,12 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return ReleaseInfo(latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1])
+    return ReleaseInfo(latest=latest,
+                       ver=version.parse(online_version),
+                       dl_url=asset_url,
+                       published=published,
+                       release_type='Pre-release' if pre_release else 'Regular',
+                       archive_file=asset_url.split('/')[-1])
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
