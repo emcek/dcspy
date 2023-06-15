@@ -285,8 +285,12 @@ def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
 def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
+    from itertools import repeat
+    from tempfile import gettempdir
     from dcspy.aircraft import ApacheEufdMode
+
     apache = request.getfixturevalue(model)
+    apache._debug_img = repeat(999)
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
@@ -296,7 +300,9 @@ def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
-    img = apache.prepare_image()
+    with patch('dcspy.aircraft.config', return_value={'save_lcd': True}):
+        img = apache.prepare_image()
+    assert (Path(gettempdir()) / f'{type(apache).__name__}_999.png').exists()
     assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
 
 
