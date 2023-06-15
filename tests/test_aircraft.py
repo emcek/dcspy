@@ -287,6 +287,7 @@ def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
 def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
     from itertools import repeat
     from tempfile import gettempdir
+
     from dcspy.aircraft import ApacheEufdMode
 
     apache = request.getfixturevalue(model)
