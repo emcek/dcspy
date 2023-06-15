@@ -1,3 +1,7 @@
+## 2.2.0
+* Internal:
+  * use newest version of `packaging`
+
 ## 2.1.2
 * Fix problem when git executable is not available (for DCS-BIOS live)
 * Add tooltips to some widgets
