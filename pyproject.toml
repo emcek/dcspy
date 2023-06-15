@@ -63,6 +63,7 @@ test = [
     'interrogate',
     'lxml',
     'mypy',
+    'pip-audit',
     'pycodestyle',
     'pydocstyle[toml]',
     'pytest',
