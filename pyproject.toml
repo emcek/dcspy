@@ -34,7 +34,7 @@ dependencies = [
     'CTkToolTip',
     'customtkinter >= 5.0.3',
     'GitPython',
-    'packaging <= 21.3',
+    'packaging',
     'Pillow >= 9.3.0',
     'psutil',
     'pystray',
