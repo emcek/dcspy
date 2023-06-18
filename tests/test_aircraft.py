@@ -215,7 +215,7 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
     assert not all([isinstance(cyc_btn, cycle) for cyc_btn in plane.cycle_buttons.values()])
     for val in values:
         assert plane.button_request(btn) == f'{btn_name} {val}\n'
-    assert isinstance(plane.cycle_buttons[btn_name], cycle)
+    assert isinstance(plane.cycle_buttons[btn]['iter'], cycle)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
