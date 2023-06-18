@@ -68,7 +68,7 @@ and calls callback function `set_bios()` of current `plane` with received value 
 ```python
 sock.sendto(bytes(self.plane.button_request(button), 'utf-8'), ('127.0.0.1', 7778))
 ```
-* Correct action is define in aircraft instance `button_request()` method:
+* Correct action is define `button_actions` and then handling by `button_request()` in `Aircraft` base class:
 ```python
 class LcdButton(Enum):
     NONE = 0x0
@@ -84,46 +84,36 @@ class LcdButton(Enum):
     DOWN = 0x2000
     MENU = 0x4000
 
-def button_request(self, button: LcdButton, request: str = '\n') -> str:
-    action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-              LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-              LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-              LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-              LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-              LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-              LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-              LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n'}
-    return super().button_request(button, action.get(button, '\n'))
+class FA18Chornet(Aircraft):
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        self.button_actions = {
+            LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+            LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+            LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+            LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+            LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+            LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
+            LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+            LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+        }
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
 
-* If there is button/switch, with more then two state, you can add them additionally to `self.cycle_buttons` dict and then you can cycle thru fore and back, by using `get_next_value_for_button()` in `button_request()`
+* If there is button/switch, with more then two state, you can add them additionally to `self.cycle_buttons` dict and (do not forget add them into `bios_data` as well) then you can cycle thru fore and back. See: `_get_next_value_for_button()` and `button_request()` in `Aircraft` base class.
 
 ```python
 class FA18Chornet(Aircraft):
-    def __init__(self, lcd_type: LcdInfo) -> None:
-        super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': ''},
-            ...
-            'HUD_ATT_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
-            'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
-            'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
-        self.cycle_buttons = {'HUD_ATT_SW': iter([0]), 'IFEI_DWN_BTN': iter([0]), 'IFEI_UP_BTN': iter([0])}
-
-def button_request(self, button: LcdButton, request: str = '\n') -> str:
-    button_map = {LcdButton.OK: 'HUD_ATT_SW',
-                  LcdButton.CANCEL: 'IFEI_UP_BTN',
-                  LcdButton.MENU: 'IFEI_DWN_BTN'}
-    settings = 0
-    button_bios_name = ''
-    if button in button_map:
-        button_bios_name = button_map[button]
-        settings = self.get_next_value_for_button(button_bios_name)
-    action = {LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-              ...
-              LcdButton.MENU: f'{button_bios_name} {settings}\n',
-              LcdButton.CANCEL: f'{button_bios_name} {settings}\n',
-              LcdButton.OK: f'{button_bios_name} {settings}\n'}
-    return super().button_request(button, action.get(button, '\n'))
+  def __init__(self, lcd_type: LcdInfo) -> None:
+    super().__init__(lcd_type)
+    self.bios_data: Dict[str, BiosValue] = {
+      'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': ''},
+      ...
+        'HUD_ATT_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
+    'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
+    'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1}}
+    self.cycle_buttons = {
+      LcdButton.OK: {'bios': 'HUD_ATT_SW', 'iter': iter([0])},
+      LcdButton.MENU: {'bios': 'IFEI_DWN_BTN', 'iter': iter([0])},
+      LcdButton.CANCEL: {'bios': 'IFEI_UP_BTN', 'iter': iter([0])},
+    }
 ```
