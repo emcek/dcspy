@@ -65,7 +65,7 @@ def get_default_yaml(local_appdata=False) -> Path:
 class ReleaseInfo(NamedTuple):
     """Tuple to store release related information."""
     latest: bool
-    ver: Union[version.Version, version.LegacyVersion]
+    ver: version.Version
     dl_url: str
     published: str
     release_type: str
@@ -129,7 +129,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
 
     Return tuple with:
     - result (bool) - if local version is latest
-    - online version (version.Version, version.LegacyVersion) - the latest version
+    - online version (version.Version) - the latest version
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
     - release type (str) - Regular or Pre-release
@@ -139,7 +139,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
     :param current_ver: current local version
     :return: ReleaseInfo NamedTuple with information
     """
-    latest, online_version, asset_url, published, pre_release = False, 'unknown', '', '', False
+    latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
     package = repo.split('/')[1]
     try:
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
@@ -155,7 +155,12 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return ReleaseInfo(latest, version.parse(online_version), asset_url, published, 'Pre-release' if pre_release else 'Regular', asset_url.split('/')[-1])
+    return ReleaseInfo(latest=latest,
+                       ver=version.parse(online_version),
+                       dl_url=asset_url,
+                       published=published,
+                       release_type='Pre-release' if pre_release else 'Regular',
+                       archive_file=asset_url.split('/')[-1])
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
@@ -191,9 +196,9 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
         details = ''
         if result.latest:
             details = ' (latest)'
-        elif str(result.ver) != 'unknown':
+        elif str(result.ver) != '0.0.0':
             details = ' (please update!)'
-        elif str(result.ver) == 'unknown':
+        elif str(result.ver) == '0.0.0':
             details = ' (failed)'
         ver_string = f'v{current_ver}{details}'
     return ver_string

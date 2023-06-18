@@ -2,7 +2,7 @@ CTkMessagebox
 CTkToolTip
 customtkinter>=5.1.0
 GitPython
-packaging<=21.3
+packaging
 Pillow>=9.3.0
 psutil
 pystray

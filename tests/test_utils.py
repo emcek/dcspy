@@ -8,8 +8,18 @@ from dcspy import utils
 
 
 @mark.parametrize('online_tag, result', [
-    ('1.1.1', utils.ReleaseInfo(True, version.parse('1.1.1'), 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz')),
-    ('3.2.1', utils.ReleaseInfo(False, version.parse('3.2.1'), 'github.com/fake.tgz', '09 August 2021', 'Pre-release', 'fake.tgz'))
+    ('1.1.1', utils.ReleaseInfo(latest=True,
+                                ver=version.parse('1.1.1'),
+                                dl_url='github.com/fake.tgz',
+                                published='09 August 2021',
+                                release_type='Pre-release',
+                                archive_file='fake.tgz')),
+    ('3.2.1', utils.ReleaseInfo(latest=False,
+                                ver=version.parse('3.2.1'),
+                                dl_url='github.com/fake.tgz',
+                                published='09 August 2021',
+                                release_type='Pre-release',
+                                archive_file='fake.tgz'))
 ], ids=['No update', 'New version'])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
@@ -23,12 +33,12 @@ def test_check_ver_is_possible(online_tag, result):
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2') == utils.ReleaseInfo(False, version.parse('unknown'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == utils.ReleaseInfo(False, version.parse('unknown'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
 
 
 @mark.parametrize('online_tag, result', [

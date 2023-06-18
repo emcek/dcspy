@@ -7,7 +7,7 @@ from re import search
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import Optional, Union
+from typing import Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -39,8 +39,8 @@ class DcspyGui(tk.Frame):
         super().__init__(master)
         self.master: tk.Tk = master
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
-        self.l_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
-        self.r_bios: Union[version.Version, version.LegacyVersion] = version.LegacyVersion('Not checked')
+        self.l_bios = version.Version('0.0.0')
+        self.r_bios = version.Version('0.0.0')
         self.event = Event()
 
         self.status_txt = tk.StringVar()
@@ -709,8 +709,8 @@ class DcspyGui(tk.Frame):
 
         :return: release description info
         """
-        self.l_bios = version.parse('not installed')
-        result = ReleaseInfo(False, self.l_bios, '', '', '', '')
+        self.l_bios = version.parse('0.0.0')
+        result = ReleaseInfo(latest=False, ver=self.l_bios, dl_url='', published='', release_type='', archive_file='')
         try:
             with open(file=Path(self.bios_path.get()) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
                 cd_lua_data = cd_lua.read()
@@ -720,7 +720,7 @@ class DcspyGui(tk.Frame):
             bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
             if bios_re:
                 self.l_bios = version.parse(bios_re.group(1))
-                result = ReleaseInfo(False, self.l_bios, '', '', '', '')
+                result = ReleaseInfo(latest=False, ver=self.l_bios, dl_url='', published='', release_type='', archive_file='')
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:

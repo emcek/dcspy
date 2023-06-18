@@ -1,6 +1,7 @@
 ## 2.2.0
 * Internal:
   * Change way of handling buttons
+  * use newest version of `packaging`
 
 ## 2.1.2
 * Fix problem when git executable is not available (for DCS-BIOS live)
