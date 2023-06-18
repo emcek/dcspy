@@ -35,6 +35,7 @@ package dcsbios {
         DATA_HIGH = 6
         WAIT_FOR_SYNC = 7
     }
+    ProtocolParser *- ParserState
 }
 
 package logitech {
