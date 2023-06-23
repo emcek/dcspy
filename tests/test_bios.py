@@ -11,12 +11,10 @@ from tests.helpers import check_dcsbios_data, generate_bios_data_for_plane
 def test_bios_values_all_planes(plane, request):
     plane = request.getfixturevalue(plane)
     name = SUPPORTED_CRAFTS[type(plane).__name__]['bios']
-    if 'F15' in type(plane).__name__:
-        name = 'F-15E'
-    results, dcsbios_ver = check_dcsbios_data(plane_bios=plane.bios_data, plane_json=f'{name}.json', git_bios=True)
+    results, dcsbios_ver = check_dcsbios_data(plane_bios=plane.bios_data, plane_name=f'{name}', git_bios=True)
     print(f'\n{name} BIOS {dcsbios_ver}\n{"-" * (len(name) + 13)}')
     pprint(results if results else 'No issues found', width=100)
     if results:
         print('----- Full BIOS entry -----')
-        pprint(generate_bios_data_for_plane(plane_bios=plane.bios_data, plane_json=f'{name}.json', git_bios=True), width=160)
+        pprint(generate_bios_data_for_plane(plane_bios=plane.bios_data, plane_name=f'{name}', git_bios=True), width=160)
     assert not results
