@@ -7,7 +7,9 @@ from tests.helpers import check_dcsbios_data, generate_bios_data_for_plane
 
 
 @mark.dcsbios
-@mark.parametrize('plane', ['hornet_mono', 'viper_mono', 'eagle_mono', 'shark_mono', 'hip_mono', 'hind_mono', 'warthog_mono', 'tomcatb_mono', 'harrier_mono', 'apache_mono'])
+@mark.parametrize('plane', [
+    'hornet_mono', 'viper_mono', 'eagle_mono', 'shark_mono', 'hip_mono', 'hind_mono', 'warthog_mono', 'tomcatb_mono', 'harrier_mono', 'apache_mono'
+])
 def test_bios_values_all_planes(plane, request):
     plane = request.getfixturevalue(plane)
     name = SUPPORTED_CRAFTS[type(plane).__name__]['bios']
