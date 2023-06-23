@@ -29,6 +29,7 @@ SUPPORTED_CRAFTS = {
     'Mi8MT': {'name': 'Mi-8MTV2 Magnificent Eight', 'bios': 'Mi-8MT'},
     'Mi24P': {'name': 'Mi-24P Hind', 'bios': 'Mi-24P'},
     'F16C50': {'name': 'F-16C Viper', 'bios': 'F-16C_50'},
+    'F15ESE': {'name': 'F-15ESE Eagle', 'bios': 'F-15ESE'},
     'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D'},
     'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
     'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C2'},
