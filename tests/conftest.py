@@ -568,9 +568,7 @@ def eagle_mono_bios():
         ('F_UFC_Line3_DISPLAY', ' HQ       AJ PROGRAM'),
         ('F_UFC_Line4_DISPLAY', 'KY-58       SQUELCH*'),
         ('F_UFC_Line5_DISPLAY', '*U262000    U133000*'),
-        ('F_UFC_Line6_DISPLAY', ' 17              35 '),
-        ('F_UFC_ACTIVE_UHF1', 'U262.000  '),
-        ('F_UFC_ACTIVE_UHF2', 'U133.000  '),
+        ('F_UFC_Line6_DISPLAY', ' 10               G '),
     ]
 
 
