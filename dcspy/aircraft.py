@@ -360,7 +360,7 @@ class F15ESE(Aircraft):
         for i in range(1, 6):
             offset = (i - 1) * 8
             draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
-        mat = search(r'\s*([0-9G]{1,2})\s+([0-9GV]{1,2})\s+', self.get_bios(f'F_UFC_Line6_DISPLAY'))
+        mat = search(r'\s*([0-9G]{1,2})\s+([0-9GV]{1,2})\s+', str(self.get_bios('F_UFC_Line6_DISPLAY')))
         if mat:
             uhf, v_uhf = mat.groups()
             draw.text(xy=(130, 30), text=f'{uhf:>2} {v_uhf:>2}', fill=self.lcd.foreground, font=self.lcd.font_s)
