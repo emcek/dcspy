@@ -72,6 +72,7 @@ package logitech {
 package aircraft {
     Aircraft <|-- FA18Chornet
     Aircraft <|-- F16C50
+    Aircraft <|-- F15ESE
     Aircraft <|-- Ka50
     Ka50 <|-- Ka503
     Aircraft <|-- Mi8MT
