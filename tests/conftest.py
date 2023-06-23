@@ -213,6 +213,18 @@ def apache_mono(lcd_mono: LcdInfo):
     return AH64DBLKII(lcd_mono)
 
 
+@fixture()
+def eagle_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of F-15ESE Eagle for Logitech mono LCD.
+
+    :param lcd_mono:
+    :return: F/A-18C Hornet instance
+    """
+    from dcspy.aircraft import F15ESE
+    return F15ESE(lcd_mono)
+
+
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
 @fixture()
 def hornet_color(lcd_color: LcdInfo):
@@ -356,6 +368,18 @@ def apache_color(lcd_color: LcdInfo):
     """
     from dcspy.aircraft import AH64DBLKII
     return AH64DBLKII(lcd_color)
+
+
+@fixture()
+def eagle_color(lcd_color: LcdInfo):
+    """
+    Return instance of F-15ESE Eagle for Logitech color LCD.
+
+    :param lcd_color:
+    :return: F/A-18C Hornet instance
+    """
+    from dcspy.aircraft import F15ESE
+    return F15ESE(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
