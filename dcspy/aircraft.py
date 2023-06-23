@@ -356,24 +356,20 @@ class F15ESE(Aircraft):
             LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
         }
 
-    def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
-        """
-        Draw common part (based on scale) for Mono and Color LCD.
-
-        :param draw: ImageDraw instance
-        :param separation: between lines in pixels
-        """
-        for i in range(1, 6):
-            offset = (i - 1) * separation
-            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
-
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), separation=8)
+        draw = ImageDraw.Draw(img)
+        for i in range(1, 6):
+            offset = (i - 1) * 8
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Color LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
+        draw = ImageDraw.Draw(img)
+        for i in range(1, 7):
+            offset = (i - 1) * 24
+            # todo: fix custom font for Color LCD
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 30))
 
 
 class Ka50(Aircraft):
