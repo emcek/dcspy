@@ -577,7 +577,7 @@ def eagle_mono_bios():
 @fixture()
 def eagle_color_bios(eagle_mono_bios):
     """Bios values for F-15ESE Eagle for Logitech color LCD."""
-    return viper_mono_bios
+    return eagle_mono_bios
 
 
 @fixture()
