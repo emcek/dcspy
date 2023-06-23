@@ -325,6 +325,57 @@ class F16C50(Aircraft):
         super().set_bios(selector, value)
 
 
+class F15ESE(Aircraft):
+    """F-15ESE Egle."""
+
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create F-15ESE Egle.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type)
+        self.bios_data: Dict[str, BiosValue] = {
+            'F_UFC_ACTIVE_UHF1': {'klass': 'StringBuffer', 'args': {'address': 0x9304, 'max_length': 0xa}, 'value': ''},
+            'F_UFC_ACTIVE_UHF2': {'klass': 'StringBuffer', 'args': {'address': 0x930e, 'max_length': 0xa}, 'value': ''},
+            'F_UFC_Line1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9214, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_Line2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9228, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_Line3_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x923c, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_Line4_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9250, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_Line5_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9264, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_Line6_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9278, 'max_length': 0x14}, 'value': ''},
+        }
+        self.button_actions = {
+            LcdButton.ONE: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
+            LcdButton.TWO: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
+            LcdButton.THREE: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
+            LcdButton.FOUR: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
+            LcdButton.LEFT: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
+            LcdButton.RIGHT: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
+            LcdButton.DOWN: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
+            LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
+        }
+
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
+        """
+        Draw common part (based on scale) for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :param separation: between lines in pixels
+        """
+        for i in range(1, 6):
+            offset = (i - 1) * separation
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for F-15ESE Eagle for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=8)
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for F-15ESE Eagle for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
+
+
 class Ka50(Aircraft):
     """Ka-50 Black Shark."""
     def __init__(self, lcd_type: LcdInfo) -> None:
