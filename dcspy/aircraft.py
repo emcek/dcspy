@@ -336,8 +336,6 @@ class F15ESE(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BiosValue] = {
-            'F_UFC_ACTIVE_UHF1': {'klass': 'StringBuffer', 'args': {'address': 0x9304, 'max_length': 0xa}, 'value': ''},
-            'F_UFC_ACTIVE_UHF2': {'klass': 'StringBuffer', 'args': {'address': 0x930e, 'max_length': 0xa}, 'value': ''},
             'F_UFC_Line1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9214, 'max_length': 0x14}, 'value': ''},
             'F_UFC_Line2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9228, 'max_length': 0x14}, 'value': ''},
             'F_UFC_Line3_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x923c, 'max_length': 0x14}, 'value': ''},
