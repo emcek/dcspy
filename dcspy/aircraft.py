@@ -371,7 +371,7 @@ class F15ESE(Aircraft):
         for i in range(1, 7):
             offset = (i - 1) * 24
             # todo: fix custom font for Color LCD
-            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 30))
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 29))
 
 
 class Ka50(Aircraft):
