@@ -288,7 +288,7 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
 
 @mark.parametrize('lcd', ['mono', 'color'])
-@mark.parametrize('model', ['hornet', 'viper', 'shark', 'shark3', 'hip', 'hind', 'apache', 'warthog', 'warthog2', 'tomcata', 'tomcatb', 'harrier'])
+@mark.parametrize('model', ['hornet', 'viper', 'eagle', 'shark', 'shark3', 'hip', 'hind', 'apache', 'warthog', 'warthog2', 'tomcata', 'tomcatb', 'harrier'])
 def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
     aircraft_model = request.getfixturevalue(f'{model}_{lcd}')
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
