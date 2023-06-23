@@ -560,6 +560,27 @@ def viper_color_bios(viper_mono_bios):
 
 
 @fixture()
+def eagle_mono_bios():
+    """Bios values for F-15ESE Eagle for Logitech mono LCD."""
+    return [
+        ('F_UFC_Line1_DISPLAY', '*R2-35     141000-AM'),
+        ('F_UFC_Line2_DISPLAY', 'MARITIME      MAN-'),
+        ('F_UFC_Line3_DISPLAY', ' HQ       AJ PROGRAM'),
+        ('F_UFC_Line4_DISPLAY', 'KY-58       SQUELCH*'),
+        ('F_UFC_Line5_DISPLAY', '*U262000    U133000*'),
+        ('F_UFC_Line6_DISPLAY', ' 17              35 '),
+        ('F_UFC_ACTIVE_UHF1', 'U262.000  '),
+        ('F_UFC_ACTIVE_UHF2', 'U133.000  '),
+    ]
+
+
+@fixture()
+def eagle_color_bios(eagle_mono_bios):
+    """Bios values for F-15ESE Eagle for Logitech color LCD."""
+    return viper_mono_bios
+
+
+@fixture()
 def shark_mono_bios():
     """Bios values for Ka-50 Black Shark II for Logitech mono LCD."""
     return [
