@@ -14,6 +14,7 @@ resources = Path(__file__).resolve().with_name('resources')
 @mark.parametrize('model', all_plane_list, ids=[
     'FA-18 Hornet',
     'F-16C Viper',
+    'F-15ESE Eagle',
     'Ka-50 Black Shark II',
     'Ka-50 Black Shark III',
     'Mi-8MT Hip',
