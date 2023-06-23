@@ -294,10 +294,10 @@ def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'eagle' in model:
-    #     img.save(resources / platform / f'{platform}_{model}_{lcd}_{type(aircraft_model).__name__}.png')
-    # else:
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
+    if 'eagle' in model:
+        img.save(resources / platform / f'{platform}_{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    else:
+        assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
