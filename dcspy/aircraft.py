@@ -23,6 +23,7 @@ LOG = getLogger(__name__)
 
 
 class CycleButton(TypedDict):
+    """Map BIOS key string with iterator to keep current value."""
     bios: str
     iter: Iterator[int]
 
