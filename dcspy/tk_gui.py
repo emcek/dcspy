@@ -3,7 +3,6 @@ from functools import partial
 from logging import getLogger
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
-from re import search
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
@@ -19,10 +18,11 @@ from pystray import Icon, MenuItem
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ReleaseInfo, check_dcs_bios_entry, check_dcs_ver,
-                         check_github_repo, check_ver_at_github, defaults_cfg,
-                         download_file, get_default_yaml, get_version_string,
-                         is_git_exec_present, proc_is_running, save_cfg)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
+                         check_dcs_ver, check_github_repo, check_ver_at_github,
+                         defaults_cfg, download_file, get_default_yaml,
+                         get_version_string, is_git_exec_present,
+                         proc_is_running, save_cfg)
 
 __version__ = '2.1.2'
 LOG = getLogger(__name__)
@@ -709,18 +709,8 @@ class DcspyGui(tk.Frame):
 
         :return: release description info
         """
-        self.l_bios = version.parse('0.0.0')
-        result = ReleaseInfo(latest=False, ver=self.l_bios, dl_url='', published='', release_type='', archive_file='')
-        try:
-            with open(file=Path(self.bios_path.get()) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
-                cd_lua_data = cd_lua.read()
-        except FileNotFoundError as err:
-            LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
-        else:
-            bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
-            if bios_re:
-                self.l_bios = version.parse(bios_re.group(1))
-                result = ReleaseInfo(latest=False, ver=self.l_bios, dl_url='', published='', release_type='', archive_file='')
+        result = check_bios_ver(bios_path=self.bios_path.get())
+        self.l_bios = result.ver
         return result
 
     def _check_remote_bios(self) -> ReleaseInfo:
