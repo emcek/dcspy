@@ -403,14 +403,14 @@ class Ka50(Aircraft):
             'AP_PITCH_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
         }
         self.button_actions = {
-            LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-            LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-            LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-            LcdButton.FOUR: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
-            LcdButton.LEFT: 'PVI_WAYPOINTS_BTN 1\nPVI_WAYPOINTS_BTN 0\n',
-            LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\nPVI_FIXPOINTS_BTN 0\n',
-            LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\nPVI_AIRFIELDS_BTN 0\n',
-            LcdButton.UP: 'PVI_TARGETS_BTN 1\nPVI_TARGETS_BTN 0\n',
+            LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\n|PVI_WAYPOINTS_BTN 0\n',
+            LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
+            LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
+            LcdButton.FOUR: 'PVI_TARGETS_BTN 1\n|PVI_TARGETS_BTN 0\n',
+            LcdButton.LEFT: 'PVI_WAYPOINTS_BTN 1\n|PVI_WAYPOINTS_BTN 0\n',
+            LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
+            LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
+            LcdButton.UP: 'PVI_TARGETS_BTN 1\n|PVI_TARGETS_BTN 0\n',
         }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
@@ -655,12 +655,12 @@ class AH64DBLKII(Aircraft):
             'PLT_EUFD_LINE12': {'klass': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': ''},
         }
         self.button_actions = {
-            LcdButton.TWO: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-            LcdButton.THREE: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-            LcdButton.FOUR: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
-            LcdButton.RIGHT: 'PLT_EUFD_RTS 0\nPLT_EUFD_RTS 1\n',
-            LcdButton.DOWN: 'PLT_EUFD_PRESET 0\nPLT_EUFD_PRESET 1\n',
-            LcdButton.UP: 'PLT_EUFD_ENT 0\nPLT_EUFD_ENT 1\n',
+            LcdButton.TWO: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
+            LcdButton.THREE: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
+            LcdButton.FOUR: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
+            LcdButton.RIGHT: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
+            LcdButton.DOWN: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
+            LcdButton.UP: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
@@ -789,9 +789,9 @@ class AH64DBLKII(Aircraft):
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = 'PLT_EUFD_WCA 0\nPLT_EUFD_WCA 1\n'
+        wca_or_idm = 'PLT_EUFD_WCA 0\n|PLT_EUFD_WCA 1\n'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = 'PLT_EUFD_IDM 0\nPLT_EUFD_IDM 1\n'
+            wca_or_idm = 'PLT_EUFD_IDM 0\n|PLT_EUFD_IDM 1\n'
 
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
@@ -885,14 +885,14 @@ class F14B(Aircraft):
             'RIO_CAP_ENTER': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
         }
         self.button_actions = {
-            LcdButton.ONE: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
-            LcdButton.TWO: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
-            LcdButton.THREE: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
-            LcdButton.FOUR: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n',
-            LcdButton.LEFT: 'RIO_CAP_CLEAR 1\nRIO_CAP_CLEAR 0\n',
-            LcdButton.RIGHT: 'RIO_CAP_SW 1\nRIO_CAP_SW 0\n',
-            LcdButton.DOWN: 'RIO_CAP_NE 1\nRIO_CAP_NE 0\n',
-            LcdButton.UP: 'RIO_CAP_ENTER 1\nRIO_CAP_ENTER 0\n',
+            LcdButton.ONE: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
+            LcdButton.TWO: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
+            LcdButton.THREE: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
+            LcdButton.FOUR: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
+            LcdButton.LEFT: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
+            LcdButton.RIGHT: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
+            LcdButton.DOWN: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
+            LcdButton.UP: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
         }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
