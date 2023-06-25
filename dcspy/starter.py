@@ -111,7 +111,7 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     :param event: stop event for main loop
     """
     parser = ProtocolParser()
-    logi_keyboard = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
+    logi_keyboard: LogitechKeyboard = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(logi_keyboard)}')
     LOG.debug(f'Loading: {repr(logi_keyboard)}')
     dcs_sock = _prepare_socket()
