@@ -352,6 +352,8 @@ class F15ESE(Aircraft):
             LcdButton.RIGHT: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
             LcdButton.DOWN: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
             LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
+            LcdButton.MENU: 'F_UFC_KEY_L_GUARD 1\n|F_UFC_KEY_L_GUARD 0\n',
+            LcdButton.CANCEL: 'F_UFC_KEY_R_GUARD 1\n|F_UFC_KEY_R_GUARD 0\n',
         }
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
