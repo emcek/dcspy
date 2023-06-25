@@ -10,24 +10,24 @@ from typing import Iterator
 from dcspy import MULTICAST_IP, RECV_ADDR, config
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechKeyboard
-from dcspy.utils import get_version_string
+from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
 __version__ = '2.1.2'
 
 
-def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
+def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
     """
     Handle main loop where all the magic is happened.
 
     :param logi_keyboard: type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
     :param sock: multi-cast UDP socket
+    :param ver_string: current version to show
     :param event: stop event for main loop
     """
     start_time = time()
-    ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
     LOG.info('Waiting for DCS connection...')
     support_banner = _supporters(text='Huge thanks to: Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ', width=26)
     while not event.is_set():
@@ -115,7 +115,8 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     LOG.info(f'Loading: {str(logi_keyboard)}')
     LOG.debug(f'Loading: {repr(logi_keyboard)}')
     dcs_sock = _prepare_socket()
-    _handle_connection(logi_keyboard, parser, dcs_sock, event)
+    dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
+    _handle_connection(logi_keyboard, parser, dcs_sock, dcspy_ver, event)
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
-    logi_keyboard.display = ['Logitech LCD OK', 'DCSpy stopped', '', f'v{__version__}']
+    logi_keyboard.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=config["dcsbios"]).ver}']
