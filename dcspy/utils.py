@@ -266,7 +266,7 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     """
     Check DSC-BIOS release version.
 
-    :param bios_path: path to DCS-BIOS directory iun SaveGames folder
+    :param bios_path: path to DCS-BIOS directory in Saved Games folder
     :return: ReleaseInfo named tuple
     """
     result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', archive_file='')
