@@ -119,4 +119,4 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     _handle_connection(logi_keyboard=logi_keyboard, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
-    logi_keyboard.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=config["dcsbios"]).ver}']
+    logi_keyboard.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(config["dcsbios"])).ver}']
