@@ -116,7 +116,7 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     LOG.debug(f'Loading: {repr(logi_keyboard)}')
     dcs_sock = _prepare_socket()
     dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
-    _handle_connection(logi_keyboard, parser, dcs_sock, dcspy_ver, event)
+    _handle_connection(logi_keyboard=logi_keyboard, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
     logi_keyboard.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=config["dcsbios"]).ver}']
