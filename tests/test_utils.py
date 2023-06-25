@@ -44,7 +44,7 @@ def test_check_ver_exception():
 
 @mark.parametrize('online_tag, result', [
     ('1.1.1', 'v1.1.1 (latest)'),
-    ('3.2.1', 'v1.1.1 (please update!)')
+    ('3.2.1', 'v1.1.1 (update!)')
 ], ids=['No update', 'New version'])
 def test_get_version_string_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
