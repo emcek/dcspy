@@ -3,6 +3,7 @@
 * Internal:
   * Change way of handling buttons
   * use newest version of `packaging`
+  * fix PyInstaller exception during runtime
 
 ## 2.1.2
 * Fix problem when git executable is not available (for DCS-BIOS live)
