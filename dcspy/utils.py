@@ -197,7 +197,7 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
         if result.latest:
             details = ' (latest)'
         elif str(result.ver) != '0.0.0':
-            details = ' (please update!)'
+            details = ' (update!)'
         elif str(result.ver) == '0.0.0':
             details = ' (failed)'
         ver_string = f'v{current_ver}{details}'
@@ -260,6 +260,27 @@ def check_dcs_ver(dcs_path: Path) -> Tuple[str, str]:
         if dcs_ver:
             result_ver = str(dcs_ver.group(1))
     return result_type, result_ver
+
+
+def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
+    """
+    Check DSC-BIOS release version.
+
+    :param bios_path: path to DCS-BIOS directory in Saved Games folder
+    :return: ReleaseInfo named tuple
+    """
+    result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', archive_file='')
+    try:
+        with open(file=Path(bios_path) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
+            cd_lua_data = cd_lua.read()
+    except FileNotFoundError as err:
+        LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
+    else:
+        bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
+        if bios_re:
+            bios = version.parse(bios_re.group(1))
+            result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', archive_file='')
+    return result
 
 
 def is_git_repo(dir_path: str) -> bool:

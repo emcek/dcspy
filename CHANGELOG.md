@@ -1,4 +1,5 @@
 ## 2.2.0
+* Add support for **F-15E Eagle** and its UFC
 * Internal:
   * Change way of handling buttons
   * use newest version of `packaging`

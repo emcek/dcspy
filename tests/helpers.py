@@ -11,21 +11,23 @@ from requests import exceptions, get
 from dcspy import BiosValue, aircraft
 from dcspy.sdk import lcd_sdk
 
-all_plane_list = ['FA18Chornet', 'F16C50', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
+all_plane_list = ['FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
 
 
-def check_dcsbios_data(plane_bios: dict, plane_json: str, git_bios: bool) -> Tuple[dict, str]:
+def check_dcsbios_data(plane_bios: dict, plane_name: str, git_bios: bool) -> Tuple[dict, str]:
     """
     Verify if all aircraft's data are correct with DCS-BIOS.
 
     :param plane_bios: BIOS data from plane
-    :param plane_json: DCS-BIOS json filename
+    :param plane_name: DCS-BIOS json filename
     :param git_bios: use live/git DCS-BIOS version
     :return: result of checks and DCS-BIOS version
     """
-    results = {}
+    results, local_json = {}, {}
     bios_ver = _get_dcs_bios_version(use_git=git_bios)
-    local_json = _get_json_for_plane(plane=plane_json, bios_ver=bios_ver)
+    aircraft_aliases = _get_dcs_bios_json(json='AircraftAliases', bios_ver=bios_ver)
+    for json_file in aircraft_aliases[plane_name]:
+        local_json = {**local_json, **_get_dcs_bios_json(json=json_file, bios_ver=bios_ver)}
     for bios_key in plane_bios:
         bios_ref = _recursive_lookup(bios_key, local_json)
         if not bios_ref:
@@ -82,7 +84,7 @@ def _compare_dcspy_with_bios(bios_key: str, bios_outputs: dict, plane_bios: dict
     return results
 
 
-def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
+def _get_dcs_bios_json(json: str, bios_ver: str) -> dict:
     """
     Download json file for plane and write it to temporary directory.
 
@@ -90,11 +92,11 @@ def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
     * file doesn't exist
     * file is older the one week
 
-    :param plane: DCS-BIOS json filename
+    :param json: DCS-BIOS json filename
     :param bios_ver: DCS-BIOS version
     :return: json as dict
     """
-    plane_path = Path(gettempdir()) / plane
+    plane_path = Path(gettempdir()) / f'{json}.json'
     try:
         m_time = plane_path.stat().st_mtime
         week = datetime.fromtimestamp(int(m_time)).strftime('%U')
@@ -104,7 +106,7 @@ def _get_json_for_plane(plane: str, bios_ver: str) -> dict:
             return loads(data)
         raise ValueError('File is outdated')
     except (FileNotFoundError, ValueError):
-        json_data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{bios_ver}/Scripts/DCS-BIOS/doc/json/{plane}')
+        json_data = get(f'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/{bios_ver}/Scripts/DCS-BIOS/doc/json/{json}.json')
         with open(plane_path, 'wb+') as plane_json_file:
             plane_json_file.write(json_data.content)
         return loads(json_data.content)
@@ -127,7 +129,7 @@ def _recursive_lookup(search_key: str, bios_dict: dict) -> dict:
                 return item
 
 
-def generate_bios_data_for_plane(plane_bios: dict, plane_json: str, git_bios: bool) -> Dict[str, BiosValue]:
+def generate_bios_data_for_plane(plane_bios: dict, plane_name: str, git_bios: bool) -> Dict[str, BiosValue]:
     """
     Generate dict of BIOS values for plane.
 
@@ -138,7 +140,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_json: str, git_bios: bo
     """
     results = {}
     bios_ver = _get_dcs_bios_version(use_git=git_bios)
-    local_json = _get_json_for_plane(plane=plane_json, bios_ver=bios_ver)
+    local_json = _get_dcs_bios_json(json=plane_name, bios_ver=bios_ver)
     for bios_key in plane_bios:
         bios_ref = _recursive_lookup(search_key=bios_key, bios_dict=local_json)
         if not bios_ref:
