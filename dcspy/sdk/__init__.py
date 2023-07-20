@@ -36,10 +36,8 @@ def load_dll(lib_type: str) -> Optional[CDLL]:
         dll = _init_dll(lib_type)
         LOG.info(f'Loading of {lib_type} SDK success')
         return dll
-    except (KeyError, FileNotFoundError) as err:
+    except (KeyError, OSError) as err:
         header = '*' * 44
-        error_string = 'ERROR!!!'
-        LOG.error(f'\n{header}\n*{error_string:^42}*\n{header}\n'
-                  f'Loading of {lib_type} SDK failed: {type(err).__name__}', exc_info=True)
+        LOG.error(f'\n{header}\n*{type(err).__name__:^42}*\n{header}\nLoading of {lib_type} SDK failed !', exc_info=True)
         LOG.error(f'{header}')
         return None
