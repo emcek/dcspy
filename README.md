@@ -37,6 +37,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * F-14A and F-14B Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display
+* F-15E Eagle - Upfront Control Panel
 * more to come....
 
 ## Requirements

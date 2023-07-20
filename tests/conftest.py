@@ -213,6 +213,18 @@ def apache_mono(lcd_mono: LcdInfo):
     return AH64DBLKII(lcd_mono)
 
 
+@fixture()
+def eagle_mono(lcd_mono: LcdInfo):
+    """
+    Return instance of F-15ESE Eagle for Logitech mono LCD.
+
+    :param lcd_mono:
+    :return: F/A-18C Hornet instance
+    """
+    from dcspy.aircraft import F15ESE
+    return F15ESE(lcd_mono)
+
+
 # <=><=><=><=><=> aircraft color <=><=><=><=><=>
 @fixture()
 def hornet_color(lcd_color: LcdInfo):
@@ -356,6 +368,18 @@ def apache_color(lcd_color: LcdInfo):
     """
     from dcspy.aircraft import AH64DBLKII
     return AH64DBLKII(lcd_color)
+
+
+@fixture()
+def eagle_color(lcd_color: LcdInfo):
+    """
+    Return instance of F-15ESE Eagle for Logitech color LCD.
+
+    :param lcd_color:
+    :return: F/A-18C Hornet instance
+    """
+    from dcspy.aircraft import F15ESE
+    return F15ESE(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
@@ -533,6 +557,25 @@ def viper_mono_bios():
 def viper_color_bios(viper_mono_bios):
     """Bios values for F16C Viper for Logitech color LCD."""
     return viper_mono_bios
+
+
+@fixture()
+def eagle_mono_bios():
+    """Bios values for F-15ESE Eagle for Logitech mono LCD."""
+    return [
+        ('F_UFC_Line1_DISPLAY', '*R2-35     141000-AM'),
+        ('F_UFC_Line2_DISPLAY', 'MARITIME      MAN-'),
+        ('F_UFC_Line3_DISPLAY', ' HQ       AJ PROGRAM'),
+        ('F_UFC_Line4_DISPLAY', 'KY-58       SQUELCH*'),
+        ('F_UFC_Line5_DISPLAY', '*U262000    U133000*'),
+        ('F_UFC_Line6_DISPLAY', ' 10               G '),
+    ]
+
+
+@fixture()
+def eagle_color_bios(eagle_mono_bios):
+    """Bios values for F-15ESE Eagle for Logitech color LCD."""
+    return eagle_mono_bios
 
 
 @fixture()

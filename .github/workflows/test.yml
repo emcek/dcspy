@@ -49,6 +49,7 @@ jobs:
           name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
           path: |
             tests/resources/*
+          retention-days: 5
 
       - name: "Check pip-audit"
         run: |
