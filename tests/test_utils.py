@@ -168,13 +168,13 @@ def test_is_git_repo(tmpdir):
 
 def test_check_github_repo(tmpdir):
     from re import search
-    sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/dcspy', repo_dir=tmpdir)
+    sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     match = search(r'(master):\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}\sby:\s.*', sha)
     assert match.group(1) == 'master'
-    sha = utils.check_github_repo(git_ref='branch', update=True, repo='emcek/dcspy', repo_dir=tmpdir)
+    sha = utils.check_github_repo(git_ref='branch', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}\sby:\s.*', sha)
     assert match.group(1)
-    sha = utils.check_github_repo(git_ref='master', update=False, repo='emcek/dcspy', repo_dir=tmpdir)
+    sha = utils.check_github_repo(git_ref='master', update=False, repo='emcek/common_sense', repo_dir=tmpdir)
     match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}', sha)
     assert match.group(1)
 
