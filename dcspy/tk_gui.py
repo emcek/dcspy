@@ -127,7 +127,7 @@ class DcspyGui(tk.Frame):
         self.master.grid_rowconfigure(index=1, weight=1)
         self.master.grid_rowconfigure(index=2, weight=1)
         self._sidebar()
-        tabview = customtkinter.CTkTabview(master=self.master, width=250, height=400, state=tk.ACTIVE)
+        tabview = customtkinter.CTkTabview(master=self.master, width=250, height=430, state=tk.ACTIVE)
         tabview.configure(command=partial(self._update_about_tab, tabview))
         tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('Keyboards')
