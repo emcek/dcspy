@@ -408,13 +408,13 @@ def collect_debug_data() -> Path:
     conf_dict = load_cfg(config_file)
     system_uname = uname()
     pyver = (python_version(), python_implementation())
-    dcs = check_dcs_ver(Path(conf_dict['dcs']))
-    bios_ver = check_bios_ver(bios_path=conf_dict['dcsbios']).ver
+    dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
+    bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
     git_ver = 'Not installed'
     head_commit = 'N/A'
     try:
         import git
-        git_ver = git.cmd.Git().version_info
+        git_ver = '.'.join([str(i) for i in git.cmd.Git().version_info])
         head_commit = git.Repo(Path(gettempdir()) / 'dcsbios_git').head.commit
     except ImportError:
         pass
