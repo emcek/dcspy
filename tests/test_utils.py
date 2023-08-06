@@ -212,8 +212,10 @@ def test_check_dcs_bios_entry_ok(tmpdir):
 
 
 def test_collect_debug_data():
+    from tempfile import gettempdir
     from zipfile import ZipFile
-
+    with open(Path(gettempdir()) / 'Ka50_999.png', 'w+') as png:
+        png.write('')
     zip_file = utils.collect_debug_data()
     assert 'dcspy_debug_' in str(zip_file)
     assert zip_file.suffix == '.zip'
@@ -224,3 +226,4 @@ def test_collect_debug_data():
     assert 'system_data.txt' in zip_list
     assert 'config.yaml' in zip_list
     assert 'dcspy.log' in zip_list
+    assert 'Ka50_999.png' in zip_list
