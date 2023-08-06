@@ -166,6 +166,10 @@ def test_is_git_repo(tmpdir):
     assert utils.is_git_repo(tmpdir) is True
 
 
+def test_is_git_exec_present():
+    assert utils.is_git_exec_present()
+
+
 def test_check_github_repo(tmpdir):
     from re import search
     sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
