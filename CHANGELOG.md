@@ -1,5 +1,6 @@
 ## 2.3.0
 * auto refresh about tab
+* Collect data for troubleshooting
 
 ## 2.2.0
 * Add support for **F-15E Eagle** and its UFC
