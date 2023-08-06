@@ -6,7 +6,7 @@ from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import Optional
+from typing import NamedTuple, Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -26,6 +26,20 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
 
 __version__ = '2.2.0'
 LOG = getLogger(__name__)
+
+
+class SystemData(NamedTuple):
+    """Tuple to store system related information."""
+    system: str
+    release: str
+    ver: str
+    proc: str
+    dcs_type: str
+    dcs_ver: str
+    dcspy_ver: str
+    bios_ver: str
+    dcs_bios_ver: str
+    git_ver: str
 
 
 class DcspyGui(tk.Frame):
