@@ -823,7 +823,7 @@ class DcspyGui(tk.Frame):
         if self.git_exec:
             from git import cmd
             git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
-        return SystemData(system, release, ver, proc, dcs_type, dcs_ver, dcspy_ver, bios_ver, dcs_bios_ver, git_ver)
+        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver, dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
     def _show_gui(self) -> None:
         """Show main GUI application window from system tray."""
