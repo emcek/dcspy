@@ -53,7 +53,7 @@ def get_default_yaml(local_appdata=False) -> Path:
     """
     cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
     if local_appdata:
-        localappdata = environ.get('localappdata', None)
+        localappdata = environ.get('LOCALAPPDATA', None)
         user_appdata = Path(localappdata) / 'dcspy' if localappdata else cfg_ful_path.parent
         makedirs(name=user_appdata, exist_ok=True)
         cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
