@@ -814,6 +814,23 @@ class DcspyGui(tk.Frame):
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
 
+    def _fetch_system_data(self) -> SystemData:
+        """
+        Fetch various system related data.
+
+        :return: SystemData named tuple with all data
+        """
+        system, _, release, ver, _, proc = uname()
+        dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
+        bios_ver = str(self._check_local_bios().ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        git_ver = 'Not installed'
+        if self.git_exec:
+            from git import cmd
+            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
+        return SystemData(system, release, ver, proc, dcs_type, dcs_ver, dcspy_ver, bios_ver, dcs_bios_ver, git_ver)
+
     def _show_gui(self) -> None:
         """Show main GUI application window from system tray."""
         self.master.after(0, self.master.deiconify)
