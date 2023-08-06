@@ -6,7 +6,7 @@ from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import Optional
+from typing import NamedTuple, Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -26,6 +26,20 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
 
 __version__ = '2.2.0'
 LOG = getLogger(__name__)
+
+
+class SystemData(NamedTuple):
+    """Tuple to store system related information."""
+    system: str
+    release: str
+    ver: str
+    proc: str
+    dcs_type: str
+    dcs_ver: str
+    dcspy_ver: str
+    bios_ver: str
+    dcs_bios_ver: str
+    git_ver: str
 
 
 class DcspyGui(tk.Frame):
@@ -71,6 +85,8 @@ class DcspyGui(tk.Frame):
         self.theme_mode = tk.StringVar()
         self.bios_git_switch = customtkinter.BooleanVar()
         self.bios_git_ref = tk.StringVar()
+        self.about_dcsbios = tk.StringVar()
+        self.about_dcsworld = tk.StringVar()
 
         self._load_cfg()
         self.git_exec = is_git_exec_present()
@@ -112,6 +128,7 @@ class DcspyGui(tk.Frame):
         self.master.grid_rowconfigure(index=2, weight=1)
         self._sidebar()
         tabview = customtkinter.CTkTabview(master=self.master, width=250, height=400, state=tk.ACTIVE)
+        tabview.configure(command=partial(self._update_about_tab, tabview))
         tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('Keyboards')
         tabview.add('General')
@@ -331,17 +348,9 @@ class DcspyGui(tk.Frame):
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
-        system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
-        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
+        data = self._fetch_system_data()
         self._auto_update_bios(silence=True)
-        bios_ver = str(self._check_local_bios().ver)
-        self._show_status_versions(bios_ver, dcspy_ver)
-        dcs_bios_ver = self._get_bios_full_version(bios_ver)
-        git_ver = 'Not installed'
-        if self.git_exec:
-            from git import cmd
-            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
+        self._show_status_versions(data.bios_ver, data.dcspy_ver)
         tabview.tab('About').grid_columnconfigure(index=0, weight=0)
         tabview.tab('About').grid_columnconfigure(index=1, weight=1)
         python1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Python:')
@@ -350,11 +359,11 @@ class DcspyGui(tk.Frame):
         python2_label.grid(column=1, row=0, sticky=tk.W, padx=10, pady=5)
         system1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='System:')
         system1_label.grid(column=0, row=1, sticky=tk.W, padx=10, pady=5)
-        system2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{system}{release} ver. {ver} ({architecture()[0]})')
+        system2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{data.system}{data.release} ver. {data.ver} ({architecture()[0]})')
         system2_label.grid(column=1, row=1, sticky=tk.W, padx=10, pady=5)
         processor1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Processor:')
         processor1_label.grid(column=0, row=2, sticky=tk.W, padx=10, pady=5)
-        processor2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{proc}')
+        processor2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{data.proc}')
         processor2_label.grid(column=1, row=2, sticky=tk.W, padx=10, pady=5)
         config1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Config:')
         config1_label.grid(column=0, row=3, sticky=tk.W, padx=10, pady=5)
@@ -362,21 +371,21 @@ class DcspyGui(tk.Frame):
         config2_label.grid(column=1, row=3, sticky=tk.W, padx=10, pady=5)
         config2_label.bind('<Button-1>', lambda e: self._open_webpage(rf'file://{self.cfg_file}'))
         self._set_tool_tip(widget=config2_label, message='Click to open')
-        dcsp1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCSpy:')
         git1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='Git:')
         git1_label.grid(column=0, row=4, sticky=tk.W, padx=10, pady=5)
-        git2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{git_ver}')
+        git2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{data.git_ver}')
         git2_label.grid(column=1, row=4, sticky=tk.W, padx=10, pady=5)
-        dcsp1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
-        dcsp2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcspy_ver}')
-        dcsp2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
+        dcspy1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCSpy:')
+        dcspy1_label.grid(column=0, row=5, sticky=tk.W, padx=10, pady=5)
+        dcspy2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{data.dcspy_ver}')
+        dcspy2_label.grid(column=1, row=5, sticky=tk.W, padx=10, pady=5)
         dcsbios1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS-BIOS:')
         dcsbios1_label.grid(column=0, row=6, sticky=tk.W, padx=10, pady=5)
-        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_bios_ver}')
+        dcsbios2_label = customtkinter.CTkLabel(master=tabview.tab('About'), textvariable=self.about_dcsbios, text=f'{data.dcs_bios_ver}')
         dcsbios2_label.grid(column=1, row=6, sticky=tk.W, padx=10, pady=5)
         dcsworld1_label = customtkinter.CTkLabel(master=tabview.tab('About'), text='DCS World:')
         dcsworld1_label.grid(column=0, row=7, sticky=tk.W, padx=10, pady=5)
-        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), text=f'{dcs_ver} {dcs_type}')
+        dcsworld2_label = customtkinter.CTkLabel(master=tabview.tab('About'), textvariable=self.about_dcsworld, text=f'{data.dcs_ver} {data.dcs_type}')
         dcsworld2_label.grid(column=1, row=7, sticky=tk.W, padx=10, pady=5)
         dcsworld2_label.bind('<Button-1>', lambda e: self._open_webpage('https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.5.40170/'))
         self._set_tool_tip(widget=dcsworld2_label, message='Click to open changelog')
@@ -392,6 +401,17 @@ class DcspyGui(tk.Frame):
         discord2_label.grid(column=1, row=9, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
         self._set_tool_tip(widget=discord2_label, message='Click to open')
+
+    def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
+        """
+        Update content of About tab.
+
+        :param tabview: TkTabView widget
+        """
+        if tabview.get() == 'About':
+            data = self._fetch_system_data()
+            self.about_dcsbios.set(data.dcs_bios_ver)
+            self.about_dcsworld.set(f'{data.dcs_ver} {data.dcs_type}')
 
     def _show_status_versions(self, bios_ver: str, dcspy_ver: str) -> None:
         """
@@ -792,6 +812,24 @@ class DcspyGui(tk.Frame):
         else:
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
+
+    def _fetch_system_data(self) -> SystemData:
+        """
+        Fetch various system related data.
+
+        :return: SystemData named tuple with all data
+        """
+        system, _, release, ver, _, proc = uname()
+        dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
+        bios_ver = str(self._check_local_bios().ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        git_ver = 'Not installed'
+        if self.git_exec:
+            from git import cmd
+            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
+        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
+                          dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
     def _show_gui(self) -> None:
         """Show main GUI application window from system tray."""
