@@ -403,6 +403,11 @@ class DcspyGui(tk.Frame):
         self._set_tool_tip(widget=discord2_label, message='Click to open')
 
     def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
+        """
+        Update content of About tab.
+
+        :param tabview: TkTabView widget
+        """
         if tabview.get() == 'About':
             data = self._fetch_system_data()
             self.about_dcsbios.set(data.dcs_bios_ver)
