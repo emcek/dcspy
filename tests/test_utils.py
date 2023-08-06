@@ -166,6 +166,10 @@ def test_is_git_repo(tmpdir):
     assert utils.is_git_repo(tmpdir) is True
 
 
+def test_is_git_exec_present():
+    assert utils.is_git_exec_present() is True
+
+
 def test_check_github_repo(tmpdir):
     from re import search
     sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
@@ -209,3 +213,21 @@ def test_check_dcs_bios_entry_ok(tmpdir):
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
+
+
+def test_collect_debug_data():
+    from tempfile import gettempdir
+    from zipfile import ZipFile
+    with open(Path(gettempdir()) / 'Ka50_999.png', 'w+') as png:
+        png.write('')
+    zip_file = utils.collect_debug_data()
+    assert 'dcspy_debug_' in str(zip_file)
+    assert zip_file.suffix == '.zip'
+    assert zip_file.is_file()
+    assert zip_file.exists()
+    with ZipFile(file=zip_file, mode='r') as zipf:
+        zip_list = zipf.namelist()
+    assert 'system_data.txt' in zip_list
+    assert 'config.yaml' in zip_list
+    assert 'dcspy.log' in zip_list
+    assert 'Ka50_999.png' in zip_list
