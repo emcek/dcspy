@@ -126,6 +126,7 @@ class DcspyGui(tk.Frame):
         self.master.grid_rowconfigure(index=2, weight=1)
         self._sidebar()
         tabview = customtkinter.CTkTabview(master=self.master, width=250, height=400, state=tk.ACTIVE)
+        tabview.configure(command=partial(self._update_about_tab, tabview))
         tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('Keyboards')
         tabview.add('General')
@@ -406,6 +407,12 @@ class DcspyGui(tk.Frame):
         discord2_label.grid(column=1, row=9, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
         self._set_tool_tip(widget=discord2_label, message='Click to open')
+
+    def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
+        if tabview.get() == 'About':
+            data = self._fetch_system_data()
+            self.about_dcsbios.set(data.dcs_bios_ver)
+            self.about_dcsworld.set(f'{data.dcs_ver} {data.dcs_type}')
 
     def _show_status_versions(self, bios_ver: str, dcspy_ver: str) -> None:
         """
