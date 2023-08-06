@@ -419,17 +419,18 @@ def collect_debug_data() -> Path:
     except ImportError:
         pass
 
-    lgs_dir = []
-    for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK'):
-        for filename in filenames:
-            lgs_dir.append(Path(dirpath) / filename)
-    lgs_dir = '\n'.join([str(i) for i in lgs_dir])
+    lgs_dir = '\n'.join([
+        str(Path(dirpath) / filename)
+        for dirpath, _, filenames in walk("C:\\Program Files\\Logitech Gaming Software\\SDK")
+        for filename in filenames
+    ])
 
-    png_files = []
-    for dirpath, _, filenames in walk(gettempdir()):
-        for filename in filenames:
-            if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith('png')]):
-                png_files.append(Path(dirpath) / filename)
+    png_files = [
+        Path(dirpath) / filename
+        for dirpath, _, filenames in walk(gettempdir())
+        for filename in filenames
+        if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith("png")])
+    ]
 
     log_file = Path(gettempdir()) / 'dcspy.log'
     sys_data = Path(gettempdir()) / 'system_data.txt'
@@ -446,3 +447,7 @@ def collect_debug_data() -> Path:
             zipf.write(png, arcname=png.name)
 
     return zip_file
+
+
+if __name__ == '__main__':
+    collect_debug_data()
