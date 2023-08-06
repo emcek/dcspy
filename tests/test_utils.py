@@ -209,3 +209,18 @@ def test_check_dcs_bios_entry_ok(tmpdir):
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
+
+
+def test_collect_debug_data():
+    from zipfile import ZipFile
+
+    zip_file = utils.collect_debug_data()
+    assert 'dcspy_debug_' in str(zip_file)
+    assert zip_file.suffix == '.zip'
+    assert zip_file.is_file()
+    assert zip_file.exists()
+    with ZipFile(file=zip_file, mode='r') as zipf:
+        zip_list = zipf.namelist()
+    assert 'system_data.txt' in zip_list
+    assert 'config.yaml' in zip_list
+    assert 'dcspy.log' in zip_list
