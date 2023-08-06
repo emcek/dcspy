@@ -8,14 +8,13 @@ authors = [{name = 'Michal Plichta'}]
 maintainers = [{name = 'Michal Plichta'}]
 description = 'Integrating DCS (Digital Combat Simulator) planes with Logitech G13/G15/G510/G19 LCD'
 license = {text = 'MIT License'}
-requires-python = '>=3.7'
+requires-python = '>=3.8'
 readme = 'README.md'
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Environment :: Win32 (MS Windows)',
     'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3.7',
     'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
