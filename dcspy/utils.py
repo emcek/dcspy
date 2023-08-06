@@ -419,7 +419,7 @@ def collect_debug_data() -> Path:
         import git
         git_ver = git.cmd.Git().version_info
         head_commit = git.Repo(Path(gettempdir()) / 'dcsbios_git').head.commit
-    except ImportError:
+    except (git.exc.NoSuchPathError, ImportError):
         pass
 
     lgs_dir = '\n'.join([
