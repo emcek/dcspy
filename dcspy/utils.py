@@ -447,7 +447,3 @@ def collect_debug_data() -> Path:
             zipf.write(png, arcname=png.name)
 
     return zip_file
-
-
-if __name__ == '__main__':
-    collect_debug_data()
