@@ -167,7 +167,7 @@ def test_is_git_repo(tmpdir):
 
 
 def test_is_git_exec_present():
-    assert utils.is_git_exec_present()
+    assert utils.is_git_exec_present() is True
 
 
 def test_check_github_repo(tmpdir):
