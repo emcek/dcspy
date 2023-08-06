@@ -1,7 +1,10 @@
+import zipfile
 from datetime import datetime
 from logging import getLogger
-from os import environ, makedirs
+from os import environ, makedirs, walk
 from pathlib import Path
+from platform import python_implementation, python_version, uname
+from pprint import pformat
 from re import search
 from shutil import rmtree
 from tempfile import gettempdir
@@ -391,3 +394,56 @@ def is_git_exec_present() -> bool:
     except ImportError as err:
         LOG.debug(type(err).__name__, exc_info=True)
         return False
+
+
+def collect_debug_data() -> Path:
+    """
+    Collect add zipp all data for troubleshooting.
+
+    :return: Path object to zip file
+    """
+    aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
+    user_appdata = Path(environ['LOCALAPPDATA']) / 'dcspy'
+    config_file = Path(user_appdata / 'config.yaml').resolve()
+
+    conf_dict = load_cfg(config_file)
+    system_uname = uname()
+    pyver = (python_version(), python_implementation())
+    dcs = check_dcs_ver(Path(conf_dict['dcs']))
+    bios_ver = check_bios_ver(bios_path=conf_dict['dcsbios']).ver
+    git_ver = 'Not installed'
+    head_commit = 'N/A'
+    try:
+        import git
+        git_ver = git.cmd.Git().version_info
+        head_commit = git.Repo(Path(gettempdir()) / 'dcsbios_git').head.commit
+    except ImportError:
+        pass
+
+    lgs_dir = []
+    for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK'):
+        for filename in filenames:
+            lgs_dir.append(Path(dirpath) / filename)
+    lgs_dir = '\n'.join([str(i) for i in lgs_dir])
+
+    png_files = []
+    for dirpath, _, filenames in walk(gettempdir()):
+        for filename in filenames:
+            if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith('png')]):
+                png_files.append(Path(dirpath) / filename)
+
+    log_file = Path(gettempdir()) / 'dcspy.log'
+    sys_data = Path(gettempdir()) / 'system_data.txt'
+    zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
+
+    with open(sys_data, 'w+') as debug_file:
+        debug_file.write(f'{__version__=}\n{system_uname=}\n{pyver=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}')
+
+    with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
+        zipf.write(sys_data, arcname=sys_data.name)
+        zipf.write(log_file, arcname=log_file.name)
+        zipf.write(config_file, arcname=config_file.name)
+        for png in png_files:
+            zipf.write(png, arcname=png.name)
+
+    return zip_file
