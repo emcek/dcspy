@@ -1,6 +1,8 @@
 ## 2.3.0
-* auto refresh about tab
+* Auto refresh about tab
 * Collect data for troubleshooting
+* Internal:
+  * Remove support for Python 3.7
 
 ## 2.2.0
 * Add support for **F-15E Eagle** and its UFC
