@@ -403,8 +403,7 @@ def collect_debug_data() -> Path:
     :return: Path object to zip file
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
-    user_appdata = Path(environ['LOCALAPPDATA']) / 'dcspy'
-    config_file = Path(user_appdata / 'config.yaml').resolve()
+    config_file = Path(Path(environ['LOCALAPPDATA']) / 'dcspy' / 'config.yaml').resolve()
 
     conf_dict = load_cfg(config_file)
     system_uname = uname()
