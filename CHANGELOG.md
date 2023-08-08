@@ -3,6 +3,7 @@
 * Collect data for troubleshooting
 * Internal:
   * Remove support for Python 3.7
+  * Loading Logitech C library using `cffi` instead of built-in `ctypes`
 
 ## 2.2.0
 * Add support for **F-15E Eagle** and its UFC
