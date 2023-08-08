@@ -1,10 +1,11 @@
-from ctypes import CDLL, c_void_p, sizeof
-from cffi import FFI
+from ctypes import c_void_p, sizeof
 from logging import getLogger
 from os import environ
 from platform import architecture
 from sys import maxsize
 from typing import Optional
+
+from cffi import FFI
 
 LOG = getLogger(__name__)
 
@@ -37,7 +38,7 @@ bool LogiLcdMonoSetText(int lineNumber, wchar_t* text);
 
 bool LogiLcdColorSetBackground(BYTE colorBitmap[]);
 bool LogiLcdColorSetTitle(wchar_t* text, int red, int green, int blue);
-bool LogiLcdColorSetText(int lineNumber, wchar_t* text, int red, int green, int blue);    
+bool LogiLcdColorSetText(int lineNumber, wchar_t* text, int red, int green, int blue);
     ''')
     dll = ffi.dlopen(dll_path)
     return dll

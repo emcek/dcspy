@@ -1,8 +1,7 @@
-from ctypes import c_bool, c_int, c_ubyte, c_wchar_p
-from cffi import FFI
 from logging import getLogger
 from typing import List, Tuple
 
+from cffi import FFI
 from PIL import Image
 
 from dcspy import (COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH,
