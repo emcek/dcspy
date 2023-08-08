@@ -200,7 +200,7 @@ bool LogiLedExcludeKeysFromBitmap(KeyName *keyList, int listCount);
 
 //Per-key effects => only apply to LOGI_DEVICETYPE_PERKEY_RGB devices.
 bool LogiLedFlashSingleKey(KeyName keyName, int redPercentage, int greenPercentage, int bluePercentage, int msDuration, int msInterval);
-bool LogiLedPulseSingleKey(KeyName keyName, int startRedPercentage, int startGreenPercentage, int startBluePercentage, 
+bool LogiLedPulseSingleKey(KeyName keyName, int startRedPercentage, int startGreenPercentage, int startBluePercentage,
                            int finishRedPercentage, int finishGreenPercentage, int finishBluePercentage, int msDuration, bool isInfinite);
 bool LogiLedStopEffectsOnKey(KeyName keyName);
 
