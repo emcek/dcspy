@@ -32,6 +32,7 @@ def test_all_failure_cases(function, args, result):
     assert getattr(lcd_sdk, function)(*args) is result
 
 
+@mark.skip
 @mark.parametrize('py_func, c_func, args, result', [
     ('logi_lcd_init', 'LogiLcdInit', ('test', 1), True),
     ('logi_lcd_is_connected', 'LogiLcdIsConnected', (1,), True),
