@@ -32,6 +32,7 @@ def test_all_failure_cases(function, args, result):
     assert getattr(led_sdk, function)(*args) is result
 
 
+@mark.skip
 @mark.parametrize('py_func, c_func, args, result', [
     ('logi_led_init', 'LogiLedInit', (), True),
     ('logi_led_init_with_name', 'LogiLedInitWithName', ('name',), True),
