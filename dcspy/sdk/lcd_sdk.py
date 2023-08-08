@@ -6,7 +6,7 @@ from PIL import Image
 
 from dcspy import (COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH,
                    TYPE_COLOR, TYPE_MONO)
-from dcspy.sdk import load_dll, LCD
+from dcspy.sdk import LCD, load_dll
 
 LOG = getLogger(__name__)
 LCD_DLL = load_dll(LCD)

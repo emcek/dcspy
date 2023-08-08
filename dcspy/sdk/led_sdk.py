@@ -2,8 +2,10 @@ from logging import getLogger
 from threading import Event
 from time import sleep
 from typing import Tuple
+
 from cffi import FFI
-from dcspy.sdk import load_dll, LED
+
+from dcspy.sdk import LED, load_dll
 
 LOG = getLogger(__name__)
 
