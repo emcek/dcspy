@@ -1,4 +1,5 @@
 from ctypes import CDLL, c_void_p, sizeof
+from cffi import FFI
 from logging import getLogger
 from os import environ
 from platform import architecture
@@ -8,7 +9,7 @@ from typing import Optional
 LOG = getLogger(__name__)
 
 
-def _init_dll(lib_type: str) -> CDLL:
+def _init_dll(lib_type: str) -> object:
     """
     Initialize C dynamic linking library.
 
@@ -22,10 +23,27 @@ def _init_dll(lib_type: str) -> CDLL:
         prog_files = environ['PROGRAMFILES']
     dll_path = f"{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type}\\{arch}\\Logitech{lib_type.capitalize()}.dll"
     LOG.debug(f'Selected DLL: {dll_path}')
-    return CDLL(dll_path)
+    ffi = FFI()
+    # dll = CDLL(dll_path)
+    ffi.cdef('''
+bool LogiLcdInit(wchar_t* friendlyName, int lcdType);
+bool LogiLcdIsConnected(int lcdType);
+bool LogiLcdIsButtonPressed(int button);
+void LogiLcdUpdate();
+void LogiLcdShutdown();
+
+bool LogiLcdMonoSetBackground(BYTE monoBitmap[]);
+bool LogiLcdMonoSetText(int lineNumber, wchar_t* text);
+
+bool LogiLcdColorSetBackground(BYTE colorBitmap[]);
+bool LogiLcdColorSetTitle(wchar_t* text, int red, int green, int blue);
+bool LogiLcdColorSetText(int lineNumber, wchar_t* text, int red, int green, int blue);    
+    ''')
+    dll = ffi.dlopen(dll_path)
+    return dll
 
 
-def load_dll(lib_type: str) -> Optional[CDLL]:
+def load_dll(lib_type: str) -> Optional[object]:
     """
     Initialize and load of C dynamic linking library.
 
