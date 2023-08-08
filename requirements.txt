@@ -1,4 +1,4 @@
-cff==1.15.1
+cffi==1.15.1
 CTkMessagebox==2.4
 CTkToolTip==0.7
 customtkinter==5.2.0
