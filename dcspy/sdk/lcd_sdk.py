@@ -24,10 +24,6 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     if LCD_DLL:
         ffi = FFI()
         ret = LCD_DLL.LogiLcdInit(ffi.new('wchar_t[]', name), lcd_type)
-        # logilcdinit = LCD_DLL['LogiLcdInit']
-        # logilcdinit.restype = c_bool
-        # logilcdinit.argtypes = (c_wchar_p, c_int)
-        # ret = logilcdinit(name, lcd_type)
         return ret
     return False
 
@@ -41,10 +37,6 @@ def logi_lcd_is_connected(lcd_type: int) -> bool:
     """
     if LCD_DLL:
         ret = LCD_DLL.LogiLcdIsConnected(lcd_type)
-        # logilcdisconnected = LCD_DLL['LogiLcdIsConnected']
-        # logilcdisconnected.restype = c_bool
-        # logilcdisconnected.argtypes = [c_int]
-        # ret = logilcdisconnected(lcd_type)
         return ret
     return False
 
@@ -58,10 +50,6 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
     """
     if LCD_DLL:
         ret = LCD_DLL.LogiLcdIsButtonPressed(button)
-        # logilcdisbuttonpressed = LCD_DLL['LogiLcdIsButtonPressed']
-        # logilcdisbuttonpressed.restype = c_bool
-        # logilcdisbuttonpressed.argtypes = [c_int]
-        # ret = logilcdisbuttonpressed(button)
         return ret
     return False
 
@@ -70,18 +58,12 @@ def logi_lcd_update() -> None:
     """Update the LCD."""
     if LCD_DLL:
         LCD_DLL.LogiLcdUpdate()
-        # logilcdupdate = LCD_DLL['LogiLcdUpdate']
-        # logilcdupdate.restype = None
-        # logilcdupdate()
 
 
 def logi_lcd_shutdown() -> None:
     """Kill the applet and frees memory used by the SDK."""
     if LCD_DLL:
         LCD_DLL.LogiLcdShutdown()
-        # logilcdshutdown = LCD_DLL['LogiLcdShutdown']
-        # logilcdshutdown.restype = None
-        # logilcdshutdown()
 
 
 def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
@@ -98,14 +80,9 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     :return: result
     """
     if LCD_DLL:
-        # logilcdmonosetbackground = LCD_DLL['LogiLcdMonoSetBackground']
-        # logilcdmonosetbackground.restype = c_bool
-        # logilcdmonosetbackground.argtypes = [c_ubyte * (MONO_WIDTH * MONO_HEIGHT)]
-        # img_bytes = [pixel * 128 for pixel in pixels]
         ffi = FFI()
         c_bitmap = ffi.new('BYTE[]', pixels)
         ret = LCD_DLL.LogiLcdMonoSetBackground(c_bitmap)
-        # ret = logilcdmonosetbackground((c_ubyte * (MONO_WIDTH * MONO_HEIGHT))(*img_bytes))
         return ret
     return False
 
@@ -121,10 +98,6 @@ def logi_lcd_mono_set_text(line_no: int, text: str) -> bool:
     if LCD_DLL:
         ffi = FFI()
         ret = LCD_DLL.LogiLcdMonoSetText(line_no, ffi.new('wchar_t[]', text))
-        # logilcdmonosettext = LCD_DLL['LogiLcdMonoSetText']
-        # logilcdmonosettext.restype = c_bool
-        # logilcdmonosettext.argtypes = (c_int, c_wchar_p)
-        # ret = logilcdmonosettext(line_no, text)
         return ret
     return False
 
@@ -140,14 +113,10 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     :return: result
     """
     if LCD_DLL:
-        # logilcdcolorsetbackground = LCD_DLL['LogiLcdColorSetBackground']
-        # logilcdcolorsetbackground.restype = c_bool
-        # logilcdcolorsetbackground.argtypes = [c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT)]
         img_bytes = [byte for pixel in pixels for byte in pixel]
         ffi = FFI()
         c_bitmap = ffi.new('BYTE[]', img_bytes)
         ret = LCD_DLL.LogiLcdColorSetBackground(c_bitmap)
-        # ret = logilcdcolorsetbackground((c_ubyte * (4 * COLOR_WIDTH * COLOR_HEIGHT))(*img_bytes))
         return ret
     return False
 
@@ -166,10 +135,6 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
     if LCD_DLL:
         ffi = FFI()
         ret = LCD_DLL.LogiLcdColorSetTitle(ffi.new('wchar_t[]', text), *rgb)
-        # logilcdcolorsettitle = LCD_DLL['LogiLcdColorSetTitle']
-        # logilcdcolorsettitle.restype = c_bool
-        # logilcdcolorsettitle.argtypes = (c_wchar_p, c_int, c_int, c_int)
-        # ret = logilcdcolorsettitle(text, *rgb)
         return ret
     return False
 
@@ -187,10 +152,6 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     if LCD_DLL:
         ffi = FFI()
         ret = LCD_DLL.LogiLcdColorSetText(line_no, ffi.new('wchar_t[]', text), *rgb)
-        # logilcdcolorsettext = LCD_DLL['LogiLcdColorSetText']
-        # logilcdcolorsettext.restype = c_bool
-        # logilcdcolorsettext.argtypes = (c_int, c_wchar_p, c_int, c_int, c_int)
-        # ret = logilcdcolorsettext(line_no, text, *rgb)
         return ret
     return False
 
