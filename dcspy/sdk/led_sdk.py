@@ -5,7 +5,7 @@ from typing import Tuple
 
 from cffi import FFI
 
-from dcspy.sdk import LED, load_dll
+from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
 
@@ -14,7 +14,7 @@ LOGI_DEVICETYPE_MONOCHROME = 1
 LOGI_DEVICETYPE_RGB = 2
 LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 
-LED_DLL = load_dll(LED)
+LED_DLL = load_dll(LedDll)
 
 
 def logi_led_init() -> bool:
