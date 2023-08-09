@@ -21,10 +21,10 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     :param lcd_type: defines the type of your applet lcd target
     :return: result
     """
-    if LCD_DLL:
-        ret = LCD_DLL.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)
-        return ret
-    return False
+    try:
+        return LCD_DLL.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)
+    except AttributeError:
+        return False
 
 
 def logi_lcd_is_connected(lcd_type: int) -> bool:
@@ -34,10 +34,10 @@ def logi_lcd_is_connected(lcd_type: int) -> bool:
     :param lcd_type: defines the type of your applet lcd target
     :return: result
     """
-    if LCD_DLL:
-        ret = LCD_DLL.LogiLcdIsConnected(lcd_type)
-        return ret
-    return False
+    try:
+        return LCD_DLL.LogiLcdIsConnected(lcd_type)
+    except AttributeError:
+        return False
 
 
 def logi_lcd_is_button_pressed(button: int) -> bool:
@@ -47,22 +47,26 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
     :param button: defines the button to check on
     :return: result
     """
-    if LCD_DLL:
-        ret = LCD_DLL.LogiLcdIsButtonPressed(button)
-        return ret
-    return False
+    try:
+        return LCD_DLL.LogiLcdIsButtonPressed(button)
+    except AttributeError:
+        return False
 
 
 def logi_lcd_update() -> None:
     """Update the LCD."""
-    if LCD_DLL:
+    try:
         LCD_DLL.LogiLcdUpdate()
+    except AttributeError:
+        pass
 
 
 def logi_lcd_shutdown() -> None:
     """Kill the applet and frees memory used by the SDK."""
-    if LCD_DLL:
+    try:
         LCD_DLL.LogiLcdShutdown()
+    except AttributeError:
+        pass
 
 
 def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
@@ -78,11 +82,11 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     :param pixels: list of 6880 (160x43) pixels as int
     :return: result
     """
-    if LCD_DLL:
-        mono_bitmap = FFI().new('BYTE[]', pixels)
-        ret = LCD_DLL.LogiLcdMonoSetBackground(mono_bitmap)
-        return ret
-    return False
+    mono_bitmap = FFI().new('BYTE[]', pixels)
+    try:
+        return LCD_DLL.LogiLcdMonoSetBackground(mono_bitmap)
+    except AttributeError:
+        return False
 
 
 def logi_lcd_mono_set_text(line_no: int, text: str) -> bool:
@@ -93,10 +97,10 @@ def logi_lcd_mono_set_text(line_no: int, text: str) -> bool:
     :param text: defines the text you want to display
     :return: result
     """
-    if LCD_DLL:
-        ret = LCD_DLL.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))
-        return ret
-    return False
+    try:
+        return LCD_DLL.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))
+    except AttributeError:
+        return False
 
 
 def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bool:
@@ -109,12 +113,12 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     :param pixels: list of 307200 (320x240x4) pixels as int
     :return: result
     """
-    if LCD_DLL:
-        img_bytes = [byte for pixel in pixels for byte in pixel]
-        color_bitmap = FFI().new('BYTE[]', img_bytes)
-        ret = LCD_DLL.LogiLcdColorSetBackground(color_bitmap)
-        return ret
-    return False
+    img_bytes = [byte for pixel in pixels for byte in pixel]
+    color_bitmap = FFI().new('BYTE[]', img_bytes)
+    try:
+        return LCD_DLL.LogiLcdColorSetBackground(color_bitmap)
+    except AttributeError:
+        return False
 
 
 def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 255)) -> bool:
@@ -128,10 +132,10 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
     """
-    if LCD_DLL:
-        ret = LCD_DLL.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)
-        return ret
-    return False
+    try:
+        return LCD_DLL.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)
+    except AttributeError:
+        return False
 
 
 def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)) -> bool:
@@ -144,10 +148,10 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     :param rgb: tuple with integer values between 0 and 255 as red, green, blue
     :return: result
     """
-    if LCD_DLL:
-        ret = LCD_DLL.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)
-        return ret
-    return False
+    try:
+        return LCD_DLL.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)
+    except AttributeError:
+        return False
 
 
 def update_text(txt: List[str]) -> None:
