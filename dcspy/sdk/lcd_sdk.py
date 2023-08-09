@@ -1,6 +1,7 @@
 from logging import getLogger
 from typing import List, Tuple
 
+from _cffi_backend import Lib
 from cffi import FFI
 from PIL import Image
 
@@ -9,7 +10,7 @@ from dcspy import (COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH,
 from dcspy.sdk import LcdDll, load_dll
 
 LOG = getLogger(__name__)
-LCD_DLL = load_dll(LcdDll)
+LCD_DLL: Lib = load_dll(LcdDll)
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:

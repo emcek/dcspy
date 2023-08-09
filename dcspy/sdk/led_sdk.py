@@ -3,13 +3,14 @@ from threading import Event
 from time import sleep
 from typing import Tuple
 
+from _cffi_backend import Lib
 from cffi import FFI
 
 from dcspy import LOGI_DEVICETYPE_ALL
 from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
-LED_DLL = load_dll(LedDll)
+LED_DLL: Lib = load_dll(LedDll)
 
 
 def logi_led_init() -> bool:
