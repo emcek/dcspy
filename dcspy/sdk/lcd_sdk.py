@@ -2,9 +2,8 @@ from logging import getLogger
 from typing import List, Tuple
 
 from _cffi_backend import Lib
-from cffi import FFI
+from cffi import FFI, CDefError
 from PIL import Image
-from pycparser.plyparser import ParseError
 
 from dcspy import (COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH,
                    TYPE_COLOR, TYPE_MONO)
@@ -85,9 +84,8 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     :return: result
     """
     try:
-        mono_bitmap = FFI().new('BYTE[]', pixels)
-        return LCD_DLL.LogiLcdMonoSetBackground(mono_bitmap)
-    except (AttributeError, ParseError):
+        return LCD_DLL.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))
+    except (AttributeError, CDefError):
         return False
 
 
@@ -117,9 +115,8 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     """
     img_bytes = [byte for pixel in pixels for byte in pixel]
     try:
-        color_bitmap = FFI().new('BYTE[]', img_bytes)
-        return LCD_DLL.LogiLcdColorSetBackground(color_bitmap)
-    except (AttributeError, ParseError):
+        return LCD_DLL.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))
+    except (AttributeError, CDefError):
         return False
 
 
