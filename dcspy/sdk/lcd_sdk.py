@@ -85,7 +85,7 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     """
     try:
         return LCD_DLL.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))
-    except (AttributeError, CDefError):
+    except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
         return False
 
 
@@ -116,7 +116,7 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     img_bytes = [byte for pixel in pixels for byte in pixel]
     try:
         return LCD_DLL.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))
-    except (AttributeError, CDefError):
+    except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
         return False
 
 
