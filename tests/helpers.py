@@ -134,7 +134,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_name: str, git_bios: bo
     Generate dict of BIOS values for plane.
 
     :param plane_bios: BIOS data from plane
-    :param plane_json: DCS-BIOS json filename
+    :param plane_name: BIOS plane name
     :param git_bios: use live/git DCS-BIOS version
     :return: dict of BIOS_VALUE for plane
     """
