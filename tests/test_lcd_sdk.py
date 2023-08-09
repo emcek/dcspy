@@ -1,4 +1,4 @@
-from unittest.mock import Mock, call, patch
+from unittest.mock import call, patch
 
 from pytest import mark
 
@@ -30,38 +30,6 @@ def test_all_failure_cases(function, args, result):
     from dcspy.sdk import lcd_sdk
     lcd_sdk.LCD_DLL = None
     assert getattr(lcd_sdk, function)(*args) is result
-
-
-@mark.skip
-@mark.parametrize('py_func, c_func, args, result', [
-    ('logi_lcd_init', 'LogiLcdInit', ('test', 1), True),
-    ('logi_lcd_is_connected', 'LogiLcdIsConnected', (1,), True),
-    ('logi_lcd_is_button_pressed', 'LogiLcdIsButtonPressed', (1,), True),
-    ('logi_lcd_update', 'LogiLcdUpdate', (), None),
-    ('logi_lcd_shutdown', 'LogiLcdShutdown', (), None),
-    ('logi_lcd_mono_set_background', 'LogiLcdMonoSetBackground', ([1, 2, 3],), True),
-    ('logi_lcd_mono_set_text', 'LogiLcdMonoSetText', (1, ''), True),
-    ('logi_lcd_color_set_background', 'LogiLcdColorSetBackground', ([(1,) * 2],), True),
-    ('logi_lcd_color_set_title', 'LogiLcdColorSetTitle', ('', (1, 2, 3)), True),
-    ('logi_lcd_color_set_text', 'LogiLcdColorSetText', (1, '', (1, 2, 3)), True)
-], ids=[
-    'init',
-    'is connected',
-    'is button pressed',
-    'update',
-    'shutdown',
-    'mono set background',
-    'mono set text',
-    'color set background',
-    'color_set title',
-    'color set text',
-])
-def test_all_success_cases(py_func, c_func, args, result):
-    from dcspy.sdk import lcd_sdk
-    mocked_c_func = Mock()
-    mocked_c_func.return_value = result
-    lcd_sdk.LCD_DLL = {c_func: mocked_c_func}
-    assert getattr(lcd_sdk, py_func)(*args) is result
 
 
 @mark.parametrize('c_func, effect, lcd, size', [
