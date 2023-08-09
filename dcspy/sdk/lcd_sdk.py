@@ -83,7 +83,7 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     :param pixels: list of 6880 (160x43) pixels as int
     :return: result
     """
-    mono_bitmap = FFI().new('BYTE[]', pixels)
+    mono_bitmap = FFI().new("BYTE[]", pixels)
     try:
         return LCD_DLL.LogiLcdMonoSetBackground(mono_bitmap)
     except AttributeError:
@@ -115,7 +115,7 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     :return: result
     """
     img_bytes = [byte for pixel in pixels for byte in pixel]
-    color_bitmap = FFI().new('BYTE[]', img_bytes)
+    color_bitmap = FFI().new("BYTE[]", img_bytes)
     try:
         return LCD_DLL.LogiLcdColorSetBackground(color_bitmap)
     except AttributeError:
