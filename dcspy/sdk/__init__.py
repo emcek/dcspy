@@ -28,26 +28,6 @@ LCD = DllSdk(name='LCD', header=lcd_header)
 LED = DllSdk(name='LED', header=led_header)
 
 
-def _init_dll(lib_type: DllSdk) -> Lib:
-    """
-    Initialize C dynamic linking library.
-
-    :param lib_type: LCD or LED
-    :return: C DLL instance
-    """
-    arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
-    try:
-        prog_files = environ['PROGRAMW6432']
-    except KeyError:
-        prog_files = environ['PROGRAMFILES']
-    dll_path = f"{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.name}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll"
-    LOG.debug(f'Selected DLL: {dll_path}')
-    ffi = FFI()
-    ffi.cdef(lib_type.header)
-    dll = ffi.dlopen(dll_path)
-    return dll
-
-
 def load_dll(lib_type: DllSdk) -> Optional[Lib]:
     """
     Initialize and load of C dynamic linking library.
@@ -56,7 +36,16 @@ def load_dll(lib_type: DllSdk) -> Optional[Lib]:
     :return: C DLL instance
     """
     try:
-        dll = _init_dll(lib_type)
+        arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
+        try:
+            prog_files = environ['PROGRAMW6432']
+        except KeyError:
+            prog_files = environ['PROGRAMFILES']
+        dll_path = f"{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.name}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll"
+        LOG.debug(f'Selected DLL: {dll_path}')
+        ffi = FFI()
+        ffi.cdef(lib_type.header)
+        dll = ffi.dlopen(dll_path)
         LOG.info(f'Loading of {lib_type.name} SDK success')
         return dll
     except (KeyError, OSError) as err:
