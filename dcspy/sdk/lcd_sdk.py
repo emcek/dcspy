@@ -22,8 +22,7 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     :return: result
     """
     if LCD_DLL:
-        ffi = FFI()
-        ret = LCD_DLL.LogiLcdInit(ffi.new('wchar_t[]', name), lcd_type)
+        ret = LCD_DLL.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)
         return ret
     return False
 
@@ -80,9 +79,8 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     :return: result
     """
     if LCD_DLL:
-        ffi = FFI()
-        c_bitmap = ffi.new('BYTE[]', pixels)
-        ret = LCD_DLL.LogiLcdMonoSetBackground(c_bitmap)
+        mono_bitmap = FFI().new('BYTE[]', pixels)
+        ret = LCD_DLL.LogiLcdMonoSetBackground(mono_bitmap)
         return ret
     return False
 
@@ -96,8 +94,7 @@ def logi_lcd_mono_set_text(line_no: int, text: str) -> bool:
     :return: result
     """
     if LCD_DLL:
-        ffi = FFI()
-        ret = LCD_DLL.LogiLcdMonoSetText(line_no, ffi.new('wchar_t[]', text))
+        ret = LCD_DLL.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))
         return ret
     return False
 
@@ -114,9 +111,8 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     """
     if LCD_DLL:
         img_bytes = [byte for pixel in pixels for byte in pixel]
-        ffi = FFI()
-        c_bitmap = ffi.new('BYTE[]', img_bytes)
-        ret = LCD_DLL.LogiLcdColorSetBackground(c_bitmap)
+        color_bitmap = FFI().new('BYTE[]', img_bytes)
+        ret = LCD_DLL.LogiLcdColorSetBackground(color_bitmap)
         return ret
     return False
 
@@ -133,8 +129,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
     :return: result
     """
     if LCD_DLL:
-        ffi = FFI()
-        ret = LCD_DLL.LogiLcdColorSetTitle(ffi.new('wchar_t[]', text), *rgb)
+        ret = LCD_DLL.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)
         return ret
     return False
 
@@ -150,8 +145,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     :return: result
     """
     if LCD_DLL:
-        ffi = FFI()
-        ret = LCD_DLL.LogiLcdColorSetText(line_no, ffi.new('wchar_t[]', text), *rgb)
+        ret = LCD_DLL.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)
         return ret
     return False
 
