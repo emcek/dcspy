@@ -24,8 +24,8 @@ with open(file=Path(__file__).resolve().with_name('LogitechLCDLib.h')) as lcd_he
     lcd_header = lcd_header_file.read()
 with open(file=Path(__file__).resolve().with_name('LogitechLEDLib.h')) as led_header_file:
     led_header = led_header_file.read()
-LCD = DllSdk(name='LCD', header=lcd_header)
-LED = DllSdk(name='LED', header=led_header)
+LcdDll = DllSdk(name='LCD', header=lcd_header)
+LedDll = DllSdk(name='LED', header=led_header)
 
 
 def load_dll(lib_type: DllSdk) -> Optional[Lib]:

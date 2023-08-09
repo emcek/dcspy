@@ -6,10 +6,10 @@ from PIL import Image
 
 from dcspy import (COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH,
                    TYPE_COLOR, TYPE_MONO)
-from dcspy.sdk import LCD, load_dll
+from dcspy.sdk import LcdDll, load_dll
 
 LOG = getLogger(__name__)
-LCD_DLL = load_dll(LCD)
+LCD_DLL = load_dll(LcdDll)
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
