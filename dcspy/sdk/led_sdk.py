@@ -5,15 +5,10 @@ from typing import Tuple
 
 from cffi import FFI
 
+from dcspy import LOGI_DEVICETYPE_ALL
 from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
-
-LOGI_LED_DURATION_INFINITE = 0
-LOGI_DEVICETYPE_MONOCHROME = 1
-LOGI_DEVICETYPE_RGB = 2
-LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
-
 LED_DLL = load_dll(LedDll)
 
 
