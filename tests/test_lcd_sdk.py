@@ -11,7 +11,7 @@ from pytest import mark
     ('logi_lcd_shutdown', (), None),
     ('logi_lcd_mono_set_background', ([1, 2, 3],), False),
     ('logi_lcd_mono_set_text', (1, ''), False),
-    ('logi_lcd_color_set_background', ([1, 2, 3],), False),
+    ('logi_lcd_color_set_background', ([(1, 2, 3)],), False),
     ('logi_lcd_color_set_title', ('', (1, 2, 3)), False),
     ('logi_lcd_color_set_text', (1, '', (1, 2, 3)), False)
 ], ids=[
