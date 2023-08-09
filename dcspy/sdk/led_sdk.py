@@ -1,19 +1,16 @@
-from ctypes import c_bool, c_int, c_wchar_p
 from logging import getLogger
 from threading import Event
 from time import sleep
 from typing import Tuple
 
-from dcspy.sdk import load_dll
+from _cffi_backend import Lib
+from cffi import FFI
+
+from dcspy import LOGI_DEVICETYPE_ALL
+from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
-
-LOGI_LED_DURATION_INFINITE = 0
-LOGI_DEVICETYPE_MONOCHROME = 1
-LOGI_DEVICETYPE_RGB = 2
-LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
-
-LED_DLL = load_dll('LED')
+LED_DLL: Lib = load_dll(LedDll)
 
 
 def logi_led_init() -> bool:
@@ -24,11 +21,10 @@ def logi_led_init() -> bool:
     currently going on the connected devices.
     :return: result
     """
-    if LED_DLL:
-        logiledinit = LED_DLL['LogiLedInit']
-        logiledinit.restype = c_bool
-        return logiledinit()
-    return False
+    try:
+        return LED_DLL.LogiLedInit()
+    except AttributeError:
+        return False
 
 
 def logi_led_init_with_name(name: str) -> bool:
@@ -42,12 +38,10 @@ def logi_led_init_with_name(name: str) -> bool:
     :param name: The referred name for this integration to show u as
     :return: result
     """
-    if LED_DLL:
-        logiledinitwithname = LED_DLL['LogiLedInitWithName']
-        logiledinitwithname.restype = c_bool
-        logiledinitwithname.argtypes = (c_wchar_p,)
-        return logiledinitwithname(name)
-    return False
+    try:
+        return LED_DLL.LogiLedInitWithName(FFI().new('wchar_t[]', name))
+    except AttributeError:
+        return False
 
 
 def logi_led_set_target_device(target_device: int) -> bool:
@@ -60,12 +54,10 @@ def logi_led_set_target_device(target_device: int) -> bool:
                           LOGI_DEVICETYPE_MONOCHROME, LOGI_DEVICETYPE_RGB, LOGI_DEVICETYPE_ALL
     :return: result
     """
-    if LED_DLL:
-        logiledsettargetdevice = LED_DLL['LogiLedSetTargetDevice']
-        logiledsettargetdevice.restype = c_bool
-        logiledsettargetdevice.argtypes = (c_int,)
-        return logiledsettargetdevice(target_device)
-    return False
+    try:
+        return LED_DLL.LogiLedSetTargetDevice(target_device)
+    except AttributeError:
+        return False
 
 
 def logi_led_save_current_lighting() -> bool:
@@ -76,11 +68,10 @@ def logi_led_save_current_lighting() -> bool:
     function just before starting the warning effect.
     :return: result
     """
-    if LED_DLL:
-        logiledsavecurrentlighting = LED_DLL['LogiLedSaveCurrentLighting']
-        logiledsavecurrentlighting.restype = c_bool
-        return logiledsavecurrentlighting()
-    return False
+    try:
+        return LED_DLL.LogiLedSaveCurrentLighting()
+    except AttributeError:
+        return False
 
 
 def logi_led_restore_lighting() -> bool:
@@ -92,11 +83,10 @@ def logi_led_restore_lighting() -> bool:
     after the warning effect is finished.
     :return: result
     """
-    if LED_DLL:
-        logiledrestorecurrentlighting = LED_DLL['LogiLedRestoreLighting']
-        logiledrestorecurrentlighting.restype = c_bool
-        return logiledrestorecurrentlighting()
-    return False
+    try:
+        return LED_DLL.LogiLedRestoreLighting()
+    except AttributeError:
+        return False
 
 
 def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
@@ -111,12 +101,10 @@ def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :return: result
     """
-    if LED_DLL:
-        logiledsetlighting = LED_DLL['LogiLedSetLighting']
-        logiledsetlighting.restype = c_bool
-        logiledsetlighting.argtypes = (c_int, c_int, c_int)
-        return logiledsetlighting(*rgb)
-    return False
+    try:
+        return LED_DLL.LogiLedSetLighting(*rgb)
+    except AttributeError:
+        return False
 
 
 def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
@@ -130,12 +118,10 @@ def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
     :param interval: duration of the flashing interval in milliseconds
     :return: result
     """
-    if LED_DLL:
-        logiledflashlighting = LED_DLL['LogiLedFlashLighting']
-        logiledflashlighting.restype = c_bool
-        logiledflashlighting.argtypes = (c_int, c_int, c_int, c_int, c_int)
-        return logiledflashlighting(*rgb, duration, interval)
-    return False
+    try:
+        return LED_DLL.LogiLedFlashLighting(*rgb, duration, interval)
+    except AttributeError:
+        return False
 
 
 def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
@@ -149,12 +135,10 @@ def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
     :param interval: duration of the flashing interval in milliseconds
     :return: result
     """
-    if LED_DLL:
-        logiledpulselighting = LED_DLL['LogiLedPulseLighting']
-        logiledpulselighting.restype = c_bool
-        logiledpulselighting.argtypes = (c_int, c_int, c_int, c_int, c_int)
-        return logiledpulselighting(*rgb, duration, interval)
-    return False
+    try:
+        return LED_DLL.LogiLedPulseLighting(*rgb, duration, interval)
+    except AttributeError:
+        return False
 
 
 def logi_led_stop_effects() -> bool:
@@ -164,19 +148,18 @@ def logi_led_stop_effects() -> bool:
     Started from logi_led_flash_lighting() or logi_led_pulse_lighting().
     :return: result
     """
-    if LED_DLL:
-        logiledstopeffects = LED_DLL['LogiLedStopEffects']
-        logiledstopeffects.restype = c_bool
-        return logiledstopeffects()
-    return False
+    try:
+        return LED_DLL.LogiLedStopEffects()
+    except AttributeError:
+        return False
 
 
 def logi_led_shutdown() -> None:
     """Restore the last saved lighting and frees memory used by the SDK."""
-    if LED_DLL:
-        logiledshutdown = LED_DLL['LogiLedShutdown']
-        logiledshutdown.restype = c_bool
-        logiledshutdown()
+    try:
+        LED_DLL.LogiLedShutdown()
+    except AttributeError:
+        pass
 
 
 def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event) -> None:
