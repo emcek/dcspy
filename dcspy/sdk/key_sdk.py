@@ -67,10 +67,16 @@ def check_button_pressed():
         while True:
             for key in range(1, LOGITECH_MAX_GKEYS):
                 for state in range(1, LOGITECH_MAX_M_STATES):
-                    if logi_gkey_is_keyboard_gkey_pressed(g_key=key, mode=state):
-                        gkey = logi_gkey_is_keyboard_gkey_string(key, state)
-                        print(f"Button {gkey.split('/')} is pressed")
-                        LOG.debug(f"Button {gkey} is pressed")
+                    gkey = get_gkey_name(key, state)
+                    LOG.debug(f"Button {gkey} is pressed")
             sleep(0.1)
     except KeyboardInterrupt:
         logi_gkey_shutdown()
+
+
+def get_gkey_name(key: int, state: int) -> str:
+    gkey = ''
+    if logi_gkey_is_keyboard_gkey_pressed(g_key=key, mode=state):
+        gkey = logi_gkey_is_keyboard_gkey_string(key, state)
+        print(f"Button {gkey.split('/')} is pressed")
+    return gkey
