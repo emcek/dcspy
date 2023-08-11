@@ -4,11 +4,10 @@ from time import sleep
 from _cffi_backend import Lib
 from cffi import FFI
 
+from dcspy import LOGITECH_MAX_GKEYS, LOGITECH_MAX_M_STATES
 from dcspy.sdk import KeyDll, load_dll
 
 LOG = getLogger(__name__)
-LOGITECH_MAX_GKEYS = 30
-LOGITECH_MAX_M_STATES = 4
 KEY_DLL: Lib = load_dll(KeyDll)
 ffi = FFI()
 
@@ -19,11 +18,10 @@ try:
         for index in range(1, LOGITECH_MAX_GKEYS):
             for mKeyIndex in range(1, LOGITECH_MAX_M_STATES):
                 if KEY_DLL.LogiGkeyIsKeyboardGkeyPressed(index, mKeyIndex):
-                    LOG.debug(f"Button {index} is pressed")
-                    gkey_str = KEY_DLL.LogiGkeyGetKeyboardGkeyString(index, mKeyIndex)
-                    print(f"Button: {ffi.string(gkey_str)}")
+                    gkey = KEY_DLL.LogiGkeyGetKeyboardGkeyString(index, mKeyIndex)
+                    gkey_str = ffi.string(gkey)
+                    print(f"Button {gkey_str.split('/')} is pressed")
+                    LOG.debug(f"Button {gkey_str} is pressed")
         sleep(0.1)
 except KeyboardInterrupt:
-    pass
-
-KEY_DLL.LogiGkeyShutdown()
+    KEY_DLL.LogiGkeyShutdown()
