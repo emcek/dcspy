@@ -27,7 +27,7 @@ def logi_gkey_init() -> bool:
 
 def logi_gkey_is_keyboard_gkey_pressed(g_key: int, mode: int) -> bool:
     """
-    Indicates whether a keyboard G-key is currently being pressed.
+    Indicate whether a keyboard G-key is currently being pressed.
 
     :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
     :param mode: number of the mode currently selected (1, 2 or 3)
@@ -41,7 +41,7 @@ def logi_gkey_is_keyboard_gkey_pressed(g_key: int, mode: int) -> bool:
 
 def logi_gkey_is_keyboard_gkey_string(g_key: int, mode: int) -> str:
     """
-    Returns a G-key-specific friendly string
+    Return a G-key-specific friendly string.
 
     :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
     :param mode: number of the mode currently selected (1, 2 or 3)
@@ -54,7 +54,7 @@ def logi_gkey_is_keyboard_gkey_string(g_key: int, mode: int) -> str:
 
 
 def logi_gkey_shutdown() -> None:
-    """Unloads the corresponding DLL and frees up any allocated resources."""
+    """Unload the corresponding DLL and frees up any allocated resources."""
     try:
         KEY_DLL.LogiGkeyShutdown()
     except AttributeError:
@@ -62,6 +62,7 @@ def logi_gkey_shutdown() -> None:
 
 
 def check_button_pressed():
+    """Check if GKey was pressed."""
     logi_gkey_init()
     try:
         while True:
@@ -75,6 +76,13 @@ def check_button_pressed():
 
 
 def get_gkey_name(key: int, state: int) -> str:
+    """
+    Get string for specified G-key and Mode number.
+
+    :param key: number of the G-key to check (for example between 1 and 29 for G13).
+    :param state: number of the mode currently selected (1, 2 or 3)
+    :return: Friendly string for specified G-key and Mode number. For example 'G5/M1'.
+    """
     gkey = ''
     if logi_gkey_is_keyboard_gkey_pressed(g_key=key, mode=state):
         gkey = logi_gkey_is_keyboard_gkey_string(key, state)
