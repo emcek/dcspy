@@ -62,6 +62,7 @@ def logi_gkey_shutdown() -> None:
 
 
 def check_button_pressed():
+    logi_gkey_init()
     try:
         while True:
             for key in range(1, LOGITECH_MAX_GKEYS):
