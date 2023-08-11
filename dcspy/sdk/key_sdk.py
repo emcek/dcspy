@@ -26,5 +26,4 @@ try:
 except KeyboardInterrupt:
     pass
 
-# Shutdown the G-key SDK
 KEY_DLL.LogiGkeyShutdown()
