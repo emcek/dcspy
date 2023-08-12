@@ -41,16 +41,19 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
 
 @mark.parametrize('keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2', [
     ('keyboard_mono', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(2, 1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
+    ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(2, 1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
+    ('keyboard_mono', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(0, 0), [call(g_key=1, mode=1)], True),
     ('keyboard_color', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(0, 0), [call(g_key=1, mode=1)], True),
     ('keyboard_mono', False, [False] * 9, [str(i) for i in _generate_gkey(9, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1), call(g_key=4, mode=1), call(g_key=5, mode=1), call(g_key=6, mode=1), call(g_key=7, mode=1), call(g_key=8, mode=1), call(g_key=9, mode=1)], False),
-], ids=['Mono G2/M1', 'Color G1/M1 already_pressed', 'Mono None Button'])
+    ('keyboard_color', False, [False] * 9, [str(i) for i in _generate_gkey(9, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1), call(g_key=4, mode=1), call(g_key=5, mode=1), call(g_key=6, mode=1), call(g_key=7, mode=1), call(g_key=8, mode=1), call(g_key=9, mode=1)], False),
+], ids=['Mono G2/M1', 'color G2/M1', 'Mono G1/M1 already_pressed', 'Color G1/M1 already_pressed', 'Mono None Button', 'Color None Button'])
 def test_keyboard_check_gkey(keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2, request):
     from dcspy.sdk import key_sdk
     keyboard = request.getfixturevalue(keyboard)
     keyboard.gkey_pressed = pressed1
-    with patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_pressed', side_effect=effect1) as gkey_pressed:
-        with patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_string', side_effect=effect2):
-            assert keyboard.check_gkey() == chk_btn
+    with patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_pressed', side_effect=effect1) as gkey_pressed, \
+            patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_string', side_effect=effect2):
+        assert keyboard.check_gkey() == chk_btn
     gkey_pressed.assert_has_calls(calls)
     assert keyboard.gkey_pressed is pressed2
 
