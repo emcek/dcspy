@@ -100,6 +100,9 @@ class Gkey:
     def __bool__(self):
         return all([self.key, self.mode])
 
+    def __hash__(self):
+        return hash((self.key, self.mode))
+
     def to_dict(self):
         """
         Convert Gkey into dict.
