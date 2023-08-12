@@ -1,10 +1,8 @@
 from logging import getLogger
-from time import sleep
 
 from _cffi_backend import Lib
 from cffi import FFI
 
-from dcspy import LOGITECH_MAX_GKEYS, LOGITECH_MAX_M_STATES
 from dcspy.sdk import KeyDll, load_dll
 
 LOG = getLogger(__name__)
