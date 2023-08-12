@@ -59,10 +59,20 @@ def test_keyboard_check_gkey(keyboard, pressed1, effect1, effect2, chk_btn, call
 
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
-def test_keyboard_button_handle(keyboard, sock, request):
+def test_keyboard_button_handle_lcdbutton(keyboard, sock, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=[True]):
+        keyboard.button_handle(sock)
+    sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
+
+
+@mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
+def test_keyboard_button_handle_gkey(keyboard, sock, request):
+    from dcspy.sdk import key_sdk
+    keyboard = request.getfixturevalue(keyboard)
+    with patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_pressed', side_effect=[True]), \
+            patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_string', side_effect=['G1/M1']):
         keyboard.button_handle(sock)
     sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
