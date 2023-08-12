@@ -42,7 +42,8 @@ class LogitechKeyboard:
         self.parser = parser
         self.plane_name = ''
         self.plane_detected = False
-        self.already_pressed = False
+        self.lcdbutton_pressed = False
+        self.gkey_pressed = False
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
@@ -121,11 +122,11 @@ class LogitechKeyboard:
         """
         for btn in self.lcd.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
-                if not self.already_pressed:
-                    self.already_pressed = True
+                if not self.lcdbutton_pressed:
+                    self.lcdbutton_pressed = True
                     return LcdButton(btn)
                 return LcdButton.NONE
-        self.already_pressed = False
+        self.lcdbutton_pressed = False
         return LcdButton.NONE
 
     def check_gkey(self) -> Gkey:
@@ -138,11 +139,11 @@ class LogitechKeyboard:
             if key_sdk.logi_gkey_is_keyboard_gkey_pressed(g_key=key.key, mode=key.mode):
                 gkey = key_sdk.logi_gkey_is_keyboard_gkey_string(g_key=key.key, mode=key.mode).replace('/', '_')
                 LOG.debug(f"Button {gkey} is pressed")
-                if not self.already_pressed:
-                    self.already_pressed = True
+                if not self.gkey_pressed:
+                    self.gkey_pressed = True
                     return key
                 return Gkey(0, 0)
-        self.already_pressed = False
+        self.gkey_pressed = False
         return Gkey(0, 0)
 
     def button_handle(self, sock: socket) -> None:

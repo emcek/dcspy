@@ -12,7 +12,7 @@ def test_keyboard_base_basic_check(keyboard_base):
 
     assert str(keyboard_base) == 'LogitechKeyboard: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'already_pressed', 'buttons',
+    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'gkey_pressed', 'buttons',
             '_display', 'plane', 'Aircraft', 'vert_space', 'lcd')
     for test_string in data:
         assert test_string in logitech_repr
@@ -32,11 +32,11 @@ def test_keyboard_base_basic_check(keyboard_base):
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
-    keyboard.already_pressed = pressed1
+    keyboard.lcdbutton_pressed = pressed1
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
         assert keyboard.check_buttons() == chk_btn
     lcd_btn_pressed.assert_has_calls(calls)
-    assert keyboard.already_pressed is pressed2
+    assert keyboard.lcdbutton_pressed is pressed2
 
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
