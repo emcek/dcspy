@@ -8,7 +8,7 @@ from typing import List, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import (SEND_ADDR, SUPPORTED_CRAFTS, LcdButton, LcdColor, LcdGkey,
+from dcspy import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, LcdButton, LcdColor,
                    LcdMono)
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
@@ -128,23 +128,22 @@ class LogitechKeyboard:
         self.already_pressed = False
         return LcdButton.NONE
 
-    def check_gkey(self) -> LcdGkey:
+    def check_gkey(self) -> Gkey:
         """
         Check if G-Key was pressed and return it`s enum.
 
-        :return: LcdGkey enum of pressed button
+        :return: Gkey enum of pressed button
         """
         for key in self.lcd.gkey:
-            for mode in [1, 2, 3]:
-                if key_sdk.logi_gkey_is_keyboard_gkey_pressed(g_key=int(str(key.value)[0]), mode=mode):
-                    gkey = key_sdk.logi_gkey_is_keyboard_gkey_string(g_key=int(str(key.value)[0]), mode=mode).replace('/', '_')
-                    LOG.debug(f"Button {gkey} is pressed")
-                    if not self.already_pressed:
-                        self.already_pressed = True
-                        return LcdGkey(key)
-                    return LcdGkey.NONE
+            if key_sdk.logi_gkey_is_keyboard_gkey_pressed(g_key=key.key, mode=key.mode):
+                gkey = key_sdk.logi_gkey_is_keyboard_gkey_string(g_key=key.key, mode=key.mode).replace('/', '_')
+                LOG.debug(f"Button {gkey} is pressed")
+                if not self.already_pressed:
+                    self.already_pressed = True
+                    return key
+                return Gkey(0, 0)
         self.already_pressed = False
-        return LcdGkey.NONE
+        return Gkey(0, 0)
 
     def button_handle(self, sock: socket) -> None:
         """
@@ -159,14 +158,14 @@ class LogitechKeyboard:
         gkey = self.check_gkey()
         if button.value:
             self._send_request(button, sock)
-        if gkey.value:
+        if gkey:
             self._send_request(gkey, sock)
 
-    def _send_request(self, button: Union[LcdButton, LcdGkey], sock) -> None:
+    def _send_request(self, button: Union[LcdButton, Gkey], sock) -> None:
         """
         Sent action to DCS-BIOS via network socket.
 
-        :param button: LcdButton or LcdGkey Enum
+        :param button: LcdButton or Gkey
         :param sock: network socket
         """
         for request in self.plane.button_request(button).split('|'):
