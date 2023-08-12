@@ -95,17 +95,21 @@ class Gkey:
     mode: int
 
     def __str__(self):
+        """Return with format G<i>/M<j>."""
         return f"G{self.key}/M{self.mode}"
 
     def __bool__(self):
+        """Return False when any of value is zero."""
         return all([self.key, self.mode])
 
     def __hash__(self):
+        """Hash will be the same for any two Gkey instances with the same key and mode values."""
         return hash((self.key, self.mode))
 
     def to_dict(self):
         """
         Convert Gkey into dict.
+
         :return: ex. {'g_key': 2, 'mode': 1}
         """
         return {'g_key': self.key, 'mode': self.mode}
