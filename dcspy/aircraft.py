@@ -10,7 +10,7 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, LcdButton, LcdGkey,
+from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, Gkey, LcdButton,
                    LcdInfo, LcdType, config)
 from dcspy.sdk import lcd_sdk
 
@@ -38,11 +38,11 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BiosValue] = {}
-        self.cycle_buttons: Dict[Union[LcdButton, LcdGkey], CycleButton] = {}
+        self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
-        self.button_actions: Dict[Union[LcdButton, LcdGkey], str] = {}
+        self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
 
-    def button_request(self, button: Union[LcdButton, LcdGkey]) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Prepare aircraft specific DCS-BIOS request for button pressed.
 
@@ -50,7 +50,7 @@ class Aircraft:
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
         Or any G-Key 1 to 29
 
-        :param button: LcdButton or LcdGkey Enum
+        :param button: LcdButton or Gkey
         :return: ready to send DCS-BIOS request
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
@@ -102,7 +102,7 @@ class Aircraft:
         """Prepare image for Aircraft for Color LCD."""
         raise NotImplementedError
 
-    def _get_next_value_for_button(self, button: Union[LcdButton, LcdGkey]) -> int:
+    def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
         """
         Get next int value (cycle fore and back) for button name.
 
@@ -118,7 +118,7 @@ class Aircraft:
             self.cycle_buttons[button]['iter'] = cycle(chain(seed))
         return next(self.cycle_buttons[button]['iter'])
 
-    def _get_cycle_request(self, button: Union[LcdButton, LcdGkey]) -> str:
+    def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Get request for cycle button.
 
@@ -785,7 +785,7 @@ class AH64DBLKII(Aircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: Union[LcdButton, LcdGkey]) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
