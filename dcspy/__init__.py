@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import Enum, auto
+from enum import Enum
 from logging import getLogger
 from os import name
 from pathlib import Path
