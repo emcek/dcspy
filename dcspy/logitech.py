@@ -8,10 +8,11 @@ from typing import List, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import SEND_ADDR, SUPPORTED_CRAFTS, LcdButton, LcdColor, LcdMono, LcdGkey
+from dcspy import (SEND_ADDR, SUPPORTED_CRAFTS, LcdButton, LcdColor, LcdGkey,
+                   LcdMono)
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.sdk import lcd_sdk, key_sdk
+from dcspy.sdk import key_sdk, lcd_sdk
 
 LOG = getLogger(__name__)
 
