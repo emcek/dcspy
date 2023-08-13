@@ -1,6 +1,7 @@
 ## 2.3.0
 * Auto refresh about tab
 * Collect data for troubleshooting
+* Add radios presets for A-10C
 * Internal:
   * Remove support for Python 3.7
   * Loading Logitech C library using `cffi` instead of built-in `ctypes`
