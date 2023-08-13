@@ -6,7 +6,7 @@ from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import NamedTuple, Optional, List
+from typing import List, NamedTuple, Optional
 from webbrowser import open_new
 
 import customtkinter
