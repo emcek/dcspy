@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import tkinter as tk
 from functools import partial
 from logging import getLogger
@@ -406,22 +407,6 @@ class DcspyGui(tk.Frame):
         collect_dat = customtkinter.CTkButton(master=tabview.tab('About'), text='Collect data', command=self._collect_data)
         collect_dat.grid(column=2, row=9, padx=10, pady=10)
         self._set_tool_tip(widget=collect_dat, message='Collect data for troubleshooting')
-
-    def _collect_data(self):
-        """Collect data for troubleshooting and ask user where to save."""
-        zip_file = collect_debug_data()
-        try:
-            dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
-        except KeyError:
-            dst_dir = 'C:\\'
-        directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
-        try:
-            destination = Path(directory) / zip_file.name
-            shutil.copy(zip_file, destination)
-            LOG.debug(f'Save debug file: {destination}')
-        except PermissionError as err:
-            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
-            CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
 
     def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
         """
@@ -851,6 +836,22 @@ class DcspyGui(tk.Frame):
             git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
+
+    def _collect_data(self):
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
+        try:
+            destination = Path(directory) / zip_file.name
+            shutil.copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
 
     def _show_gui(self) -> None:
         """Show main GUI application window from system tray."""
