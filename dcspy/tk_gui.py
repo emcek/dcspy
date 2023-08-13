@@ -1,6 +1,5 @@
 import os
 import shutil
-import sys
 import tkinter as tk
 from functools import partial
 from logging import getLogger
