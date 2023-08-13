@@ -405,7 +405,7 @@ class DcspyGui(tk.Frame):
         self._set_tool_tip(widget=discord2_label, message='Click to open')
         collect_data = customtkinter.CTkButton(master=tabview.tab('About'), text='Collect data', command=self._collect_data)
         collect_data.grid(column=2, row=9, padx=10, pady=10)
-        self._set_tool_tip(widget=collect_dat, message='Collect data for troubleshooting')
+        self._set_tool_tip(widget=collect_data, message='Collect data for troubleshooting')
 
     def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
         """
