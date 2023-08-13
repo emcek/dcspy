@@ -1,3 +1,5 @@
+import os
+import shutil
 import tkinter as tk
 from functools import partial
 from logging import getLogger
@@ -20,9 +22,9 @@ from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          check_dcs_ver, check_github_repo, check_ver_at_github,
-                         defaults_cfg, download_file, get_default_yaml,
-                         get_version_string, is_git_exec_present,
-                         proc_is_running, save_cfg)
+                         collect_debug_data, defaults_cfg, download_file,
+                         get_default_yaml, get_version_string,
+                         is_git_exec_present, proc_is_running, save_cfg)
 
 __version__ = '2.2.0'
 LOG = getLogger(__name__)
@@ -401,6 +403,25 @@ class DcspyGui(tk.Frame):
         discord2_label.grid(column=1, row=9, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
         self._set_tool_tip(widget=discord2_label, message='Click to open')
+        collect_dat = customtkinter.CTkButton(master=tabview.tab('About'), text='Collect data', command=self._collect_data)
+        collect_dat.grid(column=2, row=9, padx=10, pady=10)
+        self._set_tool_tip(widget=collect_dat, message='Collect data for troubleshooting')
+
+    def _collect_data(self):
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
+        try:
+            destination = Path(directory) / zip_file.name
+            shutil.copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
 
     def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
         """
