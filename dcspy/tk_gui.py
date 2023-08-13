@@ -348,6 +348,10 @@ class DcspyGui(tk.Frame):
         self._set_tool_tip(widget=self.bios_git_label, message='Any valid Git reference: branch, tag, commit')
         self._set_tool_tip(widget=self.bios_git, message='Any valid Git reference: branch, tag, commit')
 
+        collect_data = customtkinter.CTkButton(master=tabview.tab('Advanced'), text='Collect data', command=self._collect_data)
+        collect_data.grid(column=1, row=5, padx=10, pady=10, sticky=tk.E)
+        self._set_tool_tip(widget=collect_data, message='Collect data for troubleshooting')
+
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
         data = self._fetch_system_data()
@@ -403,9 +407,6 @@ class DcspyGui(tk.Frame):
         discord2_label.grid(column=1, row=9, sticky=tk.W, padx=10, pady=5)
         discord2_label.bind('<Button-1>', lambda e: self._open_webpage('https://discord.gg/SP5Yjx3'))
         self._set_tool_tip(widget=discord2_label, message='Click to open')
-        collect_data = customtkinter.CTkButton(master=tabview.tab('About'), text='Collect data', command=self._collect_data)
-        collect_data.grid(column=2, row=9, padx=10, pady=10)
-        self._set_tool_tip(widget=collect_data, message='Collect data for troubleshooting')
 
     def _update_about_tab(self, tabview: customtkinter.CTkTabview) -> None:
         """
