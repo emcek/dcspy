@@ -442,7 +442,7 @@ def collect_debug_data() -> Path:
     zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
 
     with open(sys_data, 'w+') as debug_file:
-        debug_file.write(f'{__version__=}\n{system_uname=}\n{pyver=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}')
+        debug_file.write(f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}')
 
     with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
         zipf.write(sys_data, arcname=sys_data.name)
