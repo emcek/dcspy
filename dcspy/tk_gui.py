@@ -6,7 +6,7 @@ from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, List
 from webbrowser import open_new
 
 import customtkinter
@@ -57,6 +57,7 @@ class DcspyGui(tk.Frame):
         self.r_bios = version.Version('0.0.0')
         self.event = Event()
 
+        self.keyboards: List[customtkinter.CTkRadioButton] = []
         self.status_txt = tk.StringVar()
         self.lcd_type = tk.StringVar()
         self.bios_path = tk.StringVar()
@@ -181,6 +182,7 @@ class DcspyGui(tk.Frame):
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text,
                                                        command=self._lcd_type_selected)
             rb_lcd_type.grid(row=i, column=1)
+            self.keyboards.append(rb_lcd_type)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
 
@@ -840,6 +842,7 @@ class DcspyGui(tk.Frame):
         self.status_txt.set('Start again or close DCSpy')
         self.btn_start.configure(state=tk.ACTIVE)
         self.btn_stop.configure(state=tk.DISABLED)
+        _ = [keyboard.configure(state=tk.ACTIVE) for keyboard in self.keyboards]
         self.event.set()
 
     def _close_gui(self) -> None:
@@ -867,4 +870,5 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.btn_start.configure(state=tk.DISABLED)
         self.btn_stop.configure(state=tk.ACTIVE)
+        _ = [key.configure(state=tk.DISABLED) for key in self.keyboards if key.cget('text') != self.lcd_type.get()]
         app_thread.start()
