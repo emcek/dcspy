@@ -839,17 +839,18 @@ class A10C(Aircraft):
 
     def _generate_freq_values(self) -> Sequence[str]:
         """
-        Generate frequency for all 3 radios (VHF AM, VHF FM and UHF).
+        Generate frequency for all 3 radios (ARC AM, VHF AM, VHF FM and UHF).
 
-        :return: All 3 frequency settings as strings
+        :return: All 4 frequency settings as strings
         """
         vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
-                f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")}'
+                f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")} ({self.get_bios("VHFAM_PRESET")})'
         vhffm = f'{self.get_bios("VHFFM_FREQ1")}{self.get_bios("VHFFM_FREQ2")}.' \
-                f'{self.get_bios("VHFFM_FREQ3")}{self.get_bios("VHFFM_FREQ4")}'
+                f'{self.get_bios("VHFFM_FREQ3")}{self.get_bios("VHFFM_FREQ4")} ({self.get_bios("VHFFM_PRESET")})'
         uhf = f'{self.get_bios("UHF_100MHZ_SEL")}{self.get_bios("UHF_10MHZ_SEL")}{self.get_bios("UHF_1MHZ_SEL")}.' \
-              f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")}'
-        return uhf, vhfam, vhffm
+              f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")} ({self.get_bios("UHF_PRESET")})'
+        arc = f'{self.get_bios("ARC210_FREQUENCY")} ({self.get_bios("ARC210_PREV_MANUAL_FREQ")})'
+        return uhf, vhfam, vhffm, arc
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog or A-10C II Tank Killer for Mono LCD."""
