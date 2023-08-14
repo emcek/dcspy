@@ -1,3 +1,5 @@
+import os
+import shutil
 import tkinter as tk
 from functools import partial
 from logging import getLogger
@@ -20,9 +22,9 @@ from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          check_dcs_ver, check_github_repo, check_ver_at_github,
-                         defaults_cfg, download_file, get_default_yaml,
-                         get_version_string, is_git_exec_present,
-                         proc_is_running, save_cfg)
+                         collect_debug_data, defaults_cfg, download_file,
+                         get_default_yaml, get_version_string,
+                         is_git_exec_present, proc_is_running, save_cfg)
 
 __version__ = '2.2.0'
 LOG = getLogger(__name__)
@@ -345,6 +347,10 @@ class DcspyGui(tk.Frame):
         self.bios_git.grid(column=1, row=4, sticky=tk.W + tk.E, padx=(10, 0), pady=5)
         self._set_tool_tip(widget=self.bios_git_label, message='Any valid Git reference: branch, tag, commit')
         self._set_tool_tip(widget=self.bios_git, message='Any valid Git reference: branch, tag, commit')
+
+        collect_data = customtkinter.CTkButton(master=tabview.tab('Advanced'), text='Collect data', command=self._collect_data)
+        collect_data.grid(column=1, row=5, padx=10, pady=10, sticky=tk.E)
+        self._set_tool_tip(widget=collect_data, message='Collect data for troubleshooting')
 
     def _about(self, tabview: customtkinter.CTkTabview) -> None:
         """About information."""
@@ -830,6 +836,22 @@ class DcspyGui(tk.Frame):
             git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
+
+    def _collect_data(self):
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
+        try:
+            destination = Path(directory) / zip_file.name
+            shutil.copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
 
     def _show_gui(self) -> None:
         """Show main GUI application window from system tray."""
