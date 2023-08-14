@@ -871,7 +871,21 @@ class A10C(Aircraft):
 
 class A10C2(A10C):
     """A-10C II Tank Killer."""
-    pass
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for A-10C II Tank Killer for Mono LCD."""
+        draw = ImageDraw.Draw(img)
+        uhf, _, vhffm, arc = self._generate_freq_values()
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f' FM: {vhffm}', f'UHF: {uhf}']):
+            offset = i * 10
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for A-10C II Tank Killer for Color LCD."""
+        draw = ImageDraw.Draw(img)
+        uhf, _, vhffm, arc = self._generate_freq_values()
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f' FM: {vhffm}', f'UHF: {uhf}']):
+            offset = i * 20
+            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
 class F14B(Aircraft):
