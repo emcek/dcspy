@@ -821,15 +821,20 @@ class A10C(Aircraft):
             'VHFAM_FREQ2': {'klass': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
             'VHFAM_FREQ3': {'klass': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
             'VHFAM_FREQ4': {'klass': 'StringBuffer', 'args': {'address': 0x1192, 'max_length': 2}, 'value': ''},
+            'VHFAM_PRESET': {'klass': 'StringBuffer', 'args': {'address': 0x118a, 'max_length': 2}, 'value': ''},
             'VHFFM_FREQ1': {'klass': 'StringBuffer', 'args': {'address': 0x119a, 'max_length': 2}, 'value': ''},
             'VHFFM_FREQ2': {'klass': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf, 'shift_by': 0x0}, 'value': int()},
             'VHFFM_FREQ3': {'klass': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
             'VHFFM_FREQ4': {'klass': 'StringBuffer', 'args': {'address': 0x119e, 'max_length': 2}, 'value': ''},
+            'VHFFM_PRESET': {'klass': 'StringBuffer', 'args': {'address': 0x1196, 'max_length': 2}, 'value': ''},
             'UHF_100MHZ_SEL': {'klass': 'StringBuffer', 'args': {'address': 0x1178, 'max_length': 1}, 'value': ''},
             'UHF_10MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa}, 'value': int()},
             'UHF_1MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
             'UHF_POINT1MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}, 'value': int()},
             'UHF_POINT25_SEL': {'klass': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': ''},
+            'UHF_PRESET': {'klass': 'StringBuffer', 'args': {'address': 0x1188, 'max_length': 2}, 'value': ''},
+            'ARC210_FREQUENCY': {'klass': 'StringBuffer', 'args': {'address': 0x1382, 'max_length': 7}, 'value': ''},
+            'ARC210_PREV_MANUAL_FREQ': {'klass': 'StringBuffer', 'args': {'address': 0x1314, 'max_length': 7}, 'value': ''},
         }
 
     def _generate_freq_values(self) -> Sequence[str]:
