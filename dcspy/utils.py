@@ -439,7 +439,7 @@ def collect_debug_data() -> Path:
     ]
 
     log_files = []
-    for logfile in glob(pathname='dcspy.log*', root_dir=gettempdir()):
+    for logfile in glob(str(Path(gettempdir()) / 'dcspy.log*')):
         log_files.append(Path(Path(gettempdir()) / logfile))
     sys_data = Path(gettempdir()) / 'system_data.txt'
     zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
