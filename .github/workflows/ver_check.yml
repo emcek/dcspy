@@ -1,4 +1,4 @@
-name: Release Pipeline
+name: test Download
 
 on:
   push:
