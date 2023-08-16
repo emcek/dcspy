@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import tkinter as tk
 from functools import partial
 from logging import getLogger
@@ -618,6 +619,10 @@ class DcspyGui(tk.Frame):
             CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:
             CTkMessagebox(title='Warning', message='Unable to check DCSpy version online', icon='warning', option_1='OK')
+        if getattr(sys, 'frozen', False):
+            LOG.debug('Pyinstaller')
+        else:
+            LOG.debug('Pip')
 
     def _auto_update_bios(self, silence=False) -> None:
         """
