@@ -19,7 +19,7 @@ runs:
     - name: "Generate version info file"
       shell: bash
       run: |
-        python generate_ver_file.py
+        python generate_ver_file.py 2.2.2
 
     - name: "Build dcspy package"
       shell: bash
