@@ -1,6 +1,7 @@
 import sys
 import zipfile
 from datetime import datetime
+from glob import glob
 from logging import getLogger
 from os import environ, makedirs, walk
 from pathlib import Path
@@ -437,7 +438,9 @@ def collect_debug_data() -> Path:
         if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith("png")])
     ]
 
-    log_file = Path(gettempdir()) / 'dcspy.log'
+    log_files = []
+    for logfile in glob(str(Path(gettempdir()) / 'dcspy.log*')):
+        log_files.append(Path(Path(gettempdir()) / logfile))
     sys_data = Path(gettempdir()) / 'system_data.txt'
     zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
 
@@ -446,7 +449,8 @@ def collect_debug_data() -> Path:
 
     with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
         zipf.write(sys_data, arcname=sys_data.name)
-        zipf.write(log_file, arcname=log_file.name)
+        for log_file in log_files:
+            zipf.write(log_file, arcname=log_file.name)
         zipf.write(config_file, arcname=config_file.name)
         for png in png_files:
             zipf.write(png, arcname=png.name)

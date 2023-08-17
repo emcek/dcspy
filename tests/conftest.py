@@ -689,15 +689,20 @@ def warthog_mono_bios():
         ('VHFAM_FREQ2', 1),
         ('VHFAM_FREQ3', 1),
         ('VHFAM_FREQ4', '30'),
+        ('VHFAM_PRESET', ' 1'),
         ('VHFFM_FREQ1', '40'),
         ('VHFFM_FREQ2', 2),
         ('VHFFM_FREQ3', 2),
         ('VHFFM_FREQ4', '50'),
+        ('VHFFM_PRESET', ' 1'),
         ('UHF_100MHZ_SEL', '5'),
         ('UHF_10MHZ_SEL', 3),
         ('UHF_1MHZ_SEL', 2),
         ('UHF_POINT1MHZ_SEL', 1),
-        ('UHF_POINT25_SEL', '25')
+        ('UHF_POINT25_SEL', '25'),
+        ('UHF_PRESET', '01'),
+        ('ARC210_FREQUENCY', '123.125'),
+        ('ARC210_PREV_MANUAL_FREQ', '234.075'),
     ]
 
 
