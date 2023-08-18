@@ -27,7 +27,7 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          get_default_yaml, get_version_string,
                          is_git_exec_present, proc_is_running, save_cfg)
 
-__version__ = '2.1.0'
+__version__ = '2.2.0'
 LOG = getLogger(__name__)
 
 
@@ -618,7 +618,7 @@ class DcspyGui(tk.Frame):
 
     def _download_new_release(self):
         """Download new release if running PyInstaller version or show instruction when running Pip version."""
-        if not getattr(sys, 'frozen', False):
+        if getattr(sys, 'frozen', False):
             LOG.debug('Pyinstaller')
             rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
             try:
