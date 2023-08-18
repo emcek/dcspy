@@ -621,11 +621,7 @@ class DcspyGui(tk.Frame):
         if getattr(sys, 'frozen', False):
             LOG.debug('Pyinstaller')
             rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
-            try:
-                dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
-            except KeyError:
-                dst_dir = 'C:\\'
-            directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
+            directory = tk.filedialog.askdirectory(initialdir=Path.cwd(), parent=self.master, title="Select a directory")
             try:
                 destination = Path(directory) / rel_info.asset_file
                 download_file(url=rel_info.dl_url, save_path=destination)
