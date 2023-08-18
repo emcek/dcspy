@@ -700,7 +700,7 @@ class DcspyGui(tk.Frame):
         remote_bios_info = self._check_remote_bios()
         self.status_txt.set(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
-        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.archive_file])
+        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
         dcs_runs = proc_is_running(name='DCS.exe')
 
         if silence and correct_remote_bios_ver and not remote_bios_info.latest:
@@ -749,7 +749,7 @@ class DcspyGui(tk.Frame):
 
         :return: release description info
         """
-        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
         self.r_bios = release_info.ver
         return release_info
 
@@ -761,7 +761,7 @@ class DcspyGui(tk.Frame):
         """
         msg_txt = f'You are running {self.l_bios} version.\n\n' \
                   f'Would you like to download\n' \
-                  f'stable release:\n\n{rel_info.archive_file}\n\n' \
+                  f'stable release:\n\n{rel_info.asset_file}\n\n' \
                   f'and overwrite update?'
         if not rel_info.latest:
             msg_txt = f'You are running {self.l_bios} version.\n' \
@@ -779,7 +779,7 @@ class DcspyGui(tk.Frame):
         :param rel_info: remote release information
         """
         tmp_dir = Path(gettempdir())
-        local_zip = tmp_dir / rel_info.archive_file
+        local_zip = tmp_dir / rel_info.asset_file
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
