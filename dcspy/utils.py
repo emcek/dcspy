@@ -9,7 +9,7 @@ from platform import python_implementation, python_version, uname
 from pprint import pformat
 from re import search
 from shutil import rmtree
-from subprocess import PIPE, CalledProcessError, run
+from subprocess import CalledProcessError, run
 from tempfile import gettempdir
 from typing import Dict, NamedTuple, Tuple, Union
 
