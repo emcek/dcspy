@@ -9,6 +9,7 @@ from platform import python_implementation, python_version, uname
 from pprint import pformat
 from re import search
 from shutil import rmtree
+from subprocess import run, PIPE, CalledProcessError
 from tempfile import gettempdir
 from typing import Dict, NamedTuple, Tuple, Union
 
@@ -457,3 +458,18 @@ def collect_debug_data() -> Path:
             zipf.write(png, arcname=png.name)
 
     return zip_file
+
+
+def run_pip_command(cmd: str) -> Tuple[int, str, str]:
+    """
+    Execute pip command.
+
+    :param cmd: as string
+    :return: tuple with return code, stderr and stdout
+    """
+    try:
+        result = run([sys.executable, "-m", "pip", *cmd.split(' ')], stdout=PIPE, stderr=PIPE, check=True)
+        return result.returncode, result.stderr.decode('utf-8'), result.stdout.decode('utf-8')
+    except CalledProcessError as e:
+        LOG.debug(f'Result: {e}')
+        return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
