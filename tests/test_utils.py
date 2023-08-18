@@ -231,3 +231,17 @@ def test_collect_debug_data():
     assert 'config.yaml' in zip_list
     assert 'dcspy.log' in zip_list
     assert 'Ka50_999.png' in zip_list
+
+
+def test_run_pip_command_success():
+    rc, err, out = utils.run_pip_command('list')
+    assert rc == 0
+    assert err == ''
+    assert out
+
+
+def test_run_pip_command_failed():
+    rc, err, out = utils.run_pip_command('bullshit')
+    assert rc == 1
+    assert err != ''
+    assert out == ''
