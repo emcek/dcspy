@@ -626,8 +626,8 @@ class DcspyGui(tk.Frame):
                 destination = Path(directory) / rel_info.asset_file
                 download_file(url=rel_info.dl_url, save_path=destination)
                 LOG.debug(f'Save new release: {destination}')
-            except PermissionError as err:
-                CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
+            except PermissionError as exc:
+                CTkMessagebox(title=exc.args[1], message=f'Can not save file:\n{exc.filename}', icon='warning', option_1='OK')
         else:
             rc, err, out = run_pip_command('install --upgrade dcspy')
             if not rc:
