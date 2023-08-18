@@ -468,7 +468,7 @@ def run_pip_command(cmd: str) -> Tuple[int, str, str]:
     :return: tuple with return code, stderr and stdout
     """
     try:
-        result = run([sys.executable, "-m", "pip", *cmd.split(' ')], stdout=PIPE, stderr=PIPE, check=True)
+        result = run([sys.executable, "-m", "pip", *cmd.split(' ')], capture_output=True, check=True)
         return result.returncode, result.stderr.decode('utf-8'), result.stdout.decode('utf-8')
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')
