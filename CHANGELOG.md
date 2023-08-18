@@ -1,7 +1,11 @@
+## 2.4.0
+* Can't switch keyboard after starting
+
 ## 2.3.0
 * Auto refresh about tab
 * Collect data for troubleshooting
-* Can't switch keyboard after starting
+* Add radios presets for **A-10C** and **A-10C II**
+* Add ARC0210 data for **A-10C II**
 * Internal:
   * Remove support for Python 3.7
   * Loading Logitech C library using `cffi` instead of built-in `ctypes`
