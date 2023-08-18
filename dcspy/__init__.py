@@ -131,6 +131,7 @@ config_logger(LOG, config['verbose'])
 LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'Python exec: {executable}')
+LOG.debug(f'Current: {Path.cwd()}')
 LOG.debug(f'{uname()}')
 LOG.info(f'Configuration: {config} from: {default_yaml}')
 
