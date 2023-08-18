@@ -25,7 +25,8 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file,
                          get_default_yaml, get_version_string,
-                         is_git_exec_present, proc_is_running, save_cfg)
+                         is_git_exec_present, proc_is_running, run_pip_command,
+                         save_cfg)
 
 __version__ = '2.2.0'
 LOG = getLogger(__name__)
@@ -619,7 +620,6 @@ class DcspyGui(tk.Frame):
     def _download_new_release(self):
         """Download new release if running PyInstaller version or show instruction when running Pip version."""
         if getattr(sys, 'frozen', False):
-            LOG.debug('Pyinstaller')
             rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
             directory = tk.filedialog.askdirectory(initialdir=Path.cwd(), parent=self.master, title="Select a directory")
             try:
@@ -629,12 +629,11 @@ class DcspyGui(tk.Frame):
             except PermissionError as err:
                 CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
         else:
-            LOG.debug('Pip')
-            self.master.clipboard_clear()
-            self.master.clipboard_append('pip install --upgrade dcspy')
-            CTkMessagebox(title='New version',
-                          message='\n1. Open Windows Command Prompt (cmd) and type:\n2. pip install --upgrade dcspy\n'
-                                  '3. Note: command copied to clipboard.')
+            rc, err, out = run_pip_command('install --upgrade dcspy')
+            if not rc:
+                CTkMessagebox(title='Pip Install', message=out.split('\r\n')[-2], option_1='OK')
+            else:
+                CTkMessagebox(title='Pip Install', message=err, icon='warning', option_1='OK')
 
     def _auto_update_bios(self, silence=False) -> None:
         """
