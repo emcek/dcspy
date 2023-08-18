@@ -9,6 +9,7 @@ from platform import python_implementation, python_version, uname
 from pprint import pformat
 from re import search
 from shutil import rmtree
+from subprocess import CalledProcessError, run
 from tempfile import gettempdir
 from typing import Dict, NamedTuple, Tuple, Union
 
@@ -75,7 +76,7 @@ class ReleaseInfo(NamedTuple):
     dl_url: str
     published: str
     release_type: str
-    archive_file: str
+    asset_file: str
 
 
 def load_cfg(filename: Path) -> ConfigDict:
@@ -129,7 +130,7 @@ def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
     return migrated_cfg
 
 
-def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
+def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseInfo:
     """
     Check version of <organization>/<package> at GitHub.
 
@@ -139,10 +140,11 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
     - download url (str) - ready to download
     - published date (str) - format DD MMMM YYYY
     - release type (str) - Regular or Pre-release
-    - archive file (str) - file name of archive
+    - asset file (str) - file name of asset
 
     :param repo: format '<organization or user>/<package>'
     :param current_ver: current local version
+    :param extension: file extension to be returned
     :return: ReleaseInfo NamedTuple with information
     """
     latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
@@ -154,7 +156,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
             published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
-            asset_url = dict_json['assets'][0]['browser_download_url']
+            asset_url = next(url for url in [asset['browser_download_url'] for asset in dict_json['assets']] if url.endswith(extension))
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             latest = _compare_versions(package, current_ver, online_version)
         else:
@@ -166,7 +168,7 @@ def check_ver_at_github(repo: str, current_ver: str) -> ReleaseInfo:
                        dl_url=asset_url,
                        published=published,
                        release_type='Pre-release' if pre_release else 'Regular',
-                       archive_file=asset_url.split('/')[-1])
+                       asset_file=asset_url.split('/')[-1])
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
@@ -198,7 +200,7 @@ def get_version_string(repo: str, current_ver: str, check=True) -> str:
     """
     ver_string = f'v{current_ver}'
     if check:
-        result = check_ver_at_github(repo=repo, current_ver=current_ver)
+        result = check_ver_at_github(repo=repo, current_ver=current_ver, extension='')
         details = ''
         if result.latest:
             details = ' (latest)'
@@ -275,7 +277,7 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     :param bios_path: path to DCS-BIOS directory in Saved Games folder
     :return: ReleaseInfo named tuple
     """
-    result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', archive_file='')
+    result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
     try:
         with open(file=Path(bios_path) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
             cd_lua_data = cd_lua.read()
@@ -285,7 +287,7 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
         bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
         if bios_re:
             bios = version.parse(bios_re.group(1))
-            result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', archive_file='')
+            result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
     return result
 
 
@@ -456,3 +458,18 @@ def collect_debug_data() -> Path:
             zipf.write(png, arcname=png.name)
 
     return zip_file
+
+
+def run_pip_command(cmd: str) -> Tuple[int, str, str]:
+    """
+    Execute pip command.
+
+    :param cmd: as string
+    :return: tuple with return code, stderr and stdout
+    """
+    try:
+        result = run([sys.executable, "-m", "pip", *cmd.split(' ')], capture_output=True, check=True)
+        return result.returncode, result.stderr.decode('utf-8'), result.stdout.decode('utf-8')
+    except CalledProcessError as e:
+        LOG.debug(f'Result: {e}')
+        return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')

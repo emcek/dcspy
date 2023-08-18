@@ -1,5 +1,6 @@
 import os
 import shutil
+import sys
 import tkinter as tk
 from functools import partial
 from logging import getLogger
@@ -24,7 +25,8 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file,
                          get_default_yaml, get_version_string,
-                         is_git_exec_present, proc_is_running, save_cfg)
+                         is_git_exec_present, proc_is_running, run_pip_command,
+                         save_cfg)
 
 __version__ = '2.2.0'
 LOG = getLogger(__name__)
@@ -607,17 +609,31 @@ class DcspyGui(tk.Frame):
         """Check version of DCSpy and show message box."""
         ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
         self.status_txt.set(ver_string)
-        if 'please update' in ver_string:
-            self.master.clipboard_clear()
-            self.master.clipboard_append('pip install --upgrade dcspy')
-            CTkMessagebox(title='New version',
-                          message='OLD WAY\n1. Open Windows Command Prompt (cmd) and type:\n2. pip install --upgrade dcspy\n'
-                                  '3. Note: command copied to clipboard.\n\nNEW WAY:\n1. Download new executable from: github.com/emcek/dcspy')
+        if 'update!' in ver_string:
             self.sys_tray_icon.notify(f'New version: {ver_string}', 'DCSpy')
+            self._download_new_release()
         elif 'latest' in ver_string:
             CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:
             CTkMessagebox(title='Warning', message='Unable to check DCSpy version online', icon='warning', option_1='OK')
+
+    def _download_new_release(self):
+        """Download new release if running PyInstaller version or show instruction when running Pip version."""
+        if getattr(sys, 'frozen', False):
+            rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+            directory = tk.filedialog.askdirectory(initialdir=Path.cwd(), parent=self.master, title="Select a directory")
+            try:
+                destination = Path(directory) / rel_info.asset_file
+                download_file(url=rel_info.dl_url, save_path=destination)
+                LOG.debug(f'Save new release: {destination}')
+            except PermissionError as exc:
+                CTkMessagebox(title=exc.args[1], message=f'Can not save file:\n{exc.filename}', icon='warning', option_1='OK')
+        else:
+            rc, err, out = run_pip_command('install --upgrade dcspy')
+            if not rc:
+                CTkMessagebox(title='Pip Install', message=out.split('\r\n')[-2], option_1='OK')
+            else:
+                CTkMessagebox(title='Pip Install', message=err, icon='warning', option_1='OK')
 
     def _auto_update_bios(self, silence=False) -> None:
         """
@@ -694,16 +710,15 @@ class DcspyGui(tk.Frame):
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
         self.status_txt.set(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
-        correct_local_bios_ver = isinstance(self.l_bios, version.Version)
-        correct_remote_bios_ver = isinstance(self.r_bios, version.Version)
+        correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
+        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
         dcs_runs = proc_is_running(name='DCS.exe')
-        ready_to_update = all([correct_remote_bios_ver, not dcs_runs])
 
-        if silence and ready_to_update and not remote_bios_info.latest:
+        if silence and correct_remote_bios_ver and not remote_bios_info.latest:
             self._update_release_bios(rel_info=remote_bios_info)
-        elif not silence and ready_to_update:
+        elif not silence and correct_remote_bios_ver:
             self._ask_to_update(rel_info=remote_bios_info)
-        elif not all([silence, ready_to_update]):
+        elif not all([silence, correct_remote_bios_ver]):
             msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
             msg = f'{msg}\n\nUsing stable release version.'
             CTkMessagebox(title='Update', message=msg, icon='warning', option_1='OK')
@@ -719,7 +734,7 @@ class DcspyGui(tk.Frame):
         """
         dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
         dcs_sta = 'running' if dcs else 'not running'
-        dcs_note = '\n     Quit is recommended.' if dcs else ''
+        dcs_note = '\n     Be sure stay on Main menu.' if dcs else ''
         lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
         lbios_note = '' if local_bios else '\n     Check "dcsbios" path in config'
         rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
@@ -745,7 +760,7 @@ class DcspyGui(tk.Frame):
 
         :return: release description info
         """
-        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios))
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
         self.r_bios = release_info.ver
         return release_info
 
@@ -757,7 +772,7 @@ class DcspyGui(tk.Frame):
         """
         msg_txt = f'You are running {self.l_bios} version.\n\n' \
                   f'Would you like to download\n' \
-                  f'stable release:\n\n{rel_info.archive_file}\n\n' \
+                  f'stable release:\n\n{rel_info.asset_file}\n\n' \
                   f'and overwrite update?'
         if not rel_info.latest:
             msg_txt = f'You are running {self.l_bios} version.\n' \
@@ -775,7 +790,7 @@ class DcspyGui(tk.Frame):
         :param rel_info: remote release information
         """
         tmp_dir = Path(gettempdir())
-        local_zip = tmp_dir / rel_info.archive_file
+        local_zip = tmp_dir / rel_info.asset_file
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
