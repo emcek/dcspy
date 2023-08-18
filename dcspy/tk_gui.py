@@ -99,6 +99,7 @@ class DcspyGui(tk.Frame):
         self.git_bios_switch: customtkinter.CTkSwitch
         self.bios_git_label: customtkinter.CTkLabel
         self.bios_git: customtkinter.CTkEntry
+        self.progressbar: customtkinter.CTkProgressBar
         self.sys_tray_icon = self._setup_system_tray()
         self.sys_tray_icon.run_detached()
         self._init_widgets()
@@ -133,7 +134,7 @@ class DcspyGui(tk.Frame):
         self._sidebar()
         tabview = customtkinter.CTkTabview(master=self.master, width=250, height=430, state=tk.ACTIVE)
         tabview.configure(command=partial(self._update_about_tab, tabview))
-        tabview.grid(column=1, row=1, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
+        tabview.grid(column=1, row=0, padx=30, pady=30, sticky=tk.N + tk.E + tk.S + tk.W)
         tabview.add('Keyboards')
         tabview.add('General')
         tabview.add('Mono')
@@ -148,6 +149,8 @@ class DcspyGui(tk.Frame):
         self._special_settings(tabview)
         self._advanced_settings(tabview)
         self._about(tabview)
+        self.progressbar = customtkinter.CTkProgressBar(self.master, orientation='horizontal', mode='indeterminate')
+        self.progressbar.grid(column=1, row=2, padx=50, sticky=tk.E + tk.W)
         status = customtkinter.CTkLabel(master=self.master, textvariable=self.status_txt)
         status.grid(row=4, column=0, columnspan=2, sticky=tk.SE, padx=7)
 
