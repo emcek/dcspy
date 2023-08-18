@@ -27,7 +27,7 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          get_default_yaml, get_version_string,
                          is_git_exec_present, proc_is_running, save_cfg)
 
-__version__ = '2.2.0'
+__version__ = '2.1.0'
 LOG = getLogger(__name__)
 
 
@@ -608,21 +608,37 @@ class DcspyGui(tk.Frame):
         """Check version of DCSpy and show message box."""
         ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
         self.status_txt.set(ver_string)
-        if 'please update' in ver_string:
-            self.master.clipboard_clear()
-            self.master.clipboard_append('pip install --upgrade dcspy')
-            CTkMessagebox(title='New version',
-                          message='OLD WAY\n1. Open Windows Command Prompt (cmd) and type:\n2. pip install --upgrade dcspy\n'
-                                  '3. Note: command copied to clipboard.\n\nNEW WAY:\n1. Download new executable from: github.com/emcek/dcspy')
+        if 'update!' in ver_string:
             self.sys_tray_icon.notify(f'New version: {ver_string}', 'DCSpy')
+            self._download_new_release()
         elif 'latest' in ver_string:
             CTkMessagebox(title='No updates', message='You are running latest version')
         elif 'failed' in ver_string:
             CTkMessagebox(title='Warning', message='Unable to check DCSpy version online', icon='warning', option_1='OK')
-        if getattr(sys, 'frozen', False):
+
+    def _download_new_release(self):
+        """Download new release if running PyInstaller version or show instruction when running Pip version."""
+        if not getattr(sys, 'frozen', False):
             LOG.debug('Pyinstaller')
+            rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+            try:
+                dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
+            except KeyError:
+                dst_dir = 'C:\\'
+            directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
+            try:
+                destination = Path(directory) / rel_info.asset_file
+                download_file(url=rel_info.dl_url, save_path=destination)
+                LOG.debug(f'Save new release: {destination}')
+            except PermissionError as err:
+                CTkMessagebox(title=err.args[1], message=f'Can not save file:\n{err.filename}', icon='warning', option_1='OK')
         else:
             LOG.debug('Pip')
+            self.master.clipboard_clear()
+            self.master.clipboard_append('pip install --upgrade dcspy')
+            CTkMessagebox(title='New version',
+                          message='\n1. Open Windows Command Prompt (cmd) and type:\n2. pip install --upgrade dcspy\n'
+                                  '3. Note: command copied to clipboard.')
 
     def _auto_update_bios(self, silence=False) -> None:
         """
