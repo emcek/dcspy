@@ -14,13 +14,13 @@ from dcspy import utils
                                 dl_url='github.com/fake.tgz',
                                 published='09 August 2021',
                                 release_type='Pre-release',
-                                archive_file='fake.tgz')),
+                                asset_file='fake.tgz')),
     ('3.2.1', utils.ReleaseInfo(latest=False,
                                 ver=version.parse('3.2.1'),
                                 dl_url='github.com/fake.tgz',
                                 published='09 August 2021',
                                 release_type='Pre-release',
-                                archive_file='fake.tgz'))
+                                asset_file='fake.tgz'))
 ], ids=['No update', 'New version'])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
@@ -28,18 +28,18 @@ def test_check_ver_is_possible(online_tag, result):
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
                                                                        'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1') == result
+        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz') == result
 
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
 
 
 @mark.parametrize('online_tag, result', [
@@ -143,7 +143,7 @@ def test_check_bios_ver(tmpdir):
     with open(file=Path(tmpdir) / 'lib' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', archive_file='')
+    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
@@ -151,12 +151,12 @@ def test_check_bios_ver_empty_lua(tmpdir):
     with open(file=Path(tmpdir) / 'lib' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', archive_file='')
+    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_raise_exception(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', archive_file='')
+    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_is_git_repo(tmpdir):
