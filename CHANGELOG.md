@@ -1,7 +1,7 @@
 ## 2.3.0
 * Add radios presets for **A-10C** and **A-10C II**
 * Add ARC0210 data for **A-10C II**
-* Allow to download DCSpy while checking for new version  
+* Allow to download DCSpy while checking for new version
 * Auto refresh about tab
 * Collect data for troubleshooting
 * Internal:
