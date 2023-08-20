@@ -1,10 +1,12 @@
 ## 2.3.0
-* Auto refresh about tab
-* Collect data for troubleshooting
 * Add radios presets for **A-10C** and **A-10C II**
 * Add ARC0210 data for **A-10C II**
+* Allow to download DCSpy while checking for new version  
+* Auto refresh about tab
+* Collect data for troubleshooting
 * Internal:
   * Remove support for Python 3.7
+  * Add Python 3.12 RC1 in CI process
   * Loading Logitech C library using `cffi` instead of built-in `ctypes`
 
 ## 2.2.0
