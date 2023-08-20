@@ -6,6 +6,7 @@
 * Collect data for troubleshooting
 * Internal:
   * Remove support for Python 3.7
+  * Add Python 3.12 RC1 in CI process
   * Loading Logitech C library using `cffi` instead of built-in `ctypes`
 
 ## 2.2.0
