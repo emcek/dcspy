@@ -21,7 +21,6 @@ try:
 except ImportError:
     from typing_extensions import TypedDict
 
-
 SUPPORTED_CRAFTS = {
     'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
     'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
@@ -53,7 +52,6 @@ MONO_HEIGHT = 43
 # LCD Color size
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
-
 
 # LED constants
 LOGI_LED_DURATION_INFINITE = 0
@@ -115,7 +113,14 @@ class Gkey:
         return {'g_key': self.key, 'mode': self.mode}
 
 
-def _generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
+def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
+    """
+    Generate sequence of G-Keys.
+
+    :param key: number of keys
+    :param mode: number of modes
+    :return:
+    """
     return tuple([Gkey(k, m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
 
@@ -131,8 +136,6 @@ class LcdInfo:
     width: int
     height: int
     type: LcdType
-    buttons: Sequence[LcdButton]
-    gkey: Sequence[Gkey]
     foreground: Union[int, Tuple[int, int, int, int]]
     background: Union[int, Tuple[int, int, int, int]]
     mode: LcdMode
@@ -144,24 +147,20 @@ class LcdInfo:
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 config = set_defaults(load_cfg(filename=default_yaml), filename=default_yaml)
 LcdMono = LcdInfo(width=MONO_WIDTH, height=MONO_HEIGHT, type=LcdType.MONO, foreground=255,
-                  buttons=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
-                  gkey=_generate_gkey(key=9, mode=1),
                   background=0, mode=LcdMode.BLACK_WHITE, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_mono_s'])),
                   font_l=ImageFont.truetype(str(config['font_name']), int(config['font_mono_l'])),
                   font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_mono_xs'])))
 LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
-                   buttons=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU),
-                   gkey=_generate_gkey(key=9, mode=1),
                    background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_color_s'])),
                    font_l=ImageFont.truetype(str(config['font_name']), int(config['font_color_l'])),
                    font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_color_xs'])))
 DED_FONT = ImageFont.truetype(str(Path(__file__).resolve().with_name('falconded.ttf')), 25)
 LCD_TYPES = {
-    'G19': {'type': 'KeyboardColor', 'icon': 'G19.png'},
-    'G510': {'type': 'KeyboardMono', 'icon': 'G510.png'},
-    'G15 v1': {'type': 'KeyboardMono', 'icon': 'G15v1.png'},
-    'G15 v2': {'type': 'KeyboardMono', 'icon': 'G15v2.png'},
-    'G13': {'type': 'KeyboardMono', 'icon': 'G13.png'},
+    'G19': {'klass': 'G19', 'icon': 'G19.png'},
+    'G510': {'klass': 'G510', 'icon': 'G510.png'},
+    'G15 v1': {'klass': 'G15v1', 'icon': 'G15v1.png'},
+    'G15 v2': {'klass': 'G15v2', 'icon': 'G15v2.png'},
+    'G13': {'klass': 'G13', 'icon': 'G13.png'},
 }
 LOG = getLogger(__name__)
 config_logger(LOG, config['verbose'])
