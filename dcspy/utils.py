@@ -24,7 +24,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '2.3.0'
+__version__ = '2.3.1'
 ConfigDict = Dict[str, Union[str, int, bool]]
 defaults_cfg: ConfigDict = {
     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
