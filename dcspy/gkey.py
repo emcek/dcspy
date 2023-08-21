@@ -4,7 +4,7 @@ from typing import Any, Dict, List
 
 import requests
 
-from dcspy.models import DcsBios, Control, ControlKeyData
+from dcspy.models import Control, ControlKeyData, DcsBios
 
 json_directory_url = 'https://raw.githubusercontent.com/DCSFlightpanels/dcs-bios/master/Scripts/DCS-BIOS/doc/json/'
 
