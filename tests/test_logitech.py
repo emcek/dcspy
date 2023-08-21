@@ -2,15 +2,15 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy import Gkey, LcdButton, LcdMode, LcdType, _generate_gkey
-from dcspy.logitech import KeyboardColor, KeyboardMono
+from dcspy import Gkey, LcdButton, LcdMode, LcdType, generate_gkey
+from dcspy.logitech import G13, G19
 from tests.helpers import all_plane_list
 
 
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk import lcd_sdk
 
-    assert str(keyboard_base) == 'LogitechKeyboard: 160x43'
+    assert str(keyboard_base) == 'KeyboardManager: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'gkey_pressed', 'buttons',
             '_display', 'plane', 'Aircraft', 'vert_space', 'lcd')
@@ -44,8 +44,8 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(2, 1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
     ('keyboard_mono', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(0, 0), [call(g_key=1, mode=1)], True),
     ('keyboard_color', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(0, 0), [call(g_key=1, mode=1)], True),
-    ('keyboard_mono', False, [False] * 9, [str(i) for i in _generate_gkey(9, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1), call(g_key=4, mode=1), call(g_key=5, mode=1), call(g_key=6, mode=1), call(g_key=7, mode=1), call(g_key=8, mode=1), call(g_key=9, mode=1)], False),
-    ('keyboard_color', False, [False] * 9, [str(i) for i in _generate_gkey(9, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1), call(g_key=4, mode=1), call(g_key=5, mode=1), call(g_key=6, mode=1), call(g_key=7, mode=1), call(g_key=8, mode=1), call(g_key=9, mode=1)], False),
+    ('keyboard_mono', False, [False] * 3, [str(i) for i in generate_gkey(3, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
+    ('keyboard_color', False, [False] * 3, [str(i) for i in generate_gkey(3, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
 ], ids=['Mono G2/M1', 'color G2/M1', 'Mono G1/M1 already_pressed', 'Color G1/M1 already_pressed', 'Mono None Button', 'Color None Button'])
 def test_keyboard_check_gkey(keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2, request):
     from dcspy.sdk import key_sdk
@@ -118,8 +118,8 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
 
 
 @mark.parametrize('mode, size,  lcd_type, keyboard', [
-    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, KeyboardMono),
-    (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, KeyboardColor)
+    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, G13),
+    (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, G19)
 ], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
     from dcspy import LcdInfo
@@ -141,7 +141,7 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard
     assert img.size == size
 
 
-@mark.parametrize('keyboard', [KeyboardMono, KeyboardColor], ids=['Mono Keyboard', 'Color Keyboard'])
+@mark.parametrize('keyboard', [G13, G19], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_check_keyboard_text(keyboard, protocol_parser):
     from dcspy.sdk import lcd_sdk
 
