@@ -386,43 +386,64 @@ def eagle_color(lcd_color: LcdInfo):
 @fixture()
 def keyboard_base(protocol_parser):
     """
-    Return instance of LogitechKeyboard.
+    Return instance of KeyboardManager.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: LogitechKeyboard
+    :return: KeyboardManager
     """
-    from dcspy.logitech import LogitechKeyboard
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return LogitechKeyboard(protocol_parser)
+    from dcspy.manager import KeyboardManager
+    from dcspy.sdk import key_sdk, lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return KeyboardManager(protocol_parser)
 
 
 @fixture()
 def keyboard_mono(protocol_parser):
     """
-    Return instance of KeyboardMono.
+    Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: KeyboardMono
+    :return: KeyboardManager
     """
-    from dcspy.logitech import KeyboardMono
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardMono(protocol_parser)
+    from dcspy.manager import KeyboardManager
+    from dcspy import LcdMono, LcdButton, generate_gkey
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Mono(KeyboardManager):
+        def __init__(self, parser):
+            super().__init__(parser, lcd_type=LcdMono)
+            self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+            self.gkey = generate_gkey(key=3, mode=1)
+            self.vert_space = 10
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Mono(protocol_parser)
 
 
 @fixture()
 def keyboard_color(protocol_parser):
     """
-    Return instance of KeyboardColor.
+    Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: KeyboardColor
+    :return: KeyboardManager
     """
-    from dcspy.logitech import KeyboardColor
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardColor(protocol_parser)
+    from dcspy.manager import KeyboardManager
+    from dcspy import LcdButton, LcdColor, generate_gkey
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Color(KeyboardManager):
+        def __init__(self, parser) -> None:
+            super().__init__(parser, lcd_type=LcdColor)
+            self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
+            self.gkey = generate_gkey(key=3, mode=1)
+            self.vert_space = 40
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Color(protocol_parser)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
