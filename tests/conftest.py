@@ -391,7 +391,7 @@ def keyboard_base(protocol_parser):
     :param protocol_parser: instance of ProtocolParser
     :return: KeyboardManager
     """
-    from dcspy.manager import KeyboardManager
+    from dcspy.logitech import KeyboardManager
     from dcspy.sdk import key_sdk, lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(key_sdk, 'logi_gkey_init', return_value=True):
@@ -406,7 +406,7 @@ def keyboard_mono(protocol_parser):
     :param protocol_parser: instance of ProtocolParser
     :return: KeyboardManager
     """
-    from dcspy.manager import KeyboardManager
+    from dcspy.logitech import KeyboardManager
     from dcspy import LcdMono, LcdButton, generate_gkey
     from dcspy.sdk import key_sdk, lcd_sdk
 
@@ -430,7 +430,7 @@ def keyboard_color(protocol_parser):
     :param protocol_parser: instance of ProtocolParser
     :return: KeyboardManager
     """
-    from dcspy.manager import KeyboardManager
+    from dcspy.logitech import KeyboardManager
     from dcspy import LcdButton, LcdColor, generate_gkey
     from dcspy.sdk import key_sdk, lcd_sdk
 
