@@ -898,7 +898,7 @@ class DcspyGui(tk.Frame):
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         keyboard = self.lcd_type.get()
         self._save_cfg()
-        app_params = {'lcd_type': LCD_TYPES[keyboard]['type'], 'event': self.event}
+        app_params = {'lcd_type': LCD_TYPES[keyboard]['klass'], 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
