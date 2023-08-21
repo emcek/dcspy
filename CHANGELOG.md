@@ -1,3 +1,6 @@
+## 2.3.1
+* Hotfix: add missing files
+
 ## 2.3.0
 * Add radios presets for **A-10C** and **A-10C II**
 * Add ARC0210 data for **A-10C II**
