@@ -111,7 +111,7 @@ def dcspy_run(lcd_type: str, event: Event) -> None:
     :param event: stop event for main loop
     """
     parser = ProtocolParser()
-    manager: KeyboardManager = getattr(import_module('dcspy.manager'), lcd_type)(parser)
+    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
     LOG.info(f'Loading: {str(manager)}')
     LOG.debug(f'Loading: {repr(manager)}')
     dcs_sock = _prepare_socket()
