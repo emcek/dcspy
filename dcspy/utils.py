@@ -2,21 +2,24 @@ import sys
 import zipfile
 from datetime import datetime
 from glob import glob
+from json import loads
 from logging import getLogger
 from os import environ, makedirs, walk
 from pathlib import Path
 from platform import python_implementation, python_version, uname
-from pprint import pformat
+from pprint import pformat, pprint
 from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Dict, NamedTuple, Tuple, Union
+from typing import Any, Dict, List, NamedTuple, Tuple, Union
 
 from packaging import version
 from psutil import process_iter
 from requests import get
 from yaml import FullLoader, dump, load, parser
+
+from dcspy.models import Control, ControlKeyData
 
 try:
     import git
@@ -473,3 +476,62 @@ def run_pip_command(cmd: str) -> Tuple[int, str, str]:
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
+
+
+def load_json(path: Path) -> Dict[str, Any]:
+    with open(path, encoding='utf-8') as json_file:
+        data = json_file.read()
+    return loads(data)
+
+
+def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
+    alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
+    local_json = {}
+    aircraft_aliases = load_json(path=alias_path)
+    for json_file in aircraft_aliases[name]:
+        local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
+
+    return local_json
+
+
+def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
+    ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
+    path = bios_dir / 'doc' / 'json' / f'{name}.json'
+    json_data = load_json(path)
+
+    for section, controllers in json_data.items():
+        ctrl_key[section] = {}
+        for ctrl_name, ctrl_data in controllers.items():
+            try:
+                Control.model_validate(ctrl_data)
+            except ValueError:
+                print(name, section, ctrl_name)
+            ctrl = Control(**ctrl_data)
+            if ctrl.inputs:
+                ctrl_key[section][ctrl_name] = ControlKeyData.from_dicts(ctrl_data['description'], ctrl_data['inputs'])
+
+        if not len(ctrl_key[section]):
+            del ctrl_key[section]
+    return ctrl_key
+
+
+def get_list(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+    result_list = []
+    for section, controllers in ctrl_key.items():
+        result_list.append(f'-- {section} --')
+        for ctrl_name in controllers:
+            result_list.append(ctrl_name)
+    return result_list
+
+
+if __name__ == '__main__':
+    bios_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
+    plane_json = get_full_bios_for_plane('F-16C_50', bios_dir)
+    print('*' * 50)
+    pprint(plane_json)
+    inputs = get_inputs_for_plane('F-16C_50', bios_dir)
+    print('*' * 50)
+    pprint(inputs)
+    in_list = get_list(ctrl_key=inputs)
+    print('*' * 50)
+    pprint(in_list)
