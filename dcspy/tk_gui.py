@@ -26,7 +26,7 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          collect_debug_data, defaults_cfg, download_file,
                          get_default_yaml, get_version_string,
                          is_git_exec_present, proc_is_running, run_pip_command,
-                         save_cfg)
+                         save_cfg, get_list, get_inputs_for_plane, load_json)
 
 __version__ = '2.3.0'
 LOG = getLogger(__name__)
@@ -78,6 +78,10 @@ class DcspyGui(tk.Frame):
         self.color_l = tk.StringVar()
         self.color_s = tk.StringVar()
         self.color_xs = tk.StringVar()
+        self.model_plane = tk.StringVar()
+        self.model_mode = tk.StringVar()
+        self.model_gkey = tk.StringVar()
+        self.model_ctrl = tk.StringVar()
         self.size_mono_l = tk.IntVar()
         self.size_mono_s = tk.IntVar()
         self.size_mono_xs = tk.IntVar()
@@ -187,6 +191,27 @@ class DcspyGui(tk.Frame):
             rb_lcd_type.grid(row=i, column=1)
             if config.get('keyboard', 'G13') == text:
                 rb_lcd_type.select()
+
+        planes = list(load_json(path=Path(self.bios_path.get()) / 'doc' / 'json' / 'AircraftAliases.json').keys())[1:]
+        self.model_plane.set(planes[1])
+        plane = customtkinter.CTkOptionMenu(master=tabview.tab('Keyboards'), values=planes, variable=self.model_plane)
+        plane.grid(column=2, row=0, sticky=tk.W, padx=(10, 0), pady=5)
+
+        modes = ['1', '2', '3']
+        mode = customtkinter.CTkOptionMenu(master=tabview.tab('Keyboards'), values=modes, variable=self.model_mode)
+        mode.grid(column=2, row=1, sticky=tk.W, padx=(10, 0), pady=5)
+
+        gkeys = [str(i) for i in range(1, 30)]
+        gkey = customtkinter.CTkOptionMenu(master=tabview.tab('Keyboards'), values=gkeys, variable=self.model_gkey)
+        gkey.grid(column=2, row=2, sticky=tk.W, padx=(10, 0), pady=5)
+
+        inputs = get_inputs_for_plane(name=self.model_plane.get(), bios_dir=Path(self.bios_path.get()))
+        ctrls = get_list(ctrl_key=inputs)
+        ctrl = customtkinter.CTkOptionMenu(master=tabview.tab('Keyboards'), values=ctrls, variable=self.model_ctrl, command=self._model_ctrl)
+        ctrl.grid(column=2, row=3, sticky=tk.W, padx=(10, 0), pady=5)
+
+    def _model_ctrl(self, choice):
+        print(choice)
 
     def _general_settings(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure general tab GUI."""
