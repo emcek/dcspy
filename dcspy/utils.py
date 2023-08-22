@@ -479,14 +479,27 @@ def run_pip_command(cmd: str) -> Tuple[int, str, str]:
 
 
 def load_json(path: Path) -> Dict[str, Any]:
+    """
+    Load json from file into dictionary.
+
+    :param path: full path
+    :return: dict
+    """
     with open(path, encoding='utf-8') as json_file:
         data = json_file.read()
     return loads(data)
 
 
 def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
+    """
+    Collect full BIOS for plane with name.
+
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS directory
+    :return: dict
+    """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
-    local_json = {}
+    local_json: Dict[str, Any] = {}
     aircraft_aliases = load_json(path=alias_path)
     for json_file in aircraft_aliases[name]:
         local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
@@ -495,6 +508,13 @@ def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
 
 
 def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
+    """
+    Get dict with all not empty inputs for plane.
+
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS
+    :return: dict.
+    """
     ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
     path = bios_dir / 'doc' / 'json' / f'{name}.json'
     json_data = load_json(path)
@@ -502,20 +522,35 @@ def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, Contr
     for section, controllers in json_data.items():
         ctrl_key[section] = {}
         for ctrl_name, ctrl_data in controllers.items():
-            try:
-                Control.model_validate(ctrl_data)
-            except ValueError:
-                print(name, section, ctrl_name)
-            ctrl = Control(**ctrl_data)
-            if ctrl.inputs:
-                ctrl_key[section][ctrl_name] = ControlKeyData.from_dicts(ctrl_data['description'], ctrl_data['inputs'])
-
+            ctrl_key[section][ctrl_name] = _method_name(ctrl_data)
         if not len(ctrl_key[section]):
             del ctrl_key[section]
     return ctrl_key
 
 
+def _method_name(ctrl_data):
+    """
+    Refacto this, internal function.
+
+    :param ctrl_data:
+    :return:
+    """
+    try:
+        Control.model_validate(ctrl_data)
+    except ValueError:
+        print(ctrl_data)
+    ctrl = Control(**ctrl_data)
+    if ctrl.inputs:
+        return ControlKeyData.from_dicts(ctrl_data['description'], ctrl_data['inputs'])
+
+
 def get_list(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+    """
+    Get list of all controllers from dict with sections and inputs.
+
+    :param ctrl_key: dict with only input for the plane
+    :return: list of string
+    """
     result_list = []
     for section, controllers in ctrl_key.items():
         result_list.append(f'-- {section} --')
