@@ -499,7 +499,7 @@ def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
     :return: dict
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
-    local_json = {}
+    local_json: Dict[str, Any] = {}
     aircraft_aliases = load_json(path=alias_path)
     for json_file in aircraft_aliases[name]:
         local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
