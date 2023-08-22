@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>G13.png</file>
+    <file>G15v1.png</file>
+    <file>G15v2.png</file>
+    <file>G19.png</file>
+    <file>G510.png</file>
+  </qresource>
+</RCC>
