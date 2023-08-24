@@ -19,7 +19,7 @@ from psutil import process_iter
 from requests import get
 from yaml import FullLoader, dump, load, parser
 
-from dcspy.models import Control, ControlKeyData
+from dcspy.models import Control, ControlKeyData, DcsBios
 
 try:
     import git
@@ -562,6 +562,7 @@ def get_list(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
 if __name__ == '__main__':
     bios_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
     plane_json = get_full_bios_for_plane('F-16C_50', bios_dir)
+    DcsBios.model_validate(plane_json)
     print('*' * 50)
     pprint(plane_json)
     inputs = get_inputs_for_plane('F-16C_50', bios_dir)
