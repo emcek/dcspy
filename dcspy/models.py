@@ -120,13 +120,15 @@ class OutputInt(Output):
 class Control(BaseModel):
     category: str
     control_type: str
-    description: Optional[str] = None
+    description: str
     identifier: str
     inputs: List[Union[FixedStep, VariableStep, SetState, Action]]
     momentary_positions: Optional[str] = None
     outputs: List[Union[OutputStr, OutputInt]]
     physical_variant: Optional[str] = None
 
+
+# DcsBios = RootModel(Dict[str, Dict[str, Control]])
 
 class DcsBios(RootModel):
     root: Dict[str, Dict[str, Control]]
@@ -138,6 +140,13 @@ class DcsBios(RootModel):
         :return: string
         """
         return str(self.root)
+
+    def __getattr__(self, item):  # if you want to use '.'
+        # https://github.com/pydantic/pydantic/issues/1802
+        return self.__root__[item]
+
+    def __getitem__(self, item):  # if you want to use '[]'
+        return self.__root__[item]
 
 
 class ControlKeyData:
