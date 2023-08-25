@@ -10,6 +10,13 @@ class Input(BaseModel):
         return getattr(self, item)
 
     def get(self, item, default=None):
+        """
+        Access item and get default when is not available.
+
+        :param item:
+        :param default:
+        :return:
+        """
         return getattr(self, item, default)
 
 
@@ -135,12 +142,22 @@ class Control(BaseModel):
 
     @property
     def input(self):
+        """
+        Extract inputs data as dict.
+
+        :return: dict
+        """
         max_value = max(d.get('max_value', 1) for d in self.inputs)
         suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
         return {'description': self.description, 'max_value': max_value, 'suggested_step': suggested_step}
 
     @property
     def output(self):
+        """
+        Extract outputs data as dict.
+
+        :return: dict
+        """
         if isinstance(self.outputs[0], OutputInt):
             return {'klass': 'IntegerBuffer',
                     'args': {'address': self.outputs[0].address,
@@ -168,6 +185,13 @@ class DcsBios(RootModel):
         return self.__root__[item]
 
     def get(self, item, default=None):
+        """
+        Access item and get default when is not available.
+
+        :param item:
+        :param default:
+        :return:
+        """
         return getattr(self.__root__, item, default)
 
 
