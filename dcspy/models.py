@@ -130,6 +130,36 @@ class OutputInt(Output):
         return value
 
 
+# ---------------- DCS-BIOS ----------------
+class IntBuffArgs(BaseModel):
+    address: int
+    mask: int
+    shift_by: int
+
+
+class BiosValueInt(BaseModel):
+    klass: str
+    args: IntBuffArgs
+    value: Union[int, str]
+    max_value: int
+
+
+class StrBuffArgs(BaseModel):
+    address: int
+    max_length: int
+
+
+class BiosValueStr(BaseModel):
+    klass: str
+    args: StrBuffArgs
+    value: Union[int, str]
+
+
+class BiosValue(RootModel):
+    root: Dict[str, Union[BiosValueStr, BiosValueInt]]
+# ---------------- DCS-BIOS ----------------
+
+
 class Control(BaseModel):
     category: str
     control_type: str
