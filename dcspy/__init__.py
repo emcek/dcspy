@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from enum import Enum
 from logging import getLogger
 from os import name
-from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
 from typing import Sequence, Tuple, Union
@@ -154,7 +153,6 @@ LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, f
                    background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_color_s'])),
                    font_l=ImageFont.truetype(str(config['font_name']), int(config['font_color_l'])),
                    font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_color_xs'])))
-DED_FONT = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
 LCD_TYPES = {
     'G19': {'klass': 'G19', 'icon': 'G19.png'},
     'G510': {'klass': 'G510', 'icon': 'G510.png'},
