@@ -199,19 +199,9 @@ class KeyboardManager:
         return img
 
     def __str__(self) -> str:
-        """
-        Show basic info of LCD.
-
-        :return: string
-        """
         return f'{type(self).__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self) -> str:
-        """
-        Show all details of LCD.
-
-        :return: string
-        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
