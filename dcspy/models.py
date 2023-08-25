@@ -6,6 +6,12 @@ from pydantic import BaseModel, RootModel, field_validator
 class Input(BaseModel):
     description: str
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def get(self, item, default=None):
+        return getattr(self, item, default)
+
 
 class FixedStep(Input):
     interface: str = 'fixed_step'
@@ -127,6 +133,19 @@ class Control(BaseModel):
     outputs: List[Union[OutputStr, OutputInt]]
     physical_variant: Optional[str] = None
 
+    @property
+    def input(self):
+        max_value = max(d.get('max_value', 1) for d in self.inputs)
+        suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
+        return {'description': self.description, 'max_value': max_value, 'suggested_step': suggested_step}
+
+    @property
+    def output(self):
+        if isinstance(self.outputs[0], OutputInt):
+            return {'klass': 'IntegerBuffer', 'args': {'address': self.outputs[0].address, 'mask': self.outputs[0].mask, 'shift_by': self.outputs[0].shift_by}, 'value': int(), 'max_value': self.outputs[0].max_value}
+        else:
+            return {'klass': 'StringBuffer', 'args': {'address': self.outputs[0].address, 'max_length': self.outputs[0].max_length}, 'value': ''}
+
 
 # DcsBios = RootModel(Dict[str, Dict[str, Control]])
 
@@ -141,12 +160,12 @@ class DcsBios(RootModel):
         """
         return str(self.root)
 
-    def __getattr__(self, item):  # if you want to use '.'
+    def __getitem__(self, item):
         # https://github.com/pydantic/pydantic/issues/1802
         return self.__root__[item]
 
-    def __getitem__(self, item):  # if you want to use '[]'
-        return self.__root__[item]
+    def get(self, item, default=None):
+        return getattr(self.__root__, item, default)
 
 
 class ControlKeyData:
