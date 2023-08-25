@@ -104,7 +104,7 @@ markers = ['dcsbios: marks tests for verfification of DCS-BIOS data']
 [tool.interrogate]
 ignore-init-method = false
 ignore-init-module = true
-ignore-magic = false
+ignore-magic = true
 ignore-semiprivate = false
 ignore-private = false
 ignore-property-decorators = false
