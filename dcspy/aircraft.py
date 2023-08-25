@@ -130,11 +130,6 @@ class Aircraft:
         return f'{button_bios_name} {settings}\n'
 
     def __repr__(self) -> str:
-        """
-        Show all details of Aircraft.
-
-        :return: string
-        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
