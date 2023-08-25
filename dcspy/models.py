@@ -160,12 +160,7 @@ class Control(BaseModel):
 class DcsBios(RootModel):
     root: Dict[str, Dict[str, Control]]
 
-    def __str__(self):
-        """
-        Show details of DcsBios.
-
-        :return: string
-        """
+    def __str__(self) -> str:
         return str(self.root)
 
     def __getitem__(self, item):
@@ -203,9 +198,4 @@ class ControlKeyData:
         return cls(description=description, max_value=max_value, suggested_step=suggested_step)
 
     def __repr__(self) -> str:
-        """
-        Show details of ControlKeyData.
-
-        :return: string
-        """
         return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
