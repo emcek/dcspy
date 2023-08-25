@@ -87,13 +87,13 @@ exclude = ['dcspy.tests*']
 
 [tool.setuptools.package-data]
 dcspy = [
-    '*.txt',
-    '*.yaml',
-    '*.ico',
-    '*.png',
-    '*.ttf',
+    'resources/*.*',
+    'img/*.*',
     'sdk/*.h',
+    'ui/*.*',
     'py.typed',
+    '*.yaml',
+    '*.qrc',
 ]
 
 [tool.pytest.ini_options]
