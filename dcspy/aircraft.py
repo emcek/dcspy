@@ -248,7 +248,7 @@ class F16C50(Aircraft):
         self.font = self.lcd.font_s
         self.ded_font = config.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
-            self.font = ImageFont.truetype(str(Path(__file__).resolve() / '..' / 'resources' / 'falconded.ttf'), 25)
+            self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
         self.bios_data: Dict[str, BiosValue] = {
             'DED_LINE_1': {'klass': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
             'DED_LINE_2': {'klass': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},
