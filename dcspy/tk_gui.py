@@ -117,7 +117,7 @@ class DcspyGui(tk.Frame):
 
         :return: system ray icon instance
         """
-        icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
+        icon = Image.open(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')
         menu = (MenuItem('Show', self._show_gui), MenuItem('Stop', self._stop), MenuItem('Quit', self._close_gui),)
         self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
         return Icon('dcspy', icon, 'DCSpy', menu)
@@ -169,7 +169,7 @@ class DcspyGui(tk.Frame):
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check DCSpy version', command=self._check_version)
         check_ver.grid(row=3, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self._start_dcspy)
-        logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name('dcspy.png')), size=(130, 60))
+        logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve() / '..' / 'img' / 'dcspy.png'), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
         self.btn_start.grid(row=5, column=0, padx=20, pady=10)
@@ -183,7 +183,7 @@ class DcspyGui(tk.Frame):
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name(LCD_TYPES[text]['icon'])), size=(103, 70))
+            icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve() / '..' / 'img' / LCD_TYPES[text]['icon']), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text,

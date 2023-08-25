@@ -22,9 +22,9 @@ def run() -> None:
     width, height = 770, 520
     root.geometry(f'{width}x{height}')
     root.minsize(width=width, height=height)
-    root.iconbitmap(Path(__file__).resolve().with_name('dcspy.ico'))
+    root.iconbitmap(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')
     if config['theme_mode'] == 'dark':
-        root.iconbitmap(Path(__file__).resolve().with_name('dcspy_white.ico'))
+        root.iconbitmap(Path(__file__).resolve() / '..' / 'img' / 'dcspy_white.ico')
     root.title('DCSpy')
     DcspyGui(master=root)
     if not config['show_gui']:
