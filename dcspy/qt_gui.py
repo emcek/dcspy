@@ -36,7 +36,7 @@ class UiLoader(QtUiTools.QUiLoader):
         if parent is None and self._baseinstance is not None:
             widget = self._baseinstance
         else:
-            widget = super(UiLoader, self).createWidget(classname, parent, name)
+            widget = super().createWidget(classname, parent, name)
             if self._baseinstance is not None:
                 setattr(self._baseinstance, name, widget)
         return widget
