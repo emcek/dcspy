@@ -7,11 +7,12 @@ from typing import Callable, Dict, Optional, Union
 
 import qtawesome
 from PySide6 import QtCore, QtUiTools
-from PySide6.QtGui import QIcon, QAction
-from PySide6.QtWidgets import (QCheckBox, QFileDialog, QLineEdit, QMainWindow,
-                               QMessageBox, QProgressBar, QPushButton,
-                               QRadioButton, QStatusBar,
-                               QSystemTrayIcon, QSlider, QToolBar, QTableWidget, QCompleter, QComboBox)
+from PySide6.QtGui import QAction, QIcon
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog,
+                               QLineEdit, QMainWindow, QMessageBox,
+                               QProgressBar, QPushButton, QRadioButton,
+                               QSlider, QStatusBar, QSystemTrayIcon,
+                               QTableWidget, QToolBar)
 
 from dcspy import qtgui_rc
 
@@ -24,6 +25,14 @@ class UiLoader(QtUiTools.QUiLoader):
     _baseinstance = None
 
     def createWidget(self, classname, parent=None, name=''):
+        """
+        Create widget.
+
+        :param classname:
+        :param parent:
+        :param name:
+        :return:
+        """
         if parent is None and self._baseinstance is not None:
             widget = self._baseinstance
         else:
@@ -33,6 +42,13 @@ class UiLoader(QtUiTools.QUiLoader):
         return widget
 
     def loadUi(self, ui_path, baseinstance=None):
+        """
+        Load UI file.
+
+        :param ui_path:
+        :param baseinstance:
+        :return:
+        """
         self._baseinstance = baseinstance
         ui_file = QtCore.QFile(ui_path)
         ui_file.open(QtCore.QIODevice.ReadOnly)
@@ -45,10 +61,10 @@ class UiLoader(QtUiTools.QUiLoader):
 
 
 class DcsPyQtGui(QMainWindow):
-    """DCSpy Qt6 GUI."""
+    """Qt6 GUI for DCSpy."""
 
     def __init__(self) -> None:
-        """DCspy Qt6 GUI."""
+        """Qt6 GUI for DCSpy."""
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
@@ -67,6 +83,14 @@ class DcsPyQtGui(QMainWindow):
         self.current_col = -1
 
     def cell7(self, currentRow, currentColumn, previousRow, previousColumn):
+        """
+        Save current cell of TableWidget.
+
+        :param currentRow:
+        :param currentColumn:
+        :param previousRow:
+        :param previousColumn:
+        """
         self.current_row = currentRow
         self.current_col = currentColumn
 
