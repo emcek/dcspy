@@ -123,6 +123,7 @@ exclude = ['tests/test_*']
 line-length = 160
 select = ['E', 'F', 'C90', 'D', 'RUF']
 ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
+extend-exclude = ["qtgui_rc.py"]
 
 [tool.ruff.mccabe]
 max-complexity = 6
@@ -135,4 +136,4 @@ exclude = 'qt_gui\.py$'
 [tool.pydocstyle]
 inherit = false
 ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212']
-match = '.*\.py'
+match = '(?!test_|qtgui_rc).*\.py'
