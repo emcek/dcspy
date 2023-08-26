@@ -3,7 +3,7 @@ import sys
 from logging import getLogger
 from pathlib import Path
 
-from PySide6.QtCore import QCoreApplication, Qt
+# from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
 
@@ -15,7 +15,7 @@ __version__ = '2.3.1'
 
 def run_gui() -> None:
     """Run DCSpy Qt6 GUI."""
-    QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+    # QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
