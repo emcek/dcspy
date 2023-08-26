@@ -56,8 +56,8 @@
             </property>
             <property name="iconSize">
              <size>
-              <width>128</width>
-              <height>128</height>
+              <width>123</width>
+              <height>90</height>
              </size>
             </property>
            </widget>
@@ -85,8 +85,8 @@
             </property>
             <property name="iconSize">
              <size>
-              <width>128</width>
-              <height>128</height>
+              <width>123</width>
+              <height>90</height>
              </size>
             </property>
            </widget>
@@ -114,8 +114,8 @@
             </property>
             <property name="iconSize">
              <size>
-              <width>128</width>
-              <height>128</height>
+              <width>123</width>
+              <height>90</height>
              </size>
             </property>
            </widget>
@@ -143,8 +143,8 @@
             </property>
             <property name="iconSize">
              <size>
-              <width>128</width>
-              <height>128</height>
+              <width>123</width>
+              <height>90</height>
              </size>
             </property>
            </widget>
@@ -172,9 +172,12 @@
             </property>
             <property name="iconSize">
              <size>
-              <width>128</width>
-              <height>128</height>
+              <width>123</width>
+              <height>90</height>
              </size>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -186,7 +189,7 @@
          </attribute>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="3" column="0">
-           <widget class="QLineEdit" name="lineEdit_2"/>
+           <widget class="QLineEdit" name="le_dcsdir"/>
           </item>
           <item row="8" column="0">
            <spacer name="verticalSpacer_2">
@@ -202,38 +205,38 @@
            </spacer>
           </item>
           <item row="5" column="0">
-           <widget class="QCheckBox" name="checkBox">
+           <widget class="QCheckBox" name="cb_autostart">
             <property name="text">
              <string>Autostart DCSpy:</string>
             </property>
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="pb_biosdir">
             <property name="text">
              <string>DCS-BIOS folder</string>
             </property>
            </widget>
           </item>
           <item row="6" column="0">
-           <widget class="QCheckBox" name="checkBox_3">
+           <widget class="QCheckBox" name="cb_show_gui">
             <property name="text">
              <string>Show GUI:</string>
             </property>
            </widget>
           </item>
           <item row="3" column="2">
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="pb_dcsdir">
             <property name="text">
              <string>DCS folder</string>
             </property>
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QLineEdit" name="lineEdit_3"/>
+           <widget class="QLineEdit" name="le_biosdir"/>
           </item>
           <item row="7" column="0">
-           <widget class="QCheckBox" name="checkBox_2">
+           <widget class="QCheckBox" name="cb_check_ver">
             <property name="text">
              <string>Check DCSpy version:</string>
             </property>
@@ -254,7 +257,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QSlider" name="horizontalSlider">
+           <widget class="QSlider" name="hs_large_font">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -268,7 +271,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QSlider" name="horizontalSlider_2">
+           <widget class="QSlider" name="hs_medium_font">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -282,7 +285,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSlider" name="horizontalSlider_3">
+           <widget class="QSlider" name="hs_small_font">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -296,7 +299,7 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QLineEdit" name="lineEdit"/>
+           <widget class="QLineEdit" name="le_font_name"/>
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_5">
@@ -306,7 +309,7 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QCheckBox" name="checkBox_4">
+           <widget class="QCheckBox" name="cb_ded_font">
             <property name="text">
              <string>use special font (only G19)</string>
             </property>
@@ -333,7 +336,14 @@
          </attribute>
          <layout class="QGridLayout" name="gridLayout_2">
           <item row="0" column="0">
-           <widget class="QTableWidget" name="tableWidget"/>
+           <widget class="QTableWidget" name="tw_gkeys"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="QPushButton" name="pb_copy">
+            <property name="text">
+             <string>Copy</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -345,35 +355,35 @@
           <item row="0" column="0" colspan="2">
            <layout class="QFormLayout" name="formLayout_2">
             <item row="0" column="0">
-             <widget class="QCheckBox" name="checkBox_7">
+             <widget class="QCheckBox" name="cb_lcd_screenshot">
               <property name="text">
                <string>Save LCD screenshot</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QCheckBox" name="checkBox_8">
+             <widget class="QCheckBox" name="cb_verbose">
               <property name="text">
                <string>Collect more logs</string>
               </property>
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QCheckBox" name="checkBox_6">
+             <widget class="QCheckBox" name="cb_autoupdate_bios">
               <property name="text">
                <string>Auto Update DCS-BIOS</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QCheckBox" name="checkBox_5">
+             <widget class="QCheckBox" name="cb_bios_live">
               <property name="text">
                <string>Use live DCS-BIOS version</string>
               </property>
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLineEdit" name="lineEdit_4"/>
+             <widget class="QLineEdit" name="le_bios_live"/>
             </item>
            </layout>
           </item>
@@ -404,7 +414,7 @@
            </spacer>
           </item>
           <item row="2" column="1">
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="pb_collect_data">
             <property name="text">
              <string>Collect debug data</string>
             </property>
@@ -419,13 +429,6 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_7">
             <property name="text">
              <string>TextLabel</string>
             </property>
@@ -500,26 +503,36 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionQuit"/>
+    <addaction name="a_quit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionReportIssue"/>
+    <addaction name="a_report_issue"/>
     <addaction name="separator"/>
-    <addaction name="actionAboutDCSpy"/>
-    <addaction name="actionAboutQt"/>
+    <addaction name="a_about_dcspy"/>
+    <addaction name="a_about_qt"/>
     <addaction name="separator"/>
-    <addaction name="actionCheckUpdates"/>
+    <addaction name="a_check_updates"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="a_show_toolbar"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolbar">
    <property name="windowTitle">
-    <string>toolBar</string>
+    <string>DCSpy tools</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -527,11 +540,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionCheckUpdates"/>
-   <addaction name="actionQuit"/>
+   <addaction name="a_check_updates"/>
+   <addaction name="a_quit"/>
    <addaction name="separator"/>
   </widget>
-  <action name="actionReportIssue">
+  <action name="a_report_issue">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
      <normaloff>:/icons/img/github-mark.svg</normaloff>:/icons/img/github-mark.svg</iconset>
@@ -540,7 +553,7 @@
     <string>Report issue</string>
    </property>
   </action>
-  <action name="actionAboutDCSpy">
+  <action name="a_about_dcspy">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
      <normaloff>:/icons/img/dcspy.ico</normaloff>:/icons/img/dcspy.ico</iconset>
@@ -549,7 +562,7 @@
     <string>About DCSpy</string>
    </property>
   </action>
-  <action name="actionAboutQt">
+  <action name="a_about_qt">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
      <normaloff>:/icons/img/qt.svg</normaloff>:/icons/img/qt.svg</iconset>
@@ -558,7 +571,7 @@
     <string>About Qt</string>
    </property>
   </action>
-  <action name="actionCheckUpdates">
+  <action name="a_check_updates">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
      <normaloff>:/icons/img/system-software-update.svg</normaloff>:/icons/img/system-software-update.svg</iconset>
@@ -567,7 +580,7 @@
     <string>Check updates</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="a_quit">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
      <normaloff>:/icons/img/backdoor-factory.svg</normaloff>:/icons/img/backdoor-factory.svg</iconset>
@@ -579,9 +592,37 @@
     <string>Ctrl+Q</string>
    </property>
   </action>
+  <action name="a_show_toolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show toolbar</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../qtgui.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pb_close</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>419</x>
+     <y>351</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
