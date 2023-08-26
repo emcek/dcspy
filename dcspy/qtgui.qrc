@@ -11,4 +11,7 @@
     <file>img/qt.svg</file>
     <file>img/system-software-update.svg</file>
   </qresource>
+  <qresource prefix="ui">
+    <file>ui/qtdcs.ui</file>
+  </qresource>
 </RCC>
