@@ -243,8 +243,8 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, 13)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, 4)])
 
-        for e in range(0, 13):
-            for c in range(0, 3):
+        for r in range(0, 13):
+            for c in range(0, 4):
                 completer = QCompleter(n1)
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
@@ -252,11 +252,11 @@ class DcsPyQtGui(QMainWindow):
                 completer.setMaxVisibleItems(20)
                 completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
-                combo = QComboBox(self)
+                combo = QComboBox()
                 combo.setEditable(True)
                 combo.addItems(n2)
                 combo.setCompleter(completer)
-                self.tw_gkeys.setCellWidget(e, c, combo)
+                self.tw_gkeys.setCellWidget(r, c, combo)
 
     def _btn_clicled(self):
         t = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
