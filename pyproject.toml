@@ -72,6 +72,7 @@ test = [
     'pydocstyle[toml]',
     'pytest',
     'pytest-cov',
+    'pytest-qt',
     'pytest-random',
     'ruff',
     'types-Pillow',
