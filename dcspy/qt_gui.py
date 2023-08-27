@@ -21,45 +21,6 @@ __version__ = '2.3.1'
 LOG = getLogger(__name__)
 
 
-class UiLoader(QtUiTools.QUiLoader):
-    _baseinstance = None
-
-    def createWidget(self, classname, parent=None, name=''):
-        """
-        Create widget.
-
-        :param classname:
-        :param parent:
-        :param name:
-        :return:
-        """
-        if parent is None and self._baseinstance is not None:
-            widget = self._baseinstance
-        else:
-            widget = super().createWidget(classname, parent, name)
-            if self._baseinstance is not None:
-                setattr(self._baseinstance, name, widget)
-        return widget
-
-    def loadUi(self, ui_path, baseinstance=None):
-        """
-        Load UI file.
-
-        :param ui_path:
-        :param baseinstance:
-        :return:
-        """
-        self._baseinstance = baseinstance
-        ui_file = QtCore.QFile(ui_path)
-        ui_file.open(QtCore.QIODevice.ReadOnly)
-        try:
-            widget = self.load(ui_file)
-            QtCore.QMetaObject.connectSlotsByName(widget)
-            return widget
-        finally:
-            ui_file.close()
-
-
 class DcsPyQtGui(QMainWindow):
     """Qt6 GUI for DCSpy."""
 
@@ -490,3 +451,42 @@ class Worker(QtCore.QRunnable):
             self.signals.result.emit(result)
         finally:
             self.signals.finished.emit()
+
+
+class UiLoader(QtUiTools.QUiLoader):
+    _baseinstance = None
+
+    def createWidget(self, classname, parent=None, name=''):
+        """
+        Create widget.
+
+        :param classname:
+        :param parent:
+        :param name:
+        :return:
+        """
+        if parent is None and self._baseinstance is not None:
+            widget = self._baseinstance
+        else:
+            widget = super().createWidget(classname, parent, name)
+            if self._baseinstance is not None:
+                setattr(self._baseinstance, name, widget)
+        return widget
+
+    def loadUi(self, ui_path, baseinstance=None):
+        """
+        Load UI file.
+
+        :param ui_path:
+        :param baseinstance:
+        :return:
+        """
+        self._baseinstance = baseinstance
+        ui_file = QtCore.QFile(ui_path)
+        ui_file.open(QtCore.QIODevice.ReadOnly)
+        try:
+            widget = self.load(ui_file)
+            QtCore.QMetaObject.connectSlotsByName(widget)
+            return widget
+        finally:
+            ui_file.close()
