@@ -253,3 +253,18 @@ class ControlKeyData:
 
     def __repr__(self) -> str:
         return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
+
+
+class KeyboardModel(BaseModel):
+    name: str
+    klass: str
+    modes: int
+    gkeys: int
+    lcdkeys: str
+
+
+ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcdkeys='')
+ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcdkeys='')
+ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcdkeys='')
+ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcdkeys='')
+ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcdkeys='')
