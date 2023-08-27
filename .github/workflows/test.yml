@@ -29,7 +29,7 @@ jobs:
           curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
           sudo mkdir -p /usr/share/fonts/truetype
           sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f -v
+          fc-cache -f
 
       - name: "Virtual Screen for Qt6/XWindows"
         if: ${{ contains( matrix.os, 'ubuntu') }}
