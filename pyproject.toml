@@ -133,7 +133,7 @@ max-complexity = 6
 ignore_missing_imports = true
 html_report = 'mypyhtml'
 exclude = [
-    'dcspy/qt_gui.py',
+    'dcspy\/qt_gui.py',
 ]
 
 [tool.pydocstyle]
