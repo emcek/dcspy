@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>690</width>
-    <height>603</height>
+    <height>633</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -188,145 +188,220 @@
           <string>General</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="3" column="0">
-           <widget class="QLineEdit" name="le_dcsdir"/>
-          </item>
-          <item row="8" column="0">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="5" column="0">
-           <widget class="QCheckBox" name="cb_autostart">
-            <property name="text">
-             <string>Autostart DCSpy:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="2">
-           <widget class="QPushButton" name="pb_biosdir">
-            <property name="text">
-             <string>DCS-BIOS folder</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QCheckBox" name="cb_show_gui">
-            <property name="text">
-             <string>Show GUI:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QPushButton" name="pb_dcsdir">
-            <property name="text">
-             <string>DCS folder</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLineEdit" name="le_biosdir"/>
-          </item>
-          <item row="7" column="0">
-           <widget class="QCheckBox" name="cb_check_ver">
-            <property name="text">
-             <string>Check DCSpy version:</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_fonts">
-         <attribute name="title">
-          <string>Fonts</string>
-         </attribute>
-         <layout class="QFormLayout" name="formLayout_3">
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Large:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QSlider" name="hs_large_font">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Medium:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QSlider" name="hs_medium_font">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-           </widget>
-          </item>
           <item row="2" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Small:</string>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Debug</string>
             </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_verbose">
+               <property name="toolTip">
+                <string>Logging more data (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Collect more logs</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="cb_lcd_screenshot">
+               <property name="toolTip">
+                <string>Make LCD screenshot everytime when updated (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Save LCD screenshot</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QPushButton" name="pb_collect_data">
+               <property name="text">
+                <string>Collect debug data</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QSlider" name="hs_small_font">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Fonts</string>
             </property>
+            <layout class="QFormLayout" name="formLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Large:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSlider" name="hs_large_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Medium:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSlider" name="hs_medium_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Small:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSlider" name="hs_small_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Name:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="le_font_name">
+               <property name="text">
+                <string>consola.ttf</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>F-16 DED:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="cb_ded_font">
+               <property name="text">
+                <string>use special font (only G19)</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Name:</string>
+          <item row="0" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>DCSpy</string>
             </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pb_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+               <property name="text">
+                <string>DCS folder</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="cb_check_ver">
+               <property name="text">
+                <string>Auto check DCSpy version</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_show_gui">
+               <property name="text">
+                <string>Show GUI</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_autostart">
+               <property name="text">
+                <string>Launch DCSpy after starting GUI</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="le_font_name"/>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>F-16 DED:</string>
+          <item row="1" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>DCS-BIOS</string>
             </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_bios_live">
+               <property name="toolTip">
+                <string>Regular release or live version (need git installed)</string>
+               </property>
+               <property name="text">
+                <string>Use live DCS-BIOS version:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QLineEdit" name="le_biosdir">
+               <property name="toolTip">
+                <string>Location of DCS-BIOS in Saved Games</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="le_bios_live">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string>Any valid Git reference: branch, tag, commit</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_autoupdate_bios">
+               <property name="text">
+                <string>Auto Update DCS-BIOS</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pb_biosdir">
+               <property name="toolTip">
+                <string>Location of DCS-BIOS in Saved Games</string>
+               </property>
+               <property name="text">
+                <string>DCS-BIOS folder</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QCheckBox" name="cb_ded_font">
-            <property name="text">
-             <string>use special font (only G19)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
@@ -380,81 +455,6 @@
           </item>
           <item row="0" column="0">
            <widget class="QTableWidget" name="tw_gkeys"/>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_advanced">
-         <attribute name="title">
-          <string>Advanced</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0" colspan="2">
-           <layout class="QFormLayout" name="formLayout_2">
-            <item row="0" column="0">
-             <widget class="QCheckBox" name="cb_lcd_screenshot">
-              <property name="text">
-               <string>Save LCD screenshot</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QCheckBox" name="cb_verbose">
-              <property name="text">
-               <string>Collect more logs</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QCheckBox" name="cb_autoupdate_bios">
-              <property name="text">
-               <string>Auto Update DCS-BIOS</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="0">
-             <widget class="QCheckBox" name="cb_bios_live">
-              <property name="text">
-               <string>Use live DCS-BIOS version</string>
-              </property>
-             </widget>
-            </item>
-            <item row="3" column="1">
-             <widget class="QLineEdit" name="le_bios_live"/>
-            </item>
-           </layout>
-          </item>
-          <item row="2" column="0">
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="2" column="1">
-           <widget class="QPushButton" name="pb_collect_data">
-            <property name="text">
-             <string>Collect debug data</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>
@@ -651,12 +651,28 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>419</x>
-     <y>351</y>
+     <x>678</x>
+     <y>600</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
      <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_bios_live</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>le_bios_live</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>96</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>81</x>
+     <y>369</y>
     </hint>
    </hints>
   </connection>
