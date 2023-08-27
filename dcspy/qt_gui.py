@@ -11,7 +11,7 @@ from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog,
                                QLineEdit, QMainWindow, QMessageBox,
                                QProgressBar, QPushButton, QRadioButton,
-                               QSlider, QStatusBar, QSystemTrayIcon,
+                               QSlider, QSpinBox, QStatusBar, QSystemTrayIcon,
                                QTableWidget, QToolBar)
 
 from dcspy import qtgui_rc
@@ -402,6 +402,7 @@ class DcsPyQtGui(QMainWindow):
         self.progressbar = self.findChild(QProgressBar, 'progressbar')
         self.toolbar = self.findChild(QToolBar, 'toolbar')
         self.tw_gkeys = self.findChild(QTableWidget, 'tw_gkeys')
+        self.sp_completer = self.findChild(QSpinBox, 'sp_completer')
 
         self.a_quit = self.findChild(QAction, 'a_quit')
         self.a_show_toolbar = self.findChild(QAction, 'a_show_toolbar')
@@ -426,7 +427,6 @@ class DcsPyQtGui(QMainWindow):
         self.cb_verbose = self.findChild(QCheckBox, 'cb_verbose')
         self.cb_autoupdate_bios = self.findChild(QCheckBox, 'cb_autoupdate_bios')
         self.cb_bios_live = self.findChild(QCheckBox, 'cb_bios_live')
-        self.cb_ded_font = self.findChild(QCheckBox, 'cb_ded_font')
 
         self.le_dcsdir = self.findChild(QLineEdit, 'le_dcsdir')
         self.le_biosdir = self.findChild(QLineEdit, 'le_biosdir')

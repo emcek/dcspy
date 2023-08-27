@@ -229,16 +229,37 @@
             <property name="title">
              <string>Fonts</string>
             </property>
-            <layout class="QFormLayout" name="formLayout">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label">
-               <property name="text">
-                <string>Large:</string>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="1">
+              <widget class="QSlider" name="hs_large_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QSlider" name="hs_large_font">
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="le_font_name">
+               <property name="text">
+                <string>consola.ttf</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="cb_ded_font">
+               <property name="text">
+                <string>use special font for F-16 Viper DED (only G19)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Small:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSlider" name="hs_small_font">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -258,17 +279,10 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
                <property name="text">
-                <string>Small:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QSlider" name="hs_small_font">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+                <string>Large:</string>
                </property>
               </widget>
              </item>
@@ -276,27 +290,6 @@
               <widget class="QLabel" name="label_4">
                <property name="text">
                 <string>Name:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QLineEdit" name="le_font_name">
-               <property name="text">
-                <string>consola.ttf</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>F-16 DED:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QCheckBox" name="cb_ded_font">
-               <property name="text">
-                <string>use special font (only G19)</string>
                </property>
               </widget>
              </item>
