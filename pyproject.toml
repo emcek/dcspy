@@ -74,6 +74,7 @@ test = [
     'pytest-cov',
     'pytest-qt',
     'pytest-random',
+    'pytest-xvfb',
     'ruff',
     'types-Pillow',
     'types-psutil',
