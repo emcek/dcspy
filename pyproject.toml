@@ -74,7 +74,6 @@ test = [
     'pytest-cov',
     'pytest-qt',
     'pytest-random',
-    'pytest-xvfb',
     'ruff',
     'types-Pillow',
     'types-psutil',
@@ -103,7 +102,10 @@ dcspy = [
 [tool.pytest.ini_options]
 addopts = ['--random', '-q']
 testpaths = ['tests']
-markers = ['dcsbios: marks tests for verfification of DCS-BIOS data']
+markers = [
+    'dcsbios: marks tests for verfification of DCS-BIOS data',
+    'qt6: marks tests for Qt6 verfification'
+]
 
 [tool.interrogate]
 ignore-init-method = false

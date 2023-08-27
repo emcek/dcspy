@@ -12,7 +12,6 @@ pytest
 pytest-cov
 pytest-qt
 pytest-random
-pytest-xvfb
 ruff
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
 types-Pillow
