@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog,
                                QSlider, QSpinBox, QStatusBar, QSystemTrayIcon,
                                QTableWidget, QToolBar)
 
-from dcspy import qtgui_rc
+from dcspy import LCD_TYPES, qtgui_rc
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
@@ -33,27 +33,15 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.conf_file = ''
         self.config = {}
-        self._init_menu_bar()
         # self._apply_gui_configuration(self._get_yaml_file(cli_args.yamlfile))
-        self.statusbar.showMessage(f'ver. {__version__}')
-        self._init_gkeys()
-        self.pb_copy.clicked.connect(self._btn_clicled)
-        self.tw_gkeys.currentCellChanged.connect(self.cell7)
+        self._init_menu_bar()
+        self._init_keyboards()
+        self._init_table_gkeys()
+
         # self._set_icons()
         self.current_row = -1
         self.current_col = -1
-
-    def cell7(self, currentRow, currentColumn, previousRow, previousColumn):
-        """
-        Save current cell of TableWidget.
-
-        :param currentRow:
-        :param currentColumn:
-        :param previousRow:
-        :param previousColumn:
-        """
-        self.current_row = currentRow
-        self.current_col = currentColumn
+        self.statusbar.showMessage(f'ver. {__version__}')
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
@@ -64,7 +52,14 @@ class DcsPyQtGui(QMainWindow):
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of='aboutQt', title='About Qt'))
         self.a_check_updates.triggered.connect(self.check_updates)
 
-    def _init_gkeys(self):
+    def _init_keyboards(self):
+        for data in LCD_TYPES.values():
+            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
+
+    def _select_keyboard(self, keyboard: str, state: bool):
+        LOG.debug(keyboard)
+
+    def _init_table_gkeys(self):
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR', 'ADI_LOC_FLAG', 'ADI_OFF_FLAG',
               'ADI_PITCH', 'ADI_PITCH_TRIM', 'ADI_TURNRATE', 'AIRSPEED', 'AIRSPEED_SET_KNB', 'MACH_INDICATOR', 'MAX_AIRSPEED', 'SET_AIRSPEED',
               'ALT_10000_FT_CNT', 'ALT_1000_FT_CNT', 'ALT_100_FT_CNT', 'ALT_100_FT_PTR', 'ALT_BARO_SET_KNB', 'ALT_MODE_LV', 'ALT_PNEU_FLAG',
@@ -196,6 +191,8 @@ class DcsPyQtGui(QMainWindow):
               'LIGHT_RWR_MSL_LAUNCH', 'LIGHT_RWR_POWER', 'LIGHT_RWR_SEARCH', 'LIGHT_RWR_SHIP_UNK', 'LIGHT_RWR_SYSTEST', 'LIGHT_RWR_TGTSEP_DN',
               'LIGHT_RWR_TGTSEP_UP', 'LIGHT_SEAT_NOT', 'LIGHT_SEC', 'LIGHT_STBY', 'LIGHT_STBY_GEN', 'LIGHT_STORES_CONFIG', 'LIGHT_TF_FAIL', 'LIGHT_TO_FLCS',
               'LIGHT_TO_LDG_CONFIG']
+        self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
+        self.pb_copy.clicked.connect(self._copy_cell_to_row)
         self.tw_gkeys.setColumnCount(3)
         self.tw_gkeys.setColumnWidth(0, 200)
         self.tw_gkeys.setColumnWidth(1, 200)
@@ -219,11 +216,23 @@ class DcsPyQtGui(QMainWindow):
                 combo.setCompleter(completer)
                 self.tw_gkeys.setCellWidget(r, c, combo)
 
-    def _btn_clicled(self):
-        t = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
-        s = {0, 1, 2} - {self.current_col}
-        for col in s:
-            self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(t)
+    def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
+        """
+        Save current cell of TableWidget.
+
+        :param currentRow:
+        :param currentColumn:
+        :param previousRow:
+        :param previousColumn:
+        """
+        self.current_row = currentRow
+        self.current_col = currentColumn
+
+    def _copy_cell_to_row(self) -> None:
+        """Copy content of current cell to whole row."""
+        current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
+        for col in {0, 1, 2} - {self.current_col}:  # todo: get number of columns from keyboard
+            self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
@@ -395,10 +404,10 @@ class DcsPyQtGui(QMainWindow):
         self.le_bios_live = self.findChild(QLineEdit, 'le_bios_live')
 
         self.rb_g19 = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g13 = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g15v1 = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g15v2 = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g510 = self.findChild(QRadioButton, 'rb_g19')
+        self.rb_g13 = self.findChild(QRadioButton, 'rb_g13')
+        self.rb_g15v1 = self.findChild(QRadioButton, 'rb_g15v1')
+        self.rb_g15v2 = self.findChild(QRadioButton, 'rb_g15v2')
+        self.rb_g510 = self.findChild(QRadioButton, 'rb_g510')
 
         self.hs_large_font = self.findChild(QSlider, 'hs_large_font')
         self.hs_medium_font = self.findChild(QSlider, 'hs_medium_font')
