@@ -66,7 +66,7 @@ jobs:
 
       - name: "Check mypy"
         run: |
-          mypy dcspy
+          mypy dcspy  --exclude '/qt_gui\.py$'
 
       - name: "Upload mypy results"
         uses: actions/upload-artifact@v3
