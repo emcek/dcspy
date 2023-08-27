@@ -245,14 +245,11 @@ class DcsPyQtGui(QMainWindow):
 
         for e in range(0, 5):
             for c in range(0, 3):
-                # self.tw_gkeys.setItem(row, 0, QTableWidgetItem(e['First Name']))
-                # self.tw_gkeys.setItem(row, 1, QTableWidgetItem(e['Last Name']))
-                # self.tw_gkeys.setItem(row, 2, QTableWidgetItem(str(e['Age'])))
                 completer = QCompleter(n1)
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
-                completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
-                completer.setFilterMode(QtCore.Qt.MatchFlag.MatchStartsWith)
-                completer.setMaxVisibleItems(9)
+                completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+                completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+                completer.setMaxVisibleItems(20)
                 completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
                 combo = QComboBox(self)
