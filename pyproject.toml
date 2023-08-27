@@ -72,7 +72,7 @@ test = [
     'pydocstyle[toml]',
     'pytest',
     'pytest-cov',
-    'pytest-qt',
+    'pytest-qt; sys_platform == "win32"',
     'pytest-random',
     'ruff',
     'types-Pillow',
