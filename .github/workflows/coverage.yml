@@ -26,6 +26,12 @@ jobs:
           sudo mv consola.ttf /usr/share/fonts/truetype
           fc-cache -f
 
+      - name: "Virtual Screen for Qt6/XWindows"
+        if: ${{ contains( matrix.os, 'ubuntu') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y '^libxcb.*-dev' libx11-xcb-dev libglu1-mesa-dev libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev ffmpeg libsm6 libxext6 xvfb
+
       - name: "Test with pytest"
         run: |
           python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing -m "not dcsbios"
