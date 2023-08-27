@@ -239,11 +239,11 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setColumnWidth(0, 200)
         self.tw_gkeys.setColumnWidth(1, 200)
         self.tw_gkeys.setColumnWidth(2, 200)
-        self.tw_gkeys.setRowCount(5)
-        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, 6)])
+        self.tw_gkeys.setRowCount(12)
+        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, 13)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, 4)])
 
-        for e in range(0, 5):
+        for e in range(0, 13):
             for c in range(0, 3):
                 completer = QCompleter(n1)
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)

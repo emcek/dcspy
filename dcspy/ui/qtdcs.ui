@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>470</width>
-    <height>393</height>
+    <width>690</width>
+    <height>603</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -335,32 +335,51 @@
           <string>G-Keys</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <widget class="QTableWidget" name="tw_gkeys"/>
-          </item>
-          <item row="0" column="1">
-           <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item row="1" column="0">
+           <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <widget class="QPushButton" name="pb_copy">
+              <property name="toolTip">
+               <string>Copy selected cell to whole row</string>
+              </property>
               <property name="text">
                <string>Copy</string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="verticalSpacer_5">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Number of results:</string>
               </property>
-              <property name="sizeHint" stdset="0">
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="sp_completer">
+              <property name="maximumSize">
                <size>
-                <width>20</width>
-                <height>40</height>
+                <width>50</width>
+                <height>16777215</height>
                </size>
               </property>
-             </spacer>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>40</number>
+              </property>
+              <property name="value">
+               <number>20</number>
+              </property>
+             </widget>
             </item>
            </layout>
+          </item>
+          <item row="0" column="0">
+           <widget class="QTableWidget" name="tw_gkeys"/>
           </item>
          </layout>
         </widget>
@@ -512,7 +531,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>470</width>
+     <width>690</width>
      <height>22</height>
     </rect>
    </property>
