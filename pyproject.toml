@@ -91,7 +91,7 @@ dcspy = [
     '*.ico',
     '*.png',
     '*.ttf',
-    '*.h',
+    'sdk/*.h',
     'py.typed',
 ]
 

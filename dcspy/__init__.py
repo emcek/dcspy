@@ -4,7 +4,7 @@ from logging import getLogger
 from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
-from sys import platform
+from sys import executable, platform
 from typing import Sequence, Tuple, Union
 
 from PIL import ImageFont
@@ -130,6 +130,7 @@ config_logger(LOG, config['verbose'])
 
 LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
+LOG.debug(f'Python exec: {executable}')
 LOG.debug(f'{uname()}')
 LOG.info(f'Configuration: {config} from: {default_yaml}')
 

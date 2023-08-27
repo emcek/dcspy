@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v2.2.0-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v2.3.1-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://www.codacy.com/gh/emcek/dcspy/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=emcek/dcspy&amp;utm_campaign=Badge_Grade)
@@ -11,7 +11,7 @@
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/emcek/dcspy/master.svg)](https://results.pre-commit.ci/latest/github/emcek/dcspy/master)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6056/badge)](https://bestpractices.coreinfrastructure.org/projects/6056)
-[![Downloads](https://pepy.tech/badge/dcspy)](https://pepy.tech/project/dcspy)
+[![Downloads](https://static.pepy.tech/badge/dcspy)](https://pepy.tech/project/dcspy)
 [![Rate this package](https://badges.openbase.com/python/rating/dcspy.svg?token=AZCVj1Hdbl6cC3I/gkVpgsigp22LtCOR0sB8lcODY9Y=)](https://openbase.com/python/dcspy?utm_source=embedded&amp;utm_medium=badge&amp;utm_campaign=rate-badge)
 
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
@@ -42,8 +42,8 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
-* [DCS-BIOS 0.7.48](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) or newer (can be installed directly from DCSpy)
-* DCS World: [2.8.5.40170](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.5.40170/) Open Beta (any release 2.8.* should work)
+* [DCS-BIOS 0.7.49](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) or newer (can be installed directly from DCSpy)
+* DCS World: [2.8.8.43704](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.8.43704/) Open Beta (any release 2.8.8.* should work)
 * (recommended) [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
 * (optional) [Python 3.11](https://www.python.org/downloads/) but 3.8+ should be fine (with tcl/tk support, see [installation](https://github.com/emcek/dcspy/wiki/installation))
 
