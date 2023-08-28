@@ -18,7 +18,7 @@ def run_gui() -> None:
     # QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = QApplication(sys.argv + ['-style', 'fusion'])
+    app = QApplication([*sys.argv, '-style', 'fusion'])
 
     try:
         tray = QSystemTrayIcon()
