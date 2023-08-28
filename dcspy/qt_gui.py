@@ -3,7 +3,7 @@ import webbrowser
 from functools import partial
 from logging import getLogger
 from sys import exc_info
-from threading import Thread, Event
+from threading import Event, Thread
 from time import sleep
 from typing import Callable, Dict, Optional, Union
 
