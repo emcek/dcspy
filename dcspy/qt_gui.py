@@ -332,7 +332,7 @@ class DcsPyQtGui(QMainWindow):
             sleep(total_time / steps)
             progress_callback.emit(progress_step)
         done_event.set()
-        # self.progressbar.hide()
+        self.progressbar.hide()
 
     def _progress_by_abs_value(self, value: int) -> None:
         """
