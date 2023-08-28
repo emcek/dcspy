@@ -58,6 +58,8 @@ class DcsPyQtGui(QMainWindow):
     def _init_keyboards(self):
         for data in LCD_TYPES.values():
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
+        self.pb_start.clicked.connect(self._start_clicked)
+        self.pb_stop.clicked.connect(self._stop_clicked)
 
     def _select_keyboard(self, keyboard: str, state: bool):
         LOG.debug(keyboard)
