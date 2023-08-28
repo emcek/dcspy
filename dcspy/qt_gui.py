@@ -3,6 +3,8 @@ import webbrowser
 from functools import partial
 from logging import getLogger
 from sys import exc_info
+from threading import Thread, Event
+from time import sleep
 from typing import Callable, Dict, Optional, Union
 
 import qtawesome
@@ -15,6 +17,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog,
                                QTableWidget, QToolBar)
 
 from dcspy import LCD_TYPES, qtgui_rc
+from dcspy.starter import dcspy_run
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
