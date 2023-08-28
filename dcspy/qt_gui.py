@@ -241,6 +241,34 @@ class DcsPyQtGui(QMainWindow):
         for col in {0, 1, 2} - {self.current_col}:  # todo: get number of columns from keyboard
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
+    def event_set(self):
+        """Setting event to close running thread."""
+        self.event.set()
+
+    def _stop_clicked(self):
+        """Set event to stop DCSpy."""
+        self.statusbar.showMessage('Start again or close DCSpy')
+        self.pb_start.setEnabled(True)
+        self.pb_stop.setEnabled(False)
+        self.event_set()
+
+    def _start_clicked(self):
+        """Run real application in thread."""
+        # LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
+        # keyboard = self.lcd_type.get()
+        self.progressbar.show()
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.5, done_event=Event()),
+                               signal_handlers={'progress': self._progress_by_abs_value})
+        keyboard = 'G13'
+        # self._save_cfg()
+        app_params = {'lcd_type': LCD_TYPES[keyboard]['klass'], 'event': self.event}
+        app_thread = Thread(target=dcspy_run, kwargs=app_params)
+        app_thread.name = 'dcspy-app'
+        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
+        self.pb_start.setEnabled(False)
+        self.pb_stop.setEnabled(True)
+        app_thread.start()
+
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
         """
