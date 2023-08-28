@@ -279,7 +279,7 @@ class DcsPyQtGui(QMainWindow):
             args = tuple()
             kwargs = dict()
         signals = {signal: handler.__name__ for signal, handler in signal_handlers.items()}
-        self.logger.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
+        LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
         self.threadpool.start(worker)
 
     def _set_icons(self, button: Optional[str] = None, icon_name: Optional[str] = None, color: str = 'black', spin: bool = False):
