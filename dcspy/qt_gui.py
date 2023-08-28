@@ -242,7 +242,7 @@ class DcsPyQtGui(QMainWindow):
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
     def event_set(self):
-        """Setting event to close running thread."""
+        """Set event to close running thread."""
         self.event.set()
 
     def _stop_clicked(self):
