@@ -18,7 +18,7 @@ def run_gui() -> None:
     # QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = QApplication(sys.argv)
+    app = QApplication(sys.argv + ['-style', 'fusion'])
 
     try:
         tray = QSystemTrayIcon()
@@ -39,7 +39,7 @@ def run_gui() -> None:
 
         tray.setContextMenu(menu)
         tray.activated.connect(window.activated)
-        # app.aboutToQuit.connect(window.trigger_autosave)
+        app.aboutToQuit.connect(window.event_set)
     except Exception as exp:
         LOG.exception(f'Critical error: {exp}')
     finally:
