@@ -282,6 +282,31 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
         self.threadpool.start(worker)
 
+    def _fake_progress(self, progress_callback: Callable, done_event: Event, total_time: int, steps: int = 100) -> None:
+        """
+        Make fake progress for progressbar.
+
+        :param progress_callback: function to update progress bar
+        :param total_time: time for fill-up whole bar (in seconds)
+        :param steps: number of steps (default 100)
+        """
+        for progress_step in range(1, steps + 1):
+            if done_event.is_set():
+                progress_callback.emit(100)
+                break
+            sleep(total_time / steps)
+            progress_callback.emit(progress_step)
+        done_event.set()
+        # self.progressbar.hide()
+
+    def _progress_by_abs_value(self, value: int) -> None:
+        """
+        Update progress bar by absolute value.
+
+        :param value: absolute value of progress bar
+        """
+        self.progressbar.setValue(value)
+
     def _set_icons(self, button: Optional[str] = None, icon_name: Optional[str] = None, color: str = 'black', spin: bool = False):
         """
         Universal method to set icon for QPushButtons.
