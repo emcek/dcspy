@@ -32,6 +32,8 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
+        self.event = Event()
+        self.progressbar.hide()
         self.threadpool = QtCore.QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.conf_file = ''
