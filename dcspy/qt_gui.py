@@ -316,11 +316,12 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: Callable, done_event: Event, total_time: int, steps: int = 100) -> None:
+    def _fake_progress(progress_callback: QtCore.SignalInstance, done_event: Event, total_time: int, steps: int = 100) -> None:
         """
         Make fake progress for progressbar.
 
-        :param progress_callback: function to update progress bar
+        :param progress_callback: signal to update progress bar
+        :done_event: threading event
         :param total_time: time for fill-up whole bar (in seconds)
         :param steps: number of steps (default 100)
         """
