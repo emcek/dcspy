@@ -370,6 +370,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
 
     def _stop_clicked(self):
         """Set event to stop DCSpy."""
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
+                               signal_handlers={'progress': self._progress_by_abs_value})
         self.statusbar.showMessage('Start again or close DCSpy')
         self.pb_start.setEnabled(True)
         self.pb_stop.setEnabled(False)
@@ -379,7 +381,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         """Run real application in thread."""
         # LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         # keyboard = self.lcd_type.get()
-        self.run_in_background(job=partial(self._fake_progress, total_time=0.5, done_event=Event()),
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
                                signal_handlers={'progress': self._progress_by_abs_value})
         keyboard = 'G13'
         # self._save_cfg()
@@ -440,23 +442,21 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: QtCore.SignalInstance, done_event: Event, total_time: int,
-                       steps: int = 100) -> None:
+    def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100, clean_after: bool = True) -> None:
         """
         Make fake progress for progressbar.
 
         :param progress_callback: signal to update progress bar
-        :done_event: threading event
         :param total_time: time for fill-up whole bar (in seconds)
         :param steps: number of steps (default 100)
+        :param clean_after: clean progress bar when finish
         """
         for progress_step in range(1, steps + 1):
-            if done_event.is_set():
-                progress_callback.emit(100)
-                break
             sleep(total_time / steps)
             progress_callback.emit(progress_step)
-        done_event.set()
+        if clean_after:
+            sleep(0.1)
+            progress_callback.emit(0)
 
     def _progress_by_abs_value(self, value: int) -> None:
         """
