@@ -7,9 +7,8 @@ from threading import Event, Thread
 from time import sleep
 from typing import Callable, Dict, Optional, Union
 
-import PySide6.QtWidgets
 import qtawesome
-from PySide6 import QtCore, QtUiTools
+from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
 from dcspy import LCD_TYPES, qtgui_rc
@@ -20,7 +19,7 @@ __version__ = '2.3.1'
 LOG = getLogger(__name__)
 
 
-class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
+class DcsPyQtGui(QtWidgets.QMainWindow):
     """Qt6 GUI for DCSpy."""
 
     def __init__(self) -> None:
@@ -205,14 +204,14 @@ class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
 
         for r in range(0, 13):
             for c in range(0, 4):
-                completer = PySide6.QtWidgets.QCompleter(n1)
+                completer = QtWidgets.QCompleter(n1)
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
-                completer.setCompletionMode(PySide6.QtWidgets.QCompleter.CompletionMode.PopupCompletion)
+                completer.setCompletionMode(QtWidgets.QCompleter.CompletionMode.PopupCompletion)
                 completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
                 completer.setMaxVisibleItems(20)
-                completer.setModelSorting(PySide6.QtWidgets.QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+                completer.setModelSorting(QtWidgets.QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
-                combo = PySide6.QtWidgets.QComboBox()
+                combo = QtWidgets.QComboBox()
                 combo.setEditable(True)
                 combo.addItems(n2)
                 combo.setCompleter(completer)
@@ -264,13 +263,13 @@ class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
         app_thread.start()
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
-    def activated(self, reason: PySide6.QtWidgets.QSystemTrayIcon.ActivationReason) -> None:
+    def activated(self, reason: QtWidgets.QSystemTrayIcon.ActivationReason) -> None:
         """
         Signal of activation.
 
         :param reason: reason of activation
         """
-        if reason == PySide6.QtWidgets.QSystemTrayIcon.Trigger:
+        if reason == QtWidgets.QSystemTrayIcon.Trigger:
             if self.isVisible():
                 self.hide()
             else:
@@ -384,14 +383,14 @@ class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
         if file_filter != 'All Files [*.*](*.*)':
             file_filter = f'{file_filter};;All Files [*.*](*.*)'
         if for_load and for_dir:
-            result_path = PySide6.QtWidgets.QFileDialog.getExistingDirectory(self, caption='Open Directory', directory=last_dir(),
-                                                                             options=PySide6.QtWidgets.QFileDialog.Option.ShowDirsOnly)
+            result_path = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Open Directory', directory=last_dir(),
+                                                                             options=QtWidgets.QFileDialog.Option.ShowDirsOnly)
         if for_load and not for_dir:
-            result_path = PySide6.QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(),
-                                                                        filter=file_filter, options=PySide6.QtWidgets.QFileDialog.Option.ReadOnly)[0]
+            result_path = QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(),
+                                                                        filter=file_filter, options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if not for_load and not for_dir:
-            result_path = PySide6.QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(),
-                                                                        filter=file_filter, options=PySide6.QtWidgets.QFileDialog.Option.ReadOnly)[0]
+            result_path = QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(),
+                                                                        filter=file_filter, options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
         return result_path
@@ -404,7 +403,7 @@ class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
         :param title: Title of modal window
         :param message: text of message, default is empty
         """
-        message_box = getattr(PySide6.QtWidgets.QMessageBox, kind_of)
+        message_box = getattr(QtWidgets.QMessageBox, kind_of)
         if kind_of == 'aboutQt':
             message_box(self, title)
         else:
@@ -423,11 +422,11 @@ class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
 
     def _find_children(self) -> None:
         """Find all widgets of main window."""
-        self.statusbar: PySide6.QtWidgets.QStatusBar = self.findChild(PySide6.QtWidgets.QStatusBar, 'statusbar')
-        self.progressbar: PySide6.QtWidgets.QProgressBar = self.findChild(PySide6.QtWidgets.QProgressBar, 'progressbar')
-        self.toolbar: PySide6.QtWidgets.QToolBar = self.findChild(PySide6.QtWidgets.QToolBar, 'toolbar')
-        self.tw_gkeys: PySide6.QtWidgets.QTableWidget = self.findChild(PySide6.QtWidgets.QTableWidget, 'tw_gkeys')
-        self.sp_completer: PySide6.QtWidgets.QSpinBox = self.findChild(PySide6.QtWidgets.QSpinBox, 'sp_completer')
+        self.statusbar: QtWidgets.QStatusBar = self.findChild(QtWidgets.QStatusBar, 'statusbar')
+        self.progressbar: QtWidgets.QProgressBar = self.findChild(QtWidgets.QProgressBar, 'progressbar')
+        self.toolbar: QtWidgets.QToolBar = self.findChild(QtWidgets.QToolBar, 'toolbar')
+        self.tw_gkeys: QtWidgets.QTableWidget = self.findChild(QtWidgets.QTableWidget, 'tw_gkeys')
+        self.sp_completer: QtWidgets.QSpinBox = self.findChild(QtWidgets.QSpinBox, 'sp_completer')
 
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
         self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
@@ -436,37 +435,37 @@ class DcsPyQtGui(PySide6.QtWidgets.QMainWindow):
         self.a_report_issue: QAction = self.findChild(QAction, 'a_report_issue')
         self.a_check_updates: QAction = self.findChild(QAction, 'a_check_updates')
 
-        self.pb_start: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_start')
-        self.pb_stop: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_stop')
-        self.pb_close: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_close')
-        self.pb_dcsdir: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_dcsdir')
-        self.pb_biosdir: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_biosdir')
-        self.pb_collect_data: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_collect_data')
-        self.pb_copy: PySide6.QtWidgets.QPushButton = self.findChild(PySide6.QtWidgets.QPushButton, 'pb_copy')
+        self.pb_start: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_start')
+        self.pb_stop: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_stop')
+        self.pb_close: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_close')
+        self.pb_dcsdir: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_dcsdir')
+        self.pb_biosdir: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_biosdir')
+        self.pb_collect_data: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_collect_data')
+        self.pb_copy: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_copy')
 
-        self.cb_autostart: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_autostart')
-        self.cb_show_gui: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_show_gui')
-        self.cb_check_ver: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_check_ver')
-        self.cb_ded_font: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_ded_font')
-        self.cb_lcd_screenshot: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_lcd_screenshot')
-        self.cb_verbose: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_verbose')
-        self.cb_autoupdate_bios: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_autoupdate_bios')
-        self.cb_bios_live: PySide6.QtWidgets.QCheckBox = self.findChild(PySide6.QtWidgets.QCheckBox, 'cb_bios_live')
+        self.cb_autostart: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_autostart')
+        self.cb_show_gui: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_show_gui')
+        self.cb_check_ver: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_check_ver')
+        self.cb_ded_font: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_ded_font')
+        self.cb_lcd_screenshot: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_lcd_screenshot')
+        self.cb_verbose: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_verbose')
+        self.cb_autoupdate_bios: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_autoupdate_bios')
+        self.cb_bios_live: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_bios_live')
 
-        self.le_dcsdir: PySide6.QtWidgets.QLineEdit = self.findChild(PySide6.QtWidgets.QLineEdit, 'le_dcsdir')
-        self.le_biosdir: PySide6.QtWidgets.QLineEdit = self.findChild(PySide6.QtWidgets.QLineEdit, 'le_biosdir')
-        self.le_font_name: PySide6.QtWidgets.QLineEdit = self.findChild(PySide6.QtWidgets.QLineEdit, 'le_font_name')
-        self.le_bios_live: PySide6.QtWidgets.QLineEdit = self.findChild(PySide6.QtWidgets.QLineEdit, 'le_bios_live')
+        self.le_dcsdir: QtWidgets.QLineEdit = self.findChild(QtWidgets.QLineEdit, 'le_dcsdir')
+        self.le_biosdir: QtWidgets.QLineEdit = self.findChild(QtWidgets.QLineEdit, 'le_biosdir')
+        self.le_font_name: QtWidgets.QLineEdit = self.findChild(QtWidgets.QLineEdit, 'le_font_name')
+        self.le_bios_live: QtWidgets.QLineEdit = self.findChild(QtWidgets.QLineEdit, 'le_bios_live')
 
-        self.rb_g19: PySide6.QtWidgets.QRadioButton = self.findChild(PySide6.QtWidgets.QRadioButton, 'rb_g19')
-        self.rb_g13: PySide6.QtWidgets.QRadioButton = self.findChild(PySide6.QtWidgets.QRadioButton, 'rb_g13')
-        self.rb_g15v1: PySide6.QtWidgets.QRadioButton = self.findChild(PySide6.QtWidgets.QRadioButton, 'rb_g15v1')
-        self.rb_g15v2: PySide6.QtWidgets.QRadioButton = self.findChild(PySide6.QtWidgets.QRadioButton, 'rb_g15v2')
-        self.rb_g510: PySide6.QtWidgets.QRadioButton = self.findChild(PySide6.QtWidgets.QRadioButton, 'rb_g510')
+        self.rb_g19: QtWidgets.QRadioButton = self.findChild(QtWidgets.QRadioButton, 'rb_g19')
+        self.rb_g13: QtWidgets.QRadioButton = self.findChild(QtWidgets.QRadioButton, 'rb_g13')
+        self.rb_g15v1: QtWidgets.QRadioButton = self.findChild(QtWidgets.QRadioButton, 'rb_g15v1')
+        self.rb_g15v2: QtWidgets.QRadioButton = self.findChild(QtWidgets.QRadioButton, 'rb_g15v2')
+        self.rb_g510: QtWidgets.QRadioButton = self.findChild(QtWidgets.QRadioButton, 'rb_g510')
 
-        self.hs_large_font: PySide6.QtWidgets.QSlider = self.findChild(PySide6.QtWidgets.QSlider, 'hs_large_font')
-        self.hs_medium_font: PySide6.QtWidgets.QSlider = self.findChild(PySide6.QtWidgets.QSlider, 'hs_medium_font')
-        self.hs_small_font: PySide6.QtWidgets.QSlider = self.findChild(PySide6.QtWidgets.QSlider, 'hs_small_font')
+        self.hs_large_font: QtWidgets.QSlider = self.findChild(QtWidgets.QSlider, 'hs_large_font')
+        self.hs_medium_font: QtWidgets.QSlider = self.findChild(QtWidgets.QSlider, 'hs_medium_font')
+        self.hs_small_font: QtWidgets.QSlider = self.findChild(QtWidgets.QSlider, 'hs_small_font')
 
 
 class WorkerSignals(QtCore.QObject):
