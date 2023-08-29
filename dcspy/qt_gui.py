@@ -33,7 +33,6 @@ class DcsPyQtGui(QMainWindow):
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
         self.event = Event()
-        self.progressbar.hide()
         self.threadpool = QtCore.QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.conf_file = ''
@@ -256,7 +255,6 @@ class DcsPyQtGui(QMainWindow):
         """Run real application in thread."""
         # LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         # keyboard = self.lcd_type.get()
-        self.progressbar.show()
         self.run_in_background(job=partial(self._fake_progress, total_time=0.5, done_event=Event()),
                                signal_handlers={'progress': self._progress_by_abs_value})
         keyboard = 'G13'
@@ -317,7 +315,8 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
         self.threadpool.start(worker)
 
-    def _fake_progress(self, progress_callback: Callable, done_event: Event, total_time: int, steps: int = 100) -> None:
+    @staticmethod
+    def _fake_progress(progress_callback: Callable, done_event: Event, total_time: int, steps: int = 100) -> None:
         """
         Make fake progress for progressbar.
 
@@ -332,7 +331,6 @@ class DcsPyQtGui(QMainWindow):
             sleep(total_time / steps)
             progress_callback.emit(progress_step)
         done_event.set()
-        self.progressbar.hide()
 
     def _progress_by_abs_value(self, value: int) -> None:
         """
