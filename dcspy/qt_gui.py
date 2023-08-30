@@ -392,9 +392,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         # keyboard = self.lcd_type.get()
         self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
                                signal_handlers={'progress': self._progress_by_abs_value})
-        keyboard = 'G13'
         # self._save_cfg()
-        app_params = {'lcd_type': LCD_TYPES[keyboard]['klass'], 'event': self.event}
+        app_params = {'lcd_type': self.keyboard.klass, 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
