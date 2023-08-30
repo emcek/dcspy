@@ -3,9 +3,7 @@ import sys
 from logging import getLogger
 from pathlib import Path
 
-# from PySide6.QtCore import QCoreApplication, Qt
-from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import QApplication, QMenu, QSystemTrayIcon
+from PySide6 import QtGui, QtWidgets
 
 from dcspy.qt_gui import DcsPyQtGui
 
@@ -15,25 +13,24 @@ __version__ = '2.3.1'
 
 def run_gui() -> None:
     """Run DCSpy Qt6 GUI."""
-    # QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = QApplication([*sys.argv, '-style', 'fusion'])
+    app = QtWidgets.QApplication([*sys.argv, '-style', 'fusion'])
 
     try:
-        tray = QSystemTrayIcon()
-        tray.setIcon(QIcon(str(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')))
+        tray = QtWidgets.QSystemTrayIcon()
+        tray.setIcon(QtGui.QIcon(str(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')))
         tray.setVisible(True)
         tray.setToolTip(f'DCSpy {__version__}')
-        menu = QMenu()
+        menu = QtWidgets.QMenu()
 
         window = DcsPyQtGui()
         window.show()
 
-        check_updates = QAction('Check updates')
+        check_updates = QtGui.QAction('Check updates')
         check_updates.triggered.connect(window.check_updates)
         menu.addAction(check_updates)
-        action_quit = QAction('Quit')
+        action_quit = QtGui.QAction('Quit')
         action_quit.triggered.connect(app.quit)
         menu.addAction(action_quit)
 
