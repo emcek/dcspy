@@ -1,6 +1,7 @@
 import traceback
 import webbrowser
 from functools import partial
+from importlib import import_module
 from logging import getLogger
 from sys import exc_info
 from threading import Event, Thread
@@ -12,6 +13,7 @@ from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
 from dcspy import LCD_TYPES, qtgui_rc
+from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
@@ -28,6 +30,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
         self.event = Event()
+        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys='')
         self.threadpool = QtCore.QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.conf_file = ''
@@ -35,7 +38,6 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         # self._apply_gui_configuration(self._get_yaml_file(cli_args.yamlfile))
         self._init_menu_bar()
         self._init_keyboards()
-        self._init_table_gkeys()
 
         # self._set_icons()
         self.current_row = -1
@@ -56,9 +58,17 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
+        self.rb_g13.setChecked(True)  # todo: remove when load config will work
 
     def _select_keyboard(self, keyboard: str, state: bool):
-        LOG.debug(keyboard)
+        if state:
+            LOG.debug(self.keyboard)
+            for mode_col in range(self.keyboard.modes):
+                self.tw_gkeys.removeColumn(mode_col)
+            for gkey_row in range(self.keyboard.gkeys):
+                self.tw_gkeys.removeRow(gkey_row)
+            self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
+            self._init_table_gkeys()
 
     def _init_table_gkeys(self):
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR',
@@ -323,16 +333,15 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
               'LIGHT_TO_LDG_CONFIG']
         self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
         self.pb_copy.clicked.connect(self._copy_cell_to_row)
-        self.tw_gkeys.setColumnCount(3)
-        self.tw_gkeys.setColumnWidth(0, 200)
-        self.tw_gkeys.setColumnWidth(1, 200)
-        self.tw_gkeys.setColumnWidth(2, 200)
-        self.tw_gkeys.setRowCount(12)
-        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, 13)])
-        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, 4)])
+        self.tw_gkeys.setColumnCount(self.keyboard.modes)
+        for mode_col in range(self.keyboard.modes):
+            self.tw_gkeys.setColumnWidth(mode_col, 200)
+        self.tw_gkeys.setRowCount(self.keyboard.gkeys)
+        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
+        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
-        for r in range(0, 13):
-            for c in range(0, 4):
+        for r in range(0, self.keyboard.gkeys + 1):
+            for c in range(0, self.keyboard.modes + 1):
                 completer = QtWidgets.QCompleter(n1)
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QtWidgets.QCompleter.CompletionMode.PopupCompletion)
