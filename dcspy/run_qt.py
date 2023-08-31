@@ -15,7 +15,8 @@ def run_gui() -> None:
     """Run DCSpy Qt6 GUI."""
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    app = QtWidgets.QApplication([*sys.argv, '-style', 'fusion'])
+    app = QtWidgets.QApplication(sys.argv)
+    app.setStyle('fusion')
 
     try:
         tray = QtWidgets.QSystemTrayIcon()
