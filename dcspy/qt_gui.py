@@ -572,13 +572,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
                                                                      directory=last_dir(),
                                                                      options=QtWidgets.QFileDialog.Option.ShowDirsOnly)
         if for_load and not for_dir:
-            result_path = \
-            QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(), filter=file_filter,
-                                                  options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
+            result_path = QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(),
+                                                                filter=file_filter, options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if not for_load and not for_dir:
-            result_path = \
-            QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(), filter=file_filter,
-                                                  options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
+            result_path = QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(),
+                                                                filter=file_filter, options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
         return result_path
