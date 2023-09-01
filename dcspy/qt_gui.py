@@ -34,9 +34,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.threadpool = QtCore.QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.conf_file = ''
+        self._visible_items = 0
         self.config = {}
         # self._apply_gui_configuration(self._get_yaml_file(cli_args.yamlfile))
         self._init_menu_bar()
+        self._init_gkeys()
         self._init_keyboards()
 
         # self._set_icons()
@@ -53,6 +55,49 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of='aboutQt', title='About Qt'))
         self.a_check_updates.triggered.connect(self.check_updates)
 
+    def _init_gkeys(self):
+        p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
+             "Alphajet", "Bell47_2", "Bf-109K-4", "BlackHawk", "Bronco-OV-10A", "C-101CC", "C-101EB", "Cessna_210N",
+             "Christen Eagle II", "DC3", "EA-18G", "Edge540", "Extra330SR", "F-117A", "F-14A-135-GR", "F-14B", "F-15C",
+             "F-15ESE", "F-16A", "F-16C_50", "F-16D_50", "F-16D_50_NS", "F-16D_52", "F-16D_52_NS", "F-16D_Barak_30",
+             "F-16D_Barak_40", "F-16I", "F-22A", "F-2A", "F-2B", "F-5E-3", "F-86F Sabre", "F4e", "FA-18C_hornet",
+             "FA-18E", "FA-18F", "FA_18D", "FW-190A8", "FW-190D9", "FlankerEx", "Flyer1", "Hawk", "Hercules", "I-16",
+             "J-11A", "J-20A", "JF-17", "Ka-50", "Ka-50_3", "L-39C", "L-39ZA", "M-2000C", "MB-339A", "MB-339APAN",
+             "MB-339PAN", "MQ9_PREDATOR", "Mi-24P", "Mi-8MT", "Mi-8MTV2", "MiG-15bis", "MiG-19P", "MiG-21Bis",
+             "MiG-29A", "MiG-29G", "MiG-29S", "Mig-23UB", "Mirage-F1CE", "Mirage-F1EE", "MirageF1", "MirageF1CT",
+             "MosquitoFBMkVI", "NONE", "NS430", "NS430_C-101CC", "NS430_C-101EB", "NS430_L-39C", "NS430_MI-8MTV2",
+             "NS430_SA342", "P-47D-30", "P-47D-30bl1", "P-47D-40", "P-51D", "P-51D-30-NA", "REISEN52",
+             "RST_Eurofighter", "RST_Eurofighter_AG", "Rafale_A_S", "Rafale_B", "Rafale_C", "Rafale_M", "SA342L",
+             "SA342M", "SA342Minigun", "SA342Mistral", "SpitfireLFMkIX", "SpitfireLFMkIXCW", "Su-25", "Su-25T", "Su-27",
+             "Su-30M", "Su-30MK", "Su-30SM", "Su-33", "Su-57", "Super_Etendard", "Supercarrier", "T-4", "T-45",
+             "TF-51D", "UH-1H", "VNAO_Ready_Room", "VSN_AJS37Viggen", "VSN_C17A", "VSN_C5_Galaxy", "VSN_E2D",
+             "VSN_Eurofighter", "VSN_Eurofighter_AG", "VSN_F104G", "VSN_F104G_AG", "VSN_F104S", "VSN_F104S_AG",
+             "VSN_F105D", "VSN_F105G", "VSN_F14A", "VSN_F14B", "VSN_F15E", "VSN_F15E_AA", "VSN_F16A", "VSN_F16AMLU",
+             "VSN_F16CBL50", "VSN_F16CBL52D", "VSN_F16CMBL50", "VSN_F22", "VSN_F35A", "VSN_F35A_AG", "VSN_F35B",
+             "VSN_F35B_AG", "VSN_F4E", "VSN_F4E_AG", "VSN_F5E", "VSN_F5N", "VSN_FA18C", "VSN_FA18C_AG",
+             "VSN_FA18C_Lot20", "VSN_FA18F", "VSN_FA18F_AG", "VSN_Harrier", "VSN_M2000", "VSN_P3C", "VSN_Su47",
+             "VSN_TornadoGR4", "VSN_TornadoIDS", "VSN_UFO", "Yak-52", ]
+        completer = QtWidgets.QCompleter(p)
+        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        completer.setCompletionMode(QtWidgets.QCompleter.CompletionMode.PopupCompletion)
+        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        completer.setMaxVisibleItems(self._visible_items)
+        completer.setModelSorting(QtWidgets.QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+        self.combo_planes.addItems(p)
+        self.combo_planes.setEditable(True)
+        self.combo_planes.setCompleter(completer)
+        self.combo_planes.currentTextChanged.connect(self._load_new_plane)
+        self.sp_completer.valueChanged.connect(self._set_find_value)
+
+    def _load_new_plane(self, text):
+        LOG.debug(text)
+        self._load_table_gkeys()
+
+    def _set_find_value(self, value):
+        LOG.debug(value)
+        self._visible_items = value
+        self._load_table_gkeys()
+
     def _init_keyboards(self):
         for data in LCD_TYPES.values():
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
@@ -68,9 +113,9 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             for gkey_row in range(self.keyboard.gkeys):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
-            self._init_table_gkeys()
+            self._load_table_gkeys()
 
-    def _init_table_gkeys(self):
+    def _load_table_gkeys(self):
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR',
               'ADI_LOC_FLAG', 'ADI_OFF_FLAG',
               'ADI_PITCH', 'ADI_PITCH_TRIM', 'ADI_TURNRATE', 'AIRSPEED', 'AIRSPEED_SET_KNB', 'MACH_INDICATOR',
@@ -346,7 +391,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QtWidgets.QCompleter.CompletionMode.PopupCompletion)
                 completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
-                completer.setMaxVisibleItems(20)
+                completer.setMaxVisibleItems(self._visible_items)
                 completer.setModelSorting(QtWidgets.QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
                 combo = QtWidgets.QComboBox()
@@ -450,7 +495,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100, clean_after: bool = True) -> None:
+    def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100,
+                       clean_after: bool = True) -> None:
         """
         Make fake progress for progressbar.
 
@@ -522,14 +568,17 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         if file_filter != 'All Files [*.*](*.*)':
             file_filter = f'{file_filter};;All Files [*.*](*.*)'
         if for_load and for_dir:
-            result_path = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Open Directory', directory=last_dir(),
+            result_path = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Open Directory',
+                                                                     directory=last_dir(),
                                                                      options=QtWidgets.QFileDialog.Option.ShowDirsOnly)
         if for_load and not for_dir:
-            result_path = QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(), filter=file_filter,
-                                                                options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
+            result_path = \
+            QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(), filter=file_filter,
+                                                  options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if not for_load and not for_dir:
-            result_path = QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(), filter=file_filter,
-                                                                options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
+            result_path = \
+            QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(), filter=file_filter,
+                                                  options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
         return result_path
@@ -566,6 +615,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.toolbar: QtWidgets.QToolBar = self.findChild(QtWidgets.QToolBar, 'toolbar')
         self.tw_gkeys: QtWidgets.QTableWidget = self.findChild(QtWidgets.QTableWidget, 'tw_gkeys')
         self.sp_completer: QtWidgets.QSpinBox = self.findChild(QtWidgets.QSpinBox, 'sp_completer')
+        self.combo_planes: QtWidgets.QComboBox = self.findChild(QtWidgets.QComboBox, 'combo_planes')
 
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
         self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
