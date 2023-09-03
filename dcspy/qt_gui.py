@@ -15,7 +15,7 @@ import qtawesome
 from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
-from dcspy import LCD_TYPES, qtgui_rc
+from dcspy import LCD_TYPES, qtgui_rc, config
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import collect_debug_data
@@ -34,8 +34,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
         self.event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys='')
+        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys='', lcd='')
         self.threadpool = QtCore.QThreadPool.globalInstance()
+        self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
+        self.color_font = {'large': 0, 'medium': 0, 'small': 0}
+        self._load_cfg()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.conf_file = ''
         self._visible_items = 0
@@ -119,10 +122,6 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
     def _select_keyboard(self, keyboard: str, state: bool):
         if state:
             LOG.debug(f'Select: {self.keyboard}')
-            if keyboard == 'G19':
-                self.cb_ded_font.setEnabled(True)
-            else:
-                self.cb_ded_font.setEnabled(False)
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
             for gkey_row in range(self.keyboard.gkeys):
@@ -476,6 +475,23 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_start.setEnabled(False)
         self.pb_stop.setEnabled(True)
         app_thread.start()
+
+    # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
+    def _load_cfg(self):
+        self.cb_autostart.setChecked(config['autostart'])
+        self.cb_show_gui.setChecked(config['show_gui'])
+        self.cb_lcd_screenshot.setChecked(config['save_lcd'])
+        self.cb_check_ver.setChecked(config['check_ver'])
+        self.cb_verbose.setChecked(config['verbose'])
+        self.cb_ded_font.setChecked(config['f16_ded_font'])
+        self.le_dcsdir.setText(config['dcs'])
+        self.le_biosdir.setText(config['dcsbios'])
+        self.cb_bios_live.setChecked(config['git_bios'])
+        self.cb_autoupdate_bios.setChecked(config['check_bios'])
+        self.le_bios_live.setText(config['git_bios_ref'])
+        self.le_font_name.setText(str(config['font_name']))
+        self.mono_font = {'large': config["font_mono_l"], 'medium': config["font_mono_s"], 'small': config["font_mono_xs"]}
+        self.color_font = {'large': config["font_color_l"], 'medium': config["font_color_s"], 'small': config["font_color_xs"]}
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def activated(self, reason: QtWidgets.QSystemTrayIcon.ActivationReason) -> None:
