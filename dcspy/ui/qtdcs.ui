@@ -227,10 +227,10 @@
              <string>Fonts</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="1">
-              <widget class="QSlider" name="hs_large_font">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="cb_ded_font">
+               <property name="text">
+                <string>use special font for F-16 Viper DED (only G19)</string>
                </property>
               </widget>
              </item>
@@ -241,10 +241,10 @@
                </property>
               </widget>
              </item>
-             <item row="4" column="1">
-              <widget class="QCheckBox" name="cb_ded_font">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>use special font for F-16 Viper DED (only G19)</string>
+                <string>Medium:</string>
                </property>
               </widget>
              </item>
@@ -255,24 +255,23 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
-              <widget class="QSlider" name="hs_small_font">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>Medium:</string>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="1">
               <widget class="QSlider" name="hs_medium_font">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Name:</string>
                </property>
               </widget>
              </item>
@@ -283,10 +282,50 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_4">
+             <item row="0" column="1">
+              <widget class="QSlider" name="hs_large_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSlider" name="hs_small_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="l_large">
                <property name="text">
-                <string>Name:</string>
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="l_medium">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="l_small">
+               <property name="text">
+                <string>0</string>
                </property>
               </widget>
              </item>
@@ -677,12 +716,60 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>96</x>
-     <y>334</y>
+     <x>118</x>
+     <y>365</y>
     </hint>
     <hint type="destinationlabel">
-     <x>81</x>
-     <y>369</y>
+     <x>271</x>
+     <y>366</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_large_font</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>l_large</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>437</x>
+     <y>427</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>423</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_medium_font</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>l_medium</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>451</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>642</x>
+     <y>455</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_small_font</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>l_small</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>432</x>
+     <y>484</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>619</x>
+     <y>480</y>
     </hint>
    </hints>
   </connection>
