@@ -15,7 +15,7 @@ import qtawesome
 from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
-from dcspy import LCD_TYPES, qtgui_rc, config
+from dcspy import LCD_TYPES, config, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import collect_debug_data
