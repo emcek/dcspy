@@ -129,7 +129,24 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             for gkey_row in range(self.keyboard.gkeys):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
+            self._set_ded_font_and_font_sliders()
             self._load_table_gkeys()
+
+    def _set_ded_font_and_font_sliders(self):
+        if self.keyboard.lcd == 'color':
+            self.cb_ded_font.setEnabled(True)
+            minimum = 15
+            maximum = 40
+        else:
+            self.cb_ded_font.setEnabled(False)
+            minimum = 7
+            maximum = 20
+
+        for name in ['large', 'medium', 'small']:
+            hs = getattr(self, f'hs_{name}_font')
+            hs.setMinimum(minimum)
+            hs.setMaximum(maximum)
+            hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
 
     def _load_table_gkeys(self):
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR',
