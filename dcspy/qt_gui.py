@@ -52,6 +52,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         # self._set_icons()
         self.current_row = -1
         self.current_col = -1
+        if config.get('autostart', False):
+            self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
 
     def _init_menu_bar(self) -> None:
