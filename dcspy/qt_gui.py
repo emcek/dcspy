@@ -1,8 +1,11 @@
+import os
+import shutil
 import traceback
 import webbrowser
 from functools import partial
 from importlib import import_module
 from logging import getLogger
+from pathlib import Path
 from sys import exc_info
 from threading import Event, Thread
 from time import sleep
@@ -15,6 +18,7 @@ from PySide6.QtGui import QAction, QIcon
 from dcspy import LCD_TYPES, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
+from dcspy.utils import collect_debug_data
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
@@ -38,6 +42,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.config = {}
         # self._apply_gui_configuration(self._get_yaml_file(cli_args.yamlfile))
         self._init_menu_bar()
+        self._init_settings()
         self._init_gkeys()
         self._init_keyboards()
 
@@ -54,6 +59,12 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         # self.actionAboutDCSpy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of='aboutQt', title='About Qt'))
         self.a_check_updates.triggered.connect(self.check_updates)
+
+    def _init_settings(self):
+        """Initialize of settings."""
+        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
+        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'D:\\', widget_name='le_biosdir'))
+        self.pb_collect_data.clicked.connect(self._collect_data_clicked)
 
     def _init_gkeys(self):
         p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
@@ -422,6 +433,22 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         """Set event to close running thread."""
         self.event.set()
 
+    def _collect_data_clicked(self):
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = str(Path(os.environ['USERPROFILE']) / 'Desktop')
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
+        try:
+            destination = Path(directory) / zip_file.name
+            shutil.copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            self._show_message_box(kind_of='warning', title=err.args[1], message=f'Can not save file:\n{err.filename}')
+
     def _stop_clicked(self):
         """Set event to stop DCSpy."""
         self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
@@ -568,14 +595,13 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         if file_filter != 'All Files [*.*](*.*)':
             file_filter = f'{file_filter};;All Files [*.*](*.*)'
         if for_load and for_dir:
-            result_path = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Open Directory',
-                                                                     directory=last_dir(),
+            result_path = QtWidgets.QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(),
                                                                      options=QtWidgets.QFileDialog.Option.ShowDirsOnly)
         if for_load and not for_dir:
-            result_path = QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', directory=last_dir(),
+            result_path = QtWidgets.QFileDialog.getOpenFileName(self, caption='Open File', dir=last_dir(),
                                                                 filter=file_filter, options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if not for_load and not for_dir:
-            result_path = QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', directory=last_dir(),
+            result_path = QtWidgets.QFileDialog.getSaveFileName(self, caption='Save File', dir=last_dir(),
                                                                 filter=file_filter, options=QtWidgets.QFileDialog.Option.ReadOnly)[0]
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
