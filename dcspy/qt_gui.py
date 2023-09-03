@@ -118,7 +118,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
 
     def _select_keyboard(self, keyboard: str, state: bool):
         if state:
-            LOG.debug(self.keyboard)
+            LOG.debug(f'Select: {self.keyboard}')
+            if keyboard == 'G19':
+                self.cb_ded_font.setEnabled(True)
+            else:
+                self.cb_ded_font.setEnabled(False)
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
             for gkey_row in range(self.keyboard.gkeys):
