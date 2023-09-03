@@ -442,7 +442,10 @@ class DcspyGui(tk.Frame):
         """
         sha_commit = ''
         if self.git_exec and self.bios_git_switch.get():
-            sha_commit = f' SHA: {check_github_repo(git_ref=self.bios_git_ref.get(), update=False)}'
+            try:
+                sha_commit = f' SHA: {check_github_repo(git_ref=self.bios_git_ref.get(), update=False)}'
+            except Exception as exc:
+                CTkMessagebox(title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.', icon='warning', option_1='OK')
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         return dcs_bios_ver
 
@@ -688,7 +691,11 @@ class DcspyGui(tk.Frame):
         :param silence: perform action with silence
         """
         repo_dir = Path(gettempdir()) / 'dcsbios_git'
-        sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
+        sha = ''
+        try:
+            sha = check_github_repo(git_ref=self.bios_git_ref.get(), update=True, repo_dir=repo_dir)
+        except Exception as exc:
+            CTkMessagebox(title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.', icon='warning', option_1='OK')
         LOG.debug(f'Remove: {self.bios_path.get()} ')
         rmtree(path=self.bios_path.get(), ignore_errors=True)
         LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path.get()} ')
