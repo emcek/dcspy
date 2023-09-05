@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from logging import getLogger
 from os import name
+from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
 from typing import Sequence, Tuple, Union
@@ -9,7 +10,7 @@ from typing import Sequence, Tuple, Union
 from PIL import ImageFont
 
 from dcspy.log import config_logger
-from dcspy.utils import get_default_yaml, load_cfg, set_defaults
+from dcspy.utils import get_default_yaml, load_cfg, set_defaults, check_dcs_ver
 
 try:
     from typing import NotRequired
@@ -39,6 +40,7 @@ SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LOCAL_APPDATA = True
+__version__ = '2.3.1'
 
 # LCD types
 TYPE_MONO = 1
@@ -167,7 +169,10 @@ LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'Python exec: {executable}')
 LOG.debug(f'{uname()}')
-LOG.info(f'Configuration: {config} from: {default_yaml}')
+LOG.debug(f'Configuration: {config} from: {default_yaml}')
+LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
+dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
 
 class IntBuffArgs(TypedDict):
