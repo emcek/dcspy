@@ -10,7 +10,7 @@ from typing import Sequence, Tuple, Union
 from PIL import ImageFont
 
 from dcspy.log import config_logger
-from dcspy.utils import get_default_yaml, load_cfg, set_defaults, check_dcs_ver
+from dcspy.utils import check_dcs_ver, get_default_yaml, load_cfg, set_defaults
 
 try:
     from typing import NotRequired

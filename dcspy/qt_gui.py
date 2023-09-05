@@ -19,7 +19,7 @@ from dcspy import LCD_TYPES, LOCAL_APPDATA, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (collect_debug_data, defaults_cfg, get_default_yaml,
-                         save_cfg, load_cfg)
+                         load_cfg, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
