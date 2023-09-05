@@ -15,11 +15,11 @@ import qtawesome
 from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
-from dcspy import LCD_TYPES, LOCAL_APPDATA, config, qtgui_rc
+from dcspy import LCD_TYPES, LOCAL_APPDATA, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (collect_debug_data, defaults_cfg, get_default_yaml,
-                         save_cfg)
+                         save_cfg, load_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
@@ -34,14 +34,17 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
+        self.threadpool = QtCore.QThreadPool.globalInstance()
+        LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.event = Event()
         self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys='', lcd='')
-        self.threadpool = QtCore.QThreadPool.globalInstance()
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
-        self.load_configuration()
-        LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
+        self.current_row = -1
+        self.current_col = -1
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
+        self.config = load_cfg(filename=self.cfg_file)
+        self.apply_configuration(cfg=self.config)
         self._visible_items = 0
         self._init_menu_bar()
         self._init_settings()
@@ -50,9 +53,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self._init_autosave()
 
         # self._set_icons()
-        self.current_row = -1
-        self.current_col = -1
-        if config.get('autostart', False):
+        if self.config.get('autostart', False):
             self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
 
@@ -169,8 +170,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             maximum = 20
 
         for name in ['large', 'medium', 'small']:
-            hs = getattr(self, f'hs_{name}_font')
-            hs.valueChanged.disconnect()
+            hs: QtWidgets.QSlider = getattr(self, f'hs_{name}_font')
+            try:
+                hs.valueChanged.disconnect()
+            except RuntimeError:
+                pass
             hs.setMinimum(minimum)
             hs.setMaximum(maximum)
             hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
@@ -528,22 +532,26 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         app_thread.start()
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
-    def load_configuration(self) -> None:
-        """Apply configuration to GUI widgets."""
-        self.cb_autostart.setChecked(config['autostart'])
-        self.cb_show_gui.setChecked(config['show_gui'])
-        self.cb_lcd_screenshot.setChecked(config['save_lcd'])
-        self.cb_check_ver.setChecked(config['check_ver'])
-        self.cb_verbose.setChecked(config['verbose'])
-        self.cb_ded_font.setChecked(config['f16_ded_font'])
-        self.le_dcsdir.setText(config['dcs'])
-        self.le_biosdir.setText(config['dcsbios'])
-        self.cb_bios_live.setChecked(config['git_bios'])
-        self.cb_autoupdate_bios.setChecked(config['check_bios'])
-        self.le_bios_live.setText(config['git_bios_ref'])
-        self.le_font_name.setText(str(config['font_name']))
-        self.mono_font = {'large': config["font_mono_l"], 'medium': config["font_mono_s"], 'small': config["font_mono_xs"]}
-        self.color_font = {'large': config["font_color_l"], 'medium': config["font_color_s"], 'small': config["font_color_xs"]}
+    def apply_configuration(self, cfg: dict) -> None:
+        """
+        Apply configuration to GUI widgets.
+
+        :param cfg: dictionary with configuration
+        """
+        self.cb_autostart.setChecked(cfg['autostart'])
+        self.cb_show_gui.setChecked(cfg['show_gui'])
+        self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
+        self.cb_check_ver.setChecked(cfg['check_ver'])
+        self.cb_verbose.setChecked(cfg['verbose'])
+        self.cb_ded_font.setChecked(cfg['f16_ded_font'])
+        self.le_dcsdir.setText(cfg['dcs'])
+        self.le_biosdir.setText(cfg['dcsbios'])
+        self.cb_bios_live.setChecked(cfg['git_bios'])
+        self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
+        self.le_bios_live.setText(cfg['git_bios_ref'])
+        self.le_font_name.setText(str(cfg['font_name']))
+        self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
+        self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
@@ -582,6 +590,10 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
     def _reset_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
         save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
+        self.config = load_cfg(filename=self.cfg_file)
+        self.apply_configuration(self.config)
+        for name in ['large', 'medium', 'small']:
+            getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
         self._show_message_box(kind_of='warning', title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
         self.close()
 
@@ -597,10 +609,6 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
                 self.hide()
             else:
                 self.show()
-
-    def trigger_autosave(self) -> None:
-        """Just trigger save configuration."""
-        self.save_config()
 
     def check_updates(self) -> None:
         """Check for updates and show result."""
