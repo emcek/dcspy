@@ -27,10 +27,10 @@ LOG = getLogger(__name__)
 
 
 class DcsPyQtGui(QtWidgets.QMainWindow):
-    """Qt6 GUI for DCSpy."""
+    """PySide6 GUI for DCSpy."""
 
     def __init__(self) -> None:
-        """Qt6 GUI for DCSpy."""
+        """PySide6 GUI for DCSpy."""
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
@@ -67,7 +67,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of='aboutQt', title='About Qt'))
         self.a_check_updates.triggered.connect(self.check_updates)
 
-    def _init_settings(self):
+    def _init_settings(self) -> None:
         """Initialize of settings."""
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'D:\\', widget_name='le_biosdir'))
@@ -75,7 +75,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
 
-    def _init_autosave(self):
+    def _init_autosave(self) -> None:
         self.cb_autostart.toggled.connect(self.save_configuration)
         self.cb_show_gui.toggled.connect(self.save_configuration)
         self.cb_check_ver.toggled.connect(self.save_configuration)
@@ -100,7 +100,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.hs_medium_font.valueChanged.connect(self.save_configuration)
         self.hs_small_font.valueChanged.connect(self.save_configuration)
 
-    def _init_gkeys(self):
+    def _init_gkeys(self) -> None:
         p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
              "Alphajet", "Bell47_2", "Bf-109K-4", "BlackHawk", "Bronco-OV-10A", "C-101CC", "C-101EB", "Cessna_210N",
              "Christen Eagle II", "DC3", "EA-18G", "Edge540", "Extra330SR", "F-117A", "F-14A-135-GR", "F-14B", "F-15C",
@@ -134,21 +134,21 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.combo_planes.currentTextChanged.connect(self._load_new_plane)
         self.sp_completer.valueChanged.connect(self._set_find_value)
 
-    def _load_new_plane(self, text):
+    def _load_new_plane(self, text) -> None:
         LOG.debug(text)
         self._load_table_gkeys()
 
-    def _set_find_value(self, value):
+    def _set_find_value(self, value) -> None:
         LOG.debug(value)
         self._visible_items = value
         self._load_table_gkeys()
 
-    def _init_keyboards(self):
+    def _init_keyboards(self) -> None:
         for data in LCD_TYPES.values():
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
         self.rb_g13.setChecked(True)  # todo: remove when load config will work
 
-    def _select_keyboard(self, keyboard: str, state: bool):
+    def _select_keyboard(self, keyboard: str, state: bool) -> None:
         if state:
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
@@ -159,7 +159,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             self._set_ded_font_and_font_sliders()
             self._load_table_gkeys()
 
-    def _set_ded_font_and_font_sliders(self):
+    def _set_ded_font_and_font_sliders(self) -> None:
         if self.keyboard.lcd == 'color':
             self.cb_ded_font.setEnabled(True)
             minimum = 15
@@ -180,11 +180,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
             hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
 
-    def _set_label_and_hs_value(self, value, name):
+    def _set_label_and_hs_value(self, value, name) -> None:
         getattr(self, f'{self.keyboard.lcd}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
 
-    def _load_table_gkeys(self):
+    def _load_table_gkeys(self) -> None:
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR',
               'ADI_LOC_FLAG', 'ADI_OFF_FLAG',
               'ADI_PITCH', 'ADI_PITCH_TRIM', 'ADI_TURNRATE', 'AIRSPEED', 'AIRSPEED_SET_KNB', 'MACH_INDICATOR',
@@ -487,11 +487,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         for col in {0, 1, 2} - {self.current_col}:  # todo: get number of columns from keyboard
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
-    def event_set(self):
+    def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
 
-    def _collect_data_clicked(self):
+    def _collect_data_clicked(self) -> None:
         """Collect data for troubleshooting and ask user where to save."""
         zip_file = collect_debug_data()
         try:
@@ -507,7 +507,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
             self._show_message_box(kind_of='warning', title=err.args[1], message=f'Can not save file:\n{err.filename}')
 
-    def _stop_clicked(self):
+    def _stop_clicked(self) -> None:
         """Set event to stop DCSpy."""
         self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
                                signal_handlers={'progress': self._progress_by_abs_value})
@@ -516,7 +516,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_stop.setEnabled(False)
         self.event_set()
 
-    def _start_clicked(self):
+    def _start_clicked(self) -> None:
         """Run real application in thread."""
         # LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         # keyboard = self.lcd_type.get()
@@ -668,7 +668,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.progressbar.setValue(value)
 
     def _set_icons(self, button: Optional[str] = None, icon_name: Optional[str] = None, color: str = 'black',
-                   spin: bool = False):
+                   spin: bool = False) -> None:
         """
         Universal method to set icon for QPushButtons.
 
@@ -742,11 +742,11 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             message_box(self, title, message)
 
     @staticmethod
-    def _report_issue():
+    def _report_issue() -> None:
         """Open report issue web page in default browser."""
         webbrowser.open('https://github.com/emcek/dcspy/issues', new=2)
 
-    def _show_toolbar(self):
+    def _show_toolbar(self) -> None:
         if self.a_show_toolbar.isChecked():
             self.toolbar.show()
         else:
@@ -837,7 +837,7 @@ class Worker(QtCore.QRunnable):
             self.kwargs['progress_callback'] = self.signals.progress
 
     @QtCore.Slot()
-    def run(self):
+    def run(self) -> None:
         """Initialise the runner function with passed additional kwargs."""
         try:
             result = self.func(**self.kwargs)
@@ -853,14 +853,14 @@ class Worker(QtCore.QRunnable):
 class UiLoader(QtUiTools.QUiLoader):
     _baseinstance = None
 
-    def createWidget(self, classname, parent=None, name=''):
+    def createWidget(self, classname: str, parent: Optional[QtWidgets.QWidget]=None, name='') -> QtWidgets.QWidget:
         """
         Create widget.
 
-        :param classname:
-        :param parent:
-        :param name:
-        :return:
+        :param classname: class name
+        :param parent: parent
+        :param name: name
+        :return: QWidget
         """
         if parent is None and self._baseinstance is not None:
             widget = self._baseinstance
@@ -870,13 +870,13 @@ class UiLoader(QtUiTools.QUiLoader):
                 setattr(self._baseinstance, name, widget)
         return widget
 
-    def loadUi(self, ui_path, baseinstance=None):
+    def loadUi(self, ui_path: Union[str, bytes, os.PathLike], baseinstance=None) -> QtWidgets.QWidget:
         """
         Load UI file.
 
-        :param ui_path:
+        :param ui_path: path to UI file
         :param baseinstance:
-        :return:
+        :return: QWidget
         """
         self._baseinstance = baseinstance
         ui_file = QtCore.QFile(ui_path)
