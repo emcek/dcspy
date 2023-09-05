@@ -1,23 +1,15 @@
-from logging import getLogger
 from pathlib import Path
 
 import customtkinter
 
 from dcspy import config
 from dcspy.tk_gui import DcspyGui
-from dcspy.utils import check_dcs_ver
-
-LOG = getLogger(__name__)
-__version__ = '2.3.1'
 
 
 def run() -> None:
     """Start DCSpy GUI."""
     customtkinter.set_appearance_mode(config['theme_mode'])
     customtkinter.set_default_color_theme(config['theme_color'])
-    LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
-    dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
-    LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
     root = customtkinter.CTk()
     width, height = 770, 520
     root.geometry(f'{width}x{height}')
