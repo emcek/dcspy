@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>690</width>
-    <height>633</height>
+    <height>650</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>470</width>
-    <height>393</height>
+    <width>500</width>
+    <height>650</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -588,6 +588,7 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="a_reset_defaults"/>
     <addaction name="a_quit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -688,6 +689,11 @@
     <string>Show toolbar</string>
    </property>
   </action>
+  <action name="a_reset_defaults">
+   <property name="text">
+    <string>Reset to defaults</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="../qtgui.qrc"/>
@@ -722,54 +728,6 @@
     <hint type="destinationlabel">
      <x>271</x>
      <y>366</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hs_large_font</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>l_large</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>437</x>
-     <y>427</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>423</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hs_medium_font</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>l_medium</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>446</x>
-     <y>451</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>642</x>
-     <y>455</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>hs_small_font</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>l_small</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>432</x>
-     <y>484</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>619</x>
-     <y>480</y>
     </hint>
    </hints>
   </connection>
