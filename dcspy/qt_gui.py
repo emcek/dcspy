@@ -853,7 +853,7 @@ class Worker(QtCore.QRunnable):
 class UiLoader(QtUiTools.QUiLoader):
     _baseinstance = None
 
-    def createWidget(self, classname: str, parent: Optional[QtWidgets.QWidget]=None, name='') -> QtWidgets.QWidget:
+    def createWidget(self, classname: str, parent: Optional[QtWidgets.QWidget] = None, name='') -> QtWidgets.QWidget:
         """
         Create widget.
 
