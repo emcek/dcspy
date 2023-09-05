@@ -15,10 +15,11 @@ import qtawesome
 from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
-from dcspy import LCD_TYPES, config, qtgui_rc
+from dcspy import LCD_TYPES, LOCAL_APPDATA, config, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
-from dcspy.utils import collect_debug_data
+from dcspy.utils import (collect_debug_data, defaults_cfg, get_default_yaml,
+                         save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
@@ -38,16 +39,15 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.threadpool = QtCore.QThreadPool.globalInstance()
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
-        self._load_cfg()
+        self.load_configuration()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
-        self.conf_file = ''
+        self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self._visible_items = 0
-        self.config = {}
-        # self._apply_gui_configuration(self._get_yaml_file(cli_args.yamlfile))
         self._init_menu_bar()
         self._init_settings()
         self._init_gkeys()
         self._init_keyboards()
+        self._init_autosave()
 
         # self._set_icons()
         self.current_row = -1
@@ -58,6 +58,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
+        self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_report_issue.triggered.connect(self._report_issue)
@@ -70,6 +71,33 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'D:\\', widget_name='le_biosdir'))
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
+        self.pb_start.clicked.connect(self._start_clicked)
+        self.pb_stop.clicked.connect(self._stop_clicked)
+
+    def _init_autosave(self):
+        self.cb_autostart.toggled.connect(self.save_configuration)
+        self.cb_show_gui.toggled.connect(self.save_configuration)
+        self.cb_check_ver.toggled.connect(self.save_configuration)
+        self.cb_ded_font.toggled.connect(self.save_configuration)
+        self.cb_lcd_screenshot.toggled.connect(self.save_configuration)
+        self.cb_verbose.toggled.connect(self.save_configuration)
+        self.cb_autoupdate_bios.toggled.connect(self.save_configuration)
+        self.cb_bios_live.toggled.connect(self.save_configuration)
+
+        self.le_dcsdir.textEdited.connect(self.save_configuration)
+        self.le_biosdir.textEdited.connect(self.save_configuration)
+        self.le_font_name.textEdited.connect(self.save_configuration)
+        self.le_bios_live.textEdited.connect(self.save_configuration)
+
+        self.rb_g19.toggled.connect(self.save_configuration)
+        self.rb_g13.toggled.connect(self.save_configuration)
+        self.rb_g15v1.toggled.connect(self.save_configuration)
+        self.rb_g15v2.toggled.connect(self.save_configuration)
+        self.rb_g510.toggled.connect(self.save_configuration)
+
+        self.hs_large_font.valueChanged.connect(self.save_configuration)
+        self.hs_medium_font.valueChanged.connect(self.save_configuration)
+        self.hs_small_font.valueChanged.connect(self.save_configuration)
 
     def _init_gkeys(self):
         p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
@@ -117,18 +145,16 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
     def _init_keyboards(self):
         for data in LCD_TYPES.values():
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
-        self.pb_start.clicked.connect(self._start_clicked)
-        self.pb_stop.clicked.connect(self._stop_clicked)
         self.rb_g13.setChecked(True)  # todo: remove when load config will work
 
     def _select_keyboard(self, keyboard: str, state: bool):
         if state:
-            LOG.debug(f'Select: {self.keyboard}')
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
             for gkey_row in range(self.keyboard.gkeys):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
+            LOG.debug(f'Select: {self.keyboard}')
             self._set_ded_font_and_font_sliders()
             self._load_table_gkeys()
 
@@ -144,9 +170,15 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
 
         for name in ['large', 'medium', 'small']:
             hs = getattr(self, f'hs_{name}_font')
+            hs.valueChanged.disconnect()
             hs.setMinimum(minimum)
             hs.setMaximum(maximum)
+            hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
             hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
+
+    def _set_label_and_hs_value(self, value, name):
+        getattr(self, f'{self.keyboard.lcd}_font')[name] = value
+        getattr(self, f'l_{name}').setText(str(value))
 
     def _load_table_gkeys(self):
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR',
@@ -496,7 +528,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         app_thread.start()
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
-    def _load_cfg(self):
+    def load_configuration(self) -> None:
+        """Apply configuration to GUI widgets."""
         self.cb_autostart.setChecked(config['autostart'])
         self.cb_show_gui.setChecked(config['show_gui'])
         self.cb_lcd_screenshot.setChecked(config['save_lcd'])
@@ -511,6 +544,46 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.le_font_name.setText(str(config['font_name']))
         self.mono_font = {'large': config["font_mono_l"], 'medium': config["font_mono_s"], 'small': config["font_mono_xs"]}
         self.color_font = {'large': config["font_color_l"], 'medium': config["font_color_s"], 'small': config["font_color_xs"]}
+
+    def save_configuration(self) -> None:
+        """Save configuration from GUI."""
+        cfg = {
+            'keyboard': self.keyboard.name,
+            'autostart': self.cb_autostart.isChecked(),
+            'show_gui': self.cb_show_gui.isChecked(),
+            'save_lcd': self.cb_lcd_screenshot.isChecked(),
+            'check_ver': self.cb_check_ver.isChecked(),
+            'check_bios': self.cb_autoupdate_bios.isChecked(),
+            'verbose': self.cb_verbose.isChecked(),
+            'f16_ded_font': self.cb_ded_font.isChecked(),
+            'dcs': self.le_dcsdir.text(),
+            'dcsbios': self.le_biosdir.text(),
+            'font_name': self.le_font_name.text(),
+            'git_bios': self.cb_bios_live.isChecked(),
+            'git_bios_ref': self.le_bios_live.text(),
+            'font_mono_l': self.mono_font['large'],
+            'font_mono_s': self.mono_font['medium'],
+            'font_mono_xs': self.mono_font['small'],
+            'font_color_l': self.color_font['large'],
+            'font_color_s': self.color_font['medium'],
+            'font_color_xs': self.color_font['small'],
+        }
+        if self.keyboard.lcd == 'color':
+            font_cfg = {'font_color_l': self.hs_large_font.value(),
+                        'font_color_s': self.hs_medium_font.value(),
+                        'font_color_xs': self.hs_small_font.value()}
+        else:
+            font_cfg = {'font_mono_l': self.hs_large_font.value(),
+                        'font_mono_s': self.hs_medium_font.value(),
+                        'font_mono_xs': self.hs_small_font.value()}
+        cfg.update(font_cfg)
+        save_cfg(cfg_dict=cfg, filename=self.cfg_file)
+
+    def _reset_defaults_cfg(self) -> None:
+        """Set defaults and stop application."""
+        save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
+        self._show_message_box(kind_of='warning', title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
+        self.close()
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def activated(self, reason: QtWidgets.QSystemTrayIcon.ActivationReason) -> None:
@@ -681,6 +754,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.combo_planes: QtWidgets.QComboBox = self.findChild(QtWidgets.QComboBox, 'combo_planes')
 
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
+        self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
         self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
         self.a_about_dcspy: QAction = self.findChild(QAction, 'a_about_dcspy')
         self.a_about_qt: QAction = self.findChild(QAction, 'a_about_qt')
