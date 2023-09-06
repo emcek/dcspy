@@ -76,6 +76,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_stop.clicked.connect(self._stop_clicked)
 
     def _init_autosave(self) -> None:
+        """Initialize of autosave."""
         self.cb_autostart.toggled.connect(self.save_configuration)
         self.cb_show_gui.toggled.connect(self.save_configuration)
         self.cb_check_ver.toggled.connect(self.save_configuration)
@@ -101,6 +102,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.hs_small_font.valueChanged.connect(self.save_configuration)
 
     def _init_gkeys(self) -> None:
+        """Initialize of cells with completer and combobox."""
         p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
              "Alphajet", "Bell47_2", "Bf-109K-4", "BlackHawk", "Bronco-OV-10A", "C-101CC", "C-101EB", "Cessna_210N",
              "Christen Eagle II", "DC3", "EA-18G", "Edge540", "Extra330SR", "F-117A", "F-14A-135-GR", "F-14B", "F-15C",
@@ -135,20 +137,37 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.sp_completer.valueChanged.connect(self._set_find_value)
 
     def _load_new_plane(self, text) -> None:
+        """Refresh table when new plane is loaded."""
         LOG.debug(text)
         self._load_table_gkeys()
 
     def _set_find_value(self, value) -> None:
+        """
+        Refresh configuration of table and completer when visible items value changed.
+
+        :param value: number of items visible
+        """
         LOG.debug(value)
         self._visible_items = value
         self._load_table_gkeys()
 
     def _init_keyboards(self) -> None:
+        """Initialize of keyboards."""
         for data in LCD_TYPES.values():
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
         self.rb_g13.setChecked(True)  # todo: remove when load config will work
 
     def _select_keyboard(self, keyboard: str, state: bool) -> None:
+        """
+        Triggered when new keyboard is selected.
+
+        Based of current selected keyboard:
+        * Add correct numbers of rows and columns
+        * enable DED font checkbox
+        * updates font sliders (range and values)
+        :param keyboard: name
+        :param state: of radio button
+        """
         if state:
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
@@ -160,6 +179,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             self._load_table_gkeys()
 
     def _set_ded_font_and_font_sliders(self) -> None:
+        """Enable DED font checkbox and updates font sliders."""
         if self.keyboard.lcd == 'color':
             self.cb_ded_font.setEnabled(True)
             minimum = 15
@@ -181,10 +201,17 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
 
     def _set_label_and_hs_value(self, value, name) -> None:
+        """
+        Set internal field for current value of slider and update label.
+
+        :param value: of slider
+        :param name: of slider
+        """
         getattr(self, f'{self.keyboard.lcd}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
 
     def _load_table_gkeys(self) -> None:
+        """Initialize table with cockpit data."""
         n1 = ['ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER', 'ADI_LOC_BAR',
               'ADI_LOC_FLAG', 'ADI_OFF_FLAG',
               'ADI_PITCH', 'ADI_PITCH_TRIM', 'ADI_TURNRATE', 'AIRSPEED', 'AIRSPEED_SET_KNB', 'MACH_INDICATOR',
@@ -747,6 +774,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         webbrowser.open('https://github.com/emcek/dcspy/issues', new=2)
 
     def _show_toolbar(self) -> None:
+        """Toggle show and hide toolbar."""
         if self.a_show_toolbar.isChecked():
             self.toolbar.show()
         else:
@@ -851,6 +879,7 @@ class Worker(QtCore.QRunnable):
 
 
 class UiLoader(QtUiTools.QUiLoader):
+    """UI file loader."""
     _baseinstance = None
 
     def createWidget(self, classname: str, parent: Optional[QtWidgets.QWidget] = None, name='') -> QtWidgets.QWidget:
