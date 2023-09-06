@@ -796,6 +796,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.a_about_qt: QAction = self.findChild(QAction, 'a_about_qt')
         self.a_report_issue: QAction = self.findChild(QAction, 'a_report_issue')
         self.a_check_updates: QAction = self.findChild(QAction, 'a_check_updates')
+        self.a_donate: QAction = self.findChild(QAction, 'a_donate')
 
         self.pb_start: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_start')
         self.pb_stop: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_stop')
