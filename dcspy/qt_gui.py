@@ -7,6 +7,7 @@ from importlib import import_module
 from logging import getLogger
 from pathlib import Path
 from sys import exc_info
+from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
 from typing import Callable, Dict, Optional, Union
@@ -19,11 +20,12 @@ from dcspy import LCD_TYPES, LOCAL_APPDATA, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (collect_debug_data, defaults_cfg, get_default_yaml,
-                         load_cfg, save_cfg)
+                         is_git_object, load_cfg, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.3.1'
 LOG = getLogger(__name__)
+DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
 
 
 class DcsPyQtGui(QtWidgets.QMainWindow):
@@ -42,12 +44,12 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
         self.current_col = -1
+        self._visible_items = 0
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.config = load_cfg(filename=self.cfg_file)
-        self.apply_configuration(cfg=self.config)
-        self._visible_items = 0
         self._init_menu_bar()
         self._init_settings()
+        self.apply_configuration(cfg=self.config)
         self._init_gkeys()
         self._init_keyboards()
         self._init_autosave()
@@ -76,6 +78,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
+        self.le_bios_live.textChanged.connect(self._is_git_object_exists)  # todo: add completer functionality
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -529,6 +532,18 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             getattr(self, widget_name).setStyleSheet('')
         else:
             getattr(self, widget_name).setStyleSheet('color: red;')
+
+    def _is_git_object_exists(self, text: str) -> None:
+        """
+        Check if entered git object exists.
+
+        :param text: Git reference
+        """
+        git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
+        if git_ref:
+            self.le_bios_live.setStyleSheet('')
+        else:
+            self.le_bios_live.setStyleSheet('color: red;')
 
     def event_set(self) -> None:
         """Set event to close running thread."""
