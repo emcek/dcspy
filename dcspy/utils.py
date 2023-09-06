@@ -2,6 +2,7 @@ import sys
 import zipfile
 from datetime import datetime
 from glob import glob
+from itertools import chain
 from json import loads
 from logging import getLogger
 from os import environ, makedirs, walk
@@ -401,6 +402,39 @@ def is_git_exec_present() -> bool:
     except ImportError as err:
         LOG.debug(type(err).__name__, exc_info=True)
         return False
+
+
+def is_git_object(repo_dir: Path, git_obj: str) -> bool:
+    """
+    Check if git_obj is valid Git reference.
+
+    :param repo_dir: directory with repository
+    :param git_obj: git reference to check
+    :return: True if git_obj is git reference, False otherwise
+    """
+    import gitdb
+    result = False
+    if is_git_repo(str(repo_dir)):
+        try:
+            git.Repo(repo_dir).commit(git_obj)
+            result = True
+        except gitdb.exc.BadName:
+            pass
+    return result
+
+
+def get_all_git_refs(repo_dir: Path) -> List[str]:
+    """
+    Get list of branches and tags for repo.
+
+    :param repo_dir: directory with repository
+    :return: list of git references as  strings
+    """
+    refs = []
+    if is_git_repo(str(repo_dir)):
+        for ref in chain(git.Repo(repo_dir).heads, git.Repo(repo_dir).tags):
+            refs.append(str(ref))
+    return refs
 
 
 def collect_debug_data() -> Path:
