@@ -70,7 +70,9 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
     def _init_settings(self) -> None:
         """Initialize of settings."""
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
-        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'D:\\', widget_name='le_biosdir'))
+        self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
+        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
+        self.le_biosdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_biosdir'))
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
@@ -514,6 +516,20 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         for col in {0, 1, 2} - {self.current_col}:  # todo: get number of columns from keyboard
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
+    def _is_dir_exists(self, text: str, widget_name: str) -> None:
+        """
+        Check if directory exists.
+
+        :param text: contents of text field
+        :param widget_name: widget name
+        """
+        dir_exists = Path(text).is_dir()
+        LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
+        if dir_exists:
+            getattr(self, widget_name).setStyleSheet('')
+        else:
+            getattr(self, widget_name).setStyleSheet('color: red;')
+
     def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
@@ -541,6 +557,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.statusbar.showMessage('Start again or close DCSpy')
         self.pb_start.setEnabled(True)
         self.pb_stop.setEnabled(False)
+        self.le_dcsdir.setEnabled(True)
+        self.le_biosdir.setEnabled(True)
         self.event_set()
 
     def _start_clicked(self) -> None:
@@ -556,6 +574,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.pb_start.setEnabled(False)
         self.pb_stop.setEnabled(True)
+        self.le_dcsdir.setEnabled(False)
+        self.le_biosdir.setEnabled(False)
         app_thread.start()
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
