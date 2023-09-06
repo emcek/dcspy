@@ -365,7 +365,7 @@
              <item row="2" column="0">
               <widget class="QCheckBox" name="cb_show_gui">
                <property name="text">
-                <string>Show GUI</string>
+                <string>Show GUI when started</string>
                </property>
               </widget>
              </item>
@@ -504,33 +504,6 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_info">
-         <attribute name="title">
-          <string>Info</string>
-         </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_4">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
        </widget>
       </item>
       <item>
@@ -601,6 +574,7 @@
     <addaction name="a_about_qt"/>
     <addaction name="separator"/>
     <addaction name="a_check_updates"/>
+    <addaction name="a_donate"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -692,6 +666,11 @@
   <action name="a_reset_defaults">
    <property name="text">
     <string>Reset to defaults</string>
+   </property>
+  </action>
+  <action name="a_donate">
+   <property name="text">
+    <string>Donate</string>
    </property>
   </action>
  </widget>
