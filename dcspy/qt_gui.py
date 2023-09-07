@@ -23,7 +23,7 @@ from dcspy.utils import (collect_debug_data, defaults_cfg, get_default_yaml,
                          is_git_object, load_cfg, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '2.4.0'
+__version__ = '2.3.1'
 LOG = getLogger(__name__)
 DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
 

@@ -8,7 +8,7 @@ from PySide6 import QtGui, QtWidgets
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '2.4.0'
+__version__ = '2.3.1'
 
 
 def run_gui() -> None:

@@ -28,7 +28,7 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
                          get_version_string, is_git_exec_present, load_json,
                          proc_is_running, run_pip_command, save_cfg)
 
-__version__ = '2.4.0'
+__version__ = '2.3.2'
 LOG = getLogger(__name__)
 
 

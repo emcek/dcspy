@@ -40,7 +40,7 @@ SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LOCAL_APPDATA = True
-__version__ = '2.4.0'
+__version__ = '2.3.1'
 
 # LCD types
 TYPE_MONO = 1
