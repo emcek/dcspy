@@ -2,6 +2,7 @@ import os
 import shutil
 import traceback
 import webbrowser
+from enum import Enum
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -26,6 +27,15 @@ _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
 LOG = getLogger(__name__)
 DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
+
+
+class MsgBoxTypes(Enum):
+    INFO = 'information'
+    QUESTION = 'question'
+    WARNING = 'warning'
+    CRITICAL = 'critical'
+    ABOUT = 'about'
+    ABOUT_QT = 'aboutQt'
 
 
 class DcsPyQtGui(QtWidgets.QMainWindow):
@@ -673,10 +683,6 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             else:
                 self.show()
 
-    def check_updates(self) -> None:
-        """Check for updates and show result."""
-        pass
-
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
         """
         Worker with signals callback to schedule GUI job in background.
@@ -790,15 +796,15 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
             getattr(self, widget_name).setText(result_path)
         return result_path
 
-    def _show_message_box(self, kind_of: str, title: str, message: str = '') -> None:
+    def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '') -> None:
         """
         Show any QMessageBox delivered with Qt.
 
-        :param kind_of: any of: information, question, warning, critical, about or aboutQt
+        :param kind_of: any of MsgBoxTypes - information, question, warning, critical, about or aboutQt
         :param title: Title of modal window
         :param message: text of message, default is empty
         """
-        message_box = getattr(QtWidgets.QMessageBox, kind_of)
+        message_box = getattr(QtWidgets.QMessageBox, kind_of.value())
         if kind_of == 'aboutQt':
             message_box(self, title)
         else:
