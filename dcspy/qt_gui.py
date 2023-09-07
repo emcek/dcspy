@@ -667,7 +667,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
             getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
-        self._show_message_box(kind_of='warning', title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
+        self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
         self.close()
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
