@@ -21,11 +21,8 @@ from pystray import Icon, MenuItem
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
-                         check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file,
-                         get_default_yaml, get_inputs_for_plane, get_list,
-                         get_version_string, is_git_exec_present, load_json,
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_default_yaml, get_inputs_for_plane, get_list, get_version_string, is_git_exec_present, load_json,
                          proc_is_running, run_pip_command, save_cfg)
 
 __version__ = '2.4.0'

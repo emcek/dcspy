@@ -8,8 +8,7 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, LcdButton, LcdColor,
-                   LcdMono, generate_gkey)
+from dcspy import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, LcdButton, LcdColor, LcdMono, generate_gkey
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import key_sdk, lcd_sdk

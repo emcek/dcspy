@@ -18,20 +18,14 @@ import qtawesome
 from packaging import version
 from PySide6 import QtCore, QtUiTools
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog,
-                               QLineEdit, QMainWindow, QMessageBox,
-                               QProgressBar, QPushButton, QRadioButton, QSlider,
-                               QSpinBox, QStatusBar, QSystemTrayIcon,
-                               QTableWidget, QToolBar, QWidget)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog, QLineEdit, QMainWindow, QMessageBox, QProgressBar, QPushButton, QRadioButton,
+                               QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QToolBar, QWidget)
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
-                         check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file,
-                         get_default_yaml, get_version_string, is_git_object,
-                         load_cfg, proc_is_running, run_pip_command, save_cfg)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_github_repo, check_ver_at_github, collect_debug_data, defaults_cfg,
+                         download_file, get_default_yaml, get_version_string, is_git_object, load_cfg, proc_is_running, run_pip_command, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
