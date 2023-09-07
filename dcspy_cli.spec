@@ -10,7 +10,7 @@ images = [(f'dcspy/img/{res}', 'dcspy/img') for res in img]
 resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in resource]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in logi_sdk]
 gui_packages = collect_data_files('customtkinter') + collect_data_files('CTkMessagebox')
-__version__ = '2.3.2'
+__version__ = '2.4.0'
 block_cipher = None
 
 
