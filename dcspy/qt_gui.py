@@ -1038,8 +1038,8 @@ class DcsPyQtGui(QMainWindow):
         :param title: Title of modal window
         :param message: text of message, default is empty
         """
-        message_box = getattr(QMessageBox, kind_of.value())
-        if kind_of == 'aboutQt':
+        message_box = getattr(QMessageBox, kind_of.value)
+        if kind_of == MsgBoxTypes.ABOUT_QT:
             message_box(self, title)
         else:
             message_box(self, title, message)
