@@ -1,27 +1,32 @@
-import os
-import shutil
+import sys
 import traceback
-import webbrowser
 from enum import Enum
 from functools import partial
 from importlib import import_module
 from logging import getLogger
+from os import PathLike, environ
 from pathlib import Path
+from shutil import copy, copytree, rmtree, unpack_archive
 from sys import exc_info
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
 from typing import Callable, Dict, Optional, Union
+from webbrowser import open_new_tab
 
 import qtawesome
+from packaging import version
 from PySide6 import QtCore, QtUiTools, QtWidgets
 from PySide6.QtGui import QAction, QIcon
 
 from dcspy import LCD_TYPES, LOCAL_APPDATA, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
-from dcspy.utils import (collect_debug_data, defaults_cfg, get_default_yaml,
-                         is_git_object, load_cfg, save_cfg)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
+                         check_github_repo, check_ver_at_github,
+                         collect_debug_data, defaults_cfg, download_file,
+                         get_default_yaml, get_version_string, is_git_object,
+                         load_cfg, proc_is_running, run_pip_command, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -55,6 +60,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.current_row = -1
         self.current_col = -1
         self._visible_items = 0
+        self.l_bios = version.Version('0.0.0')
+        self.r_bios = version.Version('0.0.0')
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.config = load_cfg(filename=self.cfg_file)
         self._init_menu_bar()
@@ -63,6 +70,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self._init_gkeys()
         self._init_keyboards()
         self._init_autosave()
+        if self.cb_autoupdate_bios.isChecked():
+            self._bios_check_clicked(silence=True)
 
         # self._set_icons()
         if self.config.get('autostart', False):
@@ -74,10 +83,10 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
-        self.a_report_issue.triggered.connect(self._report_issue)
+        self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
         # self.actionAboutDCSpy.triggered.connect(AboutDialog(self).open)
-        self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of='aboutQt', title='About Qt'))
-        self.a_check_updates.triggered.connect(self.check_updates)
+        self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
+        self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
@@ -88,6 +97,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
+        self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
+        self.pb_bios_check.clicked.connect(self._bios_check_clicked)
         self.le_bios_live.textChanged.connect(self._is_git_object_exists)  # todo: add completer functionality
 
     def _init_autosave(self) -> None:
@@ -564,18 +575,245 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         """Collect data for troubleshooting and ask user where to save."""
         zip_file = collect_debug_data()
         try:
-            dst_dir = str(Path(os.environ['USERPROFILE']) / 'Desktop')
+            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
         except KeyError:
             dst_dir = 'C:\\'
         directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
         try:
             destination = Path(directory) / zip_file.name
-            shutil.copy(zip_file, destination)
+            copy(zip_file, destination)
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
-            self._show_message_box(kind_of='warning', title=err.args[1], message=f'Can not save file:\n{err.filename}')
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
 
+    # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
+    def _dcspy_check_clicked(self):
+        """Check version of DCSpy and show message box."""
+        ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
+        self.statusbar.showMessage(ver_string)
+        if 'update!' in ver_string:
+            self.tray.showMessage(f'New DCSpy version: {ver_string}')
+            self._download_new_release()
+        elif 'latest' in ver_string:
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='No updates', message='You are running latest version')
+        elif 'failed' in ver_string:
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Unable to check DCSpy version online')
+
+    def _download_new_release(self):
+        """Download new release if running PyInstaller version or show instruction when running Pip version."""
+        if getattr(sys, 'frozen', False):
+            rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+            directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: str(Path.cwd()))
+            try:
+                destination = Path(directory) / rel_info.asset_file
+                download_file(url=rel_info.dl_url, save_path=destination)
+                LOG.debug(f'Save new release: {destination}')
+            except PermissionError as exc:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
+        else:
+            rc, err, out = run_pip_command('install --upgrade dcspy')
+            if not rc:
+                self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Pip Install', message=out.split('\r\n')[-2])
+            else:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Pip Install', message=err)
+
+    # <=><=><=><=><=><=><=><=><=><=><=> check bios updates <=><=><=><=><=><=><=><=><=><=><=>
+    def _bios_check_clicked(self, silence=False) -> None:
+        """
+        Do real update Git or stable DCS-BIOS version.
+
+        :param silence: perform action with silence
+        """
+        if not self._check_dcs_bios_path():
+            return
+
+        if self.cb_bios_live.isChecked():
+            self._check_bios_git(silence=silence)
+        else:
+            self._check_bios_release(silence=silence)
+
+    def _check_dcs_bios_path(self) -> bool:
+        """
+        Check if DCS-BIOS path fulfill two conditions.
+
+        - path is not empty
+        - drive letter exists in system
+
+        If those two are met return True, False otherwise.
+
+        :return: True if path to DCS-BIOS is correct
+        """
+        result = True
+        bios_dir = self.le_biosdir.text()
+        if self._is_dir_exists(text=bios_dir, widget_name='le_biosdir'):
+            drive_letter = Path(bios_dir).parts[0]
+            if not Path(drive_letter).exists():
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
+                result = False
+        else:
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Empty path.\n\nCheck DCS-BIOS path.')
+            result = False
+        return result
+
+    def _check_bios_git(self, silence=False) -> None:
+        """
+        Check git/live version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
+        sha = ''
+        try:
+            sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
+        except Exception as exc:
+            self._show_message_box(kind_of=MsgBoxTypes.CRITICAL, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
+        bios_dir = self.le_biosdir.text()
+        LOG.debug(f'Remove: {bios_dir} ')
+        rmtree(path=bios_dir, ignore_errors=True)
+        LOG.debug(f'Copy Git DCS-BIOS to: {bios_dir} ')
+        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=bios_dir)
+        local_bios = self._check_local_bios()
+        self.statusbar.showMessage(sha)
+        LOG.info(f'Git DCS-BIOS: {sha}')
+        if not silence:
+            install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+            install_result = f'{install_result}\n\nUsing Git/Live version.'
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
+
+    def _check_bios_release(self, silence=False) -> None:
+        """
+        Check release version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
+        self._check_local_bios()
+        remote_bios_info = self._check_remote_bios()
+        self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
+        correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
+        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
+        dcs_runs = proc_is_running(name='DCS.exe')
+
+        if silence and correct_remote_bios_ver and not remote_bios_info.latest:
+            self._update_release_bios(rel_info=remote_bios_info)
+        elif not silence and correct_remote_bios_ver:
+            self._ask_to_update(rel_info=remote_bios_info)
+        elif not all([silence, correct_remote_bios_ver]):
+            msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
+            msg = f'{msg}\n\nUsing stable release version.'
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Update', message=msg)
+
+    def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
+        """
+        Describe issues with DCS-BIOS update.
+
+        :param local_bios: local BIOS version
+        :param remote_bios: remote BIOS version
+        :param dcs: DCS is running
+        :return: description as string
+        """
+        dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
+        dcs_sta = 'running' if dcs else 'not running'
+        dcs_note = '\n     Be sure stay on Main menu.' if dcs else ''
+        lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
+        lbios_note = '' if local_bios else '\n     Check "dcsbios" path in config'
+        rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
+        rbios_note = '' if remote_bios else '\n     Check internet connection.'
+
+        return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
+               f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
+               f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
+
+    def _check_local_bios(self) -> ReleaseInfo:
+        """
+        Check version of local BIOS.
+
+        :return: release description info
+        """
+        result = check_bios_ver(bios_path=self.le_biosdir.text())
+        self.l_bios = result.ver
+        return result
+
+    def _check_remote_bios(self) -> ReleaseInfo:
+        """
+        Check version of remote BIOS.
+
+        :return: release description info
+        """
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        self.r_bios = release_info.ver
+        return release_info
+
+    def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
+        """
+        Ask user if update BIOS or not.
+
+        :param rel_info: remote release information
+        """
+        msg_txt = f'You are running {self.l_bios} version.\n\n' \
+                  f'Would you like to download\n' \
+                  f'stable release:\n\n{rel_info.asset_file}\n\n' \
+                  f'and overwrite update?'
+        if not rel_info.latest:
+            msg_txt = f'You are running {self.l_bios} version.\n' \
+                      f'New version {rel_info.ver} available.\n' \
+                      f'Released: {rel_info.published}\n\n' \
+                      f'Would you like to update?'
+        reply = QtWidgets.QMessageBox.question(self, 'Update DCS-BIOS', msg_txt, defaultButton=QtWidgets.QMessageBox.StandardButton.Yes)
+        if reply == QtWidgets.QMessageBox.StandardButton.Yes:
+            self._update_release_bios(rel_info=rel_info)
+
+    def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
+        """
+        Perform update of release version of BIOS and check configuration.
+
+        :param rel_info: remote release information
+        """
+        tmp_dir = Path(gettempdir())
+        local_zip = tmp_dir / rel_info.asset_file
+        download_file(url=rel_info.dl_url, save_path=local_zip)
+        LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
+        rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
+        LOG.debug(f'Unpack file: {local_zip} ')
+        unpack_archive(filename=local_zip, extract_dir=tmp_dir)
+        LOG.debug(f'Remove: {self.le_biosdir.text()} ')
+        rmtree(path=self.le_biosdir.text(), ignore_errors=True)
+        LOG.debug(f'Copy DCS-BIOS to: {self.le_biosdir.text()} ')
+        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.le_biosdir.text())
+        install_result = self._handling_export_lua(tmp_dir)
+        if 'github' in install_result:
+            reply = QtWidgets.QMessageBox.question(self, 'Open browser', install_result, defaultButton=QtWidgets.QMessageBox.StandardButton.Yes)
+            if reply == QtWidgets.QMessageBox.StandardButton.Yes:
+                open_new_tab(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+        else:
+            local_bios = self._check_local_bios()
+            self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            install_result = f'{install_result}\n\nUsing stable release version.'
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
+
+    def _handling_export_lua(self, temp_dir: Path) -> str:
+        """
+        Check if Export.lua file exist and its content.
+
+        If not copy Export.lua from DCS-BIOS installation archive.
+
+        :param temp_dir: directory with DCS-BIOS archive
+        :return: result of checks
+        """
+        result = 'Installation Success. Done.'
+        lua_dst_path = Path(self.le_biosdir.text()).parent
+        lua = 'Export.lua'
+        try:
+            with open(file=lua_dst_path / lua, encoding='utf-8') as lua_dst:
+                lua_dst_data = lua_dst.read()
+        except FileNotFoundError as err:
+            LOG.debug(f'{type(err).__name__}: {err.filename}')
+            copy(src=temp_dir / lua, dst=lua_dst_path)
+            LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
+        else:
+            result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
+        return result
+
+    # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
         """Set event to stop DCSpy."""
         self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
@@ -810,11 +1048,6 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         else:
             message_box(self, title, message)
 
-    @staticmethod
-    def _report_issue() -> None:
-        """Open report issue web page in default browser."""
-        webbrowser.open('https://github.com/emcek/dcspy/issues', new=2)
-
     def _show_toolbar(self) -> None:
         """Toggle show and hide toolbar."""
         if self.a_show_toolbar.isChecked():
@@ -825,6 +1058,7 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
     def _find_children(self) -> None:
         """Find all widgets of main window."""
         self.statusbar: QtWidgets.QStatusBar = self.findChild(QtWidgets.QStatusBar, 'statusbar')
+        self.tray: QtWidgets.QStatusBar = self.findChild(QtWidgets.QSystemTrayIcon, 'tray')
         self.progressbar: QtWidgets.QProgressBar = self.findChild(QtWidgets.QProgressBar, 'progressbar')
         self.toolbar: QtWidgets.QToolBar = self.findChild(QtWidgets.QToolBar, 'toolbar')
         self.tw_gkeys: QtWidgets.QTableWidget = self.findChild(QtWidgets.QTableWidget, 'tw_gkeys')
@@ -847,6 +1081,8 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
         self.pb_biosdir: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_biosdir')
         self.pb_collect_data: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_collect_data')
         self.pb_copy: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_copy')
+        self.pb_dcspy_check: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_dcspy_check')
+        self.pb_bios_check: QtWidgets.QPushButton = self.findChild(QtWidgets.QPushButton, 'pb_bios_check')
 
         self.cb_autostart: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_autostart')
         self.cb_show_gui: QtWidgets.QCheckBox = self.findChild(QtWidgets.QCheckBox, 'cb_show_gui')
@@ -942,7 +1178,7 @@ class UiLoader(QtUiTools.QUiLoader):
                 setattr(self._baseinstance, name, widget)
         return widget
 
-    def loadUi(self, ui_path: Union[str, bytes, os.PathLike], baseinstance=None) -> QtWidgets.QWidget:
+    def loadUi(self, ui_path: Union[str, bytes, PathLike], baseinstance=None) -> QtWidgets.QWidget:
         """
         Load UI file.
 
