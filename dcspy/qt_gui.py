@@ -539,11 +539,12 @@ class DcsPyQtGui(QtWidgets.QMainWindow):
 
         :param text: Git reference
         """
-        git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
-        if git_ref:
-            self.le_bios_live.setStyleSheet('')
-        else:
-            self.le_bios_live.setStyleSheet('color: red;')
+        if self.cb_bios_live.isChecked():
+            git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
+            if git_ref:
+                self.le_bios_live.setStyleSheet('')
+            else:
+                self.le_bios_live.setStyleSheet('color: red;')
 
     def event_set(self) -> None:
         """Set event to close running thread."""
