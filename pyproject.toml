@@ -141,3 +141,7 @@ exclude = '/qt_gui\.py$'
 inherit = false
 ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212']
 match = '(?!test_|qtgui_rc).*\.py'
+
+
+[tool.isort]
+line_length = 160
