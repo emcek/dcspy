@@ -1,5 +1,7 @@
 from logging import getLogger
+from os import environ, unlink
 from pathlib import Path
+from tempfile import gettempdir
 
 import customtkinter
 
@@ -8,7 +10,7 @@ from dcspy.tk_gui import DcspyGui
 from dcspy.utils import check_dcs_ver
 
 LOG = getLogger(__name__)
-__version__ = '2.3.1'
+__version__ = '2.3.2'
 
 
 def run() -> None:
@@ -29,6 +31,10 @@ def run() -> None:
     DcspyGui(master=root)
     if not config['show_gui']:
         root.withdraw()
+    try:
+        unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
+    except (KeyError, FileNotFoundError):
+        pass
     root.mainloop()
 
 

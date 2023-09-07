@@ -1,3 +1,6 @@
+## 2.3.2
+* Show message dialog when there is problem with DCS-BIOS live repository.
+
 ## 2.3.1
 * Hotfix: add missing files
 
