@@ -31,7 +31,7 @@ LOG = getLogger(__name__)
 __version__ = '2.4.0'
 ConfigDict = Dict[str, Union[str, int, bool]]
 
-with open(Path(__file__).resolve().with_name('config.yaml'), 'r') as c_file:
+with open(Path(__file__).resolve().with_name('config.yaml')) as c_file:
     defaults_cfg: ConfigDict = load(c_file, Loader=FullLoader)
 
 
