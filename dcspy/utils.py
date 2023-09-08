@@ -30,29 +30,34 @@ except ImportError:
 LOG = getLogger(__name__)
 __version__ = '2.4.0'
 ConfigDict = Dict[str, Union[str, int, bool]]
-defaults_cfg: ConfigDict = {
-    'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-    'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
-    'check_bios': True,
-    'check_ver': True,
-    'autostart': False,
-    'verbose': False,
-    'keyboard': 'G13',
-    'save_lcd': False,
-    'show_gui': True,
-    'font_name': 'consola.ttf',
-    'font_mono_s': 11,
-    'font_mono_xs': 9,
-    'font_mono_l': 16,
-    'font_color_s': 22,
-    'font_color_xs': 18,
-    'font_color_l': 32,
-    'git_bios': False,
-    'git_bios_ref': 'master',
-    'theme_mode': 'system',
-    'theme_color': 'blue',
-    'f16_ded_font': True
-}
+
+with open(Path(__file__).resolve().with_name('config.yaml'), 'r') as c_file:
+    defaults_cfg: ConfigDict = load(c_file, Loader=FullLoader)
+
+
+# defaults_cfg: ConfigDict = {
+#     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+#     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+#     'check_bios': True,
+#     'check_ver': True,
+#     'autostart': False,
+#     'verbose': False,
+#     'keyboard': 'G13',
+#     'save_lcd': False,
+#     'show_gui': True,
+#     'font_name': 'consola.ttf',
+#     'font_mono_s': 11,
+#     'font_mono_xs': 9,
+#     'font_mono_l': 16,
+#     'font_color_s': 22,
+#     'font_color_xs': 18,
+#     'font_color_l': 32,
+#     'git_bios': False,
+#     'git_bios_ref': 'master',
+#     'theme_mode': 'system',
+#     'theme_color': 'blue',
+#     'f16_ded_font': True
+# }
 
 
 def get_default_yaml(local_appdata=False) -> Path:
