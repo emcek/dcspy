@@ -1,5 +1,4 @@
 import os
-import shutil
 import sys
 import tkinter as tk
 from functools import partial
@@ -9,7 +8,7 @@ from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import NamedTuple, Optional
+from typing import Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -19,7 +18,7 @@ from packaging import version
 from PIL import Image
 from pystray import Icon, MenuItem
 
-from dcspy import LCD_TYPES, LOCAL_APPDATA, config
+from dcspy import LCD_TYPES, LOCAL_APPDATA, SystemData, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_default_yaml, get_inputs_for_plane, get_list, get_version_string, is_git_exec_present, load_json,
@@ -27,20 +26,6 @@ from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, chec
 
 __version__ = '2.4.0'
 LOG = getLogger(__name__)
-
-
-class SystemData(NamedTuple):
-    """Tuple to store system related information."""
-    system: str
-    release: str
-    ver: str
-    proc: str
-    dcs_type: str
-    dcs_ver: str
-    dcspy_ver: str
-    bios_ver: str
-    dcs_bios_ver: str
-    git_ver: str
 
 
 class DcspyGui(tk.Frame):
@@ -891,7 +876,7 @@ class DcspyGui(tk.Frame):
         directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
         try:
             destination = Path(directory) / zip_file.name
-            shutil.copy(zip_file, destination)
+            copy(zip_file, destination)
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')

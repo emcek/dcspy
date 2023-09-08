@@ -5,7 +5,8 @@ from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
-from typing import Sequence, Tuple, Union
+from tempfile import gettempdir
+from typing import NamedTuple, Sequence, Tuple, Union
 
 from PIL import ImageFont
 
@@ -40,6 +41,7 @@ SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LOCAL_APPDATA = True
+DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
 __version__ = '2.4.0'
 
 # LCD types
@@ -191,3 +193,26 @@ class BiosValue(TypedDict):
     args: Union[StrBuffArgs, IntBuffArgs]
     value: Union[int, str]
     max_value: NotRequired[int]
+
+
+class MsgBoxTypes(Enum):
+    INFO = 'information'
+    QUESTION = 'question'
+    WARNING = 'warning'
+    CRITICAL = 'critical'
+    ABOUT = 'about'
+    ABOUT_QT = 'aboutQt'
+
+
+class SystemData(NamedTuple):
+    """Tuple to store system related information."""
+    system: str
+    release: str
+    ver: str
+    proc: str
+    dcs_type: str
+    dcs_ver: str
+    dcspy_ver: str
+    bios_ver: str
+    dcs_bios_ver: str
+    git_ver: str

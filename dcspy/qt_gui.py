@@ -1,13 +1,12 @@
 import sys
 import traceback
-from enum import Enum
 from functools import partial
 from importlib import import_module
 from logging import getLogger
 from os import PathLike, environ
 from pathlib import Path
+from platform import uname
 from shutil import copy, copytree, rmtree, unpack_archive
-from sys import exc_info
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
@@ -18,28 +17,19 @@ import qtawesome
 from packaging import version
 from PySide6 import QtCore, QtUiTools
 from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog, QLineEdit, QMainWindow, QMessageBox, QProgressBar, QPushButton, QRadioButton,
-                               QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QToolBar, QWidget)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog, QLineEdit, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton,
+                               QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QToolBar, QWidget)
 
-from dcspy import LCD_TYPES, LOCAL_APPDATA, qtgui_rc
+from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_github_repo, check_ver_at_github, collect_debug_data, defaults_cfg,
-                         download_file, get_default_yaml, get_version_string, is_git_object, load_cfg, proc_is_running, run_pip_command, save_cfg)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_default_yaml, get_version_string, is_git_exec_present, is_git_object, load_cfg, proc_is_running,
+                         run_pip_command, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
 LOG = getLogger(__name__)
-DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
-
-
-class MsgBoxTypes(Enum):
-    INFO = 'information'
-    QUESTION = 'question'
-    WARNING = 'warning'
-    CRITICAL = 'critical'
-    ABOUT = 'about'
-    ABOUT_QT = 'aboutQt'
 
 
 class DcsPyQtGui(QMainWindow):
@@ -59,18 +49,28 @@ class DcsPyQtGui(QMainWindow):
         self.current_row = -1
         self.current_col = -1
         self._visible_items = 0
+        self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
+        self.systray = QSystemTrayIcon()
+        self.traymenu = QMenu()
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.config = load_cfg(filename=self.cfg_file)
         self._init_menu_bar()
+        self._init_tray()
         self._init_settings()
         self.apply_configuration(cfg=self.config)
         self._init_gkeys()
         self._init_keyboards()
         self._init_autosave()
-        # if self.cb_autoupdate_bios.isChecked():
-        #     self._bios_check_clicked(silence=True)
+        if self.cb_autoupdate_bios.isChecked():
+            self._bios_check_clicked(silence=True)
+        if self.cb_autoupdate_bios.isChecked():  # todo: clarify checking bios and dcspy in same way...
+            data = self._fetch_system_data()
+            status_ver = ''
+            status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
+            status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
+            self.statusbar.showMessage(status_ver)
 
         # self._set_icons()
         if self.config.get('autostart', False):
@@ -86,6 +86,16 @@ class DcsPyQtGui(QMainWindow):
         # self.actionAboutDCSpy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
+
+    def _init_tray(self):
+        """Initialize of system tray icon."""
+        self.systray.setIcon(QIcon(str(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')))
+        self.systray.setVisible(True)
+        self.systray.setToolTip(f'DCSpy {__version__}')
+        self.traymenu.addAction(self.a_check_updates)
+        self.traymenu.addAction(self.a_quit)
+        self.systray.setContextMenu(self.traymenu)
+        self.systray.activated.connect(self.activated)
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
@@ -539,36 +549,38 @@ class DcsPyQtGui(QMainWindow):
         for col in {0, 1, 2} - {self.current_col}:  # todo: get number of columns from keyboard
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
-    def _is_dir_exists(self, text: str, widget_name: str) -> None:
+    def _is_dir_exists(self, text: str, widget_name: str) -> bool:
         """
         Check if directory exists.
 
         :param text: contents of text field
         :param widget_name: widget name
+        :return: True if directory exists, False otherwise.
         """
         dir_exists = Path(text).is_dir()
         LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
         if dir_exists:
             getattr(self, widget_name).setStyleSheet('')
+            return True
         else:
             getattr(self, widget_name).setStyleSheet('color: red;')
+            return False
 
-    def _is_git_object_exists(self, text: str) -> None:
+    def _is_git_object_exists(self, text: str) -> bool:
         """
         Check if entered git object exists.
 
         :param text: Git reference
+        :return: True if git object exists, False otherwise.
         """
         if self.cb_bios_live.isChecked():
             git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
             if git_ref:
                 self.le_bios_live.setStyleSheet('')
+                return True
             else:
                 self.le_bios_live.setStyleSheet('color: red;')
-
-    def event_set(self) -> None:
-        """Set event to close running thread."""
-        self.event.set()
+                return False
 
     def _collect_data_clicked(self) -> None:
         """Collect data for troubleshooting and ask user where to save."""
@@ -586,13 +598,47 @@ class DcsPyQtGui(QMainWindow):
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
 
+    def _fetch_system_data(self) -> SystemData:
+        """
+        Fetch various system related data.
+
+        :return: SystemData named tuple with all data
+        """
+        system, _, release, ver, _, proc = uname()
+        dcs_type, dcs_ver = check_dcs_ver(Path(self.config["dcs"]))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
+        bios_ver = str(self._check_local_bios().ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        git_ver = 'Not installed'
+        if self.git_exec:
+            from git import cmd
+            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
+        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
+                          dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
+
+    def _get_bios_full_version(self, bios_ver: str) -> str:
+        """
+        Get full with SHA and git details DCS-BIOS version as string.
+
+        :param bios_ver: version string
+        :return: full BIOS version
+        """
+        sha_commit = ''
+        if self.git_exec and self.cb_bios_live.isChecked():
+            try:
+                sha_commit = f' SHA: {check_github_repo(git_ref=self.le_bios_live.text(), update=False)}'
+            except Exception as exc:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
+        dcs_bios_ver = f'{bios_ver}{sha_commit}'
+        return dcs_bios_ver
+
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self):
         """Check version of DCSpy and show message box."""
         ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
-            self.tray.showMessage(f'New DCSpy version: {ver_string}')
+            self.systray.showMessage('DCSpy', f'New version: {ver_string}')  # todo: add icon
             self._download_new_release()
         elif 'latest' in ver_string:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title='No updates', message='You are running latest version')
@@ -908,18 +954,6 @@ class DcsPyQtGui(QMainWindow):
         self.close()
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
-    def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
-        """
-        Signal of activation.
-
-        :param reason: reason of activation
-        """
-        if reason == QSystemTrayIcon.Trigger:
-            if self.isVisible():
-                self.hide()
-            else:
-                self.show()
-
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
         """
         Worker with signals callback to schedule GUI job in background.
@@ -1044,6 +1078,22 @@ class DcsPyQtGui(QMainWindow):
         else:
             message_box(self, title, message)
 
+    def event_set(self) -> None:
+        """Set event to close running thread."""
+        self.event.set()
+
+    def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
+        """
+        Signal of activation.
+
+        :param reason: reason of activation
+        """
+        if reason == QSystemTrayIcon.Trigger:
+            if self.isVisible():
+                self.hide()
+            else:
+                self.show()
+
     def _show_toolbar(self) -> None:
         """Toggle show and hide toolbar."""
         if self.a_show_toolbar.isChecked():
@@ -1054,7 +1104,8 @@ class DcsPyQtGui(QMainWindow):
     def _find_children(self) -> None:
         """Find all widgets of main window."""
         self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')
-        self.tray: QSystemTrayIcon = self.findChild(QSystemTrayIcon, 'tray')
+        self.systray: QSystemTrayIcon = self.findChild(QSystemTrayIcon, 'systray')
+        self.traymenu: QSystemTrayIcon = self.findChild(QMenu, 'traymenu')
         self.progressbar: QProgressBar = self.findChild(QProgressBar, 'progressbar')
         self.toolbar: QToolBar = self.findChild(QToolBar, 'toolbar')
         self.tw_gkeys: QTableWidget = self.findChild(QTableWidget, 'tw_gkeys')
@@ -1145,7 +1196,7 @@ class Worker(QtCore.QRunnable):
         try:
             result = self.func(**self.kwargs)
         except Exception:
-            exctype, value = exc_info()[:2]
+            exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             self.signals.result.emit(result)
