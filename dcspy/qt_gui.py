@@ -38,8 +38,8 @@ class DcsPyQtGui(QMainWindow):
     def __init__(self, cfg_dict: Optional[ConfigDict] = None) -> None:
         """
         PySide6 GUI for DCSpy.
-        
-        :param cfg_dict: dict with configuration 
+
+        :param cfg_dict: dict with configuration
         """
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
