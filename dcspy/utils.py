@@ -33,6 +33,7 @@ ConfigDict = Dict[str, Union[str, int, bool]]
 
 with open(Path(__file__).resolve().with_name('config.yaml'), 'r') as c_file:
     defaults_cfg: ConfigDict = load(c_file, Loader=FullLoader)
+    defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
 # defaults_cfg: ConfigDict = {
@@ -55,7 +56,7 @@ with open(Path(__file__).resolve().with_name('config.yaml'), 'r') as c_file:
 #     'git_bios': False,
 #     'git_bios_ref': 'master',
 #     'theme_mode': 'system',
-#     'theme_color': 'blue',
+#     'theme_color': 'dark-blue',
 #     'f16_ded_font': True
 # }
 
