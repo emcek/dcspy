@@ -23,9 +23,9 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog, QL
 from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         defaults_cfg, download_file, get_default_yaml, get_version_string, is_git_exec_present, is_git_object, load_cfg, proc_is_running,
-                         run_pip_command, save_cfg)
+from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
+                         collect_debug_data, defaults_cfg, download_file, get_default_yaml, get_version_string, is_git_exec_present, is_git_object, load_cfg,
+                         proc_is_running, run_pip_command, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -35,8 +35,12 @@ LOG = getLogger(__name__)
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self) -> None:
-        """PySide6 GUI for DCSpy."""
+    def __init__(self, cfg_dict: Optional[ConfigDict] = None) -> None:
+        """
+        PySide6 GUI for DCSpy.
+        
+        :param cfg_dict: dict with configuration 
+        """
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
@@ -55,7 +59,9 @@ class DcsPyQtGui(QMainWindow):
         self.systray = QSystemTrayIcon()
         self.traymenu = QMenu()
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
-        self.config = load_cfg(filename=self.cfg_file)
+        self.config = cfg_dict
+        if not cfg_dict:
+            self.config = load_cfg(filename=self.cfg_file)
         self._init_menu_bar()
         self._init_tray()
         self._init_settings()
