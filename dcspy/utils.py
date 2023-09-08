@@ -30,35 +30,11 @@ except ImportError:
 LOG = getLogger(__name__)
 __version__ = '2.4.0'
 ConfigDict = Dict[str, Union[str, int, bool]]
+default_yaml_file = Path(__file__).resolve().with_name('config.yaml')
 
-with open(Path(__file__).resolve().with_name('config.yaml')) as c_file:
+with open(default_yaml_file) as c_file:
     defaults_cfg: ConfigDict = load(c_file, Loader=FullLoader)
     defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
-
-
-# defaults_cfg: ConfigDict = {
-#     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-#     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
-#     'check_bios': True,
-#     'check_ver': True,
-#     'autostart': False,
-#     'verbose': False,
-#     'keyboard': 'G13',
-#     'save_lcd': False,
-#     'show_gui': True,
-#     'font_name': 'consola.ttf',
-#     'font_mono_s': 11,
-#     'font_mono_xs': 9,
-#     'font_mono_l': 16,
-#     'font_color_s': 22,
-#     'font_color_xs': 18,
-#     'font_color_l': 32,
-#     'git_bios': False,
-#     'git_bios_ref': 'master',
-#     'theme_mode': 'system',
-#     'theme_color': 'dark-blue',
-#     'f16_ded_font': True
-# }
 
 
 def get_default_yaml(local_appdata=False) -> Path:
@@ -68,10 +44,10 @@ def get_default_yaml(local_appdata=False) -> Path:
     :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
     :return: Path like object
     """
-    cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
+    cfg_ful_path = default_yaml_file
     if local_appdata:
         localappdata = environ.get('LOCALAPPDATA', None)
-        user_appdata = Path(localappdata) / 'dcspy' if localappdata else cfg_ful_path.parent
+        user_appdata = Path(localappdata) / 'dcspy' if localappdata else default_yaml_file.parent
         makedirs(name=user_appdata, exist_ok=True)
         cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
         if not cfg_ful_path.exists():
@@ -450,9 +426,8 @@ def collect_debug_data() -> Path:
     :return: Path object to zip file
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
-    cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
     localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else cfg_ful_path.parent
+    user_appdata = Path(localappdata) / 'dcspy' if localappdata else default_yaml_file.parent
     config_file = Path(user_appdata / 'config.yaml').resolve()
 
     conf_dict = load_cfg(config_file)
