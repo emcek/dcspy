@@ -63,8 +63,8 @@ class DcsPyQtGui(QMainWindow):
         self._init_gkeys()
         self._init_keyboards()
         self._init_autosave()
-        if self.cb_autoupdate_bios.isChecked():
-            self._bios_check_clicked(silence=True)
+        # if self.cb_autoupdate_bios.isChecked():
+        #     self._bios_check_clicked(silence=True)
         if self.cb_autoupdate_bios.isChecked():  # todo: clarify checking bios and dcspy in same way...
             data = self._fetch_system_data()
             status_ver = ''
