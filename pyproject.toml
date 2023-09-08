@@ -100,6 +100,7 @@ dcspy = [
 ]
 
 [tool.pytest.ini_options]
+qt_api = 'pyside6'
 addopts = ['--random', '-q']
 testpaths = ['tests']
 markers = [
