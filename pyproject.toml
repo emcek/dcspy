@@ -100,7 +100,7 @@ dcspy = [
 ]
 
 [tool.pytest.ini_options]
-addopts = ['--random', '-q']
+addopts = ['-vv']
 testpaths = ['tests']
 markers = [
     'dcsbios: marks tests for verfification of DCS-BIOS data',
