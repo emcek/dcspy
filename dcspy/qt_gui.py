@@ -670,8 +670,8 @@ class DcsPyQtGui(QMainWindow):
 
         :param silence: perform action with silence
         """
-        if not self._check_dcs_bios_path():
-            return
+        # if not self._check_dcs_bios_path():
+        #     return
 
         if self.cb_bios_live.isChecked():
             self._check_bios_git(silence=silence)
