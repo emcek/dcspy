@@ -675,8 +675,8 @@ class DcsPyQtGui(QMainWindow):
 
         if self.cb_bios_live.isChecked():
             self._check_bios_git(silence=silence)
-        else:
-            self._check_bios_release(silence=silence)
+        # else:
+        #     self._check_bios_release(silence=silence)
 
     def _check_dcs_bios_path(self) -> bool:
         """
