@@ -38,7 +38,7 @@ jobs:
 
       - name: "Test with pytest"
         run: |
-          python -m pytest -s -vv -m "not dcsbios"
+          python -m pytest --random -q -m "not dcsbios"
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v3
