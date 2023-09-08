@@ -78,7 +78,6 @@ def test_proc_is_running():
     assert not utils.proc_is_running('wrong_python')
 
 
-@mark.skip
 def test_dummy_save_load_set_defaults(tmpdir):
     from os import environ
     test_tmp_yaml = Path(tmpdir) / 'c.yml'
