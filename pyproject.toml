@@ -70,7 +70,7 @@ test = [
     'pip-audit',
     'pycodestyle',
     'pydocstyle[toml]',
-    'pytest==7.4.1',
+    'pytest',
     'pytest-cov',
     'pytest-qt; sys_platform == "win32"',
     'pytest-random',
@@ -100,7 +100,7 @@ dcspy = [
 ]
 
 [tool.pytest.ini_options]
-addopts = ['-vv']
+addopts = ['--random', '-q']
 testpaths = ['tests']
 markers = [
     'dcsbios: marks tests for verfification of DCS-BIOS data',

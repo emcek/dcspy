@@ -8,7 +8,7 @@ mypy
 pip-audit
 pycodestyle
 pydocstyle[toml]
-pytest==7.4.1
+pytest
 pytest-cov
 pytest-qt; sys_platform == "win32"
 pytest-random
