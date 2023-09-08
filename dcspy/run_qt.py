@@ -12,7 +12,7 @@ __version__ = '2.4.0'
 
 
 def run_gui() -> None:
-    """Run DCSpy Qt6 GUI."""
+    """Run DCSpy PySide6 GUI."""
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QtWidgets.QApplication(sys.argv)
