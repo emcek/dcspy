@@ -10,8 +10,12 @@ def test_qt(qtbot):
 
     from dcspy.qt_gui import DcsPyQtGui
     dcspy_gui = DcsPyQtGui()
-    print(dcspy_gui.config)
+    print(dcspy_gui.cfg_file)
+    with open(dcspy_gui.cfg_file) as f:
+        d = f.read()
+    print(d)
     print(dcspy_gui.cb_autoupdate_bios.isChecked())
+    print(dcspy_gui.config)
     dcspy_gui.show()
     qtbot.addWidget(dcspy_gui)
     qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
