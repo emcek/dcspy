@@ -69,8 +69,8 @@ class DcsPyQtGui(QMainWindow):
         self._init_gkeys()
         self._init_keyboards()
         self._init_autosave()
-        if self.cb_autoupdate_bios.isChecked():
-            self._bios_check_clicked(silence=True)
+        # if self.cb_autoupdate_bios.isChecked():
+        #     self._bios_check_clicked(silence=True)
 
         # self._set_icons()
         if self.config.get('autostart', False):
