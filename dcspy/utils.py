@@ -397,8 +397,10 @@ def is_git_object(repo_dir: Path, git_obj: str) -> bool:
     import gitdb
     result = False
     if is_git_repo(str(repo_dir)):
+        bios_repo = git.Repo(repo_dir)
+        bios_repo.git.checkout('master')
         try:
-            git.Repo(repo_dir).commit(git_obj)
+            bios_repo.commit(git_obj)
             result = True
         except gitdb.exc.BadName:
             pass
