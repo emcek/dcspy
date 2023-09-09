@@ -65,9 +65,10 @@ class DcsPyQtGui(QMainWindow):
         self._init_menu_bar()
         self._init_tray()
         self._init_settings()
-        self.apply_configuration(cfg=self.config)
+        self._apply_configuration_1(cfg=self.config)
         self._init_gkeys()
         self._init_keyboards()
+        self._apply_configuration_2(cfg=self.config)
         self._init_autosave()
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
@@ -196,7 +197,6 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of keyboards."""
         for data in LCD_TYPES.values():
             getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
-        self.rb_g13.setChecked(True)  # todo: remove when load config will work
 
     def _select_keyboard(self, keyboard: str, state: bool) -> None:
         """
@@ -900,20 +900,37 @@ class DcsPyQtGui(QMainWindow):
 
         :param cfg: dictionary with configuration
         """
+        self._apply_configuration_1(cfg=cfg)
+        self._apply_configuration_2(cfg=cfg)
+
+    def _apply_configuration_1(self, cfg: dict) -> None:
+        """
+        Apply configuration to part of GUI widgets.
+
+        :param cfg: dictionary with configuration
+        """
         self.cb_autostart.setChecked(cfg['autostart'])
         self.cb_show_gui.setChecked(cfg['show_gui'])
         self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
         self.cb_check_ver.setChecked(cfg['check_ver'])
         self.cb_verbose.setChecked(cfg['verbose'])
         self.cb_ded_font.setChecked(cfg['f16_ded_font'])
-        self.le_dcsdir.setText(cfg['dcs'])
-        self.le_biosdir.setText(cfg['dcsbios'])
         self.cb_bios_live.setChecked(cfg['git_bios'])
         self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
-        self.le_bios_live.setText(cfg['git_bios_ref'])
-        self.le_font_name.setText(str(cfg['font_name']))
+        self.le_font_name.setText(cfg['font_name'])
         self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
         self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
+
+    def _apply_configuration_2(self, cfg: dict) -> None:
+        """
+        Apply configuration to part of GUI widgets.
+
+        :param cfg: dictionary with configuration
+        """
+        getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
+        self.le_dcsdir.setText(cfg['dcs'])
+        self.le_biosdir.setText(cfg['dcsbios'])
+        self.le_bios_live.setText(cfg['git_bios_ref'])  # todo: verify how it behave when check and uncheck during start
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
