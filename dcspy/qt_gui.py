@@ -24,8 +24,8 @@ from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, Syst
 from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_default_yaml, get_version_string, is_git_exec_present, is_git_object, load_cfg,
-                         proc_is_running, run_pip_command, save_cfg)
+                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
+                         is_git_object, load_cfg, proc_is_running, run_pip_command, save_cfg)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -53,6 +53,7 @@ class DcsPyQtGui(QMainWindow):
         self.current_row = -1
         self.current_col = -1
         self._visible_items = 0
+        self._git_refs_count = 0
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
@@ -115,7 +116,8 @@ class DcsPyQtGui(QMainWindow):
         self.pb_stop.clicked.connect(self._stop_clicked)
         self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
         self.pb_bios_check.clicked.connect(self._bios_check_clicked)
-        self.le_bios_live.textChanged.connect(self._is_git_object_exists)  # todo: add completer functionality
+        self.le_bios_live.textEdited.connect(self._is_git_object_exists)
+        self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
         self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
 
     def _init_autosave(self) -> None:
@@ -585,6 +587,7 @@ class DcsPyQtGui(QMainWindow):
             LOG.debug(f'Git reference: {text} in {DCS_BIOS_REPO_DIR} exists: {git_ref}')
             if git_ref:
                 self.le_bios_live.setStyleSheet('')
+                self._set_completer_for_git_ref()
                 return True
             else:
                 self.le_bios_live.setStyleSheet('color: red;')
@@ -650,6 +653,18 @@ class DcsPyQtGui(QMainWindow):
             self.le_bios_live.setStyleSheet('')
         self._bios_check_clicked(silence=False)
 
+    def _set_completer_for_git_ref(self) -> None:
+        """Setup completer for Git references of DCS-BIOS git repo."""
+        if not self._git_refs_count:
+            git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
+            self._git_refs_count = len(git_refs)
+            completer = QCompleter(git_refs)
+            completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+            completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+            completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+            self.le_bios_live.setCompleter(completer)
+
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self):
         """Check version of DCSpy and show message box."""
@@ -693,6 +708,7 @@ class DcsPyQtGui(QMainWindow):
 
         if self.cb_bios_live.isChecked():
             self._check_bios_git(silence=silence)
+            self._is_git_object_exists(text=self.le_bios_live.text())
         else:
             self._check_bios_release(silence=silence)
 
@@ -927,7 +943,6 @@ class DcsPyQtGui(QMainWindow):
         self.cb_check_ver.setChecked(cfg['check_ver'])
         self.cb_verbose.setChecked(cfg['verbose'])
         self.cb_ded_font.setChecked(cfg['f16_ded_font'])
-        self.cb_bios_live.setChecked(cfg['git_bios'])
         self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
         self.le_font_name.setText(cfg['font_name'])
         self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
@@ -943,6 +958,7 @@ class DcsPyQtGui(QMainWindow):
         self.le_dcsdir.setText(cfg['dcs'])
         self.le_biosdir.setText(cfg['dcsbios'])
         self.le_bios_live.setText(cfg['git_bios_ref'])
+        self.cb_bios_live.setChecked(cfg['git_bios'])
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
