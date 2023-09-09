@@ -628,7 +628,7 @@ class DcsPyQtGui(QMainWindow):
         return dcs_bios_ver
 
     def _cb_bios_live_toggled(self, state: bool) -> None:
-        """Action when Live BIOS checkbox is toggled"""
+        """When Live BIOS checkbox is toggled."""
         if state:
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
@@ -638,7 +638,7 @@ class DcsPyQtGui(QMainWindow):
         self._bios_check_clicked(silence=False)
 
     def _set_completer_for_git_ref(self) -> None:
-        """Setup completer for Git references of DCS-BIOS git repo."""
+        """Setups completer for Git references of DCS-BIOS git repo."""
         if not self._git_refs_count:
             git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
             self._git_refs_count = len(git_refs)
