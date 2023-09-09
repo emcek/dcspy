@@ -539,7 +539,7 @@ class DcsPyQtGui(QMainWindow):
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
         current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
-        for col in {0, 1, 2} - {self.current_col}:  # todo: get number of columns from keyboard
+        for col in set(range(self.keyboard.modes)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
     def _is_dir_exists(self, text: str, widget_name: str) -> bool:
