@@ -90,6 +90,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
                      'save_lcd': False,
                      'show_gui': True,
                      'autostart': False,
+                     'completer_items': 20,
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                      'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                      'verbose': False,

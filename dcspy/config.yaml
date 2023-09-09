@@ -1,6 +1,7 @@
 autostart: false
 check_bios: true
 check_ver: true
+completer_items: 20
 dcs: C:\Program Files\Eagle Dynamics\DCS World OpenBeta
 dcsbios: D:\Users\UNKNOWN\Saved Games\DCS.openbeta\Scripts\DCS-BIOS
 f16_ded_font: true

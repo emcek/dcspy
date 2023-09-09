@@ -52,7 +52,7 @@ class DcsPyQtGui(QMainWindow):
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
         self.current_col = -1
-        self._visible_items = 0
+        self._completer_items = 0
         self._git_refs_count = 0
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
@@ -119,6 +119,7 @@ class DcsPyQtGui(QMainWindow):
         self.le_bios_live.textEdited.connect(self._is_git_object_exists)
         self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
         self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
+        self.sp_completer.valueChanged.connect(self._set_find_value)
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -126,7 +127,7 @@ class DcsPyQtGui(QMainWindow):
                        'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textEdited',
                        'le_biosdir': 'textEdited', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
                        'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
-                       'hs_small_font': 'valueChanged'}
+                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged'}
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
@@ -157,13 +158,12 @@ class DcsPyQtGui(QMainWindow):
         completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
-        completer.setMaxVisibleItems(self._visible_items)
+        completer.setMaxVisibleItems(self._completer_items)
         completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
         self.combo_planes.addItems(p)
         self.combo_planes.setEditable(True)
         self.combo_planes.setCompleter(completer)
         self.combo_planes.currentTextChanged.connect(self._load_new_plane)
-        self.sp_completer.valueChanged.connect(self._set_find_value)
 
     def _load_new_plane(self, text) -> None:
         """Refresh table when new plane is loaded."""
@@ -176,8 +176,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param value: number of items visible
         """
-        LOG.debug(value)
-        self._visible_items = value
+        self._completer_items = value
         self._load_table_gkeys()
 
     def _init_keyboards(self) -> None:
@@ -515,7 +514,7 @@ class DcsPyQtGui(QMainWindow):
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
                 completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
-                completer.setMaxVisibleItems(self._visible_items)
+                completer.setMaxVisibleItems(self._completer_items)
                 completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
                 combo = QComboBox()
@@ -929,6 +928,8 @@ class DcsPyQtGui(QMainWindow):
         self.cb_ded_font.setChecked(cfg['f16_ded_font'])
         self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
         self.le_font_name.setText(cfg['font_name'])
+        self.sp_completer.setValue(cfg['completer_items'])
+        self._completer_items = cfg['completer_items']
         self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
         self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
 
@@ -966,6 +967,7 @@ class DcsPyQtGui(QMainWindow):
             'font_color_l': self.color_font['large'],
             'font_color_s': self.color_font['medium'],
             'font_color_xs': self.color_font['small'],
+            'completer_items': self.sp_completer.value(),
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
