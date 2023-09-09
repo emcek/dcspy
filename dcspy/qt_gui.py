@@ -116,6 +116,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
         self.pb_bios_check.clicked.connect(self._bios_check_clicked)
         self.le_bios_live.textChanged.connect(self._is_git_object_exists)  # todo: add completer functionality
+        self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -581,6 +582,7 @@ class DcsPyQtGui(QMainWindow):
         """
         if self.cb_bios_live.isChecked():
             git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
+            LOG.debug(f'Git reference: {text} in {DCS_BIOS_REPO_DIR} exists: {git_ref}')
             if git_ref:
                 self.le_bios_live.setStyleSheet('')
                 return True
@@ -637,6 +639,16 @@ class DcsPyQtGui(QMainWindow):
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         return dcs_bios_ver
+
+    def _cb_bios_live_toggled(self, state: bool) -> None:
+        """Action when Live BIOS checkbox is toggled"""
+        if state:
+            self.le_bios_live.setEnabled(True)
+            self._is_git_object_exists(text=self.le_bios_live.text())
+        else:
+            self.le_bios_live.setEnabled(False)
+            self.le_bios_live.setStyleSheet('')
+        self._bios_check_clicked(silence=False)
 
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self):
@@ -930,7 +942,7 @@ class DcsPyQtGui(QMainWindow):
         getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
         self.le_dcsdir.setText(cfg['dcs'])
         self.le_biosdir.setText(cfg['dcsbios'])
-        self.le_bios_live.setText(cfg['git_bios_ref'])  # todo: verify how it behave when check and uncheck during start
+        self.le_bios_live.setText(cfg['git_bios_ref'])
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
