@@ -187,7 +187,7 @@ def test_is_git_object(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='wrong') is False
-    assert utils.is_git_object(repo_dir=Path('.'), git_obj='wrong') is False
+    assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
 
 
 def test_get_all_git_refs(tmpdir):
