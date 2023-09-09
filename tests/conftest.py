@@ -454,6 +454,18 @@ def sock():
 
 
 @fixture()
+def default_config():
+    """Get default configuration dict."""
+    from os import environ
+    return {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+            'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta', 'keyboard': 'G13', 'save_lcd': False, 'show_gui': True, 'autostart': False,
+            'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': 'consola.ttf', 'font_mono_s': 11, 'font_mono_xs': 9, 'font_mono_l': 16,
+            'font_color_s': 22, 'font_color_xs': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': False, 'git_bios_ref': 'master',
+            'theme_mode': 'system', 'theme_color': 'dark-blue'}
+
+
+# <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
+@fixture()
 def autoupdate1_cfg():
     """Mock for correct autoupdate_cfg."""
     return """{
@@ -514,6 +526,7 @@ def autoupdate3_cfg():
 """
 
 
+# <=><=><=><=><=> airplane bios data <=><=><=><=><=>
 @fixture()
 def apache_pre_mode_bios_data():
     """Bios values for AH-64D Apache PRE mode."""
