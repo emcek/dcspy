@@ -122,29 +122,13 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
-        self.cb_autostart.toggled.connect(self.save_configuration)
-        self.cb_show_gui.toggled.connect(self.save_configuration)
-        self.cb_check_ver.toggled.connect(self.save_configuration)
-        self.cb_ded_font.toggled.connect(self.save_configuration)
-        self.cb_lcd_screenshot.toggled.connect(self.save_configuration)
-        self.cb_verbose.toggled.connect(self.save_configuration)
-        self.cb_autoupdate_bios.toggled.connect(self.save_configuration)
-        self.cb_bios_live.toggled.connect(self.save_configuration)
-
-        self.le_dcsdir.textEdited.connect(self.save_configuration)
-        self.le_biosdir.textEdited.connect(self.save_configuration)
-        self.le_font_name.textEdited.connect(self.save_configuration)
-        self.le_bios_live.textEdited.connect(self.save_configuration)
-
-        self.rb_g19.toggled.connect(self.save_configuration)
-        self.rb_g13.toggled.connect(self.save_configuration)
-        self.rb_g15v1.toggled.connect(self.save_configuration)
-        self.rb_g15v2.toggled.connect(self.save_configuration)
-        self.rb_g510.toggled.connect(self.save_configuration)
-
-        self.hs_large_font.valueChanged.connect(self.save_configuration)
-        self.hs_medium_font.valueChanged.connect(self.save_configuration)
-        self.hs_small_font.valueChanged.connect(self.save_configuration)
+        widget_dict = {'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
+                       'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textEdited',
+                       'le_biosdir': 'textEdited', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
+                       'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
+                       'hs_small_font': 'valueChanged'}
+        for widget_name, trigger_method in widget_dict.items():
+            getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
     def _init_gkeys(self) -> None:
         """Initialize of cells with completer and combobox."""
