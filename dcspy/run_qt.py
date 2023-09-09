@@ -4,6 +4,7 @@ from logging import getLogger
 
 from PySide6.QtWidgets import QApplication
 
+from dcspy import config
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
@@ -19,7 +20,8 @@ def run_gui() -> None:
 
     try:
         window = DcsPyQtGui()
-        window.show()
+        if config.get('show_gui', True):
+            window.show()
         app.aboutToQuit.connect(window.event_set)
     except Exception as exp:
         LOG.exception(f'Critical error: {exp}')
