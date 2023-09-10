@@ -16,7 +16,7 @@ from webbrowser import open_new_tab
 import qtawesome
 from packaging import version
 from PySide6 import QtCore, QtUiTools
-from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem, QStandardItemModel
+from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QProgressBar,
                                QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QWidget)
 
@@ -67,7 +67,7 @@ class DcsPyQtGui(QMainWindow):
         self._init_tray()
         self._init_settings()
         self._apply_configuration_1(cfg=self.config)
-        self._init_gkeys()
+        self._init_combo_plane()
         self._init_keyboards()
         self._apply_configuration_2(cfg=self.config)
         self._init_autosave()
@@ -134,12 +134,12 @@ class DcsPyQtGui(QMainWindow):
                        'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textEdited',
                        'le_biosdir': 'textEdited', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
                        'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
-                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged'}
+                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged'}
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
-    def _init_gkeys(self) -> None:
-        """Initialize of cells with completer and combobox."""
+    def _init_combo_plane(self) -> None:
+        """Initialize of combo box for plane selector with completer."""
         p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
              "Alphajet", "Bell47_2", "Bf-109K-4", "BlackHawk", "Bronco-OV-10A", "C-101CC", "C-101EB", "Cessna_210N",
              "Christen Eagle II", "DC3", "EA-18G", "Edge540", "Extra330SR", "F-117A", "F-14A-135-GR", "F-14B", "F-15C",
@@ -168,6 +168,7 @@ class DcsPyQtGui(QMainWindow):
         completer.setMaxVisibleItems(self._completer_items)
         completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
         self.combo_planes.addItems(p)
+        self.combo_planes.setCurrentText(self.config['current_plane'])
         self.combo_planes.setEditable(True)
         self.combo_planes.setCompleter(completer)
 
@@ -389,11 +390,12 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
-        plane_gkeys = load_yaml(self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
-        LOG.debug(f'{self.combo_planes.currentText()}: {plane_gkeys}')
+        plane_name = self.combo_planes.currentText()
+        plane_gkeys = load_yaml(self.cfg_file.parent / f'{plane_name}.yaml')
+        LOG.debug(f'{plane_name}: {plane_gkeys}')
 
-        for r in range(0, self.keyboard.gkeys):
-            for c in range(0, self.keyboard.modes):
+        for row in range(0, self.keyboard.gkeys):
+            for col in range(0, self.keyboard.modes):
                 completer = QCompleter([item for item in n2 if item and '--' not in item])
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
@@ -406,8 +408,8 @@ class DcsPyQtGui(QMainWindow):
                 combo.addItems(n2)
                 combo.setCompleter(completer)
                 self._disable_items_with(text='--', combo=combo)
-                self.tw_gkeys.setCellWidget(r, c, combo)
-                self.tw_gkeys.cellWidget(r, c).setCurrentText(plane_gkeys.get(f'G{r + 1}_M{c + 1}', ''))
+                self.tw_gkeys.setCellWidget(row, col, combo)
+                self.tw_gkeys.cellWidget(row, col).setCurrentText(plane_gkeys.get(f'G{row + 1}_M{col + 1}', ''))
 
     @staticmethod
     def _disable_items_with(text: str, combo: QComboBox) -> None:
@@ -838,6 +840,7 @@ class DcsPyQtGui(QMainWindow):
         self.le_font_name.setText(cfg['font_name'])
         self.sp_completer.setValue(cfg['completer_items'])
         self._completer_items = cfg['completer_items']
+        self.combo_planes.setCurrentText(cfg['current_plane'])
         self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
         self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
 
@@ -876,6 +879,7 @@ class DcsPyQtGui(QMainWindow):
             'font_color_s': self.color_font['medium'],
             'font_color_xs': self.color_font['small'],
             'completer_items': self.sp_completer.value(),
+            'current_plane': self.combo_planes.currentText(),
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
