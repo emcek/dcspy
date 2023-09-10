@@ -1,7 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-img = ['dcspy.ico', 'dcspy_white.ico', 'dcspy.png', 'splash.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png']
+img = ['dcspy.ico', 'dcspy_white.ico', 'dcspy.png', 'splash.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'G13device.png', 'G19device.png', 'G510device.png', 'G15v1device.png', 'G15v2device.png']
 resource = ['falconded.ttf', 'license.txt']
 logi_sdk = ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']
 
