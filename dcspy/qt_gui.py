@@ -25,7 +25,7 @@ from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
-                         is_git_object, load_cfg, proc_is_running, run_pip_command, save_cfg)
+                         is_git_object, load_cfg, load_yaml, proc_is_running, run_pip_command, save_cfg, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -120,6 +120,10 @@ class DcsPyQtGui(QMainWindow):
         self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
         self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
         self.sp_completer.valueChanged.connect(self._set_find_value)
+        self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
+        self.pb_copy.clicked.connect(self._copy_cell_to_row)
+        self.pb_save.clicked.connect(self._save_gkeys_cfg)
+        self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -163,12 +167,6 @@ class DcsPyQtGui(QMainWindow):
         self.combo_planes.addItems(p)
         self.combo_planes.setEditable(True)
         self.combo_planes.setCompleter(completer)
-        self.combo_planes.currentTextChanged.connect(self._load_new_plane)
-
-    def _load_new_plane(self, text) -> None:
-        """Refresh table when new plane is loaded."""
-        LOG.debug(text)
-        self._load_table_gkeys()
 
     def _set_find_value(self, value) -> None:
         """
@@ -499,8 +497,6 @@ class DcsPyQtGui(QMainWindow):
               'LIGHT_RWR_TGTSEP_UP', 'LIGHT_SEAT_NOT', 'LIGHT_SEC', 'LIGHT_STBY', 'LIGHT_STBY_GEN',
               'LIGHT_STORES_CONFIG', 'LIGHT_TF_FAIL', 'LIGHT_TO_FLCS',
               'LIGHT_TO_LDG_CONFIG']
-        self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
-        self.pb_copy.clicked.connect(self._copy_cell_to_row)
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
@@ -508,8 +504,10 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
-        for r in range(0, self.keyboard.gkeys + 1):
-            for c in range(0, self.keyboard.modes + 1):
+        plane_gkeys = load_yaml(self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
+
+        for r in range(0, self.keyboard.gkeys):
+            for c in range(0, self.keyboard.modes):
                 completer = QCompleter(n1)
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
@@ -522,6 +520,17 @@ class DcsPyQtGui(QMainWindow):
                 combo.addItems(n2)
                 combo.setCompleter(completer)
                 self.tw_gkeys.setCellWidget(r, c, combo)
+                LOG.debug(plane_gkeys)
+                self.tw_gkeys.cellWidget(r, c).setCurrentText(plane_gkeys.get(f'G{r + 1}_M{c + 1}', ''))
+
+    def _save_gkeys_cfg(self) -> None:
+        """Save G-Keys configuration for current plane."""
+        cfg = {}
+        for r in range(0, self.tw_gkeys.rowCount()):
+            for c in range(0, self.tw_gkeys.columnCount()):
+                cfg[f'G{r + 1}_M{c + 1}'] = self.tw_gkeys.cellWidget(r, c).currentText()
+        LOG.debug(cfg)
+        save_yaml(data=cfg, yaml_file=self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
 
     def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
         """
