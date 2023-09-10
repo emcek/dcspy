@@ -514,14 +514,12 @@ def load_yaml(yaml_file: Path) -> Dict[str, str]:
     :param yaml_file: full path
     :return: dict
     """
-    LOG.debug(yaml_file)
     try:
-        with open(file=yaml_file, encoding='utf-8') as plane_cfg:
-            plane_gkeys = load(plane_cfg, Loader=FullLoader)
+        with open(file=yaml_file, encoding='utf-8') as yamlfile:
+            data = load(yamlfile, Loader=FullLoader)
     except (FileNotFoundError, parser.ParserError):
-        plane_gkeys = {}
-    LOG.debug(f'Loaded: {plane_gkeys}')
-    return plane_gkeys
+        data = {}
+    return data
 
 
 def save_yaml(data: dict, yaml_file: Path) -> None:
