@@ -670,7 +670,7 @@
     <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::RightDockWidgetArea</set>
+    <set>Qt::NoDockWidgetArea</set>
    </property>
    <property name="windowTitle">
     <string>G-Keys layout</string>
