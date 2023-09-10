@@ -1,9 +1,9 @@
+import json
 import sys
 import zipfile
 from datetime import datetime
 from glob import glob
 from itertools import chain
-from json import loads
 from logging import getLogger
 from os import environ, makedirs, walk
 from pathlib import Path
@@ -15,10 +15,10 @@ from subprocess import CalledProcessError, run
 from tempfile import gettempdir
 from typing import Any, Dict, List, NamedTuple, Tuple, Union
 
+import yaml
 from packaging import version
 from psutil import process_iter
 from requests import get
-from yaml import FullLoader, dump, load, parser
 
 from dcspy.models import Control, ControlKeyData, DcsBios
 
@@ -33,7 +33,7 @@ ConfigDict = Dict[str, Union[str, int, bool]]
 default_yaml_file = Path(__file__).resolve().with_name('config.yaml')
 
 with open(default_yaml_file) as c_file:
-    defaults_cfg: ConfigDict = load(c_file, Loader=FullLoader)
+    defaults_cfg: ConfigDict = yaml.load(c_file, Loader=yaml.FullLoader)
     defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
@@ -72,14 +72,15 @@ def load_cfg(filename: Path) -> ConfigDict:
     :param filename: path to yam file - default <package_dir>/config.yaml
     :return: configuration dict
     """
+    # todo: combine with load_yaml
     cfg_dict: ConfigDict = {}
     try:
         with open(file=filename, encoding='utf-8') as yaml_file:
-            cfg_dict = load(yaml_file, Loader=FullLoader)
+            cfg_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
             if not isinstance(cfg_dict, dict):
                 cfg_dict, old_dict = {}, cfg_dict
                 raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
-    except (FileNotFoundError, parser.ParserError, AttributeError) as err:
+    except (FileNotFoundError, yaml.parser.ParserError, AttributeError) as err:
         makedirs(name=filename.parent, exist_ok=True)
         LOG.warning(f'{type(err).__name__}: {filename}. Default configuration will be used.')
         LOG.debug(f'{err}')
@@ -93,10 +94,11 @@ def save_cfg(cfg_dict: ConfigDict, filename: Path) -> None:
     :param cfg_dict: configuration dict
     :param filename: path to yaml file
     """
+    # todo: combine with save_yaml
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
     with open(file=filename, mode='w', encoding='utf-8') as yaml_file:
-        dump(curr_dict, yaml_file)
+        yaml.dump(curr_dict, yaml_file)
 
 
 def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
@@ -504,7 +506,7 @@ def load_json(path: Path) -> Dict[str, Any]:
     """
     with open(path, encoding='utf-8') as json_file:
         data = json_file.read()
-    return loads(data)
+    return json.loads(data)
 
 
 def load_yaml(yaml_file: Path) -> Dict[str, str]:
@@ -514,10 +516,11 @@ def load_yaml(yaml_file: Path) -> Dict[str, str]:
     :param yaml_file: full path
     :return: dict
     """
+    # todo: combine with load_cfg
     try:
         with open(file=yaml_file, encoding='utf-8') as yamlfile:
-            data = load(yamlfile, Loader=FullLoader)
-    except (FileNotFoundError, parser.ParserError):
+            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
+    except (FileNotFoundError, yaml.parser.ParserError):
         data = {}
     return data
 
@@ -528,8 +531,9 @@ def save_yaml(data: dict, yaml_file: Path) -> None:
 
     :rtype: object
     """
+    # todo: combine with save_cfg
     with open(file=yaml_file, mode='w+', encoding='utf-8') as yamlfile:
-        dump(data, yamlfile)
+        yaml.dump(data, yamlfile)
 
 
 def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
