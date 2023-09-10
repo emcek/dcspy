@@ -98,7 +98,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
 
-    def _init_tray(self):
+    def _init_tray(self) -> None:
         """Initialize of system tray icon."""
         self.systray.setIcon(QIcon(str(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')))
         self.systray.setVisible(True)
@@ -666,7 +666,7 @@ class DcsPyQtGui(QMainWindow):
             self.le_bios_live.setCompleter(completer)
 
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
-    def _dcspy_check_clicked(self):
+    def _dcspy_check_clicked(self) -> None:
         """Check version of DCSpy and show message box."""
         ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
@@ -678,7 +678,7 @@ class DcsPyQtGui(QMainWindow):
         elif 'failed' in ver_string:
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Unable to check DCSpy version online')
 
-    def _download_new_release(self):
+    def _download_new_release(self) -> None:
         """Download new release if running PyInstaller version or show instruction when running Pip version."""
         if getattr(sys, 'frozen', False):
             rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
