@@ -519,6 +519,16 @@
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="pb_save">
+              <property name="toolTip">
+               <string>Save current plane configuration</string>
+              </property>
+              <property name="text">
+               <string>Save</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QLabel" name="label_7">
               <property name="text">
                <string>Number of results:</string>
