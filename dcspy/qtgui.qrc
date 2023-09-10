@@ -11,6 +11,13 @@
     <file>img/qt.svg</file>
     <file>img/system-software-update.svg</file>
   </qresource>
+  <qresource prefix="img">
+    <file>img/G13device.png</file>
+    <file>img/G15v1device.png</file>
+    <file>img/G15v2device.png</file>
+    <file>img/G19device.png</file>
+    <file>img/G510device.png</file>
+  </qresource>
   <qresource prefix="ui">
     <file>ui/qtdcs.ui</file>
   </qresource>
