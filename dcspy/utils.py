@@ -91,7 +91,7 @@ def save_cfg(cfg_dict: ConfigDict, filename: Path) -> None:
     Update yaml file with dict.
 
     :param cfg_dict: configuration dict
-    :param filename: path to yam file - default <package_dir>/config.yaml
+    :param filename: path to yaml file
     """
     curr_dict = load_cfg(filename)
     curr_dict.update(cfg_dict)
@@ -505,6 +505,33 @@ def load_json(path: Path) -> Dict[str, Any]:
     with open(path, encoding='utf-8') as json_file:
         data = json_file.read()
     return loads(data)
+
+
+def load_yaml(yaml_file: Path) -> Dict[str, str]:
+    """
+    Load yaml from file into dictionary.
+
+    :param yaml_file: full path
+    :return: dict
+    """
+    LOG.debug(yaml_file)
+    try:
+        with open(file=yaml_file, encoding='utf-8') as plane_cfg:
+            plane_gkeys = load(plane_cfg, Loader=FullLoader)
+    except (FileNotFoundError, parser.ParserError):
+        plane_gkeys = {}
+    LOG.debug(f'Loaded: {plane_gkeys}')
+    return plane_gkeys
+
+
+def save_yaml(data: dict, yaml_file: Path) -> None:
+    """
+    Save dictionary to yaml file.
+
+    :rtype: object
+    """
+    with open(file=yaml_file, mode='w+', encoding='utf-8') as yamlfile:
+        dump(data, yamlfile)
 
 
 def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
