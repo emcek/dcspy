@@ -16,9 +16,9 @@ from webbrowser import open_new_tab
 import qtawesome
 from packaging import version
 from PySide6 import QtCore, QtUiTools
-from PySide6.QtGui import QAction, QIcon
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QFileDialog, QLineEdit, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton,
-                               QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QToolBar, QWidget)
+from PySide6.QtGui import QAction, QIcon, QPixmap
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QProgressBar,
+                               QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QWidget)
 
 from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
 from dcspy.models import KeyboardModel
@@ -63,6 +63,8 @@ class DcsPyQtGui(QMainWindow):
         self.config = cfg_dict
         if not cfg_dict:
             self.config = load_cfg(filename=self.cfg_file)
+        self.dw_gkeys.hide()
+        self.dw_gkeys.setFloating(True)
         self._init_menu_bar()
         self._init_tray()
         self._init_settings()
@@ -90,6 +92,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
+        self.a_show_layout.triggered.connect(self._show_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
         # self.actionAboutDCSpy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
@@ -201,6 +204,7 @@ class DcsPyQtGui(QMainWindow):
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
             LOG.debug(f'Select: {self.keyboard}')
             self._set_ded_font_and_font_sliders()
+            self._update_dock()
             self._load_table_gkeys()
 
     def _set_ded_font_and_font_sliders(self) -> None:
@@ -234,6 +238,10 @@ class DcsPyQtGui(QMainWindow):
         """
         getattr(self, f'{self.keyboard.lcd}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
+
+    def _update_dock(self) -> None:
+        """Update dock with image of keyboard."""
+        self.l_keyboard.setPixmap(QPixmap(f':/img/img/{self.keyboard.klass}device.png'))
 
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
@@ -505,6 +513,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
         plane_gkeys = load_yaml(self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
+        LOG.debug(f'{self.combo_planes.currentText()}: {plane_gkeys}')
 
         for r in range(0, self.keyboard.gkeys):
             for c in range(0, self.keyboard.modes):
@@ -520,7 +529,6 @@ class DcsPyQtGui(QMainWindow):
                 combo.addItems(n2)
                 combo.setCompleter(completer)
                 self.tw_gkeys.setCellWidget(r, c, combo)
-                LOG.debug(plane_gkeys)
                 self.tw_gkeys.cellWidget(r, c).setCurrentText(plane_gkeys.get(f'G{r + 1}_M{c + 1}', ''))
 
     def _save_gkeys_cfg(self) -> None:
@@ -1147,6 +1155,13 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.toolbar.hide()
 
+    def _show_dock(self) -> None:
+        """Toggle show and hide dock."""
+        if self.a_show_layout.isChecked():
+            self.dw_gkeys.show()
+        else:
+            self.dw_gkeys.hide()
+
     def _find_children(self) -> None:
         """Find all widgets of main window."""
         self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')
@@ -1157,10 +1172,14 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys: QTableWidget = self.findChild(QTableWidget, 'tw_gkeys')
         self.sp_completer: QSpinBox = self.findChild(QSpinBox, 'sp_completer')
         self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')
+        self.dw_gkeys: QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
+        self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')
+        self.l_keyboard: QLabel = self.findChild(QLabel, 'l_keyboard')
 
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
         self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
         self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
+        self.a_show_layout: QAction = self.findChild(QAction, 'a_show_layout')
         self.a_about_dcspy: QAction = self.findChild(QAction, 'a_about_dcspy')
         self.a_about_qt: QAction = self.findChild(QAction, 'a_about_qt')
         self.a_report_issue: QAction = self.findChild(QAction, 'a_report_issue')
