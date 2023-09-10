@@ -63,8 +63,6 @@ class DcsPyQtGui(QMainWindow):
         self.config = cfg_dict
         if not cfg_dict:
             self.config = load_cfg(filename=self.cfg_file)
-        self.dw_gkeys.hide()
-        self.dw_gkeys.setFloating(True)
         self._init_menu_bar()
         self._init_tray()
         self._init_settings()
@@ -110,6 +108,8 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
+        self.dw_gkeys.hide()
+        self.dw_gkeys.setFloating(True)
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
         self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
