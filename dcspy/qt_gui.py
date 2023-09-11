@@ -771,20 +771,33 @@ class DcsPyQtGui(QMainWindow):
         """Set event to stop DCSpy."""
         self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
                                signal_handlers={'progress': self._progress_by_abs_value})
+        for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
+            if not rb_key.isChecked():
+                rb_key.setEnabled(True)
         self.statusbar.showMessage('Start again or close DCSpy')
         self.pb_start.setEnabled(True)
         self.pb_stop.setEnabled(False)
         self.le_dcsdir.setEnabled(True)
         self.le_biosdir.setEnabled(True)
+        self.hs_small_font.setEnabled(True)
+        self.hs_medium_font.setEnabled(True)
+        self.hs_large_font.setEnabled(True)
+        self.le_font_name.setEnabled(True)
+        if self.rb_g19.isChecked():
+            self.cb_ded_font.setEnabled(True)
+        self.l_large.setEnabled(True)
+        self.l_medium.setEnabled(True)
+        self.l_small.setEnabled(True)
         self.event_set()
 
     def _start_clicked(self) -> None:
         """Run real application in thread."""
-        # LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
-        # keyboard = self.lcd_type.get()
+        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
                                signal_handlers={'progress': self._progress_by_abs_value})
-        # self._save_cfg()
+        for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
+            if not rb_key.isChecked():
+                rb_key.setEnabled(False)
         app_params = {'lcd_type': self.keyboard.klass, 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
@@ -793,7 +806,17 @@ class DcsPyQtGui(QMainWindow):
         self.pb_stop.setEnabled(True)
         self.le_dcsdir.setEnabled(False)
         self.le_biosdir.setEnabled(False)
+        self.hs_small_font.setEnabled(False)
+        self.hs_medium_font.setEnabled(False)
+        self.hs_large_font.setEnabled(False)
+        self.le_font_name.setEnabled(False)
+        self.cb_ded_font.setEnabled(False)
+        self.l_large.setEnabled(False)
+        self.l_medium.setEnabled(False)
+        self.l_small.setEnabled(False)
         app_thread.start()
+        alive = 'working' if app_thread.is_alive() else 'not working'
+        self.statusbar.showMessage(f'DCSpy client: {alive}')
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
     def apply_configuration(self, cfg: dict) -> None:
@@ -1036,7 +1059,11 @@ class DcsPyQtGui(QMainWindow):
         self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')
         self.dw_gkeys: QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
         self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')
+
         self.l_keyboard: QLabel = self.findChild(QLabel, 'l_keyboard')
+        self.l_large: QLabel = self.findChild(QLabel, 'l_large')
+        self.l_medium: QLabel = self.findChild(QLabel, 'l_medium')
+        self.l_small: QLabel = self.findChild(QLabel, 'l_small')
 
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
         self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
