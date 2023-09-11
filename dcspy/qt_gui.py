@@ -5,7 +5,7 @@ from importlib import import_module
 from logging import getLogger
 from os import PathLike, environ
 from pathlib import Path
-from platform import uname
+from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
@@ -16,9 +16,11 @@ from webbrowser import open_new_tab
 import qtawesome
 from packaging import version
 from PySide6 import QtCore, QtUiTools
+from PySide6 import __version__ as pyside6_ver
 from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox, QProgressBar,
-                               QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QWidget)
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox,
+                               QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
+                               QWidget)
 
 from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
 from dcspy.models import KeyboardModel
@@ -74,7 +76,7 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
         if self.cb_autoupdate_bios.isChecked():  # todo: clarify checking bios and dcspy in same way...
-            data = self._fetch_system_data()
+            data = self.fetch_system_data()
             status_ver = ''
             status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
             status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
@@ -92,7 +94,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_show_layout.triggered.connect(self._show_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
-        # self.actionAboutDCSpy.triggered.connect(AboutDialog(self).open)
+        self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
 
@@ -501,24 +503,6 @@ class DcsPyQtGui(QMainWindow):
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
-
-    def _fetch_system_data(self) -> SystemData:
-        """
-        Fetch various system related data.
-
-        :return: SystemData named tuple with all data
-        """
-        system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(Path(self.config["dcs"]))
-        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
-        bios_ver = str(self._check_local_bios().ver)
-        dcs_bios_ver = self._get_bios_full_version(bios_ver)
-        git_ver = 'Not installed'
-        if self.git_exec:
-            from git import cmd
-            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
-        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
-                          dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
     def _get_bios_full_version(self, bios_ver: str) -> str:
         """
@@ -956,6 +940,24 @@ class DcsPyQtGui(QMainWindow):
         """
         self.progressbar.setValue(value)
 
+    def fetch_system_data(self) -> SystemData:
+        """
+        Fetch various system related data.
+
+        :return: SystemData named tuple with all data
+        """
+        system, _, release, ver, _, proc = uname()
+        dcs_type, dcs_ver = check_dcs_ver(Path(self.config["dcs"]))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
+        bios_ver = str(self._check_local_bios().ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        git_ver = 'Not installed'
+        if self.git_exec:
+            from git import cmd
+            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
+        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
+                          dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
+
     def _set_icons(self, button: Optional[str] = None, icon_name: Optional[str] = None, color: str = 'black',
                    spin: bool = False) -> None:
         """
@@ -1114,6 +1116,38 @@ class DcsPyQtGui(QMainWindow):
         self.hs_large_font: QSlider = self.findChild(QSlider, 'hs_large_font')
         self.hs_medium_font: QSlider = self.findChild(QSlider, 'hs_medium_font')
         self.hs_small_font: QSlider = self.findChild(QSlider, 'hs_small_font')
+
+
+class AboutDialog(QDialog):
+    """About dialog."""
+    def __init__(self, parent) -> None:
+        """Dcspy about dialog window."""
+        super().__init__(parent)
+        self.parent: DcsPyQtGui = parent
+        UiLoader().loadUi(':/ui/ui/about.ui', self)
+        self.l_info: QLabel = self.findChild(QLabel, 'l_info')
+        self.setup_text()
+
+    def setup_text(self) -> None:
+        """Prepare text information about DCSpy application."""
+        data = self.parent.fetch_system_data()
+        text = '<html><head/><body><p>'
+        text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
+        text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
+        text += '<br><b>Wiki</b>: <a href="https://github.com/emcek/dcspy/wiki">docs</a>'
+        text += '<br><b>Discord</b>: <a href="https://discord.gg/SP5Yjx3">discord.gg/SP5Yjx3</a>'
+        text += '<br><b>Issues</b>: <a href="https://github.com/emcek/dcspy/issues">report issue</a>'
+        text += f'<br><b>System</b>: {data.system}{data.release} ver. {data.ver} ({architecture()[0]})'
+        text += f'<br><b>Processor</b>: {data.proc}'
+        text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
+        text += f'<br><b>Config</b>: <a href="file:///{self.parent.cfg_file.parent}">{self.parent.cfg_file.name}</a>'
+        text += f'<br><b>Git</b>: {data.git_ver}'
+        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {QtCore.__version__}'
+        text += f'<br><b>DCSpy</b>: {data.dcspy_ver}'
+        text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{data.dcs_bios_ver}</a>'
+        text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{data.dcs_ver}/">{data.dcs_ver}</a> ({data.dcs_type})'
+        text += '</p></body></html>'
+        self.l_info.setText(text)
 
 
 class WorkerSignals(QtCore.QObject):
