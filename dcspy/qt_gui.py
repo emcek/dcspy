@@ -1130,22 +1130,22 @@ class AboutDialog(QDialog):
 
     def setup_text(self) -> None:
         """Prepare text information about DCSpy application."""
-        data = self.parent.fetch_system_data()
+        d = self.parent.fetch_system_data()
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
         text += '<br><b>Wiki</b>: <a href="https://github.com/emcek/dcspy/wiki">docs</a>'
         text += '<br><b>Discord</b>: <a href="https://discord.gg/SP5Yjx3">discord.gg/SP5Yjx3</a>'
         text += '<br><b>Issues</b>: <a href="https://github.com/emcek/dcspy/issues">report issue</a>'
-        text += f'<br><b>System</b>: {data.system}{data.release} ver. {data.ver} ({architecture()[0]})'
-        text += f'<br><b>Processor</b>: {data.proc}'
+        text += f'<br><b>System</b>: {d.system}{d.release} ver. {d.ver} ({architecture()[0]})'
+        text += f'<br><b>Processor</b>: {d.proc}'
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
         text += f'<br><b>Config</b>: <a href="file:///{self.parent.cfg_file.parent}">{self.parent.cfg_file.name}</a>'
-        text += f'<br><b>Git</b>: {data.git_ver}'
+        text += f'<br><b>Git</b>: {d.git_ver}'
         text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {QtCore.__version__}'
-        text += f'<br><b>DCSpy</b>: {data.dcspy_ver}'
-        text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{data.dcs_bios_ver}</a>'
-        text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{data.dcs_ver}/">{data.dcs_ver}</a> ({data.dcs_type})'
+        text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
+        text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{d.dcs_bios_ver}</a>'
+        text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
         text += '</p></body></html>'
         self.l_info.setText(text)
 
