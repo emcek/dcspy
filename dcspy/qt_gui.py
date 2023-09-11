@@ -13,7 +13,6 @@ from time import sleep
 from typing import Callable, Dict, Optional, Union
 from webbrowser import open_new_tab
 
-import qtawesome
 from packaging import version
 from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
@@ -82,7 +81,6 @@ class DcsPyQtGui(QMainWindow):
             status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
             self.statusbar.showMessage(status_ver)
 
-        # self._set_icons()
         if self.config.get('autostart', False):
             self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
@@ -957,38 +955,6 @@ class DcsPyQtGui(QMainWindow):
             git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
-
-    def _set_icons(self, button: Optional[str] = None, icon_name: Optional[str] = None, color: str = 'black',
-                   spin: bool = False) -> None:
-        """
-        Universal method to set icon for QPushButtons.
-
-        When button is provided without icon_name, current button icon will be removed.
-        When none of button nor icon_name are provided, default starting icons are set for all buttons.
-
-        :param button: button name
-        :param icon_name: ex: spinner, check, times, pause
-        :param color: ex: red, green, black
-        :param spin: spinning icon: True or False
-        """
-        if not (button or icon_name):
-            self.pb_mods_dir.setIcon(qtawesome.icon('fa5s.folder', color='brown'))
-            self.pb_morrowind_dir.setIcon(qtawesome.icon('fa5s.folder', color='brown'))
-            self.pb_tes3cmd.setIcon(qtawesome.icon('fa5s.file', color='brown'))
-            self.pb_clean.setIcon(qtawesome.icon('fa5s.snowplow', color='brown'))
-            self.pb_report.setIcon(qtawesome.icon('fa5s.file-contract', color='brown'))
-            self.pb_back_clean.setIcon(qtawesome.icon('fa5s.arrow-left', color='brown'))
-            self.pb_masters_select.setIcon(qtawesome.icon('fa5s.folder', color='brown'))
-            self.pb_masters_run.setIcon(qtawesome.icon('fa5s.play', color='brown'))
-            return
-        btn = getattr(self, button)  # type: ignore
-        if spin and icon_name:
-            icon = qtawesome.icon(f'{icon_name}', color=color, animation=qtawesome.Spin(btn, 2, 1))
-        elif not spin and icon_name:
-            icon = qtawesome.icon(f'{icon_name}', color=color)
-        else:
-            icon = QIcon()
-        btn.setIcon(icon)
 
     def _run_file_dialog(self, for_load: bool, for_dir: bool, last_dir: Callable[..., str],
                          widget_name: Optional[str] = None, file_filter: str = 'All Files [*.*](*.*)') -> str:
