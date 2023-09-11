@@ -20,5 +20,6 @@
   </qresource>
   <qresource prefix="ui">
     <file>ui/qtdcs.ui</file>
+    <file>ui/about.ui</file>
   </qresource>
 </RCC>
