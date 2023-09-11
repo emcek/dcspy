@@ -64,13 +64,13 @@ class DcsPyQtGui(QMainWindow):
         self.config = cfg_dict
         if not cfg_dict:
             self.config = load_cfg(filename=self.cfg_file)
-        self._init_menu_bar()
         self._init_tray()
         self._init_settings()
         self._apply_configuration_1(cfg=self.config)
         self._init_combo_plane()
         self._init_keyboards()
         self._apply_configuration_2(cfg=self.config)
+        self._init_menu_bar()
         self._init_autosave()
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
@@ -80,7 +80,6 @@ class DcsPyQtGui(QMainWindow):
             status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
             status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
             self.statusbar.showMessage(status_ver)
-
         if self.config.get('autostart', False):
             self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
