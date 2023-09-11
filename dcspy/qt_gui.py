@@ -49,7 +49,7 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool = QtCore.QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys='', lcd='')
+        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=0, lcd='')
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
