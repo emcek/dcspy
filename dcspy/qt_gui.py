@@ -97,7 +97,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
-        self.systray.setIcon(QIcon(str(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')))
+        self.systray.setIcon(QIcon(':/icons/img/dcspy.ico'))
         self.systray.setVisible(True)
         self.systray.setToolTip(f'DCSpy {__version__}')
         self.traymenu.addAction(self.a_check_updates)
@@ -545,7 +545,7 @@ class DcsPyQtGui(QMainWindow):
         ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
-            self.systray.showMessage('DCSpy', f'New version: {ver_string}')  # todo: add icon
+            self.systray.showMessage('DCSpy', f'New version: {__version__}', QIcon(':/icons/img/system-software-update.svg'))
             self._download_new_release()
         elif 'latest' in ver_string:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title='No updates', message='You are running latest version')
