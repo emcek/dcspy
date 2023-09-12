@@ -58,8 +58,6 @@ class DcsPyQtGui(QMainWindow):
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
-        self.systray = QSystemTrayIcon()
-        self.traymenu = QMenu()
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.config = cfg_dict
         if not cfg_dict:
