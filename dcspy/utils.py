@@ -578,12 +578,12 @@ def get_list(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
 
 
 if __name__ == '__main__':
-    bios_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
-    plane_json = get_full_bios_for_plane('F-16C_50', bios_dir)
+    bios_local_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
+    plane_json = get_full_bios_for_plane('F-16C_50', bios_local_dir)
     DcsBios.model_validate(plane_json)
     print('*' * 100)
     pprint(plane_json, width=500)
-    inputs = get_inputs_for_plane('F-16C_50', bios_dir)
+    inputs = get_inputs_for_plane('F-16C_50', bios_local_dir)
     print('*' * 100)
     pprint(inputs, width=150)
     in_list = get_list(ctrl_key=inputs)
