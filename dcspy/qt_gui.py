@@ -3,7 +3,7 @@ import traceback
 from functools import partial
 from importlib import import_module
 from logging import getLogger
-from os import PathLike, environ
+from os import environ
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
@@ -743,7 +743,7 @@ class DcsPyQtGui(QMainWindow):
             install_result = f'{install_result}\n\nUsing stable release version.'
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
 
-    def _handling_export_lua(self, temp_dir: PathLike) -> str:
+    def _handling_export_lua(self, temp_dir: Path) -> str:
         """
         Check if Export.lua file exist and its content.
 
@@ -1211,7 +1211,7 @@ class UiLoader(QtUiTools.QUiLoader):
                 setattr(self._baseinstance, name, widget)
         return widget
 
-    def loadUi(self, ui_path: Union[str, bytes, PathLike], baseinstance=None) -> QWidget:
+    def loadUi(self, ui_path: Union[str, bytes, Path], baseinstance=None) -> QWidget:
         """
         Load UI file.
 
