@@ -743,7 +743,7 @@ class DcsPyQtGui(QMainWindow):
             install_result = f'{install_result}\n\nUsing stable release version.'
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
 
-    def _handling_export_lua(self, temp_dir: Path) -> str:
+    def _handling_export_lua(self, temp_dir: PathLike) -> str:
         """
         Check if Export.lua file exist and its content.
 
