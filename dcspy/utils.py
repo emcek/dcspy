@@ -577,6 +577,18 @@ def get_list_of_ctrls(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[st
     return result_list
 
 
+def get_planes_list(bios_dir: Path) -> List[str]:
+    """
+    Get list of all DCS-BIOS supported planes.
+
+    :param bios_dir: path to DCS-BIOS
+    :return: list of all supported planes
+    """
+    alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
+    aircraft_aliases = load_json(path=alias_path)
+    return [aircraft for aircraft in aircraft_aliases.keys() if aircraft]
+
+
 if __name__ == '__main__':
     bios_local_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
     plane_json = get_full_bios_for_plane('F-16C_50', bios_local_dir)
