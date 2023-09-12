@@ -1,0 +1,1230 @@
+import sys
+import traceback
+from functools import partial
+from importlib import import_module
+from logging import getLogger
+from os import environ
+from pathlib import Path
+from platform import architecture, python_implementation, python_version, uname
+from shutil import copy, copytree, rmtree, unpack_archive
+from tempfile import gettempdir
+from threading import Event, Thread
+from time import sleep
+from typing import Callable, Dict, Optional, Union
+from webbrowser import open_new_tab
+
+from packaging import version
+from PySide6 import QtCore, QtUiTools
+from PySide6 import __version__ as pyside6_ver
+from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem
+from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox,
+                               QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
+                               QWidget)
+
+from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
+from dcspy.models import KeyboardModel
+from dcspy.starter import dcspy_run
+from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
+                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
+                         is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
+
+_ = qtgui_rc  # prevent to remove import statement accidentally
+__version__ = '2.4.0'
+LOG = getLogger(__name__)
+
+
+class DcsPyQtGui(QMainWindow):
+    """PySide6 GUI for DCSpy."""
+
+    def __init__(self, cfg_dict: Optional[ConfigDict] = None) -> None:
+        """
+        PySide6 GUI for DCSpy.
+
+        :param cfg_dict: dict with configuration
+        """
+        super().__init__()
+        UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
+        self._find_children()
+        self.threadpool = QtCore.QThreadPool.globalInstance()
+        LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
+        self.event = Event()
+        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=0, lcd='')
+        self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
+        self.color_font = {'large': 0, 'medium': 0, 'small': 0}
+        self.current_row = -1
+        self.current_col = -1
+        self._completer_items = 0
+        self._git_refs_count = 0
+        self.git_exec = is_git_exec_present()
+        self.l_bios = version.Version('0.0.0')
+        self.r_bios = version.Version('0.0.0')
+        self.systray = QSystemTrayIcon()
+        self.traymenu = QMenu()
+        self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
+        self.config = cfg_dict
+        if not cfg_dict:
+            self.config = load_yaml(full_path=self.cfg_file)
+        self._init_tray()
+        self._init_settings()
+        self._apply_configuration_1(cfg=self.config)
+        self._init_combo_plane()
+        self._init_keyboards()
+        self._apply_configuration_2(cfg=self.config)
+        self._init_menu_bar()
+        self._init_autosave()
+        if self.cb_autoupdate_bios.isChecked():
+            self._bios_check_clicked(silence=True)
+        if self.cb_check_ver.isChecked():  # todo: clarify checking bios and dcspy in same way...
+            data = self.fetch_system_data()
+            status_ver = ''
+            status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
+            status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
+            self.statusbar.showMessage(status_ver)
+        if self.config.get('autostart', False):
+            self._start_clicked()
+        self.statusbar.showMessage(f'ver. {__version__}')
+
+    def _init_menu_bar(self) -> None:
+        """Initialize of menubar."""
+        self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
+        self.a_quit.triggered.connect(self.close)
+        self.a_show_toolbar.triggered.connect(self._show_toolbar)
+        self.a_show_layout.triggered.connect(self._show_dock)
+        self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
+        self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
+        self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
+        self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
+
+    def _init_tray(self) -> None:
+        """Initialize of system tray icon."""
+        self.systray.setIcon(QIcon(':/icons/img/dcspy.ico'))
+        self.systray.setVisible(True)
+        self.systray.setToolTip(f'DCSpy {__version__}')
+        self.traymenu.addAction(self.a_check_updates)
+        self.traymenu.addAction(self.a_quit)
+        self.systray.setContextMenu(self.traymenu)
+        self.systray.activated.connect(self.activated)
+
+    def _init_settings(self) -> None:
+        """Initialize of settings."""
+        self.dw_gkeys.hide()
+        self.dw_gkeys.setFloating(True)
+        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
+        self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
+        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
+        self.le_biosdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_biosdir'))
+        self.pb_collect_data.clicked.connect(self._collect_data_clicked)
+        self.pb_start.clicked.connect(self._start_clicked)
+        self.pb_stop.clicked.connect(self._stop_clicked)
+        self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
+        self.pb_bios_check.clicked.connect(self._bios_check_clicked)
+        self.le_bios_live.textEdited.connect(self._is_git_object_exists)
+        self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
+        self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
+        self.sp_completer.valueChanged.connect(self._set_find_value)
+        self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
+        self.pb_copy.clicked.connect(self._copy_cell_to_row)
+        self.pb_save.clicked.connect(self._save_gkeys_cfg)
+        self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
+
+    def _init_autosave(self) -> None:
+        """Initialize of autosave."""
+        widget_dict = {'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
+                       'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textEdited',
+                       'le_biosdir': 'textEdited', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
+                       'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
+                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged'}
+        for widget_name, trigger_method in widget_dict.items():
+            getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
+
+    def _init_combo_plane(self) -> None:
+        """Initialize of combo box for plane selector with completer."""
+        p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
+             "Alphajet", "Bell47_2", "Bf-109K-4", "BlackHawk", "Bronco-OV-10A", "C-101CC", "C-101EB", "Cessna_210N",
+             "Christen Eagle II", "DC3", "EA-18G", "Edge540", "Extra330SR", "F-117A", "F-14A-135-GR", "F-14B", "F-15C",
+             "F-15ESE", "F-16A", "F-16C_50", "F-16D_50", "F-16D_50_NS", "F-16D_52", "F-16D_52_NS", "F-16D_Barak_30",
+             "F-16D_Barak_40", "F-16I", "F-22A", "F-2A", "F-2B", "F-5E-3", "F-86F Sabre", "F4e", "FA-18C_hornet",
+             "FA-18E", "FA-18F", "FA_18D", "FW-190A8", "FW-190D9", "FlankerEx", "Flyer1", "Hawk", "Hercules", "I-16",
+             "J-11A", "J-20A", "JF-17", "Ka-50", "Ka-50_3", "L-39C", "L-39ZA", "M-2000C", "MB-339A", "MB-339APAN",
+             "MB-339PAN", "MQ9_PREDATOR", "Mi-24P", "Mi-8MT", "Mi-8MTV2", "MiG-15bis", "MiG-19P", "MiG-21Bis",
+             "MiG-29A", "MiG-29G", "MiG-29S", "Mig-23UB", "Mirage-F1CE", "Mirage-F1EE", "MirageF1", "MirageF1CT",
+             "MosquitoFBMkVI", "NONE", "NS430", "NS430_C-101CC", "NS430_C-101EB", "NS430_L-39C", "NS430_MI-8MTV2",
+             "NS430_SA342", "P-47D-30", "P-47D-30bl1", "P-47D-40", "P-51D", "P-51D-30-NA", "REISEN52",
+             "RST_Eurofighter", "RST_Eurofighter_AG", "Rafale_A_S", "Rafale_B", "Rafale_C", "Rafale_M", "SA342L",
+             "SA342M", "SA342Minigun", "SA342Mistral", "SpitfireLFMkIX", "SpitfireLFMkIXCW", "Su-25", "Su-25T", "Su-27",
+             "Su-30M", "Su-30MK", "Su-30SM", "Su-33", "Su-57", "Super_Etendard", "Supercarrier", "T-4", "T-45",
+             "TF-51D", "UH-1H", "VNAO_Ready_Room", "VSN_AJS37Viggen", "VSN_C17A", "VSN_C5_Galaxy", "VSN_E2D",
+             "VSN_Eurofighter", "VSN_Eurofighter_AG", "VSN_F104G", "VSN_F104G_AG", "VSN_F104S", "VSN_F104S_AG",
+             "VSN_F105D", "VSN_F105G", "VSN_F14A", "VSN_F14B", "VSN_F15E", "VSN_F15E_AA", "VSN_F16A", "VSN_F16AMLU",
+             "VSN_F16CBL50", "VSN_F16CBL52D", "VSN_F16CMBL50", "VSN_F22", "VSN_F35A", "VSN_F35A_AG", "VSN_F35B",
+             "VSN_F35B_AG", "VSN_F4E", "VSN_F4E_AG", "VSN_F5E", "VSN_F5N", "VSN_FA18C", "VSN_FA18C_AG",
+             "VSN_FA18C_Lot20", "VSN_FA18F", "VSN_FA18F_AG", "VSN_Harrier", "VSN_M2000", "VSN_P3C", "VSN_Su47",
+             "VSN_TornadoGR4", "VSN_TornadoIDS", "VSN_UFO", "Yak-52", ]
+        completer = QCompleter(p)
+        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        completer.setMaxVisibleItems(self._completer_items)
+        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+        self.combo_planes.addItems(p)
+        self.combo_planes.setCurrentText(self.config['current_plane'])
+        self.combo_planes.setEditable(True)
+        self.combo_planes.setCompleter(completer)
+
+    def _set_find_value(self, value) -> None:
+        """
+        Refresh configuration of table and completer when visible items value changed.
+
+        :param value: number of items visible
+        """
+        self._completer_items = value
+        self._load_table_gkeys()
+
+    def _init_keyboards(self) -> None:
+        """Initialize of keyboards."""
+        for data in LCD_TYPES.values():
+            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
+
+    def _select_keyboard(self, keyboard: str, state: bool) -> None:
+        """
+        Triggered when new keyboard is selected.
+
+        Based of current selected keyboard:
+        * Add correct numbers of rows and columns
+        * enable DED font checkbox
+        * updates font sliders (range and values)
+        :param keyboard: name
+        :param state: of radio button
+        """
+        if state:
+            for mode_col in range(self.keyboard.modes):
+                self.tw_gkeys.removeColumn(mode_col)
+            for gkey_row in range(self.keyboard.gkeys):
+                self.tw_gkeys.removeRow(gkey_row)
+            self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
+            LOG.debug(f'Select: {self.keyboard}')
+            self._set_ded_font_and_font_sliders()
+            self._update_dock()
+            self._load_table_gkeys()
+
+    def _set_ded_font_and_font_sliders(self) -> None:
+        """Enable DED font checkbox and updates font sliders."""
+        if self.keyboard.lcd == 'color':
+            self.cb_ded_font.setEnabled(True)
+            minimum = 15
+            maximum = 40
+        else:
+            self.cb_ded_font.setEnabled(False)
+            minimum = 7
+            maximum = 20
+
+        for name in ['large', 'medium', 'small']:
+            hs: QSlider = getattr(self, f'hs_{name}_font')
+            try:
+                hs.valueChanged.disconnect()
+            except RuntimeError:
+                pass
+            hs.setMinimum(minimum)
+            hs.setMaximum(maximum)
+            hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
+            hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
+
+    def _set_label_and_hs_value(self, value, name) -> None:
+        """
+        Set internal field for current value of slider and update label.
+
+        :param value: of slider
+        :param name: of slider
+        """
+        getattr(self, f'{self.keyboard.lcd}_font')[name] = value
+        getattr(self, f'l_{name}').setText(str(value))
+
+    def _update_dock(self) -> None:
+        """Update dock with image of keyboard."""
+        self.l_keyboard.setPixmap(QPixmap(f':/img/img/{self.keyboard.klass}device.png'))
+
+    def _load_table_gkeys(self) -> None:
+        """Initialize table with cockpit data."""
+        n2 = ['', '-- ADI --', 'ADI_AUX_FLAG', 'ADI_BANK', 'ADI_BUBBLE', 'ADI_GS_BAR', 'ADI_GS_FLAG', 'ADI_GS_POINTER',
+              'ADI_LOC_BAR', 'ADI_LOC_FLAG',
+              'ADI_OFF_FLAG', 'ADI_PITCH', 'ADI_PITCH_TRIM', 'ADI_TURNRATE', '-- Airspeed Indicator --', 'AIRSPEED',
+              'AIRSPEED_SET_KNB', 'MACH_INDICATOR',
+              'MAX_AIRSPEED', 'SET_AIRSPEED', '-- Altimeter --', 'ALT_10000_FT_CNT', 'ALT_1000_FT_CNT',
+              'ALT_100_FT_CNT', 'ALT_100_FT_PTR', 'ALT_BARO_SET_KNB',
+              'ALT_MODE_LV', 'ALT_PNEU_FLAG', 'ALT_PRESSURE_DRUM_0_CNT', 'ALT_PRESSURE_DRUM_1_CNT',
+              'ALT_PRESSURE_DRUM_2_CNT', 'ALT_PRESSURE_DRUM_3_CNT',
+              '-- AoA --', 'AOA_VALUE', '-- Audio Panel --', 'COMM1_MODE_KNB', 'COMM1_PWR_KNB', 'COMM2_MODE_KNB',
+              'COMM2_PWR_KNB', 'HOT_MIC_SW',
+              'IFF_ANT_SEL_SW', 'ILS_PWR_KNB', 'INTERCOM_KNB', 'MSL_KNB', 'SEC_VOICE_KNB', 'TACAN_KNB', 'TF_KNB',
+              'THREAT_KNB', 'UHF_ANT_SEL_SW',
+              'VMS_INHIBIT_SW', '-- Avionic Panel --', 'DL_SW', 'GPS_SW', 'INS_KNB', 'MAP_SW', 'MFD_SW', 'MIDS_LVT_KNB',
+              'MMC_PWR_SW', 'ST_STA_SW', 'UFC_SW',
+              '-- CMDS --', 'CMDS_01_EXP_CAT_SW', 'CMDS_02_EXP_CAT_SW', 'CMDS_CH_Amount', 'CMDS_CH_EXP_CAT_SW',
+              'CMDS_DISPENSE_BTN', 'CMDS_FL_Amount',
+              'CMDS_FL_EXP_CAT_SW', 'CMDS_JETT_SW', 'CMDS_JMR_SOURCHE_SW', 'CMDS_MODE_KNB', 'CMDS_MWS_SOURCHE_SW',
+              'CMDS_O1_Amount', 'CMDS_O2_Amount',
+              'CMDS_PROG_KNB', 'CMDS_PWR_SOURCHE_SW', '-- Clock --', 'CLOCK_CURRTIME_H', 'CLOCK_CURRTIME_MS',
+              'CLOCK_ELAPSED', 'CLOCK_ELAPSED_TIME_M',
+              'CLOCK_ELAPSED_TIME_SEC', 'CLOCK_SET', 'CLOCK_WIND', '-- Cockpit Mechanics --', 'CANOPY_HANDLE',
+              'CANOPY_JETT_THANDLE', 'CANOPY_POS', 'CANOPY_SW',
+              'HIDE_STICK', 'SEAT_ADJ', 'SEAT_EJECT_HANDLE', 'SEAT_EJECT_SAFE', 'SEAT_HEIGHT',
+              '-- Control Interface --', 'ADV_MODE_SW', 'ALT_FLAPS_SW',
+              'AP_PITCH_SW', 'AP_ROLL_SW', 'BIT_SW', 'DIGI_BAK_SW', 'FLCS_RESET_SW', 'LE_FLAPS_SW', 'MANUAL_PITCH_SW',
+              'MAN_TF_FLYUP_SW', 'PITCH_TRIM',
+              'ROLL_TRIM', 'STORES_CONFIG_SW', 'TRIM_AP_DISC_SW', 'YAW_TRIM', '-- DED Output Data --', 'DED_LINE_1',
+              'DED_LINE_2', 'DED_LINE_3', 'DED_LINE_4',
+              'DED_LINE_5', '-- ECM --', 'ECM_1_BTN', 'ECM_2_BTN', 'ECM_3_BTN', 'ECM_4_BTN', 'ECM_5_BTN', 'ECM_6_BTN',
+              'ECM_BIT_BTN', 'ECM_DIM_KNB',
+              'ECM_FRM_BTN', 'ECM_PW_SW', 'ECM_RESET_BTN', 'ECM_SPL_BTN', 'ECM_XMIT_SW', '-- ECS --', 'AIR_SOURCE_KNB',
+              'DEFOG_LEVER', 'TEMP_KNB', '-- EHSI --',
+              'EHSI_CRS_SET', 'EHSI_CRS_SET_KNB', 'EHSI_HDG_SET_BTN', 'EHSI_HDG_SET_KNB', 'EHSI_MODE', '-- EPU --',
+              'EPU_SW', 'EPU_SW_COVER_OFF',
+              'EPU_SW_COVER_ON', 'HYDRAZIN_VOLUME', '-- Electric System --', 'ELEC_CAUTION', 'EPU_GEN_TEST_SW',
+              'FLCS_PWR_TEST_SW', 'MAIN_PWR_SW',
+              'PROBE_HEAT_SW', '-- Engine --', 'AB_RESET_SW', 'ENGINE_FTIT', 'ENGINE_NOZZLE_POSITION',
+              'ENGINE_OIL_PRESSURE', 'ENGINE_TACHOMETER',
+              'ENG_ANTI_ICE', 'ENG_CONT_SW', 'ENG_CONT_SW_COVER', 'FIRE_OHEAT_DETECT_BTN', 'JFS_SW', 'MAX_PWR_SW',
+              '-- External Aircraft Model --',
+              'EXT_FORMATION_LIGHTS', 'EXT_POSITION_LIGHTS_WING', 'EXT_POSITION_LIGHT_FUSELAGE', 'EXT_SPEED_BRAKE_LEFT',
+              'EXT_SPEED_BRAKE_RIGHT',
+              'EXT_STROBE_TAIL', 'EXT_TAIL_LIGHT', 'EXT_WOW_LEFT', 'EXT_WOW_NOSE', 'EXT_WOW_RIGHT',
+              '-- External Lights --', 'AIR_REFUEL_LIGHT_KNB',
+              'ANTI_COLL_LIGHT_KNB', 'ENGINE_FEED_KNB', 'FORM_LIGHT_KNB', 'LAND_TAXI_LIGHT_SW', 'MAL_IND_LTS_BRT_SW',
+              'MASTER_LIGHT_SW', 'POS_FLASH_LIGHT_SW',
+              'POS_FUSELAGE_LIGHT_SW', 'POS_WING_TAIL_LIGHT_SW', '-- Fuel System --', 'AIR_REFUEL_SW',
+              'EXT_FUEL_TRANS_SW', 'FUELFLOWCOUNTER_100',
+              'FUELFLOWCOUNTER_10K', 'FUELFLOWCOUNTER_1K', 'FUELTOTALIZER_100', 'FUELTOTALIZER_10K', 'FUELTOTALIZER_1K',
+              'FUEL_AL', 'FUEL_FR', 'FUEL_MASTER_CV',
+              'FUEL_MASTER_SW', 'FUEL_QTY_SEL_KNB', 'FUEL_QTY_SEL_T_KNB', 'TANK_INTERTING_SW', '-- Gear System --',
+              'ANTI_SKID_SW', 'BRAKE_CHAN_SW',
+              'DN_LOCK_BTN', 'GEAR_ALT_BTN', 'GEAR_ALT_HANDLE', 'GEAR_HANDLE', 'HOOK_SW', 'HORN_SILENCE_BTN',
+              '-- HMCS --', 'HMCS_INT_KNB',
+              '-- HUD Control Panel --', 'HUD_ALT_SW', 'HUD_BRT_SW', 'HUD_DED_DATA_SW', 'HUD_DEPRESS_RET_SW',
+              'HUD_FP_MARKER_SW', 'HUD_SCALES_SW',
+              'HUD_SPEED_SW', 'HUD_TEST_SW', '-- Hydraulic Pressure Indicators --', 'SYSA_PRESSURE', 'SYSB_PRESSURE',
+              '-- IFF --', 'IFF_CODE_DRUM_DIGIT_1',
+              'IFF_CODE_DRUM_DIGIT_2', 'IFF_CODE_DRUM_DIGIT_3', 'IFF_CODE_DRUM_DIGIT_4', 'IFF_C_I_KNB', 'IFF_ENABLE_SW',
+              'IFF_M1_SEL_1', 'IFF_M1_SEL_2',
+              'IFF_M3_SEL_1', 'IFF_M3_SEL_2', 'IFF_M4_CODE_SW', 'IFF_M4_MONITOR_SW', 'IFF_M4_REPLY_SW',
+              'IFF_MASTER_KNB', '-- Interior Lights --',
+              'AOA_INDEX_BRT_KNB', 'AR_STATUS_BRT_KNB', 'FLOOD_CONSOLES_BRT_KNB', 'FLOOD_INST_PNL_BRT_KNB',
+              'MAL_IND_LTS_TEST', 'MASTER_CAUTION',
+              'PRI_CONSOLES_BRT_KNB', 'PRI_DATA_DISPLAY_BRT_KNB', 'PRI_INST_PNL_BRT_KNB',
+              '-- Interior Lights Indicators --', 'LIGHT_CONSLES',
+              'LIGHT_CONSLES_FLOOD', 'LIGHT_INST_PNL', 'LIGHT_INST_PNL_FLOOD', '-- KY-58 --', 'KY58_FILL_KNB',
+              'KY58_MODE_KNB', 'KY58_PWR_KNB', 'KY58_VOL_KNB',
+              'PLAIN_CIPHER_SW', 'ZEROIZE_SW', 'ZEROIZE_SW_COVER', '-- MFD Left --', 'MFD_L_1', 'MFD_L_10', 'MFD_L_11',
+              'MFD_L_12', 'MFD_L_13', 'MFD_L_14',
+              'MFD_L_15', 'MFD_L_16', 'MFD_L_17', 'MFD_L_18', 'MFD_L_19', 'MFD_L_2', 'MFD_L_20', 'MFD_L_3', 'MFD_L_4',
+              'MFD_L_5', 'MFD_L_6', 'MFD_L_7',
+              'MFD_L_8', 'MFD_L_9', 'MFD_L_BRT_SW', 'MFD_L_CON_SW', 'MFD_L_GAIN_SW', 'MFD_L_SYM_SW', '-- MFD Right --',
+              'MFD_R_1', 'MFD_R_10', 'MFD_R_11',
+              'MFD_R_12', 'MFD_R_13', 'MFD_R_14', 'MFD_R_15', 'MFD_R_16', 'MFD_R_17', 'MFD_R_18', 'MFD_R_19', 'MFD_R_2',
+              'MFD_R_20', 'MFD_R_3', 'MFD_R_4',
+              'MFD_R_5', 'MFD_R_6', 'MFD_R_7', 'MFD_R_8', 'MFD_R_9', 'MFD_R_BRT_SW', 'MFD_R_CON_SW', 'MFD_R_GAIN_SW',
+              'MFD_R_SYM_SW', '-- MMC --',
+              'ALT_REL_BTN', 'EMERG_STORE_JETT', 'GND_JETT_ENABLE_SW', 'LASER_ARM_SW', 'MASTER_ARM_SW',
+              '-- Oxygen System --', 'COCKPIT_ALITITUDE',
+              'FLOW_INDICATOR', 'FLOW_INDICATOR_LIGHT', 'OBOGS_SW', 'OXYGEN_PRESSURE', 'OXY_DILUTER_LVR',
+              'OXY_EMERG_LVR', 'OXY_SUPPLY_LVR', '-- RWR --',
+              'RWR_ACT_PWR_BTN', 'RWR_ALT_BTN', 'RWR_HANDOFF_BTN', 'RWR_IND_DIM_KNB', 'RWR_INTENS_KNB',
+              'RWR_LAUNCH_BTN', 'RWR_MODE_BTN', 'RWR_PWR_BTN',
+              'RWR_SEARCH_BTN', 'RWR_SYS_TEST_BTN', 'RWR_T_BTN', 'RWR_UNKNOWN_SHIP_BTN', '-- SAI --',
+              'SAI_AIRCRAFTREFERENCESYMBOL', 'SAI_BANK',
+              'SAI_BANK_ARROW', 'SAI_CAGE', 'SAI_KNB_ARROW', 'SAI_OFF_FLAG', 'SAI_PITCH', 'SAI_PITCH_TRIM',
+              '-- Sensor Panel --', 'FCR_PWR_SW', 'HDPT_SW_L',
+              'HDPT_SW_R', 'RDR_ALT_PWR_SW', '-- Speed Brake --', 'SPEEDBRAKE_INDICATOR', '-- Trim Indicators --',
+              'PITCHTRIMIND', 'ROLLTRIMIND', '-- UFC --',
+              'F_ACK_BTN', 'ICP_AA_MODE_BTN', 'ICP_AG_MODE_BTN', 'ICP_BTN_0', 'ICP_BTN_1', 'ICP_BTN_2', 'ICP_BTN_3',
+              'ICP_BTN_4', 'ICP_BTN_5', 'ICP_BTN_6',
+              'ICP_BTN_7', 'ICP_BTN_8', 'ICP_BTN_9', 'ICP_COM1_BTN', 'ICP_COM2_BTN', 'ICP_DATA_RTN_SEQ_SW',
+              'ICP_DATA_UP_DN_SW', 'ICP_DED_SW', 'ICP_DRIFT_SW',
+              'ICP_ENTR_BTN', 'ICP_FLIR_GAIN_SW', 'ICP_FLIR_SW', 'ICP_HUD_BRT_KNB', 'ICP_IFF_BTN', 'ICP_LIST_BTN',
+              'ICP_RASTER_BRT_KNB', 'ICP_RASTER_CONTR_KNB',
+              'ICP_RCL_BTN', 'ICP_RETICLE_DEPRESS_KNB', 'ICP_WX_BTN', 'IFF_ID_BTN', 'RF_SW', '-- UHF --',
+              'UHF_CHAN_DISP', 'UHF_CHAN_KNB', 'UHF_DOOR',
+              'UHF_FREQ_0025_KNB', 'UHF_FREQ_01_KNB', 'UHF_FREQ_100_KNB', 'UHF_FREQ_10_KNB', 'UHF_FREQ_1_KNB',
+              'UHF_FREQ_DISP', 'UHF_FUNC_KNB', 'UHF_MODE_KNB',
+              'UHF_SQUELCH_SW', 'UHF_STATUS_BTN', 'UHF_TEST_BTN', 'UHF_TONE_BTN', 'UHF_VOL_KNB',
+              '-- Vertical Velocity Indicator --', 'VVI',
+              '-- Warning, Caution and IndicatorLights --', 'LIGHT_ACFT_BATT_FAIL', 'LIGHT_ACTIVE',
+              'LIGHT_AFT_FUEL_LOW', 'LIGHT_AIR', 'LIGHT_ANTI_SKID',
+              'LIGHT_AOA_DN', 'LIGHT_AOA_MID', 'LIGHT_AOA_UP', 'LIGHT_AR_NWS', 'LIGHT_ATF_NOT', 'LIGHT_AVIONICS_FAULT',
+              'LIGHT_BUC', 'LIGHT_CABIN_PRESS',
+              'LIGHT_CADC', 'LIGHT_CANOPY', 'LIGHT_CAUTION_1', 'LIGHT_CAUTION_2', 'LIGHT_CAUTION_3', 'LIGHT_CAUTION_4',
+              'LIGHT_CAUTION_5', 'LIGHT_CAUTION_6',
+              'LIGHT_CMDS_DISP', 'LIGHT_CMDS_GO', 'LIGHT_CMDS_NO_GO', 'LIGHT_CMDS_RDY', 'LIGHT_DBU_ON', 'LIGHT_DISC',
+              'LIGHT_ECM', 'LIGHT_ECM_1_A',
+              'LIGHT_ECM_1_F', 'LIGHT_ECM_1_S', 'LIGHT_ECM_1_T', 'LIGHT_ECM_2_A', 'LIGHT_ECM_2_F', 'LIGHT_ECM_2_S',
+              'LIGHT_ECM_2_T', 'LIGHT_ECM_3_A',
+              'LIGHT_ECM_3_F', 'LIGHT_ECM_3_S', 'LIGHT_ECM_3_T', 'LIGHT_ECM_4_A', 'LIGHT_ECM_4_F', 'LIGHT_ECM_4_S',
+              'LIGHT_ECM_4_T', 'LIGHT_ECM_5_A',
+              'LIGHT_ECM_5_F', 'LIGHT_ECM_5_S', 'LIGHT_ECM_5_T', 'LIGHT_ECM_A', 'LIGHT_ECM_F', 'LIGHT_ECM_FRM_A',
+              'LIGHT_ECM_FRM_F', 'LIGHT_ECM_FRM_S',
+              'LIGHT_ECM_FRM_T', 'LIGHT_ECM_S', 'LIGHT_ECM_SPL_A', 'LIGHT_ECM_SPL_F', 'LIGHT_ECM_SPL_S',
+              'LIGHT_ECM_SPL_T', 'LIGHT_ECM_T', 'LIGHT_EDGE',
+              'LIGHT_EEC', 'LIGHT_ELEC', 'LIGHT_ELEC_SYS', 'LIGHT_ENGINE', 'LIGHT_ENGINE_FAULT', 'LIGHT_ENG_FIRE',
+              'LIGHT_EPU', 'LIGHT_EPU_GEN',
+              'LIGHT_EPU_PMG', 'LIGHT_EQUIP_HOT', 'LIGHT_FLCS', 'LIGHT_FLCS_FAULT', 'LIGHT_FLCS_PMG',
+              'LIGHT_FLCS_PWR_A', 'LIGHT_FLCS_PWR_B',
+              'LIGHT_FLCS_PWR_C', 'LIGHT_FLCS_PWR_D', 'LIGHT_FLCS_RLY', 'LIGHT_FL_FAIL', 'LIGHT_FL_RUN',
+              'LIGHT_FUEL_OIL_HOT', 'LIGHT_FWD_FUEL_LOW',
+              'LIGHT_GEAR_L', 'LIGHT_GEAR_N', 'LIGHT_GEAR_R', 'LIGHT_GEAR_WARN', 'LIGHT_HOOK', 'LIGHT_HYDRAZN',
+              'LIGHT_HYD_OIL_PRESS', 'LIGHT_IFF',
+              'LIGHT_INLET_ICING', 'LIGHT_JFS_RUN', 'LIGHT_MAIN_GEN', 'LIGHT_MARKER_BEACON', 'LIGHT_MASTER_CAUTION',
+              'LIGHT_NUCLEAR', 'LIGHT_NWS_FAIL',
+              'LIGHT_OBOGS', 'LIGHT_OVERHEAT', 'LIGHT_OXY_LOW', 'LIGHT_PROBE_HEAT', 'LIGHT_RADAR_ALT', 'LIGHT_RDY',
+              'LIGHT_RWR_ACTIVITY', 'LIGHT_RWR_ACT_POWER',
+              'LIGHT_RWR_ALT', 'LIGHT_RWR_ALT_LOW', 'LIGHT_RWR_HANDOFF_H', 'LIGHT_RWR_HANDOFF_UP',
+              'LIGHT_RWR_MODE_OPEN', 'LIGHT_RWR_MODE_PRI',
+              'LIGHT_RWR_MSL_LAUNCH', 'LIGHT_RWR_POWER', 'LIGHT_RWR_SEARCH', 'LIGHT_RWR_SHIP_UNK', 'LIGHT_RWR_SYSTEST',
+              'LIGHT_RWR_TGTSEP_DN',
+              'LIGHT_RWR_TGTSEP_UP', 'LIGHT_SEAT_NOT', 'LIGHT_SEC', 'LIGHT_STBY', 'LIGHT_STBY_GEN',
+              'LIGHT_STORES_CONFIG', 'LIGHT_TF_FAIL', 'LIGHT_TO_FLCS',
+              'LIGHT_TO_LDG_CONFIG']
+        self.tw_gkeys.setColumnCount(self.keyboard.modes)
+        for mode_col in range(self.keyboard.modes):
+            self.tw_gkeys.setColumnWidth(mode_col, 200)
+        self.tw_gkeys.setRowCount(self.keyboard.gkeys)
+        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
+        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
+
+        plane_name = self.combo_planes.currentText()
+        plane_gkeys = load_yaml(full_path=self.cfg_file.parent / f'{plane_name}.yaml')
+        LOG.debug(f'{plane_name}: {plane_gkeys}')
+
+        for row in range(0, self.keyboard.gkeys):
+            for col in range(0, self.keyboard.modes):
+                completer = QCompleter([item for item in n2 if item and '--' not in item])
+                completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+                completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+                completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+                completer.setMaxVisibleItems(self._completer_items)
+                completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+
+                combo = QComboBox()
+                combo.setEditable(True)
+                combo.addItems(n2)
+                combo.setCompleter(completer)
+                self._disable_items_with(text='--', combo=combo)
+                self.tw_gkeys.setCellWidget(row, col, combo)
+                self.tw_gkeys.cellWidget(row, col).setCurrentText(plane_gkeys.get(f'G{row + 1}_M{col + 1}', ''))
+
+    @staticmethod
+    def _disable_items_with(text: str, combo: QComboBox) -> None:
+        """
+        Disable items in ComboBox, which shouldn't be selected.
+
+        :param combo: QComboBox instance
+        """
+        model = combo.model()
+        for i in range(1, combo.count()):
+            item: QStandardItem = model.item(i)
+            if text in item.text():
+                item.setEnabled(False)
+
+    def _save_gkeys_cfg(self) -> None:
+        """Save G-Keys configuration for current plane."""
+        cfg = {}
+        for r in range(0, self.tw_gkeys.rowCount()):
+            for c in range(0, self.tw_gkeys.columnCount()):
+                cfg[f'G{r + 1}_M{c + 1}'] = self.tw_gkeys.cellWidget(r, c).currentText()
+        LOG.debug(cfg)
+        save_yaml(data=cfg, full_path=self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
+
+    def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
+        """
+        Save current cell of TableWidget.
+
+        :param currentRow:
+        :param currentColumn:
+        :param previousRow:
+        :param previousColumn:
+        """
+        self.current_row = currentRow
+        self.current_col = currentColumn
+
+    def _copy_cell_to_row(self) -> None:
+        """Copy content of current cell to whole row."""
+        current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
+        for col in set(range(self.keyboard.modes)) - {self.current_col}:
+            self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
+
+    def _is_dir_exists(self, text: str, widget_name: str) -> bool:
+        """
+        Check if directory exists.
+
+        :param text: contents of text field
+        :param widget_name: widget name
+        :return: True if directory exists, False otherwise.
+        """
+        dir_exists = Path(text).is_dir()
+        LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
+        if dir_exists:
+            getattr(self, widget_name).setStyleSheet('')
+            return True
+        else:
+            getattr(self, widget_name).setStyleSheet('color: red;')
+            return False
+
+    def _is_git_object_exists(self, text: str) -> bool:
+        """
+        Check if entered git object exists.
+
+        :param text: Git reference
+        :return: True if git object exists, False otherwise.
+        """
+        if self.cb_bios_live.isChecked():
+            git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
+            LOG.debug(f'Git reference: {text} in {DCS_BIOS_REPO_DIR} exists: {git_ref}')
+            if git_ref:
+                self.le_bios_live.setStyleSheet('')
+                self._set_completer_for_git_ref()
+                return True
+            else:
+                self.le_bios_live.setStyleSheet('color: red;')
+                return False
+
+    def _collect_data_clicked(self) -> None:
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
+        try:
+            destination = Path(directory) / zip_file.name
+            copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
+
+    def _get_bios_full_version(self, bios_ver: str) -> str:
+        """
+        Get full with SHA and git details DCS-BIOS version as string.
+
+        :param bios_ver: version string
+        :return: full BIOS version
+        """
+        sha_commit = ''
+        if self.git_exec and self.cb_bios_live.isChecked():
+            try:
+                sha_commit = f' SHA: {check_github_repo(git_ref=self.le_bios_live.text(), update=False)}'
+            except Exception as exc:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
+        dcs_bios_ver = f'{bios_ver}{sha_commit}'
+        return dcs_bios_ver
+
+    def _cb_bios_live_toggled(self, state: bool) -> None:
+        """When Live BIOS checkbox is toggled."""
+        if state:
+            self.le_bios_live.setEnabled(True)
+            self._is_git_object_exists(text=self.le_bios_live.text())
+        else:
+            self.le_bios_live.setEnabled(False)
+            self.le_bios_live.setStyleSheet('')
+        self._bios_check_clicked(silence=False)
+
+    def _set_completer_for_git_ref(self) -> None:
+        """Setups completer for Git references of DCS-BIOS git repo."""
+        if not self._git_refs_count:
+            git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
+            self._git_refs_count = len(git_refs)
+            completer = QCompleter(git_refs)
+            completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+            completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+            completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+            self.le_bios_live.setCompleter(completer)
+
+    # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
+    def _dcspy_check_clicked(self) -> None:
+        """Check version of DCSpy and show message box."""
+        ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
+        self.statusbar.showMessage(ver_string)
+        if 'update!' in ver_string:
+            self.systray.showMessage('DCSpy', f'New version: {__version__}', QIcon(':/icons/img/system-software-update.svg'))
+            self._download_new_release()
+        elif 'latest' in ver_string:
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='No updates', message='You are running latest version')
+        elif 'failed' in ver_string:
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Unable to check DCSpy version online')
+
+    def _download_new_release(self) -> None:
+        """Download new release if running PyInstaller version or show instruction when running Pip version."""
+        if getattr(sys, 'frozen', False):
+            rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+            directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: str(Path.cwd()))
+            try:
+                destination = Path(directory) / rel_info.asset_file
+                download_file(url=rel_info.dl_url, save_path=destination)
+                LOG.debug(f'Save new release: {destination}')
+            except PermissionError as exc:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
+        else:
+            rc, err, out = run_pip_command('install --upgrade dcspy')
+            if not rc:
+                self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Pip Install', message=out.split('\r\n')[-2])
+            else:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Pip Install', message=err)
+
+    # <=><=><=><=><=><=><=><=><=><=><=> check bios updates <=><=><=><=><=><=><=><=><=><=><=>
+    def _bios_check_clicked(self, silence=False) -> None:
+        """
+        Do real update Git or stable DCS-BIOS version.
+
+        :param silence: perform action with silence
+        """
+        if not self._check_dcs_bios_path():
+            return
+
+        if self.cb_bios_live.isChecked():
+            self._check_bios_git(silence=silence)
+            self._is_git_object_exists(text=self.le_bios_live.text())
+        else:
+            self._check_bios_release(silence=silence)
+
+    def _check_dcs_bios_path(self) -> bool:
+        """
+        Check if DCS-BIOS path fulfill two conditions.
+
+        - path is not empty
+        - drive letter exists in system
+
+        If those two are met return True, False otherwise.
+
+        :return: True if path to DCS-BIOS is correct
+        """
+        result = True
+        bios_dir = self.le_biosdir.text()
+        if self._is_dir_exists(text=bios_dir, widget_name='le_biosdir'):
+            drive_letter = Path(bios_dir).parts[0]
+            if not Path(drive_letter).exists():
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
+                result = False
+        else:
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Empty path.\n\nCheck DCS-BIOS path.')
+            result = False
+        return result
+
+    def _check_bios_git(self, silence=False) -> None:
+        """
+        Check git/live version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
+        sha = ''
+        try:
+            sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
+        except Exception as exc:
+            self._show_message_box(kind_of=MsgBoxTypes.CRITICAL, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
+        bios_dir = self.le_biosdir.text()
+        LOG.debug(f'Remove: {bios_dir} ')
+        rmtree(path=bios_dir, ignore_errors=True)
+        LOG.debug(f'Copy Git DCS-BIOS to: {bios_dir} ')
+        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=bios_dir)
+        local_bios = self._check_local_bios()
+        self.statusbar.showMessage(sha)
+        LOG.info(f'Git DCS-BIOS: {sha}')
+        if not silence:
+            install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+            install_result = f'{install_result}\n\nUsing Git/Live version.'
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
+
+    def _check_bios_release(self, silence=False) -> None:
+        """
+        Check release version and configuration of DCS-BIOS.
+
+        :param silence: perform action with silence
+        """
+        self._check_local_bios()
+        remote_bios_info = self._check_remote_bios()
+        self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
+        correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
+        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
+        dcs_runs = proc_is_running(name='DCS.exe')
+
+        if silence and correct_remote_bios_ver and not remote_bios_info.latest:
+            self._update_release_bios(rel_info=remote_bios_info)
+        elif not silence and correct_remote_bios_ver:
+            self._ask_to_update(rel_info=remote_bios_info)
+        elif not all([silence, correct_remote_bios_ver]):
+            msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
+            msg = f'{msg}\n\nUsing stable release version.'
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Update', message=msg)
+
+    def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
+        """
+        Describe issues with DCS-BIOS update.
+
+        :param local_bios: local BIOS version
+        :param remote_bios: remote BIOS version
+        :param dcs: DCS is running
+        :return: description as string
+        """
+        dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
+        dcs_sta = 'running' if dcs else 'not running'
+        dcs_note = '\n     Be sure stay on Main menu.' if dcs else ''
+        lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
+        lbios_note = '' if local_bios else '\n     Check "dcsbios" path in config'
+        rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
+        rbios_note = '' if remote_bios else '\n     Check internet connection.'
+
+        return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
+               f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
+               f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
+
+    def _check_local_bios(self) -> ReleaseInfo:
+        """
+        Check version of local BIOS.
+
+        :return: release description info
+        """
+        result = check_bios_ver(bios_path=self.le_biosdir.text())
+        self.l_bios = result.ver
+        return result
+
+    def _check_remote_bios(self) -> ReleaseInfo:
+        """
+        Check version of remote BIOS.
+
+        :return: release description info
+        """
+        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        self.r_bios = release_info.ver
+        return release_info
+
+    def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
+        """
+        Ask user if update BIOS or not.
+
+        :param rel_info: remote release information
+        """
+        msg_txt = f'You are running {self.l_bios} version.\n\n' \
+                  f'Would you like to download\n' \
+                  f'stable release:\n\n{rel_info.asset_file}\n\n' \
+                  f'and overwrite update?'
+        if not rel_info.latest:
+            msg_txt = f'You are running {self.l_bios} version.\n' \
+                      f'New version {rel_info.ver} available.\n' \
+                      f'Released: {rel_info.published}\n\n' \
+                      f'Would you like to update?'
+        reply = QMessageBox.question(self, 'Update DCS-BIOS', msg_txt, defaultButton=QMessageBox.StandardButton.Yes)
+        if reply == QMessageBox.StandardButton.Yes:
+            self._update_release_bios(rel_info=rel_info)
+
+    def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
+        """
+        Perform update of release version of BIOS and check configuration.
+
+        :param rel_info: remote release information
+        """
+        tmp_dir = Path(gettempdir())
+        local_zip = tmp_dir / rel_info.asset_file
+        download_file(url=rel_info.dl_url, save_path=local_zip)
+        LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
+        rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
+        LOG.debug(f'Unpack file: {local_zip} ')
+        unpack_archive(filename=local_zip, extract_dir=tmp_dir)
+        LOG.debug(f'Remove: {self.le_biosdir.text()} ')
+        rmtree(path=self.le_biosdir.text(), ignore_errors=True)
+        LOG.debug(f'Copy DCS-BIOS to: {self.le_biosdir.text()} ')
+        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.le_biosdir.text())
+        install_result = self._handling_export_lua(tmp_dir)
+        if 'github' in install_result:
+            reply = QMessageBox.question(self, 'Open browser', install_result, defaultButton=QMessageBox.StandardButton.Yes)
+            if reply == QMessageBox.StandardButton.Yes:
+                open_new_tab(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+        else:
+            local_bios = self._check_local_bios()
+            self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            install_result = f'{install_result}\n\nUsing stable release version.'
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
+
+    def _handling_export_lua(self, temp_dir: Path) -> str:
+        """
+        Check if Export.lua file exist and its content.
+
+        If not copy Export.lua from DCS-BIOS installation archive.
+
+        :param temp_dir: directory with DCS-BIOS archive
+        :return: result of checks
+        """
+        result = 'Installation Success. Done.'
+        lua_dst_path = Path(self.le_biosdir.text()).parent
+        lua = 'Export.lua'
+        try:
+            with open(file=lua_dst_path / lua, encoding='utf-8') as lua_dst:
+                lua_dst_data = lua_dst.read()
+        except FileNotFoundError as err:
+            LOG.debug(f'{type(err).__name__}: {err.filename}')
+            copy(src=temp_dir / lua, dst=lua_dst_path)
+            LOG.debug(f'Copy Export.lua from: {temp_dir} to {lua_dst_path} ')
+        else:
+            result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
+        return result
+
+    # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
+    def _stop_clicked(self) -> None:
+        """Set event to stop DCSpy."""
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
+                               signal_handlers={'progress': self._progress_by_abs_value})
+        for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
+            if not rb_key.isChecked():
+                rb_key.setEnabled(True)
+        self.statusbar.showMessage('Start again or close DCSpy')
+        self.pb_start.setEnabled(True)
+        self.pb_stop.setEnabled(False)
+        self.le_dcsdir.setEnabled(True)
+        self.le_biosdir.setEnabled(True)
+        self.hs_small_font.setEnabled(True)
+        self.hs_medium_font.setEnabled(True)
+        self.hs_large_font.setEnabled(True)
+        self.le_font_name.setEnabled(True)
+        if self.rb_g19.isChecked():
+            self.cb_ded_font.setEnabled(True)
+        self.l_large.setEnabled(True)
+        self.l_medium.setEnabled(True)
+        self.l_small.setEnabled(True)
+        self.event_set()
+
+    def _start_clicked(self) -> None:
+        """Run real application in thread."""
+        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
+                               signal_handlers={'progress': self._progress_by_abs_value})
+        for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
+            if not rb_key.isChecked():
+                rb_key.setEnabled(False)
+        app_params = {'lcd_type': self.keyboard.klass, 'event': self.event}
+        app_thread = Thread(target=dcspy_run, kwargs=app_params)
+        app_thread.name = 'dcspy-app'
+        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
+        self.pb_start.setEnabled(False)
+        self.pb_stop.setEnabled(True)
+        self.le_dcsdir.setEnabled(False)
+        self.le_biosdir.setEnabled(False)
+        self.hs_small_font.setEnabled(False)
+        self.hs_medium_font.setEnabled(False)
+        self.hs_large_font.setEnabled(False)
+        self.le_font_name.setEnabled(False)
+        self.cb_ded_font.setEnabled(False)
+        self.l_large.setEnabled(False)
+        self.l_medium.setEnabled(False)
+        self.l_small.setEnabled(False)
+        app_thread.start()
+        alive = 'working' if app_thread.is_alive() else 'not working'
+        self.statusbar.showMessage(f'DCSpy client: {alive}')
+
+    # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
+    def apply_configuration(self, cfg: dict) -> None:
+        """
+        Apply configuration to GUI widgets.
+
+        :param cfg: dictionary with configuration
+        """
+        self._apply_configuration_1(cfg=cfg)
+        self._apply_configuration_2(cfg=cfg)
+
+    def _apply_configuration_1(self, cfg: dict) -> None:
+        """
+        Apply configuration to part of GUI widgets.
+
+        :param cfg: dictionary with configuration
+        """
+        self.cb_autostart.setChecked(cfg['autostart'])
+        self.cb_show_gui.setChecked(cfg['show_gui'])
+        self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
+        self.cb_check_ver.setChecked(cfg['check_ver'])
+        self.cb_verbose.setChecked(cfg['verbose'])
+        self.cb_ded_font.setChecked(cfg['f16_ded_font'])
+        self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
+        self.le_font_name.setText(cfg['font_name'])
+        self.sp_completer.setValue(cfg['completer_items'])
+        self._completer_items = cfg['completer_items']
+        self.combo_planes.setCurrentText(cfg['current_plane'])
+        self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
+        self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
+
+    def _apply_configuration_2(self, cfg: dict) -> None:
+        """
+        Apply configuration to part of GUI widgets.
+
+        :param cfg: dictionary with configuration
+        """
+        getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
+        self.le_dcsdir.setText(cfg['dcs'])
+        self.le_biosdir.setText(cfg['dcsbios'])
+        self.le_bios_live.setText(cfg['git_bios_ref'])
+        self.cb_bios_live.setChecked(cfg['git_bios'])
+
+    def save_configuration(self) -> None:
+        """Save configuration from GUI."""
+        cfg = {
+            'keyboard': self.keyboard.name,
+            'autostart': self.cb_autostart.isChecked(),
+            'show_gui': self.cb_show_gui.isChecked(),
+            'save_lcd': self.cb_lcd_screenshot.isChecked(),
+            'check_ver': self.cb_check_ver.isChecked(),
+            'check_bios': self.cb_autoupdate_bios.isChecked(),
+            'verbose': self.cb_verbose.isChecked(),
+            'f16_ded_font': self.cb_ded_font.isChecked(),
+            'dcs': self.le_dcsdir.text(),
+            'dcsbios': self.le_biosdir.text(),
+            'font_name': self.le_font_name.text(),
+            'git_bios': self.cb_bios_live.isChecked(),
+            'git_bios_ref': self.le_bios_live.text(),
+            'font_mono_l': self.mono_font['large'],
+            'font_mono_s': self.mono_font['medium'],
+            'font_mono_xs': self.mono_font['small'],
+            'font_color_l': self.color_font['large'],
+            'font_color_s': self.color_font['medium'],
+            'font_color_xs': self.color_font['small'],
+            'completer_items': self.sp_completer.value(),
+            'current_plane': self.combo_planes.currentText(),
+        }
+        if self.keyboard.lcd == 'color':
+            font_cfg = {'font_color_l': self.hs_large_font.value(),
+                        'font_color_s': self.hs_medium_font.value(),
+                        'font_color_xs': self.hs_small_font.value()}
+        else:
+            font_cfg = {'font_mono_l': self.hs_large_font.value(),
+                        'font_mono_s': self.hs_medium_font.value(),
+                        'font_mono_xs': self.hs_small_font.value()}
+        cfg.update(font_cfg)
+        save_yaml(data=cfg, full_path=self.cfg_file)
+
+    def _reset_defaults_cfg(self) -> None:
+        """Set defaults and stop application."""
+        save_yaml(data=defaults_cfg, full_path=self.cfg_file)
+        self.config = load_yaml(full_path=self.cfg_file)
+        self.apply_configuration(self.config)
+        for name in ['large', 'medium', 'small']:
+            getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
+        self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
+        self.close()
+
+    # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
+    def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
+        """
+        Worker with signals callback to schedule GUI job in background.
+
+        signal_handlers parameter is a dict with signals from  WorkerSignals,
+        possibles signals are: finished, error, result, progress. Values in dict
+        are methods/callables as handlers/callbacks for particular signal.
+
+        :param job: GUI method or function to run in background
+        :param signal_handlers: signals as keys: finished, error, result, progress and values as callable
+        """
+        progress = True if 'progress' in signal_handlers.keys() else False
+        worker = Worker(func=job, with_progress=progress)
+        for signal, handler in signal_handlers.items():
+            getattr(worker.signals, signal).connect(handler)
+        if isinstance(job, partial):
+            job_name = job.func.__name__
+            args = job.args
+            kwargs = job.keywords
+        else:
+            job_name = job.__name__
+            args = tuple()
+            kwargs = dict()
+        signals = {signal: handler.__name__ for signal, handler in signal_handlers.items()}
+        LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
+        self.threadpool.start(worker)
+
+    @staticmethod
+    def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100,
+                       clean_after: bool = True) -> None:
+        """
+        Make fake progress for progressbar.
+
+        :param progress_callback: signal to update progress bar
+        :param total_time: time for fill-up whole bar (in seconds)
+        :param steps: number of steps (default 100)
+        :param clean_after: clean progress bar when finish
+        """
+        for progress_step in range(1, steps + 1):
+            sleep(total_time / steps)
+            progress_callback.emit(progress_step)
+        if clean_after:
+            sleep(0.1)
+            progress_callback.emit(0)
+
+    def _progress_by_abs_value(self, value: int) -> None:
+        """
+        Update progress bar by absolute value.
+
+        :param value: absolute value of progress bar
+        """
+        self.progressbar.setValue(value)
+
+    def fetch_system_data(self) -> SystemData:
+        """
+        Fetch various system related data.
+
+        :return: SystemData named tuple with all data
+        """
+        system, _, release, ver, _, proc = uname()
+        dcs_type, dcs_ver = check_dcs_ver(Path(self.config["dcs"]))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
+        bios_ver = str(self._check_local_bios().ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        git_ver = 'Not installed'
+        if self.git_exec:
+            from git import cmd
+            git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
+        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
+                          dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
+
+    def _run_file_dialog(self, for_load: bool, for_dir: bool, last_dir: Callable[..., str],
+                         widget_name: Optional[str] = None, file_filter: str = 'All Files [*.*](*.*)') -> str:
+        """
+        Open/save dialog to select file or folder.
+
+        :param for_load: if True show window for load, for save otherwise
+        :param for_dir: if True show window for selecting directory only, if False selecting file only
+        :param last_dir: function return last selected dir
+        :param widget_name: update text for widget
+        :param file_filter: list of types of files ;;-seperated: Text [*.txt](*.txt)
+        :return: full path to file or directory
+        """
+        result_path = ''
+        if file_filter != 'All Files [*.*](*.*)':
+            file_filter = f'{file_filter};;All Files [*.*](*.*)'
+        if for_load and for_dir:
+            result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
+        if for_load and not for_dir:
+            result_path = QFileDialog.getOpenFileName(self, caption='Open File', dir=last_dir(), filter=file_filter, options=QFileDialog.Option.ReadOnly)[0]
+        if not for_load and not for_dir:
+            result_path = QFileDialog.getSaveFileName(self, caption='Save File', dir=last_dir(), filter=file_filter, options=QFileDialog.Option.ReadOnly)[0]
+        if widget_name is not None and result_path:
+            getattr(self, widget_name).setText(result_path)
+        return result_path
+
+    def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '') -> None:
+        """
+        Show any QMessageBox delivered with Qt.
+
+        :param kind_of: any of MsgBoxTypes - information, question, warning, critical, about or aboutQt
+        :param title: Title of modal window
+        :param message: text of message, default is empty
+        """
+        message_box = getattr(QMessageBox, kind_of.value)
+        if kind_of == MsgBoxTypes.ABOUT_QT:
+            message_box(self, title)
+        else:
+            message_box(self, title, message)
+
+    def event_set(self) -> None:
+        """Set event to close running thread."""
+        self.event.set()
+
+    def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
+        """
+        Signal of activation.
+
+        :param reason: reason of activation
+        """
+        if reason == QSystemTrayIcon.Trigger:
+            if self.isVisible():
+                self.hide()
+            else:
+                self.show()
+
+    def _show_toolbar(self) -> None:
+        """Toggle show and hide toolbar."""
+        if self.a_show_toolbar.isChecked():
+            self.toolbar.show()
+        else:
+            self.toolbar.hide()
+
+    def _show_dock(self) -> None:
+        """Toggle show and hide dock."""
+        if self.a_show_layout.isChecked():
+            self.dw_gkeys.show()
+        else:
+            self.dw_gkeys.hide()
+
+    def _find_children(self) -> None:
+        """Find all widgets of main window."""
+        self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')
+        self.systray: QSystemTrayIcon = self.findChild(QSystemTrayIcon, 'systray')
+        self.traymenu: QSystemTrayIcon = self.findChild(QMenu, 'traymenu')
+        self.progressbar: QProgressBar = self.findChild(QProgressBar, 'progressbar')
+        self.toolbar: QToolBar = self.findChild(QToolBar, 'toolbar')
+        self.tw_gkeys: QTableWidget = self.findChild(QTableWidget, 'tw_gkeys')
+        self.sp_completer: QSpinBox = self.findChild(QSpinBox, 'sp_completer')
+        self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')
+        self.dw_gkeys: QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
+        self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')
+
+        self.l_keyboard: QLabel = self.findChild(QLabel, 'l_keyboard')
+        self.l_large: QLabel = self.findChild(QLabel, 'l_large')
+        self.l_medium: QLabel = self.findChild(QLabel, 'l_medium')
+        self.l_small: QLabel = self.findChild(QLabel, 'l_small')
+
+        self.a_quit: QAction = self.findChild(QAction, 'a_quit')
+        self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
+        self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
+        self.a_show_layout: QAction = self.findChild(QAction, 'a_show_layout')
+        self.a_about_dcspy: QAction = self.findChild(QAction, 'a_about_dcspy')
+        self.a_about_qt: QAction = self.findChild(QAction, 'a_about_qt')
+        self.a_report_issue: QAction = self.findChild(QAction, 'a_report_issue')
+        self.a_check_updates: QAction = self.findChild(QAction, 'a_check_updates')
+        self.a_donate: QAction = self.findChild(QAction, 'a_donate')
+
+        self.pb_start: QPushButton = self.findChild(QPushButton, 'pb_start')
+        self.pb_stop: QPushButton = self.findChild(QPushButton, 'pb_stop')
+        self.pb_close: QPushButton = self.findChild(QPushButton, 'pb_close')
+        self.pb_dcsdir: QPushButton = self.findChild(QPushButton, 'pb_dcsdir')
+        self.pb_biosdir: QPushButton = self.findChild(QPushButton, 'pb_biosdir')
+        self.pb_collect_data: QPushButton = self.findChild(QPushButton, 'pb_collect_data')
+        self.pb_copy: QPushButton = self.findChild(QPushButton, 'pb_copy')
+        self.pb_dcspy_check: QPushButton = self.findChild(QPushButton, 'pb_dcspy_check')
+        self.pb_bios_check: QPushButton = self.findChild(QPushButton, 'pb_bios_check')
+
+        self.cb_autostart: QCheckBox = self.findChild(QCheckBox, 'cb_autostart')
+        self.cb_show_gui: QCheckBox = self.findChild(QCheckBox, 'cb_show_gui')
+        self.cb_check_ver: QCheckBox = self.findChild(QCheckBox, 'cb_check_ver')
+        self.cb_ded_font: QCheckBox = self.findChild(QCheckBox, 'cb_ded_font')
+        self.cb_lcd_screenshot: QCheckBox = self.findChild(QCheckBox, 'cb_lcd_screenshot')
+        self.cb_verbose: QCheckBox = self.findChild(QCheckBox, 'cb_verbose')
+        self.cb_autoupdate_bios: QCheckBox = self.findChild(QCheckBox, 'cb_autoupdate_bios')
+        self.cb_bios_live: QCheckBox = self.findChild(QCheckBox, 'cb_bios_live')
+
+        self.le_dcsdir: QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')
+        self.le_biosdir: QLineEdit = self.findChild(QLineEdit, 'le_biosdir')
+        self.le_font_name: QLineEdit = self.findChild(QLineEdit, 'le_font_name')
+        self.le_bios_live: QLineEdit = self.findChild(QLineEdit, 'le_bios_live')
+
+        self.rb_g19: QRadioButton = self.findChild(QRadioButton, 'rb_g19')
+        self.rb_g13: QRadioButton = self.findChild(QRadioButton, 'rb_g13')
+        self.rb_g15v1: QRadioButton = self.findChild(QRadioButton, 'rb_g15v1')
+        self.rb_g15v2: QRadioButton = self.findChild(QRadioButton, 'rb_g15v2')
+        self.rb_g510: QRadioButton = self.findChild(QRadioButton, 'rb_g510')
+
+        self.hs_large_font: QSlider = self.findChild(QSlider, 'hs_large_font')
+        self.hs_medium_font: QSlider = self.findChild(QSlider, 'hs_medium_font')
+        self.hs_small_font: QSlider = self.findChild(QSlider, 'hs_small_font')
+
+
+class AboutDialog(QDialog):
+    """About dialog."""
+    def __init__(self, parent) -> None:
+        """Dcspy about dialog window."""
+        super().__init__(parent)
+        self.parent: DcsPyQtGui = parent
+        UiLoader().loadUi(':/ui/ui/about.ui', self)
+        self.l_info: QLabel = self.findChild(QLabel, 'l_info')
+        self.setup_text()
+
+    def setup_text(self) -> None:
+        """Prepare text information about DCSpy application."""
+        d = self.parent.fetch_system_data()
+        text = '<html><head/><body><p>'
+        text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
+        text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
+        text += '<br><b>Wiki</b>: <a href="https://github.com/emcek/dcspy/wiki">docs</a>'
+        text += '<br><b>Discord</b>: <a href="https://discord.gg/SP5Yjx3">discord.gg/SP5Yjx3</a>'
+        text += '<br><b>Issues</b>: <a href="https://github.com/emcek/dcspy/issues">report issue</a>'
+        text += f'<br><b>System</b>: {d.system}{d.release} ver. {d.ver} ({architecture()[0]})'
+        text += f'<br><b>Processor</b>: {d.proc}'
+        text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
+        text += f'<br><b>Config</b>: <a href="file:///{self.parent.cfg_file.parent}">{self.parent.cfg_file.name}</a>'
+        text += f'<br><b>Git</b>: {d.git_ver}'
+        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {QtCore.__version__}'
+        text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
+        text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{d.dcs_bios_ver}</a>'
+        text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
+        text += '</p></body></html>'
+        self.l_info.setText(text)
+
+
+class WorkerSignals(QtCore.QObject):
+    """
+    Defines the signals available from a running worker thread.
+
+    Supported signals are:
+    * finished - no data
+    * error - tuple with exctype, value, traceback.format_exc()
+    * result - object/any type - data returned from processing
+    * progress - float between 0 and 1 as indication of progress
+    """
+
+    finished = QtCore.Signal()
+    error = QtCore.Signal(tuple)
+    result = QtCore.Signal(object)
+    progress = QtCore.Signal(float)
+
+
+class Worker(QtCore.QRunnable):
+    """Runnable worker."""
+
+    def __init__(self, func: Union[partial, Callable], with_progress: bool) -> None:
+        """
+        Worker thread.
+
+        Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+        :param func: The function callback to run on worker thread
+        """
+        super().__init__()
+        self.func = func
+        self.signals = WorkerSignals()
+        self.kwargs = {}
+        if with_progress:
+            self.kwargs['progress_callback'] = self.signals.progress
+
+    @QtCore.Slot()
+    def run(self) -> None:
+        """Initialise the runner function with passed additional kwargs."""
+        try:
+            result = self.func(**self.kwargs)
+        except Exception:
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit(result)
+        finally:
+            self.signals.finished.emit()
+
+
+class UiLoader(QtUiTools.QUiLoader):
+    """UI file loader."""
+    _baseinstance = None
+
+    def createWidget(self, classname: str, parent: Optional[QWidget] = None, name='') -> QWidget:
+        """
+        Create widget.
+
+        :param classname: class name
+        :param parent: parent
+        :param name: name
+        :return: QWidget
+        """
+        if parent is None and self._baseinstance is not None:
+            widget = self._baseinstance
+        else:
+            widget = super().createWidget(classname, parent, name)
+            if self._baseinstance is not None:
+                setattr(self._baseinstance, name, widget)
+        return widget
+
+    def loadUi(self, ui_path: Union[str, bytes, Path], baseinstance=None) -> QWidget:
+        """
+        Load UI file.
+
+        :param ui_path: path to UI file
+        :param baseinstance:
+        :return: QWidget
+        """
+        self._baseinstance = baseinstance
+        ui_file = QtCore.QFile(ui_path)
+        ui_file.open(QtCore.QIODevice.ReadOnly)
+        try:
+            widget = self.load(ui_file)
+            QtCore.QMetaObject.connectSlotsByName(widget)
+            return widget
+        finally:
+            ui_file.close()

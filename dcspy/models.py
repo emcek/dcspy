@@ -6,6 +6,19 @@ from pydantic import BaseModel, RootModel, field_validator
 class Input(BaseModel):
     description: str
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def get(self, item, default=None):
+        """
+        Access item and get default when is not available.
+
+        :param item:
+        :param default:
+        :return:
+        """
+        return getattr(self, item, default)
+
 
 class FixedStep(Input):
     interface: str = 'fixed_step'
@@ -117,27 +130,99 @@ class OutputInt(Output):
         return value
 
 
+# ---------------- DCS-BIOS ----------------
+class IntBuffArgs(BaseModel):
+    address: int
+    mask: int
+    shift_by: int
+
+
+class BiosValueInt(BaseModel):
+    klass: str
+    args: IntBuffArgs
+    value: Union[int, str]
+    max_value: int
+
+
+class StrBuffArgs(BaseModel):
+    address: int
+    max_length: int
+
+
+class BiosValueStr(BaseModel):
+    klass: str
+    args: StrBuffArgs
+    value: Union[int, str]
+
+
+class BiosValue(RootModel):
+    root: Dict[str, Union[BiosValueStr, BiosValueInt]]
+# ---------------- DCS-BIOS ----------------
+
+
 class Control(BaseModel):
     category: str
     control_type: str
-    description: Optional[str] = None
+    description: str
     identifier: str
     inputs: List[Union[FixedStep, VariableStep, SetState, Action]]
     momentary_positions: Optional[str] = None
     outputs: List[Union[OutputStr, OutputInt]]
     physical_variant: Optional[str] = None
 
+    @property
+    def input(self):
+        """
+        Extract inputs data as dict.
+
+        :return: dict
+        """
+        max_value = max(d.get('max_value', 1) for d in self.inputs)
+        suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
+        return {'description': self.description, 'max_value': max_value, 'suggested_step': suggested_step}
+
+    @property
+    def output(self):
+        """
+        Extract outputs data as dict.
+
+        :return: dict
+        """
+        if isinstance(self.outputs[0], OutputInt):
+            return {'klass': 'IntegerBuffer',
+                    'args': {'address': self.outputs[0].address,
+                             'mask': self.outputs[0].mask,
+                             'shift_by': self.outputs[0].shift_by},
+                    'value': int(),
+                    'max_value': self.outputs[0].max_value}
+        else:
+            return {'klass': 'StringBuffer',
+                    'args': {'address': self.outputs[0].address,
+                             'max_length': self.outputs[0].max_length},
+                    'value': ''}
+
+
+# DcsBios = RootModel(Dict[str, Dict[str, Control]])
 
 class DcsBios(RootModel):
     root: Dict[str, Dict[str, Control]]
 
-    def __str__(self):
-        """
-        Show details of DcsBios.
-
-        :return: string
-        """
+    def __str__(self) -> str:
         return str(self.root)
+
+    def __getitem__(self, item):
+        # https://github.com/pydantic/pydantic/issues/1802
+        return self.__root__[item]
+
+    def get(self, item, default=None):
+        """
+        Access item and get default when is not available.
+
+        :param item:
+        :param default:
+        :return:
+        """
+        return getattr(self.__root__, item, default)
 
 
 class ControlKeyData:
@@ -167,9 +252,20 @@ class ControlKeyData:
         return cls(description=description, max_value=max_value, suggested_step=suggested_step)
 
     def __repr__(self) -> str:
-        """
-        Show details of ControlKeyData.
-
-        :return: string
-        """
         return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
+
+
+class KeyboardModel(BaseModel):
+    name: str
+    klass: str
+    modes: int
+    gkeys: int
+    lcdkeys: int
+    lcd: str
+
+
+ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcdkeys=7, lcd='color')
+ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcdkeys=4, lcd='mono')
+ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcdkeys=4, lcd='mono')
+ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcdkeys=4, lcd='mono')
+ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcdkeys=4, lcd='mono')

@@ -1,5 +1,4 @@
 import os
-import shutil
 import sys
 import tkinter as tk
 from functools import partial
@@ -9,7 +8,7 @@ from platform import architecture, python_implementation, python_version, uname
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
-from typing import NamedTuple, Optional
+from typing import Optional
 from webbrowser import open_new
 
 import customtkinter
@@ -19,31 +18,14 @@ from packaging import version
 from PIL import Image
 from pystray import Icon, MenuItem
 
-from dcspy import LCD_TYPES, LOCAL_APPDATA, config
+from dcspy import LCD_TYPES, LOCAL_APPDATA, SystemData, config
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry,
-                         check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file,
-                         get_default_yaml, get_inputs_for_plane, get_list,
-                         get_version_string, is_git_exec_present, load_json,
-                         proc_is_running, run_pip_command, save_cfg)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_default_yaml, get_inputs_for_plane, get_list, get_version_string, is_git_exec_present, load_json,
+                         proc_is_running, run_pip_command, save_yaml)
 
-__version__ = '2.3.2'
+__version__ = '2.4.0'
 LOG = getLogger(__name__)
-
-
-class SystemData(NamedTuple):
-    """Tuple to store system related information."""
-    system: str
-    release: str
-    ver: str
-    proc: str
-    dcs_type: str
-    dcs_ver: str
-    dcspy_ver: str
-    bios_ver: str
-    dcs_bios_ver: str
-    git_ver: str
 
 
 class DcspyGui(tk.Frame):
@@ -117,7 +99,7 @@ class DcspyGui(tk.Frame):
 
         :return: system ray icon instance
         """
-        icon = Image.open(Path(__file__).resolve().with_name('dcspy.ico'))
+        icon = Image.open(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')
         menu = (MenuItem('Show', self._show_gui), MenuItem('Stop', self._stop), MenuItem('Quit', self._close_gui),)
         self.master.protocol('WM_DELETE_WINDOW', self._withdraw_gui)
         return Icon('dcspy', icon, 'DCSpy', menu)
@@ -169,7 +151,7 @@ class DcspyGui(tk.Frame):
         check_ver = customtkinter.CTkButton(master=sidebar_frame, text='Check DCSpy version', command=self._check_version)
         check_ver.grid(row=3, column=0, padx=20, pady=10)
         self.btn_start = customtkinter.CTkButton(master=sidebar_frame, text='Start', command=self._start_dcspy)
-        logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name('dcspy.png')), size=(130, 60))
+        logo_icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve() / '..' / 'img' / 'dcspy.png'), size=(130, 60))
         logo_label = customtkinter.CTkLabel(master=sidebar_frame, text='', image=logo_icon)
         logo_label.grid(row=4, column=0, sticky=tk.W + tk.E)
         self.btn_start.grid(row=5, column=0, padx=20, pady=10)
@@ -183,7 +165,7 @@ class DcspyGui(tk.Frame):
     def _keyboards(self, tabview: customtkinter.CTkTabview) -> None:
         """Configure keyboard tab GUI."""
         for i, text in enumerate(LCD_TYPES):
-            icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve().with_name(LCD_TYPES[text]['icon'])), size=(103, 70))
+            icon = customtkinter.CTkImage(Image.open(Path(__file__).resolve() / '..' / 'img' / LCD_TYPES[text]['icon']), size=(103, 70))
             label = customtkinter.CTkLabel(master=tabview.tab('Keyboards'), text='', image=icon)
             label.grid(row=i, column=0)
             rb_lcd_type = customtkinter.CTkRadioButton(master=tabview.tab('Keyboards'), text=text, variable=self.lcd_type, value=text,
@@ -574,11 +556,11 @@ class DcspyGui(tk.Frame):
         }
         if conf:
             cfg.update(conf)
-        save_cfg(cfg_dict=cfg, filename=self.cfg_file)
+        save_yaml(data=cfg, full_path=self.cfg_file)
 
     def _set_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
-        save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
+        save_yaml(data=defaults_cfg, full_path=self.cfg_file)
         CTkMessagebox(title='Restart', message='DCSpy needs to be close.\nPlease start again manually!', icon='warning', option_1='OK')
         self.master.destroy()
 
@@ -894,7 +876,7 @@ class DcspyGui(tk.Frame):
         directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
         try:
             destination = Path(directory) / zip_file.name
-            shutil.copy(zip_file, destination)
+            copy(zip_file, destination)
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')

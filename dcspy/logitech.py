@@ -8,8 +8,7 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, LcdButton, LcdColor,
-                   LcdMono, generate_gkey)
+from dcspy import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, LcdButton, LcdColor, LcdMono, generate_gkey
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.sdk import key_sdk, lcd_sdk
@@ -199,19 +198,9 @@ class KeyboardManager:
         return img
 
     def __str__(self) -> str:
-        """
-        Show basic info of LCD.
-
-        :return: string
-        """
         return f'{type(self).__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self) -> str:
-        """
-        Show all details of LCD.
-
-        :return: string
-        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 

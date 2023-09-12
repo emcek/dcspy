@@ -10,8 +10,7 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, Gkey, LcdButton,
-                   LcdInfo, LcdType, config)
+from dcspy import SUPPORTED_CRAFTS, BiosValue, Gkey, LcdButton, LcdInfo, LcdType, config
 from dcspy.sdk import lcd_sdk
 
 try:
@@ -130,11 +129,6 @@ class Aircraft:
         return f'{button_bios_name} {settings}\n'
 
     def __repr__(self) -> str:
-        """
-        Show all details of Aircraft.
-
-        :return: string
-        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
@@ -253,7 +247,7 @@ class F16C50(Aircraft):
         self.font = self.lcd.font_s
         self.ded_font = config.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
-            self.font = DED_FONT
+            self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
         self.bios_data: Dict[str, BiosValue] = {
             'DED_LINE_1': {'klass': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
             'DED_LINE_2': {'klass': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},

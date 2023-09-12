@@ -82,14 +82,16 @@ def test_dummy_save_load_set_defaults(tmpdir):
     from os import environ
     test_tmp_yaml = Path(tmpdir) / 'c.yml'
 
-    utils.save_cfg(cfg_dict={'font_mono_xs': 9}, filename=test_tmp_yaml)
-    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
+    utils.save_yaml(data={'font_mono_xs': 9}, full_path=test_tmp_yaml)
+    d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
     d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
     assert d_cfg == {'keyboard': 'G13',
                      'save_lcd': False,
                      'show_gui': True,
                      'autostart': False,
+                     'completer_items': 20,
+                     'current_plane': 'A-10A',
                      'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
                      'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
                      'verbose': False,
@@ -106,10 +108,10 @@ def test_dummy_save_load_set_defaults(tmpdir):
                      'git_bios': False,
                      'git_bios_ref': 'master',
                      'theme_mode': 'system',
-                     'theme_color': 'blue'}
+                     'theme_color': 'dark-blue'}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
-    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
+    d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert len(d_cfg) == 0
 
 
@@ -181,6 +183,18 @@ def test_check_github_repo(tmpdir):
     sha = utils.check_github_repo(git_ref='master', update=False, repo='emcek/common_sense', repo_dir=tmpdir)
     match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}', sha)
     assert match.group(1)
+
+
+def test_is_git_object(tmpdir):
+    utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='wrong') is False
+    assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
+
+
+def test_get_all_git_refs(tmpdir):
+    utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):
