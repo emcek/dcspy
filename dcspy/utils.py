@@ -51,7 +51,7 @@ def get_default_yaml(local_appdata=False) -> Path:
         makedirs(name=user_appdata, exist_ok=True)
         cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
         if not cfg_ful_path.exists():
-            save_cfg(cfg_dict=defaults_cfg, filename=cfg_ful_path)
+            save_yaml(data=defaults_cfg, full_path=cfg_ful_path)
     return cfg_ful_path
 
 
@@ -87,18 +87,15 @@ def load_cfg(filename: Path) -> ConfigDict:
     return cfg_dict
 
 
-def save_cfg(cfg_dict: ConfigDict, filename: Path) -> None:
+def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
     """
-    Update yaml file with dict.
+    Save disc as yaml file.
 
-    :param cfg_dict: configuration dict
-    :param filename: path to yaml file
+    :param data: dict
+    :param full_path: full path to yaml file
     """
-    # todo: combine with save_yaml
-    curr_dict = load_cfg(filename)
-    curr_dict.update(cfg_dict)
-    with open(file=filename, mode='w', encoding='utf-8') as yaml_file:
-        yaml.dump(curr_dict, yaml_file)
+    with open(file=full_path, mode='w', encoding='utf-8') as yaml_file:
+        yaml.dump(data, yaml_file)
 
 
 def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
@@ -113,7 +110,7 @@ def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults_cfg.items()}
     if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
         migrated_cfg['dcsbios'] = defaults_cfg['dcsbios']
-    save_cfg(cfg_dict=migrated_cfg, filename=filename)
+    save_yaml(data=migrated_cfg, full_path=filename)
     LOG.debug(f'Save: {migrated_cfg}')
     return migrated_cfg
 
@@ -523,17 +520,6 @@ def load_yaml(yaml_file: Path) -> Dict[str, str]:
     except (FileNotFoundError, yaml.parser.ParserError):
         data = {}
     return data
-
-
-def save_yaml(data: dict, yaml_file: Path) -> None:
-    """
-    Save dictionary to yaml file.
-
-    :rtype: object
-    """
-    # todo: combine with save_cfg
-    with open(file=yaml_file, mode='w+', encoding='utf-8') as yamlfile:
-        yaml.dump(data, yamlfile)
 
 
 def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:

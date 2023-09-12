@@ -82,7 +82,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
     from os import environ
     test_tmp_yaml = Path(tmpdir) / 'c.yml'
 
-    utils.save_cfg(cfg_dict={'font_mono_xs': 9}, filename=test_tmp_yaml)
+    utils.save_yaml(data={'font_mono_xs': 9}, full_path=test_tmp_yaml)
     d_cfg = utils.load_cfg(filename=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
     d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)

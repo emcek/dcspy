@@ -22,7 +22,7 @@ from dcspy import LCD_TYPES, LOCAL_APPDATA, SystemData, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_default_yaml, get_inputs_for_plane, get_list, get_version_string, is_git_exec_present, load_json,
-                         proc_is_running, run_pip_command, save_cfg)
+                         proc_is_running, run_pip_command, save_yaml)
 
 __version__ = '2.4.0'
 LOG = getLogger(__name__)
@@ -556,11 +556,11 @@ class DcspyGui(tk.Frame):
         }
         if conf:
             cfg.update(conf)
-        save_cfg(cfg_dict=cfg, filename=self.cfg_file)
+        save_yaml(data=cfg, full_path=self.cfg_file)
 
     def _set_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
-        save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
+        save_yaml(data=defaults_cfg, full_path=self.cfg_file)
         CTkMessagebox(title='Restart', message='DCSpy needs to be close.\nPlease start again manually!', icon='warning', option_1='OK')
         self.master.destroy()
 

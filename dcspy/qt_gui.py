@@ -26,7 +26,7 @@ from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
-                         is_git_object, load_cfg, load_yaml, proc_is_running, run_pip_command, save_cfg, save_yaml)
+                         is_git_object, load_cfg, load_yaml, proc_is_running, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -430,7 +430,7 @@ class DcsPyQtGui(QMainWindow):
             for c in range(0, self.tw_gkeys.columnCount()):
                 cfg[f'G{r + 1}_M{c + 1}'] = self.tw_gkeys.cellWidget(r, c).currentText()
         LOG.debug(cfg)
-        save_yaml(data=cfg, yaml_file=self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
+        save_yaml(data=cfg, full_path=self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
 
     def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
         """
@@ -894,11 +894,11 @@ class DcsPyQtGui(QMainWindow):
                         'font_mono_s': self.hs_medium_font.value(),
                         'font_mono_xs': self.hs_small_font.value()}
         cfg.update(font_cfg)
-        save_cfg(cfg_dict=cfg, filename=self.cfg_file)
+        save_yaml(data=cfg, full_path=self.cfg_file)
 
     def _reset_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
-        save_cfg(cfg_dict=defaults_cfg, filename=self.cfg_file)
+        save_yaml(data=defaults_cfg, full_path=self.cfg_file)
         self.config = load_cfg(filename=self.cfg_file)
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
