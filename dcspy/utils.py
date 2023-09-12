@@ -30,9 +30,9 @@ except ImportError:
 LOG = getLogger(__name__)
 __version__ = '2.4.0'
 ConfigDict = Dict[str, Union[str, int, bool]]
-default_yaml_file = Path(__file__).resolve().with_name('config.yaml')
+DEFAULT_YAML_FILE = Path(__file__).resolve().with_name('config.yaml')
 
-with open(default_yaml_file) as c_file:
+with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: ConfigDict = yaml.load(c_file, Loader=yaml.FullLoader)
     defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
@@ -44,10 +44,10 @@ def get_default_yaml(local_appdata=False) -> Path:
     :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
     :return: Path like object
     """
-    cfg_ful_path = default_yaml_file
+    cfg_ful_path = DEFAULT_YAML_FILE
     if local_appdata:
         localappdata = environ.get('LOCALAPPDATA', None)
-        user_appdata = Path(localappdata) / 'dcspy' if localappdata else default_yaml_file.parent
+        user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
         makedirs(name=user_appdata, exist_ok=True)
         cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
         if not cfg_ful_path.exists():
@@ -314,7 +314,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
             branch = bios_repo.active_branch.name
             head_commit = bios_repo.head.commit
             sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
-        except (git.exc.GitCommandError, TypeError):   # type: ignore
+        except (git.exc.GitCommandError, TypeError):  # type: ignore
             head_commit = bios_repo.head.commit
             sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime} by: {head_commit.author}'
         LOG.debug(f"Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")  # type: ignore
@@ -426,7 +426,7 @@ def collect_debug_data() -> Path:
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
     localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else default_yaml_file.parent
+    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
     config_file = Path(user_appdata / 'config.yaml').resolve()
 
     conf_dict = load_yaml(config_file)
