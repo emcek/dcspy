@@ -562,7 +562,7 @@ def get_input_from_control(ctrl_data: dict) -> Optional[ControlKeyData]:
     return control_key_data
 
 
-def get_list(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+def get_list_of_ctrls(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
     """
     Get list of all controllers from dict with sections and inputs.
 
@@ -586,6 +586,6 @@ if __name__ == '__main__':
     inputs = get_inputs_for_plane('F-16C_50', bios_local_dir)
     print('*' * 100)
     pprint(inputs, width=150)
-    in_list = get_list(ctrl_key=inputs)
+    in_list = get_list_of_ctrls(ctrl_key=inputs)
     print('*' * 100)
     print(in_list)

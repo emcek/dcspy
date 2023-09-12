@@ -21,7 +21,7 @@ from pystray import Icon, MenuItem
 from dcspy import LCD_TYPES, LOCAL_APPDATA, SystemData, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         defaults_cfg, download_file, get_default_yaml, get_inputs_for_plane, get_list, get_version_string, is_git_exec_present, load_json,
+                         defaults_cfg, download_file, get_default_yaml, get_inputs_for_plane, get_list_of_ctrls, get_version_string, is_git_exec_present, load_json,
                          proc_is_running, run_pip_command, save_yaml)
 
 __version__ = '2.4.0'
@@ -188,7 +188,7 @@ class DcspyGui(tk.Frame):
         gkey.grid(column=2, row=2, sticky=tk.W, padx=(10, 0), pady=5)
 
         inputs = get_inputs_for_plane(name=self.model_plane.get(), bios_dir=Path(self.bios_path.get()))
-        ctrls = get_list(ctrl_key=inputs)
+        ctrls = get_list_of_ctrls(ctrl_key=inputs)
         ctrl = customtkinter.CTkOptionMenu(master=tabview.tab('Keyboards'), values=ctrls, variable=self.model_ctrl, command=self._model_ctrl)
         ctrl.grid(column=2, row=3, sticky=tk.W, padx=(10, 0), pady=5)
 
