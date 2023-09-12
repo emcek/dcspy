@@ -22,7 +22,7 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockW
                                QWidget)
 
 from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
-from dcspy.models import KeyboardModel, CTRL_LIST_SEPARATOR
+from dcspy.models import CTRL_LIST_SEPARATOR, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,

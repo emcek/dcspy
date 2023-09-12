@@ -13,14 +13,14 @@ from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Dict, List, NamedTuple, Tuple, Union, Optional
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
 
 import yaml
 from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import Control, ControlKeyData, DcsBios, CTRL_LIST_SEPARATOR
+from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios
 
 try:
     import git
