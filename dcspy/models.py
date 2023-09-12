@@ -3,6 +3,9 @@ from typing import Dict, List, Optional, Union
 from pydantic import BaseModel, RootModel, field_validator
 
 
+CTRL_LIST_SEPARATOR = '--'
+
+
 class Input(BaseModel):
     description: str
 

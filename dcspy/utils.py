@@ -20,7 +20,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import Control, ControlKeyData, DcsBios
+from dcspy.models import Control, ControlKeyData, DcsBios, CTRL_LIST_SEPARATOR
 
 try:
     import git
@@ -571,7 +571,7 @@ def get_list(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
     """
     result_list = []
     for section, controllers in ctrl_key.items():
-        result_list.append(f'-- {section} --')
+        result_list.append(f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}')
         for ctrl_name in controllers:
             result_list.append(ctrl_name)
     return result_list
