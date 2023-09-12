@@ -83,7 +83,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
     test_tmp_yaml = Path(tmpdir) / 'c.yml'
 
     utils.save_yaml(data={'font_mono_xs': 9}, full_path=test_tmp_yaml)
-    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
+    d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
     d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
     assert d_cfg == {'keyboard': 'G13',
@@ -111,7 +111,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
                      'theme_color': 'dark-blue'}
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
-    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
+    d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert len(d_cfg) == 0
 
 

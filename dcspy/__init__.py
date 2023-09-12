@@ -11,7 +11,7 @@ from typing import NamedTuple, Sequence, Tuple, Union
 from PIL import ImageFont
 
 from dcspy.log import config_logger
-from dcspy.utils import check_dcs_ver, get_default_yaml, load_cfg, set_defaults
+from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, set_defaults
 
 try:
     from typing import NotRequired
@@ -148,7 +148,7 @@ class LcdInfo:
 
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
-config = set_defaults(load_cfg(filename=default_yaml), filename=default_yaml)
+config = set_defaults(load_yaml(full_path=default_yaml), filename=default_yaml)
 LcdMono = LcdInfo(width=MONO_WIDTH, height=MONO_HEIGHT, type=LcdType.MONO, foreground=255,
                   background=0, mode=LcdMode.BLACK_WHITE, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_mono_s'])),
                   font_l=ImageFont.truetype(str(config['font_name']), int(config['font_mono_l'])),

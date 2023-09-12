@@ -65,26 +65,24 @@ class ReleaseInfo(NamedTuple):
     asset_file: str
 
 
-def load_cfg(filename: Path) -> ConfigDict:
+def load_yaml(full_path: Path) -> Dict[str, Any]:
     """
-    Load configuration form yaml filename.
+    Load yaml from file into dictionary.
 
-    :param filename: path to yam file - default <package_dir>/config.yaml
-    :return: configuration dict
+    :param full_path: full path to yaml file
+    :return: dictionary
     """
-    # todo: combine with load_yaml
-    cfg_dict: ConfigDict = {}
     try:
-        with open(file=filename, encoding='utf-8') as yaml_file:
-            cfg_dict = yaml.load(yaml_file, Loader=yaml.FullLoader)
-            if not isinstance(cfg_dict, dict):
-                cfg_dict, old_dict = {}, cfg_dict
-                raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
-    except (FileNotFoundError, yaml.parser.ParserError, AttributeError) as err:
-        makedirs(name=filename.parent, exist_ok=True)
-        LOG.warning(f'{type(err).__name__}: {filename}. Default configuration will be used.')
+        with open(file=full_path, encoding='utf-8') as yaml_file:
+            data = yaml.load(yaml_file, Loader=yaml.FullLoader)
+            if not isinstance(data, dict):
+                data = {}
+    except (FileNotFoundError, yaml.parser.ParserError) as err:
+        makedirs(name=full_path.parent, exist_ok=True)
+        LOG.warning(f'{type(err).__name__}: {full_path}.')
         LOG.debug(f'{err}')
-    return cfg_dict
+        data = {}
+    return data
 
 
 def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
@@ -431,7 +429,7 @@ def collect_debug_data() -> Path:
     user_appdata = Path(localappdata) / 'dcspy' if localappdata else default_yaml_file.parent
     config_file = Path(user_appdata / 'config.yaml').resolve()
 
-    conf_dict = load_cfg(config_file)
+    conf_dict = load_yaml(config_file)
     name = uname()
     pyver = (python_version(), python_implementation())
     pyexec = sys.executable
@@ -504,22 +502,6 @@ def load_json(path: Path) -> Dict[str, Any]:
     with open(path, encoding='utf-8') as json_file:
         data = json_file.read()
     return json.loads(data)
-
-
-def load_yaml(yaml_file: Path) -> Dict[str, str]:
-    """
-    Load yaml from file into dictionary.
-
-    :param yaml_file: full path
-    :return: dict
-    """
-    # todo: combine with load_cfg
-    try:
-        with open(file=yaml_file, encoding='utf-8') as yamlfile:
-            data = yaml.load(yamlfile, Loader=yaml.FullLoader)
-    except (FileNotFoundError, yaml.parser.ParserError):
-        data = {}
-    return data
 
 
 def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:

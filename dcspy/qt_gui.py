@@ -26,7 +26,7 @@ from dcspy.models import KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
-                         is_git_object, load_cfg, load_yaml, proc_is_running, run_pip_command, save_yaml)
+                         is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -63,7 +63,7 @@ class DcsPyQtGui(QMainWindow):
         self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.config = cfg_dict
         if not cfg_dict:
-            self.config = load_cfg(filename=self.cfg_file)
+            self.config = load_yaml(full_path=self.cfg_file)
         self._init_tray()
         self._init_settings()
         self._apply_configuration_1(cfg=self.config)
@@ -390,7 +390,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
         plane_name = self.combo_planes.currentText()
-        plane_gkeys = load_yaml(self.cfg_file.parent / f'{plane_name}.yaml')
+        plane_gkeys = load_yaml(full_path=self.cfg_file.parent / f'{plane_name}.yaml')
         LOG.debug(f'{plane_name}: {plane_gkeys}')
 
         for row in range(0, self.keyboard.gkeys):
@@ -899,7 +899,7 @@ class DcsPyQtGui(QMainWindow):
     def _reset_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
         save_yaml(data=defaults_cfg, full_path=self.cfg_file)
-        self.config = load_cfg(filename=self.cfg_file)
+        self.config = load_yaml(full_path=self.cfg_file)
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
             getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
