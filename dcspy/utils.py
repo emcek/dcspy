@@ -563,15 +563,17 @@ def get_input_from_control(ctrl_data: dict) -> Optional[ControlKeyData]:
     return control_key_data
 
 
-def get_list_of_ctrls(ctrl_key: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+def get_list_of_ctrls(name: str, bios_dir: Path) -> List[str]:
     """
     Get list of all controllers from dict with sections and inputs.
 
-    :param ctrl_key: dict with only input for the plane
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS
     :return: list of string
     """
     result_list = []
-    for section, controllers in ctrl_key.items():
+    inputs = get_inputs_for_plane(name=name, bios_dir=bios_dir)
+    for section, controllers in inputs.items():
         result_list.append(f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}')
         for ctrl_name in controllers:
             result_list.append(ctrl_name)
@@ -596,9 +598,9 @@ if __name__ == '__main__':
     DcsBios.model_validate(plane_json)
     print('*' * 100)
     pprint(plane_json, width=500)
-    inputs = get_inputs_for_plane('F-16C_50', bios_local_dir)
+    ctrl_inputs = get_inputs_for_plane('F-16C_50', bios_local_dir)
     print('*' * 100)
-    pprint(inputs, width=150)
-    in_list = get_list_of_ctrls(ctrl_key=inputs)
+    pprint(ctrl_inputs, width=150)
+    in_list = get_list_of_ctrls('F-16C_50', bios_local_dir)
     print('*' * 100)
     print(in_list)
