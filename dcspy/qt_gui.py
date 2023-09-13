@@ -21,12 +21,12 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockW
                                QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
                                QWidget)
 
-from dcspy import DCS_BIOS_REPO_DIR, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
+from dcspy import DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
 from dcspy.models import CTRL_LIST_SEPARATOR, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
-                         is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml, get_planes_list)
+                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_planes_list, get_version_string,
+                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -535,7 +535,7 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self) -> None:
         """Check version of DCSpy and show message box."""
-        ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
+        ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
             self.systray.showMessage('DCSpy', f'New version: {__version__}', QIcon(':/icons/img/system-software-update.svg'))

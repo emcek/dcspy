@@ -18,7 +18,7 @@ from packaging import version
 from PIL import Image
 from pystray import Icon, MenuItem
 
-from dcspy import LCD_TYPES, LOCAL_APPDATA, SystemData, config
+from dcspy import DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, SystemData, config
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_default_yaml, get_version_string, is_git_exec_present, proc_is_running, run_pip_command, save_yaml)
@@ -591,7 +591,7 @@ class DcspyGui(tk.Frame):
 
     def _check_version(self) -> None:
         """Check version of DCSpy and show message box."""
-        ver_string = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=True)
+        ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
         self.status_txt.set(ver_string)
         if 'update!' in ver_string:
             self.sys_tray_icon.notify(f'New version: {ver_string}', 'DCSpy')
@@ -604,7 +604,7 @@ class DcspyGui(tk.Frame):
     def _download_new_release(self):
         """Download new release if running PyInstaller version or show instruction when running Pip version."""
         if getattr(sys, 'frozen', False):
-            rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+            rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME, current_ver=__version__, extension='.exe')
             directory = tk.filedialog.askdirectory(initialdir=Path.cwd(), parent=self.master, title="Select a directory")
             try:
                 destination = Path(directory) / rel_info.asset_file
@@ -830,7 +830,7 @@ class DcspyGui(tk.Frame):
         """
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
-        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
+        dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
         dcs_bios_ver = self._get_bios_full_version(bios_ver)
         git_ver = 'Not installed'

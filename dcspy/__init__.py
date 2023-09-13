@@ -41,6 +41,7 @@ SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LOCAL_APPDATA = True
+DCSPY_REPO_NAME = 'emcek/dcspy'
 DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
 __version__ = '2.4.0'
 
