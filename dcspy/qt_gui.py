@@ -270,7 +270,6 @@ class DcsPyQtGui(QMainWindow):
                 combo.addItems(self.ctrl_inputs)
                 combo.setCompleter(completer)
                 combo.currentTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo))
-                print(combo.styleSheet())
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
                 val = plane_gkeys.get(f'G{row + 1}_M{col + 1}', '')
