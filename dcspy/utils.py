@@ -30,7 +30,8 @@ except ImportError:
 LOG = getLogger(__name__)
 __version__ = '2.4.0'
 ConfigDict = Dict[str, Union[str, int, bool]]
-DEFAULT_YAML_FILE = Path(__file__).resolve().with_name('config.yaml')
+CONFIG_YAML = 'config.yaml'
+DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: ConfigDict = yaml.load(c_file, Loader=yaml.FullLoader)
@@ -49,7 +50,7 @@ def get_default_yaml(local_appdata=False) -> Path:
         localappdata = environ.get('LOCALAPPDATA', None)
         user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
         makedirs(name=user_appdata, exist_ok=True)
-        cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
+        cfg_ful_path = Path(user_appdata / CONFIG_YAML).resolve()
         if not cfg_ful_path.exists():
             save_yaml(data=defaults_cfg, full_path=cfg_ful_path)
     return cfg_ful_path
@@ -427,7 +428,7 @@ def collect_debug_data() -> Path:
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
     localappdata = environ.get('LOCALAPPDATA', None)
     user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
-    config_file = Path(user_appdata / 'config.yaml').resolve()
+    config_file = Path(user_appdata / CONFIG_YAML).resolve()
 
     conf_dict = load_yaml(config_file)
     name = uname()
