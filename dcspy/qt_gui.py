@@ -25,8 +25,8 @@ from dcspy import DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, 
 from dcspy.models import CTRL_LIST_SEPARATOR, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_list_of_ctrls, get_planes_list,
-                         get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml, get_plane_aliases)
+                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_list_of_ctrls, get_plane_aliases,
+                         get_planes_list, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
