@@ -885,15 +885,6 @@ class DcsPyQtGui(QMainWindow):
 
         :param cfg: dictionary with configuration
         """
-        self._apply_configuration_1(cfg=cfg)
-        self._apply_configuration_2(cfg=cfg)
-
-    def _apply_configuration_1(self, cfg: dict) -> None:
-        """
-        Apply configuration to part of GUI widgets.
-
-        :param cfg: dictionary with configuration
-        """
         self.cb_autostart.setChecked(cfg['autostart'])
         self.cb_show_gui.setChecked(cfg['show_gui'])
         self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
@@ -907,13 +898,6 @@ class DcsPyQtGui(QMainWindow):
         self.combo_planes.setCurrentText(cfg['current_plane'])
         self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
         self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
-
-    def _apply_configuration_2(self, cfg: dict) -> None:
-        """
-        Apply configuration to part of GUI widgets.
-
-        :param cfg: dictionary with configuration
-        """
         getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
         self.le_dcsdir.setText(cfg['dcs'])
         self.le_biosdir.setText(cfg['dcsbios'])
