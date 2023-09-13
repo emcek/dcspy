@@ -269,7 +269,7 @@ class DcsPyQtGui(QMainWindow):
                 combo.addItems(self.ctrl_inputs)
                 combo.setCompleter(completer)
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, combo=combo)
-                self.tw_gkeys.setCellWidget(row, col, combo)
+                self.tw_gkeys.setCellWidget(row, col, combo)  # todo: add empty or allowed empty when checking content of cell
                 self.tw_gkeys.cellWidget(row, col).setCurrentText(plane_gkeys.get(f'G{row + 1}_M{col + 1}', ''))
 
     @staticmethod
