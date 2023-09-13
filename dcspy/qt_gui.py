@@ -26,7 +26,7 @@ from dcspy.models import CTRL_LIST_SEPARATOR, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_list_of_ctrls, get_planes_list,
-                         get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
+                         get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml, get_plane_aliases)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -55,6 +55,8 @@ class DcsPyQtGui(QMainWindow):
         self.current_col = -1
         self._completer_items = 0
         self._git_refs_count = 0
+        self.plane_aliases = ['']
+        self.ctrl_inputs = ['']
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
@@ -239,7 +241,10 @@ class DcsPyQtGui(QMainWindow):
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
         plane_name = self.combo_planes.currentText()
-        ctrl_inputs = get_list_of_ctrls(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+        plane_aliases = get_plane_aliases(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+        if self.plane_aliases != plane_aliases:
+            self.plane_aliases = plane_aliases
+            self.ctrl_inputs = get_list_of_ctrls(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
@@ -252,7 +257,7 @@ class DcsPyQtGui(QMainWindow):
 
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
-                completer = QCompleter([item for item in ctrl_inputs if item and CTRL_LIST_SEPARATOR not in item])
+                completer = QCompleter([item for item in self.ctrl_inputs if item and CTRL_LIST_SEPARATOR not in item])
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
                 completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
@@ -261,7 +266,7 @@ class DcsPyQtGui(QMainWindow):
 
                 combo = QComboBox()
                 combo.setEditable(True)
-                combo.addItems(ctrl_inputs)
+                combo.addItems(self.ctrl_inputs)
                 combo.setCompleter(completer)
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, combo=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
