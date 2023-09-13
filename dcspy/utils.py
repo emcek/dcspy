@@ -586,9 +586,23 @@ def get_planes_list(bios_dir: Path) -> List[str]:
     :param bios_dir: path to DCS-BIOS
     :return: list of all supported planes
     """
+    aircraft_aliases = get_plane_aliases(bios_dir=bios_dir, name=None)
+    return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
+
+
+def get_plane_aliases(bios_dir: Path, name: Optional[str] = None) -> Dict[str, List[str]]:
+    """
+    Get list of all yaml files for plane with name.
+
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS
+    :return: list of all yaml files for plane definition
+    """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     aircraft_aliases = load_json(path=alias_path)
-    return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
+    if name:
+        aircraft_aliases = {name: aircraft_aliases[name]}
+    return aircraft_aliases
 
 
 if __name__ == '__main__':
