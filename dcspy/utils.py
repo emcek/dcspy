@@ -576,7 +576,6 @@ def get_list_of_ctrls(name: str, bios_dir: Path) -> List[str]:
         result_list.append(f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}')
         for ctrl_name in controllers:
             result_list.append(ctrl_name)
-    result_list.insert(0, '')  # todo: add empty or allowed empty when checking content of cell
     return result_list
 
 
