@@ -581,14 +581,14 @@ def get_list_of_ctrls(name: str, bios_dir: Path) -> List[str]:
 
 def get_planes_list(bios_dir: Path) -> List[str]:
     """
-    Get list of all DCS-BIOS supported planes.
+    Get list of all DCS-BIOS supported planes with clickable cockpit.
 
     :param bios_dir: path to DCS-BIOS
     :return: list of all supported planes
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     aircraft_aliases = load_json(path=alias_path)
-    return [aircraft for aircraft in aircraft_aliases.keys() if aircraft]
+    return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
 
 
 if __name__ == '__main__':
