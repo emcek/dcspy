@@ -244,7 +244,7 @@ class DcsPyQtGui(QMainWindow):
         plane_aliases = get_plane_aliases(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
         if self.plane_aliases != plane_aliases[plane_name]:
             self.plane_aliases = plane_aliases[plane_name]
-            LOG.debug('Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
+            LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
             self.ctrl_inputs = get_list_of_ctrls(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
