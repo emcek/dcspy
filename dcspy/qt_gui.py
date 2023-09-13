@@ -269,19 +269,34 @@ class DcsPyQtGui(QMainWindow):
                 combo.setEditable(True)
                 combo.addItems(self.ctrl_inputs)
                 combo.setCompleter(completer)
-                self._disable_items_with(text=CTRL_LIST_SEPARATOR, combo=combo)
-                self.tw_gkeys.setCellWidget(row, col, combo)  # todo: add empty or allowed empty when checking content of cell
-                self.tw_gkeys.cellWidget(row, col).setCurrentText(plane_gkeys.get(f'G{row + 1}_M{col + 1}', ''))
+                combo.currentTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo))
+                print(combo.styleSheet())
+                self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
+                self.tw_gkeys.setCellWidget(row, col, combo)
+                val = plane_gkeys.get(f'G{row + 1}_M{col + 1}', '')
+                combo.setCurrentText(val)
+
+    def _cell_ctrl_content_changed(self, text: str, widget: QComboBox) -> None:
+        """
+        Check in input control exists in current plane control list.
+
+        :param text: current text
+        :param widget: combo instance
+        """
+        if text in self.ctrl_inputs or text == '':
+            widget.setStyleSheet('')
+        else:
+            widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
 
     @staticmethod
-    def _disable_items_with(text: str, combo: QComboBox) -> None:
+    def _disable_items_with(text: str, widget: QComboBox) -> None:
         """
         Disable items in ComboBox, which shouldn't be selected.
 
-        :param combo: QComboBox instance
+        :param widget: QComboBox instance
         """
-        model = combo.model()
-        for i in range(0, combo.count()):
+        model = widget.model()
+        for i in range(0, widget.count()):
             item: QStandardItem = model.item(i)
             if text in item.text():
                 item.setEnabled(False)
