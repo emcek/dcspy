@@ -531,8 +531,7 @@ def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, Contr
     :return: dict.
     """
     ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
-    path = bios_dir / 'doc' / 'json' / f'{name}.json'
-    json_data = load_json(path)
+    json_data = get_full_bios_for_plane(name=name, bios_dir=bios_dir)
 
     for section, controllers in json_data.items():
         ctrl_key[section] = {}

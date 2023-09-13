@@ -275,7 +275,7 @@ class DcsPyQtGui(QMainWindow):
         :param combo: QComboBox instance
         """
         model = combo.model()
-        for i in range(1, combo.count()):
+        for i in range(0, combo.count()):
             item: QStandardItem = model.item(i)
             if text in item.text():
                 item.setEnabled(False)
