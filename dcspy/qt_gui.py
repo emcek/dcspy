@@ -26,7 +26,7 @@ from dcspy.models import CTRL_LIST_SEPARATOR, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_version_string, is_git_exec_present,
-                         is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
+                         is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml, get_planes_list)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -139,34 +139,14 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_combo_plane(self) -> None:
         """Initialize of combo box for plane selector with completer."""
-        p = ["A-10A", "A-10C", "A-10C_2", "A-29B", "A-4E-C", "AC_130", "AH-6", "AH-64D_BLK_II", "AJS37", "AV8BNA",
-             "Alphajet", "Bell47_2", "Bf-109K-4", "BlackHawk", "Bronco-OV-10A", "C-101CC", "C-101EB", "Cessna_210N",
-             "Christen Eagle II", "DC3", "EA-18G", "Edge540", "Extra330SR", "F-117A", "F-14A-135-GR", "F-14B", "F-15C",
-             "F-15ESE", "F-16A", "F-16C_50", "F-16D_50", "F-16D_50_NS", "F-16D_52", "F-16D_52_NS", "F-16D_Barak_30",
-             "F-16D_Barak_40", "F-16I", "F-22A", "F-2A", "F-2B", "F-5E-3", "F-86F Sabre", "F4e", "FA-18C_hornet",
-             "FA-18E", "FA-18F", "FA_18D", "FW-190A8", "FW-190D9", "FlankerEx", "Flyer1", "Hawk", "Hercules", "I-16",
-             "J-11A", "J-20A", "JF-17", "Ka-50", "Ka-50_3", "L-39C", "L-39ZA", "M-2000C", "MB-339A", "MB-339APAN",
-             "MB-339PAN", "MQ9_PREDATOR", "Mi-24P", "Mi-8MT", "Mi-8MTV2", "MiG-15bis", "MiG-19P", "MiG-21Bis",
-             "MiG-29A", "MiG-29G", "MiG-29S", "Mig-23UB", "Mirage-F1CE", "Mirage-F1EE", "MirageF1", "MirageF1CT",
-             "MosquitoFBMkVI", "NONE", "NS430", "NS430_C-101CC", "NS430_C-101EB", "NS430_L-39C", "NS430_MI-8MTV2",
-             "NS430_SA342", "P-47D-30", "P-47D-30bl1", "P-47D-40", "P-51D", "P-51D-30-NA", "REISEN52",
-             "RST_Eurofighter", "RST_Eurofighter_AG", "Rafale_A_S", "Rafale_B", "Rafale_C", "Rafale_M", "SA342L",
-             "SA342M", "SA342Minigun", "SA342Mistral", "SpitfireLFMkIX", "SpitfireLFMkIXCW", "Su-25", "Su-25T", "Su-27",
-             "Su-30M", "Su-30MK", "Su-30SM", "Su-33", "Su-57", "Super_Etendard", "Supercarrier", "T-4", "T-45",
-             "TF-51D", "UH-1H", "VNAO_Ready_Room", "VSN_AJS37Viggen", "VSN_C17A", "VSN_C5_Galaxy", "VSN_E2D",
-             "VSN_Eurofighter", "VSN_Eurofighter_AG", "VSN_F104G", "VSN_F104G_AG", "VSN_F104S", "VSN_F104S_AG",
-             "VSN_F105D", "VSN_F105G", "VSN_F14A", "VSN_F14B", "VSN_F15E", "VSN_F15E_AA", "VSN_F16A", "VSN_F16AMLU",
-             "VSN_F16CBL50", "VSN_F16CBL52D", "VSN_F16CMBL50", "VSN_F22", "VSN_F35A", "VSN_F35A_AG", "VSN_F35B",
-             "VSN_F35B_AG", "VSN_F4E", "VSN_F4E_AG", "VSN_F5E", "VSN_F5N", "VSN_FA18C", "VSN_FA18C_AG",
-             "VSN_FA18C_Lot20", "VSN_FA18F", "VSN_FA18F_AG", "VSN_Harrier", "VSN_M2000", "VSN_P3C", "VSN_Su47",
-             "VSN_TornadoGR4", "VSN_TornadoIDS", "VSN_UFO", "Yak-52", ]
-        completer = QCompleter(p)
+        plane_list = get_planes_list(bios_dir=self.le_biosdir.text())
+        completer = QCompleter(plane_list)
         completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
         completer.setMaxVisibleItems(self._completer_items)
         completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
-        self.combo_planes.addItems(p)
+        self.combo_planes.addItems(plane_list)
         self.combo_planes.setCurrentText(self.config['current_plane'])
         self.combo_planes.setEditable(True)
         self.combo_planes.setCompleter(completer)
