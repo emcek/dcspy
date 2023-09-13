@@ -64,93 +64,16 @@ class DcsPyQtGui(QMainWindow):
         self.config = cfg_dict
         if not cfg_dict:
             self.config = load_yaml(full_path=self.cfg_file)
-        # self._init_tray()
-        self.systray.setIcon(QIcon(':/icons/img/dcspy.ico'))
-        self.systray.setVisible(True)
-        self.systray.setToolTip(f'DCSpy {__version__}')
-        self.traymenu.addAction(self.a_check_updates)
-        self.traymenu.addAction(self.a_quit)
-        self.systray.setContextMenu(self.traymenu)
-        self.systray.activated.connect(self.activated)
-
-        # self._init_settings()
         self.dw_gkeys.hide()
         self.dw_gkeys.setFloating(True)
-        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
-        self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
-        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
-        self.le_biosdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_biosdir'))
-        self.pb_collect_data.clicked.connect(self._collect_data_clicked)
-        self.pb_start.clicked.connect(self._start_clicked)
-        self.pb_stop.clicked.connect(self._stop_clicked)
-        self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
-        self.pb_bios_check.clicked.connect(self._bios_check_clicked)
-        self.le_bios_live.textEdited.connect(self._is_git_object_exists)
-        self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
-        self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
-        self.sp_completer.valueChanged.connect(self._set_find_value)
-        self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
-        self.pb_copy.clicked.connect(self._copy_cell_to_row)
-        self.pb_save.clicked.connect(self._save_gkeys_cfg)
-        self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
-
-        # self._apply_configuration_1(cfg=self.config)
-        self.cb_autostart.setChecked(self.config['autostart'])
-        self.cb_show_gui.setChecked(self.config['show_gui'])
-        self.cb_lcd_screenshot.setChecked(self.config['save_lcd'])
-        self.cb_check_ver.setChecked(self.config['check_ver'])
-        self.cb_verbose.setChecked(self.config['verbose'])
-        self.cb_ded_font.setChecked(self.config['f16_ded_font'])
-        self.cb_autoupdate_bios.setChecked(self.config['check_bios'])
-        self.le_font_name.setText(self.config['font_name'])
-        self.sp_completer.setValue(self.config['completer_items'])
-        self._completer_items = self.config['completer_items']
-        self.combo_planes.setCurrentText(self.config['current_plane'])
-        self.mono_font = {'large': self.config["font_mono_l"], 'medium': self.config["font_mono_s"], 'small': self.config["font_mono_xs"]}
-        self.color_font = {'large': self.config["font_color_l"], 'medium': self.config["font_color_s"], 'small': self.config["font_color_xs"]}
-
-        # self._init_combo_plane()
-        plane_list = get_planes_list(bios_dir=self.le_biosdir.text())
-        completer = QCompleter(plane_list)
-        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
-        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
-        completer.setMaxVisibleItems(self._completer_items)
-        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
-        self.combo_planes.addItems(plane_list)
-        self.combo_planes.setCurrentText(self.config['current_plane'])
-        self.combo_planes.setEditable(True)
-        self.combo_planes.setCompleter(completer)
-
-        # self._init_keyboards()
-        for data in LCD_TYPES.values():
-            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
-
-        # self._apply_configuration_2(cfg=self.config)
-        getattr(self, f"rb_{self.config['keyboard'].lower().replace(' ', '')}").toggle()
-        self.le_dcsdir.setText(self.config['dcs'])
-        self.le_biosdir.setText(self.config['dcsbios'])
-        self.le_bios_live.setText(self.config['git_bios_ref'])
-        self.cb_bios_live.setChecked(self.config['git_bios'])
-
-        # self._init_menu_bar()
-        self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
-        self.a_quit.triggered.connect(self.close)
-        self.a_show_toolbar.triggered.connect(self._show_toolbar)
-        self.a_show_layout.triggered.connect(self._show_dock)
-        self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
-        self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
-        self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
-        self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
-
-        # self._init_autosave()
-        widget_dict = {'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
-                       'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textEdited',
-                       'le_biosdir': 'textEdited', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
-                       'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
-                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged'}
-        for widget_name, trigger_method in widget_dict.items():
-            getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
+        self._init_tray()
+        self._init_combo_plane()
+        self.apply_configuration(cfg=self.config)
+        self._init_settings()
+        self._init_keyboards()
+        self._init_menu_bar()
+        self._init_autosave()
+        self._trigger_refresh_data()
 
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
@@ -164,17 +87,6 @@ class DcsPyQtGui(QMainWindow):
             self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
 
-    def _init_menu_bar(self) -> None:
-        """Initialize of menubar."""
-        self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
-        self.a_quit.triggered.connect(self.close)
-        self.a_show_toolbar.triggered.connect(self._show_toolbar)
-        self.a_show_layout.triggered.connect(self._show_dock)
-        self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
-        self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
-        self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
-        self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
-
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
         self.systray.setIcon(QIcon(':/icons/img/dcspy.ico'))
@@ -185,10 +97,21 @@ class DcsPyQtGui(QMainWindow):
         self.systray.setContextMenu(self.traymenu)
         self.systray.activated.connect(self.activated)
 
+    def _init_combo_plane(self) -> None:
+        """Initialize of combo box for plane selector with completer."""
+        plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
+        completer = QCompleter(plane_list)
+        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        completer.setMaxVisibleItems(self._completer_items)
+        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+        self.combo_planes.addItems(plane_list)
+        self.combo_planes.setEditable(True)
+        self.combo_planes.setCompleter(completer)
+
     def _init_settings(self) -> None:
         """Initialize of settings."""
-        self.dw_gkeys.hide()
-        self.dw_gkeys.setFloating(True)
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
         self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
@@ -207,6 +130,22 @@ class DcsPyQtGui(QMainWindow):
         self.pb_save.clicked.connect(self._save_gkeys_cfg)
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
 
+    def _init_keyboards(self) -> None:
+        """Initialize of keyboards."""
+        for data in LCD_TYPES.values():
+            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
+
+    def _init_menu_bar(self) -> None:
+        """Initialize of menubar."""
+        self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
+        self.a_quit.triggered.connect(self.close)
+        self.a_show_toolbar.triggered.connect(self._show_toolbar)
+        self.a_show_layout.triggered.connect(self._show_dock)
+        self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
+        self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
+        self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
+        self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
+
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
         widget_dict = {'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
@@ -217,19 +156,18 @@ class DcsPyQtGui(QMainWindow):
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
-    def _init_combo_plane(self) -> None:
-        """Initialize of combo box for plane selector with completer."""
-        plane_list = get_planes_list(bios_dir=self.le_biosdir.text())
-        completer = QCompleter(plane_list)
-        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
-        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
-        completer.setMaxVisibleItems(self._completer_items)
-        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
-        self.combo_planes.addItems(plane_list)
-        self.combo_planes.setCurrentText(self.config['current_plane'])
-        self.combo_planes.setEditable(True)
-        self.combo_planes.setCompleter(completer)
+    def _trigger_refresh_data(self):
+        """Refresh widgets states and regenerates data."""
+        self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
+        self._is_dir_exists(text=self.le_biosdir.text(), widget_name='le_biosdir')
+        if self.cb_bios_live.isChecked():
+            self.le_bios_live.setEnabled(True)
+            self._is_git_object_exists(text=self.le_bios_live.text())
+        for data in LCD_TYPES.values():
+            keyboard = getattr(self, f'rb_{data["klass"].lower()}')
+            if keyboard.isChecked():
+                self._select_keyboard(keyboard=data['klass'], state=True)
+                break
 
     def _set_find_value(self, value) -> None:
         """
@@ -239,11 +177,6 @@ class DcsPyQtGui(QMainWindow):
         """
         self._completer_items = value
         self._load_table_gkeys()
-
-    def _init_keyboards(self) -> None:
-        """Initialize of keyboards."""
-        for data in LCD_TYPES.values():
-            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
 
     def _select_keyboard(self, keyboard: str, state: bool) -> None:
         """
