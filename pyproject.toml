@@ -69,7 +69,7 @@ test = [
     'pydocstyle[toml]',
     'pytest',
     'pytest-cov',
-    'pytest-random',
+    'pytest-randomly',
     'ruff',
     'types-Pillow',
     'types-psutil',
@@ -96,7 +96,7 @@ dcspy = [
 ]
 
 [tool.pytest.ini_options]
-addopts = ['--random', '-q']
+addopts = ['-q']
 testpaths = ['tests']
 markers = ['dcsbios: marks tests for verfification of DCS-BIOS data']
 
