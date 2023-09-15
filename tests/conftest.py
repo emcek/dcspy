@@ -2,7 +2,25 @@ from unittest.mock import MagicMock, patch
 
 from pytest import fixture
 
-from dcspy import LcdInfo
+from dcspy import LcdInfo, LcdMono, LcdColor
+from dcspy.aircraft import Aircraft, FA18Chornet, F16C50, F15ESE, Ka50, Ka503, Mi8MT, Mi24P, AH64DBLKII, A10C, A10C2, F14B, F14A135GR, AV8BNA
+
+
+aircrafts = [Aircraft, FA18Chornet, F16C50, F15ESE, Ka50, Ka503, Mi8MT, Mi24P, AH64DBLKII, A10C, A10C2, F14B, F14A135GR, AV8BNA]
+lcds = [LcdMono, LcdColor]
+
+
+def generate_fixture(ac, lcd):
+    @fixture()
+    def _fixture():
+        return ac(lcd)
+    return _fixture
+
+
+for ac in aircrafts:
+    for lcd in lcds:
+        name = f"{ac.__name__.lower()}_{lcd.type.name.lower()}"
+        globals()[name] = generate_fixture(ac, lcd)
 
 
 def pytest_addoption(parser) -> None:
