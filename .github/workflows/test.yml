@@ -53,4 +53,4 @@ jobs:
 
       - name: "Check pip-audit"
         run: |
-          pip-audit -lv --progress-spinner off --ignore-vuln PYSEC-2022-42969 --ignore-vuln GHSA-cwvm-v4w8-q58c
+          pip-audit -lv --progress-spinner off --ignore-vuln PYSEC-2022-42969
