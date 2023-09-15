@@ -7,8 +7,6 @@ from pytest import mark, raises
 from dcspy import LcdButton, LcdColor, LcdMono
 from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
-resources = Path(__file__).resolve().with_name('resources')
-
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
 @mark.parametrize('model', all_plane_list, ids=[
@@ -289,7 +287,7 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', ['hornet', 'viper', 'eagle', 'shark', 'shark3', 'hip', 'hind', 'apache', 'warthog', 'warthog2', 'tomcata', 'tomcatb', 'harrier'])
-def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
+def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, request):
     aircraft_model = request.getfixturevalue(f'{model}_{lcd}')
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
@@ -301,7 +299,7 @@ def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
+def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, request):
     from itertools import repeat
     from tempfile import gettempdir
 
@@ -326,7 +324,7 @@ def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_wca_more_then_one_screen_scrolled(model, img_precision, request):
+def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precision, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -347,7 +345,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, img_precision, request)
 
 
 @mark.parametrize('model', ['apache_mono', 'apache_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_pre_mode(model, apache_pre_mode_bios_data, img_precision, request):
+def test_apache_pre_mode(model, apache_pre_mode_bios_data, resources, img_precision, request):
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
