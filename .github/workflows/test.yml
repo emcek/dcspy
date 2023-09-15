@@ -9,10 +9,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12.0-rc.2']
         exclude:
           - os: ubuntu-latest
             python-version: '3.11'
+          - os: windows-latest
+            python-version: '3.12.0-rc.2'
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
@@ -38,7 +40,7 @@ jobs:
 
       - name: "Test with pytest"
         run: |
-          python -m pytest --random -q -m "not dcsbios"
+          python -m pytest -q -m "not dcsbios"
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v3

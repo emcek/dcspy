@@ -11,7 +11,7 @@ pydocstyle[toml]
 pytest
 pytest-cov
 pytest-qt; sys_platform == "win32"
-pytest-random
+pytest-randomly
 ruff
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
 types-Pillow
