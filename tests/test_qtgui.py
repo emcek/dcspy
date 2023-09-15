@@ -10,7 +10,12 @@ def test_qt(qtbot, default_config):
 
     from dcspy.qt_gui import DcsPyQtGui
 
-    default_config.update({'check_bios': False, 'check_ver': False})
+    default_config.update({
+        'check_bios': False,
+        'check_ver': False,
+        'dcsbios': './resources/dcs_bios',
+        'current_plane': 'A-10C',
+    })
     dcspy_gui = DcsPyQtGui(cfg_dict=default_config)
     dcspy_gui.show()
     qtbot.addWidget(dcspy_gui)
