@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from pytest import fixture
@@ -472,6 +473,24 @@ def default_config():
             'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': 'consola.ttf', 'font_mono_s': 11, 'font_mono_xs': 9, 'font_mono_l': 16,
             'font_color_s': 22, 'font_color_xs': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': False, 'git_bios_ref': 'master',
             'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20, 'current_plane': 'A-10A'}
+
+
+@fixture()
+def switch_dcs_bios_path_in_config(resources):
+    """
+    Switch path to config yaml file during testing.
+
+    :param resources: path to tests/resources directory
+    """
+    from dcspy import utils
+
+    org = utils.load_yaml(resources / 'c.yml')
+    dcs_bios = org['dcsbios']
+    org['dcsbios'] = str(resources / 'dcs_bios')
+    utils.save_yaml(data=org, full_path=resources / 'c.yml')
+    yield
+    org['dcsbios'] = dcs_bios
+    utils.save_yaml(data=org, full_path=resources / 'c.yml')
 
 
 # <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
