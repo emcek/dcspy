@@ -25,6 +25,16 @@ def img_precision(pytestconfig):
     return pytestconfig.getoption('img_precision')
 
 
+@fixture()
+def resources():
+    """
+    Path to tests/resources directory.
+
+    :return: path to tests/resources directory
+    """
+    return Path(__file__).resolve().with_name('resources')
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
