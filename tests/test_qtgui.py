@@ -1,6 +1,9 @@
+from pathlib import Path
 from sys import platform
 
 from pytest import mark
+
+resources = Path(__file__).resolve().with_name('resources')
 
 
 @mark.qt6
@@ -13,7 +16,7 @@ def test_qt(qtbot, default_config):
     default_config.update({
         'check_bios': False,
         'check_ver': False,
-        'dcsbios': './resources/dcs_bios',
+        'dcsbios': str(resources / 'dcs_bios'),
         'current_plane': 'A-10C',
     })
     import os
