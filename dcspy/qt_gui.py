@@ -22,11 +22,12 @@ from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockW
                                QWidget)
 
 from dcspy import DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
-from dcspy.models import CTRL_LIST_SEPARATOR, KeyboardModel
+from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_list_of_ctrls, get_plane_aliases,
-                         get_planes_list, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command, save_yaml)
+                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_inputs_for_plane, get_list_of_ctrls,
+                         get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running,
+                         run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '2.4.0'
@@ -56,7 +57,8 @@ class DcsPyQtGui(QMainWindow):
         self._completer_items = 0
         self._git_refs_count = 0
         self.plane_aliases = ['']
-        self.ctrl_inputs = ['']
+        self.ctrl_input: Dict[str, Dict[str, ControlKeyData]] = {}
+        self.ctrl_list = ['']
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
@@ -245,7 +247,8 @@ class DcsPyQtGui(QMainWindow):
         if self.plane_aliases != plane_aliases[plane_name]:
             self.plane_aliases = plane_aliases[plane_name]
             LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
-            self.ctrl_inputs = get_list_of_ctrls(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+            self.ctrl_input = get_inputs_for_plane(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+            self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
@@ -258,7 +261,7 @@ class DcsPyQtGui(QMainWindow):
 
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
-                completer = QCompleter([item for item in self.ctrl_inputs if item and CTRL_LIST_SEPARATOR not in item])
+                completer = QCompleter([item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item])
                 completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
                 completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
@@ -267,7 +270,7 @@ class DcsPyQtGui(QMainWindow):
 
                 combo = QComboBox()
                 combo.setEditable(True)
-                combo.addItems(self.ctrl_inputs)
+                combo.addItems(self.ctrl_list)
                 combo.setCompleter(completer)
                 combo.currentTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo))
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
@@ -282,10 +285,28 @@ class DcsPyQtGui(QMainWindow):
         :param text: current text
         :param widget: combo instance
         """
-        if (text in self.ctrl_inputs and CTRL_LIST_SEPARATOR not in text) or text == '':
+        if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
+            widget.setStyleSheet('')
+            section = self._find_section_name(ctrl_name=text)
+            widget.setToolTip(self.ctrl_input[section][text].description)
+        elif text == '':
             widget.setStyleSheet('')
         else:
             widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
+            widget.setToolTip('')
+
+    def _find_section_name(self, ctrl_name: str) -> str:
+        """
+        Find section name of control input name.
+
+        :param ctrl_name: input name of controller.
+        :return: section name as string
+        """
+        idx = self.ctrl_list.index(ctrl_name)
+        for element in reversed(self.ctrl_list[:idx]):
+            if element.startswith(CTRL_LIST_SEPARATOR):
+                return element.strip(f' {CTRL_LIST_SEPARATOR}')
+        return ''
 
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
