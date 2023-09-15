@@ -354,8 +354,11 @@
              </item>
              <item row="2" column="0">
               <widget class="QCheckBox" name="cb_autostart">
+               <property name="toolTip">
+                <string>Start DCSpy client when application starts</string>
+               </property>
                <property name="text">
-                <string>Launch DCSpy after starting GUI</string>
+                <string>Auto launch DCSpy client</string>
                </property>
               </widget>
              </item>
@@ -368,6 +371,9 @@
              </item>
              <item row="3" column="0">
               <widget class="QCheckBox" name="cb_show_gui">
+               <property name="toolTip">
+                <string>If unchecked DCSpy stay open in system tray and client will be lauched</string>
+               </property>
                <property name="text">
                 <string>Show GUI when started</string>
                </property>
@@ -375,6 +381,9 @@
              </item>
              <item row="1" column="0">
               <widget class="QCheckBox" name="cb_check_ver">
+               <property name="toolTip">
+                <string>Auto check DCSpy version during startup</string>
+               </property>
                <property name="text">
                 <string>Auto check DCSpy version</string>
                </property>
@@ -382,8 +391,11 @@
              </item>
              <item row="1" column="1">
               <widget class="QPushButton" name="pb_dcspy_check">
+               <property name="toolTip">
+                <string>Check updates for DCSpy</string>
+               </property>
                <property name="text">
-                <string>Check DCSpy updates</string>
+                <string>Check for updates</string>
                </property>
               </widget>
              </item>
@@ -445,6 +457,9 @@
              </item>
              <item row="1" column="0">
               <widget class="QCheckBox" name="cb_autoupdate_bios">
+               <property name="toolTip">
+                <string>Auto check DCS-BIOS version during startup</string>
+               </property>
                <property name="text">
                 <string>Auto check DCS-BIOS</string>
                </property>
@@ -462,8 +477,11 @@
              </item>
              <item row="1" column="2">
               <widget class="QPushButton" name="pb_bios_check">
+               <property name="toolTip">
+                <string>Check updates for DCS-BIOS</string>
+               </property>
                <property name="text">
-                <string>Check DCS-BIOS updates</string>
+                <string>Check for updates</string>
                </property>
               </widget>
              </item>
@@ -490,7 +508,7 @@
           <string>G-Keys</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
+          <item row="0" column="1">
            <widget class="QLabel" name="label_5">
             <property name="text">
              <string>Aircraft:</string>
@@ -500,17 +518,33 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1">
+          <item row="0" column="2">
            <widget class="QComboBox" name="combo_planes">
+            <property name="toolTip">
+             <string>Aircraft name: type to search</string>
+            </property>
             <property name="editable">
              <bool>true</bool>
             </property>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="0" colspan="3">
            <widget class="QTableWidget" name="tw_gkeys"/>
           </item>
-          <item row="3" column="0" colspan="2">
+          <item row="4" column="0" colspan="3">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <widget class="QPushButton" name="pb_copy">
@@ -549,6 +583,9 @@
                 <width>50</width>
                 <height>16777215</height>
                </size>
+              </property>
+              <property name="toolTip">
+               <string>Show number of results</string>
               </property>
               <property name="minimum">
                <number>1</number>
