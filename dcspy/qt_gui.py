@@ -180,6 +180,7 @@ class DcsPyQtGui(QMainWindow):
         :param value: number of items visible
         """
         self._completer_items = value
+        LOG.debug(f'Set number of results: {value}')
         self._load_table_gkeys()
 
     def _select_keyboard(self, keyboard: str, state: bool) -> None:
