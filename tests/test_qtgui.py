@@ -16,6 +16,8 @@ def test_qt(qtbot, default_config):
         'dcsbios': './resources/dcs_bios',
         'current_plane': 'A-10C',
     })
+    import os
+    print(f'----------------- {os.getcwd()} -----------------------')
     dcspy_gui = DcsPyQtGui(cfg_dict=default_config)
     dcspy_gui.show()
     qtbot.addWidget(dcspy_gui)

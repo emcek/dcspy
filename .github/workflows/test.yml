@@ -37,8 +37,10 @@ jobs:
           pip install -Ur requirements_test.txt
 
       - name: "Test with pytest"
+        env:
+          - PYSIDE_DESIGNER_PLUGINS: .
         run: |
-          python -m pytest -q -m "not dcsbios"
+          python -m pytest -v -s -m "not dcsbios"
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v3
