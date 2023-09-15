@@ -282,7 +282,7 @@ class DcsPyQtGui(QMainWindow):
         :param text: current text
         :param widget: combo instance
         """
-        if text in self.ctrl_inputs or text == '':
+        if (text in self.ctrl_inputs and CTRL_LIST_SEPARATOR not in text) or text == '':
             widget.setStyleSheet('')
         else:
             widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
@@ -298,7 +298,7 @@ class DcsPyQtGui(QMainWindow):
         for i in range(0, widget.count()):
             item: QStandardItem = model.item(i)
             if text in item.text():
-                item.setEnabled(False)
+                item.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
