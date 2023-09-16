@@ -7,6 +7,8 @@ from pytest import mark
 @mark.qt6
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_qt(qtbot, resources, switch_dcs_bios_path_in_config):
+    from time import sleep
+
     from PySide6 import QtCore
     from PySide6.QtCore import Qt
     from PySide6.QtQuick import QQuickWindow, QSGRendererInterface
@@ -20,4 +22,8 @@ def test_qt(qtbot, resources, switch_dcs_bios_path_in_config):
         dcspy_gui = qt_gui.DcsPyQtGui()
     dcspy_gui.show()
     qtbot.addWidget(dcspy_gui)
+    qtbot.mouseClick(dcspy_gui.rb_g19, Qt.LeftButton)
+    qtbot.mouseClick(dcspy_gui.pb_start, Qt.LeftButton)
+    sleep(0.3)
+    qtbot.mouseClick(dcspy_gui.pb_stop, Qt.LeftButton)
     qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
