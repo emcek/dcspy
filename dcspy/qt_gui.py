@@ -982,6 +982,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_biosdir: QPushButton = self.findChild(QPushButton, 'pb_biosdir')
         self.pb_collect_data: QPushButton = self.findChild(QPushButton, 'pb_collect_data')
         self.pb_copy: QPushButton = self.findChild(QPushButton, 'pb_copy')
+        self.pb_save: QPushButton = self.findChild(QPushButton, 'pb_save')
         self.pb_dcspy_check: QPushButton = self.findChild(QPushButton, 'pb_dcspy_check')
         self.pb_bios_check: QPushButton = self.findChild(QPushButton, 'pb_bios_check')
 
