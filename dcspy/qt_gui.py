@@ -245,7 +245,7 @@ class DcsPyQtGui(QMainWindow):
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
         plane_name = self.combo_planes.currentText()
-        if not self._build_ctrl_input_list_needed(plane_name=plane_name):
+        if self._rebuild_ctrl_input_table_not_needed(plane_name=plane_name):
             return
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
@@ -276,7 +276,7 @@ class DcsPyQtGui(QMainWindow):
                 val = plane_gkeys.get(f'G{row + 1}_M{col + 1}', '')
                 combo.setCurrentText(val)
 
-    def _build_ctrl_input_list_needed(self, plane_name: str) -> bool:
+    def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
         """
         Detect when new plane is selected.
 
@@ -296,6 +296,10 @@ class DcsPyQtGui(QMainWindow):
         if self.plane_aliases != plane_aliases[plane_name]:
             try:
                 self.ctrl_input = get_inputs_for_plane(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+                self.plane_aliases = plane_aliases[plane_name]
+                LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
+                self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
+                return False
             except ValidationError as exc:
                 self._show_custom_msg_box(title=f'Warning with {plane_name}',
                                           text=f'Can not read infomodel of {plane_name}. Regenerate\ninfomodel might help. Please follow instruction:',
@@ -306,11 +310,7 @@ class DcsPyQtGui(QMainWindow):
                     self.combo_planes.setCurrentText(self.plane_aliases[1])
                 else:
                     self.combo_planes.setCurrentIndex(0)
-                return False
-            self.plane_aliases = plane_aliases[plane_name]
-            LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
-            self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
-            return True
+                return True
 
     def _cell_ctrl_content_changed(self, text: str, widget: QComboBox) -> None:
         """
