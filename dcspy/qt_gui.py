@@ -14,6 +14,7 @@ from typing import Callable, Dict, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
+from pydantic_core import ValidationError
 from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem
@@ -246,9 +247,21 @@ class DcsPyQtGui(QMainWindow):
         plane_name = self.combo_planes.currentText()
         plane_aliases = get_plane_aliases(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
         if self.plane_aliases != plane_aliases[plane_name]:
+            try:
+                self.ctrl_input = get_inputs_for_plane(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+            except ValidationError as exc:
+                self._show_custom_msg_box(title=f'Warning with {plane_name}',
+                                          text=f'Can not read infomodel of {plane_name}. Regenerate\ninfomodel might help. Please follow instruction:',
+                                          info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n'
+                                                   f'3. Click Fly\n4. Try again',
+                                          detail_txt=f'{exc.errors()}')
+                if len(self.plane_aliases) > 1:
+                    self.combo_planes.setCurrentText(self.plane_aliases[1])
+                else:
+                    self.combo_planes.setCurrentIndex(0)
+                return
             self.plane_aliases = plane_aliases[plane_name]
             LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
-            self.ctrl_input = get_inputs_for_plane(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
             self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
