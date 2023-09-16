@@ -109,7 +109,7 @@ class DcsPyQtGui(QMainWindow):
         completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
         completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
-        completer.setMaxVisibleItems(self._completer_items)
+        completer.setMaxVisibleItems(self.config['completer_items'])
         completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
         self.combo_planes.addItems(plane_list)
         self.combo_planes.setEditable(True)
