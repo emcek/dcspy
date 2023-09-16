@@ -536,30 +536,12 @@ def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, Contr
     for section, controllers in json_data.items():
         ctrl_key[section] = {}
         for ctrl_name, ctrl_data in controllers.items():
-            ctrl_input = get_input_from_control(ctrl_data)
+            ctrl_input = Control.model_validate(ctrl_data).input
             if ctrl_input:
                 ctrl_key[section][ctrl_name] = ctrl_input
         if not len(ctrl_key[section]):
             del ctrl_key[section]
     return ctrl_key
-
-
-def get_input_from_control(ctrl_data: dict) -> Optional[ControlKeyData]:
-    """
-    Extract input data from Control model and return as ControlKeyData.
-
-    :param ctrl_data: dict for Control model
-    :return: ControlKeyData instance
-    """
-    try:
-        Control.model_validate(ctrl_data)
-    except ValueError:
-        print(ctrl_data)
-    control_key_data = None
-    ctrl = Control(**ctrl_data)
-    if ctrl.inputs:
-        control_key_data = ControlKeyData.from_dicts(ctrl_data['description'], ctrl_data['inputs'])
-    return control_key_data
 
 
 def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
