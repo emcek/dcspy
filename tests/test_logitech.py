@@ -4,7 +4,6 @@ from pytest import mark
 
 from dcspy import LcdButton, LcdMode, LcdType
 from dcspy.logitech import KeyboardColor, KeyboardMono
-from tests.helpers import all_plane_list
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -124,20 +123,9 @@ def test_check_keyboard_text(keyboard, protocol_parser):
         upd_txt.assert_called()
 
 
-@mark.parametrize('model', all_plane_list, ids=[
-    'FA-18 Hornet',
-    'F-16C Viper',
-    'F-15ESE Eagle',
-    'Ka-50 Black Shark II',
-    'Ka-50 Black Shark III',
-    'Mi-8MT Hip',
-    'Mi-24P Hind',
-    'AH-64D Apache',
-    'A-10C Warthog',
-    'A-10C II Tank Killer',
-    'F-14A',
-    'F-14B',
-    'AV-8B N/A Harrier'])
+@mark.parametrize('model', [
+    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA'
+])
 def test_keyboard_mono_load_plane(model, keyboard_mono):
     from dcspy.aircraft import Aircraft
     from dcspy.sdk import lcd_sdk

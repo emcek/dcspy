@@ -1,8 +1,25 @@
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from pytest import fixture
 
-from dcspy import LcdInfo
+import dcspy
+from dcspy import aircraft
+
+
+def generate_fixture(plane_model, lcdtype):
+    @fixture()
+    def _fixture():
+        return plane_model(lcdtype)
+    return _fixture
+
+
+for plane in ['Aircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+    for lcd in ['LcdMono', 'LcdColor']:
+        airplane = getattr(aircraft, plane)
+        lcd_type = getattr(dcspy, lcd)
+        name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
+        globals()[name] = generate_fixture(airplane, lcd_type)
 
 
 def pytest_addoption(parser) -> None:
@@ -25,361 +42,22 @@ def img_precision(pytestconfig):
     return pytestconfig.getoption('img_precision')
 
 
+@fixture()
+def resources():
+    """
+    Path to tests/resources directory.
+
+    :return: path to tests/resources directory
+    """
+    return Path(__file__).resolve().with_name('resources')
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
     """Instance of ProtocolParser."""
     from dcspy.dcsbios import ProtocolParser
     return ProtocolParser()
-
-
-# <=><=><=><=><=> lcd <=><=><=><=><=>
-@fixture()
-def lcd_mono() -> LcdInfo:
-    """
-    Return of mono LCD.
-
-    :return: mono lcd type
-    """
-    from dcspy import LcdMono
-    return LcdMono
-
-
-@fixture()
-def lcd_color() -> LcdInfo:
-    """
-    Return of color LCD.
-
-    :return: color lcd type
-    """
-    from dcspy import LcdColor
-    return LcdColor
-
-
-# <=><=><=><=><=> aircraft mono <=><=><=><=><=>
-@fixture()
-def aircraft(lcd_mono: LcdInfo):
-    """
-    Return instance of Aircraft base class for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: Aircraft instance
-    """
-    from dcspy.aircraft import Aircraft
-    return Aircraft(lcd_mono)
-
-
-@fixture()
-def hornet_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F/A-18C Hornet for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircraft import FA18Chornet
-    return FA18Chornet(lcd_mono)
-
-
-@fixture()
-def viper_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F16C Viper for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: F-16C Viper instance
-    """
-    from dcspy.aircraft import F16C50
-    return F16C50(lcd_mono)
-
-
-@fixture()
-def shark_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of Ka-50 Black Shark II for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: Ka-50 Black Shark II instance
-    """
-    from dcspy.aircraft import Ka50
-    return Ka50(lcd_mono)
-
-
-@fixture()
-def shark3_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of Ka-50 Black Shark III for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: Ka-50 Black Shark III instance
-    """
-    from dcspy.aircraft import Ka503
-    return Ka503(lcd_mono)
-
-
-@fixture()
-def hip_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of Mi-8MTV2 Magnificent Eight for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: Mi-8MTV2 Magnificent Eight instance
-    """
-    from dcspy.aircraft import Mi8MT
-    return Mi8MT(lcd_mono)
-
-
-@fixture()
-def hind_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of Mi-24P Hind for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: Mi-24P Hind instance
-    """
-    from dcspy.aircraft import Mi24P
-    return Mi24P(lcd_mono)
-
-
-@fixture()
-def warthog_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of A-10C Warthog for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: A-10C Warthog instance
-    """
-    from dcspy.aircraft import A10C
-    return A10C(lcd_mono)
-
-
-@fixture()
-def warthog2_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of A-10C II Tank Killer for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: A-10C II Tank Killer instance
-    """
-    from dcspy.aircraft import A10C2
-    return A10C2(lcd_mono)
-
-
-@fixture()
-def tomcata_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F-14A-135-GR Tomcat for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: F-14A-135-GR Tomcat instance
-    """
-    from dcspy.aircraft import F14A135GR
-    return F14A135GR(lcd_mono)
-
-
-@fixture()
-def tomcatb_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F-14B Tomcat for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: F-14B Tomcat instance
-    """
-    from dcspy.aircraft import F14B
-    return F14B(lcd_mono)
-
-
-@fixture()
-def harrier_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of AV-8B N/A Harrier for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: AV-8B N/A Harrier instance
-    """
-    from dcspy.aircraft import AV8BNA
-    return AV8BNA(lcd_mono)
-
-
-@fixture()
-def apache_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of AH-64D Apache for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: AH-64D Apache instance
-    """
-    from dcspy.aircraft import AH64DBLKII
-    return AH64DBLKII(lcd_mono)
-
-
-@fixture()
-def eagle_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F-15ESE Eagle for Logitech mono LCD.
-
-    :param lcd_mono:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircraft import F15ESE
-    return F15ESE(lcd_mono)
-
-
-# <=><=><=><=><=> aircraft color <=><=><=><=><=>
-@fixture()
-def hornet_color(lcd_color: LcdInfo):
-    """
-    Return instance of F/A-18C Hornet for Logitech color LCD.
-
-    :param lcd_color:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircraft import FA18Chornet
-    return FA18Chornet(lcd_color)
-
-
-@fixture()
-def viper_color(lcd_color: LcdInfo):
-    """
-    Return instance of F16C Viper for Logitech color LCD.
-
-    :param lcd_color:
-    :return: F-16C Viper instance
-    """
-    from dcspy.aircraft import F16C50
-    return F16C50(lcd_color)
-
-
-@fixture()
-def shark_color(lcd_color: LcdInfo):
-    """
-    Return instance of Ka-50 Black Shark II for Logitech color LCD.
-
-    :param lcd_color:
-    :return: Ka-50 Black Shark II instance
-    """
-    from dcspy.aircraft import Ka50
-    return Ka50(lcd_color)
-
-
-@fixture()
-def shark3_color(lcd_color: LcdInfo):
-    """
-    Return instance of Ka-50 Black Shark III for Logitech color LCD.
-
-    :param lcd_color:
-    :return: Ka-50 Black Shark III instance
-    """
-    from dcspy.aircraft import Ka503
-    return Ka503(lcd_color)
-
-
-@fixture()
-def hip_color(lcd_color: LcdInfo):
-    """
-    Return instance of Mi-8MTV2 Magnificent Eight for Logitech color LCD.
-
-    :param lcd_color:
-    :return: Mi-8MTV2 Magnificent Eight instance
-    """
-    from dcspy.aircraft import Mi8MT
-    return Mi8MT(lcd_color)
-
-
-@fixture()
-def hind_color(lcd_color: LcdInfo):
-    """
-    Return instance of Mi-24P Hind for Logitech color LCD.
-
-    :param lcd_color:
-    :return: Mi-24P Hind instance
-    """
-    from dcspy.aircraft import Mi24P
-    return Mi24P(lcd_color)
-
-
-@fixture()
-def warthog_color(lcd_color: LcdInfo):
-    """
-    Return instance of A-10C II Tank Killer for Logitech color LCD.
-
-    :param lcd_color:
-    :return: A-10C II Tank Killer instance
-    """
-    from dcspy.aircraft import A10C
-    return A10C(lcd_color)
-
-
-@fixture()
-def warthog2_color(lcd_color: LcdInfo):
-    """
-    Return instance of A-10C Warthog for Logitech color LCD.
-
-    :param lcd_color:
-    :return: A-10C II Tank Killer instance
-    """
-    from dcspy.aircraft import A10C2
-    return A10C2(lcd_color)
-
-
-@fixture()
-def tomcata_color(lcd_color: LcdInfo):
-    """
-    Return instance of F-14A-135-GR Tomcat for Logitech color LCD.
-
-    :param lcd_color:
-    :return: F-14A-135-GR Tomcat instance
-    """
-    from dcspy.aircraft import F14A135GR
-    return F14A135GR(lcd_color)
-
-
-@fixture()
-def tomcatb_color(lcd_color: LcdInfo):
-    """
-    Return instance of F-14B Tomcat for Logitech color LCD.
-
-    :param lcd_color:
-    :return: F-14B Tomcat instance
-    """
-    from dcspy.aircraft import F14B
-    return F14B(lcd_color)
-
-
-@fixture()
-def harrier_color(lcd_color: LcdInfo):
-    """
-    Return instance of AV-8B N/A Harrier for Logitech color LCD.
-
-    :param lcd_color:
-    :return: AV-8B N/A Harrier instance
-    """
-    from dcspy.aircraft import AV8BNA
-    return AV8BNA(lcd_color)
-
-
-@fixture()
-def apache_color(lcd_color: LcdInfo):
-    """
-    Return instance of AH-64D Apache for Logitech color LCD.
-
-    :param lcd_color:
-    :return: AH-64D Apache instance
-    """
-    from dcspy.aircraft import AH64DBLKII
-    return AH64DBLKII(lcd_color)
-
-
-@fixture()
-def eagle_color(lcd_color: LcdInfo):
-    """
-    Return instance of F-15ESE Eagle for Logitech color LCD.
-
-    :param lcd_color:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircraft import F15ESE
-    return F15ESE(lcd_color)
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
@@ -512,7 +190,7 @@ def apache_pre_mode_bios_data():
 
 
 @fixture()
-def hornet_mono_bios():
+def fa18chornet_mono_bios():
     """Bios values for F/A-18C Hornet for Logitech mono LCD."""
     return [
         ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
@@ -536,13 +214,13 @@ def hornet_mono_bios():
 
 
 @fixture()
-def hornet_color_bios(hornet_mono_bios):
+def fa18chornet_color_bios(fa18chornet_mono_bios):
     """Bios values for F/A-18C Hornet for Logitech color LCD."""
-    return hornet_mono_bios
+    return fa18chornet_mono_bios
 
 
 @fixture()
-def viper_mono_bios():
+def f16c50_mono_bios():
     """Bios values for F16C Viper for Logitech mono LCD."""
     return [
         ('DED_LINE_1', "  INS  08.0/ 6        1a "),
@@ -554,13 +232,13 @@ def viper_mono_bios():
 
 
 @fixture()
-def viper_color_bios(viper_mono_bios):
+def f16c50_color_bios(f16c50_mono_bios):
     """Bios values for F16C Viper for Logitech color LCD."""
-    return viper_mono_bios
+    return f16c50_mono_bios
 
 
 @fixture()
-def eagle_mono_bios():
+def f15ese_mono_bios():
     """Bios values for F-15ESE Eagle for Logitech mono LCD."""
     return [
         ('F_UFC_Line1_DISPLAY', '*R2-35     141000-AM'),
@@ -573,13 +251,13 @@ def eagle_mono_bios():
 
 
 @fixture()
-def eagle_color_bios(eagle_mono_bios):
+def f15ese_color_bios(f15ese_mono_bios):
     """Bios values for F-15ESE Eagle for Logitech color LCD."""
-    return eagle_mono_bios
+    return f15ese_mono_bios
 
 
 @fixture()
-def shark_mono_bios():
+def ka50_mono_bios():
     """Bios values for Ka-50 Black Shark II for Logitech mono LCD."""
     return [
         ('PVI_LINE1_APOSTROPHE1', '`'),
@@ -601,25 +279,25 @@ def shark_mono_bios():
 
 
 @fixture()
-def shark_color_bios(shark_mono_bios):
+def ka50_color_bios(ka50_mono_bios):
     """Bios values for Ka-50 Black Shark II for Logitech color LCD."""
-    return shark_mono_bios
+    return ka50_mono_bios
 
 
 @fixture()
-def shark3_mono_bios(shark_mono_bios):
+def ka503_mono_bios(ka50_mono_bios):
     """Bios values for Ka-50 Black Shark III for Logitech mono LCD."""
-    return shark_mono_bios
+    return ka50_mono_bios
 
 
 @fixture()
-def shark3_color_bios(shark_mono_bios):
+def ka503_color_bios(ka50_mono_bios):
     """Bios values for Ka-50 Black Shark III for Logitech color LCD."""
-    return shark_mono_bios
+    return ka50_mono_bios
 
 
 @fixture()
-def hip_mono_bios():
+def mi8mt_mono_bios():
     """Bios values for Mi-8MTV2 Magnificent Eight for Logitech mono LCD."""
     return [
         ('LMP_AP_HDG_ON', 1),
@@ -634,13 +312,13 @@ def hip_mono_bios():
 
 
 @fixture()
-def hip_color_bios(hip_mono_bios):
+def mi8mt_color_bios(mi8mt_mono_bios):
     """Bios values for Mi-8MTV2 Magnificent Eight for Logitech color LCD."""
-    return hip_mono_bios
+    return mi8mt_mono_bios
 
 
 @fixture()
-def hind_mono_bios():
+def mi24p_mono_bios():
     """Bios values for Mi-24P Hind for Logitech mono LCD."""
     return [
         ('PLT_R863_CHAN', 9),
@@ -658,13 +336,13 @@ def hind_mono_bios():
 
 
 @fixture()
-def hind_color_bios(hind_mono_bios):
+def mi24p_color_bios(mi24p_mono_bios):
     """Bios values for Mi-24P Hind for Logitech color LCD."""
-    return hind_mono_bios
+    return mi24p_mono_bios
 
 
 @fixture()
-def apache_mono_bios():
+def ah64dblkii_mono_bios():
     """Bios values for AH-64D Apache for Logitech mono LCD."""
     return [
         ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
@@ -676,13 +354,13 @@ def apache_mono_bios():
 
 
 @fixture()
-def apache_color_bios(apache_mono_bios):
+def ah64dblkii_color_bios(ah64dblkii_mono_bios):
     """Bios values for AH-64D Apache for Logitech color LCD."""
-    return apache_mono_bios
+    return ah64dblkii_mono_bios
 
 
 @fixture()
-def warthog_mono_bios():
+def a10c_mono_bios():
     """Bios values for A-10C Warthog for Logitech mono LCD."""
     return [
         ('VHFAM_FREQ1', '20'),
@@ -707,25 +385,25 @@ def warthog_mono_bios():
 
 
 @fixture()
-def warthog_color_bios(warthog_mono_bios):
+def a10c_color_bios(a10c_mono_bios):
     """Bios values for A-10C Warthog for Logitech color LCD."""
-    return warthog_mono_bios
+    return a10c_mono_bios
 
 
 @fixture()
-def warthog2_mono_bios(warthog_mono_bios):
+def a10c2_mono_bios(a10c_mono_bios):
     """Bios values for A-10C II Tank Killer for Logitech mono LCD."""
-    return warthog_mono_bios
+    return a10c_mono_bios
 
 
 @fixture()
-def warthog2_color_bios(warthog_mono_bios):
+def a10c2_color_bios(a10c_mono_bios):
     """Bios values for A-10C II Tank Killer for Logitech color LCD."""
-    return warthog_mono_bios
+    return a10c_mono_bios
 
 
 @fixture()
-def harrier_mono_bios():
+def av8bna_mono_bios():
     """Bios values for AV-8B N/A Harrier for Logitech mono LCD."""
     return [
         ('UFC_SCRATCHPAD', '123456789012'),
@@ -745,30 +423,30 @@ def harrier_mono_bios():
 
 
 @fixture()
-def harrier_color_bios(harrier_mono_bios):
+def av8bna_color_bios(av8bna_mono_bios):
     """Bios values for AV-8B N/A Harrier for Logitech color LCD."""
-    return harrier_mono_bios
+    return av8bna_mono_bios
 
 
 @fixture()
-def tomcata_mono_bios():
+def f14a135gr_mono_bios():
     """Bios values for F-14A-135-GR Tomcat for Logitech mono LCD."""
     return []
 
 
 @fixture()
-def tomcata_color_bios(tomcata_mono_bios):
+def f14a135gr_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-135-GR Tomcat for Logitech color LCD."""
-    return tomcata_mono_bios
+    return f14a135gr_mono_bios
 
 
 @fixture()
-def tomcatb_mono_bios(tomcata_mono_bios):
+def f14b_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech mono LCD."""
-    return tomcata_mono_bios
+    return f14a135gr_mono_bios
 
 
 @fixture()
-def tomcatb_color_bios(tomcata_mono_bios):
+def f14b_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech color LCD."""
-    return tomcata_mono_bios
+    return f14a135gr_mono_bios
