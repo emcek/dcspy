@@ -7,8 +7,6 @@ from pytest import mark, raises
 from dcspy import LcdButton
 from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
-resources = Path(__file__).resolve().with_name('resources')
-
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
 @mark.parametrize('plane', all_plane_list)
@@ -274,19 +272,19 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', all_plane_list)
-def test_prepare_image_for_all_planes(model, lcd, img_precision, request):
+def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, request):
     aircraft_model = request.getfixturevalue(f'{model}_{lcd}')
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     # if 'warthog' in model:
-    img.save(resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    #     img.save(resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
-    # assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
-def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
+def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, request):
     from itertools import repeat
     from tempfile import gettempdir
 
@@ -311,7 +309,7 @@ def test_prepare_image_for_apache_wca_mode(model, img_precision, request):
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_wca_more_then_one_screen_scrolled(model, img_precision, request):
+def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precision, request):
     from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
@@ -332,7 +330,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, img_precision, request)
 
 
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
-def test_apache_pre_mode(model, apache_pre_mode_bios_data, img_precision, request):
+def test_apache_pre_mode(model, apache_pre_mode_bios_data, resources, img_precision, request):
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
