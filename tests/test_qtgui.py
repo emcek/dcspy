@@ -24,6 +24,6 @@ def test_qt(qtbot, resources, switch_dcs_bios_path_in_config):
     qtbot.addWidget(dcspy_gui)
     qtbot.mouseClick(dcspy_gui.rb_g19, Qt.LeftButton)
     qtbot.mouseClick(dcspy_gui.pb_start, Qt.LeftButton)
-    sleep(0.3)
     qtbot.mouseClick(dcspy_gui.pb_stop, Qt.LeftButton)
     qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
+    sleep(0.7)
