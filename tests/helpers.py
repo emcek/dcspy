@@ -11,7 +11,7 @@ from requests import exceptions, get
 from dcspy import BiosValue, aircraft
 from dcspy.sdk import lcd_sdk
 
-all_plane_list = ['FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
+all_plane_list = ['fa18chornet', 'f16c50', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna']
 
 
 def check_dcsbios_data(plane_bios: dict, plane_name: str, git_bios: bool) -> Tuple[dict, str]:
