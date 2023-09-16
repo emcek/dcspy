@@ -162,6 +162,28 @@ class BiosValue(RootModel):
 # ---------------- DCS-BIOS ----------------
 
 
+class ControlKeyData:
+    def __init__(self, description: str, max_value: int, suggested_step: int = 1) -> None:
+        """
+        Define type of input for cockpit controller.
+
+        :param description: Description
+        :param max_value: max value
+        :param suggested_step: 1 by default
+        """
+        self.max_value = max_value
+        self.suggested_step = suggested_step
+        self.description = description
+
+    def __repr__(self) -> str:
+        return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
+
+    def __bool__(self) -> bool:
+        if not all([self.max_value, self.suggested_step]):
+            return False
+        return True
+
+
 class Control(BaseModel):
     category: str
     control_type: str
@@ -173,35 +195,36 @@ class Control(BaseModel):
     physical_variant: Optional[str] = None
 
     @property
-    def input(self):
+    def input(self) -> ControlKeyData:
         """
-        Extract inputs data as dict.
+        Extract inputs data.
 
-        :return: dict
+        :return: ControlKeyData
         """
-        max_value = max(d.get('max_value', 1) for d in self.inputs)
-        suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
-        return {'description': self.description, 'max_value': max_value, 'suggested_step': suggested_step}
+        try:
+            max_value = max(d.get('max_value', 1) for d in self.inputs)
+            suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
+        except ValueError:
+            max_value = 0
+            suggested_step = 0
+        return ControlKeyData(description=self.description, max_value=max_value, suggested_step=suggested_step)
 
     @property
-    def output(self):
+    def output(self) -> Union[BiosValueInt, BiosValueStr]:
         """
-        Extract outputs data as dict.
+        Extract outputs data.
 
-        :return: dict
+        :return: Union[BiosValueInt, BiosValueStr]
         """
         if isinstance(self.outputs[0], OutputInt):
-            return {'klass': 'IntegerBuffer',
-                    'args': {'address': self.outputs[0].address,
-                             'mask': self.outputs[0].mask,
-                             'shift_by': self.outputs[0].shift_by},
-                    'value': int(),
-                    'max_value': self.outputs[0].max_value}
+            return BiosValueInt(klass='IntegerBuffer',
+                                args=IntBuffArgs(address=self.outputs[0].address, mask=self.outputs[0].mask, shift_by=self.outputs[0].shift_by),
+                                value=int(),
+                                max_value=self.outputs[0].max_value)
         else:
-            return {'klass': 'StringBuffer',
-                    'args': {'address': self.outputs[0].address,
-                             'max_length': self.outputs[0].max_length},
-                    'value': ''}
+            return BiosValueStr(klass='StringBuffer',
+                                args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
+                                value='')
 
 
 # DcsBios = RootModel(Dict[str, Dict[str, Control]])
@@ -225,36 +248,6 @@ class DcsBios(RootModel):
         :return:
         """
         return getattr(self.__root__, item, default)
-
-
-class ControlKeyData:
-    def __init__(self, description: str, max_value: int, suggested_step: int = 1) -> None:
-        """
-        Define type of input for cockpit controller.
-
-        :param description: Description
-        :param max_value: max value
-        :param suggested_step: 1 by default
-        """
-        self.max_value = max_value
-        self.suggested_step = suggested_step
-        self.description = description
-
-    @classmethod
-    def from_dicts(cls, /, description, list_of_dicts: List[Dict[str, int]]) -> 'ControlKeyData':
-        """
-        Construct object form list of dictionaries.
-
-        :param description:
-        :param list_of_dicts:
-        :return: ControlKeyData instance
-        """
-        max_value = max(dictionary.get('max_value', 1) for dictionary in list_of_dicts)
-        suggested_step = max([dictionary.get('suggested_step', 1) for dictionary in list_of_dicts])
-        return cls(description=description, max_value=max_value, suggested_step=suggested_step)
-
-    def __repr__(self) -> str:
-        return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
 
 
 class KeyboardModel(BaseModel):
