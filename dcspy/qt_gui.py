@@ -900,6 +900,23 @@ class DcsPyQtGui(QMainWindow):
         else:
             message_box(self, title, message)
 
+    def _show_custom_msg_box(self, title: str, text: str, info_txt: str, detail_txt: str) -> int:
+        """
+        Show custom message box with hidden text.
+
+        :param title: title
+        :param text: first section
+        :param info_txt: second section
+        :param detail_txt: hidden text
+        :return: code of pushed button as integer code
+        """
+        msg = QMessageBox(text=text, parent=self)
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setWindowTitle(title)
+        msg.setInformativeText(info_txt)
+        msg.setDetailedText(detail_txt)
+        return msg.exec()
+
     def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
