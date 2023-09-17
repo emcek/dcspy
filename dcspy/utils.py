@@ -318,7 +318,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
         except (git.exc.GitCommandError, TypeError):  # type: ignore
             head_commit = bios_repo.head.commit
             sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime} by: {head_commit.author}'
-        LOG.debug(f"Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")  # type: ignore
+        LOG.debug(f"Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message}")  # type: ignore
     else:
         bios_repo.git.checkout(git_ref)
         head_commit = bios_repo.head.commit
