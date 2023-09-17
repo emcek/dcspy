@@ -164,6 +164,7 @@ def test_check_bios_ver_raise_exception(tmpdir):
 def test_is_git_repo(tmpdir):
     from git import Repo
     assert utils.is_git_repo(tmpdir) is False
+    assert utils.is_git_repo(tmpdir / 'new') is False
     Repo.init(tmpdir)
     assert utils.is_git_repo(tmpdir) is True
 
