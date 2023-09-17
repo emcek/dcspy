@@ -286,7 +286,7 @@ def is_git_repo(dir_path: str) -> bool:
     try:
         _ = git.Repo(dir_path).git_dir
         return True
-    except git.InvalidGitRepositoryError:
+    except (git.InvalidGitRepositoryError, git.exc.NoSuchPathError):
         return False
 
 
