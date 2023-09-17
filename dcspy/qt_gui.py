@@ -302,7 +302,8 @@ class DcsPyQtGui(QMainWindow):
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
                 return False
             except ValidationError as exc:
-                self._show_custom_msg_box(title=f'Warning with {plane_name}',
+                self._show_custom_msg_box(kind_of=QMessageBox.Icon.Warning,
+                                          title=f'Warning with {plane_name}',
                                           text=f'Can not read infomodel of {plane_name}. Regenerate\ninfomodel might help. Please follow instruction:',
                                           info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n'
                                                    f'3. Click Fly\n4. Try again',
@@ -571,7 +572,7 @@ class DcsPyQtGui(QMainWindow):
         self._done_event.set()
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
-        self._show_custom_msg_box(title='Error', text=str(exc_type), detail_txt=str(exc_val),
+        self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
                                   info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
         self._done_event.clear()
@@ -956,7 +957,7 @@ class DcsPyQtGui(QMainWindow):
         else:
             message_box(self, title, message)
 
-    def _show_custom_msg_box(self, title: str, text: str, info_txt: str, detail_txt: str) -> int:
+    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str) -> int:
         """
         Show custom message box with hidden text.
 
@@ -967,7 +968,7 @@ class DcsPyQtGui(QMainWindow):
         :return: code of pushed button as integer code
         """
         msg = QMessageBox(text=text, parent=self)
-        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setIcon(kind_of)
         msg.setWindowTitle(title)
         msg.setInformativeText(info_txt)
         msg.setDetailedText(detail_txt)
