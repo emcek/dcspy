@@ -10,7 +10,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, Optional, Tuple, Union
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -27,7 +27,7 @@ from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_inputs_for_plane, get_list_of_ctrls,
-                         get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running,
+                         get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running,
                          run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
@@ -50,6 +50,7 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool = QtCore.QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.event = Event()
+        self._done_event = Event()
         self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=0, lcd='')
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
@@ -83,7 +84,7 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
         if self.cb_check_ver.isChecked():  # todo: clarify checking bios and dcspy in same way...
-            data = self.fetch_system_data()
+            data = self.fetch_system_data()  # todo: maybe add silence
             status_ver = ''
             status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
             status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
@@ -445,6 +446,7 @@ class DcsPyQtGui(QMainWindow):
             try:
                 sha_commit = f' SHA: {check_github_repo(git_ref=self.le_bios_live.text(), update=False)}'
             except Exception as exc:
+                # todo: handle silence form fetch system and make custom message box
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         return dcs_bios_ver
@@ -513,8 +515,12 @@ class DcsPyQtGui(QMainWindow):
             return
 
         if self.cb_bios_live.isChecked():
-            self._check_bios_git(silence=silence)
-            self._is_git_object_exists(text=self.le_bios_live.text())
+            total_time = 1 if is_git_repo(dir_path=str(DCS_BIOS_REPO_DIR)) else 24
+            self.run_in_background(job=partial(self._fake_progress, total_time=total_time, done_event=self._done_event),
+                                   signal_handlers={'progress': self._progress_by_abs_value})
+            self.run_in_background(job=partial(self._check_bios_git, silence=silence),
+                                   signal_handlers={'result': self._check_bios_git_completed,
+                                                    'error': self._error_during_bios_update})
         else:
             self._check_bios_release(silence=silence)
 
@@ -541,29 +547,42 @@ class DcsPyQtGui(QMainWindow):
             result = False
         return result
 
-    def _check_bios_git(self, silence=False) -> None:
+    def _check_bios_git(self, silence=False) -> Tuple[str, str]:
         """
         Check git/live version and configuration of DCS-BIOS.
 
         :param silence: perform action with silence
+        :return installation result as string
         """
-        sha = ''
-        try:
-            sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
-        except Exception as exc:
-            self._show_message_box(kind_of=MsgBoxTypes.CRITICAL, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
+        sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
         bios_dir = self.le_biosdir.text()
         LOG.debug(f'Remove: {bios_dir} ')
         rmtree(path=bios_dir, ignore_errors=True)
         LOG.debug(f'Copy Git DCS-BIOS to: {bios_dir} ')
         copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=bios_dir)
         local_bios = self._check_local_bios()
-        self.statusbar.showMessage(sha)
-        LOG.info(f'Git DCS-BIOS: {sha}')
+        LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
         if not silence:
             install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
             install_result = f'{install_result}\n\nUsing Git/Live version.'
-            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
+            return sha, install_result
+
+    def _error_during_bios_update(self, exc_tuple):
+        self._done_event.set()
+        exc_type, exc_val, exc_tb = exc_tuple
+        LOG.debug(exc_tb)
+        self._show_custom_msg_box(title='Error', text=str(exc_type), detail_txt=str(exc_val),
+                                  info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
+        LOG.debug(f'Can not update BIOS: {exc_type}')
+        self._done_event.clear()
+
+    def _check_bios_git_completed(self, result):
+        self._done_event.set()
+        sha, install_result = result
+        self.statusbar.showMessage(sha)
+        self._is_git_object_exists(text=self.le_bios_live.text())
+        self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
+        self._done_event.clear()
 
     def _check_bios_release(self, silence=False) -> None:
         """
@@ -852,7 +871,7 @@ class DcsPyQtGui(QMainWindow):
 
     @staticmethod
     def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100,
-                       clean_after: bool = True) -> None:
+                       clean_after: bool = True, **kwargs) -> None:
         """
         Make fake progress for progressbar.
 
@@ -861,11 +880,15 @@ class DcsPyQtGui(QMainWindow):
         :param steps: number of steps (default 100)
         :param clean_after: clean progress bar when finish
         """
+        done_event = kwargs.get('done_event', Event())
         for progress_step in range(1, steps + 1):
             sleep(total_time / steps)
             progress_callback.emit(progress_step)
+            if done_event.is_set():
+                progress_callback.emit(100)
+                break
         if clean_after:
-            sleep(0.1)
+            sleep(0.5)
             progress_callback.emit(0)
 
     def _progress_by_abs_value(self, value: int) -> None:
@@ -1096,7 +1119,7 @@ class WorkerSignals(QtCore.QObject):
 class Worker(QtCore.QRunnable):
     """Runnable worker."""
 
-    def __init__(self, func: Union[partial, Callable], with_progress: bool) -> None:
+    def __init__(self, func: partial, with_progress: bool) -> None:
         """
         Worker thread.
 
@@ -1106,15 +1129,14 @@ class Worker(QtCore.QRunnable):
         super().__init__()
         self.func = func
         self.signals = WorkerSignals()
-        self.kwargs = {}
         if with_progress:
-            self.kwargs['progress_callback'] = self.signals.progress
+            self.func.keywords['progress_callback'] = self.signals.progress
 
     @QtCore.Slot()
     def run(self) -> None:
         """Initialise the runner function with passed additional kwargs."""
         try:
-            result = self.func(**self.kwargs)
+            result = self.func()
         except Exception:
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
