@@ -17,7 +17,7 @@ from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem
+from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem, QShowEvent
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox,
                                QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
                                QWidget)
@@ -84,7 +84,7 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
         if self.cb_check_ver.isChecked():  # todo: clarify checking bios and dcspy in same way...
-            data = self.fetch_system_data()  # todo: maybe add silence
+            data = self.fetch_system_data(silence=False)  # todo: maybe add silence
             status_ver = ''
             status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
             status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
@@ -435,11 +435,12 @@ class DcsPyQtGui(QMainWindow):
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
 
-    def _get_bios_full_version(self, bios_ver: str) -> str:
+    def _get_bios_full_version(self, bios_ver: str, silence=True) -> str:
         """
         Get full with SHA and git details DCS-BIOS version as string.
 
         :param bios_ver: version string
+        :param silence: perform action with silence
         :return: full BIOS version
         """
         sha_commit = ''
@@ -448,7 +449,9 @@ class DcsPyQtGui(QMainWindow):
                 sha_commit = f' SHA: {check_github_repo(git_ref=self.le_bios_live.text(), update=False)}'
             except Exception as exc:
                 # todo: handle silence form fetch system and make custom message box
-                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
+                LOG.debug(f'{exc}')
+                if not silence:
+                    self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
         dcs_bios_ver = f'{bios_ver}{sha_commit}'
         return dcs_bios_ver
 
@@ -900,17 +903,18 @@ class DcsPyQtGui(QMainWindow):
         """
         self.progressbar.setValue(value)
 
-    def fetch_system_data(self) -> SystemData:
+    def fetch_system_data(self, silence: bool = False) -> SystemData:
         """
         Fetch various system related data.
 
+        :param silence: perform action with silence
         :return: SystemData named tuple with all data
         """
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(Path(self.config["dcs"]))
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
-        dcs_bios_ver = self._get_bios_full_version(bios_ver)
+        dcs_bios_ver = self._get_bios_full_version(bios_ver=bios_ver, silence=silence)
         git_ver = 'Not installed'
         if self.git_exec:
             from git import cmd
@@ -1076,11 +1080,11 @@ class AboutDialog(QDialog):
         self.parent: DcsPyQtGui = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
         self.l_info: QLabel = self.findChild(QLabel, 'l_info')
-        self.setup_text()
 
-    def setup_text(self) -> None:
+    def showEvent(self, event: QShowEvent):
         """Prepare text information about DCSpy application."""
-        d = self.parent.fetch_system_data()
+        super().showEvent(event)
+        d = self.parent.fetch_system_data(silence=False)
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
