@@ -17,7 +17,7 @@ from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtGui import QAction, QIcon, QPixmap, QStandardItem, QShowEvent
+from PySide6.QtGui import QAction, QIcon, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox,
                                QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
                                QWidget)
