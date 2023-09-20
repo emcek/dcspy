@@ -34,7 +34,7 @@ dependencies = [
     'CTkMessagebox==2.5',
     'CTkToolTip==0.8',
     'customtkinter==5.2.0',
-    'GitPython==3.1.35',
+    'GitPython==3.1.36',
     'packaging==23.1',
     'Pillow==10.0.1',
     'psutil==5.9.5',
