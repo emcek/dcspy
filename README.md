@@ -23,10 +23,6 @@ It supports:
 
 See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 
-## Sponsored by Jetbrains Open Source Support Program
-[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.svg)](https://jb.gg/OpenSourceSupport)
-[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://jb.gg/OpenSourceSupport)
-
 ## Aircraft and instruments
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
@@ -59,3 +55,7 @@ You want contribute, perfect see: [contributing](./CONTRIBUTING.md) guide.
 
 ## Credits
 More details [here](https://github.com/emcek/dcspy/wiki/Information#credits).
+
+## Sponsored by Jetbrains Open Source Support Program
+[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.svg)](https://jb.gg/OpenSourceSupport)
+[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://jb.gg/OpenSourceSupport)
