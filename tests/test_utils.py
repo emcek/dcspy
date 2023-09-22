@@ -21,7 +21,10 @@ from dcspy import utils
                                 published='09 August 2021',
                                 release_type='Pre-release',
                                 asset_file='fake.tgz'))
-], ids=['No update', 'New version'])
+], ids=[
+    'No update',
+    'New version',
+])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
@@ -86,29 +89,31 @@ def test_dummy_save_load_set_defaults(tmpdir):
     d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
     d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
-    assert d_cfg == {'keyboard': 'G13',
-                     'save_lcd': False,
-                     'show_gui': True,
-                     'autostart': False,
-                     'completer_items': 20,
-                     'current_plane': 'A-10A',
-                     'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-                     'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
-                     'verbose': False,
-                     'check_bios': True,
-                     'check_ver': True,
-                     'font_name': 'consola.ttf',
-                     'font_mono_s': 11,
-                     'font_mono_xs': 9,
-                     'font_mono_l': 16,
-                     'font_color_s': 22,
-                     'font_color_xs': 18,
-                     'font_color_l': 32,
-                     'f16_ded_font': True,
-                     'git_bios': False,
-                     'git_bios_ref': 'master',
-                     'theme_mode': 'system',
-                     'theme_color': 'dark-blue'}
+    assert d_cfg == {
+        'keyboard': 'G13',
+        'save_lcd': False,
+        'show_gui': True,
+        'autostart': False,
+        'completer_items': 20,
+        'current_plane': 'A-10A',
+        'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+        'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+        'verbose': False,
+        'check_bios': True,
+        'check_ver': True,
+        'font_name': 'consola.ttf',
+        'font_mono_s': 11,
+        'font_mono_xs': 9,
+        'font_mono_l': 16,
+        'font_color_s': 22,
+        'font_color_xs': 18,
+        'font_color_l': 32,
+        'f16_ded_font': True,
+        'git_bios': False,
+        'git_bios_ref': 'master',
+        'theme_mode': 'system',
+        'theme_color': 'blue',
+    }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
     d_cfg = utils.load_yaml(full_path=test_tmp_yaml)

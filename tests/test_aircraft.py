@@ -235,9 +235,9 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
     ('f16c50_color', [('DED_LINE_5', '\xfe')], ''),
     ('f16c50_color', [('DED_LINE_1', '\xfc')], ''),
     ('f16c50_color', [('DED_LINE_2', '   @')], '   '),
-    ('f16c50_color', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], "ÁDEST ÂBNGO ÃVIP  rINTG  "),
-    ('f16c50_color', [('DED_LINE_3', '4NAV  5MAN  6INS  EDLNK  A\x10\x04')], "ÄNAV  ÅMAN  ÆINS  eDLNK  "),
-    ('f16c50_color', [('DED_LINE_4', '7CMDS 8MODE 9VRP  0MISC  A\x10\x04')], "ÇCMDS ÈMODE ÉVRP  ÀMISC  "),
+    ('f16c50_color', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], 'ÁDEST ÂBNGO ÃVIP  rINTG  '),
+    ('f16c50_color', [('DED_LINE_3', '4NAV  5MAN  6INS  EDLNK  A\x10\x04')], 'ÄNAV  ÅMAN  ÆINS  eDLNK  '),
+    ('f16c50_color', [('DED_LINE_4', '7CMDS 8MODE 9VRP  0MISC  A\x10\x04')], 'ÇCMDS ÈMODE ÉVRP  ÀMISC  '),
     ('f16c50_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
     ('f16c50_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
     ('f16c50_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
@@ -297,7 +297,7 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
         ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  '),
         ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  '),
-        ('PLT_EUFD_LINE5', '                  |                  |                  ')
+        ('PLT_EUFD_LINE5', '                  |                  |                  '),
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
@@ -315,7 +315,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
-        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  '),
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA

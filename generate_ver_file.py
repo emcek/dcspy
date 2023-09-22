@@ -59,7 +59,7 @@ def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '1.1.1'), bld=environ.get('
         with open(ver_f, mode='w+', encoding='utf-8') as file_ver_info:
             file_ver_info.write(str(info_ver_data))
     else:
-        print("Use: v1.9.5 40 a43c77649cad77204c075b431f38d03dbc75cbdd file_version_info.txt")
+        print('Use: v1.9.5 40 a43c77649cad77204c075b431f38d03dbc75cbdd file_version_info.txt')
     return ver, bld, sha[:7], ver_f
 
 

@@ -191,9 +191,9 @@ class FA18Chornet(Aircraft):
         :param scale: scaling factor (Mono 1, Color 2)
         :return: updated image to draw
         """
-        scratch_1 = self.get_bios("UFC_SCRATCHPAD_STRING_1_DISPLAY")
-        scratch_2 = self.get_bios("UFC_SCRATCHPAD_STRING_2_DISPLAY")
-        scratch_num = self.get_bios("UFC_SCRATCHPAD_NUMBER_DISPLAY")
+        scratch_1 = self.get_bios('UFC_SCRATCHPAD_STRING_1_DISPLAY')
+        scratch_2 = self.get_bios('UFC_SCRATCHPAD_STRING_2_DISPLAY')
+        scratch_num = self.get_bios('UFC_SCRATCHPAD_NUMBER_DISPLAY')
         draw.text(xy=(0, 0), fill=self.lcd.foreground, font=self.lcd.font_l,
                   text=f'{scratch_1}{scratch_2}{scratch_num}')
         draw.line(xy=(0, 20 * scale, 115 * scale, 20 * scale), fill=self.lcd.foreground, width=1)
@@ -442,12 +442,12 @@ class Ka50(Aircraft):
         line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
         line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
         if line1_text:
-            l1_apostr1 = self.get_bios("PVI_LINE1_APOSTROPHE1")
-            l1_apostr2 = self.get_bios("PVI_LINE1_APOSTROPHE2")
+            l1_apostr1 = self.get_bios('PVI_LINE1_APOSTROPHE1')
+            l1_apostr2 = self.get_bios('PVI_LINE1_APOSTROPHE2')
             text1 = f'{line1_text[-6:-3]}{l1_apostr1}{line1_text[-3:-1]}{l1_apostr2}{line1_text[-1]}'
         if line2_text:
-            l2_apostr1 = self.get_bios("PVI_LINE2_APOSTROPHE1")
-            l2_apostr2 = self.get_bios("PVI_LINE2_APOSTROPHE2")
+            l2_apostr1 = self.get_bios('PVI_LINE2_APOSTROPHE1')
+            l2_apostr2 = self.get_bios('PVI_LINE2_APOSTROPHE2')
             text2 = f'{line2_text[-6:-3]}{l2_apostr1}{line2_text[-3:-1]}{l2_apostr2}{line2_text[-1]}'
         line1 = f'{self.get_bios("PVI_LINE1_SIGN")}{text1} {self.get_bios("PVI_LINE1_POINT")}'
         line2 = f'{self.get_bios("PVI_LINE2_SIGN")}{text2} {self.get_bios("PVI_LINE2_POINT")}'
@@ -514,7 +514,8 @@ class Mi8MT(Aircraft):
         for c_rect, c_text, ap_channel, turn_on in (
                 ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON')),
                 ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
-                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON'))):
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON')),
+        ):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
         r863, r828, yadro = self._generate_radio_values()
@@ -536,13 +537,13 @@ class Mi8MT(Aircraft):
 
         :return: All 3 radios settings as strings
         """
-        r863_mod = 'FM' if int(self.get_bios("R863_MOD")) else 'AM'
+        r863_mod = 'FM' if int(self.get_bios('R863_MOD')) else 'AM'
         try:
-            r863_freq = float(self.get_bios("R863_FREQ"))
+            r863_freq = float(self.get_bios('R863_FREQ'))
         except ValueError:
             r863_freq = 0.0
         try:
-            yadro_freq = float(self.get_bios("YADRO1A_FREQ"))
+            yadro_freq = float(self.get_bios('YADRO1A_FREQ'))
         except ValueError:
             yadro_freq = 0.0
         r863 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f}'
@@ -611,9 +612,9 @@ class Mi24P(Aircraft):
 
         :return: All 3 radios settings as strings
         """
-        r863_mod = 'FM' if int(self.get_bios("PLT_R863_MODUL")) else 'AM'
+        r863_mod = 'FM' if int(self.get_bios('PLT_R863_MODUL')) else 'AM'
         try:
-            yadro_freq = float(self.get_bios("JADRO_FREQ"))
+            yadro_freq = float(self.get_bios('JADRO_FREQ'))
         except ValueError:
             yadro_freq = 0.0
         r863 = f'Ch:{int(self.get_bios("PLT_R863_CHAN")) + 1:>2} {r863_mod}'
@@ -742,16 +743,18 @@ class AH64DBLKII(Aircraft):
         :param ycords: list of Y coordinates
         :param font: font instance
         """
-        match_dict = {2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
-                      3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-                      11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+'}
+        match_dict = {
+            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
+            3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+        }
         for i, xcord, ycord in zip(range(2, 12), xcords, ycords):
             mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:

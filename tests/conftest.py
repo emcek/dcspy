@@ -237,7 +237,7 @@ def apache_pre_mode_bios_data():
         ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
         ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
         ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 '),
     ]
 
 
@@ -261,7 +261,7 @@ def fa18chornet_mono_bios():
         ('UFC_OPTION_CUEING_4', '4'),
         ('UFC_OPTION_CUEING_5', '5'),
         ('IFEI_FUEL_DOWN', '123456'),
-        ('IFEI_FUEL_UP', '234567')
+        ('IFEI_FUEL_UP', '234567'),
     ]
 
 
@@ -275,11 +275,11 @@ def fa18chornet_color_bios(fa18chornet_mono_bios):
 def f16c50_mono_bios():
     """Bios values for F16C Viper for Logitech mono LCD."""
     return [
-        ('DED_LINE_1', "  INS  08.0/ 6        1a "),
+        ('DED_LINE_1', '  INS  08.0/ 6        1a '),
         ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
         ('DED_LINE_3', "  LNG  E040o34.2'        "),
-        ('DED_LINE_4', " SALT      74FT          "),
-        ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
+        ('DED_LINE_4', ' SALT      74FT          '),
+        ('DED_LINE_5', ' THDG   25.0o   G/S    0 '),
     ]
 
 
@@ -326,7 +326,7 @@ def ka50_mono_bios():
         ('AP_BANK_HOLD_LED', 0),
         ('AP_FD_LED', 1),
         ('AP_HDG_HOLD_LED', 0),
-        ('AP_PITCH_HOLD_LED', 1)
+        ('AP_PITCH_HOLD_LED', 1),
     ]
 
 
@@ -357,9 +357,9 @@ def mi8mt_mono_bios():
         ('LMP_AP_HEIGHT_ON', 1),
         ('R863_CNL_SEL', 9),
         ('R863_MOD', 1),
-        ('R863_FREQ', "123.525"),
+        ('R863_FREQ', '123.525'),
         ('R828_PRST_CHAN_SEL', 9),
-        ('YADRO1A_FREQ', "09091.9"),
+        ('YADRO1A_FREQ', '09091.9'),
     ]
 
 
@@ -376,7 +376,7 @@ def mi24p_mono_bios():
         ('PLT_R863_CHAN', 9),
         ('PLT_R863_MODUL', 1),
         ('PLT_R828_CHAN', 9),
-        ('JADRO_FREQ', "08082.8"),
+        ('JADRO_FREQ', '08082.8'),
         ('PLT_SAU_HOVER_MODE_ON_L', 1),
         ('PLT_SAU_ROUTE_MODE_ON_L', 0),
         ('PLT_SAU_ALT_MODE_ON_L', 1),
@@ -401,7 +401,7 @@ def ah64dblkii_mono_bios():
         ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
         ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
         ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
-        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')
+        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   '),
     ]
 
 
@@ -470,7 +470,7 @@ def av8bna_mono_bios():
         ('AV8BNA_ODU_4_SELECT', '4'),
         ('AV8BNA_ODU_4_Text', '4567'),
         ('AV8BNA_ODU_5_SELECT', '5'),
-        ('AV8BNA_ODU_5_Text', '5678')
+        ('AV8BNA_ODU_5_Text', '5678'),
     ]
 
 
