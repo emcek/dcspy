@@ -139,7 +139,7 @@ class KeyboardManager:
         for key in self.gkey:
             if key_sdk.logi_gkey_is_keyboard_gkey_pressed(g_key=key.key, mode=key.mode):
                 gkey = key_sdk.logi_gkey_is_keyboard_gkey_string(g_key=key.key, mode=key.mode).replace('/', '_')
-                LOG.debug(f"Button {gkey} is pressed")
+                LOG.debug(f'Button {gkey} is pressed')
                 if not self.gkey_pressed:
                     self.gkey_pressed = True
                     return key
