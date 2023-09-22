@@ -112,7 +112,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
         'git_bios': False,
         'git_bios_ref': 'master',
         'theme_mode': 'system',
-        'theme_color': 'blue',
+        'theme_color': 'dark-blue',
     }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
