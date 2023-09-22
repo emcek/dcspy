@@ -86,8 +86,8 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_check_ver.isChecked():  # todo: clarify checking bios and dcspy in same way...
             data = self.fetch_system_data(silence=False)  # todo: maybe add silence
             status_ver = ''
-            status_ver += f"Dcspy: {data.dcspy_ver} " if self.config['check_ver'] else ''
-            status_ver += f"BIOS: {data.bios_ver}" if self.config['check_bios'] else ''
+            status_ver += f'Dcspy: {data.dcspy_ver} ' if self.config['check_ver'] else ''
+            status_ver += f'BIOS: {data.bios_ver}' if self.config['check_bios'] else ''
             self.statusbar.showMessage(status_ver)
         if self.config.get('autostart', False):
             self._start_clicked()
@@ -139,7 +139,7 @@ class DcsPyQtGui(QMainWindow):
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
         for data in LCD_TYPES.values():
-            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data["klass"]))
+            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data['klass']))
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
@@ -791,8 +791,8 @@ class DcsPyQtGui(QMainWindow):
         self.sp_completer.setValue(cfg['completer_items'])
         self._completer_items = cfg['completer_items']
         self.combo_planes.setCurrentText(cfg['current_plane'])
-        self.mono_font = {'large': cfg["font_mono_l"], 'medium': cfg["font_mono_s"], 'small': cfg["font_mono_xs"]}
-        self.color_font = {'large': cfg["font_color_l"], 'medium': cfg["font_color_s"], 'small': cfg["font_color_xs"]}
+        self.mono_font = {'large': cfg['font_mono_l'], 'medium': cfg['font_mono_s'], 'small': cfg['font_mono_xs']}
+        self.color_font = {'large': cfg['font_color_l'], 'medium': cfg['font_color_s'], 'small': cfg['font_color_xs']}
         getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
         self.le_dcsdir.setText(cfg['dcs'])
         self.le_biosdir.setText(cfg['dcsbios'])
@@ -911,7 +911,7 @@ class DcsPyQtGui(QMainWindow):
         :return: SystemData named tuple with all data
         """
         system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(Path(self.config["dcs"]))
+        dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
         dcs_bios_ver = self._get_bios_full_version(bios_ver=bios_ver, silence=silence)

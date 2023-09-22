@@ -98,7 +98,7 @@ class Gkey:
 
     def __str__(self):
         """Return with format G<i>/M<j>."""
-        return f"G{self.key}/M{self.mode}"
+        return f'G{self.key}/M{self.mode}'
 
     def __bool__(self):
         """Return False when any of value is zero."""
@@ -174,7 +174,7 @@ LOG.debug(f'Python exec: {executable}')
 LOG.debug(f'{uname()}')
 LOG.debug(f'Configuration: {config} from: {default_yaml}')
 LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
-dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+dcs_type, dcs_ver = check_dcs_ver(Path(str(config['dcs'])))
 LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
 

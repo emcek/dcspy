@@ -46,7 +46,7 @@ def load_dll(lib_type: DllSdk) -> Optional[Lib]:
             prog_files = environ['PROGRAMW6432']
         except KeyError:
             prog_files = environ['PROGRAMFILES']
-        dll_path = f"{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.dir}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll"
+        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.dir}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll'
         LOG.debug(f'Selected DLL: {dll_path}')
         ffi = FFI()
         ffi.cdef(lib_type.header)
