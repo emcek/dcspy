@@ -334,7 +334,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
         except (git.exc.GitCommandError, TypeError):   # type: ignore
             head_commit = bios_repo.head.commit
             sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime} by: {head_commit.author}'
-        LOG.debug(f"Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}")  # type: ignore
+        LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}')  # type: ignore
     else:
         bios_repo.git.checkout(git_ref)
         head_commit = bios_repo.head.commit
@@ -429,7 +429,7 @@ def collect_debug_data() -> Path:
 
     lgs_dir = '\n'.join([
         str(Path(dirpath) / filename)
-        for dirpath, _, filenames in walk("C:\\Program Files\\Logitech Gaming Software\\SDK")
+        for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
         for filename in filenames
     ])
 
@@ -437,7 +437,7 @@ def collect_debug_data() -> Path:
         Path(dirpath) / filename
         for dirpath, _, filenames in walk(gettempdir())
         for filename in filenames
-        if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith("png")])
+        if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith('png')])
     ]
 
     log_files = []
@@ -468,7 +468,7 @@ def run_pip_command(cmd: str) -> Tuple[int, str, str]:
     :return: tuple with return code, stderr and stdout
     """
     try:
-        result = run([sys.executable, "-m", "pip", *cmd.split(' ')], capture_output=True, check=True)
+        result = run([sys.executable, '-m', 'pip', *cmd.split(' ')], capture_output=True, check=True)
         return result.returncode, result.stderr.decode('utf-8'), result.stdout.decode('utf-8')
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')

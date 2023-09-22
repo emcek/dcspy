@@ -18,7 +18,7 @@ def run() -> None:
     customtkinter.set_appearance_mode(config['theme_mode'])
     customtkinter.set_default_color_theme(config['theme_color'])
     LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
-    dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+    dcs_type, dcs_ver = check_dcs_ver(Path(str(config['dcs'])))
     LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
     root = customtkinter.CTk()
     width, height = 770, 520

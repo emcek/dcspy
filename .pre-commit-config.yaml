@@ -31,6 +31,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: debug-statements
+      - id: double-quote-string-fixer
       - id: check-toml
       - id: check-yaml
       - id: requirements-txt-fixer

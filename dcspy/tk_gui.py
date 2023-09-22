@@ -429,8 +429,8 @@ class DcspyGui(tk.Frame):
         :param dcspy_ver: Dcspy version
         """
         status_ver = ''
-        status_ver += f"Dcspy: {dcspy_ver} " if config['check_ver'] else ''
-        status_ver += f"BIOS: {bios_ver}" if config['check_bios'] else ''
+        status_ver += f'Dcspy: {dcspy_ver} ' if config['check_ver'] else ''
+        status_ver += f'BIOS: {bios_ver}' if config['check_bios'] else ''
         self.status_txt.set(status_ver)
 
     def _get_bios_full_version(self, bios_ver: str) -> str:
@@ -508,12 +508,12 @@ class DcspyGui(tk.Frame):
         self.color_l.set(f'Font Color L : {config["font_color_l"]}')
         self.color_s.set(f'Font Color S : {config["font_color_s"]}')
         self.color_xs.set(f'Font Color Xs : {config["font_color_xs"]}')
-        self.size_mono_l.set(int(config["font_mono_l"]))
-        self.size_mono_s.set(int(config["font_mono_s"]))
-        self.size_mono_xs.set(int(config["font_mono_xs"]))
-        self.size_color_l.set(int(config["font_color_l"]))
-        self.size_color_s.set(int(config["font_color_s"]))
-        self.size_color_xs.set(int(config["font_color_xs"]))
+        self.size_mono_l.set(int(config['font_mono_l']))
+        self.size_mono_s.set(int(config['font_mono_s']))
+        self.size_mono_xs.set(int(config['font_mono_xs']))
+        self.size_color_l.set(int(config['font_color_l']))
+        self.size_color_s.set(int(config['font_color_s']))
+        self.size_color_xs.set(int(config['font_color_xs']))
         self.font_name.set(str(config['font_name']))
         self.theme_mode.set(str(config['theme_mode']).capitalize())
         self.theme_color.set(str(config['theme_color']).replace('-', ' ').title())
@@ -603,7 +603,7 @@ class DcspyGui(tk.Frame):
             'ctkframe6.ctkentry': 'git_bios_ref',
         }
         LOG.debug(f'Content: {what} Trigger: {trigger} Raw: {widget}')
-        raw_widget = ".".join(widget.split(".!")[2:-1])
+        raw_widget = '.'.join(widget.split('.!')[2:-1])
         LOG.debug(f'Key: {map_tk_to_cfg_value[raw_widget]} Widget: {raw_widget}')
         self._save_cfg(conf={map_tk_to_cfg_value[raw_widget]: what})
         return True
@@ -624,7 +624,7 @@ class DcspyGui(tk.Frame):
         """Download new release if running PyInstaller version or show instruction when running Pip version."""
         if getattr(sys, 'frozen', False):
             rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
-            directory = tk.filedialog.askdirectory(initialdir=Path.cwd(), parent=self.master, title="Select a directory")
+            directory = tk.filedialog.askdirectory(initialdir=Path.cwd(), parent=self.master, title='Select a directory')
             try:
                 destination = Path(directory) / rel_info.asset_file
                 download_file(url=rel_info.dl_url, save_path=destination)
@@ -848,7 +848,7 @@ class DcspyGui(tk.Frame):
         :return: SystemData named tuple with all data
         """
         system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(Path(str(config["dcs"])))
+        dcs_type, dcs_ver = check_dcs_ver(Path(str(config['dcs'])))
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
         dcs_bios_ver = self._get_bios_full_version(bios_ver)
@@ -866,7 +866,7 @@ class DcspyGui(tk.Frame):
             dst_dir = Path(os.environ['USERPROFILE']) / 'Desktop'
         except KeyError:
             dst_dir = 'C:\\'
-        directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title="Select a directory")
+        directory = tk.filedialog.askdirectory(initialdir=dst_dir, parent=self.master, title='Select a directory')
         try:
             destination = Path(directory) / zip_file.name
             shutil.copy(zip_file, destination)

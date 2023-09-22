@@ -223,11 +223,11 @@ def fa18chornet_color_bios(fa18chornet_mono_bios):
 def f16c50_mono_bios():
     """Bios values for F16C Viper for Logitech mono LCD."""
     return [
-        ('DED_LINE_1', "  INS  08.0/ 6        1a "),
+        ('DED_LINE_1', '  INS  08.0/ 6        1a '),
         ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
         ('DED_LINE_3', "  LNG  E040o34.2'        "),
-        ('DED_LINE_4', " SALT      74FT          "),
-        ('DED_LINE_5', " THDG   25.0o   G/S    0 "),
+        ('DED_LINE_4', ' SALT      74FT          '),
+        ('DED_LINE_5', ' THDG   25.0o   G/S    0 '),
     ]
 
 
@@ -305,9 +305,9 @@ def mi8mt_mono_bios():
         ('LMP_AP_HEIGHT_ON', 1),
         ('R863_CNL_SEL', 9),
         ('R863_MOD', 1),
-        ('R863_FREQ', "123.525"),
+        ('R863_FREQ', '123.525'),
         ('R828_PRST_CHAN_SEL', 9),
-        ('YADRO1A_FREQ', "09091.9"),
+        ('YADRO1A_FREQ', '09091.9'),
     ]
 
 
@@ -324,7 +324,7 @@ def mi24p_mono_bios():
         ('PLT_R863_CHAN', 9),
         ('PLT_R863_MODUL', 1),
         ('PLT_R828_CHAN', 9),
-        ('JADRO_FREQ', "08082.8"),
+        ('JADRO_FREQ', '08082.8'),
         ('PLT_SAU_HOVER_MODE_ON_L', 1),
         ('PLT_SAU_ROUTE_MODE_ON_L', 0),
         ('PLT_SAU_ALT_MODE_ON_L', 1),
