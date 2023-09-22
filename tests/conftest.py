@@ -185,7 +185,7 @@ def apache_pre_mode_bios_data():
         ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | AWACS    141.000 '),
         ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | FLIGHT   128.000 '),
         ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | BATUMI   126.000 '),
-        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 ')
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | COMMAND  137.000 '),
     ]
 
 
@@ -209,7 +209,7 @@ def fa18chornet_mono_bios():
         ('UFC_OPTION_CUEING_4', '4'),
         ('UFC_OPTION_CUEING_5', '5'),
         ('IFEI_FUEL_DOWN', '123456'),
-        ('IFEI_FUEL_UP', '234567')
+        ('IFEI_FUEL_UP', '234567'),
     ]
 
 
@@ -274,7 +274,7 @@ def ka50_mono_bios():
         ('AP_BANK_HOLD_LED', 0),
         ('AP_FD_LED', 1),
         ('AP_HDG_HOLD_LED', 0),
-        ('AP_PITCH_HOLD_LED', 1)
+        ('AP_PITCH_HOLD_LED', 1),
     ]
 
 
@@ -349,7 +349,7 @@ def ah64dblkii_mono_bios():
         ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
         ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
         ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
-        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   ')
+        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   '),
     ]
 
 
@@ -418,7 +418,7 @@ def av8bna_mono_bios():
         ('AV8BNA_ODU_4_SELECT', '4'),
         ('AV8BNA_ODU_4_Text', '4567'),
         ('AV8BNA_ODU_5_SELECT', '5'),
-        ('AV8BNA_ODU_5_Text', '5678')
+        ('AV8BNA_ODU_5_Text', '5678'),
     ]
 
 

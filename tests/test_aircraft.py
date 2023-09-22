@@ -297,7 +297,7 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
         ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  '),
         ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  |                  '),
-        ('PLT_EUFD_LINE5', '                  |                  |                  ')
+        ('PLT_EUFD_LINE5', '                  |                  |                  '),
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
@@ -315,7 +315,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),
         ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |TAIL WHL LOCK SEL '),
-        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  ')
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      |                  '),
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA

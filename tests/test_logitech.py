@@ -27,7 +27,14 @@ def test_keyboard_base_basic_check(keyboard_base):
     ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE, [call(256)], True),
     ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(1), call(2), call(4), call(8)], False),
     ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(256), call(512), call(4096), call(8192), call(1024), call(2048), call(16384)], False),
-], ids=['Mono 4 Button', 'Color Ok Button', 'Mono None already_pressed', 'Color None already_pressed', 'Mono None Button', 'Color None Button'])
+], ids=[
+    'Mono 4 Button',
+    'Color Ok Button',
+    'Mono None already_pressed',
+    'Color None already_pressed',
+    'Mono None Button',
+    'Color None Button',
+])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
@@ -62,20 +69,22 @@ def test_keyboard_button_handle(keyboard, sock, request):
     ('AV8BNA', 'AV8BNA', ['Detected aircraft:', 'AV-8B N/A Harrier'], True),
     ('F-117_Nighthawk', 'F117Nighthawk', ['Detected aircraft:', 'F117Nighthawk', 'Not supported yet!'], False),
     ('', '', [], False),
-], ids=['FA-18 Hornet',
-        'F-16C Viper',
-        'Ka-50 Black Shark II',
-        'Ka-50 Black Shark III',
-        'Mi-8MT Hip',
-        'Mi-24P Hind',
-        'AH-64D Apache',
-        'A-10C Warthog',
-        'A-10C II Tank Killer',
-        'F-14A',
-        'F-14B',
-        'AV-8B N/A Harrier',
-        'F-117 Nighthawk',
-        'Empty'])
+], ids=[
+    'FA-18 Hornet',
+    'F-16C Viper',
+    'Ka-50 Black Shark II',
+    'Ka-50 Black Shark III',
+    'Mi-8MT Hip',
+    'Mi-24P Hind',
+    'AH-64D Apache',
+    'A-10C Warthog',
+    'A-10C II Tank Killer',
+    'F-14A',
+    'F-14B',
+    'AV-8B N/A Harrier',
+    'F-117 Nighthawk',
+    'Empty',
+])
 def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboard_mono):
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -89,8 +98,11 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
 
 @mark.parametrize('mode, size,  lcd_type, keyboard', [
     (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, KeyboardMono),
-    (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, KeyboardColor)
-], ids=['Mono Keyboard', 'Color Keyboard'])
+    (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, KeyboardColor),
+], ids=[
+    'Mono Keyboard',
+    'Color Keyboard',
+])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
     from dcspy import LcdInfo
     from dcspy.aircraft import Aircraft
@@ -124,7 +136,7 @@ def test_check_keyboard_text(keyboard, protocol_parser):
 
 
 @mark.parametrize('model', [
-    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA'
+    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
 def test_keyboard_mono_load_plane(model, keyboard_mono):
     from dcspy.aircraft import Aircraft
