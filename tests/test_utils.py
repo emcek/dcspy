@@ -2,6 +2,7 @@ from os import makedirs
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
+import pytest
 from packaging import version
 from pytest import mark
 
@@ -265,3 +266,48 @@ def test_run_pip_command_failed():
     assert rc == 1
     assert err != ''
     assert out == ''
+
+
+def test_get_full_bios_for_plane(resources):
+    from dcspy.models import DcsBios
+    json_data = utils.get_full_bios_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
+    assert isinstance(json_data, dict)
+    a10_model = DcsBios.model_validate(json_data)
+    assert a10_model
+
+
+def test_get_inputs_for_plane(resources):
+    from dcspy.models import ControlKeyData, CTRL_LIST_SEPARATOR
+    bios = utils.get_inputs_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
+    for section, ctrls in bios.items():
+        for name, ctrl in ctrls.items():
+            assert isinstance(ctrl, ControlKeyData), f'Wrong type fpr {section} / {name}'
+
+    list_of_ctrls = utils.get_list_of_ctrls(inputs=bios)
+    assert CTRL_LIST_SEPARATOR
+    assert CTRL_LIST_SEPARATOR in list_of_ctrls[0], list_of_ctrls[0]
+
+
+def test_get_inputs_for_wrong_plane(resources):
+    with pytest.raises(KeyError):
+        _ = utils.get_inputs_for_plane(name='Wrong', bios_dir=resources / 'dcs_bios')
+
+
+def test_get_plane_aliases_all(resources):
+    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios')
+    assert s == {'A-10C': ['CommonData', 'A-10C'], 'F-16C_50': ['CommonData', 'F-16C_50']}
+
+
+def test_get_plane_aliases_one_plane(resources):
+    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', name='A-10C')
+    assert s == {'A-10C': ['CommonData', 'A-10C']}
+
+
+def test_get_plane_aliases_wrong_plane(resources):
+    with pytest.raises(KeyError):
+        _ = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', name='A-Wrong')
+
+
+def test_get_planes_list(resources):
+    plane_list = utils.get_planes_list(bios_dir=resources / 'dcs_bios')
+    assert plane_list == ['A-10C', 'F-16C_50'], plane_list
