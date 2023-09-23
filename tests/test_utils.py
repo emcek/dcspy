@@ -277,7 +277,7 @@ def test_get_full_bios_for_plane(resources):
 
 
 def test_get_inputs_for_plane(resources):
-    from dcspy.models import ControlKeyData, CTRL_LIST_SEPARATOR
+    from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData
     bios = utils.get_inputs_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
     for section, ctrls in bios.items():
         for name, ctrl in ctrls.items():
