@@ -237,7 +237,7 @@ class DcsBios(RootModel):
 
     def __getitem__(self, item):
         # https://github.com/pydantic/pydantic/issues/1802
-        return self.__root__[item]
+        return self.root[item]
 
     def get(self, item, default=None):
         """
@@ -247,7 +247,7 @@ class DcsBios(RootModel):
         :param default:
         :return:
         """
-        return getattr(self.__root__, item, default)
+        return getattr(self.root, item, default)
 
 
 class KeyboardModel(BaseModel):
