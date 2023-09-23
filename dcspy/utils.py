@@ -1,22 +1,26 @@
+import json
 import sys
 import zipfile
 from datetime import datetime
 from glob import glob
+from itertools import chain
 from logging import getLogger
 from os import environ, makedirs, walk
 from pathlib import Path
 from platform import python_implementation, python_version, uname
-from pprint import pformat
+from pprint import pformat, pprint
 from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Dict, NamedTuple, Tuple, Union
+from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
 
+import yaml
 from packaging import version
 from psutil import process_iter
 from requests import get
-from yaml import FullLoader, dump, load, parser
+
+from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios
 
 try:
     import git
@@ -24,31 +28,14 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '2.3.2'
+__version__ = '2.4.0'
 ConfigDict = Dict[str, Union[str, int, bool]]
-defaults_cfg: ConfigDict = {
-    'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-    'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
-    'check_bios': True,
-    'check_ver': True,
-    'autostart': False,
-    'verbose': False,
-    'keyboard': 'G13',
-    'save_lcd': False,
-    'show_gui': True,
-    'font_name': 'consola.ttf',
-    'font_mono_s': 11,
-    'font_mono_xs': 9,
-    'font_mono_l': 16,
-    'font_color_s': 22,
-    'font_color_xs': 18,
-    'font_color_l': 32,
-    'git_bios': False,
-    'git_bios_ref': 'master',
-    'theme_mode': 'system',
-    'theme_color': 'blue',
-    'f16_ded_font': True,
-}
+CONFIG_YAML = 'config.yaml'
+DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
+
+with open(DEFAULT_YAML_FILE) as c_file:
+    defaults_cfg: ConfigDict = yaml.load(c_file, Loader=yaml.FullLoader)
+    defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
 def get_default_yaml(local_appdata=False) -> Path:
@@ -58,14 +45,14 @@ def get_default_yaml(local_appdata=False) -> Path:
     :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
     :return: Path like object
     """
-    cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
+    cfg_ful_path = DEFAULT_YAML_FILE
     if local_appdata:
         localappdata = environ.get('LOCALAPPDATA', None)
-        user_appdata = Path(localappdata) / 'dcspy' if localappdata else cfg_ful_path.parent
+        user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
         makedirs(name=user_appdata, exist_ok=True)
-        cfg_ful_path = Path(user_appdata / 'config.yaml').resolve()
+        cfg_ful_path = Path(user_appdata / CONFIG_YAML).resolve()
         if not cfg_ful_path.exists():
-            save_cfg(cfg_dict=defaults_cfg, filename=cfg_ful_path)
+            save_yaml(data=defaults_cfg, full_path=cfg_ful_path)
     return cfg_ful_path
 
 
@@ -79,38 +66,35 @@ class ReleaseInfo(NamedTuple):
     asset_file: str
 
 
-def load_cfg(filename: Path) -> ConfigDict:
+def load_yaml(full_path: Path) -> Dict[str, Any]:
     """
-    Load configuration form yaml filename.
+    Load yaml from file into dictionary.
 
-    :param filename: path to yam file - default <package_dir>/config.yaml
-    :return: configuration dict
+    :param full_path: full path to yaml file
+    :return: dictionary
     """
-    cfg_dict: ConfigDict = {}
     try:
-        with open(file=filename, encoding='utf-8') as yaml_file:
-            cfg_dict = load(yaml_file, Loader=FullLoader)
-            if not isinstance(cfg_dict, dict):
-                cfg_dict, old_dict = {}, cfg_dict
-                raise AttributeError(f'Config is not a dict {type(old_dict)} value: **{old_dict}**')
-    except (FileNotFoundError, parser.ParserError, AttributeError) as err:
-        makedirs(name=filename.parent, exist_ok=True)
-        LOG.warning(f'{type(err).__name__}: {filename}. Default configuration will be used.')
+        with open(file=full_path, encoding='utf-8') as yaml_file:
+            data = yaml.load(yaml_file, Loader=yaml.FullLoader)
+            if not isinstance(data, dict):
+                data = {}
+    except (FileNotFoundError, yaml.parser.ParserError) as err:
+        makedirs(name=full_path.parent, exist_ok=True)
+        LOG.warning(f'{type(err).__name__}: {full_path}.')
         LOG.debug(f'{err}')
-    return cfg_dict
+        data = {}
+    return data
 
 
-def save_cfg(cfg_dict: ConfigDict, filename: Path) -> None:
+def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
     """
-    Update yaml file with dict.
+    Save disc as yaml file.
 
-    :param cfg_dict: configuration dict
-    :param filename: path to yam file - default <package_dir>/config.yaml
+    :param data: dict
+    :param full_path: full path to yaml file
     """
-    curr_dict = load_cfg(filename)
-    curr_dict.update(cfg_dict)
-    with open(file=filename, mode='w', encoding='utf-8') as yaml_file:
-        dump(curr_dict, yaml_file)
+    with open(file=full_path, mode='w', encoding='utf-8') as yaml_file:
+        yaml.dump(data, yaml_file)
 
 
 def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
@@ -125,7 +109,7 @@ def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
     migrated_cfg = {key: cfg.get(key, value) for key, value in defaults_cfg.items()}
     if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
         migrated_cfg['dcsbios'] = defaults_cfg['dcsbios']
-    save_cfg(cfg_dict=migrated_cfg, filename=filename)
+    save_yaml(data=migrated_cfg, full_path=filename)
     LOG.debug(f'Save: {migrated_cfg}')
     return migrated_cfg
 
@@ -304,7 +288,7 @@ def is_git_repo(dir_path: str) -> bool:
     try:
         _ = git.Repo(dir_path).git_dir
         return True
-    except git.InvalidGitRepositoryError:
+    except (git.InvalidGitRepositoryError, git.exc.NoSuchPathError):
         return False
 
 
@@ -333,10 +317,10 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
             branch = bios_repo.active_branch.name
             head_commit = bios_repo.head.commit
             sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
-        except (git.exc.GitCommandError, TypeError):   # type: ignore
+        except (git.exc.GitCommandError, TypeError):  # type: ignore
             head_commit = bios_repo.head.commit
             sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime} by: {head_commit.author}'
-        LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | {head_commit.message} | by: {head_commit.author}')  # type: ignore
+        LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message}')  # type: ignore
     else:
         bios_repo.git.checkout(git_ref)
         head_commit = bios_repo.head.commit
@@ -402,6 +386,41 @@ def is_git_exec_present() -> bool:
         return False
 
 
+def is_git_object(repo_dir: Path, git_obj: str) -> bool:
+    """
+    Check if git_obj is valid Git reference.
+
+    :param repo_dir: directory with repository
+    :param git_obj: git reference to check
+    :return: True if git_obj is git reference, False otherwise
+    """
+    import gitdb
+    result = False
+    if is_git_repo(str(repo_dir)):
+        bios_repo = git.Repo(repo_dir)
+        bios_repo.git.checkout('master')
+        try:
+            bios_repo.commit(git_obj)
+            result = True
+        except gitdb.exc.BadName:
+            pass
+    return result
+
+
+def get_all_git_refs(repo_dir: Path) -> List[str]:
+    """
+    Get list of branches and tags for repo.
+
+    :param repo_dir: directory with repository
+    :return: list of git references as  strings
+    """
+    refs = []
+    if is_git_repo(str(repo_dir)):
+        for ref in chain(git.Repo(repo_dir).heads, git.Repo(repo_dir).tags):
+            refs.append(str(ref))
+    return refs
+
+
 def collect_debug_data() -> Path:
     """
     Collect add zipp all data for troubleshooting.
@@ -409,12 +428,11 @@ def collect_debug_data() -> Path:
     :return: Path object to zip file
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
-    cfg_ful_path = Path(__file__).resolve().with_name('config.yaml')
     localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else cfg_ful_path.parent
-    config_file = Path(user_appdata / 'config.yaml').resolve()
+    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+    config_file = Path(user_appdata / CONFIG_YAML).resolve()
 
-    conf_dict = load_cfg(config_file)
+    conf_dict = load_yaml(config_file)
     name = uname()
     pyver = (python_version(), python_implementation())
     pyexec = sys.executable
@@ -475,3 +493,109 @@ def run_pip_command(cmd: str) -> Tuple[int, str, str]:
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
+
+
+def load_json(path: Path) -> Dict[str, Any]:
+    """
+    Load json from file into dictionary.
+
+    :param path: full path
+    :return: dict
+    """
+    with open(path, encoding='utf-8') as json_file:
+        data = json_file.read()
+    return json.loads(data)
+
+
+def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
+    """
+    Collect full BIOS for plane with name.
+
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS directory
+    :return: dict
+    """
+    alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
+    local_json: Dict[str, Any] = {}
+    aircraft_aliases = load_json(path=alias_path)
+    for json_file in aircraft_aliases[name]:
+        local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
+
+    return local_json
+
+
+def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
+    """
+    Get dict with all not empty inputs for plane.
+
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS
+    :return: dict.
+    """
+    ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
+    json_data = get_full_bios_for_plane(name=name, bios_dir=bios_dir)
+
+    for section, controllers in json_data.items():
+        ctrl_key[section] = {}
+        for ctrl_name, ctrl_data in controllers.items():
+            ctrl_input = Control.model_validate(ctrl_data).input
+            if ctrl_input:
+                ctrl_key[section][ctrl_name] = ctrl_input
+        if not len(ctrl_key[section]):
+            del ctrl_key[section]
+    return ctrl_key
+
+
+def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+    """
+    Get list of all controllers from dict with sections and inputs.
+
+    :param inputs: dict with ControlKeyData
+    :return: list of string
+    """
+    result_list = []
+    for section, controllers in inputs.items():
+        result_list.append(f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}')
+        for ctrl_name in controllers:
+            result_list.append(ctrl_name)
+    return result_list
+
+
+def get_planes_list(bios_dir: Path) -> List[str]:
+    """
+    Get list of all DCS-BIOS supported planes with clickable cockpit.
+
+    :param bios_dir: path to DCS-BIOS
+    :return: list of all supported planes
+    """
+    aircraft_aliases = get_plane_aliases(bios_dir=bios_dir, name=None)
+    return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
+
+
+def get_plane_aliases(bios_dir: Path, name: Optional[str] = None) -> Dict[str, List[str]]:
+    """
+    Get list of all yaml files for plane with name.
+
+    :param name: BIOS plane name
+    :param bios_dir: path to DCS-BIOS
+    :return: list of all yaml files for plane definition
+    """
+    alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
+    aircraft_aliases = load_json(path=alias_path)
+    if name:
+        aircraft_aliases = {name: aircraft_aliases[name]}
+    return aircraft_aliases
+
+
+if __name__ == '__main__':
+    bios_local_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
+    plane_json = get_full_bios_for_plane('F-16C_50', bios_local_dir)
+    DcsBios.model_validate(plane_json)
+    print('*' * 100)
+    pprint(plane_json, width=500)
+    ctrl_inputs = get_inputs_for_plane('F-16C_50', bios_local_dir)
+    print('*' * 100)
+    pprint(ctrl_inputs, width=150)
+    in_list = get_list_of_ctrls(ctrl_inputs)
+    print('*' * 100)
+    print(in_list)

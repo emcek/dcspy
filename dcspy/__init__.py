@@ -5,12 +5,13 @@ from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
-from typing import Sequence, Tuple, Union
+from tempfile import gettempdir
+from typing import NamedTuple, Sequence, Tuple, Union
 
 from PIL import ImageFont
 
 from dcspy.log import config_logger
-from dcspy.utils import get_default_yaml, load_cfg, set_defaults
+from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, set_defaults
 
 try:
     from typing import NotRequired
@@ -20,7 +21,6 @@ try:
     from typing import TypedDict
 except ImportError:
     from typing_extensions import TypedDict
-
 
 SUPPORTED_CRAFTS = {
     'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
@@ -41,6 +41,9 @@ SEND_ADDR = ('127.0.0.1', 7778)
 RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 LOCAL_APPDATA = True
+DCSPY_REPO_NAME = 'emcek/dcspy'
+DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
+__version__ = '2.4.0'
 
 # LCD types
 TYPE_MONO = 1
@@ -54,12 +57,15 @@ MONO_HEIGHT = 43
 COLOR_WIDTH = 320
 COLOR_HEIGHT = 240
 
-
 # LED constants
 LOGI_LED_DURATION_INFINITE = 0
 LOGI_DEVICETYPE_MONOCHROME = 1
 LOGI_DEVICETYPE_RGB = 2
 LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
+
+# G Key
+LOGITECH_MAX_GKEYS = 30
+LOGITECH_MAX_M_STATES = 4
 
 
 class LcdType(Enum):
@@ -84,6 +90,44 @@ class LcdButton(Enum):
     MENU = 0x4000
 
 
+@dataclass
+class Gkey:
+    """Logitech G-Key."""
+    key: int
+    mode: int
+
+    def __str__(self):
+        """Return with format G<i>/M<j>."""
+        return f'G{self.key}/M{self.mode}'
+
+    def __bool__(self):
+        """Return False when any of value is zero."""
+        return all([self.key, self.mode])
+
+    def __hash__(self):
+        """Hash will be the same for any two Gkey instances with the same key and mode values."""
+        return hash((self.key, self.mode))
+
+    def to_dict(self):
+        """
+        Convert Gkey into dict.
+
+        :return: ex. {'g_key': 2, 'mode': 1}
+        """
+        return {'g_key': self.key, 'mode': self.mode}
+
+
+def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
+    """
+    Generate sequence of G-Keys.
+
+    :param key: number of keys
+    :param mode: number of modes
+    :return:
+    """
+    return tuple([Gkey(k, m) for k in range(1, key + 1) for m in range(1, mode + 1)])
+
+
 class LcdMode(Enum):
     """LCD Mode."""
     BLACK_WHITE = '1'
@@ -96,7 +140,6 @@ class LcdInfo:
     width: int
     height: int
     type: LcdType
-    buttons: Sequence[LcdButton]
     foreground: Union[int, Tuple[int, int, int, int]]
     background: Union[int, Tuple[int, int, int, int]]
     mode: LcdMode
@@ -106,24 +149,21 @@ class LcdInfo:
 
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
-config = set_defaults(load_cfg(filename=default_yaml), filename=default_yaml)
+config = set_defaults(load_yaml(full_path=default_yaml), filename=default_yaml)
 LcdMono = LcdInfo(width=MONO_WIDTH, height=MONO_HEIGHT, type=LcdType.MONO, foreground=255,
-                  buttons=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
                   background=0, mode=LcdMode.BLACK_WHITE, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_mono_s'])),
                   font_l=ImageFont.truetype(str(config['font_name']), int(config['font_mono_l'])),
                   font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_mono_xs'])))
 LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
-                   buttons=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU),
                    background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR, font_s=ImageFont.truetype(str(config['font_name']), int(config['font_color_s'])),
                    font_l=ImageFont.truetype(str(config['font_name']), int(config['font_color_l'])),
                    font_xs=ImageFont.truetype(str(config['font_name']), int(config['font_color_xs'])))
-DED_FONT = ImageFont.truetype(str(Path(__file__).resolve().with_name('falconded.ttf')), 25)
 LCD_TYPES = {
-    'G19': {'type': 'KeyboardColor', 'icon': 'G19.png'},
-    'G510': {'type': 'KeyboardMono', 'icon': 'G510.png'},
-    'G15 v1': {'type': 'KeyboardMono', 'icon': 'G15v1.png'},
-    'G15 v2': {'type': 'KeyboardMono', 'icon': 'G15v2.png'},
-    'G13': {'type': 'KeyboardMono', 'icon': 'G13.png'},
+    'G19': {'klass': 'G19', 'icon': 'G19.png'},
+    'G510': {'klass': 'G510', 'icon': 'G510.png'},
+    'G15 v1': {'klass': 'G15v1', 'icon': 'G15v1.png'},
+    'G15 v2': {'klass': 'G15v2', 'icon': 'G15v2.png'},
+    'G13': {'klass': 'G13', 'icon': 'G13.png'},
 }
 LOG = getLogger(__name__)
 config_logger(LOG, config['verbose'])
@@ -132,7 +172,10 @@ LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'Python exec: {executable}')
 LOG.debug(f'{uname()}')
-LOG.info(f'Configuration: {config} from: {default_yaml}')
+LOG.debug(f'Configuration: {config} from: {default_yaml}')
+LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
+dcs_type, dcs_ver = check_dcs_ver(Path(str(config['dcs'])))
+LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
 
 class IntBuffArgs(TypedDict):
@@ -151,3 +194,26 @@ class BiosValue(TypedDict):
     args: Union[StrBuffArgs, IntBuffArgs]
     value: Union[int, str]
     max_value: NotRequired[int]
+
+
+class MsgBoxTypes(Enum):
+    INFO = 'information'
+    QUESTION = 'question'
+    WARNING = 'warning'
+    CRITICAL = 'critical'
+    ABOUT = 'about'
+    ABOUT_QT = 'aboutQt'
+
+
+class SystemData(NamedTuple):
+    """Tuple to store system related information."""
+    system: str
+    release: str
+    ver: str
+    proc: str
+    dcs_type: str
+    dcs_ver: str
+    dcspy_ver: str
+    bios_ver: str
+    dcs_bios_ver: str
+    git_ver: str

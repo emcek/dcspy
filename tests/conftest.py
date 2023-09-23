@@ -64,43 +64,64 @@ def protocol_parser():
 @fixture()
 def keyboard_base(protocol_parser):
     """
-    Return instance of LogitechKeyboard.
+    Return instance of KeyboardManager.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: LogitechKeyboard
+    :return: KeyboardManager
     """
-    from dcspy.logitech import LogitechKeyboard
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return LogitechKeyboard(protocol_parser)
+    from dcspy.logitech import KeyboardManager
+    from dcspy.sdk import key_sdk, lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return KeyboardManager(protocol_parser)
 
 
 @fixture()
 def keyboard_mono(protocol_parser):
     """
-    Return instance of KeyboardMono.
+    Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: KeyboardMono
+    :return: KeyboardManager
     """
-    from dcspy.logitech import KeyboardMono
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardMono(protocol_parser)
+    from dcspy import LcdButton, LcdMono, generate_gkey
+    from dcspy.logitech import KeyboardManager
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Mono(KeyboardManager):
+        def __init__(self, parser):
+            super().__init__(parser, lcd_type=LcdMono)
+            self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+            self.gkey = generate_gkey(key=3, mode=1)
+            self.vert_space = 10
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Mono(protocol_parser)
 
 
 @fixture()
 def keyboard_color(protocol_parser):
     """
-    Return instance of KeyboardColor.
+    Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: KeyboardColor
+    :return: KeyboardManager
     """
-    from dcspy.logitech import KeyboardColor
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardColor(protocol_parser)
+    from dcspy import LcdButton, LcdColor, generate_gkey
+    from dcspy.logitech import KeyboardManager
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Color(KeyboardManager):
+        def __init__(self, parser) -> None:
+            super().__init__(parser, lcd_type=LcdColor)
+            self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
+            self.gkey = generate_gkey(key=3, mode=1)
+            self.vert_space = 40
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Color(protocol_parser)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
@@ -110,6 +131,36 @@ def sock():
     return MagicMock()
 
 
+@fixture()
+def default_config():
+    """Get default configuration dict."""
+    from os import environ
+    return {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+            'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta', 'keyboard': 'G13', 'save_lcd': False, 'show_gui': True, 'autostart': False,
+            'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': 'consola.ttf', 'font_mono_s': 11, 'font_mono_xs': 9, 'font_mono_l': 16,
+            'font_color_s': 22, 'font_color_xs': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': False, 'git_bios_ref': 'master',
+            'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20, 'current_plane': 'A-10A'}
+
+
+@fixture()
+def switch_dcs_bios_path_in_config(resources):
+    """
+    Switch path to config yaml file during testing.
+
+    :param resources: path to tests/resources directory
+    """
+    from dcspy import utils
+
+    org = utils.load_yaml(resources / 'c.yml')
+    dcs_bios = org['dcsbios']
+    org['dcsbios'] = str(resources / 'dcs_bios')
+    utils.save_yaml(data=org, full_path=resources / 'c.yml')
+    yield
+    org['dcsbios'] = dcs_bios
+    utils.save_yaml(data=org, full_path=resources / 'c.yml')
+
+
+# <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
 @fixture()
 def autoupdate1_cfg():
     """Mock for correct autoupdate_cfg."""
@@ -171,6 +222,7 @@ def autoupdate3_cfg():
 """
 
 
+# <=><=><=><=><=> airplane bios data <=><=><=><=><=>
 @fixture()
 def apache_pre_mode_bios_data():
     """Bios values for AH-64D Apache PRE mode."""

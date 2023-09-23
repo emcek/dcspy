@@ -9,12 +9,10 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12.0-rc.2']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
         exclude:
-          - os: ubuntu-latest
-            python-version: '3.11'
           - os: windows-latest
-            python-version: '3.12.0-rc.2'
+            python-version: '3.11'
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
@@ -31,7 +29,7 @@ jobs:
           curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
           sudo mkdir -p /usr/share/fonts/truetype
           sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f -v
+          fc-cache -f
 
       - name: "Install dependencies"
         run: |
@@ -39,6 +37,8 @@ jobs:
           pip install -Ur requirements_test.txt
 
       - name: "Test with pytest"
+        env:
+          PYSIDE_DESIGNER_PLUGINS: .
         run: |
           python -m pytest -q -m "not dcsbios"
 

@@ -10,8 +10,7 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, LcdButton, LcdInfo,
-                   LcdType, config)
+from dcspy import SUPPORTED_CRAFTS, BiosValue, Gkey, LcdButton, LcdInfo, LcdType, config
 from dcspy.sdk import lcd_sdk
 
 try:
@@ -38,18 +37,19 @@ class Aircraft:
         """
         self.lcd = lcd_type
         self.bios_data: Dict[str, BiosValue] = {}
-        self.cycle_buttons: Dict[LcdButton, CycleButton] = {}
+        self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
-        self.button_actions: Dict[LcdButton, str] = {}
+        self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
 
-    def button_request(self, button: LcdButton) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Prepare aircraft specific DCS-BIOS request for button pressed.
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        Or any G-Key 1 to 29
 
-        :param button: LcdButton Enum
+        :param button: LcdButton or Gkey
         :return: ready to send DCS-BIOS request
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
@@ -101,7 +101,7 @@ class Aircraft:
         """Prepare image for Aircraft for Color LCD."""
         raise NotImplementedError
 
-    def _get_next_value_for_button(self, button: LcdButton) -> int:
+    def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
         """
         Get next int value (cycle fore and back) for button name.
 
@@ -117,7 +117,7 @@ class Aircraft:
             self.cycle_buttons[button]['iter'] = cycle(chain(seed))
         return next(self.cycle_buttons[button]['iter'])
 
-    def _get_cycle_request(self, button: LcdButton) -> str:
+    def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Get request for cycle button.
 
@@ -129,11 +129,6 @@ class Aircraft:
         return f'{button_bios_name} {settings}\n'
 
     def __repr__(self) -> str:
-        """
-        Show all details of Aircraft.
-
-        :return: string
-        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
@@ -182,6 +177,10 @@ class FA18Chornet(Aircraft):
             LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
             LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
             LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
+            Gkey(1, 1): 'UFC_COMM1_CHANNEL_SELECT DEC\n',
+            Gkey(8, 1): 'UFC_COMM1_CHANNEL_SELECT INC\n',
+            Gkey(2, 1): 'UFC_COMM2_CHANNEL_SELECT DEC\n',
+            Gkey(9, 1): 'UFC_COMM2_CHANNEL_SELECT INC\n',
         }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
@@ -248,7 +247,7 @@ class F16C50(Aircraft):
         self.font = self.lcd.font_s
         self.ded_font = config.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
-            self.font = DED_FONT
+            self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
         self.bios_data: Dict[str, BiosValue] = {
             'DED_LINE_1': {'klass': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
             'DED_LINE_2': {'klass': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},
@@ -783,12 +782,13 @@ class AH64DBLKII(Aircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: LcdButton) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        Or any G-Key 1 to 29
 
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request

@@ -10,21 +10,14 @@ on:
 
 jobs:
   coverage:
-    name: ubuntu-latest py3.11
-    runs-on: ubuntu-latest
+    name: windows-latest py3.11
+    runs-on: windows-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
-
-      - name: "Install MS Fonts"
-        run: |
-          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
-          sudo mkdir -p /usr/share/fonts/truetype
-          sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f
 
       - name: "Test with pytest"
         run: |

@@ -1,12 +1,16 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-resources = ['dcspy.ico', 'dcspy_white.ico', 'config.yaml', 'falconded.ttf', 'dcspy.png', 'splash.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'license.txt']
-logi_sdk = ['LogitechLCDLib.h', 'LogitechLEDLib.h']
-files = [(f'dcspy/{res}', 'dcspy') for res in resources]
+img = ['dcspy.ico', 'dcspy_white.ico', 'dcspy.png', 'splash.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'G13device.png', 'G19device.png', 'G510device.png', 'G15v1device.png', 'G15v2device.png']
+resource = ['falconded.ttf', 'license.txt']
+logi_sdk = ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']
+
+files = [(f'dcspy/{res}', 'dcspy') for res in  ['config.yaml']]
+images = [(f'dcspy/img/{res}', 'dcspy/img') for res in img]
+resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in resource]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in logi_sdk]
 gui_packages = collect_data_files('customtkinter') + collect_data_files('CTkMessagebox')
-__version__ = '2.3.2'
+__version__ = '2.4.0'
 block_cipher = None
 
 
@@ -14,7 +18,7 @@ a = Analysis(
     ['dcs_py.py'],
     pathex=[],
     binaries=[],
-    datas=files + headers + gui_packages,
+    datas=files + images + resources + headers + gui_packages,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -27,7 +31,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'dcspy/splash.png',
+    'dcspy/img/splash.png',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,
@@ -59,5 +63,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     version='file_version_info.txt',
-    icon=['dcspy/dcspy.ico'],
+    icon=['dcspy/img/dcspy.ico'],
 )

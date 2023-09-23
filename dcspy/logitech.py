@@ -4,19 +4,19 @@ from logging import getLogger
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List
+from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import SEND_ADDR, SUPPORTED_CRAFTS, LcdButton, LcdColor, LcdMono
+from dcspy import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, LcdButton, LcdColor, LcdMono, generate_gkey
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.sdk import lcd_sdk
+from dcspy.sdk import key_sdk, lcd_sdk
 
 LOG = getLogger(__name__)
 
 
-class LogitechKeyboard:
+class KeyboardManager:
     """General keyboard with LCD from Logitech."""
     def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
@@ -41,10 +41,14 @@ class LogitechKeyboard:
         self.parser = parser
         self.plane_name = ''
         self.plane_detected = False
-        self.already_pressed = False
+        self.lcdbutton_pressed = False
+        self.gkey_pressed = False
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
+        self.gkey: Sequence[Gkey] = ()
+        self.buttons: Sequence[LcdButton] = ()
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
+        key_sdk.logi_gkey_init()
         self.plane = Aircraft(self.lcd)
         self.vert_space = 0
 
@@ -117,14 +121,31 @@ class LogitechKeyboard:
 
         :return: LcdButton enum of pressed button
         """
-        for btn in self.lcd.buttons:
+        for btn in self.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
-                if not self.already_pressed:
-                    self.already_pressed = True
+                if not self.lcdbutton_pressed:
+                    self.lcdbutton_pressed = True
                     return LcdButton(btn)
                 return LcdButton.NONE
-        self.already_pressed = False
+        self.lcdbutton_pressed = False
         return LcdButton.NONE
+
+    def check_gkey(self) -> Gkey:
+        """
+        Check if G-Key was pressed and return it`s enum.
+
+        :return: Gkey enum of pressed button
+        """
+        for key in self.gkey:
+            if key_sdk.logi_gkey_is_keyboard_gkey_pressed(g_key=key.key, mode=key.mode):
+                gkey = key_sdk.logi_gkey_is_keyboard_gkey_string(g_key=key.key, mode=key.mode).replace('/', '_')
+                LOG.debug(f'Button {gkey} is pressed')
+                if not self.gkey_pressed:
+                    self.gkey_pressed = True
+                    return key
+                return Gkey(0, 0)
+        self.gkey_pressed = False
+        return Gkey(0, 0)
 
     def button_handle(self, sock: socket) -> None:
         """
@@ -132,14 +153,26 @@ class LogitechKeyboard:
 
         * detect if button was pressed
         * fetch DCS-BIOS request from current plane
-        * sent action to DCS-BIOS via. network socket
+        * sent action to DCS-BIOS via network socket
         :param sock: network socket
         """
         button = self.check_buttons()
+        gkey = self.check_gkey()
         if button.value:
-            for request in self.plane.button_request(button).split('|'):
-                sock.sendto(bytes(request, 'utf-8'), SEND_ADDR)
-                sleep(0.1)
+            self._send_request(button, sock)
+        if gkey:
+            self._send_request(gkey, sock)
+
+    def _send_request(self, button: Union[LcdButton, Gkey], sock) -> None:
+        """
+        Sent action to DCS-BIOS via network socket.
+
+        :param button: LcdButton or Gkey
+        :param sock: network socket
+        """
+        for request in self.plane.button_request(button).split('|'):
+            sock.sendto(bytes(request, 'utf-8'), SEND_ADDR)
+            sleep(0.05)
 
     def clear(self, true_clear=False) -> None:
         """
@@ -165,36 +198,73 @@ class LogitechKeyboard:
         return img
 
     def __str__(self) -> str:
-        """
-        Show basic info of LCD.
-
-        :return: string
-        """
         return f'{type(self).__name__}: {self.lcd.width}x{self.lcd.height}'
 
     def __repr__(self) -> str:
-        """
-        Show all details of LCD.
-
-        :return: string
-        """
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
-class KeyboardMono(LogitechKeyboard):
+class G13(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: ProtocolParser) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
-        Support for: G510, G13, G15 (v1 and v2)
+        Support for: G13
         :param parser: DCS-BIOS parser instance
         """
         super().__init__(parser, lcd_type=LcdMono)
+        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+        self.gkey = generate_gkey(key=29, mode=3)
         self.vert_space = 10
 
 
-class KeyboardColor(LogitechKeyboard):
+class G510(KeyboardManager):
+    """Logitech`s keyboard with mono LCD."""
+    def __init__(self, parser: ProtocolParser) -> None:
+        """
+        Logitech`s keyboard with mono LCD.
+
+        Support for: G510
+        :param parser: DCS-BIOS parser instance
+        """
+        super().__init__(parser, lcd_type=LcdMono)
+        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+        self.gkey = generate_gkey(key=18, mode=13)
+        self.vert_space = 10
+
+
+class G15v1(KeyboardManager):
+    """Logitech`s keyboard with mono LCD."""
+    def __init__(self, parser: ProtocolParser) -> None:
+        """
+        Logitech`s keyboard with mono LCD.
+
+        Support for: G15 v1
+        :param parser: DCS-BIOS parser instance
+        """
+        super().__init__(parser, lcd_type=LcdMono)
+        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+        self.gkey = generate_gkey(key=18, mode=3)
+        self.vert_space = 10
+
+
+class G15v2(KeyboardManager):
+    """Logitech`s keyboard with mono LCD."""
+    def __init__(self, parser: ProtocolParser) -> None:
+        """
+        Logitech`s keyboard with mono LCD.
+
+        Support for: G15 v2
+        :param parser: DCS-BIOS parser instance
+        """
+        super().__init__(parser, lcd_type=LcdMono)
+        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+        self.gkey = generate_gkey(key=6, mode=3)
+        self.vert_space = 10
+
+
+class G19(KeyboardManager):
     """Logitech`s keyboard with color LCD."""
     def __init__(self, parser: ProtocolParser) -> None:
         """
@@ -204,4 +274,6 @@ class KeyboardColor(LogitechKeyboard):
         :param parser: DCS-BIOS parser instance
         """
         super().__init__(parser, lcd_type=LcdColor)
+        self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
+        self.gkey = generate_gkey(key=12, mode=3)
         self.vert_space = 40

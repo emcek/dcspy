@@ -18,14 +18,19 @@ class DllSdk:
     """DLL SDK."""
     name: str
     header: str
+    dir: str
 
 
 with open(file=Path(__file__).resolve().with_name('LogitechLCDLib.h')) as lcd_header_file:
     lcd_header = lcd_header_file.read()
 with open(file=Path(__file__).resolve().with_name('LogitechLEDLib.h')) as led_header_file:
     led_header = led_header_file.read()
-LcdDll = DllSdk(name='LCD', header=lcd_header)
-LedDll = DllSdk(name='LED', header=led_header)
+with open(file=Path(__file__).resolve().with_name('LogitechGkeyLib.h')) as led_header_file:
+    key_header = led_header_file.read()
+
+LcdDll = DllSdk(name='LCD', dir='LCD', header=lcd_header)
+LedDll = DllSdk(name='LED', dir='LED', header=led_header)
+KeyDll = DllSdk(name='Gkey', dir='G-key', header=key_header)
 
 
 def load_dll(lib_type: DllSdk) -> Optional[Lib]:
@@ -41,7 +46,7 @@ def load_dll(lib_type: DllSdk) -> Optional[Lib]:
             prog_files = environ['PROGRAMW6432']
         except KeyError:
             prog_files = environ['PROGRAMFILES']
-        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.name}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll'
+        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.dir}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll'
         LOG.debug(f'Selected DLL: {dll_path}')
         ffi = FFI()
         ffi.cdef(lib_type.header)

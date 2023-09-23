@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtDcs</class>
+ <widget class="QMainWindow" name="QtDcs">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>690</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>500</width>
+    <height>650</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>DCSpy</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qtgui.qrc">
+    <normaloff>:/icons/img/dcspy.ico</normaloff>:/icons/img/dcspy.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTabWidget" name="tw_main">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_keyboards">
+         <attribute name="title">
+          <string>Keyboards</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="rb_g510">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G510</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G510.png</normaloff>:/icons/img/G510.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="rb_g19">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G19</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G19.png</normaloff>:/icons/img/G19.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="rb_g15v1">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G15 v1</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G15v1.png</normaloff>:/icons/img/G15v1.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="rb_g15v2">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G15 v2</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G15v2.png</normaloff>:/icons/img/G15v2.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="rb_g13">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G13</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G13.png</normaloff>:/icons/img/G13.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_general">
+         <attribute name="title">
+          <string>General</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="2" column="1" colspan="3">
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Fonts</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="cb_ded_font">
+               <property name="text">
+                <string>use special font for F-16 Viper DED (only G19)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="le_font_name">
+               <property name="text">
+                <string>consola.ttf</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Medium:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Small:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSlider" name="hs_medium_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Name:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Large:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSlider" name="hs_large_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSlider" name="hs_small_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="l_large">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="l_medium">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="l_small">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Debug</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_verbose">
+               <property name="toolTip">
+                <string>Logging more data (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Collect more logs</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="cb_lcd_screenshot">
+               <property name="toolTip">
+                <string>Make LCD screenshot everytime when updated (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Save LCD screenshot</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QPushButton" name="pb_collect_data">
+               <property name="text">
+                <string>Collect debug data</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="0" colspan="4">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>DCSpy</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pb_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+               <property name="text">
+                <string>DCS folder</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_autostart">
+               <property name="toolTip">
+                <string>Start DCSpy client when application starts</string>
+               </property>
+               <property name="text">
+                <string>Auto launch DCSpy client</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="cb_show_gui">
+               <property name="toolTip">
+                <string>If unchecked DCSpy stay open in system tray and client will be lauched</string>
+               </property>
+               <property name="text">
+                <string>Show GUI when started</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_check_ver">
+               <property name="toolTip">
+                <string>Auto check DCSpy version during startup</string>
+               </property>
+               <property name="text">
+                <string>Auto check DCSpy version</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pb_dcspy_check">
+               <property name="toolTip">
+                <string>Check updates for DCSpy</string>
+               </property>
+               <property name="text">
+                <string>Check for updates</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="0" rowspan="4" colspan="4">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_bios">
+         <attribute name="title">
+          <string>DCS-BIOS</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_9">
+          <item row="0" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>DCS-BIOS</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_bios_live">
+               <property name="toolTip">
+                <string>Regular release or live version (need git installed)</string>
+               </property>
+               <property name="text">
+                <string>Use live DCS-BIOS version:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QLineEdit" name="le_biosdir">
+               <property name="toolTip">
+                <string>Location of DCS-BIOS in Saved Games</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="le_bios_live">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string>Any valid Git reference: branch, tag, commit</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_autoupdate_bios">
+               <property name="toolTip">
+                <string>Auto check DCS-BIOS version during startup</string>
+               </property>
+               <property name="text">
+                <string>Auto check DCS-BIOS</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pb_biosdir">
+               <property name="toolTip">
+                <string>Location of DCS-BIOS in Saved Games</string>
+               </property>
+               <property name="text">
+                <string>DCS-BIOS folder</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QPushButton" name="pb_bios_check">
+               <property name="toolTip">
+                <string>Check updates for DCS-BIOS</string>
+               </property>
+               <property name="text">
+                <string>Check for updates</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_gkeys">
+         <attribute name="title">
+          <string>G-Keys</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Aircraft:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="combo_planes">
+            <property name="toolTip">
+             <string>Aircraft name: type to search</string>
+            </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QTableWidget" name="tw_gkeys"/>
+          </item>
+          <item row="4" column="0" colspan="3">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="pb_copy">
+              <property name="toolTip">
+               <string>Copy selected cell to whole row</string>
+              </property>
+              <property name="text">
+               <string>Copy cell to row</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pb_save">
+              <property name="toolTip">
+               <string>Save current plane configuration</string>
+              </property>
+              <property name="text">
+               <string>Save current plane</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="text">
+               <string>Number of results:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="sp_completer">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Show number of results</string>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>40</number>
+              </property>
+              <property name="value">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QProgressBar" name="progressbar">
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="textVisible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_start">
+          <property name="text">
+           <string>Start</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_stop">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_close">
+          <property name="text">
+           <string>Close</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>690</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="a_reset_defaults"/>
+    <addaction name="a_quit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="a_report_issue"/>
+    <addaction name="separator"/>
+    <addaction name="a_about_dcspy"/>
+    <addaction name="a_about_qt"/>
+    <addaction name="separator"/>
+    <addaction name="a_check_updates"/>
+    <addaction name="a_donate"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="a_show_toolbar"/>
+    <addaction name="a_show_layout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolbar">
+   <property name="windowTitle">
+    <string>DCSpy tools</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="a_check_updates"/>
+   <addaction name="a_quit"/>
+   <addaction name="separator"/>
+  </widget>
+  <widget class="QDockWidget" name="dw_gkeys">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>G-Keys layout</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="l_keyboard">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="a_report_issue">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/github-mark.svg</normaloff>:/icons/img/github-mark.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Report issue</string>
+   </property>
+  </action>
+  <action name="a_about_dcspy">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/dcspy.ico</normaloff>:/icons/img/dcspy.ico</iconset>
+   </property>
+   <property name="text">
+    <string>About DCSpy</string>
+   </property>
+  </action>
+  <action name="a_about_qt">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/qt.svg</normaloff>:/icons/img/qt.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+  </action>
+  <action name="a_check_updates">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/system-software-update.svg</normaloff>:/icons/img/system-software-update.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Check updates</string>
+   </property>
+  </action>
+  <action name="a_quit">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/backdoor-factory.svg</normaloff>:/icons/img/backdoor-factory.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="a_show_toolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show toolbar</string>
+   </property>
+  </action>
+  <action name="a_reset_defaults">
+   <property name="text">
+    <string>Reset to defaults</string>
+   </property>
+  </action>
+  <action name="a_donate">
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
+  <action name="a_show_layout">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show layout</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../qtgui.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>pb_close</sender>
+   <signal>clicked()</signal>
+   <receiver>QtDcs</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>592</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

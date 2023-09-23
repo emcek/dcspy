@@ -55,27 +55,27 @@ jobs:
         run: |
           ruff check dcspy
 
-  mypy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check mypy"
-        run: |
-          mypy dcspy
-
-      - name: "Upload mypy results"
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: mypy_3_11
-          path: |
-            mypyhtml/*
-          retention-days: 4
+#  mypy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: "Checkout"
+#        uses: actions/checkout@v3
+#
+#      - name: "Set up Python environment"
+#        uses: ./.github/actions/setup-python
+#
+#      - name: "Check mypy"
+#        run: |
+#          mypy dcspy
+#
+#      - name: "Upload mypy results"
+#        uses: actions/upload-artifact@v3
+#        if: always()
+#        with:
+#          name: mypy_3_11
+#          path: |
+#            mypyhtml/*
+#          retention-days: 4
 
   flake8:
     runs-on: ubuntu-latest

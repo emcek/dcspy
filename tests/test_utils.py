@@ -2,6 +2,7 @@ from os import makedirs
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
+import pytest
 from packaging import version
 from pytest import mark
 
@@ -28,13 +29,9 @@ from dcspy import utils
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
-        type(response_get.return_value).json = MagicMock(
-            return_value={
-                'tag_name': online_tag, 'prerelease': True,
-                'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
-                'published_at': '2021-08-09T16:41:51Z',
-            },
-        )
+        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
+                                                                       'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
+                                                                       'published_at': '2021-08-09T16:41:51Z'})
         assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz') == result
 
 
@@ -51,21 +48,14 @@ def test_check_ver_exception():
 
 @mark.parametrize('online_tag, result', [
     ('1.1.1', 'v1.1.1 (latest)'),
-    ('3.2.1', 'v1.1.1 (update!)'),
-], ids=[
-    'No update',
-    'New version',
-])
+    ('3.2.1', 'v1.1.1 (update!)')
+], ids=['No update', 'New version'])
 def test_get_version_string_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
-        type(response_get.return_value).json = MagicMock(
-            return_value={
-                'tag_name': online_tag, 'prerelease': True,
-                'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
-                'published_at': '2021-08-09T16:41:51Z',
-            },
-        )
+        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
+                                                                       'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
+                                                                       'published_at': '2021-08-09T16:41:51Z'})
         assert utils.get_version_string(repo='fake1/package1', current_ver='1.1.1', check=True) == result
 
 
@@ -96,8 +86,8 @@ def test_dummy_save_load_set_defaults(tmpdir):
     from os import environ
     test_tmp_yaml = Path(tmpdir) / 'c.yml'
 
-    utils.save_cfg(cfg_dict={'font_mono_xs': 9}, filename=test_tmp_yaml)
-    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
+    utils.save_yaml(data={'font_mono_xs': 9}, full_path=test_tmp_yaml)
+    d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert d_cfg == {'font_mono_xs': 9}
     d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
     assert d_cfg == {
@@ -105,6 +95,8 @@ def test_dummy_save_load_set_defaults(tmpdir):
         'save_lcd': False,
         'show_gui': True,
         'autostart': False,
+        'completer_items': 20,
+        'current_plane': 'A-10A',
         'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
         'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
         'verbose': False,
@@ -121,11 +113,11 @@ def test_dummy_save_load_set_defaults(tmpdir):
         'git_bios': False,
         'git_bios_ref': 'master',
         'theme_mode': 'system',
-        'theme_color': 'blue',
+        'theme_color': 'dark-blue',
     }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
-    d_cfg = utils.load_cfg(filename=test_tmp_yaml)
+    d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
     assert len(d_cfg) == 0
 
 
@@ -178,6 +170,7 @@ def test_check_bios_ver_raise_exception(tmpdir):
 def test_is_git_repo(tmpdir):
     from git import Repo
     assert utils.is_git_repo(tmpdir) is False
+    assert utils.is_git_repo(tmpdir / 'new') is False
     Repo.init(tmpdir)
     assert utils.is_git_repo(tmpdir) is True
 
@@ -197,6 +190,18 @@ def test_check_github_repo(tmpdir):
     sha = utils.check_github_repo(git_ref='master', update=False, repo='emcek/common_sense', repo_dir=tmpdir)
     match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}', sha)
     assert match.group(1)
+
+
+def test_is_git_object(tmpdir):
+    utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='wrong') is False
+    assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
+
+
+def test_get_all_git_refs(tmpdir):
+    utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):
@@ -261,3 +266,48 @@ def test_run_pip_command_failed():
     assert rc == 1
     assert err != ''
     assert out == ''
+
+
+def test_get_full_bios_for_plane(resources):
+    from dcspy.models import DcsBios
+    json_data = utils.get_full_bios_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
+    assert isinstance(json_data, dict)
+    a10_model = DcsBios.model_validate(json_data)
+    assert a10_model
+
+
+def test_get_inputs_for_plane(resources):
+    from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData
+    bios = utils.get_inputs_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
+    for section, ctrls in bios.items():
+        for name, ctrl in ctrls.items():
+            assert isinstance(ctrl, ControlKeyData), f'Wrong type fpr {section} / {name}'
+
+    list_of_ctrls = utils.get_list_of_ctrls(inputs=bios)
+    assert CTRL_LIST_SEPARATOR
+    assert CTRL_LIST_SEPARATOR in list_of_ctrls[0], list_of_ctrls[0]
+
+
+def test_get_inputs_for_wrong_plane(resources):
+    with pytest.raises(KeyError):
+        _ = utils.get_inputs_for_plane(name='Wrong', bios_dir=resources / 'dcs_bios')
+
+
+def test_get_plane_aliases_all(resources):
+    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios')
+    assert s == {'A-10C': ['CommonData', 'A-10C'], 'F-16C_50': ['CommonData', 'F-16C_50']}
+
+
+def test_get_plane_aliases_one_plane(resources):
+    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', name='A-10C')
+    assert s == {'A-10C': ['CommonData', 'A-10C']}
+
+
+def test_get_plane_aliases_wrong_plane(resources):
+    with pytest.raises(KeyError):
+        _ = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', name='A-Wrong')
+
+
+def test_get_planes_list(resources):
+    plane_list = utils.get_planes_list(bios_dir=resources / 'dcs_bios')
+    assert plane_list == ['A-10C', 'F-16C_50'], plane_list
