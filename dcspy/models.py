@@ -204,26 +204,56 @@ class ControlKeyData:
 
     @property
     def input_len(self) -> int:
+        """
+        Get length of input dictionary.
+
+        :return: int
+        """
         return len(self.list_dict)
 
     @property
     def one_input(self) -> bool:
+        """
+        Check if input has only one input dict.
+
+        :return: bool
+        """
         return bool(len(self.list_dict) == 1)
 
     @property
     def has_fixed_step(self) -> bool:
+        """
+        Check if input has fixed step input.
+
+        :return: bool
+        """
         return any([isinstance(d, FixedStep) for d in self.list_dict])
 
     @property
     def has_variable_step(self) -> bool:
+        """
+        Check if input has variable step input.
+
+        :return: bool
+        """
         return any([isinstance(d, VariableStep) for d in self.list_dict])
 
     @property
     def has_set_state(self) -> bool:
+        """
+        Check if input has set state input.
+
+        :return: bool
+        """
         return any([isinstance(d, SetState) for d in self.list_dict])
 
     @property
     def has_action(self) -> bool:
+        """
+        Check if input has action input.
+
+        :return: bool
+        """
         return any([isinstance(d, Action) for d in self.list_dict])
 
 
