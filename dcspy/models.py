@@ -196,8 +196,12 @@ class ControlKeyData:
         :param list_of_dicts:
         :return: ControlKeyData instance
         """
-        max_value = max(d.get('max_value', 1) for d in list_of_dicts)
-        suggested_step = max([d.get('suggested_step', 1) for d in list_of_dicts])
+        try:
+            max_value = max(d.get('max_value', 1) for d in list_of_dicts)
+            suggested_step = max([d.get('suggested_step', 1) for d in list_of_dicts])
+        except ValueError:
+            max_value = 0
+            suggested_step = 0
         instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
         instance.list_dict = list_of_dicts
         return instance
