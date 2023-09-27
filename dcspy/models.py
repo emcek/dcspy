@@ -196,8 +196,8 @@ class ControlKeyData:
         :param list_of_dicts:
         :return: ControlKeyData instance
         """
-        max_value = max(dictionary.get('max_value', 1) for dictionary in list_of_dicts)
-        suggested_step = max([dictionary.get('suggested_step', 1) for dictionary in list_of_dicts])
+        max_value = max(d.get('max_value', 1) for d in list_of_dicts)
+        suggested_step = max([d.get('suggested_step', 1) for d in list_of_dicts])
         instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
         instance.list_dict = list_of_dicts
         return instance
@@ -245,12 +245,6 @@ class Control(BaseModel):
 
         :return: ControlKeyData
         """
-        try:
-            max_value = max(d.get('max_value', 1) for d in self.inputs)
-            suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
-        except ValueError:
-            max_value = 0
-            suggested_step = 0
         return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs)
 
     @property
