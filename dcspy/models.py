@@ -185,6 +185,7 @@ class ControlKeyData:
 
 
 class Control(BaseModel):
+    api_variant: Optional[str] = None
     category: str
     control_type: str
     description: str
