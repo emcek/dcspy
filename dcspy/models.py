@@ -163,25 +163,68 @@ class BiosValue(RootModel):
 
 
 class ControlKeyData:
-    def __init__(self, description: str, max_value: int, suggested_step: int = 1) -> None:
+    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
         """
         Define type of input for cockpit controller.
 
+        :param name: name of the input
         :param description: Description
         :param max_value: max value
         :param suggested_step: 1 by default
         """
+        self.name = name
+        self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
-        self.description = description
+        self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action]] = []
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
+        return f'KeyControl({self.description}: {self.name}, max_value={self.max_value}, suggested_step={self.suggested_step})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
             return False
         return True
+
+    @classmethod
+    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action]]) -> 'ControlKeyData':
+        """
+        Construct object from list of dictionaries.
+
+        :param name: name of the input
+        :param description:
+        :param list_of_dicts:
+        :return: ControlKeyData instance
+        """
+        max_value = max(dictionary.get('max_value', 1) for dictionary in list_of_dicts)
+        suggested_step = max([dictionary.get('suggested_step', 1) for dictionary in list_of_dicts])
+        instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
+        instance.list_dict = list_of_dicts
+        return instance
+
+    @property
+    def input_len(self) -> int:
+        return len(self.list_dict)
+
+    @property
+    def one_input(self) -> bool:
+        return bool(len(self.list_dict) == 1)
+
+    @property
+    def has_fixed_step(self) -> bool:
+        return any([isinstance(d, FixedStep) for d in self.list_dict])
+
+    @property
+    def has_variable_step(self) -> bool:
+        return any([isinstance(d, VariableStep) for d in self.list_dict])
+
+    @property
+    def has_set_state(self) -> bool:
+        return any([isinstance(d, SetState) for d in self.list_dict])
+
+    @property
+    def has_action(self) -> bool:
+        return any([isinstance(d, Action) for d in self.list_dict])
 
 
 class Control(BaseModel):
@@ -208,7 +251,7 @@ class Control(BaseModel):
         except ValueError:
             max_value = 0
             suggested_step = 0
-        return ControlKeyData(description=self.description, max_value=max_value, suggested_step=suggested_step)
+        return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs)
 
     @property
     def output(self) -> Union[BiosValueInt, BiosValueStr]:
