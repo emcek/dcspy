@@ -311,3 +311,9 @@ def test_get_plane_aliases_wrong_plane(resources):
 def test_get_planes_list(resources):
     plane_list = utils.get_planes_list(bios_dir=resources / 'dcs_bios')
     assert plane_list == ['A-10C', 'F-16C_50'], plane_list
+
+
+def test_get_ctrl(resources):
+    c = utils.get_ctrl(ctrl='TACAN_MODE', bios_dir=resources / 'dcs_bios', name='A-10C')
+    assert c.output.max_value == 4
+    assert c.input.one_input is False

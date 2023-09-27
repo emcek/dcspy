@@ -587,6 +587,22 @@ def get_plane_aliases(bios_dir: Path, name: Optional[str] = None) -> Dict[str, L
     return aircraft_aliases
 
 
+def get_ctrl(ctrl: str, name: str, bios_dir: Path) -> Control:
+    """
+    Get Control object with name of plane.
+
+    :param ctrl: Control name
+    :param name: plane name
+    :param bios_dir: path to DCS-BIOS
+    :return: Control instance
+    """
+    json_data = get_full_bios_for_plane(name=name, bios_dir=bios_dir)
+    for section, controllers in json_data.items():
+        for ctrl_name, ctrl_data in controllers.items():
+            if ctrl_name == ctrl:
+                return Control.model_validate(ctrl_data)
+
+
 if __name__ == '__main__':
     bios_local_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
     plane_json = get_full_bios_for_plane('F-16C_50', bios_local_dir)
