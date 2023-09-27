@@ -293,10 +293,10 @@ class DcsPyQtGui(QMainWindow):
         :param plane_name: BIOS plane name
         :return:
         """
-        plane_aliases = get_plane_aliases(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+        plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
         if self.plane_aliases != plane_aliases[plane_name]:
             try:
-                self.ctrl_input = get_inputs_for_plane(name=plane_name, bios_dir=Path(self.le_biosdir.text()))
+                self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
                 self.plane_aliases = plane_aliases[plane_name]
                 LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
