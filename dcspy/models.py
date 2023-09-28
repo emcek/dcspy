@@ -8,18 +8,15 @@ CTRL_LIST_SEPARATOR = '--'
 class Input(BaseModel):
     description: str
 
-    def __getitem__(self, item):
-        return getattr(self, item)
-
-    def get(self, item, default=None):
+    def get(self, attribute: str, default=None) -> Optional[Any]:
         """
-        Access item and get default when is not available.
+        Access attribute and get default when is not available.
 
-        :param item:
+        :param attribute:
         :param default:
         :return:
         """
-        return getattr(self, item, default)
+        return self.model_dump().get(attribute, default)
 
 
 class FixedStep(Input):
@@ -168,8 +165,8 @@ class ControlKeyData:
         Define type of input for cockpit controller.
 
         :param name: name of the input
-        :param description: Description
-        :param max_value: max value
+        :param description: short description
+        :param max_value: max value (zero based)
         :param suggested_step: 1 by default
         """
         self.name = name
@@ -179,7 +176,7 @@ class ControlKeyData:
         self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action]] = []
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.description}: {self.name}, max_value={self.max_value}, suggested_step={self.suggested_step})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
@@ -192,13 +189,26 @@ class ControlKeyData:
         Construct object from list of dictionaries.
 
         :param name: name of the input
-        :param description:
+        :param description: short description
         :param list_of_dicts:
         :return: ControlKeyData instance
         """
+        _real_zero = False
+        _max_values = []
         try:
-            max_value = max(d.get('max_value', 1) for d in list_of_dicts)
-            suggested_step = max([d.get('suggested_step', 1) for d in list_of_dicts])
+            for d in list_of_dicts:
+                try:
+                    _max_values.append(d.max_value)
+                    if d.max_value == 0:
+                        _real_zero = True
+                        break
+                except AttributeError:
+                    _max_values.append(0)
+            max_value = max(_max_values)
+            if all([not _real_zero, not max_value]):
+                max_value = 1
+
+            suggested_step = max(d.get('suggested_step', 1) for d in list_of_dicts)
         except ValueError:
             max_value = 0
             suggested_step = 0
