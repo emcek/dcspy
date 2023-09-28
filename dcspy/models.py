@@ -193,21 +193,8 @@ class ControlKeyData:
         :param list_of_dicts:
         :return: ControlKeyData instance
         """
-        _real_zero = False
-        _max_values = []
         try:
-            for d in list_of_dicts:
-                try:
-                    _max_values.append(d.max_value)
-                    if d.max_value == 0:
-                        _real_zero = True
-                        break
-                except AttributeError:
-                    _max_values.append(0)
-            max_value = max(_max_values)
-            if all([not _real_zero, not max_value]):
-                max_value = 1
-
+            max_value = cls._get_max_value(list_of_dicts)
             suggested_step = max(d.get('suggested_step', 1) for d in list_of_dicts)
         except ValueError:
             max_value = 0
@@ -215,6 +202,29 @@ class ControlKeyData:
         instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
         instance.list_dict = list_of_dicts
         return instance
+
+    @staticmethod
+    def _get_max_value(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action]]) -> int:
+        """
+        Get max value from list of dictionaries.
+
+        :param list_of_dicts:
+        :return: max value
+        """
+        _real_zero = False
+        _max_values = []
+        for d in list_of_dicts:
+            try:
+                _max_values.append(d.max_value)
+                if d.max_value == 0:
+                    _real_zero = True
+                    break
+            except AttributeError:
+                _max_values.append(0)
+        max_value = max(_max_values)
+        if all([not _real_zero, not max_value]):
+            max_value = 1
+        return max_value
 
     @property
     def input_len(self) -> int:
