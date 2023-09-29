@@ -507,40 +507,40 @@ def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(data)
 
 
-def get_full_bios_for_plane(name: str, bios_dir: Path) -> Dict[str, Any]:
+def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Any]:
     """
     Collect full BIOS for plane with name.
 
-    :param name: BIOS plane name
+    :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS directory
     :return: dict
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     local_json: Dict[str, Any] = {}
     aircraft_aliases = load_json(path=alias_path)
-    for json_file in aircraft_aliases[name]:
+    for json_file in aircraft_aliases[plane]:
         local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
 
     return local_json
 
 
-def get_inputs_for_plane(name: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
+def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
     """
     Get dict with all not empty inputs for plane.
 
-    :param name: BIOS plane name
+    :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
     :return: dict.
     """
     ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
-    json_data = get_full_bios_for_plane(name=name, bios_dir=bios_dir)
+    json_data = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
 
     for section, controllers in json_data.items():
         ctrl_key[section] = {}
-        for ctrl_name, ctrl_data in controllers.items():
-            ctrl_input = Control.model_validate(ctrl_data).input
+        for ctrl, data in controllers.items():
+            ctrl_input = Control.model_validate(data).input
             if ctrl_input:
-                ctrl_key[section][ctrl_name] = ctrl_input
+                ctrl_key[section][ctrl] = ctrl_input
         if not len(ctrl_key[section]):
             del ctrl_key[section]
     return ctrl_key
@@ -568,23 +568,39 @@ def get_planes_list(bios_dir: Path) -> List[str]:
     :param bios_dir: path to DCS-BIOS
     :return: list of all supported planes
     """
-    aircraft_aliases = get_plane_aliases(bios_dir=bios_dir, name=None)
+    aircraft_aliases = get_plane_aliases(bios_dir=bios_dir, plane=None)
     return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
 
 
-def get_plane_aliases(bios_dir: Path, name: Optional[str] = None) -> Dict[str, List[str]]:
+def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, List[str]]:
     """
     Get list of all yaml files for plane with name.
 
-    :param name: BIOS plane name
+    :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
     :return: list of all yaml files for plane definition
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     aircraft_aliases = load_json(path=alias_path)
-    if name:
-        aircraft_aliases = {name: aircraft_aliases[name]}
+    if plane:
+        aircraft_aliases = {plane: aircraft_aliases[plane]}
     return aircraft_aliases
+
+
+def get_ctrl(ctrl_name: str, plane: str, bios_dir: Path) -> Control:
+    """
+    Get Control object with name of plane.
+
+    :param ctrl_name: Control name
+    :param plane: plane name
+    :param bios_dir: path to DCS-BIOS
+    :return: Control instance
+    """
+    json_data = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
+    for section, controllers in json_data.items():
+        for ctrl, data in controllers.items():
+            if ctrl == ctrl_name:
+                return Control.model_validate(data)
 
 
 if __name__ == '__main__':

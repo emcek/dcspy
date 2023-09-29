@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional, Union
 
 from pydantic import BaseModel, RootModel, field_validator
 
@@ -8,18 +8,15 @@ CTRL_LIST_SEPARATOR = '--'
 class Input(BaseModel):
     description: str
 
-    def __getitem__(self, item):
-        return getattr(self, item)
-
-    def get(self, item, default=None):
+    def get(self, attribute: str, default=None) -> Optional[Any]:
         """
-        Access item and get default when is not available.
+        Access attribute and get default when is not available.
 
-        :param item:
+        :param attribute:
         :param default:
         :return:
         """
-        return getattr(self, item, default)
+        return self.model_dump().get(attribute, default)
 
 
 class FixedStep(Input):
@@ -163,28 +160,170 @@ class BiosValue(RootModel):
 
 
 class ControlKeyData:
-    def __init__(self, description: str, max_value: int, suggested_step: int = 1) -> None:
+    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
         """
         Define type of input for cockpit controller.
 
-        :param description: Description
-        :param max_value: max value
+        :param name: name of the input
+        :param description: short description
+        :param max_value: max value (zero based)
         :param suggested_step: 1 by default
         """
+        self.name = name
+        self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
-        self.description = description
+        self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action]] = []
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.description}: max_value={self.max_value}, suggested_step={self.suggested_step})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
             return False
         return True
 
+    @classmethod
+    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action]]) -> 'ControlKeyData':
+        """
+        Construct object from list of dictionaries.
+
+        :param name: name of the input
+        :param description: short description
+        :param list_of_dicts:
+        :return: ControlKeyData instance
+        """
+        try:
+            max_value = cls._get_max_value(list_of_dicts)
+            suggested_step = max(d.get('suggested_step', 1) for d in list_of_dicts)
+        except ValueError:
+            max_value = 0
+            suggested_step = 0
+        instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
+        instance.list_dict = list_of_dicts
+        return instance
+
+    @staticmethod
+    def _get_max_value(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action]]) -> int:
+        """
+        Get max value from list of dictionaries.
+
+        :param list_of_dicts:
+        :return: max value
+        """
+        _real_zero = False
+        _max_values = []
+        for d in list_of_dicts:
+            try:
+                _max_values.append(d.max_value)
+                if d.max_value == 0:
+                    _real_zero = True
+                    break
+            except AttributeError:
+                _max_values.append(0)
+        max_value = max(_max_values)
+        if all([not _real_zero, not max_value]):
+            max_value = 1
+        return max_value
+
+    def request(self) -> Union[str, Dict[str, Union[str, Iterator]]]:
+        """
+        Generate button request for input.
+
+        :return: str or dict with iterator
+        """
+        if self.is_cycle:
+            return {'bios': self.name, 'iter': iter([0])}
+        elif self.one_input and self.has_fixed_step:
+            return f'{self.name} INC\n'   # todo: if 2 buttons/keys in one mode has the same name used 1st will be INC, 2nd DEC
+        elif self.has_set_state and self.has_action:
+            return f'{self.name} {self.max_value-self.suggested_step}\n|{self.name} {self.max_value}\n'  # 0 1
+        elif self.has_fixed_step and self.has_set_state and self.max_value == 0:
+            return f'{self.name} 0\n'
+
+    @property
+    def cycle_data(self):
+        """
+        Get cycle data. Used for cycle buttons.
+
+        :return: tuple with max value and suggested step
+        """
+        return self.max_value, self.suggested_step
+
+    @property
+    def is_cycle(self) -> bool:
+        """
+        Check if input is cycle button.
+
+        :return: bool if input is cycle button, False otherwise.
+        """
+        if self.has_set_state and self.max_value > 0:
+            return True
+        elif self.has_variable_step:
+            return True
+        elif self.has_fixed_step and self.has_action and self.input_len == 2:
+            return True
+        elif self.has_action and self.one_input:
+            return True
+        return False
+
+    @property
+    def input_len(self) -> int:
+        """
+        Get length of input dictionary.
+
+        :return: int
+        """
+        return len(self.list_dict)
+
+    @property
+    def one_input(self) -> bool:
+        """
+        Check if input has only one input dict.
+
+        :return: bool
+        """
+        return bool(len(self.list_dict) == 1)
+
+    @property
+    def has_fixed_step(self) -> bool:
+        """
+        Check if input has fixed step input.
+
+        :return: bool
+        """
+        return any([isinstance(d, FixedStep) for d in self.list_dict])
+
+    @property
+    def has_variable_step(self) -> bool:
+        """
+        Check if input has variable step input.
+
+        :return: bool
+        """
+        return any([isinstance(d, VariableStep) for d in self.list_dict])
+
+    @property
+    def has_set_state(self) -> bool:
+        """
+        Check if input has set state input.
+
+        :return: bool
+        """
+        return any([isinstance(d, SetState) for d in self.list_dict])
+
+    @property
+    def has_action(self) -> bool:
+        """
+        Check if input has action input.
+
+        :return: bool
+        """
+        return any([isinstance(d, Action) for d in self.list_dict])
+
 
 class Control(BaseModel):
+    api_variant: Optional[str] = None
     category: str
     control_type: str
     description: str
@@ -201,13 +340,7 @@ class Control(BaseModel):
 
         :return: ControlKeyData
         """
-        try:
-            max_value = max(d.get('max_value', 1) for d in self.inputs)
-            suggested_step = max([d.get('suggested_step', 1) for d in self.inputs])
-        except ValueError:
-            max_value = 0
-            suggested_step = 0
-        return ControlKeyData(description=self.description, max_value=max_value, suggested_step=suggested_step)
+        return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs)
 
     @property
     def output(self) -> Union[BiosValueInt, BiosValueStr]:

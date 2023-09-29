@@ -270,7 +270,7 @@ def test_run_pip_command_failed():
 
 def test_get_full_bios_for_plane(resources):
     from dcspy.models import DcsBios
-    json_data = utils.get_full_bios_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
+    json_data = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
     assert isinstance(json_data, dict)
     a10_model = DcsBios.model_validate(json_data)
     assert a10_model
@@ -278,7 +278,7 @@ def test_get_full_bios_for_plane(resources):
 
 def test_get_inputs_for_plane(resources):
     from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData
-    bios = utils.get_inputs_for_plane(name='A-10C', bios_dir=resources / 'dcs_bios')
+    bios = utils.get_inputs_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
     for section, ctrls in bios.items():
         for name, ctrl in ctrls.items():
             assert isinstance(ctrl, ControlKeyData), f'Wrong type fpr {section} / {name}'
@@ -290,7 +290,7 @@ def test_get_inputs_for_plane(resources):
 
 def test_get_inputs_for_wrong_plane(resources):
     with pytest.raises(KeyError):
-        _ = utils.get_inputs_for_plane(name='Wrong', bios_dir=resources / 'dcs_bios')
+        _ = utils.get_inputs_for_plane(plane='Wrong', bios_dir=resources / 'dcs_bios')
 
 
 def test_get_plane_aliases_all(resources):
@@ -299,15 +299,21 @@ def test_get_plane_aliases_all(resources):
 
 
 def test_get_plane_aliases_one_plane(resources):
-    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', name='A-10C')
+    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', plane='A-10C')
     assert s == {'A-10C': ['CommonData', 'A-10C']}
 
 
 def test_get_plane_aliases_wrong_plane(resources):
     with pytest.raises(KeyError):
-        _ = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', name='A-Wrong')
+        _ = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', plane='A-Wrong')
 
 
 def test_get_planes_list(resources):
     plane_list = utils.get_planes_list(bios_dir=resources / 'dcs_bios')
     assert plane_list == ['A-10C', 'F-16C_50'], plane_list
+
+
+def test_get_ctrl(resources):
+    c = utils.get_ctrl(ctrl_name='TACAN_MODE', bios_dir=resources / 'dcs_bios', plane='A-10C')
+    assert c.output.max_value == 4
+    assert c.input.one_input is False

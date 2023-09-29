@@ -111,8 +111,11 @@ class Aircraft:
             bios = self.cycle_buttons[button]['bios']
             curr_val = int(self.get_bios(bios))
             max_val = self.bios_data[bios]['max_value']
-            full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
-            seed = full_seed[curr_val + 1:2 * max_val + curr_val + 1]
+            step = 1
+            range_inc = list(range(0, max_val + step, step))
+            range_dec = list(range(max_val - step, 0, -step))
+            full_seed = range_inc + range_dec + range_inc
+            seed = full_seed[curr_val//step + 1:2 * (len(range_inc) - 1) + curr_val//step + 1]
             LOG.debug(f'{type(self).__name__} {bios} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
             self.cycle_buttons[button]['iter'] = cycle(chain(seed))
         return next(self.cycle_buttons[button]['iter'])
