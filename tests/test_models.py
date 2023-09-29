@@ -259,4 +259,4 @@ def test_get_input_request_for_cycle_button(control, results):
     assert ctrl.input.has_action is results[5]
     assert ctrl.input.request()['bios'] == results[6]['bios']
     assert isinstance(ctrl.input.request()['iter'], Iterable)
-    assert ctrl.input.cycle_data() == results[7]
+    assert ctrl.input.cycle_data == results[7]
