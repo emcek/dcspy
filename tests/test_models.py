@@ -264,7 +264,8 @@ def test_get_input_request_for_cycle_button(control, results):
 
 def get_next_value_for_button(button, curr_val, control):
     # todo: move to Aircraft
-    from itertools import cycle, chain
+    from itertools import chain, cycle
+
     from dcspy.models import Control
 
     ctrl = Control.model_validate(control)
