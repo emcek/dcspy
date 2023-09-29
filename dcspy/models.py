@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional, Union
 
 from pydantic import BaseModel, RootModel, field_validator
 
@@ -225,6 +225,47 @@ class ControlKeyData:
         if all([not _real_zero, not max_value]):
             max_value = 1
         return max_value
+
+    def request(self) -> Union[str, Dict[str, Union[str, Iterator]]]:
+        """
+        Generate button request for input.
+
+        :return: str or dict with iterator
+        """
+        if self.is_cycle:
+            return {'bios': self.name, 'iter': iter([0])}
+        elif self.one_input and self.has_fixed_step:
+            return f'{self.name} INC\n'   # todo: if 2 buttons/keys in one mode has the same name used 1st will be INC, 2nd DEC
+        elif self.has_set_state and self.has_action:
+            return f'{self.name} {self.max_value-self.suggested_step}\n|{self.name} {self.max_value}\n'  # 0 1
+        elif self.has_fixed_step and self.has_set_state and self.max_value == 0:
+            return f'{self.name} 0\n'
+
+    @property
+    def cycle_data(self):
+        """
+        Get cycle data. Used for cycle buttons.
+
+        :return: tuple with max value and suggested step
+        """
+        return self.max_value, self.suggested_step
+
+    @property
+    def is_cycle(self) -> bool:
+        """
+        Check if input is cycle button.
+
+        :return: bool if input is cycle button, False otherwise.
+        """
+        if self.has_set_state and self.max_value > 0:
+            return True
+        elif self.has_variable_step:
+            return True
+        elif self.has_fixed_step and self.has_action and self.input_len == 2:
+            return True
+        elif self.has_action and self.one_input:
+            return True
+        return False
 
     @property
     def input_len(self) -> int:
