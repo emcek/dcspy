@@ -1,6 +1,5 @@
 from pytest import mark
 
-
 AAP_PAGE = {
     'category': 'AAP',
     'control_type': 'selector',
@@ -168,54 +167,54 @@ CLOCK_ADJUST_PULL = {
     'physical_variant': 'limited_rotary'
 }
 ADI_PITCH_TRIM = {
-    "category": "ADI",
-    "control_type": "limited_dial",
-    "description": "ADI Pitch Trim",
-    "identifier": "ADI_PITCH_TRIM",
-    "inputs": [{
-        "description": "set the position of the dial",
-        "interface": "set_state",
-        "max_value": 65535
+    'category': 'ADI',
+    'control_type': 'limited_dial',
+    'description': 'ADI Pitch Trim',
+    'identifier': 'ADI_PITCH_TRIM',
+    'inputs': [{
+        'description': 'set the position of the dial',
+        'interface': 'set_state',
+        'max_value': 65535
     }, {
-        "description": "turn the dial left or right",
-        "interface": "variable_step",
-        "max_value": 65535,
-        "suggested_step": 3200
+        'description': 'turn the dial left or right',
+        'interface': 'variable_step',
+        'max_value': 65535,
+        'suggested_step': 3200
     }],
-    "outputs": [{
-        "address": 4446,
-        "address_identifier": "A_10C_ADI_PITCH_TRIM",
-        "address_only_identifier": "A_10C_ADI_PITCH_TRIM_ADDR",
-        "description": "position of the potentiometer",
-        "mask": 65535,
-        "max_value": 65535,
-        "shift_by": 0,
-        "suffix": "",
-        "type": "integer"
+    'outputs': [{
+        'address': 4446,
+        'address_identifier': 'A_10C_ADI_PITCH_TRIM',
+        'address_only_identifier': 'A_10C_ADI_PITCH_TRIM_ADDR',
+        'description': 'position of the potentiometer',
+        'mask': 65535,
+        'max_value': 65535,
+        'shift_by': 0,
+        'suffix': '',
+        'type': 'integer'
     }]
 }
 ARC210_CHN_KNB = {
-    "api_variant": "multiturn",
-    "category": "ARC-210",
-    "control_type": "analog_dial",
-    "description": "ARC-210 Channel Selector Knob",
-    "identifier": "ARC210_CHN_KNB",
-    "inputs": [{
-        "description": "turn the dial left or right",
-        "interface": "variable_step",
-        "max_value": 65535,
-        "suggested_step": 3200
+    'api_variant': 'multiturn',
+    'category': 'ARC-210',
+    'control_type': 'analog_dial',
+    'description': 'ARC-210 Channel Selector Knob',
+    'identifier': 'ARC210_CHN_KNB',
+    'inputs': [{
+        'description': 'turn the dial left or right',
+        'interface': 'variable_step',
+        'max_value': 65535,
+        'suggested_step': 3200
     }],
-    "outputs": [{
-        "address": 4990,
-        "address_identifier": "A_10C_ARC210_CHN_KNB",
-        "address_only_identifier": "A_10C_ARC210_CHN_KNB_ADDR",
-        "description": "the rotation of the knob in the cockpit (not the value that is controlled by this knob!)",
-        "mask": 65535,
-        "max_value": 65535,
-        "shift_by": 0,
-        "suffix": "_KNOB_POS",
-        "type": "integer"
+    'outputs': [{
+        'address': 4990,
+        'address_identifier': 'A_10C_ARC210_CHN_KNB',
+        'address_only_identifier': 'A_10C_ARC210_CHN_KNB_ADDR',
+        'description': 'the rotation of the knob in the cockpit (not the value that is controlled by this knob!)',
+        'mask': 65535,
+        'max_value': 65535,
+        'shift_by': 0,
+        'suffix': '_KNOB_POS',
+        'type': 'integer'
     }]
 }
 
@@ -248,6 +247,7 @@ def test_get_input_request_for_regular_button(control, results):
 ], ids=['AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
 def test_get_input_request_for_cycle_button(control, results):
     from collections.abc import Iterable
+
     from dcspy.models import Control
 
     ctrl = Control.model_validate(control)
