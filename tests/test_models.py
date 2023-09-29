@@ -260,3 +260,60 @@ def test_get_input_request_for_cycle_button(control, results):
     assert ctrl.input.request()['bios'] == results[6]['bios']
     assert isinstance(ctrl.input.request()['iter'], Iterable)
     assert ctrl.input.cycle_data == results[7]
+
+
+def get_next_value_for_button(button, curr_val, control):
+    # todo: move to Aircraft
+    from itertools import cycle, chain
+    from dcspy.models import Control
+
+    ctrl = Control.model_validate(control)
+    cycle_buttons = {button: ctrl.input.request()}
+    bios = ctrl.input.name
+    max_val = ctrl.input.max_value
+    step = ctrl.input.suggested_step
+    range_inc = list(range(0, max_val + step, step))
+    range_dec = list(range(max_val - step, 0, -step))
+    if range_inc[-1] != max_val:
+        del range_inc[-1]
+        range_inc.append(max_val)
+    full_seed = range_inc + range_dec + range_inc
+    if curr_val not in range_inc:
+        curr_val = min(range_inc, key=lambda x: abs(curr_val - x))
+    seed = full_seed[curr_val // step + 1:2 * (len(range_inc) - 1) + curr_val // step + 1]
+    print(f'{bios} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
+    cycle_buttons[button]['iter'] = cycle(chain(seed))
+    return next(cycle_buttons[button]['iter']), full_seed, seed, cycle_buttons
+
+
+@mark.parametrize('control, curr_val, results', [
+    (AAP_PAGE, 0, [1, [0, 1, 2, 3, 2, 1, 0, 1, 2, 3], [1, 2, 3, 2, 1, 0], 'AAP_PAGE']),
+    (AAP_PAGE, 2, [3, [0, 1, 2, 3, 2, 1, 0, 1, 2, 3], [3, 2, 1, 0, 1, 2], 'AAP_PAGE']),
+    (ARC210_CHN_KNB, 0, [
+        3200, [
+            0, 3200, 6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535,
+            62335, 59135, 55935, 52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0, 3200,
+            6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535
+        ], [
+            3200, 6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535,
+            62335, 59135, 55935, 52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0],
+        'ARC210_CHN_KNB']),
+    (ARC210_CHN_KNB, 9500, [
+        12800, [
+            0, 3200, 6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535,
+            62335, 59135, 55935, 52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0, 3200,
+            6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535
+        ], [
+            12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535, 62335, 59135, 55935,
+            52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0, 3200, 6400, 9600],
+        'ARC210_CHN_KNB']),
+], ids=['AAP_PAGE 0', 'AAP_PAGE 2', 'ARC210_CHN_KNB 0', 'ARC210_CHN_KNB 3'])
+def test_get_next_value_for_button(control, curr_val, results):
+    from collections.abc import Iterable
+
+    n, full, seed, cycle_btn = get_next_value_for_button('Button1', curr_val, control)
+    assert n == results[0]
+    assert full == results[1]
+    assert seed == results[2]
+    assert cycle_btn['Button1']['bios'] == results[3]
+    assert isinstance(cycle_btn['Button1']['iter'], Iterable)
