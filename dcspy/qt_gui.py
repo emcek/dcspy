@@ -71,7 +71,7 @@ class DcsPyQtGui(QMainWindow):
         if not cfg_dict:
             self.config = load_yaml(full_path=self.cfg_file)
         self.dw_gkeys.hide()
-        self.dw_gkeys.setFloating(True)
+        self.l_keyboard.hide()
         self._init_tray()
         self._init_combo_plane()
         self.apply_configuration(cfg=self.config)
@@ -1066,6 +1066,12 @@ class DcsPyQtGui(QMainWindow):
         self.rb_g15v1: QRadioButton = self.findChild(QRadioButton, 'rb_g15v1')
         self.rb_g15v2: QRadioButton = self.findChild(QRadioButton, 'rb_g15v2')
         self.rb_g510: QRadioButton = self.findChild(QRadioButton, 'rb_g510')
+        self.rb_toggle: QRadioButton = self.findChild(QRadioButton, 'rb_toggle')
+        self.rb_fixed_step_inc: QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_inc')
+        self.rb_fixed_step_dec: QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_dec')
+        self.rb_set_state: QRadioButton = self.findChild(QRadioButton, 'rb_set_state')
+        self.rb_variable_step_plus: QRadioButton = self.findChild(QRadioButton, 'rb_variable_step_plus')
+        self.rb_variable_step_minus: QRadioButton = self.findChild(QRadioButton, 'rb_variable_step_minus')
 
         self.hs_large_font: QSlider = self.findChild(QSlider, 'hs_large_font')
         self.hs_medium_font: QSlider = self.findChild(QSlider, 'hs_medium_font')
