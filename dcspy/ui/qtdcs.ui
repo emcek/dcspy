@@ -708,13 +708,13 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable</set>
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::NoDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
-    <string>G-Keys layout</string>
+    <string>G-Keys setup</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -722,10 +722,90 @@
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QLabel" name="l_keyboard">
-       <property name="text">
-        <string/>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Actions:</string>
        </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="rb_toggle">
+          <property name="text">
+           <string>Toggle</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fixed_step_inc">
+          <property name="text">
+           <string>Fixed step INC</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fixed_step_dec">
+          <property name="text">
+           <string>Fixed step DEC</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_set_state">
+          <property name="text">
+           <string>Set state</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_variable_step_plus">
+          <property name="text">
+           <string>Variable step +</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_variable_step_minus">
+          <property name="text">
+           <string>Variable step -</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Keyboard view:</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QCheckBox" name="ch_show_keyboard">
+          <property name="text">
+           <string>Show keyboard</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_keyboard">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
     </layout>
@@ -820,12 +900,28 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>592</x>
+     <x>533</x>
      <y>617</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
      <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ch_show_keyboard</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>l_keyboard</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>608</x>
+     <y>320</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>608</x>
+     <y>609</y>
     </hint>
    </hints>
   </connection>
