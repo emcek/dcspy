@@ -71,7 +71,8 @@ class DcsPyQtGui(QMainWindow):
         if not cfg_dict:
             self.config = load_yaml(full_path=self.cfg_file)
         self.dw_gkeys.hide()
-        self.l_keyboard.hide()
+        self.dw_keyboard.hide()
+        self.dw_keyboard.setFloating(True)
         self._init_tray()
         self._init_combo_plane()
         self.apply_configuration(cfg=self.config)
@@ -146,7 +147,8 @@ class DcsPyQtGui(QMainWindow):
         self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
-        self.a_show_layout.triggered.connect(self._show_dock)
+        self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
+        self.a_show_keyboard.triggered.connect(self._show_keyboard_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
         self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
@@ -1001,12 +1003,19 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.toolbar.hide()
 
-    def _show_dock(self) -> None:
-        """Toggle show and hide dock."""
-        if self.a_show_layout.isChecked():
+    def _show_gkeys_dock(self) -> None:
+        """Toggle show and hide G-Keys dock."""
+        if self.a_show_gkeys.isChecked():
             self.dw_gkeys.show()
         else:
             self.dw_gkeys.hide()
+
+    def _show_keyboard_dock(self) -> None:
+        """Toggle show and hide keyboard dock."""
+        if self.a_show_keyboard.isChecked():
+            self.dw_keyboard.show()
+        else:
+            self.dw_keyboard.hide()
 
     def _find_children(self) -> None:
         """Find all widgets of main window."""
@@ -1019,6 +1028,7 @@ class DcsPyQtGui(QMainWindow):
         self.sp_completer: QSpinBox = self.findChild(QSpinBox, 'sp_completer')
         self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')
         self.dw_gkeys: QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
+        self.dw_keyboard: QDockWidget = self.findChild(QDockWidget, 'dw_keyboard')
         self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')
 
         self.l_keyboard: QLabel = self.findChild(QLabel, 'l_keyboard')
@@ -1029,7 +1039,8 @@ class DcsPyQtGui(QMainWindow):
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
         self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
         self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
-        self.a_show_layout: QAction = self.findChild(QAction, 'a_show_layout')
+        self.a_show_gkeys: QAction = self.findChild(QAction, 'a_show_gkeys')
+        self.a_show_keyboard: QAction = self.findChild(QAction, 'a_show_keyboard')
         self.a_about_dcspy: QAction = self.findChild(QAction, 'a_about_dcspy')
         self.a_about_qt: QAction = self.findChild(QAction, 'a_about_qt')
         self.a_report_issue: QAction = self.findChild(QAction, 'a_report_issue')
