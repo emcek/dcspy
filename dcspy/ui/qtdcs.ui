@@ -679,7 +679,8 @@
      <string>View</string>
     </property>
     <addaction name="a_show_toolbar"/>
-    <addaction name="a_show_layout"/>
+    <addaction name="a_show_gkeys"/>
+    <addaction name="a_show_keyboard"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -772,40 +773,32 @@
        </layout>
       </widget>
      </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_keyboard">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Keyboard View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
-      <widget class="QGroupBox" name="groupBox_6">
-       <property name="title">
-        <string>Keyboard view:</string>
+      <widget class="QLabel" name="l_keyboard">
+       <property name="text">
+        <string/>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="QCheckBox" name="ch_show_keyboard">
-          <property name="text">
-           <string>Show keyboard</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="l_keyboard">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </item>
     </layout>
@@ -880,12 +873,20 @@
     <string>Donate</string>
    </property>
   </action>
-  <action name="a_show_layout">
+  <action name="a_show_gkeys">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show layout</string>
+    <string>Show G-Keys</string>
+   </property>
+  </action>
+  <action name="a_show_keyboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show keyboard</string>
    </property>
   </action>
  </widget>
@@ -906,22 +907,6 @@
     <hint type="destinationlabel">
      <x>419</x>
      <y>367</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ch_show_keyboard</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>l_keyboard</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>608</x>
-     <y>320</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>608</x>
-     <y>609</y>
     </hint>
    </hints>
   </connection>
