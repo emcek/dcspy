@@ -274,6 +274,7 @@ class DcsPyQtGui(QMainWindow):
                 combo.addItems(self.ctrl_list)
                 combo.setCompleter(completer)
                 combo.currentTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo))
+                combo.textActivated.connect(partial(self._cell_ctrl_text_activated))
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
                 val = plane_gkeys.get(f'G{row + 1}_M{col + 1}', '')
@@ -345,6 +346,54 @@ class DcsPyQtGui(QMainWindow):
             if element.startswith(CTRL_LIST_SEPARATOR):
                 return element.strip(f' {CTRL_LIST_SEPARATOR}')
         return ''
+
+    def _cell_ctrl_text_activated(self, text: str) -> None:
+        """
+        Check if control input exists in current plane control list.
+
+        Set details for current control input.
+
+        :param text: current text
+        """
+        self.l_category.setText('')
+        self.l_description.setText('')
+        self.l_identifier.setText('')
+        if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
+            section = self._find_section_name(ctrl_name=text)
+            ctrl_key = self.ctrl_input[section][text]
+            self.l_category.setText(section)
+            self.l_description.setText(ctrl_key.description)
+            self.l_identifier.setText(text)
+            self._enable_actions_for_ctrl_input(ctrl_key=ctrl_key)
+
+    def _enable_actions_for_ctrl_input(self, ctrl_key: ControlKeyData) -> None:
+        """
+        Enable actions for current control input.
+
+        :param ctrl_key: ControlKeyData instance
+        """
+        for widget in [self.rb_action, self.rb_fixed_step_inc, self.rb_fixed_step_dec, self.rb_set_state, self.rb_variable_step_plus, self.rb_variable_step_minus]:
+            widget.setEnabled(False)
+
+        if ctrl_key.has_action:
+            self.rb_action.setEnabled(True)
+        if ctrl_key.has_fixed_step:
+            self.rb_fixed_step_inc.setEnabled(True)
+            self.rb_fixed_step_dec.setEnabled(True)
+        if ctrl_key.has_set_state:
+            self.rb_set_state.setEnabled(True)
+        if ctrl_key.has_variable_step:
+            self.rb_variable_step_plus.setEnabled(True)
+            self.rb_variable_step_minus.setEnabled(True)
+
+        if ctrl_key.has_action:
+            self.rb_action.setChecked(True)
+        elif ctrl_key.has_fixed_step:
+            self.rb_fixed_step_inc.setChecked(True)
+        elif ctrl_key.has_set_state:
+            self.rb_set_state.setChecked(True)
+        elif ctrl_key.has_variable_step:
+            self.rb_variable_step_plus.setChecked(True)
 
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
@@ -1035,6 +1084,9 @@ class DcsPyQtGui(QMainWindow):
         self.l_large: QLabel = self.findChild(QLabel, 'l_large')
         self.l_medium: QLabel = self.findChild(QLabel, 'l_medium')
         self.l_small: QLabel = self.findChild(QLabel, 'l_small')
+        self.l_category: QLabel = self.findChild(QLabel, 'l_category')
+        self.l_description: QLabel = self.findChild(QLabel, 'l_description')
+        self.l_identifier: QLabel = self.findChild(QLabel, 'l_identifier')
 
         self.a_quit: QAction = self.findChild(QAction, 'a_quit')
         self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
@@ -1077,7 +1129,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_g15v1: QRadioButton = self.findChild(QRadioButton, 'rb_g15v1')
         self.rb_g15v2: QRadioButton = self.findChild(QRadioButton, 'rb_g15v2')
         self.rb_g510: QRadioButton = self.findChild(QRadioButton, 'rb_g510')
-        self.rb_toggle: QRadioButton = self.findChild(QRadioButton, 'rb_toggle')
+        self.rb_action: QRadioButton = self.findChild(QRadioButton, 'rb_action')
         self.rb_fixed_step_inc: QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_inc')
         self.rb_fixed_step_dec: QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_dec')
         self.rb_set_state: QRadioButton = self.findChild(QRadioButton, 'rb_set_state')
