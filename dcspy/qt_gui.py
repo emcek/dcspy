@@ -383,6 +383,8 @@ class DcsPyQtGui(QMainWindow):
         if ctrl_key.has_set_state:
             self.rb_set_state.setEnabled(True)
             self.rb_set_state.setChecked(True)
+        if ctrl_key.input_len == 2 and ctrl_key.has_variable_step and ctrl_key.has_set_state:
+            self.rb_variable_step_plus.setChecked(True)
         if ctrl_key.has_fixed_step:
             self.rb_fixed_step_inc.setEnabled(True)
             self.rb_fixed_step_dec.setEnabled(True)
