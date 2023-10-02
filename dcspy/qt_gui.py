@@ -245,6 +245,40 @@ class DcsPyQtGui(QMainWindow):
         """Update dock with image of keyboard."""
         self.l_keyboard.setPixmap(QPixmap(f':/img/img/{self.keyboard.klass}device.png'))
 
+    def _collect_data_clicked(self) -> None:
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
+        try:
+            destination = Path(directory) / zip_file.name
+            copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
+
+    def _is_dir_exists(self, text: str, widget_name: str) -> bool:
+        """
+        Check if directory exists.
+
+        :param text: contents of text field
+        :param widget_name: widget name
+        :return: True if directory exists, False otherwise.
+        """
+        dir_exists = Path(text).is_dir()
+        LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
+        if dir_exists:
+            getattr(self, widget_name).setStyleSheet('')
+            return True
+        else:
+            getattr(self, widget_name).setStyleSheet('color: red;')
+            return False
+
+    # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
         plane_name = self.combo_planes.currentText()
@@ -334,19 +368,6 @@ class DcsPyQtGui(QMainWindow):
             widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
             widget.setToolTip('')
 
-    def _find_section_name(self, ctrl_name: str) -> str:
-        """
-        Find section name of control input name.
-
-        :param ctrl_name: input name of controller.
-        :return: section name as string
-        """
-        idx = self.ctrl_list.index(ctrl_name)
-        for element in reversed(self.ctrl_list[:idx]):
-            if element.startswith(CTRL_LIST_SEPARATOR):
-                return element.strip(f' {CTRL_LIST_SEPARATOR}')
-        return ''
-
     def _cell_ctrl_text_activated(self, text: str) -> None:
         """
         Check if control input exists in current plane control list.
@@ -365,6 +386,19 @@ class DcsPyQtGui(QMainWindow):
             self.l_description.setText(ctrl_key.description)
             self.l_identifier.setText(text)
             self._enable_actions_for_ctrl_input(ctrl_key=ctrl_key)
+
+    def _find_section_name(self, ctrl_name: str) -> str:
+        """
+        Find section name of control input name.
+
+        :param ctrl_name: input name of controller.
+        :return: section name as string
+        """
+        idx = self.ctrl_list.index(ctrl_name)
+        for element in reversed(self.ctrl_list[:idx]):
+            if element.startswith(CTRL_LIST_SEPARATOR):
+                return element.strip(f' {CTRL_LIST_SEPARATOR}')
+        return ''
 
     def _enable_actions_for_ctrl_input(self, ctrl_key: ControlKeyData) -> None:
         """
@@ -433,23 +467,7 @@ class DcsPyQtGui(QMainWindow):
         for col in set(range(self.keyboard.modes)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
-    def _is_dir_exists(self, text: str, widget_name: str) -> bool:
-        """
-        Check if directory exists.
-
-        :param text: contents of text field
-        :param widget_name: widget name
-        :return: True if directory exists, False otherwise.
-        """
-        dir_exists = Path(text).is_dir()
-        LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
-        if dir_exists:
-            getattr(self, widget_name).setStyleSheet('')
-            return True
-        else:
-            getattr(self, widget_name).setStyleSheet('color: red;')
-            return False
-
+    # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool:
         """
         Check if entered git object exists.
@@ -467,22 +485,6 @@ class DcsPyQtGui(QMainWindow):
             else:
                 self.le_bios_live.setStyleSheet('color: red;')
                 return False
-
-    def _collect_data_clicked(self) -> None:
-        """Collect data for troubleshooting and ask user where to save."""
-        zip_file = collect_debug_data()
-        try:
-            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
-        except KeyError:
-            dst_dir = 'C:\\'
-        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
-        try:
-            destination = Path(directory) / zip_file.name
-            copy(zip_file, destination)
-            LOG.debug(f'Save debug file: {destination}')
-        except PermissionError as err:
-            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
 
     def _get_bios_full_version(self, bios_ver: str, silence=True) -> str:
         """
