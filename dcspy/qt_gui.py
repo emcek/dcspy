@@ -372,28 +372,24 @@ class DcsPyQtGui(QMainWindow):
 
         :param ctrl_key: ControlKeyData instance
         """
-        for widget in [self.rb_action, self.rb_fixed_step_inc, self.rb_fixed_step_dec, self.rb_set_state, self.rb_variable_step_plus, self.rb_variable_step_minus]:
+        for widget in [self.rb_action, self.rb_fixed_step_inc, self.rb_fixed_step_dec, self.rb_set_state,
+                       self.rb_variable_step_plus, self.rb_variable_step_minus]:
             widget.setEnabled(False)
 
-        if ctrl_key.has_action:
-            self.rb_action.setEnabled(True)
-        if ctrl_key.has_fixed_step:
-            self.rb_fixed_step_inc.setEnabled(True)
-            self.rb_fixed_step_dec.setEnabled(True)
-        if ctrl_key.has_set_state:
-            self.rb_set_state.setEnabled(True)
         if ctrl_key.has_variable_step:
             self.rb_variable_step_plus.setEnabled(True)
             self.rb_variable_step_minus.setEnabled(True)
-
-        if ctrl_key.has_action:
-            self.rb_action.setChecked(True)
-        elif ctrl_key.has_fixed_step:
-            self.rb_fixed_step_inc.setChecked(True)
-        elif ctrl_key.has_set_state:
-            self.rb_set_state.setChecked(True)
-        elif ctrl_key.has_variable_step:
             self.rb_variable_step_plus.setChecked(True)
+        if ctrl_key.has_set_state:
+            self.rb_set_state.setEnabled(True)
+            self.rb_set_state.setChecked(True)
+        if ctrl_key.has_fixed_step:
+            self.rb_fixed_step_inc.setEnabled(True)
+            self.rb_fixed_step_dec.setEnabled(True)
+            self.rb_fixed_step_inc.setChecked(True)
+        if ctrl_key.has_action:
+            self.rb_action.setEnabled(True)
+            self.rb_action.setChecked(True)
 
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
