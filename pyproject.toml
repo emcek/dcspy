@@ -30,7 +30,7 @@ classifiers = [
 keywords = ['logitech', 'logitech sdk', 'logitech keyboards', 'logitech gaming', 'logitech gaming keyboard', 'dcsworld', 'dcs', 'g13', 'g15', 'g510', 'g19']
 dynamic = ['version']
 dependencies = [
-    'cffi==1.15.1',
+    'cffi==1.16.0',
     'CTkMessagebox==2.5',
     'CTkToolTip==0.8',
     'customtkinter==5.2.0',
