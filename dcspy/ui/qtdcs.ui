@@ -715,7 +715,7 @@
     <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
-    <string>G-Keys setup</string>
+    <string>G-Keys details</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -729,7 +729,10 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <widget class="QRadioButton" name="rb_toggle">
+         <widget class="QRadioButton" name="rb_action">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Toggle</string>
           </property>
@@ -737,6 +740,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="rb_fixed_step_inc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Fixed step INC</string>
           </property>
@@ -744,6 +750,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="rb_fixed_step_dec">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Fixed step DEC</string>
           </property>
@@ -751,6 +760,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="rb_set_state">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Set state</string>
           </property>
@@ -758,6 +770,9 @@
         </item>
         <item>
          <widget class="QRadioButton" name="rb_variable_step_plus">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Variable step +</string>
           </property>
@@ -765,13 +780,106 @@
         </item>
         <item>
          <widget class="QRadioButton" name="rb_variable_step_minus">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Variable step -</string>
           </property>
          </widget>
         </item>
+        <item>
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Information:</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="2" column="1">
+         <widget class="QLabel" name="l_identifier">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="l_description">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Description:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Category:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Identifier:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="l_category">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_5">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </widget>
