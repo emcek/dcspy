@@ -18,9 +18,9 @@ from pydantic_core import ValidationError
 from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtGui import QAction, QIcon, QPixmap, QShowEvent, QStandardItem
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox,
-                               QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
-                               QWidget)
+from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu,
+                               QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
+                               QToolBar, QWidget)
 
 from dcspy import DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
 from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, KeyboardModel
@@ -61,6 +61,7 @@ class DcsPyQtGui(QMainWindow):
         self.plane_aliases = ['']
         self.ctrl_input: Dict[str, Dict[str, ControlKeyData]] = {}
         self.ctrl_list = ['']
+        self.input_reqs: Dict[str, Dict[str, str]] = {}
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
@@ -73,6 +74,7 @@ class DcsPyQtGui(QMainWindow):
         self.dw_gkeys.hide()
         self.dw_keyboard.hide()
         self.dw_keyboard.setFloating(True)
+        self.bg_rb_input_iface = QButtonGroup(self)
         self._init_tray()
         self._init_combo_plane()
         self.apply_configuration(cfg=self.config)
@@ -116,6 +118,7 @@ class DcsPyQtGui(QMainWindow):
         self.combo_planes.addItems(plane_list)
         self.combo_planes.setEditable(True)
         self.combo_planes.setCompleter(completer)
+        self.input_reqs = {plane: {} for plane in plane_list}
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
@@ -136,6 +139,13 @@ class DcsPyQtGui(QMainWindow):
         self.pb_copy.clicked.connect(self._copy_cell_to_row)
         self.pb_save.clicked.connect(self._save_gkeys_cfg)
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
+        self.bg_rb_input_iface.addButton(self.rb_action)
+        self.bg_rb_input_iface.addButton(self.rb_set_state)
+        self.bg_rb_input_iface.addButton(self.rb_fixed_step_inc)
+        self.bg_rb_input_iface.addButton(self.rb_fixed_step_dec)
+        self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
+        self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
+        self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed)
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
@@ -307,8 +317,7 @@ class DcsPyQtGui(QMainWindow):
                 combo.setEditable(True)
                 combo.addItems(self.ctrl_list)
                 combo.setCompleter(completer)
-                combo.currentTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo))
-                combo.textActivated.connect(partial(self._cell_ctrl_text_activated))
+                combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
                 val = plane_gkeys.get(f'G{row + 1}_M{col + 1}', '')
@@ -351,41 +360,55 @@ class DcsPyQtGui(QMainWindow):
                     self.combo_planes.setCurrentIndex(0)
                 return True
 
-    def _cell_ctrl_content_changed(self, text: str, widget: QComboBox) -> None:
-        """
-        Check in input control exists in current plane control list.
-
-        :param text: current text
-        :param widget: combo instance
-        """
-        if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
-            widget.setStyleSheet('')
-            section = self._find_section_name(ctrl_name=text)
-            widget.setToolTip(self.ctrl_input[section][text].description)
-        elif text == '':
-            widget.setStyleSheet('')
-        else:
-            widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
-            widget.setToolTip('')
-
-    def _cell_ctrl_text_activated(self, text: str) -> None:
+    def _cell_ctrl_content_changed(self, text: str, widget: QComboBox, row: int, col: int) -> None:
         """
         Check if control input exists in current plane control list.
 
-        Set details for current control input.
+        * set details for current control input
+        * set styling
+        * add description tooltip
+        * save control request for current plane
 
         :param text: current text
+        :param widget: combo instance
+        :param row: current row
+        :param col: current column
         """
         self.l_category.setText('')
         self.l_description.setText('')
         self.l_identifier.setText('')
+        widget.setToolTip('')
+        widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
-            self.l_category.setText(section)
-            self.l_description.setText(ctrl_key.description)
-            self.l_identifier.setText(text)
-            self._enable_actions_for_ctrl_input(ctrl_key=ctrl_key)
+            widget.setToolTip(ctrl_key.description)
+            widget.setStyleSheet('')
+            self.l_category.setText(f'Category: {section}')
+            self.l_description.setText(f'Description: {ctrl_key.description}')
+            self.l_identifier.setText(f'Identifier: {text}')
+            input_iface_name = self._enable_interfeces_for_ctrl_input(ctrl_key=ctrl_key)
+            plane = self.combo_planes.currentText()
+            self.input_reqs[plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_request(ctrl_key=ctrl_key, input_iface=input_iface_name)
+
+    @staticmethod
+    def _get_input_iface_request(ctrl_key: ControlKeyData, input_iface: str) -> str:
+        """
+        Get request for current input interface.
+
+        :param ctrl_key: ControlKeyData instance
+        :param input_iface: name of input interface
+        :return: button request as string
+        """
+        button_requests_types = {
+            'rb_action': f'{ctrl_key.name} TOGGLE',
+            'rb_fixed_step_inc': f'{ctrl_key.name} INC',
+            'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
+            'rb_set_state': f'{ctrl_key.name} CYCLE_{ctrl_key.max_value}',
+            'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
+            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
+        }
+        return button_requests_types.get(input_iface, '')
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -400,11 +423,12 @@ class DcsPyQtGui(QMainWindow):
                 return element.strip(f' {CTRL_LIST_SEPARATOR}')
         return ''
 
-    def _enable_actions_for_ctrl_input(self, ctrl_key: ControlKeyData) -> None:
+    def _enable_interfeces_for_ctrl_input(self, ctrl_key: ControlKeyData) -> str:
         """
-        Enable actions for current control input.
+        Enable input interfaces for current control input identifier.
 
         :param ctrl_key: ControlKeyData instance
+        :return: Currently checked radio button name
         """
         for widget in [self.rb_action, self.rb_fixed_step_inc, self.rb_fixed_step_dec, self.rb_set_state,
                        self.rb_variable_step_plus, self.rb_variable_step_minus]:
@@ -427,6 +451,8 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
 
+        return self.bg_rb_input_iface.checkedButton().objectName()
+
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
         """
@@ -443,11 +469,13 @@ class DcsPyQtGui(QMainWindow):
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
         cfg = {}
+        current_plane = self.combo_planes.currentText()
         for r in range(0, self.tw_gkeys.rowCount()):
             for c in range(0, self.tw_gkeys.columnCount()):
-                cfg[f'G{r + 1}_M{c + 1}'] = self.tw_gkeys.cellWidget(r, c).currentText()
-        LOG.debug(cfg)
-        save_yaml(data=cfg, full_path=self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
+                gkey_label = f'G{r + 1}_M{c + 1}'
+                cfg[gkey_label] = self.input_reqs[current_plane].get(gkey_label, '')
+        LOG.debug(f'Save {current_plane} with: {cfg}')
+        save_yaml(data=cfg, full_path=self.cfg_file.parent / f'{current_plane}.yaml')
 
     def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
         """
@@ -460,6 +488,21 @@ class DcsPyQtGui(QMainWindow):
         """
         self.current_row = currentRow
         self.current_col = currentColumn
+
+    def _input_iface_changed(self, button: QRadioButton) -> None:
+        """
+        Triggered when new input interface is selected.
+
+        :param button: currently checked input interface radio button
+        """
+        row = self.current_row
+        col = self.current_col
+        current_text = self.tw_gkeys.cellWidget(row, col).currentText()
+        if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
+            section = self._find_section_name(ctrl_name=current_text)
+            ctrl_key = self.ctrl_input[section][current_text]
+            plane = self.combo_planes.currentText()
+            self.input_reqs[plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_request(ctrl_key=ctrl_key, input_iface=button.objectName())
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
