@@ -390,6 +390,8 @@ class DcsPyQtGui(QMainWindow):
             input_iface_name = self._enable_interfeces_for_ctrl_input(ctrl_key=ctrl_key)
             plane = self.combo_planes.currentText()
             self.input_reqs[plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_request(ctrl_key=ctrl_key, input_iface=input_iface_name)
+        elif text == '':
+            widget.setStyleSheet('')
 
     @staticmethod
     def _get_input_iface_request(ctrl_key: ControlKeyData, input_iface: str) -> str:
