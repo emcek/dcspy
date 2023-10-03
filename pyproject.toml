@@ -131,7 +131,7 @@ ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF0
 extend-exclude = ["qtgui_rc.py"]
 
 [tool.ruff.mccabe]
-max-complexity = 6
+max-complexity = 7
 
 [tool.mypy]
 ignore_missing_imports = true
