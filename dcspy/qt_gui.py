@@ -15,9 +15,11 @@ from webbrowser import open_new_tab
 
 from packaging import version
 from pydantic_core import ValidationError
-from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
+from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
+from PySide6.QtCore import __version__ as qt6_ver
 from PySide6.QtGui import QAction, QIcon, QPixmap, QShowEvent, QStandardItem
+from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu,
                                QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
                                QToolBar, QWidget)
@@ -47,7 +49,7 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
-        self.threadpool = QtCore.QThreadPool.globalInstance()
+        self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.event = Event()
         self._done_event = Event()
@@ -110,9 +112,9 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of combo box for plane selector with completer."""
         plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
         completer = QCompleter(plane_list)
-        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        completer.setFilterMode(Qt.MatchFlag.MatchContains)
         completer.setMaxVisibleItems(self.config['completer_items'])
         completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
         self.combo_planes.addItems(plane_list)
@@ -307,9 +309,9 @@ class DcsPyQtGui(QMainWindow):
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
                 completer = QCompleter([item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item])
-                completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+                completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-                completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+                completer.setFilterMode(Qt.MatchFlag.MatchContains)
                 completer.setMaxVisibleItems(self._completer_items)
                 completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
@@ -466,7 +468,7 @@ class DcsPyQtGui(QMainWindow):
         for i in range(0, widget.count()):
             item: QStandardItem = model.item(i)
             if text in item.text():
-                item.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
+                item.setFlags(Qt.ItemFlag.NoItemFlags)
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
@@ -567,9 +569,9 @@ class DcsPyQtGui(QMainWindow):
             git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
             self._git_refs_count = len(git_refs)
             completer = QCompleter(git_refs)
-            completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
             completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-            completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
             completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
             self.le_bios_live.setCompleter(completer)
 
@@ -970,7 +972,7 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100,
+    def _fake_progress(progress_callback: SignalInstance, total_time: int, steps: int = 100,
                        clean_after: bool = True, **kwargs) -> None:
         """
         Make fake progress for progressbar.
@@ -1084,7 +1086,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param reason: reason of activation
         """
-        if reason == QSystemTrayIcon.Trigger:
+        if reason == QSystemTrayIcon.ActivationReason.Trigger:
             if self.isVisible():
                 self.hide()
             else:
@@ -1211,7 +1213,7 @@ class AboutDialog(QDialog):
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
         text += f'<br><b>Config</b>: <a href="file:///{self.parent.cfg_file.parent}">{self.parent.cfg_file.name}</a>'
         text += f'<br><b>Git</b>: {d.git_ver}'
-        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {QtCore.__version__}'
+        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
         text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
@@ -1219,7 +1221,7 @@ class AboutDialog(QDialog):
         self.l_info.setText(text)
 
 
-class WorkerSignals(QtCore.QObject):
+class WorkerSignals(QObject):
     """
     Defines the signals available from a running worker thread.
 
@@ -1230,13 +1232,13 @@ class WorkerSignals(QtCore.QObject):
     * progress - float between 0 and 1 as indication of progress
     """
 
-    finished = QtCore.Signal()
-    error = QtCore.Signal(tuple)
-    result = QtCore.Signal(object)
-    progress = QtCore.Signal(int)
+    finished = Signal()
+    error = Signal(tuple)
+    result = Signal(object)
+    progress = Signal(int)
 
 
-class Worker(QtCore.QRunnable):
+class Worker(QRunnable):
     """Runnable worker."""
 
     def __init__(self, func: partial, with_progress: bool) -> None:
@@ -1252,7 +1254,7 @@ class Worker(QtCore.QRunnable):
         if with_progress:
             self.func.keywords['progress_callback'] = self.signals.progress
 
-    @QtCore.Slot()
+    @Slot()
     def run(self) -> None:
         """Initialise the runner function with passed additional kwargs."""
         try:
@@ -1266,7 +1268,7 @@ class Worker(QtCore.QRunnable):
             self.signals.finished.emit()
 
 
-class UiLoader(QtUiTools.QUiLoader):
+class UiLoader(QUiLoader):
     """UI file loader."""
     _baseinstance = None
 
@@ -1296,11 +1298,11 @@ class UiLoader(QtUiTools.QUiLoader):
         :return: QWidget
         """
         self._baseinstance = baseinstance
-        ui_file = QtCore.QFile(ui_path)
-        ui_file.open(QtCore.QIODevice.ReadOnly)
+        ui_file = QFile(ui_path)
+        ui_file.open(QIODevice.OpenModeFlag.ReadOnly)
         try:
             widget = self.load(ui_file)
-            QtCore.QMetaObject.connectSlotsByName(widget)
+            QMetaObject.connectSlotsByName(widget)
             return widget
         finally:
             ui_file.close()
