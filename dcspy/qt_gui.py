@@ -387,8 +387,8 @@ class DcsPyQtGui(QMainWindow):
 
         for gkey, data in plane_gkeys.items():
             try:
-                iface = [rb_iface for req_suffix, rb_iface in button_requests_types.items() if req_suffix in data][0]
-            except IndexError:
+                iface = next(rb_iface for req_suffix, rb_iface in button_requests_types.items() if req_suffix in data)
+            except StopIteration:
                 data = ''
                 iface = ''
             input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
