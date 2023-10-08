@@ -6,6 +6,7 @@ from logging import getLogger
 from os import environ
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
+from pprint import pformat
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
@@ -15,15 +16,17 @@ from webbrowser import open_new_tab
 
 from packaging import version
 from pydantic_core import ValidationError
-from PySide6 import QtCore, QtUiTools
 from PySide6 import __version__ as pyside6_ver
+from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
+from PySide6.QtCore import __version__ as qt6_ver
 from PySide6.QtGui import QAction, QIcon, QPixmap, QShowEvent, QStandardItem
-from PySide6.QtWidgets import (QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu, QMessageBox,
-                               QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar,
-                               QWidget)
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu,
+                               QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
+                               QToolBar, QWidget)
 
 from dcspy import DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
-from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, KeyboardModel
+from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, GuiPlaneInputRequest, KeyboardModel
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_inputs_for_plane, get_list_of_ctrls,
@@ -47,7 +50,7 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
-        self.threadpool = QtCore.QThreadPool.globalInstance()
+        self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.event = Event()
         self._done_event = Event()
@@ -61,6 +64,7 @@ class DcsPyQtGui(QMainWindow):
         self.plane_aliases = ['']
         self.ctrl_input: Dict[str, Dict[str, ControlKeyData]] = {}
         self.ctrl_list = ['']
+        self.input_reqs: Dict[str, Dict[str, GuiPlaneInputRequest]] = {}
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
@@ -71,7 +75,9 @@ class DcsPyQtGui(QMainWindow):
         if not cfg_dict:
             self.config = load_yaml(full_path=self.cfg_file)
         self.dw_gkeys.hide()
-        self.dw_gkeys.setFloating(True)
+        self.dw_keyboard.hide()
+        self.dw_keyboard.setFloating(True)
+        self.bg_rb_input_iface = QButtonGroup(self)
         self._init_tray()
         self._init_combo_plane()
         self.apply_configuration(cfg=self.config)
@@ -107,14 +113,15 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of combo box for plane selector with completer."""
         plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
         completer = QCompleter(plane_list)
-        completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+        completer.setFilterMode(Qt.MatchFlag.MatchContains)
         completer.setMaxVisibleItems(self.config['completer_items'])
         completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
         self.combo_planes.addItems(plane_list)
         self.combo_planes.setEditable(True)
         self.combo_planes.setCompleter(completer)
+        self.input_reqs = {plane: {} for plane in plane_list}
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
@@ -135,6 +142,13 @@ class DcsPyQtGui(QMainWindow):
         self.pb_copy.clicked.connect(self._copy_cell_to_row)
         self.pb_save.clicked.connect(self._save_gkeys_cfg)
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
+        self.bg_rb_input_iface.addButton(self.rb_action)
+        self.bg_rb_input_iface.addButton(self.rb_set_state)
+        self.bg_rb_input_iface.addButton(self.rb_fixed_step_inc)
+        self.bg_rb_input_iface.addButton(self.rb_fixed_step_dec)
+        self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
+        self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
+        self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed)
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
@@ -146,7 +160,8 @@ class DcsPyQtGui(QMainWindow):
         self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
-        self.a_show_layout.triggered.connect(self._show_dock)
+        self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
+        self.a_show_keyboard.triggered.connect(self._show_keyboard_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
         self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
@@ -243,10 +258,43 @@ class DcsPyQtGui(QMainWindow):
         """Update dock with image of keyboard."""
         self.l_keyboard.setPixmap(QPixmap(f':/img/img/{self.keyboard.klass}device.png'))
 
+    def _collect_data_clicked(self) -> None:
+        """Collect data for troubleshooting and ask user where to save."""
+        zip_file = collect_debug_data()
+        try:
+            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
+        except KeyError:
+            dst_dir = 'C:\\'
+        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
+        try:
+            destination = Path(directory) / zip_file.name
+            copy(zip_file, destination)
+            LOG.debug(f'Save debug file: {destination}')
+        except PermissionError as err:
+            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
+
+    def _is_dir_exists(self, text: str, widget_name: str) -> bool:
+        """
+        Check if directory exists.
+
+        :param text: contents of text field
+        :param widget_name: widget name
+        :return: True if directory exists, False otherwise.
+        """
+        dir_exists = Path(text).is_dir()
+        LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
+        if dir_exists:
+            getattr(self, widget_name).setStyleSheet('')
+            return True
+        else:
+            getattr(self, widget_name).setStyleSheet('color: red;')
+            return False
+
+    # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
-        plane_name = self.combo_planes.currentText()
-        if self._rebuild_ctrl_input_table_not_needed(plane_name=plane_name):
+        if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
             return
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
@@ -255,15 +303,14 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
-        plane_gkeys = load_yaml(full_path=self.cfg_file.parent / f'{plane_name}.yaml')
-        LOG.debug(f'{plane_name}: {plane_gkeys}')
+        self.input_reqs[self.current_plane] = self._load_plane_yaml_into_dict(plane_yaml=self.cfg_file.parent / f'{self.current_plane}.yaml')
 
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
                 completer = QCompleter([item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item])
-                completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+                completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
                 completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-                completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+                completer.setFilterMode(Qt.MatchFlag.MatchContains)
                 completer.setMaxVisibleItems(self._completer_items)
                 completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
 
@@ -271,11 +318,14 @@ class DcsPyQtGui(QMainWindow):
                 combo.setEditable(True)
                 combo.addItems(self.ctrl_list)
                 combo.setCompleter(completer)
-                combo.currentTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo))
+                combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
-                val = plane_gkeys.get(f'G{row + 1}_M{col + 1}', '')
-                combo.setCurrentText(val)
+                try:
+                    identifier = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).identifier
+                except AttributeError:
+                    identifier = ''
+                combo.setCurrentText(identifier)
 
     def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
         """
@@ -314,22 +364,90 @@ class DcsPyQtGui(QMainWindow):
                     self.combo_planes.setCurrentIndex(0)
                 return True
 
-    def _cell_ctrl_content_changed(self, text: str, widget: QComboBox) -> None:
+    @staticmethod
+    def _load_plane_yaml_into_dict(plane_yaml: Path) -> Dict[str, GuiPlaneInputRequest]:
         """
-        Check in input control exists in current plane control list.
+        Load plane yaml file into input request dictionary.
+
+        :param plane_yaml: full path to plane config yaml file
+        :return: input requests dict for plane
+        """
+        plane_gkeys = load_yaml(full_path=plane_yaml)
+        LOG.debug(f'Load {plane_yaml}:\n{pformat(plane_gkeys)}')
+        input_reqs = {}
+        req_keyword_rb_iface = {
+            'TOGGLE': 'rb_action',
+            'INC': 'rb_fixed_step_inc',
+            'DEC': 'rb_fixed_step_dec',
+            'CYCLE_': 'rb_set_state',
+            '+': 'rb_variable_step_plus',
+            '-': 'rb_variable_step_minus',
+        }
+
+        for gkey, data in plane_gkeys.items():
+            try:
+                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
+            except StopIteration:
+                data = ''
+                iface = ''
+            input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
+        return input_reqs
+
+    def _cell_ctrl_content_changed(self, text: str, widget: QComboBox, row: int, col: int) -> None:
+        """
+        Check if control input exists in current plane control list.
+
+        * set details for current control input
+        * set styling
+        * add description tooltip
+        * save control request for current plane
 
         :param text: current text
         :param widget: combo instance
+        :param row: current row
+        :param col: current column
         """
+        self.l_category.setText('')
+        self.l_description.setText('')
+        self.l_identifier.setText('')
+        widget.setToolTip('')
+        widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
-            widget.setStyleSheet('')
             section = self._find_section_name(ctrl_name=text)
-            widget.setToolTip(self.ctrl_input[section][text].description)
+            ctrl_key = self.ctrl_input[section][text]
+            widget.setToolTip(ctrl_key.description)
+            widget.setStyleSheet('')
+            self.l_category.setText(f'Category: {section}')
+            self.l_description.setText(f'Description: {ctrl_key.description}')
+            self.l_identifier.setText(f'Identifier: {text}')
+            self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
+            self._checked_iface_rb_for_identifier(row=row, col=col)
+            input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
+            self.input_reqs[self.current_plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, rb_iface=input_iface_name)
         elif text == '':
             widget.setStyleSheet('')
-        else:
-            widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
-            widget.setToolTip('')
+            for rb_widget in self.bg_rb_input_iface.buttons():
+                rb_widget.setEnabled(False)
+                rb_widget.setChecked(False)
+
+    @staticmethod
+    def _get_input_iface_dict_request(ctrl_key: ControlKeyData, rb_iface: str) -> GuiPlaneInputRequest:
+        """
+        Get dictionary with request details for current input interface.
+
+        :param ctrl_key: ControlKeyData instance
+        :param rb_iface: name of radio button input interface
+        :return: dict with button request details
+        """
+        rb_iface_request = {
+            'rb_action': f'{ctrl_key.name} TOGGLE',
+            'rb_fixed_step_inc': f'{ctrl_key.name} INC',
+            'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
+            'rb_set_state': f'{ctrl_key.name} CYCLE_{ctrl_key.max_value}',
+            'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
+            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
+        }
+        return GuiPlaneInputRequest(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -344,6 +462,44 @@ class DcsPyQtGui(QMainWindow):
                 return element.strip(f' {CTRL_LIST_SEPARATOR}')
         return ''
 
+    def _enable_checked_iface_radio_button(self, ctrl_key: ControlKeyData) -> None:
+        """
+        Enable and checked default input interface radio buttons for current identifier.
+
+        :param ctrl_key: ControlKeyData instance
+        """
+        for widget in self.bg_rb_input_iface.buttons():
+            widget.setEnabled(False)
+        if ctrl_key.has_variable_step:
+            self.rb_variable_step_plus.setEnabled(True)
+            self.rb_variable_step_minus.setEnabled(True)
+            self.rb_variable_step_plus.setChecked(True)
+        if ctrl_key.has_set_state:
+            self.rb_set_state.setEnabled(True)
+            self.rb_set_state.setChecked(True)
+        if ctrl_key.input_len == 2 and ctrl_key.has_variable_step and ctrl_key.has_set_state:
+            self.rb_variable_step_plus.setChecked(True)
+        if ctrl_key.has_fixed_step:
+            self.rb_fixed_step_inc.setEnabled(True)
+            self.rb_fixed_step_dec.setEnabled(True)
+            self.rb_fixed_step_inc.setChecked(True)
+        if ctrl_key.has_action:
+            self.rb_action.setEnabled(True)
+            self.rb_action.setChecked(True)
+
+    def _checked_iface_rb_for_identifier(self, row: int, col: int) -> None:
+        """
+        Enable input interfaces for current control input identifier.
+
+        :param row: current row
+        :param col: current column
+        """
+        try:
+            widget_iface = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).widget_iface
+            getattr(self, widget_iface).setChecked(True)
+        except AttributeError:
+            pass
+
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
         """
@@ -355,16 +511,21 @@ class DcsPyQtGui(QMainWindow):
         for i in range(0, widget.count()):
             item: QStandardItem = model.item(i)
             if text in item.text():
-                item.setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
+                item.setFlags(Qt.ItemFlag.NoItemFlags)
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
-        cfg = {}
+        plane_cfg_yaml = {}
         for r in range(0, self.tw_gkeys.rowCount()):
             for c in range(0, self.tw_gkeys.columnCount()):
-                cfg[f'G{r + 1}_M{c + 1}'] = self.tw_gkeys.cellWidget(r, c).currentText()
-        LOG.debug(cfg)
-        save_yaml(data=cfg, full_path=self.cfg_file.parent / f'{self.combo_planes.currentText()}.yaml')
+                g_key_id = f'G{r + 1}_M{c + 1}'
+                try:
+                    request = self.input_reqs[self.current_plane].get(g_key_id, {}).request
+                except AttributeError:
+                    request = ''
+                plane_cfg_yaml[g_key_id] = request
+        LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
+        save_yaml(data=plane_cfg_yaml, full_path=self.cfg_file.parent / f'{self.current_plane}.yaml')
 
     def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
         """
@@ -377,6 +538,22 @@ class DcsPyQtGui(QMainWindow):
         """
         self.current_row = currentRow
         self.current_col = currentColumn
+        cell_combo = self.tw_gkeys.cellWidget(currentRow, currentColumn)
+        self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=currentRow, col=currentColumn)
+
+    def _input_iface_changed(self, button: QRadioButton) -> None:
+        """
+        Triggered when new input interface is selected.
+
+        :param button: currently checked input interface radio button
+        """
+        row = self.current_row
+        col = self.current_col
+        current_text = self.tw_gkeys.cellWidget(row, col).currentText()
+        if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
+            section = self._find_section_name(ctrl_name=current_text)
+            ctrl_key = self.ctrl_input[section][current_text]
+            self.input_reqs[self.current_plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, rb_iface=button.objectName())
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
@@ -384,23 +561,7 @@ class DcsPyQtGui(QMainWindow):
         for col in set(range(self.keyboard.modes)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
-    def _is_dir_exists(self, text: str, widget_name: str) -> bool:
-        """
-        Check if directory exists.
-
-        :param text: contents of text field
-        :param widget_name: widget name
-        :return: True if directory exists, False otherwise.
-        """
-        dir_exists = Path(text).is_dir()
-        LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
-        if dir_exists:
-            getattr(self, widget_name).setStyleSheet('')
-            return True
-        else:
-            getattr(self, widget_name).setStyleSheet('color: red;')
-            return False
-
+    # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool:
         """
         Check if entered git object exists.
@@ -418,22 +579,6 @@ class DcsPyQtGui(QMainWindow):
             else:
                 self.le_bios_live.setStyleSheet('color: red;')
                 return False
-
-    def _collect_data_clicked(self) -> None:
-        """Collect data for troubleshooting and ask user where to save."""
-        zip_file = collect_debug_data()
-        try:
-            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
-        except KeyError:
-            dst_dir = 'C:\\'
-        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
-        try:
-            destination = Path(directory) / zip_file.name
-            copy(zip_file, destination)
-            LOG.debug(f'Save debug file: {destination}')
-        except PermissionError as err:
-            LOG.debug(f'Error: {err}, Collected data: {zip_file}')
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=err.args[1], message=f'Can not save file:\n{err.filename}')
 
     def _get_bios_full_version(self, bios_ver: str, silence=True) -> str:
         """
@@ -471,9 +616,9 @@ class DcsPyQtGui(QMainWindow):
             git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
             self._git_refs_count = len(git_refs)
             completer = QCompleter(git_refs)
-            completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
             completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-            completer.setFilterMode(QtCore.Qt.MatchFlag.MatchContains)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
             completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
             self.le_bios_live.setCompleter(completer)
 
@@ -822,7 +967,7 @@ class DcsPyQtGui(QMainWindow):
             'font_color_s': self.color_font['medium'],
             'font_color_xs': self.color_font['small'],
             'completer_items': self.sp_completer.value(),
-            'current_plane': self.combo_planes.currentText(),
+            'current_plane': self.current_plane,
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -844,6 +989,16 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
         self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
         self.close()
+
+    # <=><=><=><=><=><=><=><=><=><=><=> others <=><=><=><=><=><=><=><=><=><=><=>
+    @property
+    def current_plane(self) -> str:
+        """
+        Get current plane from combo box.
+
+        :return: plane name as string
+        """
+        return self.combo_planes.currentText()
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
@@ -874,7 +1029,7 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: QtCore.SignalInstance, total_time: int, steps: int = 100,
+    def _fake_progress(progress_callback: SignalInstance, total_time: int, steps: int = 100,
                        clean_after: bool = True, **kwargs) -> None:
         """
         Make fake progress for progressbar.
@@ -988,7 +1143,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param reason: reason of activation
         """
-        if reason == QSystemTrayIcon.Trigger:
+        if reason == QSystemTrayIcon.ActivationReason.Trigger:
             if self.isVisible():
                 self.hide()
             else:
@@ -1001,75 +1156,94 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.toolbar.hide()
 
-    def _show_dock(self) -> None:
-        """Toggle show and hide dock."""
-        if self.a_show_layout.isChecked():
+    def _show_gkeys_dock(self) -> None:
+        """Toggle show and hide G-Keys dock."""
+        if self.a_show_gkeys.isChecked():
             self.dw_gkeys.show()
         else:
             self.dw_gkeys.hide()
 
+    def _show_keyboard_dock(self) -> None:
+        """Toggle show and hide keyboard dock."""
+        if self.a_show_keyboard.isChecked():
+            self.dw_keyboard.show()
+        else:
+            self.dw_keyboard.hide()
+
     def _find_children(self) -> None:
         """Find all widgets of main window."""
-        self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')
-        self.systray: QSystemTrayIcon = self.findChild(QSystemTrayIcon, 'systray')
-        self.traymenu: QSystemTrayIcon = self.findChild(QMenu, 'traymenu')
-        self.progressbar: QProgressBar = self.findChild(QProgressBar, 'progressbar')
-        self.toolbar: QToolBar = self.findChild(QToolBar, 'toolbar')
-        self.tw_gkeys: QTableWidget = self.findChild(QTableWidget, 'tw_gkeys')
-        self.sp_completer: QSpinBox = self.findChild(QSpinBox, 'sp_completer')
-        self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')
-        self.dw_gkeys: QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
-        self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')
+        self.statusbar: Union[object, QStatusBar] = self.findChild(QStatusBar, 'statusbar')
+        self.systray: Union[object, QSystemTrayIcon] = self.findChild(QSystemTrayIcon, 'systray')
+        self.traymenu: Union[object, QMenu] = self.findChild(QMenu, 'traymenu')
+        self.progressbar: Union[object, QProgressBar] = self.findChild(QProgressBar, 'progressbar')
+        self.toolbar: Union[object, QToolBar] = self.findChild(QToolBar, 'toolbar')
+        self.tw_gkeys: Union[object, QTableWidget] = self.findChild(QTableWidget, 'tw_gkeys')
+        self.sp_completer: Union[object, QSpinBox] = self.findChild(QSpinBox, 'sp_completer')
+        self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
+        self.tw_main: Union[object, QTabWidget] = self.findChild(QTabWidget, 'tw_main')
 
-        self.l_keyboard: QLabel = self.findChild(QLabel, 'l_keyboard')
-        self.l_large: QLabel = self.findChild(QLabel, 'l_large')
-        self.l_medium: QLabel = self.findChild(QLabel, 'l_medium')
-        self.l_small: QLabel = self.findChild(QLabel, 'l_small')
+        self.dw_gkeys: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_gkeys')
+        self.dw_keyboard: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_keyboard')
 
-        self.a_quit: QAction = self.findChild(QAction, 'a_quit')
-        self.a_reset_defaults: QAction = self.findChild(QAction, 'a_reset_defaults')
-        self.a_show_toolbar: QAction = self.findChild(QAction, 'a_show_toolbar')
-        self.a_show_layout: QAction = self.findChild(QAction, 'a_show_layout')
-        self.a_about_dcspy: QAction = self.findChild(QAction, 'a_about_dcspy')
-        self.a_about_qt: QAction = self.findChild(QAction, 'a_about_qt')
-        self.a_report_issue: QAction = self.findChild(QAction, 'a_report_issue')
-        self.a_check_updates: QAction = self.findChild(QAction, 'a_check_updates')
-        self.a_donate: QAction = self.findChild(QAction, 'a_donate')
+        self.l_keyboard: Union[object, QLabel] = self.findChild(QLabel, 'l_keyboard')
+        self.l_large: Union[object, QLabel] = self.findChild(QLabel, 'l_large')
+        self.l_medium: Union[object, QLabel] = self.findChild(QLabel, 'l_medium')
+        self.l_small: Union[object, QLabel] = self.findChild(QLabel, 'l_small')
+        self.l_category: Union[object, QLabel] = self.findChild(QLabel, 'l_category')
+        self.l_description: Union[object, QLabel] = self.findChild(QLabel, 'l_description')
+        self.l_identifier: Union[object, QLabel] = self.findChild(QLabel, 'l_identifier')
 
-        self.pb_start: QPushButton = self.findChild(QPushButton, 'pb_start')
-        self.pb_stop: QPushButton = self.findChild(QPushButton, 'pb_stop')
-        self.pb_close: QPushButton = self.findChild(QPushButton, 'pb_close')
-        self.pb_dcsdir: QPushButton = self.findChild(QPushButton, 'pb_dcsdir')
-        self.pb_biosdir: QPushButton = self.findChild(QPushButton, 'pb_biosdir')
-        self.pb_collect_data: QPushButton = self.findChild(QPushButton, 'pb_collect_data')
-        self.pb_copy: QPushButton = self.findChild(QPushButton, 'pb_copy')
-        self.pb_save: QPushButton = self.findChild(QPushButton, 'pb_save')
-        self.pb_dcspy_check: QPushButton = self.findChild(QPushButton, 'pb_dcspy_check')
-        self.pb_bios_check: QPushButton = self.findChild(QPushButton, 'pb_bios_check')
+        self.a_quit: Union[object, QAction] = self.findChild(QAction, 'a_quit')
+        self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
+        self.a_show_toolbar: Union[object, QAction] = self.findChild(QAction, 'a_show_toolbar')
+        self.a_show_gkeys: Union[object, QAction] = self.findChild(QAction, 'a_show_gkeys')
+        self.a_show_keyboard: Union[object, QAction] = self.findChild(QAction, 'a_show_keyboard')
+        self.a_about_dcspy: Union[object, QAction] = self.findChild(QAction, 'a_about_dcspy')
+        self.a_about_qt: Union[object, QAction] = self.findChild(QAction, 'a_about_qt')
+        self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
+        self.a_check_updates: Union[object, QAction] = self.findChild(QAction, 'a_check_updates')
+        self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
 
-        self.cb_autostart: QCheckBox = self.findChild(QCheckBox, 'cb_autostart')
-        self.cb_show_gui: QCheckBox = self.findChild(QCheckBox, 'cb_show_gui')
-        self.cb_check_ver: QCheckBox = self.findChild(QCheckBox, 'cb_check_ver')
-        self.cb_ded_font: QCheckBox = self.findChild(QCheckBox, 'cb_ded_font')
-        self.cb_lcd_screenshot: QCheckBox = self.findChild(QCheckBox, 'cb_lcd_screenshot')
-        self.cb_verbose: QCheckBox = self.findChild(QCheckBox, 'cb_verbose')
-        self.cb_autoupdate_bios: QCheckBox = self.findChild(QCheckBox, 'cb_autoupdate_bios')
-        self.cb_bios_live: QCheckBox = self.findChild(QCheckBox, 'cb_bios_live')
+        self.pb_start: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_start')
+        self.pb_stop: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_stop')
+        self.pb_close: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_close')
+        self.pb_dcsdir: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcsdir')
+        self.pb_biosdir: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_biosdir')
+        self.pb_collect_data: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_collect_data')
+        self.pb_copy: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_copy')
+        self.pb_save: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_save')
+        self.pb_dcspy_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcspy_check')
+        self.pb_bios_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_check')
 
-        self.le_dcsdir: QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')
-        self.le_biosdir: QLineEdit = self.findChild(QLineEdit, 'le_biosdir')
-        self.le_font_name: QLineEdit = self.findChild(QLineEdit, 'le_font_name')
-        self.le_bios_live: QLineEdit = self.findChild(QLineEdit, 'le_bios_live')
+        self.cb_autostart: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autostart')
+        self.cb_show_gui: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_show_gui')
+        self.cb_check_ver: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_check_ver')
+        self.cb_ded_font: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_ded_font')
+        self.cb_lcd_screenshot: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_lcd_screenshot')
+        self.cb_verbose: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_verbose')
+        self.cb_autoupdate_bios: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autoupdate_bios')
+        self.cb_bios_live: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_bios_live')
 
-        self.rb_g19: QRadioButton = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g13: QRadioButton = self.findChild(QRadioButton, 'rb_g13')
-        self.rb_g15v1: QRadioButton = self.findChild(QRadioButton, 'rb_g15v1')
-        self.rb_g15v2: QRadioButton = self.findChild(QRadioButton, 'rb_g15v2')
-        self.rb_g510: QRadioButton = self.findChild(QRadioButton, 'rb_g510')
+        self.le_dcsdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_dcsdir')
+        self.le_biosdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_biosdir')
+        self.le_font_name: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_font_name')
+        self.le_bios_live: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_bios_live')
 
-        self.hs_large_font: QSlider = self.findChild(QSlider, 'hs_large_font')
-        self.hs_medium_font: QSlider = self.findChild(QSlider, 'hs_medium_font')
-        self.hs_small_font: QSlider = self.findChild(QSlider, 'hs_small_font')
+        self.rb_g19: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g19')
+        self.rb_g13: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g13')
+        self.rb_g15v1: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v1')
+        self.rb_g15v2: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v2')
+        self.rb_g510: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g510')
+        self.rb_action: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_action')
+        self.rb_fixed_step_inc: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_inc')
+        self.rb_fixed_step_dec: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_dec')
+        self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
+        self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
+        self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
+
+        self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
+        self.hs_medium_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_medium_font')
+        self.hs_small_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_small_font')
 
 
 class AboutDialog(QDialog):
@@ -1079,7 +1253,7 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self.parent: DcsPyQtGui = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
-        self.l_info: QLabel = self.findChild(QLabel, 'l_info')
+        self.l_info: Union[object, QLabel] = self.findChild(QLabel, 'l_info')
 
     def showEvent(self, event: QShowEvent):
         """Prepare text information about DCSpy application."""
@@ -1096,7 +1270,7 @@ class AboutDialog(QDialog):
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
         text += f'<br><b>Config</b>: <a href="file:///{self.parent.cfg_file.parent}">{self.parent.cfg_file.name}</a>'
         text += f'<br><b>Git</b>: {d.git_ver}'
-        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {QtCore.__version__}'
+        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
         text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
@@ -1104,7 +1278,7 @@ class AboutDialog(QDialog):
         self.l_info.setText(text)
 
 
-class WorkerSignals(QtCore.QObject):
+class WorkerSignals(QObject):
     """
     Defines the signals available from a running worker thread.
 
@@ -1115,13 +1289,13 @@ class WorkerSignals(QtCore.QObject):
     * progress - float between 0 and 1 as indication of progress
     """
 
-    finished = QtCore.Signal()
-    error = QtCore.Signal(tuple)
-    result = QtCore.Signal(object)
-    progress = QtCore.Signal(int)
+    finished = Signal()
+    error = Signal(tuple)
+    result = Signal(object)
+    progress = Signal(int)
 
 
-class Worker(QtCore.QRunnable):
+class Worker(QRunnable):
     """Runnable worker."""
 
     def __init__(self, func: partial, with_progress: bool) -> None:
@@ -1137,7 +1311,7 @@ class Worker(QtCore.QRunnable):
         if with_progress:
             self.func.keywords['progress_callback'] = self.signals.progress
 
-    @QtCore.Slot()
+    @Slot()
     def run(self) -> None:
         """Initialise the runner function with passed additional kwargs."""
         try:
@@ -1151,7 +1325,7 @@ class Worker(QtCore.QRunnable):
             self.signals.finished.emit()
 
 
-class UiLoader(QtUiTools.QUiLoader):
+class UiLoader(QUiLoader):
     """UI file loader."""
     _baseinstance = None
 
@@ -1181,11 +1355,11 @@ class UiLoader(QtUiTools.QUiLoader):
         :return: QWidget
         """
         self._baseinstance = baseinstance
-        ui_file = QtCore.QFile(ui_path)
-        ui_file.open(QtCore.QIODevice.ReadOnly)
+        ui_file = QFile(ui_path)
+        ui_file.open(QIODevice.OpenModeFlag.ReadOnly)
         try:
             widget = self.load(ui_file)
-            QtCore.QMetaObject.connectSlotsByName(widget)
+            QMetaObject.connectSlotsByName(widget)
             return widget
         finally:
             ui_file.close()
