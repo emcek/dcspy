@@ -375,7 +375,7 @@ class DcsPyQtGui(QMainWindow):
         plane_gkeys = load_yaml(full_path=plane_yaml)
         LOG.debug(f'Load {plane_yaml}:\n{pformat(plane_gkeys)}')
         input_reqs = {}
-        button_requests_types = {
+        req_keyword_rb_iface = {
             'TOGGLE': 'rb_action',
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
@@ -386,7 +386,7 @@ class DcsPyQtGui(QMainWindow):
 
         for gkey, data in plane_gkeys.items():
             try:
-                iface = next(rb_iface for req_suffix, rb_iface in button_requests_types.items() if req_suffix in data)
+                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
             except StopIteration:
                 data = ''
                 iface = ''
@@ -439,7 +439,7 @@ class DcsPyQtGui(QMainWindow):
         :param rb_iface: name of radio button input interface
         :return: dict with button request details
         """
-        button_requests_types = {
+        rb_iface_request = {
             'rb_action': f'{ctrl_key.name} TOGGLE',
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
@@ -447,7 +447,7 @@ class DcsPyQtGui(QMainWindow):
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
-        return GuiPlaneInputRequest(identifier=ctrl_key.name, request=button_requests_types.get(rb_iface, ''), widget_iface=rb_iface)
+        return GuiPlaneInputRequest(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
