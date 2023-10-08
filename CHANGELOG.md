@@ -1,3 +1,13 @@
+## 3.0.0
+* Use PySIde6 instead of Custom Tkinter framework
+  * Recognize Git objects for DCS-BIOS live repository
+* Add support for G-Keys of Logitech keyboards
+* Allow assign G-Keys to any control/instrument of all DCS-BIOS supported planes
+* Internal:
+  * G-Keys Logitech SDK C library
+  * Use Pydantic data models
+  * Add unit tests for Qt GUI
+
 ## 2.3.2
 * Show message dialog when there is problem with DCS-BIOS live repository.
 
