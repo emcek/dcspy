@@ -327,7 +327,7 @@ class F16C50(Aircraft):
 
 
 class F15ESE(Aircraft):
-    """F-15ESE Egle."""
+    """F-15ESE Eagle."""
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
