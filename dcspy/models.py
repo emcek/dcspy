@@ -383,6 +383,12 @@ class DcsBios(RootModel):
         return getattr(self.root, item, default)
 
 
+class GuiPlaneInputRequest(BaseModel):
+    identifier: str
+    request: str
+    widget_iface: str
+
+
 class KeyboardModel(BaseModel):
     name: str
     klass: str

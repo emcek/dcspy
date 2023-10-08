@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>690</width>
+    <width>862</width>
     <height>650</height>
    </rect>
   </property>
@@ -651,7 +651,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>690</width>
+     <width>862</width>
      <height>22</height>
     </rect>
    </property>
@@ -679,7 +679,8 @@
      <string>View</string>
     </property>
     <addaction name="a_show_toolbar"/>
-    <addaction name="a_show_layout"/>
+    <addaction name="a_show_gkeys"/>
+    <addaction name="a_show_keyboard"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -704,23 +705,181 @@
    <addaction name="separator"/>
   </widget>
   <widget class="QDockWidget" name="dw_gkeys">
+   <property name="minimumSize">
+    <size>
+     <width>150</width>
+     <height>350</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>350</height>
+    </size>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable</set>
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="allowedAreas">
-    <set>Qt::NoDockWidgetArea</set>
+    <set>Qt::AllDockWidgetAreas</set>
    </property>
    <property name="windowTitle">
-    <string>G-Keys layout</string>
+    <string>G-Keys details</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Actions:</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="rb_action">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Toggle</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fixed_step_inc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Fixed step INC</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fixed_step_dec">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Fixed step DEC</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_set_state">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Set state</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_variable_step_plus">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Variable step +</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_variable_step_minus">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Variable step -</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Information:</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="l_category">
+          <property name="text">
+           <string>Category:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_description">
+          <property name="text">
+           <string>Description:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_identifier">
+          <property name="text">
+           <string>Identifier:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_keyboard">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Keyboard View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
      <item>
       <widget class="QLabel" name="l_keyboard">
        <property name="text">
@@ -800,12 +959,20 @@
     <string>Donate</string>
    </property>
   </action>
-  <action name="a_show_layout">
+  <action name="a_show_gkeys">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show layout</string>
+    <string>Show G-Keys</string>
+   </property>
+  </action>
+  <action name="a_show_keyboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show keyboard</string>
    </property>
   </action>
  </widget>
@@ -820,7 +987,7 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>592</x>
+     <x>533</x>
      <y>617</y>
     </hint>
     <hint type="destinationlabel">
