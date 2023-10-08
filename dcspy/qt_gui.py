@@ -294,8 +294,7 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
-        plane_name = self.combo_planes.currentText()
-        if self._rebuild_ctrl_input_table_not_needed(plane_name=plane_name):
+        if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
             return
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
@@ -304,7 +303,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
-        self.input_reqs[plane_name] = self._load_plane_yaml_into_dict(plane_yaml=self.cfg_file.parent / f'{plane_name}.yaml')
+        self.input_reqs[self.current_plane] = self._load_plane_yaml_into_dict(plane_yaml=self.cfg_file.parent / f'{self.current_plane}.yaml')
 
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
@@ -323,7 +322,7 @@ class DcsPyQtGui(QMainWindow):
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
                 try:
-                    identifier = self.input_reqs[plane_name].get(f'G{row + 1}_M{col + 1}', {}).identifier
+                    identifier = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).identifier
                 except AttributeError:
                     identifier = ''
                 combo.setCurrentText(identifier)
@@ -424,8 +423,7 @@ class DcsPyQtGui(QMainWindow):
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
             self._checked_iface_rb_for_identifier(row=row, col=col)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            plane = self.combo_planes.currentText()
-            self.input_reqs[plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, input_iface=input_iface_name)
+            self.input_reqs[self.current_plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, rb_iface=input_iface_name)
         elif text == '':
             widget.setStyleSheet('')
             for rb_widget in self.bg_rb_input_iface.buttons():
@@ -433,12 +431,12 @@ class DcsPyQtGui(QMainWindow):
                 rb_widget.setChecked(False)
 
     @staticmethod
-    def _get_input_iface_dict_request(ctrl_key: ControlKeyData, input_iface: str) -> GuiPlaneInputRequest:
+    def _get_input_iface_dict_request(ctrl_key: ControlKeyData, rb_iface: str) -> GuiPlaneInputRequest:
         """
         Get dictionary with request details for current input interface.
 
         :param ctrl_key: ControlKeyData instance
-        :param input_iface: name of input interface
+        :param rb_iface: name of radio button input interface
         :return: dict with button request details
         """
         button_requests_types = {
@@ -449,7 +447,7 @@ class DcsPyQtGui(QMainWindow):
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
-        return GuiPlaneInputRequest(identifier=ctrl_key.name, request=button_requests_types.get(input_iface, ''), widget_iface=input_iface,)
+        return GuiPlaneInputRequest(identifier=ctrl_key.name, request=button_requests_types.get(rb_iface, ''), widget_iface=rb_iface)
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -496,9 +494,8 @@ class DcsPyQtGui(QMainWindow):
         :param row: current row
         :param col: current column
         """
-        plane = self.combo_planes.currentText()
         try:
-            widget_iface = self.input_reqs[plane].get(f'G{row + 1}_M{col + 1}', {}).widget_iface
+            widget_iface = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).widget_iface
             getattr(self, widget_iface).setChecked(True)
         except AttributeError:
             pass
@@ -519,17 +516,16 @@ class DcsPyQtGui(QMainWindow):
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
         plane_cfg_yaml = {}
-        current_plane = self.combo_planes.currentText()
         for r in range(0, self.tw_gkeys.rowCount()):
             for c in range(0, self.tw_gkeys.columnCount()):
                 g_key_id = f'G{r + 1}_M{c + 1}'
                 try:
-                    request = self.input_reqs[current_plane].get(g_key_id, {}).request
+                    request = self.input_reqs[self.current_plane].get(g_key_id, {}).request
                 except AttributeError:
                     request = ''
                 plane_cfg_yaml[g_key_id] = request
-        LOG.debug(f'Save {current_plane}:\n{pformat(plane_cfg_yaml)}')
-        save_yaml(data=plane_cfg_yaml, full_path=self.cfg_file.parent / f'{current_plane}.yaml')
+        LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
+        save_yaml(data=plane_cfg_yaml, full_path=self.cfg_file.parent / f'{self.current_plane}.yaml')
 
     def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
         """
@@ -557,8 +553,7 @@ class DcsPyQtGui(QMainWindow):
         if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
             section = self._find_section_name(ctrl_name=current_text)
             ctrl_key = self.ctrl_input[section][current_text]
-            plane = self.combo_planes.currentText()
-            self.input_reqs[plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, input_iface=button.objectName())
+            self.input_reqs[self.current_plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, rb_iface=button.objectName())
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
@@ -972,7 +967,7 @@ class DcsPyQtGui(QMainWindow):
             'font_color_s': self.color_font['medium'],
             'font_color_xs': self.color_font['small'],
             'completer_items': self.sp_completer.value(),
-            'current_plane': self.combo_planes.currentText(),
+            'current_plane': self.current_plane,
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -994,6 +989,16 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
         self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
         self.close()
+
+    # <=><=><=><=><=><=><=><=><=><=><=> others <=><=><=><=><=><=><=><=><=><=><=>
+    @property
+    def current_plane(self) -> str:
+        """
+        Get current plane from combo box.
+
+        :return: plane name as string
+        """
+        return self.combo_planes.currentText()
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
