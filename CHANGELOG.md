@@ -3,6 +3,8 @@
 * Internal:
   * formatting code across project to match style
   * update dependencies to latest version to mitigate vulnerabilities
+  * generate fixtures for unit tests instead of crating them manually
+  * use newer random pytest plugin
 
 ## 2.3.2
 * Show message dialog when there is problem with DCS-BIOS live repository.
