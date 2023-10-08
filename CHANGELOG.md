@@ -1,4 +1,4 @@
-## 2.4.0
+## 2.3.3
 * Alignment with latest DCS-BIOS for: **F-15ESE Eagle** and **AV-8B Night Attack**
 * Internal:
   * formatting code across project to match style
