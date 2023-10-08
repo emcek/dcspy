@@ -293,12 +293,12 @@ def f16c50_color_bios(f16c50_mono_bios):
 def f15ese_mono_bios():
     """Bios values for F-15ESE Eagle for Logitech mono LCD."""
     return [
-        ('F_UFC_Line1_DISPLAY', '*R2-35     141000-AM'),
-        ('F_UFC_Line2_DISPLAY', 'MARITIME      MAN-'),
-        ('F_UFC_Line3_DISPLAY', ' HQ       AJ PROGRAM'),
-        ('F_UFC_Line4_DISPLAY', 'KY-58       SQUELCH*'),
-        ('F_UFC_Line5_DISPLAY', '*U262000    U133000*'),
-        ('F_UFC_Line6_DISPLAY', ' 10               G '),
+        ('F_UFC_LINE1_DISPLAY', '*R2-35     141000-AM'),
+        ('F_UFC_LINE2_DISPLAY', 'MARITIME      MAN-'),
+        ('F_UFC_LINE3_DISPLAY', ' HQ       AJ PROGRAM'),
+        ('F_UFC_LINE4_DISPLAY', 'KY-58       SQUELCH*'),
+        ('F_UFC_LINE5_DISPLAY', '*U262000    U133000*'),
+        ('F_UFC_LINE6_DISPLAY', ' 10               G '),
     ]
 
 
@@ -462,15 +462,15 @@ def av8bna_mono_bios():
         ('UFC_COMM1_DISPLAY', '11'),
         ('UFC_COMM2_DISPLAY', '22'),
         ('AV8BNA_ODU_1_SELECT', '1'),
-        ('AV8BNA_ODU_1_Text', '1234'),
+        ('AV8BNA_ODU_1_TEXT', '1234'),
         ('AV8BNA_ODU_2_SELECT', '2'),
-        ('AV8BNA_ODU_2_Text', '2345'),
+        ('AV8BNA_ODU_2_TEXT', '2345'),
         ('AV8BNA_ODU_3_SELECT', '3'),
-        ('AV8BNA_ODU_3_Text', '3456'),
+        ('AV8BNA_ODU_3_TEXT', '3456'),
         ('AV8BNA_ODU_4_SELECT', '4'),
-        ('AV8BNA_ODU_4_Text', '4567'),
+        ('AV8BNA_ODU_4_TEXT', '4567'),
         ('AV8BNA_ODU_5_SELECT', '5'),
-        ('AV8BNA_ODU_5_Text', '5678'),
+        ('AV8BNA_ODU_5_TEXT', '5678'),
     ]
 
 

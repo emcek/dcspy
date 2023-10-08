@@ -277,7 +277,7 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'warthog' in model:
+    # if 'f15ese' in model or 'av8bna' in model:
     #     img.save(resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)

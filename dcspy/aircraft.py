@@ -329,7 +329,7 @@ class F16C50(Aircraft):
 
 
 class F15ESE(Aircraft):
-    """F-15ESE Egle."""
+    """F-15ESE Eagle."""
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -339,12 +339,12 @@ class F15ESE(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BiosValue] = {
-            'F_UFC_Line1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9214, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_Line2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9228, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_Line3_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x923c, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_Line4_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9250, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_Line5_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9264, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_Line6_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9278, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_LINE1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9214, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_LINE2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9228, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_LINE3_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x923c, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_LINE4_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9250, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_LINE5_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9264, 'max_length': 0x14}, 'value': ''},
+            'F_UFC_LINE6_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9278, 'max_length': 0x14}, 'value': ''},
         }
         self.button_actions = {
             LcdButton.ONE: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
@@ -364,8 +364,8 @@ class F15ESE(Aircraft):
         draw = ImageDraw.Draw(img)
         for i in range(1, 6):
             offset = (i - 1) * 8
-            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
-        mat = search(r'\s*([0-9G]{1,2})\s+([0-9GV]{1,2})\s+', str(self.get_bios('F_UFC_Line6_DISPLAY')))
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
+        mat = search(r'\s*([0-9G]{1,2})\s+([0-9GV]{1,2})\s+', str(self.get_bios('F_UFC_LINE6_DISPLAY')))
         if mat:
             uhf, v_uhf = mat.groups()
             draw.text(xy=(130, 30), text=f'{uhf:>2} {v_uhf:>2}', fill=self.lcd.foreground, font=self.lcd.font_s)
@@ -376,7 +376,7 @@ class F15ESE(Aircraft):
         for i in range(1, 7):
             offset = (i - 1) * 24
             # todo: fix custom font for Color LCD
-            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_Line{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 29))
+            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 29))
 
 
 class Ka50(Aircraft):
@@ -952,19 +952,19 @@ class AV8BNA(Aircraft):
         """
         super().__init__(lcd_type)
         self.bios_data: Dict[str, BiosValue] = {
-            'UFC_SCRATCHPAD': {'klass': 'StringBuffer', 'args': {'address': 0x7984, 'max_length': 12}, 'value': ''},
+            'UFC_SCRATCHPAD': {'klass': 'StringBuffer', 'args': {'address': 0x7976, 'max_length': 12}, 'value': ''},
             'UFC_COMM1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7954, 'max_length': 2}, 'value': ''},
             'UFC_COMM2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7956, 'max_length': 2}, 'value': ''},
-            'AV8BNA_ODU_1_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7966, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_1_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7968, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_2_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x796c, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_2_Text': {'klass': 'StringBuffer', 'args': {'address': 0x796e, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_3_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7972, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_3_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7974, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_4_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7978, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_4_Text': {'klass': 'StringBuffer', 'args': {'address': 0x797a, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_5_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x797e, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_5_Text': {'klass': 'StringBuffer', 'args': {'address': 0x7980, 'max_length': 4}, 'value': ''},
+            'AV8BNA_ODU_1_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7958, 'max_length': 1}, 'value': ''},
+            'AV8BNA_ODU_1_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x795a, 'max_length': 4}, 'value': ''},
+            'AV8BNA_ODU_2_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x795e, 'max_length': 1}, 'value': ''},
+            'AV8BNA_ODU_2_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x7960, 'max_length': 4}, 'value': ''},
+            'AV8BNA_ODU_3_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7964, 'max_length': 1}, 'value': ''},
+            'AV8BNA_ODU_3_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x7966, 'max_length': 4}, 'value': ''},
+            'AV8BNA_ODU_4_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x796a, 'max_length': 1}, 'value': ''},
+            'AV8BNA_ODU_4_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x796c, 'max_length': 4}, 'value': ''},
+            'AV8BNA_ODU_5_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7970, 'max_length': 1}, 'value': ''},
+            'AV8BNA_ODU_5_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x7972, 'max_length': 4}, 'value': ''},
         }
         self.button_actions = {
             LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
@@ -997,7 +997,7 @@ class AV8BNA(Aircraft):
         for i in range(1, 6):
             offset = (i - 1) * 8 * scale
             draw.text(xy=(0 * scale, offset), fill=self.lcd.foreground, font=self.lcd.font_s,
-                      text=f'{i}{self.get_bios(f"AV8BNA_ODU_{i}_SELECT")}{self.get_bios(f"AV8BNA_ODU_{i}_Text")}')
+                      text=f'{i}{self.get_bios(f"AV8BNA_ODU_{i}_SELECT")}{self.get_bios(f"AV8BNA_ODU_{i}_TEXT")}')
         return draw
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:

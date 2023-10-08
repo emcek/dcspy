@@ -8,6 +8,14 @@
   * Use Pydantic data models
   * Add unit tests for Qt GUI
 
+## 2.3.3
+* Alignment with latest DCS-BIOS for: **F-15ESE Eagle** and **AV-8B Night Attack**
+* Internal:
+  * formatting code across project to match style
+  * update dependencies to latest version to mitigate vulnerabilities
+  * generate fixtures for unit tests instead of crating them manually
+  * use newer random pytest plugin
+
 ## 2.3.2
 * Show message dialog when there is problem with DCS-BIOS live repository.
 
