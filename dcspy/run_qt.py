@@ -8,7 +8,7 @@ from dcspy import config
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '2.4.0'
+__version__ = '3.0.0'
 
 
 def run_gui() -> None:
