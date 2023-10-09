@@ -6,7 +6,7 @@ from typing import Tuple
 from _cffi_backend import Lib
 from cffi import FFI
 
-from dcspy import LOGI_DEVICETYPE_ALL
+from dcspy.models import LOGI_DEVICETYPE_ALL
 from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)

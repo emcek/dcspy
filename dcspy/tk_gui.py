@@ -18,7 +18,8 @@ from packaging import version
 from PIL import Image
 from pystray import Icon, MenuItem
 
-from dcspy import DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, SystemData, config
+from dcspy import LCD_TYPES, config
+from dcspy.models import DCSPY_REPO_NAME, LOCAL_APPDATA, SystemData
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_default_yaml, get_version_string, is_git_exec_present, proc_is_running, run_pip_command, save_yaml)

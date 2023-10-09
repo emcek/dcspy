@@ -7,9 +7,10 @@ from threading import Event
 from time import gmtime, time
 from typing import Iterator
 
-from dcspy import MULTICAST_IP, RECV_ADDR, config
+from dcspy import config
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import KeyboardManager
+from dcspy.models import MULTICAST_IP, RECV_ADDR
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)

@@ -2,7 +2,7 @@ from pprint import pprint
 
 from pytest import mark
 
-from dcspy import SUPPORTED_CRAFTS
+from dcspy.models import SUPPORTED_CRAFTS
 from tests.helpers import check_dcsbios_data, generate_bios_data_for_plane
 
 

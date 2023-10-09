@@ -25,8 +25,9 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
                                QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
                                QToolBar, QWidget)
 
-from dcspy import DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, LCD_TYPES, LOCAL_APPDATA, MsgBoxTypes, SystemData, qtgui_rc
-from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, GuiPlaneInputRequest, KeyboardModel
+from dcspy import qtgui_rc
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, LOCAL_APPDATA, ControlKeyData, GuiPlaneInputRequest,
+                          KeyboardModel, MsgBoxTypes, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
                          collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_inputs_for_plane, get_list_of_ctrls,
@@ -152,8 +153,8 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
-        for data in LCD_TYPES.values():
-            getattr(self, f'rb_{data["klass"].lower()}').toggled.connect(partial(self._select_keyboard, data['klass']))
+        for keyboard_type in KEYBOARD_TYPES:
+            getattr(self, f'rb_{keyboard_type.lower()}').toggled.connect(partial(self._select_keyboard, keyboard_type))
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
@@ -184,10 +185,10 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_bios_live.isChecked():
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
-        for data in LCD_TYPES.values():
-            keyboard = getattr(self, f'rb_{data["klass"].lower()}')
+        for keyboard_type in KEYBOARD_TYPES:
+            keyboard = getattr(self, f'rb_{keyboard_type.lower()}')
             if keyboard.isChecked():
-                self._select_keyboard(keyboard=data['klass'], state=True)
+                self._select_keyboard(keyboard=keyboard_type, state=True)
                 break
 
     def _set_find_value(self, value) -> None:

@@ -2,8 +2,8 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy import Gkey, LcdButton, LcdMode, LcdType, generate_gkey
 from dcspy.logitech import G13, G19
+from dcspy.models import Gkey, LcdButton, LcdInfo, LcdMode, LcdType, generate_gkey
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -133,7 +133,6 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
     'Color Keyboard',
 ])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
-    from dcspy import LcdInfo
     from dcspy.aircraft import Aircraft
     from dcspy.sdk import lcd_sdk
 

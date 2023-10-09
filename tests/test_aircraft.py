@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from pytest import mark, raises
 
-from dcspy import LcdButton
+from dcspy.models import LcdButton
 from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 
