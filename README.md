@@ -41,7 +41,7 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 * [DCS-BIOS 0.7.49](https://github.com/DCSFlightpanels/dcs-bios/releases/latest) or newer (can be installed directly from DCSpy)
 * DCS World: [2.8.8.43704](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.8.8.43704/) Open Beta (any release 2.8.8.* should work)
 * (recommended) [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
-* (optional) [Python 3.11](https://www.python.org/downloads/) but 3.8+ should be fine (with tcl/tk support, see [installation](https://github.com/emcek/dcspy/wiki/installation))
+* (optional) [Python 3.11](https://www.python.org/downloads/) but 3.8+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
 
 **Notes:**
 * If you upgrade DCSpy from 1.5.1 or older you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software).

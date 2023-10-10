@@ -9,7 +9,6 @@ files = [(f'dcspy/{res}', 'dcspy') for res in  ['config.yaml']]
 images = [(f'dcspy/img/{res}', 'dcspy/img') for res in img]
 resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in resource]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in logi_sdk]
-gui_packages = collect_data_files('customtkinter') + collect_data_files('CTkMessagebox')
 __version__ = '3.0.0'
 block_cipher = None
 
@@ -18,7 +17,7 @@ a = Analysis(
     ['dcs_py.py'],
     pathex=[],
     binaries=[],
-    datas=files + images + resources + headers + gui_packages,
+    datas=files + images + resources + headers,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
