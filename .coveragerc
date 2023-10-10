@@ -3,7 +3,6 @@ source = dcspy
 
 [report]
 omit = tests/*
-       dcspy/tk_gui.py
        dcspy/qt_gui.py
 
 [html]
