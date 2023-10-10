@@ -8,10 +8,10 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import LcdColor, LcdMono
 from dcspy.aircraft import Aircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.models import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510, generate_gkey
+from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
+                          generate_gkey)
 from dcspy.sdk import key_sdk, lcd_sdk
 
 LOG = getLogger(__name__)
@@ -208,13 +208,14 @@ class KeyboardManager:
 
 class G13(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G13
         :param parser: DCS-BIOS parser instance
         """
+        LcdMono.set_fonts(kwargs['fonts'])
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG13
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
@@ -224,13 +225,14 @@ class G13(KeyboardManager):
 
 class G510(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G510
         :param parser: DCS-BIOS parser instance
         """
+        LcdMono.set_fonts(kwargs['fonts'])
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG510
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
@@ -240,13 +242,14 @@ class G510(KeyboardManager):
 
 class G15v1(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G15 v1
         :param parser: DCS-BIOS parser instance
         """
+        LcdMono.set_fonts(kwargs['fonts'])
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG15v1
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
@@ -256,13 +259,14 @@ class G15v1(KeyboardManager):
 
 class G15v2(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G15 v2
         :param parser: DCS-BIOS parser instance
         """
+        LcdMono.set_fonts(kwargs['fonts'])
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG15v2
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
@@ -272,13 +276,14 @@ class G15v2(KeyboardManager):
 
 class G19(KeyboardManager):
     """Logitech`s keyboard with color LCD."""
-    def __init__(self, parser: ProtocolParser) -> None:
+    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
         """
         Logitech`s keyboard with color LCD.
 
         Support for: G19
         :param parser: DCS-BIOS parser instance
         """
+        LcdColor.set_fonts(kwargs['fonts'])
         super().__init__(parser, lcd_type=LcdColor)
         self.model = ModelG19
         self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
