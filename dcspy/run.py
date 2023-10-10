@@ -1,34 +1,32 @@
-from os import environ, unlink
-from pathlib import Path
-from tempfile import gettempdir
+import signal
+import sys
+from logging import getLogger
 
-import customtkinter
+from PySide6.QtWidgets import QApplication
 
 from dcspy import config
-from dcspy.tk_gui import DcspyGui
+from dcspy.qt_gui import DcsPyQtGui
+
+LOG = getLogger(__name__)
 
 
-def run() -> None:
-    """Start DCSpy GUI."""
-    customtkinter.set_appearance_mode(config['theme_mode'])
-    customtkinter.set_default_color_theme(config['theme_color'])
-    root = customtkinter.CTk()
-    width, height = 770, 520
-    root.geometry(f'{width}x{height}')
-    root.minsize(width=width, height=height)
-    root.iconbitmap(Path(__file__).resolve() / '..' / 'img' / 'dcspy.ico')
-    if config['theme_mode'] == 'dark':
-        root.iconbitmap(Path(__file__).resolve() / '..' / 'img' / 'dcspy_white.ico')
-    root.title('DCSpy')
-    DcspyGui(master=root)
-    if not config['show_gui']:
-        root.withdraw()
+def run_gui() -> None:
+    """Run DCSpy Qt6 GUI."""
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    app = QApplication(sys.argv)
+    app.setStyle('fusion')
+
     try:
-        unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
-    except (KeyError, FileNotFoundError):
-        pass
-    root.mainloop()
+        window = DcsPyQtGui()
+        if config.get('show_gui', True):
+            window.show()
+        app.aboutToQuit.connect(window.event_set)
+    except Exception as exp:
+        LOG.exception(f'Critical error: {exp}')
+    finally:
+        sys.exit(app.exec())
 
 
 if __name__ == '__main__':
-    run()
+    run_gui()
