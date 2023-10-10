@@ -3,7 +3,7 @@ from unittest.mock import call, patch
 from pytest import mark
 
 from dcspy.logitech import G13, G19
-from dcspy.models import Gkey, LcdButton, LcdInfo, LcdMode, LcdType, generate_gkey
+from dcspy.models import FontsConfig, Gkey, LcdButton, LcdInfo, LcdMode, LcdType, generate_gkey
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -125,19 +125,19 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
     assert keyboard_mono.plane_detected is detect
 
 
-@mark.parametrize('mode, size,  lcd_type, keyboard', [
-    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, G13),
-    (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, G19),
+@mark.parametrize('mode, size,  lcd_type, lcd_font, keyboard', [
+    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G13),
+    (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, FontsConfig(name='consola.ttf', small=18, medium=22, large=32), G19),
 ], ids=[
     'Mono Keyboard',
     'Color Keyboard',
 ])
-def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard, protocol_parser):
+def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser):
     from dcspy.aircraft import Aircraft
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        keyboard = keyboard(protocol_parser)
+        keyboard = keyboard(parser=protocol_parser, fonts=lcd_font)
     assert isinstance(keyboard.plane, Aircraft)
     assert isinstance(keyboard.lcd, LcdInfo)
     assert keyboard.lcd.type == lcd_type
@@ -151,12 +151,18 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, keyboard
     assert img.size == size
 
 
-@mark.parametrize('keyboard', [G13, G19], ids=['Mono Keyboard', 'Color Keyboard'])
-def test_check_keyboard_text(keyboard, protocol_parser):
+@mark.parametrize('lcd_font, keyboard', [
+    (FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G13),
+    (FontsConfig(name='consola.ttf', small=18, medium=22, large=32), G19)
+], ids=[
+    'Mono Keyboard',
+    'Color Keyboard'
+])
+def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        keyboard = keyboard(protocol_parser)
+        keyboard = keyboard(parser=protocol_parser, fonts=lcd_font)
 
     with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
         keyboard.text(['1', '2'])
