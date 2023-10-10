@@ -468,6 +468,13 @@ class LcdMode(Enum):
     TRUE_COLOR = 'RGBA'
 
 
+class FontsConfig(BaseModel):
+    name: str
+    small: int
+    medium: int
+    large: int
+
+
 @dataclass
 class LcdInfo:
     """LCD info."""
@@ -477,12 +484,25 @@ class LcdInfo:
     foreground: Union[int, Tuple[int, int, int, int]]
     background: Union[int, Tuple[int, int, int, int]]
     mode: LcdMode
-    font_xs: ImageFont.FreeTypeFont
-    font_s: ImageFont.FreeTypeFont
-    font_l: ImageFont.FreeTypeFont
+    font_xs: Optional[ImageFont.FreeTypeFont] = None
+    font_s: Optional[ImageFont.FreeTypeFont] = None
+    font_l: Optional[ImageFont.FreeTypeFont] = None
+
+    def set_fonts(self, fonts: FontsConfig) -> None:
+        """
+        Set fonts configuration.
+
+        :param fonts: fonts configuration
+        """
+        self.font_xs = ImageFont.truetype(fonts.name, fonts.small)
+        self.font_s = ImageFont.truetype(fonts.name, fonts.medium)
+        self.font_l = ImageFont.truetype(fonts.name, fonts.large)
 
 
-KEYBOARD_TYPES = ['G19', 'G510', 'G15v1', 'G15v2', 'G13']
+LcdMono = LcdInfo(width=MONO_WIDTH, height=MONO_HEIGHT, type=LcdType.MONO, foreground=255,
+                  background=0, mode=LcdMode.BLACK_WHITE)
+LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
+                   background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
 
 
 class KeyboardModel(BaseModel):
@@ -499,6 +519,8 @@ ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcdkeys=4, 
 ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcdkeys=4, lcd='mono')
 ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcdkeys=4, lcd='mono')
 ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcdkeys=4, lcd='mono')
+
+KEYBOARD_TYPES = [ModelG19.klass, ModelG510.klass, ModelG15v1.klass, ModelG15v2.klass, ModelG13.klass]
 
 
 @dataclass
