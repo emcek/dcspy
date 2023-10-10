@@ -1,13 +1,13 @@
 ## Development
 DCSpy use multicast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).
 Main modules of DCSpy:
-* `run.py` main script - it starts GUI in tkinter
+* `run.py` main script - it starts GUI in Qt6/PySide6
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.
 * `log.py` dumb simple logger configuration
 * `logitech.py` handling Logitech keyboards with LCD and buttons, loading dynamically aircraft used in DCS
 * `aircraft.py` define all supported aircraft with details how and what display from DCS, draws bitmap that will be passed to LCD keyboard handler and returns input data for buttons
 * `dcsbios.py` BIOS protocol parser and two buffers to fetching integer and string values `IntegerBuffer` and `StringBuffer` respectively.
-* `tk_gui.py` simple GUI with widgets, layouts and events. It allows configuring DCSpy as well.
+* `qt_gui.py` GUI with widgets, layouts and events. It allows configuring DCSpy as well.
 * `utils.py` various useful tools - load and save config, check online version, download file, update DCS-BIOS using git, etc.
 
 If you want to modify or write something by yourself, here's a quick walk-through:
