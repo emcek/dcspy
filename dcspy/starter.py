@@ -7,9 +7,10 @@ from threading import Event
 from time import gmtime, time
 from typing import Iterator
 
-from dcspy import MULTICAST_IP, RECV_ADDR, config
+from dcspy import config
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import KeyboardManager
+from dcspy.models import MULTICAST_IP, RECV_ADDR, FontsConfig
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
@@ -103,15 +104,16 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(lcd_type: str, event: Event) -> None:
+def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
     """
     Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
     :param event: stop event for main loop
+    :param fonts_cfg: fonts configuration for LCD
     """
     parser = ProtocolParser()
-    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
+    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, fonts=fonts_cfg)
     LOG.info(f'Loading: {str(manager)}')
     LOG.debug(f'Loading: {repr(manager)}')
     dcs_sock = _prepare_socket()

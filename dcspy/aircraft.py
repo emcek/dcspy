@@ -10,7 +10,8 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import SUPPORTED_CRAFTS, BiosValue, Gkey, LcdButton, LcdInfo, LcdType, config
+from dcspy import BiosValue, config
+from dcspy.models import SUPPORTED_CRAFTS, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
 
 try:

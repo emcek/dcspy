@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 
 from pytest import fixture
 
-import dcspy
-from dcspy import aircraft
+from dcspy import aircraft, models
+from dcspy.models import FontsConfig
 
 
 def generate_fixture(plane_model, lcdtype):
@@ -17,7 +17,11 @@ def generate_fixture(plane_model, lcdtype):
 for plane in ['Aircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
         airplane = getattr(aircraft, plane)
-        lcd_type = getattr(dcspy, lcd)
+        lcd_type = getattr(models, lcd)
+        if lcd == 'LcdMono':
+            lcd_type.set_fonts(FontsConfig(name='consola.ttf', small=9, medium=11, large=16))
+        else:
+            lcd_type.set_fonts(FontsConfig(name='consola.ttf', small=18, medium=22, large=32))
         name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
         globals()[name] = generate_fixture(airplane, lcd_type)
 
@@ -62,6 +66,16 @@ def protocol_parser():
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
+def lcd_font_mono():
+    return FontsConfig(name='consola.ttf', small=9, medium=11, large=16)
+
+
+@fixture()
+def lcd_font_color(protocol_parser):
+    return FontsConfig(name='consola.ttf', small=18, medium=22, large=32)
+
+
+@fixture()
 def keyboard_base(protocol_parser):
     """
     Return instance of KeyboardManager.
@@ -77,19 +91,21 @@ def keyboard_base(protocol_parser):
 
 
 @fixture()
-def keyboard_mono(protocol_parser):
+def keyboard_mono(protocol_parser, lcd_font_mono):
     """
     Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
+    :param lcd_font_mono font configuration for LCD
     :return: KeyboardManager
     """
-    from dcspy import LcdButton, LcdMono, generate_gkey
     from dcspy.logitech import KeyboardManager
+    from dcspy.models import LcdButton, LcdMono, generate_gkey
     from dcspy.sdk import key_sdk, lcd_sdk
 
     class Mono(KeyboardManager):
-        def __init__(self, parser):
+        def __init__(self, parser, **kwargs) -> None:
+            LcdMono.set_fonts(kwargs['fonts'])
             super().__init__(parser, lcd_type=LcdMono)
             self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
             self.gkey = generate_gkey(key=3, mode=1)
@@ -97,23 +113,25 @@ def keyboard_mono(protocol_parser):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(key_sdk, 'logi_gkey_init', return_value=True):
-        return Mono(protocol_parser)
+        return Mono(parser=protocol_parser, fonts=lcd_font_mono)
 
 
 @fixture()
-def keyboard_color(protocol_parser):
+def keyboard_color(protocol_parser, lcd_font_color):
     """
     Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
+    :param lcd_font_color font configuration for LCD
     :return: KeyboardManager
     """
-    from dcspy import LcdButton, LcdColor, generate_gkey
     from dcspy.logitech import KeyboardManager
+    from dcspy.models import LcdButton, LcdColor, generate_gkey
     from dcspy.sdk import key_sdk, lcd_sdk
 
     class Color(KeyboardManager):
-        def __init__(self, parser) -> None:
+        def __init__(self, parser, **kwargs) -> None:
+            LcdColor.set_fonts(kwargs['fonts'])
             super().__init__(parser, lcd_type=LcdColor)
             self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
             self.gkey = generate_gkey(key=3, mode=1)
@@ -121,7 +139,7 @@ def keyboard_color(protocol_parser):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(key_sdk, 'logi_gkey_init', return_value=True):
-        return Color(protocol_parser)
+        return Color(parser=protocol_parser, fonts=lcd_font_color)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
