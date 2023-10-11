@@ -8,7 +8,7 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy.aircraft import Aircraft
+from dcspy.aircraft import BasicAircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
                           generate_gkey)
@@ -51,7 +51,7 @@ class KeyboardManager:
         self.buttons: Sequence[LcdButton] = ()
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
         key_sdk.logi_gkey_init()
-        self.plane = Aircraft(self.lcd)
+        self.plane = BasicAircraft(self.lcd)
         self.vert_space = 0
 
     @property
