@@ -39,32 +39,64 @@ package dcsbios {
 }
 
 package logitech {
-    LogitechKeyboard <|-- KeyboardMono
-    LogitechKeyboard <|-- KeyboardColor
+    KeyboardManager <|-- G13
+    KeyboardManager <|-- G510
+    KeyboardManager <|-- G15v1
+    KeyboardManager <|-- G15v2
+    KeyboardManager <|-- G19
 
-    class LogitechKeyboard {
+    class KeyboardManager {
         + parser : ProtocolParser
         + plane : BasicAircraft
         + plane_name = '' : str
         + plane_detected = False : bool
-        + already_pressed = False : bool
+        + lcdbutton_pressed = False : bool
+        + gkey_pressed = False : bool
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
         + lcd : LcdInfo
+        + model: KeyboardModel
         + vert_space = 0 : int
+        + __init__(parser: ProtocolParser)
         + dislay(message : List[str]) -> List[str]
-        # {abstract} _prepare_image() -> Image
         + detecting_plane()
         + load_new_plane(value : str)
-        + check_buttons() -> int
+        + check_buttons() -> LcdButton
+        + check_gkey() -> Gkey
         + button_handle(sock : socket)
         + clear()
         + text(List[str])
+        # _prepare_image() -> Image
+        # _send_request()
     }
 
-    class KeyboardMono {
+    class G13 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
 
-    class KeyboardColor {
+    class G510 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
+        + vert_space = 10 : int
+    }
+
+    class G15v1 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
+        + vert_space = 10 : int
+    }
+
+    class G15v2 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
+        + vert_space = 10 : int
+    }
+
+    class G19 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
         + vert_space = 40 : int
     }
 }
@@ -221,10 +253,10 @@ LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LcdButton -* BasicAircraft
 
-LogitechKeyboard *- BasicAircraft
-LcdInfo -* LogitechKeyboard
-LogitechKeyboard *--- ProtocolParser
-LogitechKeyboard *-- lcd_sdk
+KeyboardManager *- BasicAircraft
+LcdInfo -* KeyboardManager
+KeyboardManager *--- ProtocolParser
+KeyboardManager *-- lcd_sdk
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
