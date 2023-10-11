@@ -133,12 +133,12 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
     'Color Keyboard',
 ])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser):
-    from dcspy.aircraft import Aircraft
+    from dcspy.aircraft import BasicAircraft
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
         keyboard = keyboard(parser=protocol_parser, fonts=lcd_font)
-    assert isinstance(keyboard.plane, Aircraft)
+    assert isinstance(keyboard.plane, BasicAircraft)
     assert isinstance(keyboard.lcd, LcdInfo)
     assert keyboard.lcd.type == lcd_type
     assert isinstance(keyboard.display, list)
@@ -173,12 +173,12 @@ def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
 def test_keyboard_mono_load_plane(model, keyboard_mono):
-    from dcspy.aircraft import Aircraft
+    from dcspy.aircraft import AdvancedAircraft
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
         keyboard_mono.plane_name = model
         keyboard_mono.load_new_plane()
-    assert isinstance(keyboard_mono.plane, Aircraft)
+    assert isinstance(keyboard_mono.plane, AdvancedAircraft)
     assert model in type(keyboard_mono.plane).__name__
