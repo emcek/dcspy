@@ -221,6 +221,12 @@ package sdk{
         + logi_led_shutdown()
         + start_led_pulse()
     }
+    class key_sdk <<(L,lightblue)>> {
+        + logi_gkey_init()
+        + logi_gkey_is_keyboard_gkey_pressed()
+        + logi_gkey_is_keyboard_gkey_string()
+        + logi_gkey_shutdown()
+    }
 }
 
 class IntBuffArgs <<(T,orange)>> {
@@ -257,6 +263,7 @@ KeyboardManager *- BasicAircraft
 LcdInfo -* KeyboardManager
 KeyboardManager *--- ProtocolParser
 KeyboardManager *-- lcd_sdk
+KeyboardManager *-- key_sdk
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
