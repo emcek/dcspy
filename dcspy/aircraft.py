@@ -31,6 +31,16 @@ class CycleButton(TypedDict):
 class MetaAircraft(type):
     """Meta class for all BasicAircraft."""
     def __new__(mcs, name, bases, namespace):
+        """
+        Create new instance of any BasicAircraft.
+
+        You can crate instance of any plane:
+        f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)
+
+        :param name:
+        :param bases:
+        :param namespace:
+        """
         return super().__new__(mcs, name, bases, namespace)
 
 
