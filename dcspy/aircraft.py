@@ -32,7 +32,7 @@ class MetaAircraft(type):
     """Meta class for all BasicAircraft."""
     def __new__(mcs, name, bases, namespace):
         """
-        Create new instance of any BasicAircraft.
+        Create new instance of any plane as BasicAircraft.
 
         You can crate instance of any plane:
         f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)
@@ -42,6 +42,15 @@ class MetaAircraft(type):
         :param namespace:
         """
         return super().__new__(mcs, name, bases, namespace)
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Create new instance of any BasicAircraft.
+
+        :param args:
+        :param kwargs:
+        """
+        LOG.debug(f'Creating {cls.__name__} with: {args[0].type}')
 
 
 class BasicAircraft:
