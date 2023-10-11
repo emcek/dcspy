@@ -119,6 +119,10 @@ package aircraft {
     AH64D *-- ApacheEufdMode
     AdvancedAircraft *- CycleButton
 
+    class MetaAircraft <<(M,plum)>> {
+        + __new__(name, bases, namespace)
+    }
+
     class BasicAircraft {
         + bios_data : Dict[str, BiosValue]
         + cycle_buttons : Dict[LcdButton, CycleButton]
