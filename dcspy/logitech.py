@@ -156,6 +156,7 @@ class KeyboardManager:
         * detect if button was pressed
         * fetch DCS-BIOS request from current plane
         * sent action to DCS-BIOS via network socket
+
         :param sock: network socket
         """
         button = self.check_buttons()
