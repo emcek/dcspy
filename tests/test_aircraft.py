@@ -13,12 +13,12 @@ from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 def test_check_all_aircraft_inherit_from_correct_base_class(plane, request):
     from dcspy import aircraft
     plane = request.getfixturevalue(f'{plane}_mono')
-    assert isinstance(plane, aircraft.Aircraft)
+    assert isinstance(plane, aircraft.BasicAircraft)
 
 
 @mark.parametrize('selector, data, value, c_func, effect, plane', [
-    ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], 'aircraft_mono'),
-    ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], 'aircraft_color'),
+    ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], 'advancedaircraft_mono'),
+    ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], 'advancedaircraft_color'),
 ], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, plane, request):
     from dcspy.sdk import lcd_sdk
@@ -35,8 +35,8 @@ def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, pla
 
 
 @mark.parametrize('c_func, plane', [
-    ('logi_lcd_mono_set_background', 'aircraft_mono'),
-    ('logi_lcd_color_set_background', 'aircraft_color'),
+    ('logi_lcd_mono_set_background', 'advancedaircraft_mono'),
+    ('logi_lcd_color_set_background', 'advancedaircraft_color'),
 ], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_prepare_img(c_func, plane, request):
     from dcspy.sdk import lcd_sdk
