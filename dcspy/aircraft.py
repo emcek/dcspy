@@ -28,6 +28,12 @@ class CycleButton(TypedDict):
     iter: Iterator[int]
 
 
+class MetaAircraft(type):
+    """Meta class for all BasicAircraft."""
+    def __new__(mcs, name, bases, namespace):
+        return super().__new__(mcs, name, bases, namespace)
+
+
 class BasicAircraft:
     """Basic Aircraft."""
     def __init__(self, lcd_type: LcdInfo) -> None:
