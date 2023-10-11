@@ -4,6 +4,7 @@
   * Improve DCS-BIOS update process
 * Add support for G-Keys of Logitech keyboards
 * Allow assign G-Keys to any control/instrument of all DCS-BIOS supported planes
+* New model of support mods: basic (only G-Key) and advanced (G-Key + LCD)
 * Internal:
   * G-Keys Logitech SDK C library
   * Use Pydantic data models
