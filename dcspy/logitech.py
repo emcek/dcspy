@@ -1,6 +1,7 @@
 from functools import partial
 from importlib import import_module
 from logging import getLogger
+from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
@@ -8,11 +9,13 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy.aircraft import BasicAircraft
+from dcspy import config
+from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
                           generate_gkey)
 from dcspy.sdk import key_sdk, lcd_sdk
+from dcspy.utils import get_planes_list
 
 LOG = getLogger(__name__)
 
@@ -96,12 +99,16 @@ class KeyboardManager:
         if self.plane_name != short_name:
             self.plane_name = short_name
             if self.plane_name in SUPPORTED_CRAFTS:
-                LOG.info(f'Detected Aircraft: {value}')
+                LOG.info(f'Advanced supported aircraft: {value}')
                 self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
                 self.plane_detected = True
-            elif self.plane_name not in SUPPORTED_CRAFTS and self.plane_name:
+            elif self.plane_name not in SUPPORTED_CRAFTS and value in get_planes_list(bios_dir=Path(config['dcsbios'])) and self.plane_name:
+                LOG.info(f'Basic supported aircraft: {value}')
+                self.display = ['Detected aircraft:', value]
+                self.plane_detected = True
+            elif value not in get_planes_list(bios_dir=Path(config['dcsbios'])) and self.plane_name:
                 LOG.warning(f'Not supported aircraft: {value}')
-                self.display = ['Detected aircraft:', self.plane_name, 'Not supported yet!']
+                self.display = ['Detected aircraft:', value, 'Not supported yet!']
 
     def load_new_plane(self) -> None:
         """
@@ -110,12 +117,16 @@ class KeyboardManager:
         Setup callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
-        self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
-        LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]["name"]}')
+        if self.plane_name in SUPPORTED_CRAFTS:
+            self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
+            LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]["name"]}')
+            for field_name, proto_data in self.plane.bios_data.items():
+                dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), proto_data['klass'])
+                dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
+        else:
+            self.plane = MetaAircraft(self.plane_name, (BasicAircraft,), {})(self.lcd)
+            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft')
         LOG.debug(f'{repr(self)}')
-        for field_name, proto_data in self.plane.bios_data.items():
-            dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), proto_data['klass'])
-            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
 
     def check_buttons(self) -> LcdButton:
         """
