@@ -162,7 +162,7 @@ def generate_bios_data_for_plane(plane_bios: dict, plane_name: str, git_bios: bo
     return results
 
 
-def set_bios_during_test(aircraft_model: aircraft.Aircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
+def set_bios_during_test(aircraft_model: aircraft.BasicAircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
     """
     Set BIOS values for a given aircraft model.
 
