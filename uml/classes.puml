@@ -121,6 +121,7 @@ package aircraft {
 
     class MetaAircraft <<(M,plum)>> {
         + __new__(name, bases, namespace)
+        + __call__()
     }
 
     class BasicAircraft {
