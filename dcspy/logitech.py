@@ -102,11 +102,11 @@ class KeyboardManager:
                 LOG.info(f'Advanced supported aircraft: {value}')
                 self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
                 self.plane_detected = True
-            elif self.plane_name not in SUPPORTED_CRAFTS and value in get_planes_list(bios_dir=Path(config['dcsbios'])) and self.plane_name:
+            elif self.plane_name not in SUPPORTED_CRAFTS and value in get_planes_list(bios_dir=Path(str(config['dcsbios']))) and self.plane_name:
                 LOG.info(f'Basic supported aircraft: {value}')
                 self.display = ['Detected aircraft:', value]
                 self.plane_detected = True
-            elif value not in get_planes_list(bios_dir=Path(config['dcsbios'])) and self.plane_name:
+            elif value not in get_planes_list(bios_dir=Path(str(config['dcsbios']))) and self.plane_name:
                 LOG.warning(f'Not supported aircraft: {value}')
                 self.display = ['Detected aircraft:', value, 'Not supported yet!']
 
