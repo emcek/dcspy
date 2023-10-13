@@ -141,6 +141,11 @@ exclude = [
     'generate_ver_file\.py$',
 ]
 
+[[tool.mypy.overrides]]
+module = 'qt_gui'
+follow_imports = 'skip'
+#ignore_errors = true
+
 [tool.pydocstyle]
 inherit = false
 ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212']

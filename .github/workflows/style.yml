@@ -66,9 +66,7 @@ jobs:
 
       - name: "Check mypy"
         run: |
-          pwd
-          ls -la
-          mypy --follow-imports silent .
+          mypy .
 
       - name: "Upload mypy results"
         uses: actions/upload-artifact@v3
