@@ -48,6 +48,19 @@ def test_aircraft_base_class_prepare_img(c_func, plane, request):
         aircraft.prepare_image()
 
 
+@mark.parametrize('keyboard, plane_name', [
+    ('keyboard_mono', 'F-22A'),
+    ('keyboard_color', 'UH-60L'),
+], ids=['F-22A Mono Keyboard', 'UH-60L Color Keyboard'])
+def test_meta_plane(keyboard, plane_name, request):
+    from dcspy.aircraft import BasicAircraft, MetaAircraft
+
+    keyboard = request.getfixturevalue(keyboard)
+    plane = MetaAircraft(plane_name, (BasicAircraft,), {})(keyboard.lcd)
+    assert isinstance(plane, BasicAircraft)
+    assert type(plane).__name__ == plane_name
+
+
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
 @mark.parametrize('plane, button, result', [
     ('fa18chornet_mono', LcdButton.NONE, '\n'),
