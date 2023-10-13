@@ -51,6 +51,7 @@ class MetaAircraft(type):
         :param kwargs:
         """
         LOG.debug(f'Creating {cls.__name__} with: {args[0].type}')
+        return super().__call__(*args, **kwargs)
 
 
 class BasicAircraft:
