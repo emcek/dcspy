@@ -144,7 +144,6 @@ exclude = [
 [[tool.mypy.overrides]]
 module = 'dcspy.qt_gui'
 follow_imports = 'skip'
-#ignore_errors = true
 
 [tool.pydocstyle]
 inherit = false
