@@ -142,7 +142,7 @@ exclude = [
 ]
 
 [[tool.mypy.overrides]]
-module = 'qt_gui'
+module = 'dcspy.qt_gui'
 follow_imports = 'skip'
 #ignore_errors = true
 
