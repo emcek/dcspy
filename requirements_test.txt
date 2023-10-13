@@ -14,7 +14,5 @@ pytest-qt; sys_platform == "win32"
 pytest-randomly
 ruff
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
-types-Pillow
-types-psutil
 types-PyYAML
 types-requests
