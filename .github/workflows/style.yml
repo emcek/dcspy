@@ -66,6 +66,8 @@ jobs:
 
       - name: "Check mypy"
         run: |
+          pwd
+          ls -la
           mypy .
 
       - name: "Upload mypy results"
