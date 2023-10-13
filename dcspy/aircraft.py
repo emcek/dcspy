@@ -93,7 +93,6 @@ class BasicAircraft:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
-        lcd_sdk.update_display(self.prepare_image())
 
     def get_bios(self, selector: str) -> Union[str, int]:
         """
@@ -168,6 +167,16 @@ class AdvancedAircraft(BasicAircraft):
         request = self.button_actions.get(button, '\n')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
+
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+        """
+        Set value for DCS-BIOS selector and update LCD with image.
+
+        :param selector:
+        :param value:
+        """
+        super().set_bios(selector=selector, value=value)
+        lcd_sdk.update_display(self.prepare_image())
 
     def prepare_image(self) -> Image.Image:
         """
