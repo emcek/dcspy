@@ -227,8 +227,8 @@ def proc_is_running(name: str) -> int:
     :return: PID as int
     """
     for proc in process_iter(['pid', 'name']):
-        if name in proc.info['name']:  # type: ignore
-            return proc.info['pid']  # type: ignore
+        if name in proc.info['name']:
+            return proc.info['pid']
     return 0
 
 
@@ -317,7 +317,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
             branch = bios_repo.active_branch.name
             head_commit = bios_repo.head.commit
             sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
-        except (git.exc.GitCommandError, TypeError):  # type: ignore
+        except (git.exc.GitCommandError, TypeError):
             head_commit = bios_repo.head.commit
             sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime} by: {head_commit.author}'
         LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message}')  # type: ignore
@@ -587,7 +587,7 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     return aircraft_aliases
 
 
-def get_ctrl(ctrl_name: str, plane: str, bios_dir: Path) -> Control:
+def get_ctrl(ctrl_name: str, plane: str, bios_dir: Path) -> Optional[Control]:
     """
     Get Control object with name of plane.
 

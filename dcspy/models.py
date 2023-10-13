@@ -246,7 +246,7 @@ class ControlKeyData:
         """
         try:
             max_value = cls._get_max_value(list_of_dicts)
-            suggested_step = max(d.get('suggested_step', 1) for d in list_of_dicts)
+            suggested_step: int = max(d.get('suggested_step', 1) for d in list_of_dicts)  # type: ignore
         except ValueError:
             max_value = 0
             suggested_step = 0
@@ -266,8 +266,8 @@ class ControlKeyData:
         _max_values = []
         for d in list_of_dicts:
             try:
-                _max_values.append(d.max_value)
-                if d.max_value == 0:
+                _max_values.append(d.max_value)  # type: ignore
+                if d.max_value == 0:             # type: ignore
                     _real_zero = True
                     break
             except AttributeError:
@@ -291,6 +291,7 @@ class ControlKeyData:
             return f'{self.name} {self.max_value-self.suggested_step}\n|{self.name} {self.max_value}\n'  # 0 1
         elif self.has_fixed_step and self.has_set_state and self.max_value == 0:
             return f'{self.name} 0\n'
+        return '\n'
 
     @property
     def cycle_data(self):
