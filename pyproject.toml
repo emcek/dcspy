@@ -123,21 +123,28 @@ exclude = ['tests/test_*']
 line-length = 160
 select = ['E', 'F', 'C90', 'D', 'RUF']
 ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
-extend-exclude = ["qtgui_rc.py"]
+extend-exclude = [
+    "qtgui_rc.py",
+    "tests/",
+]
 
 [tool.ruff.mccabe]
 max-complexity = 7
 
 [tool.mypy]
 ignore_missing_imports = true
+no_warn_no_return = true
 html_report = 'mypyhtml'
-exclude = '/qt_gui\.py$'
+exclude = [
+    '/qt_gui\.py$',
+    'tests/',
+    'generate_ver_file\.py$',
+]
 
 [tool.pydocstyle]
 inherit = false
 ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212']
 match = '(?!test_|qtgui_rc).*\.py'
-
 
 [tool.isort]
 line_length = 160
