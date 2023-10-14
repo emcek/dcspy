@@ -97,7 +97,7 @@ def test_keyboard_button_handle_gkey(keyboard, sock, request):
     ('F-14B', 'F14B', ['Detected aircraft:', 'F-14B Tomcat'], True),
     ('AV8BNA', 'AV8BNA', ['Detected aircraft:', 'AV-8B N/A Harrier'], True),
     ('SpitfireLFMkIX', 'SpitfireLFMkIX', ['Detected aircraft:', 'SpitfireLFMkIX'], True),
-    ('F-22A', 'F22A', ['Detected aircraft:', 'F-22A'], True),
+    ('F-22A', 'F-22A', ['Detected aircraft:', 'F-22A'], True),
     ('A-10A', 'A10A', ['Detected aircraft:', 'A-10A', 'Not supported yet!'], False),
     ('F-117_Nighthawk', 'F117Nighthawk', ['Detected aircraft:', 'F-117_Nighthawk', 'Not supported yet!'], False),
     ('', '', [], False),
