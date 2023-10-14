@@ -3,7 +3,7 @@ from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
-from typing import Union, Optional
+from typing import Optional, Union
 
 from dcspy.log import config_logger
 from dcspy.models import LOCAL_APPDATA
