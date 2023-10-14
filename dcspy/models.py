@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from re import search
 from tempfile import gettempdir
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
 
@@ -549,6 +550,19 @@ class Gkey:
         :return: ex. {'g_key': 2, 'mode': 1}
         """
         return {'g_key': self.key, 'mode': self.mode}
+
+    @classmethod
+    def from_yaml(cls, /, yaml_str: str) -> 'Gkey':
+        """
+        Construct Gkey from YAML string.
+
+        :param yaml_str: ex. G2_M1
+        :return: Gkey instance
+        """
+        match = search(r'G(\d+)_M(\d+)', yaml_str)
+        if match:
+            return cls(*[int(i) for i in match.groups()])
+        raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
 
 def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
