@@ -7,7 +7,7 @@ from threading import Event
 from time import gmtime, time
 from typing import Iterator
 
-from dcspy import config
+from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import KeyboardManager
 from dcspy.models import MULTICAST_IP, RECV_ADDR, FontsConfig
@@ -117,8 +117,8 @@ def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
     LOG.info(f'Loading: {str(manager)}')
     LOG.debug(f'Loading: {repr(manager)}')
     dcs_sock = _prepare_socket()
-    dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
+    dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
     _handle_connection(manager=manager, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
-    manager.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(config["dcsbios"])).ver}']
+    manager.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(get_config_yaml_item("dcsbios"))).ver}']

@@ -39,66 +39,108 @@ package dcsbios {
 }
 
 package logitech {
-    LogitechKeyboard <|-- KeyboardMono
-    LogitechKeyboard <|-- KeyboardColor
+    KeyboardManager <|-- G13
+    KeyboardManager <|-- G510
+    KeyboardManager <|-- G15v1
+    KeyboardManager <|-- G15v2
+    KeyboardManager <|-- G19
 
-    class LogitechKeyboard {
+    class KeyboardManager {
         + parser : ProtocolParser
-        + plane : Aircraft
+        + plane : BasicAircraft
         + plane_name = '' : str
         + plane_detected = False : bool
-        + already_pressed = False : bool
+        + lcdbutton_pressed = False : bool
+        + gkey_pressed = False : bool
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
         + lcd : LcdInfo
+        + model: KeyboardModel
         + vert_space = 0 : int
+        + __init__(parser: ProtocolParser)
         + dislay(message : List[str]) -> List[str]
-        # {abstract} _prepare_image() -> Image
         + detecting_plane()
         + load_new_plane(value : str)
-        + check_buttons() -> int
+        + check_buttons() -> LcdButton
+        + check_gkey() -> Gkey
         + button_handle(sock : socket)
         + clear()
         + text(List[str])
+        # _prepare_image() -> Image
+        # _send_request()
     }
 
-    class KeyboardMono {
+    class G13 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
 
-    class KeyboardColor {
+    class G510 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
+        + vert_space = 10 : int
+    }
+
+    class G15v1 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
+        + vert_space = 10 : int
+    }
+
+    class G15v2 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
+        + vert_space = 10 : int
+    }
+
+    class G19 {
+        + gkey: Sequence[Gkey]
+        + buttons: Sequence[LcdButton]
         + vert_space = 40 : int
     }
 }
 
 package aircraft {
-    Aircraft <|-- FA18Chornet
-    Aircraft <|-- F16C50
-    Aircraft <|-- F15ESE
-    Aircraft <|-- Ka50
+    BasicAircraft <|-- AdvancedAircraft
+    AdvancedAircraft <|-- FA18Chornet
+    AdvancedAircraft <|-- F16C50
+    AdvancedAircraft <|-- F15ESE
+    AdvancedAircraft <|-- Ka50
     Ka50 <|-- Ka503
-    Aircraft <|-- Mi8MT
-    Aircraft <|-- Mi24P
-    Aircraft <|-- AH64D
-    Aircraft <|-- A10C
+    AdvancedAircraft <|-- Mi8MT
+    AdvancedAircraft <|-- Mi24P
+    AdvancedAircraft <|-- AH64D
+    AdvancedAircraft <|-- A10C
     A10C <|-- A10C2
-    Aircraft <|-- F14B
+    AdvancedAircraft <|-- F14B
     F14B <|-- F14A135GR
-    Aircraft <|-- AV8BNA
+    AdvancedAircraft <|-- AV8BNA
     AH64D *-- ApacheEufdMode
-    Aircraft *- CycleButton
+    AdvancedAircraft *- CycleButton
 
-    class Aircraft {
+    class MetaAircraft <<(M,plum)>> {
+        + __new__(name, bases, namespace)
+        + __call__()
+    }
+
+    class BasicAircraft {
         + bios_data : Dict[str, BiosValue]
         + cycle_buttons : Dict[LcdButton, CycleButton]
         + button_actions: Dict[LcdButton, str]
         + lcd : LcdInfo
-        # _debug_img : Iterator[int]
+        + cfg: Dict[str, Union[str, int]]
         + __init__(lcd_type: LcdInfo)
         + button_request(button: LcdButton) -> str
-        + prepare_image() -> Image
         + set_bios(selector: str, value: Union[str, int])
         + get_bios(selector: str) -> Union[str, int]
         # _get_next_value_for_button(button: LcdButton) -> int
         # _get_cycle_request(button: LcdButton) -> str
+    }
+
+    class AdvancedAircraft {
+        # _debug_img : Iterator[int]
+        + prepare_image() -> Image
         + {abstract} draw_for_lcd_mono(img: Image)
         + {abstract} draw_for_lcd_color(img: Image)
     }
@@ -185,6 +227,12 @@ package sdk{
         + logi_led_shutdown()
         + start_led_pulse()
     }
+    class key_sdk <<(L,lightblue)>> {
+        + logi_gkey_init()
+        + logi_gkey_is_keyboard_gkey_pressed()
+        + logi_gkey_is_keyboard_gkey_string()
+        + logi_gkey_shutdown()
+    }
 }
 
 class IntBuffArgs <<(T,orange)>> {
@@ -215,15 +263,16 @@ BiosValue *-- StrBuffArgs
 LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
-LcdButton -* Aircraft
+LcdButton -* BasicAircraft
 
-LogitechKeyboard *- Aircraft
-LcdInfo -* LogitechKeyboard
-LogitechKeyboard *--- ProtocolParser
-LogitechKeyboard *-- lcd_sdk
+KeyboardManager *- BasicAircraft
+LcdInfo -* KeyboardManager
+KeyboardManager *--- ProtocolParser
+KeyboardManager *-- lcd_sdk
+KeyboardManager *-- key_sdk
 
-LcdInfo --* Aircraft
-Aircraft *-- StringBuffer
-Aircraft *--- IntegerBuffer
-Aircraft *-- lcd_sdk
+LcdInfo --* BasicAircraft
+BasicAircraft *-- StringBuffer
+BasicAircraft *--- IntegerBuffer
+BasicAircraft *-- lcd_sdk
 @enduml

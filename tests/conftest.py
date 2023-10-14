@@ -14,7 +14,7 @@ def generate_fixture(plane_model, lcdtype):
     return _fixture
 
 
-for plane in ['Aircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+for plane in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
         airplane = getattr(aircraft, plane)
         lcd_type = getattr(models, lcd)

@@ -10,7 +10,7 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import BiosValue, config
+from dcspy import BiosValue, default_yaml, load_yaml
 from dcspy.models import SUPPORTED_CRAFTS, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
 
@@ -28,18 +28,44 @@ class CycleButton(TypedDict):
     iter: Iterator[int]
 
 
-class Aircraft:
-    """Common Aircraft."""
+class MetaAircraft(type):
+    """Meta class for all BasicAircraft."""
+    def __new__(mcs, name, bases, namespace):
+        """
+        Create new instance of any plane as BasicAircraft.
+
+        You can crate instance of any plane:
+        f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)
+
+        :param name:
+        :param bases:
+        :param namespace:
+        """
+        return super().__new__(mcs, name, bases, namespace)
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Create new instance of any BasicAircraft.
+
+        :param args:
+        :param kwargs:
+        """
+        LOG.debug(f'Creating {cls.__name__} with: {args[0].type}')
+        return super().__call__(*args, **kwargs)
+
+
+class BasicAircraft:
+    """Basic Aircraft."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Create common aircraft.
+        Create basic aircraft.
 
         :param lcd_type: LCD type
         """
         self.lcd = lcd_type
+        self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: Dict[str, BiosValue] = {}
         self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
-        self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
         self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
 
     def button_request(self, button: Union[LcdButton, Gkey]) -> str:
@@ -60,18 +86,6 @@ class Aircraft:
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
-    def prepare_image(self) -> Image.Image:
-        """
-        Prepare image to be sent to correct type of LCD.
-
-        :return: image instance ready display on LCD
-        """
-        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
-        getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
-        if config.get('save_lcd', False):
-            img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
-        return img
-
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
         Set value for DCS-BIOS selector.
@@ -81,7 +95,6 @@ class Aircraft:
         """
         self.bios_data[selector]['value'] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
-        lcd_sdk.update_display(self.prepare_image())
 
     def get_bios(self, selector: str) -> Union[str, int]:
         """
@@ -93,14 +106,6 @@ class Aircraft:
             return self.bios_data[selector]['value']
         except KeyError:
             return ''
-
-    def draw_for_lcd_mono(self, img: Image.Image) -> None:
-        """Prepare image for Aircraft for Mono LCD."""
-        raise NotImplementedError
-
-    def draw_for_lcd_color(self, img: Image.Image) -> None:
-        """Prepare image for Aircraft for Color LCD."""
-        raise NotImplementedError
 
     def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
         """
@@ -136,7 +141,67 @@ class Aircraft:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
-class FA18Chornet(Aircraft):
+class AdvancedAircraft(BasicAircraft):
+    """Advanced Aircraft."""
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create advanced aircraft.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type=lcd_type)
+        self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
+
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
+        """
+        Prepare aircraft specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        Or any G-Key 1 to 29
+
+        :param button: LcdButton or Gkey
+        :return: ready to send DCS-BIOS request
+        """
+        LOG.debug(f'{type(self).__name__} Button: {button}')
+        if button in self.cycle_buttons:
+            self.button_actions[button] = self._get_cycle_request(button)
+        request = self.button_actions.get(button, '\n')
+        LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
+        return request
+
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+        """
+        Set value for DCS-BIOS selector and update LCD with image.
+
+        :param selector:
+        :param value:
+        """
+        super().set_bios(selector=selector, value=value)
+        lcd_sdk.update_display(self.prepare_image())
+
+    def prepare_image(self) -> Image.Image:
+        """
+        Prepare image to be sent to correct type of LCD.
+
+        :return: image instance ready display on LCD
+        """
+        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
+        getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
+        if self.cfg.get('save_lcd', False):
+            img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
+        return img
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for Aircraft for Mono LCD."""
+        raise NotImplementedError
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for Aircraft for Color LCD."""
+        raise NotImplementedError
+
+
+class FA18Chornet(AdvancedAircraft):
     """F/A-18C Hornet."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -239,7 +304,7 @@ class FA18Chornet(Aircraft):
         super().set_bios(selector, value)
 
 
-class F16C50(Aircraft):
+class F16C50(AdvancedAircraft):
     """F-16C Viper."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -249,7 +314,7 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.font = self.lcd.font_s
-        self.ded_font = config.get('f16_ded_font', True)
+        self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
         self.bios_data: Dict[str, BiosValue] = {
@@ -329,7 +394,7 @@ class F16C50(Aircraft):
         super().set_bios(selector, value)
 
 
-class F15ESE(Aircraft):
+class F15ESE(AdvancedAircraft):
     """F-15ESE Eagle."""
 
     def __init__(self, lcd_type: LcdInfo) -> None:
@@ -380,7 +445,7 @@ class F15ESE(Aircraft):
             draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 29))
 
 
-class Ka50(Aircraft):
+class Ka50(AdvancedAircraft):
     """Ka-50 Black Shark."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -487,7 +552,7 @@ class Ka503(Ka50):
     pass
 
 
-class Mi8MT(Aircraft):
+class Mi8MT(AdvancedAircraft):
     """Mi-8MTV2 Magnificent Eight."""
 
     def __init__(self, lcd_type: LcdInfo) -> None:
@@ -556,7 +621,7 @@ class Mi8MT(Aircraft):
         return r863, r828, yadro
 
 
-class Mi24P(Aircraft):
+class Mi24P(AdvancedAircraft):
     """Mi-24P Hind."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -634,7 +699,7 @@ class ApacheEufdMode(Enum):
     PRE = 4
 
 
-class AH64DBLKII(Aircraft):
+class AH64DBLKII(AdvancedAircraft):
     """AH-64D Apache."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -814,7 +879,7 @@ class AH64DBLKII(Aircraft):
         return super().button_request(button)
 
 
-class A10C(Aircraft):
+class A10C(AdvancedAircraft):
     """A-10C Warthog."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -895,7 +960,7 @@ class A10C2(A10C):
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
-class F14B(Aircraft):
+class F14B(AdvancedAircraft):
     """F-14B Tomcat."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -943,7 +1008,7 @@ class F14A135GR(F14B):
     pass
 
 
-class AV8BNA(Aircraft):
+class AV8BNA(AdvancedAircraft):
     """AV-8B Night Attack."""
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
