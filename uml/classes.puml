@@ -129,6 +129,7 @@ package aircraft {
         + cycle_buttons : Dict[LcdButton, CycleButton]
         + button_actions: Dict[LcdButton, str]
         + lcd : LcdInfo
+        + cfg: Dict[str, Union[str, int]]
         + __init__(lcd_type: LcdInfo)
         + button_request(button: LcdButton) -> str
         + set_bios(selector: str, value: Union[str, int])
