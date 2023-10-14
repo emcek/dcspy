@@ -25,14 +25,14 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
                                QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
                                QToolBar, QWidget)
 
-from dcspy import qtgui_rc
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, LOCAL_APPDATA, ControlKeyData, FontsConfig,
-                          GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, SystemData)
+from dcspy import default_yaml, qtgui_rc
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, FontsConfig, GuiPlaneInputRequest,
+                          KeyboardModel, MsgBoxTypes, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_default_yaml, get_inputs_for_plane, get_list_of_ctrls,
-                         get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running,
-                         run_pip_command, save_yaml)
+                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
+                         get_planes_list, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command,
+                         save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0'
@@ -71,10 +71,9 @@ class DcsPyQtGui(QMainWindow):
         self.r_bios = version.Version('0.0.0')
         self.systray = QSystemTrayIcon()
         self.traymenu = QMenu()
-        self.cfg_file = get_default_yaml(local_appdata=LOCAL_APPDATA)
         self.config = cfg_dict
         if not cfg_dict:
-            self.config = load_yaml(full_path=self.cfg_file)
+            self.config = load_yaml(full_path=default_yaml)
         self.dw_gkeys.hide()
         self.dw_keyboard.hide()
         self.dw_keyboard.setFloating(True)
@@ -304,7 +303,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
 
-        self.input_reqs[self.current_plane] = self._load_plane_yaml_into_dict(plane_yaml=self.cfg_file.parent / f'{self.current_plane}.yaml')
+        self.input_reqs[self.current_plane] = self._load_plane_yaml_into_dict(plane_yaml=default_yaml.parent / f'{self.current_plane}.yaml')
 
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
@@ -526,7 +525,7 @@ class DcsPyQtGui(QMainWindow):
                     request = ''
                 plane_cfg_yaml[g_key_id] = request
         LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
-        save_yaml(data=plane_cfg_yaml, full_path=self.cfg_file.parent / f'{self.current_plane}.yaml')
+        save_yaml(data=plane_cfg_yaml, full_path=default_yaml.parent / f'{self.current_plane}.yaml')
 
     def _save_current_cell(self, currentRow: int, currentColumn: int, previousRow: int, previousColumn: int) -> None:
         """
@@ -980,12 +979,12 @@ class DcsPyQtGui(QMainWindow):
                         'font_mono_s': self.hs_medium_font.value(),
                         'font_mono_xs': self.hs_small_font.value()}
         cfg.update(font_cfg)
-        save_yaml(data=cfg, full_path=self.cfg_file)
+        save_yaml(data=cfg, full_path=default_yaml)
 
     def _reset_defaults_cfg(self) -> None:
         """Set defaults and stop application."""
-        save_yaml(data=defaults_cfg, full_path=self.cfg_file)
-        self.config = load_yaml(full_path=self.cfg_file)
+        save_yaml(data=defaults_cfg, full_path=default_yaml)
+        self.config = load_yaml(full_path=default_yaml)
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
             getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
