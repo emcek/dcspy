@@ -314,8 +314,8 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
-    with patch('dcspy.aircraft.config', return_value={'save_lcd': True}):
-        img = apache.prepare_image()
+    apache.cfg['save_lcd'] = True
+    img = apache.prepare_image()
     assert (Path(gettempdir()) / f'{type(apache).__name__}_999.png').exists()
     assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
 
