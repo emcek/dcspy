@@ -10,7 +10,7 @@ from typing import Dict, Iterator, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import BiosValue, config
+from dcspy import BiosValue, default_yaml, load_yaml
 from dcspy.models import SUPPORTED_CRAFTS, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
 
@@ -63,6 +63,7 @@ class BasicAircraft:
         :param lcd_type: LCD type
         """
         self.lcd = lcd_type
+        self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: Dict[str, BiosValue] = {}
         self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
@@ -187,7 +188,7 @@ class AdvancedAircraft(BasicAircraft):
         """
         img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
-        if config.get('save_lcd', False):
+        if self.cfg.get('save_lcd', False):
             img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
         return img
 
@@ -313,7 +314,7 @@ class F16C50(AdvancedAircraft):
         """
         super().__init__(lcd_type)
         self.font = self.lcd.font_s
-        self.ded_font = config.get('f16_ded_font', True)
+        self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
         self.bios_data: Dict[str, BiosValue] = {
