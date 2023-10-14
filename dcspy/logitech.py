@@ -9,13 +9,13 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import config
+from dcspy import default_yaml
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
                           generate_gkey)
 from dcspy.sdk import key_sdk, lcd_sdk
-from dcspy.utils import get_planes_list
+from dcspy.utils import get_planes_list, load_yaml
 
 LOG = getLogger(__name__)
 
@@ -98,15 +98,16 @@ class KeyboardManager:
         short_name = value.replace('-', '').replace('_', '')
         if self.plane_name != short_name:
             self.plane_name = short_name
+            planes_list = get_planes_list(bios_dir=Path(load_yaml(full_path=default_yaml)['dcsbios']))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
                 self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
                 self.plane_detected = True
-            elif self.plane_name not in SUPPORTED_CRAFTS and value in get_planes_list(bios_dir=Path(str(config['dcsbios']))) and self.plane_name:
+            elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
                 self.display = ['Detected aircraft:', value]
                 self.plane_detected = True
-            elif value not in get_planes_list(bios_dir=Path(str(config['dcsbios']))) and self.plane_name:
+            elif value not in planes_list:
                 LOG.warning(f'Not supported aircraft: {value}')
                 self.display = ['Detected aircraft:', value, 'Not supported yet!']
 
