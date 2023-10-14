@@ -18,7 +18,7 @@ def test_qt(qtbot, resources, switch_dcs_bios_path_in_config):
     QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     QtCore.QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 
-    with patch.object(qt_gui, 'get_default_yaml', return_value=resources / 'c.yml'):
+    with patch('dcspy.qt_gui.default_yaml', resources / 'c.yml'):
         dcspy_gui = qt_gui.DcsPyQtGui()
     dcspy_gui.show()
     qtbot.addWidget(dcspy_gui)
