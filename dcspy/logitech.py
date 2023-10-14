@@ -9,13 +9,13 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import default_yaml
+from dcspy import get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
                           generate_gkey)
 from dcspy.sdk import key_sdk, lcd_sdk
-from dcspy.utils import get_planes_list, load_yaml
+from dcspy.utils import get_planes_list
 
 LOG = getLogger(__name__)
 
@@ -98,7 +98,7 @@ class KeyboardManager:
         short_name = value.replace('-', '').replace('_', '')
         if self.plane_name != short_name:
             self.plane_name = short_name
-            planes_list = get_planes_list(bios_dir=Path(load_yaml(full_path=default_yaml)['dcsbios']))
+            planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
                 self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
