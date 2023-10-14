@@ -98,7 +98,7 @@ class KeyboardManager:
         short_name = value.replace('-', '').replace('_', '')
         if self.plane_name != short_name:
             self.plane_name = short_name
-            planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
+            planes_list = get_planes_list(bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
                 self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
