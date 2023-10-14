@@ -1,4 +1,4 @@
-from pytest import mark
+from pytest import mark, raises
 
 AAP_PAGE = {
     'category': 'AAP',
@@ -318,3 +318,18 @@ def test_get_next_value_for_button(control, curr_val, results):
     assert seed == results[2]
     assert cycle_btn['Button1']['bios'] == results[3]
     assert isinstance(cycle_btn['Button1']['iter'], Iterable)
+
+
+def test_gkey_from_yaml_success():
+    from dcspy.models import Gkey
+
+    gkey = Gkey.from_yaml('G22_M3')
+    assert gkey.key == 22
+    assert gkey.mode == 3
+
+
+def test_gkey_from_yaml_value_error():
+    from dcspy.models import Gkey
+
+    with raises(ValueError):
+        _ = Gkey.from_yaml('G_M1')
