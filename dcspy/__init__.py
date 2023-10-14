@@ -22,13 +22,6 @@ __version__ = '3.0.0'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 _config = set_defaults(load_yaml(full_path=default_yaml), filename=default_yaml)
-LCD_TYPES = {
-    'G19': {'klass': 'G19', 'icon': 'G19.png'},
-    'G510': {'klass': 'G510', 'icon': 'G510.png'},
-    'G15 v1': {'klass': 'G15v1', 'icon': 'G15v1.png'},
-    'G15 v2': {'klass': 'G15v2', 'icon': 'G15v2.png'},
-    'G13': {'klass': 'G13', 'icon': 'G13.png'},
-}
 LOG = getLogger(__name__)
 config_logger(LOG, _config['verbose'])
 
