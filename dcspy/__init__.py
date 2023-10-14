@@ -3,7 +3,7 @@ from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
-from typing import Union
+from typing import Union, Optional
 
 from dcspy.log import config_logger
 from dcspy.models import LOCAL_APPDATA
@@ -33,6 +33,17 @@ LOG.debug(f'Configuration: {_config} from: {default_yaml}')
 LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
 dcs_type, dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
 LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
+
+
+def get_config_yaml_item(key: str, /, default: Optional[Union[str, int]] = None) -> Union[str, int]:
+    """
+    Get item from configuration YAML file..
+
+    :param key: key to get
+    :param default: default value if key not found
+    :return: value from configuration
+    """
+    return load_yaml(full_path=default_yaml).get(key, default)
 
 
 class IntBuffArgs(TypedDict):
