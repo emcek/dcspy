@@ -7,7 +7,7 @@ from tempfile import gettempdir
 
 from PySide6.QtWidgets import QApplication
 
-from dcspy import config
+from dcspy import default_yaml, load_yaml
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
@@ -22,7 +22,7 @@ def run() -> None:
 
     try:
         window = DcsPyQtGui()
-        if config.get('show_gui', True):
+        if load_yaml(full_path=default_yaml).get('show_gui', True):
             window.show()
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
         app.aboutToQuit.connect(window.event_set)
