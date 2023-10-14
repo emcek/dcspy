@@ -105,6 +105,7 @@ class KeyboardManager:
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
+                self.plane_name = value
                 self.display = ['Detected aircraft:', value]
                 self.plane_detected = True
             elif value not in planes_list:
