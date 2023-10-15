@@ -6,7 +6,7 @@ from tempfile import gettempdir
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
 
 from PIL import ImageFont
-from pydantic import BaseModel, RootModel, field_validator
+from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 # Network
 SEND_ADDR = ('127.0.0.1', 7778)
@@ -434,6 +434,14 @@ class DcsBios(RootModel):
         :return:
         """
         return getattr(self.root, item, default)
+
+
+class CycleButton(BaseModel):
+    """Map BIOS key string with iterator to keep current value."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    ctrl_name: str
+    iter: Iterator[int] = iter([0])
 
 
 class GuiPlaneInputRequest(BaseModel):
