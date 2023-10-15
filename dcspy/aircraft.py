@@ -222,7 +222,7 @@ class FA18Chornet(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'UFC_SCRATCHPAD_STRING_1_DISPLAY': '',
             'UFC_SCRATCHPAD_STRING_2_DISPLAY': '',
             'UFC_SCRATCHPAD_NUMBER_DISPLAY':  '',
@@ -243,13 +243,13 @@ class FA18Chornet(AdvancedAircraft):
             'HUD_ATT_SW': int(),
             'IFEI_DWN_BTN': int(),
             'IFEI_UP_BTN': int(),
-        }
-        self.cycle_buttons = {
+        })
+        self.cycle_buttons.update({
             LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW'),
             LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN'),
             LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN'),
-        }
-        self.button_actions = {
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
             LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
             LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
@@ -262,7 +262,7 @@ class FA18Chornet(AdvancedAircraft):
             Gkey(8, 1): 'UFC_COMM1_CHANNEL_SELECT INC\n',
             Gkey(2, 1): 'UFC_COMM2_CHANNEL_SELECT DEC\n',
             Gkey(9, 1): 'UFC_COMM2_CHANNEL_SELECT INC\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
@@ -331,18 +331,18 @@ class F16C50(AdvancedAircraft):
         self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'DED_LINE_1': '',
             'DED_LINE_2': '',
             'DED_LINE_3': '',
             'DED_LINE_4': '',
             'DED_LINE_5': '',
-            'IFF_MASTER_KNB':  int(),
+            'IFF_MASTER_KNB': int(),
             'IFF_ENABLE_SW': int(),
             'IFF_M4_CODE_SW': int(),
             'IFF_M4_REPLY_SW': int(),
-        }
-        self.cycle_buttons = {
+        })
+        self.cycle_buttons.update({
             LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB'),
             LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW'),
             LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW'),
@@ -351,7 +351,7 @@ class F16C50(AdvancedAircraft):
             LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW'),
             LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW'),
             LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW'),
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
@@ -419,15 +419,15 @@ class F15ESE(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'F_UFC_LINE1_DISPLAY': '',
             'F_UFC_LINE2_DISPLAY': '',
             'F_UFC_LINE3_DISPLAY': '',
             'F_UFC_LINE4_DISPLAY': '',
             'F_UFC_LINE5_DISPLAY': '',
             'F_UFC_LINE6_DISPLAY': '',
-        }
-        self.button_actions = {
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
             LcdButton.TWO: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
             LcdButton.THREE: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
@@ -438,7 +438,7 @@ class F15ESE(AdvancedAircraft):
             LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
             LcdButton.MENU: 'F_UFC_KEY_L_GUARD 1\n|F_UFC_KEY_L_GUARD 0\n',
             LcdButton.CANCEL: 'F_UFC_KEY_R_GUARD 1\n|F_UFC_KEY_R_GUARD 0\n',
-        }
+        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
@@ -471,7 +471,7 @@ class Ka50(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'PVI_LINE1_APOSTROPHE1': '',
             'PVI_LINE1_APOSTROPHE2': '',
             'PVI_LINE1_POINT': '',
@@ -487,8 +487,8 @@ class Ka50(AdvancedAircraft):
             'AP_FD_LED': int(),
             'AP_HDG_HOLD_LED': int(),
             'AP_PITCH_HOLD_LED': int(),
-        }
-        self.button_actions = {
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\n|PVI_WAYPOINTS_BTN 0\n',
             LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
             LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
@@ -497,7 +497,7 @@ class Ka50(AdvancedAircraft):
             LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
             LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
             LcdButton.UP: 'PVI_TARGETS_BTN 1\n|PVI_TARGETS_BTN 0\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -580,7 +580,7 @@ class Mi8MT(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'LMP_AP_HDG_ON': int(),
             'LMP_AP_PITCH_ROLL_ON': int(),
             'LMP_AP_HEIGHT_ON': int(),
@@ -589,7 +589,7 @@ class Mi8MT(AdvancedAircraft):
             'R863_FREQ': '',
             'R828_PRST_CHAN_SEL': int(),
             'YADRO1A_FREQ': '',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -650,7 +650,7 @@ class Mi24P(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'PLT_R863_CHAN': int(),
             'PLT_R863_MODUL': int(),
             'PLT_R828_CHAN': int(),
@@ -662,7 +662,7 @@ class Mi24P(AdvancedAircraft):
             'PLT_SAU_K_ON_L': int(),
             'PLT_SAU_T_ON_L': int(),
             'PLT_SAU_B_ON_L': int(),
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -732,7 +732,7 @@ class AH64DBLKII(AdvancedAircraft):
         super().__init__(lcd_type)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'PLT_EUFD_LINE1': '',
             'PLT_EUFD_LINE2': '',
             'PLT_EUFD_LINE3': '',
@@ -745,15 +745,15 @@ class AH64DBLKII(AdvancedAircraft):
             'PLT_EUFD_LINE10': '',
             'PLT_EUFD_LINE11': '',
             'PLT_EUFD_LINE12': '',
-        }
-        self.button_actions = {
+        })
+        self.button_actions.update({
             LcdButton.TWO: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
             LcdButton.THREE: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
             LcdButton.FOUR: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
             LcdButton.RIGHT: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
             LcdButton.DOWN: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
             LcdButton.UP: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
-        }
+        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -912,7 +912,7 @@ class A10C(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'VHFAM_FREQ1': '',
             'VHFAM_FREQ2': int(),
             'VHFAM_FREQ3': int(),
@@ -931,7 +931,7 @@ class A10C(AdvancedAircraft):
             'UHF_PRESET': '',
             'ARC210_FREQUENCY': '',
             'ARC210_PREV_MANUAL_FREQ': '',
-        }
+        })
 
     def _generate_freq_values(self) -> Sequence[str]:
         """
@@ -997,13 +997,13 @@ class F14B(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'RIO_CAP_CLEAR': int(),
             'RIO_CAP_SW': int(),
             'RIO_CAP_NE': int(),
             'RIO_CAP_ENTER': int(),
-        }
-        self.button_actions = {
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
             LcdButton.TWO: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
             LcdButton.THREE: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
@@ -1012,7 +1012,7 @@ class F14B(AdvancedAircraft):
             LcdButton.RIGHT: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
             LcdButton.DOWN: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
             LcdButton.UP: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
@@ -1047,7 +1047,7 @@ class AV8BNA(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, Union[str, int]] = {
+        self.bios_data.update({
             'UFC_SCRATCHPAD': '',
             'UFC_COMM1_DISPLAY': '',
             'UFC_COMM2_DISPLAY': '',
@@ -1061,8 +1061,8 @@ class AV8BNA(AdvancedAircraft):
             'AV8BNA_ODU_4_TEXT': '',
             'AV8BNA_ODU_5_SELECT': '',
             'AV8BNA_ODU_5_TEXT': '',
-        }
-        self.button_actions = {
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
             LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
             LcdButton.THREE: 'UFC_COM2_SEL -3200\n',
@@ -1071,7 +1071,7 @@ class AV8BNA(AdvancedAircraft):
             LcdButton.RIGHT: 'UFC_COM1_SEL 3200\n',
             LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
             LcdButton.UP: 'UFC_COM2_SEL 3200\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
