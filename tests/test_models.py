@@ -333,3 +333,22 @@ def test_gkey_from_yaml_value_error():
 
     with raises(ValueError):
         _ = Gkey.from_yaml('G_M1')
+
+
+def test_cycle_button_default_iter():
+    from dcspy.models import CycleButton
+
+    cb = CycleButton(ctrl_name='AAP_PAGE')
+    with raises(StopIteration):
+        next(cb.iter)
+        next(cb.iter)
+
+
+def test_cycle_button_custom_iter():
+    from dcspy.models import CycleButton
+
+    cb = CycleButton(ctrl_name='AAP_PAGE', iter=iter([1, 2]))
+    with raises(StopIteration):
+        assert next(cb.iter) == 1
+        assert next(cb.iter) == 2
+        next(cb.iter)
