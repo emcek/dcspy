@@ -6,21 +6,15 @@ from pprint import pformat
 from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Iterator, List, NamedTuple, Sequence, Tuple, Union
+from typing import Dict, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import SUPPORTED_CRAFTS, Gkey, LcdButton, LcdInfo, LcdType
+from dcspy.models import CycleButton, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
-
-
-class CycleButton(NamedTuple):
-    """Map BIOS key string with iterator to keep current value."""
-    bios: str
-    iter: Iterator[int]
 
 
 class MetaAircraft(type):
