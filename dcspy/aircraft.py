@@ -6,18 +6,13 @@ from pprint import pformat
 from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Iterator, List, Sequence, Tuple, Union, NamedTuple
+from typing import Dict, Iterator, List, NamedTuple, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
 from dcspy.models import SUPPORTED_CRAFTS, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
-
-try:
-    from typing import TypedDict
-except ImportError:
-    from typing_extensions import TypedDict
 
 LOG = getLogger(__name__)
 
