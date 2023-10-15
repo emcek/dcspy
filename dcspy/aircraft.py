@@ -6,11 +6,11 @@ from pprint import pformat
 from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Iterator, List, Sequence, Tuple, Union
+from typing import Dict, Iterator, List, Sequence, Tuple, Union, NamedTuple
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import BiosValue, default_yaml, load_yaml
+from dcspy import default_yaml, load_yaml
 from dcspy.models import SUPPORTED_CRAFTS, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
 
@@ -22,7 +22,7 @@ except ImportError:
 LOG = getLogger(__name__)
 
 
-class CycleButton(TypedDict):
+class CycleButton(NamedTuple):
     """Map BIOS key string with iterator to keep current value."""
     bios: str
     iter: Iterator[int]
