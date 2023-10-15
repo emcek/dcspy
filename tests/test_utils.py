@@ -314,6 +314,7 @@ def test_get_planes_list(resources):
 
 
 def test_get_ctrl(resources):
-    c = utils.get_ctrl(ctrl_name='TACAN_MODE', bios_dir=resources / 'dcs_bios', plane='A-10C')
+    json_data = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    c = utils.get_ctrl(ctrl_name='TACAN_MODE', plane_bios=json_data)
     assert c.output.max_value == 4
     assert c.input.one_input is False
