@@ -1033,7 +1033,7 @@ class F14B(AdvancedAircraft):
 
 class F14A135GR(F14B):
     """F-14A-135-GR Tomcat."""
-    pass
+    bios_name: str = 'F-14A-135-GR'
 
 
 class AV8BNA(AdvancedAircraft):
