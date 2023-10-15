@@ -123,8 +123,8 @@ class BasicAircraft:
 
         :param button: LcdButton Enum
         """
-        if not isinstance(self.cycle_buttons[button]['iter'], cycle):
-            bios = self.cycle_buttons[button]['bios']
+        if not isinstance(self.cycle_buttons[button].iter, cycle):
+            bios = self.cycle_buttons[button].ctrl_name
             curr_val = int(self.get_bios(bios))
             max_val = self.bios_data[bios]['max_value']
             step = 1
@@ -133,8 +133,8 @@ class BasicAircraft:
             full_seed = range_inc + range_dec + range_inc
             seed = full_seed[curr_val//step + 1:2 * (len(range_inc) - 1) + curr_val//step + 1]
             LOG.debug(f'{type(self).__name__} {bios} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
-            self.cycle_buttons[button]['iter'] = cycle(chain(seed))
-        return next(self.cycle_buttons[button]['iter'])
+            self.cycle_buttons[button].iter = cycle(chain(seed))
+        return next(self.cycle_buttons[button].iter)
 
     def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
@@ -143,7 +143,7 @@ class BasicAircraft:
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
         """
-        button_bios_name = self.cycle_buttons[button]['bios']
+        button_bios_name = self.cycle_buttons[button].ctrl_name
         settings = self._get_next_value_for_button(button)
         return f'{button_bios_name} {settings}\n'
 
@@ -245,9 +245,9 @@ class FA18Chornet(AdvancedAircraft):
             'IFEI_UP_BTN': int(),
         }
         self.cycle_buttons = {
-            LcdButton.OK: {'bios': 'HUD_ATT_SW', 'iter': iter([0])},
-            LcdButton.MENU: {'bios': 'IFEI_DWN_BTN', 'iter': iter([0])},
-            LcdButton.CANCEL: {'bios': 'IFEI_UP_BTN', 'iter': iter([0])},
+            LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW'),
+            LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN'),
+            LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN'),
         }
         self.button_actions = {
             LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
@@ -343,14 +343,14 @@ class F16C50(AdvancedAircraft):
             'IFF_M4_REPLY_SW': int(),
         }
         self.cycle_buttons = {
-            LcdButton.ONE: {'bios': 'IFF_MASTER_KNB', 'iter': iter([0])},
-            LcdButton.TWO: {'bios': 'IFF_ENABLE_SW', 'iter': iter([0])},
-            LcdButton.THREE: {'bios': 'IFF_M4_CODE_SW', 'iter': iter([0])},
-            LcdButton.FOUR: {'bios': 'IFF_M4_REPLY_SW', 'iter': iter([0])},
-            LcdButton.LEFT: {'bios': 'IFF_MASTER_KNB', 'iter': iter([0])},
-            LcdButton.RIGHT: {'bios': 'IFF_ENABLE_SW', 'iter': iter([0])},
-            LcdButton.DOWN: {'bios': 'IFF_M4_CODE_SW', 'iter': iter([0])},
-            LcdButton.UP: {'bios': 'IFF_M4_REPLY_SW', 'iter': iter([0])},
+            LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB'),
+            LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW'),
+            LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW'),
+            LcdButton.FOUR: CycleButton(ctrl_name='IFF_M4_REPLY_SW'),
+            LcdButton.LEFT: CycleButton(ctrl_name='IFF_MASTER_KNB'),
+            LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW'),
+            LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW'),
+            LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW'),
         }
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
