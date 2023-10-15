@@ -103,7 +103,7 @@ class BasicAircraft:
         :param selector:
         :param value:
         """
-        self.bios_data[selector]['value'] = value
+        self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
 
     def get_bios(self, selector: str) -> Union[str, int]:
@@ -113,7 +113,7 @@ class BasicAircraft:
         :param selector:
         """
         try:
-            return self.bios_data[selector]['value']
+            return self.bios_data[selector]
         except KeyError:
             return ''
 
