@@ -40,7 +40,7 @@ jobs:
         env:
           PYSIDE_DESIGNER_PLUGINS: .
         run: |
-          python -m pytest -q -m "not dcsbios"
+          python -m pytest -q
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v3
