@@ -58,6 +58,25 @@ class BasicAircraft:
         self.bios_data: Dict[str, Union[str, int]] = {}
         self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
+        self._load_plane_yaml()
+
+    def _load_plane_yaml(self) -> None:
+        """Load plane's YAML file with configuration and apply."""
+        bios_data, cycle_buttons, button_actions = {}, {}, {}
+        plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
+        for gkey_str, request in plane_yaml.items():
+            if request:
+                gkey = Gkey.from_yaml(gkey_str)
+                if 'CYCLE' in request:
+                    selector = request.split(' ')[0]
+                    bios_data[selector] = ''  # int or str maybe set as None
+                    cycle_buttons[gkey] = CycleButton(ctrl_name=selector)
+                else:
+                    button_actions[gkey] = f'{request}\n'
+
+        self.bios_data.update(bios_data)
+        self.cycle_buttons.update(cycle_buttons)
+        self.button_actions.update(button_actions)
 
     def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
