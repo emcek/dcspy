@@ -99,7 +99,6 @@ qt_api = 'pyside6'
 addopts = ['-q']
 testpaths = ['tests']
 markers = [
-    'dcsbios: marks tests for verfification of DCS-BIOS data',
     'qt6: marks tests for Qt6 verfification'
 ]
 
