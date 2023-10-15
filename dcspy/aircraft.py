@@ -45,6 +45,8 @@ class MetaAircraft(type):
 
 class BasicAircraft:
     """Basic Aircraft."""
+    bios_name: str = ''
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create basic aircraft.
@@ -192,6 +194,8 @@ class AdvancedAircraft(BasicAircraft):
 
 class FA18Chornet(AdvancedAircraft):
     """F/A-18C Hornet."""
+    bios_name: str = 'FA-18C_hornet'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F/A-18C Hornet.
@@ -295,6 +299,8 @@ class FA18Chornet(AdvancedAircraft):
 
 class F16C50(AdvancedAircraft):
     """F-16C Viper."""
+    bios_name: str = 'F-16C_50'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F-16C Viper.
@@ -385,6 +391,7 @@ class F16C50(AdvancedAircraft):
 
 class F15ESE(AdvancedAircraft):
     """F-15ESE Eagle."""
+    bios_name: str = 'F-15ESE'
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -436,6 +443,8 @@ class F15ESE(AdvancedAircraft):
 
 class Ka50(AdvancedAircraft):
     """Ka-50 Black Shark."""
+    bios_name: str = 'Ka-50'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create Ka-50 Black Shark.
@@ -538,11 +547,12 @@ class Ka50(AdvancedAircraft):
 
 class Ka503(Ka50):
     """Ka-50 Black Shark III."""
-    pass
+    bios_name: str = 'Ka-50_3'
 
 
 class Mi8MT(AdvancedAircraft):
     """Mi-8MTV2 Magnificent Eight."""
+    bios_name: str = 'Mi-8MT'
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -612,6 +622,8 @@ class Mi8MT(AdvancedAircraft):
 
 class Mi24P(AdvancedAircraft):
     """Mi-24P Hind."""
+    bios_name: str = 'Mi-24P'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create Mi-24P Hind.
@@ -690,6 +702,8 @@ class ApacheEufdMode(Enum):
 
 class AH64DBLKII(AdvancedAircraft):
     """AH-64D Apache."""
+    bios_name: str = 'AH-64D_BLK_II'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AH-64D Apache.
@@ -870,6 +884,8 @@ class AH64DBLKII(AdvancedAircraft):
 
 class A10C(AdvancedAircraft):
     """A-10C Warthog."""
+    bios_name: str = 'A-10C'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create A-10C Warthog or A-10C II Tank Killer.
@@ -932,6 +948,8 @@ class A10C(AdvancedAircraft):
 
 class A10C2(A10C):
     """A-10C II Tank Killer."""
+    bios_name: str = 'A-10C_2'
+
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Mono LCD."""
         draw = ImageDraw.Draw(img)
@@ -951,6 +969,8 @@ class A10C2(A10C):
 
 class F14B(AdvancedAircraft):
     """F-14B Tomcat."""
+    bios_name: str = 'F-14B'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F-14B Tomcat.
@@ -999,6 +1019,8 @@ class F14A135GR(F14B):
 
 class AV8BNA(AdvancedAircraft):
     """AV-8B Night Attack."""
+    bios_name: str = 'AV8BNA'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AV-8B Night Attack.
