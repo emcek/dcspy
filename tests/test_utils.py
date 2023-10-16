@@ -260,15 +260,15 @@ def test_collect_debug_data():
 def test_run_pip_command_success():
     rc, err, out = utils.run_pip_command('list')
     assert rc == 0
-    assert err == ''
-    assert out
+    assert 'pip' in out, out
+    assert err == '', err
 
 
 def test_run_pip_command_failed():
     rc, err, out = utils.run_pip_command('bullshit')
     assert rc == 1
-    assert err != ''
-    assert out == ''
+    assert out == '', out
+    assert err != '', err
 
 
 def test_get_full_bios_for_plane(resources):
