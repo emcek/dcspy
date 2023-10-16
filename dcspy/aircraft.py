@@ -75,8 +75,8 @@ class BasicAircraft:
                     button_actions[gkey] = f'{request}\n'
 
         self.bios_data.update(bios_data)
-        self.cycle_buttons.update(cycle_buttons)
-        self.button_actions.update(button_actions)
+        self.cycle_buttons.update(cycle_buttons)  # type: ignore
+        self.button_actions.update(button_actions)  # type: ignore
 
     def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
