@@ -38,14 +38,12 @@ def test_check_ver_is_possible(online_tag, result):
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '',
-                                                                                                                            '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '',
-                                                                                                                            '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
 
 
 @mark.parametrize('online_tag, result', [
@@ -219,8 +217,7 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
         lua_dst.write(lua_dst_data)
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
-    assert result == ('\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation '
-                      'at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
 
 
 def test_check_dcs_bios_entry_ok(tmpdir):
