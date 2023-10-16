@@ -1,4 +1,4 @@
-from os import makedirs, linesep
+from os import linesep, makedirs
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
