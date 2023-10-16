@@ -1,4 +1,4 @@
-from os import makedirs
+from os import makedirs, linesep
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
@@ -261,7 +261,7 @@ def test_run_pip_command_success():
     rc, err, out = utils.run_pip_command('list')
     assert rc == 0
     assert 'pip' in out, out
-    assert err == '' or err == 'WARNING: There was an error checking the latest version of pip.\n', err
+    assert err == '' or err == f'WARNING: There was an error checking the latest version of pip.{linesep}', err
 
 
 def test_run_pip_command_failed():
