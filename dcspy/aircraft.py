@@ -245,9 +245,9 @@ class FA18Chornet(AdvancedAircraft):
             'IFEI_UP_BTN': int(),
         })
         self.cycle_buttons.update({
-            LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW'),
-            LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN'),
-            LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN'),
+            LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW', max_value=2),
+            LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN', max_value=1),
+            LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN', max_value=1),
         })
         self.button_actions.update({
             LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
@@ -343,14 +343,14 @@ class F16C50(AdvancedAircraft):
             'IFF_M4_REPLY_SW': int(),
         })
         self.cycle_buttons.update({
-            LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB'),
-            LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW'),
-            LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW'),
-            LcdButton.FOUR: CycleButton(ctrl_name='IFF_M4_REPLY_SW'),
-            LcdButton.LEFT: CycleButton(ctrl_name='IFF_MASTER_KNB'),
-            LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW'),
-            LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW'),
-            LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW'),
+            LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
+            LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
+            LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
+            LcdButton.FOUR: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
+            LcdButton.LEFT: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
+            LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
+            LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
+            LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
         })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
