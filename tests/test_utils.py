@@ -38,7 +38,8 @@ def test_check_ver_is_possible(online_tag, result):
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '',
+                                                                                                                            '', 'Regular', '')
 
 
 def test_check_ver_exception():
