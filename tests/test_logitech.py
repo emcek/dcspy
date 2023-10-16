@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.logitech import G13, G19
+from dcspy.logitech import G13, G19, G510, G15v1, G15v2
 from dcspy.models import FontsConfig, Gkey, LcdButton, LcdInfo, LcdMode, LcdType, generate_gkey
 
 
@@ -12,7 +12,7 @@ def test_keyboard_base_basic_check(keyboard_base):
     assert str(keyboard_base) == 'KeyboardManager: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'gkey_pressed', 'buttons',
-            '_display', 'plane', 'Aircraft', 'vert_space', 'lcd')
+            '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel')
     for test_string in data:
         assert test_string in logitech_repr
 
@@ -134,10 +134,16 @@ def test_keyboard_mono_detecting_plane(plane_str, plane, display, detect, keyboa
 
 @mark.parametrize('mode, size,  lcd_type, lcd_font, keyboard', [
     (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G13),
+    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G510),
+    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G15v1),
+    (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G15v2),
     (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, FontsConfig(name='consola.ttf', small=18, medium=22, large=32), G19),
 ], ids=[
-    'Mono Keyboard',
-    'Color Keyboard',
+    'Mono G13',
+    'Mono G510',
+    'Mono G15v1',
+    'Mono G15v2',
+    'Color G19',
 ])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser):
     from dcspy.aircraft import BasicAircraft
@@ -160,10 +166,16 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
 
 @mark.parametrize('lcd_font, keyboard', [
     (FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G13),
+    (FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G510),
+    (FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G15v1),
+    (FontsConfig(name='consola.ttf', small=9, medium=11, large=16), G15v2),
     (FontsConfig(name='consola.ttf', small=18, medium=22, large=32), G19)
 ], ids=[
-    'Mono Keyboard',
-    'Color Keyboard'
+    'Mono G13',
+    'Mono G510',
+    'Mono G15v1',
+    'Mono G15v2',
+    'Color G19',
 ])
 def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
     from dcspy.sdk import lcd_sdk
@@ -179,7 +191,7 @@ def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
-def test_keyboard_mono_load_plane(model, keyboard_mono):  # todo: need mock for Local data config Ka-50 i.e.
+def test_keyboard_mono_load_plane(model, keyboard_mono):
     from dcspy.aircraft import AdvancedAircraft
     from dcspy.sdk import lcd_sdk
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
@@ -189,3 +201,18 @@ def test_keyboard_mono_load_plane(model, keyboard_mono):  # todo: need mock for 
         keyboard_mono.load_new_plane()
     assert isinstance(keyboard_mono.plane, AdvancedAircraft)
     assert model in type(keyboard_mono.plane).__name__
+
+
+@mark.parametrize('model', [
+    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
+])
+def test_keyboard_color_load_plane(model, keyboard_color):
+    from dcspy.aircraft import AdvancedAircraft
+    from dcspy.sdk import lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_color_set_background', return_value=True), \
+            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        keyboard_color.plane_name = model
+        keyboard_color.load_new_plane()
+    assert isinstance(keyboard_color.plane, AdvancedAircraft)
+    assert model in type(keyboard_color.plane).__name__
