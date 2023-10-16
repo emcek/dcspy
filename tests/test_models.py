@@ -339,6 +339,7 @@ def test_cycle_button_default_iter():
     from dcspy.models import CycleButton
 
     cb = CycleButton(ctrl_name='AAP_PAGE')
+    assert cb.max_value == 1
     with raises(StopIteration):
         next(cb.iter)
         next(cb.iter)
@@ -347,8 +348,11 @@ def test_cycle_button_default_iter():
 def test_cycle_button_custom_iter():
     from dcspy.models import CycleButton
 
-    cb = CycleButton(ctrl_name='AAP_PAGE', iter=iter([1, 2]))
+    max_val = 2
+    cb = CycleButton(ctrl_name='AAP_PAGE', max_value=max_val, iter=iter(range(max_val + 1)))
+    assert cb.max_value == max_val
     with raises(StopIteration):
+        assert next(cb.iter) == 0
         assert next(cb.iter) == 1
         assert next(cb.iter) == 2
         next(cb.iter)
