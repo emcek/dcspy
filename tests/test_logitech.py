@@ -216,7 +216,7 @@ def test_keyboard_color_load_plane(model, keyboard_color):
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA'
 ])
 @mark.parametrize('keyboard', [
-    'g13', 'g510', 'g15v1', 'g15v2', 'g19'
+    'G13', 'G510', 'G15v1', 'G15v2', 'G19'
 ])
 def test_all_keyboard_all_plane_load(model, keyboard, resources, request):
     from dcspy.aircraft import AdvancedAircraft
