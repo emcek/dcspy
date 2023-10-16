@@ -130,7 +130,7 @@ def keyboard_mono(protocol_parser, lcd_font_mono):
             self.vert_space = 10
 
         def _setup_plane_callback(self) -> None:
-            pass
+            print('empty callback setup')
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(key_sdk, 'logi_gkey_init', return_value=True):
@@ -158,7 +158,7 @@ def keyboard_color(protocol_parser, lcd_font_color):
             self.vert_space = 40
 
         def _setup_plane_callback(self) -> None:
-            pass
+            print('empty callback setup')
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(key_sdk, 'logi_gkey_init', return_value=True):
