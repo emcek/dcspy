@@ -148,6 +148,56 @@ def keyboard_color(protocol_parser, lcd_font_color):
         return Color(parser=protocol_parser, fonts=lcd_font_color)
 
 
+@fixture()
+def g13(protocol_parser, lcd_font_mono):
+    from dcspy.logitech import G13
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return G13(parser=protocol_parser, fonts=lcd_font_mono)
+
+
+@fixture()
+def g510(protocol_parser, lcd_font_mono):
+    from dcspy.logitech import G510
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return G510(parser=protocol_parser, fonts=lcd_font_mono)
+
+
+@fixture()
+def g15v1(protocol_parser, lcd_font_mono):
+    from dcspy.logitech import G15v1
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return G15v1(parser=protocol_parser, fonts=lcd_font_mono)
+
+
+@fixture()
+def g15v2(protocol_parser, lcd_font_mono):
+    from dcspy.logitech import G15v2
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return G15v2(parser=protocol_parser, fonts=lcd_font_mono)
+
+
+@fixture()
+def g19(protocol_parser, lcd_font_color):
+    from dcspy.logitech import G19
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return G19(parser=protocol_parser, fonts=lcd_font_color)
+
+
 # <=><=><=><=><=> others <=><=><=><=><=>
 @fixture()
 def sock():
