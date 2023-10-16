@@ -441,6 +441,7 @@ class CycleButton(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     ctrl_name: str
+    max_value: int = 1
     iter: Iterator[int] = iter([0])
 
 
