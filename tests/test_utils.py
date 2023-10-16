@@ -44,7 +44,8 @@ def test_check_ver_can_not_check():
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '',
+                                                                                                                            '', 'Regular', '')
 
 
 @mark.parametrize('online_tag, result', [
@@ -325,7 +326,21 @@ def test_get_plane_aliases_wrong_plane(resources):
 
 def test_get_planes_list(resources):
     plane_list = utils.get_planes_list(bios_dir=resources / 'dcs_bios')
-    assert plane_list == ['A-10C', 'F-16C_50'], plane_list
+    assert plane_list == [
+        'A-10C',
+        'A-10C_2',
+        'AH-64D_BLK_II',
+        'AV8BNA',
+        'F-14A-135-GR',
+        'F-14B',
+        'F-15ESE',
+        'F-16C_50',
+        'FA-18C_hornet',
+        'Ka-50',
+        'Ka-50_3',
+        'Mi-24P',
+        'Mi-8MT',
+    ]
 
 
 def test_get_ctrl(resources):
