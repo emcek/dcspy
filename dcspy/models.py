@@ -1,11 +1,12 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
+from re import search
 from tempfile import gettempdir
 from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
 
 from PIL import ImageFont
-from pydantic import BaseModel, RootModel, field_validator
+from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 # Network
 SEND_ADDR = ('127.0.0.1', 7778)
@@ -140,7 +141,7 @@ class Action(Input):
 
 class Output(BaseModel):
     address: int
-    description: str
+    description: Optional[str] = None  # workaround: for Ka-50 `definePushButtonLed`
     suffix: str
 
 
@@ -435,6 +436,15 @@ class DcsBios(RootModel):
         return getattr(self.root, item, default)
 
 
+class CycleButton(BaseModel):
+    """Map BIOS key string with iterator to keep current value."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    ctrl_name: str
+    max_value: int = 1
+    iter: Iterator[int] = iter([0])
+
+
 class GuiPlaneInputRequest(BaseModel):
     identifier: str
     request: str
@@ -549,6 +559,19 @@ class Gkey:
         :return: ex. {'g_key': 2, 'mode': 1}
         """
         return {'g_key': self.key, 'mode': self.mode}
+
+    @classmethod
+    def from_yaml(cls, /, yaml_str: str) -> 'Gkey':
+        """
+        Construct Gkey from YAML string.
+
+        :param yaml_str: ex. G2_M1
+        :return: Gkey instance
+        """
+        match = search(r'G(\d+)_M(\d+)', yaml_str)
+        if match:
+            return cls(*[int(i) for i in match.groups()])
+        raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
 
 def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:

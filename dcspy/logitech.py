@@ -15,7 +15,7 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
                           generate_gkey)
 from dcspy.sdk import key_sdk, lcd_sdk
-from dcspy.utils import get_planes_list
+from dcspy.utils import get_ctrl, get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
 
@@ -105,6 +105,7 @@ class KeyboardManager:
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
+                self.plane_name = value
                 self.display = ['Detected aircraft:', value]
                 self.plane_detected = True
             elif value not in planes_list:
@@ -120,14 +121,22 @@ class KeyboardManager:
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
             self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
-            LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]["name"]}')
-            for field_name, proto_data in self.plane.bios_data.items():
-                dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), proto_data['klass'])
-                dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, field_name), **proto_data['args'])
+            LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]["name"]} | BIOS: {self.plane.bios_name}')
+            self._setup_plane_callback()
         else:
             self.plane = MetaAircraft(self.plane_name, (BasicAircraft,), {})(self.lcd)
-            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft')
+            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')  # todo: remove, check name
+            self.plane.bios_name = self.plane_name
+            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')
         LOG.debug(f'{repr(self)}')
+
+    def _setup_plane_callback(self):
+        """Setups DCS-BIOS parser callbacks for detected plane."""
+        plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
+        for ctrl_name in self.plane.bios_data:
+            ctrl = get_ctrl(ctrl_name=ctrl_name, plane_bios=plane_bios)
+            dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
+            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
     def check_buttons(self) -> LcdButton:
         """

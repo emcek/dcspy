@@ -507,7 +507,7 @@ def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(data)
 
 
-def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Any]:
+def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
     """
     Collect full BIOS for plane with name.
 
@@ -587,17 +587,15 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     return aircraft_aliases
 
 
-def get_ctrl(ctrl_name: str, plane: str, bios_dir: Path) -> Optional[Control]:
+def get_ctrl(ctrl_name: str, plane_bios: Dict[str, Dict[str, ControlKeyData]]) -> Optional[Control]:
     """
-    Get Control object with name of plane.
+    Get Control dict for control name.
 
     :param ctrl_name: Control name
-    :param plane: plane name
-    :param bios_dir: path to DCS-BIOS
+    :param plane_bios: dict with controls of plane
     :return: Control instance
     """
-    json_data = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
-    for section, controllers in json_data.items():
+    for section, controllers in plane_bios.items():
         for ctrl, data in controllers.items():
             if ctrl == ctrl_name:
                 return Control.model_validate(data)

@@ -39,8 +39,9 @@ jobs:
       - name: "Test with pytest"
         env:
           PYSIDE_DESIGNER_PLUGINS: .
+          PYTEST_QT_API: PySide6
         run: |
-          python -m pytest -q -m "not dcsbios"
+          python -m pytest -q
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v3
