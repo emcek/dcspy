@@ -261,7 +261,7 @@ def test_run_pip_command_success():
     rc, err, out = utils.run_pip_command('list')
     assert rc == 0
     assert 'pip' in out, out
-    assert err == '' or err == 'WARNING: There was an error checking the latest version of pip.', err
+    assert err == '' or err == 'WARNING: There was an error checking the latest version of pip.\n', err
 
 
 def test_run_pip_command_failed():
