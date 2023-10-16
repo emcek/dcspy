@@ -219,7 +219,8 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
         lua_dst.write(lua_dst_data)
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
-    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+    assert result == ('\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation '
+                      'at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
 
 
 def test_check_dcs_bios_entry_ok(tmpdir):
