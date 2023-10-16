@@ -717,6 +717,11 @@ class DcsPyQtGui(QMainWindow):
             return sha, install_result
 
     def _error_during_bios_update(self, exc_tuple):
+        """
+        Show message box with error details.
+
+        :param exc_tuple: Exception tuple
+        """
         self._done_event.set()
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
@@ -726,6 +731,11 @@ class DcsPyQtGui(QMainWindow):
         self._done_event.clear()
 
     def _check_bios_git_completed(self, result):
+        """
+        Show message box with installation details.
+
+        :param result:
+        """
         self._done_event.set()
         sha, install_result = result
         self.statusbar.showMessage(sha)
