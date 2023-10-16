@@ -7,10 +7,10 @@ from dcspy import aircraft, logitech, models
 from dcspy.models import FontsConfig
 
 
-def generate_plane_fixtures(plane_model, lcdtype):
+def generate_plane_fixtures(plane, lcd_type_with_fonts):
     @fixture()
     def _fixture():
-        return plane_model(lcdtype)
+        return plane(lcd_type_with_fonts)
     return _fixture
 
 
