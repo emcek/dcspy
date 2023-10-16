@@ -125,7 +125,9 @@ class KeyboardManager:
             self._setup_plane_callback()
         else:
             self.plane = MetaAircraft(self.plane_name, (BasicAircraft,), {})(self.lcd)
-            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft')
+            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')  # todo: remove, check name
+            self.plane.bios_name = self.plane_name
+            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')
         LOG.debug(f'{repr(self)}')
 
     def _setup_plane_callback(self):
