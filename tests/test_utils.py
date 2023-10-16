@@ -296,7 +296,21 @@ def test_get_inputs_for_wrong_plane(resources):
 
 def test_get_plane_aliases_all(resources):
     s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios')
-    assert s == {'A-10C': ['CommonData', 'A-10C'], 'F-16C_50': ['CommonData', 'F-16C_50']}
+    assert s == {
+        'A-10C': ['CommonData', 'A-10C'],
+        'A-10C_2': ['CommonData', 'A-10C'],
+        'AH-64D_BLK_II': ['CommonData', 'AH-64D'],
+        'AV8BNA': ['CommonData', 'AV8BNA'],
+        'F-14A-135-GR': ['CommonData', 'F-14'],
+        'F-14B': ['CommonData', 'F-14'],
+        'F-15ESE': ['CommonData', 'F-15E'],
+        'F-16C_50': ['CommonData', 'F-16C_50'],
+        'FA-18C_hornet': ['CommonData', 'FA-18C_hornet'],
+        'Ka-50': ['CommonData', 'Ka-50'],
+        'Ka-50_3': ['CommonData', 'Ka-50'],
+        'Mi-24P': ['CommonData', 'Mi-24P'],
+        'Mi-8MT': ['CommonData', 'Mi-8MT'],
+    }
 
 
 def test_get_plane_aliases_one_plane(resources):
