@@ -68,9 +68,9 @@ class BasicAircraft:
             if request:
                 gkey = Gkey.from_yaml(gkey_str)
                 if 'CYCLE' in request:
-                    selector = request.split(' ')[0]
+                    selector, _, max_value = request.split(' ')
                     bios_data[selector] = ''  # int or str maybe set as None
-                    cycle_buttons[gkey] = CycleButton(ctrl_name=selector)
+                    cycle_buttons[gkey] = CycleButton(ctrl_name=selector, max_value=int(max_value))
                 else:
                     button_actions[gkey] = f'{request}\n'
 
@@ -126,7 +126,7 @@ class BasicAircraft:
         if not isinstance(self.cycle_buttons[button].iter, cycle):
             bios = self.cycle_buttons[button].ctrl_name
             curr_val = int(self.get_bios(bios))
-            max_val = self.bios_data[bios]['max_value']
+            max_val = self.cycle_buttons[button].max_value
             step = 1
             range_inc = list(range(0, max_val + step, step))
             range_dec = list(range(max_val - step, 0, -step))
