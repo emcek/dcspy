@@ -141,7 +141,7 @@ class Action(Input):
 
 class Output(BaseModel):
     address: int
-    description: str
+    description: Optional[str] = None  # workaround: for Ka-50 `definePushButtonLed`
     suffix: str
 
 
