@@ -379,7 +379,7 @@ class DcsPyQtGui(QMainWindow):
             'TOGGLE': 'rb_action',
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
-            'CYCLE_': 'rb_set_state',
+            'CYCLE': 'rb_set_state',
             '+': 'rb_variable_step_plus',
             '-': 'rb_variable_step_minus',
         }
@@ -443,7 +443,7 @@ class DcsPyQtGui(QMainWindow):
             'rb_action': f'{ctrl_key.name} TOGGLE',
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
-            'rb_set_state': f'{ctrl_key.name} CYCLE_{ctrl_key.max_value}',
+            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.max_value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
