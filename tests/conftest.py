@@ -8,15 +8,29 @@ from dcspy.models import FontsConfig
 
 
 def generate_plane_fixtures(plane, lcd_type_with_fonts):
+    """
+    Generate fixtures for any plane with any lcd type.
+
+    :param plane: any plane object
+    :param lcd_type_with_fonts: lcd_type with fonts
+    """
     @fixture()
     def _fixture():
+        """Fixture."""
         return plane(lcd_type_with_fonts)
     return _fixture
 
 
 def generate_keyboard_fixtures(keyboard, lcd_font_setting):
+    """
+    Generate fixtures for any keyboard and with lcd_font_setting.
+
+    :param keyboard: any keyboard object
+    :param lcd_font_setting: FontSetting object
+    """
     @fixture()
     def _fixture():
+        """Fixture."""
         from dcspy.dcsbios import ProtocolParser
         from dcspy.sdk import key_sdk, lcd_sdk
 
@@ -87,11 +101,13 @@ def protocol_parser():
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
 def lcd_font_mono():
+    """Returns font configuration for mono LCD."""
     return FontsConfig(name='consola.ttf', small=9, medium=11, large=16)
 
 
 @fixture()
 def lcd_font_color(protocol_parser):
+    """Returns font configuration for color LCD."""
     return FontsConfig(name='consola.ttf', small=18, medium=22, large=32)
 
 
