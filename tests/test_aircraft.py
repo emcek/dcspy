@@ -222,10 +222,10 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     from itertools import cycle
     plane = request.getfixturevalue(plane)
-    assert not all([isinstance(cyc_btn, cycle) for cyc_btn in plane.cycle_buttons.values()])
+    assert not all([isinstance(cyc_btn.iter, cycle) for cyc_btn in plane.cycle_buttons.values()])
     for val in values:
         assert plane.button_request(btn) == f'{btn_name} {val}\n'
-    assert isinstance(plane.cycle_buttons[btn]['iter'], cycle)
+    assert isinstance(plane.cycle_buttons[btn].iter, cycle)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
@@ -265,7 +265,7 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
 def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
-    assert plane.bios_data[bios_pairs[0][0]]['value'] == result
+    assert plane.bios_data[bios_pairs[0][0]] == result
 
 
 @mark.parametrize('plane, bios_pairs, mode', [
