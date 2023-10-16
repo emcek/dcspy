@@ -193,12 +193,9 @@ def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
 ])
 def test_keyboard_mono_load_plane(model, keyboard_mono):
     from dcspy.aircraft import AdvancedAircraft
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-        keyboard_mono.plane_name = model
-        keyboard_mono.load_new_plane()
+
+    keyboard_mono.plane_name = model
+    keyboard_mono.load_new_plane()
     assert isinstance(keyboard_mono.plane, AdvancedAircraft)
     assert model in type(keyboard_mono.plane).__name__
 
@@ -208,11 +205,26 @@ def test_keyboard_mono_load_plane(model, keyboard_mono):
 ])
 def test_keyboard_color_load_plane(model, keyboard_color):
     from dcspy.aircraft import AdvancedAircraft
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_color_set_background', return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
-        keyboard_color.plane_name = model
-        keyboard_color.load_new_plane()
+
+    keyboard_color.plane_name = model
+    keyboard_color.load_new_plane()
     assert isinstance(keyboard_color.plane, AdvancedAircraft)
     assert model in type(keyboard_color.plane).__name__
+
+
+@mark.parametrize('model', [
+    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA'
+])
+@mark.parametrize('keyboard', [
+    'g13', 'g510', 'g15v1', 'g15v2', 'g19'
+])
+def test_all_keyboard_all_plane_load(model, keyboard, resources, request):
+    from dcspy.aircraft import AdvancedAircraft
+
+    keyboard = request.getfixturevalue(keyboard)
+    with patch('dcspy.logitech.get_config_yaml_item', return_value=resources / 'dcs_bios'):
+        keyboard.plane_name = model
+        keyboard.load_new_plane()
+
+    assert isinstance(keyboard.plane, AdvancedAircraft)
+    assert model in type(keyboard.plane).__name__
