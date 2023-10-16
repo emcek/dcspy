@@ -58,6 +58,7 @@ SUPPORTED_CRAFTS = {
 
 
 class Input(BaseModel):
+    """Input base class of inputs section of Control."""
     description: str
 
     def get(self, attribute: str, default=None) -> Optional[Any]:
@@ -72,6 +73,7 @@ class Input(BaseModel):
 
 
 class FixedStep(Input):
+    """FixedStep input interface of inputs section of Control."""
     interface: str = 'fixed_step'
 
     @field_validator('interface')
@@ -88,6 +90,7 @@ class FixedStep(Input):
 
 
 class VariableStep(Input):
+    """VariableStep input interface of inputs section of Control."""
     interface: str = 'variable_step'
     max_value: int
     suggested_step: int
@@ -106,6 +109,7 @@ class VariableStep(Input):
 
 
 class SetState(Input):
+    """SetState input interface of inputs section of Control."""
     interface: str = 'set_state'
     max_value: int
 
@@ -123,6 +127,7 @@ class SetState(Input):
 
 
 class Action(Input):
+    """Action input interface of inputs section of Control."""
     argument: str
     interface: str = 'action'
 
@@ -140,12 +145,14 @@ class Action(Input):
 
 
 class Output(BaseModel):
+    """Output base class of outputs section of Control."""
     address: int
     description: Optional[str] = None  # workaround: for Ka-50 `definePushButtonLed`
     suffix: str
 
 
 class OutputStr(Output):
+    """String output interface of outputs section of Control."""
     max_length: int
     type: str
 
@@ -163,6 +170,7 @@ class OutputStr(Output):
 
 
 class OutputInt(Output):
+    """Integer output interface of outputs section of Control."""
     mask: int
     max_value: int
     shift_by: int
@@ -183,12 +191,14 @@ class OutputInt(Output):
 
 # ---------------- DCS-BIOS ----------------
 class IntBuffArgs(BaseModel):
+    """Arguments of BIOS Integer Buffer."""
     address: int
     mask: int
     shift_by: int
 
 
 class BiosValueInt(BaseModel):
+    """Value of BIOS Integer Buffer."""
     klass: str
     args: IntBuffArgs
     value: Union[int, str]
@@ -196,22 +206,27 @@ class BiosValueInt(BaseModel):
 
 
 class StrBuffArgs(BaseModel):
+    """Arguments of BIOS String Buffer."""
     address: int
     max_length: int
 
 
 class BiosValueStr(BaseModel):
+    """Value of BIOS String Buffer."""
     klass: str
     args: StrBuffArgs
     value: Union[int, str]
 
 
 class BiosValue(RootModel):
+    """BIOS values model."""
     root: Dict[str, Union[BiosValueStr, BiosValueInt]]
 # ---------------- DCS-BIOS ----------------
 
 
 class ControlKeyData:
+    """Describes input data for cockpit controller."""
+
     def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
         """
         Define type of input for cockpit controller.
@@ -376,6 +391,7 @@ class ControlKeyData:
 
 
 class Control(BaseModel):
+    """Control section of BIOS model."""
     api_variant: Optional[str] = None
     category: str
     control_type: str
@@ -416,6 +432,7 @@ class Control(BaseModel):
 # DcsBios = RootModel(Dict[str, Dict[str, Control]])
 
 class DcsBios(RootModel):
+    """Root model of BIOS model."""
     root: Dict[str, Dict[str, Control]]
 
     def __str__(self) -> str:
@@ -446,6 +463,7 @@ class CycleButton(BaseModel):
 
 
 class GuiPlaneInputRequest(BaseModel):
+    """Input request for Control for GUI."""
     identifier: str
     request: str
     widget_iface: str
@@ -480,6 +498,7 @@ class LcdMode(Enum):
 
 
 class FontsConfig(BaseModel):
+    """Fonts configuration for LcdInfo."""
     name: str
     small: int
     medium: int
@@ -517,6 +536,7 @@ LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, f
 
 
 class KeyboardModel(BaseModel):
+    """Light LCD keyboard model."""
     name: str
     klass: str
     modes: int
@@ -586,6 +606,7 @@ def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
 
 
 class MsgBoxTypes(Enum):
+    """Message box types."""
     INFO = 'information'
     QUESTION = 'question'
     WARNING = 'warning'
