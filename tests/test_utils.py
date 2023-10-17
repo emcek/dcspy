@@ -85,7 +85,7 @@ def test_proc_is_running():
 
 def test_dummy_save_load_set_defaults(tmpdir):
     from os import environ
-    test_tmp_yaml = Path(tmpdir) / 'c.yml'
+    test_tmp_yaml = Path(tmpdir) / 'test_cfg.yaml'
 
     utils.save_yaml(data={'font_mono_xs': 9}, full_path=test_tmp_yaml)
     d_cfg = utils.load_yaml(full_path=test_tmp_yaml)

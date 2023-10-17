@@ -6,7 +6,7 @@ from pytest import mark
 
 @mark.qt6
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
-def test_qt(qtbot, resources, switch_dcs_bios_path_in_config):
+def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config):
     from time import sleep
 
     from PySide6 import QtCore
@@ -18,7 +18,7 @@ def test_qt(qtbot, resources, switch_dcs_bios_path_in_config):
     QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     QtCore.QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 
-    with patch('dcspy.qt_gui.default_yaml', resources / 'c.yml'):
+    with patch('dcspy.qt_gui.default_yaml', test_config_yaml):
         dcspy_gui = qt_gui.DcsPyQtGui()
         dcspy_gui.show()
         qtbot.addWidget(dcspy_gui)

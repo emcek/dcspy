@@ -90,6 +90,16 @@ def resources():
     return Path(__file__).resolve().with_name('resources')
 
 
+@fixture()
+def test_config_yaml(resources):
+    """
+    Path to YAML tests config file.
+
+    :return: path to yaml config file
+    """
+    return resources / 'c.yml'
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
@@ -200,7 +210,7 @@ def default_config():
 
 
 @fixture()
-def switch_dcs_bios_path_in_config(resources):
+def switch_dcs_bios_path_in_config(resources, test_config_yaml):
     """
     Switch path to config yaml file during testing.
 
@@ -208,13 +218,13 @@ def switch_dcs_bios_path_in_config(resources):
     """
     from dcspy import utils
 
-    org = utils.load_yaml(resources / 'c.yml')
+    org = utils.load_yaml(test_config_yaml)
     dcs_bios = org['dcsbios']
     org['dcsbios'] = str(resources / 'dcs_bios')
-    utils.save_yaml(data=org, full_path=resources / 'c.yml')
+    utils.save_yaml(data=org, full_path=test_config_yaml)
     yield
     org['dcsbios'] = dcs_bios
-    utils.save_yaml(data=org, full_path=resources / 'c.yml')
+    utils.save_yaml(data=org, full_path=test_config_yaml)
 
 
 # <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
