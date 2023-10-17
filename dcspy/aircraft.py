@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import CycleButton, Gkey, LcdButton, LcdInfo, LcdType
+from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType
 from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
@@ -457,7 +457,10 @@ class F15ESE(AdvancedAircraft):
         for i in range(1, 7):
             offset = (i - 1) * 24
             # todo: fix custom font for Color LCD
-            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 29))
+            draw.text(xy=(0, offset),
+                      text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')),
+                      fill=self.lcd.foreground,
+                      font=ImageFont.truetype(DEFAULT_FONT_NAME, 29))
 
 
 class Ka50(AdvancedAircraft):

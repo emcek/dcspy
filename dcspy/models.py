@@ -38,6 +38,7 @@ LOGITECH_MAX_M_STATES = 4
 # Others
 LOCAL_APPDATA = True
 DCSPY_REPO_NAME = 'emcek/dcspy'
+DEFAULT_FONT_NAME = 'consola.ttf'
 DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
 CTRL_LIST_SEPARATOR = '--'
 SUPPORTED_CRAFTS = {

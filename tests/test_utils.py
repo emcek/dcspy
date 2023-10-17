@@ -7,6 +7,7 @@ from packaging import version
 from pytest import mark
 
 from dcspy import utils
+from dcspy.models import DEFAULT_FONT_NAME
 
 
 @mark.parametrize('online_tag, result', [
@@ -102,7 +103,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
         'verbose': False,
         'check_bios': True,
         'check_ver': True,
-        'font_name': 'consola.ttf',
+        'font_name': DEFAULT_FONT_NAME,
         'font_mono_s': 11,
         'font_mono_xs': 9,
         'font_mono_l': 16,
