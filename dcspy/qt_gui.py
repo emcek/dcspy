@@ -1279,7 +1279,7 @@ class AboutDialog(QDialog):
         text += f'<br><b>System</b>: {d.system}{d.release} ver. {d.ver} ({architecture()[0]})'
         text += f'<br><b>Processor</b>: {d.proc}'
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
-        text += f'<br><b>Config</b>: <a href="file:///{self.parent.cfg_file.parent}">{self.parent.cfg_file.name}</a>'
+        text += f'<br><b>Config</b>: <a href="file:///{default_yaml.parent}">{default_yaml.name}</a>'
         text += f'<br><b>Git</b>: {d.git_ver}'
         text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
