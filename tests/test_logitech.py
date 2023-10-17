@@ -188,7 +188,7 @@ def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
-def test_keyboard_mono_load_plane(model, keyboard_mono):
+def test_keyboard_mono_load_advanced_plane(model, keyboard_mono):
     from dcspy.aircraft import AdvancedAircraft
 
     keyboard_mono.plane_name = model
@@ -211,7 +211,7 @@ def test_test_keyboard_mono_load_basic_plane(keyboard_mono):
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
-def test_keyboard_color_load_plane(model, keyboard_color):
+def test_keyboard_color_load_advanced_plane(model, keyboard_color):
     from dcspy.aircraft import AdvancedAircraft
 
     keyboard_color.plane_name = model
