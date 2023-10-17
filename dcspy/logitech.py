@@ -44,6 +44,7 @@ class KeyboardManager:
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(**detect_plane)
         self.parser = parser
         self.plane_name = ''
+        self.bios_name = ''
         self.plane_detected = False
         self.lcdbutton_pressed = False
         self.gkey_pressed = False
@@ -105,7 +106,7 @@ class KeyboardManager:
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
-                self.plane_name = value
+                self.bios_name = value
                 self.display = ['Detected aircraft:', value]
                 self.plane_detected = True
             elif value not in planes_list:
@@ -121,12 +122,11 @@ class KeyboardManager:
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
             self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
-            LOG.debug(f'Dynamic load of: {self.plane_name} as {SUPPORTED_CRAFTS[self.plane_name]["name"]} | BIOS: {self.plane.bios_name}')
+            LOG.debug(f'Dynamic load of: {self.plane_name} as AdvancedAircraft | BIOS: {self.plane.bios_name}')
             self._setup_plane_callback()
         else:
             self.plane = MetaAircraft(self.plane_name, (BasicAircraft,), {})(self.lcd)
-            LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')  # todo: remove, check name
-            self.plane.bios_name = self.plane_name
+            self.plane.bios_name = self.bios_name
             LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')
         LOG.debug(f'{repr(self)}')
 
