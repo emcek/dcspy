@@ -200,6 +200,17 @@ def test_keyboard_mono_load_plane(model, keyboard_mono):
     assert model in type(keyboard_mono.plane).__name__
 
 
+def test_test_keyboard_mono_load_basic_plane(keyboard_mono):
+    from dcspy.aircraft import BasicAircraft
+
+    keyboard_mono.plane_name = 'Bf109K4'
+    keyboard_mono.bios_name = 'Bf-109K-4'
+    keyboard_mono.load_new_plane()
+    assert isinstance(keyboard_mono.plane, BasicAircraft)
+    assert type(keyboard_mono.plane).__name__ == 'Bf109K4'
+    assert keyboard_mono.plane.bios_name == 'Bf-109K-4'
+
+
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
@@ -210,6 +221,17 @@ def test_keyboard_color_load_plane(model, keyboard_color):
     keyboard_color.load_new_plane()
     assert isinstance(keyboard_color.plane, AdvancedAircraft)
     assert model in type(keyboard_color.plane).__name__
+
+
+def test_test_keyboard_color_load_basic_plane(keyboard_color):
+    from dcspy.aircraft import BasicAircraft
+
+    keyboard_color.plane_name = 'P47D30'
+    keyboard_color.bios_name = 'P-47D-30'
+    keyboard_color.load_new_plane()
+    assert isinstance(keyboard_color.plane, BasicAircraft)
+    assert type(keyboard_color.plane).__name__ == 'P47D30'
+    assert keyboard_color.plane.bios_name == 'P-47D-30'
 
 
 @mark.parametrize('model', [
