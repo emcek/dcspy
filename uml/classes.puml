@@ -49,6 +49,7 @@ package logitech {
         + parser : ProtocolParser
         + plane : BasicAircraft
         + plane_name = '' : str
+        + bios_name = '' : str
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
         + gkey_pressed = False : bool
