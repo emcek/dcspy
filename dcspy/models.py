@@ -147,7 +147,7 @@ class Action(Input):
 class Output(BaseModel):
     """Output base class of outputs section of Control."""
     address: int
-    description: Optional[str] = None  # workaround: for Ka-50 `definePushButtonLed`
+    description: str
     suffix: str
 
 
