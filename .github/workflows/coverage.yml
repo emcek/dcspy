@@ -10,7 +10,7 @@ on:
 
 jobs:
   coverage:
-    name: windows-latest py3.11
+    name: windows-latest py3.12
     runs-on: windows-latest
     steps:
       - name: "Checkout"
@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: coverage_3_11
+          name: coverage_3_12
           path: |
             covhtml/*
             coverage.xml
