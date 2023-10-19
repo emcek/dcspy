@@ -5,10 +5,12 @@
 * Add support for G-Keys of Logitech keyboards
 * Allow assign G-Keys to any control/instrument of all DCS-BIOS supported planes
 * New model of support mods: basic (only G-Key) and advanced (G-Key + LCD)
+* Support for Python 3.12
 * Internal:
   * G-Keys Logitech SDK C library
   * Use Pydantic data models
   * Add unit tests for Qt GUI
+  * improve CI process - add Python 3.12
 
 ## 2.3.3
 * Alignment with latest DCS-BIOS for: **F-15ESE Eagle** and **AV-8B Night Attack**
