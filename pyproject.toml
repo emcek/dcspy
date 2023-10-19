@@ -69,8 +69,6 @@ test = [
     'pytest-qt; sys_platform == "win32"',
     'pytest-randomly',
     'ruff',
-    'types-Pillow',
-    'types-psutil',
     'types-PyYAML',
     'types-requests',
 ]
