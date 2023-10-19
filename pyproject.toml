@@ -19,6 +19,7 @@ classifiers = [
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
     'Operating System :: Microsoft :: Windows',
     'Operating System :: Microsoft :: Windows :: Windows 10',
     'Topic :: Games/Entertainment',
@@ -36,7 +37,7 @@ dependencies = [
     'Pillow==10.1.0',
     'psutil==5.9.6',
     'pydantic==2.4.2',
-    'PySide6==6.5.3',
+    'PySide6==6.6.0',
     'PyYAML==6.0.1',
     'requests==2.31.0',
 ]
@@ -69,8 +70,6 @@ test = [
     'pytest-qt; sys_platform == "win32"',
     'pytest-randomly',
     'ruff',
-    'types-Pillow',
-    'types-psutil',
     'types-PyYAML',
     'types-requests',
 ]
