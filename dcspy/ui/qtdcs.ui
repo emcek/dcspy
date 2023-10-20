@@ -708,13 +708,13 @@
    <property name="minimumSize">
     <size>
      <width>150</width>
-     <height>350</height>
+     <height>360</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>524287</width>
-     <height>350</height>
+     <height>360</height>
     </size>
    </property>
    <property name="floating">
@@ -737,13 +737,17 @@
      <item>
       <widget class="QGroupBox" name="groupBox_5">
        <property name="title">
-        <string>Actions:</string>
+        <string>Inputs:</string>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QRadioButton" name="rb_action">
           <property name="enabled">
            <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Toggle between positions back and forth.
+Avaliable for two-state switches and knobs.</string>
           </property>
           <property name="text">
            <string>Toggle</string>
@@ -755,8 +759,12 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Only increase position of switch.
+Avaliable for multi-possition switches and knobs with fixed step size.</string>
+          </property>
           <property name="text">
-           <string>Fixed step INC</string>
+           <string>Fixed step inc</string>
           </property>
          </widget>
         </item>
@@ -765,8 +773,12 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Only decrease position of switch. 
+Avaliable for multi-possition switches and knobs with fixed step size.</string>
+          </property>
           <property name="text">
-           <string>Fixed step DEC</string>
+           <string>Fixed step dec</string>
           </property>
          </widget>
         </item>
@@ -775,8 +787,12 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Cycle thru all values first increase and then decrease, move back and forth.
+Avaliable for most switches and knobs with fixed step size.</string>
+          </property>
           <property name="text">
-           <string>Set state</string>
+           <string>Cycle state</string>
           </property>
          </widget>
         </item>
@@ -785,8 +801,12 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Only increase value of switch.
+Available for variable step knobs or potentiometers i.e. volume or brightness.</string>
+          </property>
           <property name="text">
-           <string>Variable step +</string>
+           <string>Variable step inc</string>
           </property>
          </widget>
         </item>
@@ -795,8 +815,12 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Only decrease value of switch.
+Available for variable step knobs or potentiometers i.e. volume or brightness.</string>
+          </property>
           <property name="text">
-           <string>Variable step -</string>
+           <string>Variable step dec</string>
           </property>
          </widget>
         </item>
@@ -840,6 +864,13 @@
          <widget class="QLabel" name="l_identifier">
           <property name="text">
            <string>Identifier:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_range">
+          <property name="text">
+           <string>Range:</string>
           </property>
          </widget>
         </item>
