@@ -265,7 +265,7 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     """
     result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
     try:
-        with open(file=Path(bios_path) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
+        with open(file=Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8') as cd_lua:
             cd_lua_data = cd_lua.read()
     except FileNotFoundError as err:
         LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
