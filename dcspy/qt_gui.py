@@ -132,7 +132,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
         self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
-        self.le_biosdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_biosdir'))
+        self.le_biosdir.textChanged.connect(partial(self._is_dir_dcs_bios, widget_name='le_biosdir'))
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
@@ -184,7 +184,7 @@ class DcsPyQtGui(QMainWindow):
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
         self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
-        self._is_dir_exists(text=self.le_biosdir.text(), widget_name='le_biosdir')
+        self._is_dir_dcs_bios(text=self.le_biosdir.text(), widget_name='le_biosdir')
         if self.cb_bios_live.isChecked():
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
@@ -289,6 +289,23 @@ class DcsPyQtGui(QMainWindow):
         dir_exists = Path(text).is_dir()
         LOG.debug(f'Path: {text} for {widget_name} exists: {dir_exists}')
         if dir_exists:
+            getattr(self, widget_name).setStyleSheet('')
+            return True
+        else:
+            getattr(self, widget_name).setStyleSheet('color: red;')
+            return False
+
+    def _is_dir_dcs_bios(self, text: str, widget_name: str) -> bool:
+        """
+        Check if directory is valid DCS-BIOS installation.
+
+        :param text: contents of text field
+        :param widget_name: widget name
+        :return: True if valid BIOS directory, False otherwise.
+        """
+        bios_lua = Path(text) / 'BIOS.lua'
+        metadata_json = Path(text) / 'doc' / 'json' / 'MetadataStart.json'
+        if all([Path(text).is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
             getattr(self, widget_name).setStyleSheet('')
             return True
         else:
@@ -698,7 +715,7 @@ class DcsPyQtGui(QMainWindow):
         """
         result = True
         bios_dir = self.le_biosdir.text()
-        if self._is_dir_exists(text=bios_dir, widget_name='le_biosdir'):
+        if self._is_dir_dcs_bios(text=bios_dir, widget_name='le_biosdir'):
             drive_letter = Path(bios_dir).parts[0]
             if not Path(drive_letter).exists():
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
