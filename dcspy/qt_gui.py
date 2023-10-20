@@ -1205,6 +1205,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_category: Union[object, QLabel] = self.findChild(QLabel, 'l_category')
         self.l_description: Union[object, QLabel] = self.findChild(QLabel, 'l_description')
         self.l_identifier: Union[object, QLabel] = self.findChild(QLabel, 'l_identifier')
+        self.l_range: Union[object, QLabel] = self.findChild(QLabel, 'l_range')
 
         self.a_quit: Union[object, QAction] = self.findChild(QAction, 'a_quit')
         self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
