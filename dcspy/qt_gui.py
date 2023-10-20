@@ -410,6 +410,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_category.setText('')
         self.l_description.setText('')
         self.l_identifier.setText('')
+        self.l_range.setText('')
         widget.setToolTip('')
         widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
@@ -420,6 +421,7 @@ class DcsPyQtGui(QMainWindow):
             self.l_category.setText(f'Category: {section}')
             self.l_description.setText(f'Description: {ctrl_key.description}')
             self.l_identifier.setText(f'Identifier: {text}')
+            self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
             self._checked_iface_rb_for_identifier(row=row, col=col)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
