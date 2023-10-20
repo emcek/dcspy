@@ -111,17 +111,21 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_combo_plane(self) -> None:
         """Initialize of combo box for plane selector with completer."""
-        plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
-        completer = QCompleter(plane_list)
-        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        completer.setFilterMode(Qt.MatchFlag.MatchContains)
-        completer.setMaxVisibleItems(self.config['completer_items'])
-        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
-        self.combo_planes.addItems(plane_list)
-        self.combo_planes.setEditable(True)
-        self.combo_planes.setCompleter(completer)
-        self.input_reqs = {plane: {} for plane in plane_list}
+        try:
+            plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
+            completer = QCompleter(plane_list)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
+            completer.setMaxVisibleItems(self.config['completer_items'])
+            completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+            self.combo_planes.addItems(plane_list)
+            self.combo_planes.setEditable(True)
+            self.combo_planes.setCompleter(completer)
+            self.input_reqs = {plane: {} for plane in plane_list}
+        except FileNotFoundError as exc:
+            message = f'Folder not exists: \n{self.config["dcsbios"]}\n\nCheck DCS-BIOS path.\n\n{exc}'
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Planes List', message=message)
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
@@ -343,7 +347,13 @@ class DcsPyQtGui(QMainWindow):
         :param plane_name: BIOS plane name
         :return:
         """
-        plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
+        try:
+            plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
+        except FileNotFoundError as exc:
+            message = f'Folder not exists: \n{self.le_biosdir.text()}\n\nCheck DCS-BIOS path.\n\n{exc}'
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
+            return False
+
         if self.plane_aliases != plane_aliases[plane_name]:
             try:
                 self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
