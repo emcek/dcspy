@@ -184,7 +184,7 @@ class DcsPyQtGui(QMainWindow):
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
         self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
-        self._is_dir_dcs_bios(text=self.le_biosdir.text(), widget_name='le_biosdir')
+        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         if self.cb_bios_live.isChecked():
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
@@ -366,15 +366,15 @@ class DcsPyQtGui(QMainWindow):
         :return:
         """
         try:
-            plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
+            plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as exc:
-            message = f'Folder not exists: \n{self.le_biosdir.text()}\n\nCheck DCS-BIOS path.\n\n{exc}'
+            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{exc}'
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
             return False
 
         if self.plane_aliases != plane_aliases[plane_name]:
             try:
-                self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
+                self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=self.bios_path)
                 self.plane_aliases = plane_aliases[plane_name]
                 LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
@@ -715,9 +715,8 @@ class DcsPyQtGui(QMainWindow):
         :return: True if path to DCS-BIOS is correct
         """
         result = True
-        bios_dir = self.le_biosdir.text()
-        if self._is_dir_dcs_bios(text=bios_dir, widget_name='le_biosdir'):
-            drive_letter = Path(bios_dir).parts[0]
+        if self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir'):
+            drive_letter = self.bios_path.parts[0]
             if not Path(drive_letter).exists():
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
                 result = False
@@ -734,11 +733,10 @@ class DcsPyQtGui(QMainWindow):
         :return installation result as string
         """
         sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
-        bios_dir = self.le_biosdir.text()
-        LOG.debug(f'Remove: {bios_dir} ')
-        rmtree(path=bios_dir, ignore_errors=True)
-        LOG.debug(f'Copy Git DCS-BIOS to: {bios_dir} ')
-        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=bios_dir)
+        LOG.debug(f'Remove: {self.bios_path} ')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
+        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
         local_bios = self._check_local_bios()
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
         if not silence:
@@ -822,7 +820,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: release description info
         """
-        result = check_bios_ver(bios_path=self.le_biosdir.text())
+        result = check_bios_ver(bios_path=self.bios_path)
         self.l_bios = result.ver
         return result
 
@@ -868,10 +866,10 @@ class DcsPyQtGui(QMainWindow):
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.le_biosdir.text()} ')
-        rmtree(path=self.le_biosdir.text(), ignore_errors=True)
-        LOG.debug(f'Copy DCS-BIOS to: {self.le_biosdir.text()} ')
-        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.le_biosdir.text())
+        LOG.debug(f'Remove: {self.bios_path} ')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
+        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path)
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
             reply = QMessageBox.question(self, 'Open browser', install_result, defaultButton=QMessageBox.StandardButton.Yes)
@@ -893,7 +891,7 @@ class DcsPyQtGui(QMainWindow):
         :return: result of checks
         """
         result = 'Installation Success. Done.'
-        lua_dst_path = Path(self.le_biosdir.text()).parent
+        lua_dst_path = self.bios_path.parent
         lua = 'Export.lua'
         try:
             with open(file=lua_dst_path / lua, encoding='utf-8') as lua_dst:
