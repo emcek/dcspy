@@ -1165,7 +1165,8 @@ class DcsPyQtGui(QMainWindow):
         else:
             message_box(self, title, message)
 
-    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str) -> int:
+    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: Optional[str] = None,
+                             buttons: Optional[QMessageBox.StandardButton] = None) -> int:
         """
         Show custom message box with hidden text.
 
@@ -1173,13 +1174,17 @@ class DcsPyQtGui(QMainWindow):
         :param text: first section
         :param info_txt: second section
         :param detail_txt: hidden text
+        :param buttons: tuple of buttons
         :return: code of pushed button as integer code
         """
         msg = QMessageBox(text=text, parent=self)
         msg.setIcon(kind_of)
         msg.setWindowTitle(title)
         msg.setInformativeText(info_txt)
-        msg.setDetailedText(detail_txt)
+        if detail_txt:
+            msg.setDetailedText(detail_txt)
+        if buttons:
+            msg.setStandardButtons(buttons)
         return msg.exec()
 
     def event_set(self) -> None:
