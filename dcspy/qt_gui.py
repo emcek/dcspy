@@ -1292,7 +1292,7 @@ class AboutDialog(QDialog):
     def __init__(self, parent) -> None:
         """Dcspy about dialog window."""
         super().__init__(parent)
-        self.parent: DcsPyQtGui = parent
+        self.parent: Union[DcsPyQtGui, QWidget] = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
         self.l_info: Union[object, QLabel] = self.findChild(QLabel, 'l_info')
 
