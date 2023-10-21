@@ -722,8 +722,9 @@ class DcsPyQtGui(QMainWindow):
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
                 result = False
         else:
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Empty path.\n\nCheck DCS-BIOS path.')
-            result = False
+            reply = QMessageBox.question(self, 'Install DCS-BIOS', f'There is no DCS-BIOS installed at:\n{self.bios_path}\n\nDo you want install?',
+                                         defaultButton=QMessageBox.StandardButton.Yes)
+            result = True if reply == QMessageBox.StandardButton.Yes else False
         return result
 
     def _check_bios_git(self, silence=False) -> Tuple[str, str]:
