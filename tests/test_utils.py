@@ -99,7 +99,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
         'completer_items': 20,
         'current_plane': 'A-10A',
         'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-        'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+        'dcs': 'C:/Program Files/Eagle Dynamics/DCS World OpenBeta',
         'verbose': False,
         'check_bios': True,
         'check_ver': True,
