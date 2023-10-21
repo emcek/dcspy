@@ -380,12 +380,13 @@ class DcsPyQtGui(QMainWindow):
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
                 return False
             except ValidationError as exc:
-                self._show_custom_msg_box(kind_of=QMessageBox.Icon.Warning,
-                                          title=f'Warning with {plane_name}',
-                                          text=f'Can not read infomodel of {plane_name}. Regenerate\ninfomodel might help. Please follow instruction:',
-                                          info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n'
-                                                   f'3. Click Fly\n4. Try again',
-                                          detail_txt=f'{exc.errors()}')
+                self._show_custom_msg_box(
+                    kind_of=QMessageBox.Icon.Warning,
+                    title=f'Warning with {plane_name}',
+                    text=f'Can not read info-model of {plane_name}. Regenerate\ninfo-model might help. Please follow instruction: ',
+                    info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n3. Click Fly\n4. Try again',
+                    detail_txt=f'{exc.errors()}'
+                )
                 if len(self.plane_aliases) > 1:
                     self.combo_planes.setCurrentText(self.plane_aliases[1])
                 else:
