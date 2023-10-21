@@ -770,6 +770,7 @@ class DcsPyQtGui(QMainWindow):
         sha, install_result = result
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
+        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self._done_event.clear()
 
@@ -881,6 +882,7 @@ class DcsPyQtGui(QMainWindow):
             local_bios = self._check_local_bios()
             self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
             install_result = f'{install_result}\n\nUsing stable release version.'
+            self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
 
     def _handling_export_lua(self, temp_dir: Path) -> str:
