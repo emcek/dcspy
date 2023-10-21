@@ -295,7 +295,7 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, widget_name).setStyleSheet('color: red;')
             return False
 
-    def _is_dir_dcs_bios(self, text: str, widget_name: str) -> bool:
+    def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
         """
         Check if directory is valid DCS-BIOS installation.
 
@@ -303,9 +303,10 @@ class DcsPyQtGui(QMainWindow):
         :param widget_name: widget name
         :return: True if valid BIOS directory, False otherwise.
         """
-        bios_lua = Path(text) / 'BIOS.lua'
-        metadata_json = Path(text) / 'doc' / 'json' / 'MetadataStart.json'
-        if all([Path(text).is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
+        text = Path(text)
+        bios_lua = text / 'BIOS.lua'
+        metadata_json = text / 'doc' / 'json' / 'MetadataStart.json'
+        if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
             getattr(self, widget_name).setStyleSheet('')
             return True
         else:
