@@ -1040,6 +1040,15 @@ class DcsPyQtGui(QMainWindow):
         """
         return self.combo_planes.currentText()
 
+    @property
+    def bios_path(self) -> Path:
+        """
+        Get path to DCS-BIOS.
+
+        :return: full path as Path
+        """
+        return Path(self.le_biosdir.text())
+
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
         """
