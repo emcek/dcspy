@@ -324,7 +324,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     else:
         bios_repo.git.checkout(git_ref)
         head_commit = bios_repo.head.commit
-        sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime}'
+        sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")}'
     return sha
 
 
