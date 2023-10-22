@@ -1119,7 +1119,7 @@ class DcsPyQtGui(QMainWindow):
         dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
-        dcs_bios_ver = self._get_bios_full_version(bios_ver=bios_ver, silence=silence)
+        dcs_bios_ver = self._get_bios_full_version(silence=silence)
         git_ver = 'Not installed'
         if self.git_exec:
             from git import cmd
