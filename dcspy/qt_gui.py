@@ -831,7 +831,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: release description info
         """
-        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
         self.r_bios = release_info.ver
         return release_info
 
@@ -875,7 +875,7 @@ class DcsPyQtGui(QMainWindow):
         if 'github' in install_result:
             reply = QMessageBox.question(self, 'Open browser', install_result, defaultButton=QMessageBox.StandardButton.Yes)
             if reply == QMessageBox.StandardButton.Yes:
-                open_new_tab(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+                open_new_tab(r'https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
         else:
             local_bios = self._check_local_bios()
             self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')

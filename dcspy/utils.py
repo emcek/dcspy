@@ -292,7 +292,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -366,7 +366,7 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
         with open(file=lua_dst_path / lua, mode='a+', encoding='utf-8') as exportlua_dst:
             exportlua_dst.write(f'\n{lua_src_data}')
         LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
-        result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+        result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation'
     else:
         result += '\n\nDCS-BIOS entry detected.'
     return result
