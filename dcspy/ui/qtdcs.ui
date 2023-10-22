@@ -768,6 +768,7 @@
      <string>Help</string>
     </property>
     <addaction name="a_report_issue"/>
+    <addaction name="a_discord"/>
     <addaction name="separator"/>
     <addaction name="a_about_dcspy"/>
     <addaction name="a_about_qt"/>
@@ -809,7 +810,9 @@
    <addaction name="a_show_keyboard"/>
    <addaction name="separator"/>
    <addaction name="a_report_issue"/>
+   <addaction name="a_discord"/>
    <addaction name="a_donate"/>
+   <addaction name="separator"/>
    <addaction name="a_about_dcspy"/>
   </widget>
   <widget class="QDockWidget" name="dw_gkeys">
@@ -1187,6 +1190,18 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="a_discord">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/discord.svg</normaloff>:/icons/img/discord.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Discord</string>
+   </property>
+   <property name="toolTip">
+    <string>Discord Server</string>
    </property>
   </action>
  </widget>
