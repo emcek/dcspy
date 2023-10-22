@@ -259,7 +259,7 @@
                 <string>If unchecked DCSpy stay open in system tray and client will be lauched</string>
                </property>
                <property name="text">
-                <string>Hide GUI when started</string>
+                <string>Show GUI when started</string>
                </property>
                <property name="icon">
                 <iconset resource="../qtgui.qrc">
@@ -760,8 +760,8 @@
      <string>File</string>
     </property>
     <addaction name="a_reset_defaults"/>
-    <addaction name="a_quit"/>
     <addaction name="a_save_plane"/>
+    <addaction name="a_quit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -815,7 +815,7 @@
   <widget class="QDockWidget" name="dw_gkeys">
    <property name="minimumSize">
     <size>
-     <width>150</width>
+     <width>169</width>
      <height>360</height>
     </size>
    </property>
@@ -865,6 +865,10 @@ Avaliable for two-state switches and knobs.</string>
           <property name="text">
            <string>Toggle</string>
           </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/configure.svg</normaloff>:/icons/img/configure.svg</iconset>
+          </property>
          </widget>
         </item>
         <item>
@@ -878,6 +882,10 @@ Avaliable for multi-possition switches and knobs with fixed step size.</string>
           </property>
           <property name="text">
            <string>Fixed step inc</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/go-next.svg</normaloff>:/icons/img/go-next.svg</iconset>
           </property>
          </widget>
         </item>
@@ -893,6 +901,10 @@ Avaliable for multi-possition switches and knobs with fixed step size.</string>
           <property name="text">
            <string>Fixed step dec</string>
           </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/go-previous.svg</normaloff>:/icons/img/go-previous.svg</iconset>
+          </property>
          </widget>
         </item>
         <item>
@@ -906,6 +918,10 @@ Avaliable for most switches and knobs with fixed step size.</string>
           </property>
           <property name="text">
            <string>Cycle state</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/kr_comparedirs.svg</normaloff>:/icons/img/kr_comparedirs.svg</iconset>
           </property>
          </widget>
         </item>
@@ -921,6 +937,10 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           <property name="text">
            <string>Variable step inc</string>
           </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/list-add.svg</normaloff>:/icons/img/list-add.svg</iconset>
+          </property>
          </widget>
         </item>
         <item>
@@ -934,6 +954,10 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           </property>
           <property name="text">
            <string>Variable step dec</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/list-remove.svg</normaloff>:/icons/img/list-remove.svg</iconset>
           </property>
          </widget>
         </item>
