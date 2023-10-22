@@ -1,15 +1,34 @@
 <RCC>
   <qresource prefix="icons">
     <file>img/dcspy.ico</file>
-    <file>img/backdoor-factory.svg</file>
     <file>img/G13.png</file>
+    <file>img/cpu.svg</file>
+    <file>img/edit-undo.svg</file>
+    <file>img/document-save-all.svg</file>
+    <file>img/view-conceal-symbolic.svg</file>
+    <file>img/help-about.svg</file>
+    <file>img/viewitem.svg</file>
+    <file>img/jgmenu.svg</file>
+    <file>img/github-desktop.svg</file>
+    <file>img/preferences-system.svg</file>
+    <file>img/input-keyboard.svg</file>
+    <file>img/edit-duplicate.svg</file>
+    <file>img/input-gaming.svg</file>
+    <file>img/media-playback-start.svg</file>
+    <file>img/xfsm-reboot.svg</file>
+    <file>img/media-playback-stop.svg</file>
+    <file>img/network-card.svg</file>
+    <file>img/qt.svg</file>
+    <file>img/git.svg</file>
+    <file>img/io.photoflare.photoflare.svg</file>
+    <file>img/system-shutdown.svg</file>
+    <file>img/taxes-finances.svg</file>
+    <file>img/view-refresh.svg</file>
     <file>img/G15v1.png</file>
+    <file>img/folder.svg</file>
     <file>img/G15v2.png</file>
     <file>img/G19.png</file>
     <file>img/G510.png</file>
-    <file>img/github-mark.svg</file>
-    <file>img/qt.svg</file>
-    <file>img/system-software-update.svg</file>
   </qresource>
   <qresource prefix="img">
     <file>img/G13device.png</file>

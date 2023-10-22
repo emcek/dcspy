@@ -33,6 +33,11 @@
          <number>0</number>
         </property>
         <widget class="QWidget" name="tab_keyboards">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/input-keyboard.svg</normalon>
+          </iconset>
+         </attribute>
          <attribute name="title">
           <string>Keyboards</string>
          </attribute>
@@ -185,10 +190,114 @@
          </layout>
         </widget>
         <widget class="QWidget" name="tab_general">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/preferences-system.svg</normalon>
+          </iconset>
+         </attribute>
          <attribute name="title">
           <string>General</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_4">
+          <item row="3" column="0" rowspan="4" colspan="4">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0" colspan="4">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>DCSpy</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pb_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+               <property name="text">
+                <string>DCS folder</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/folder.svg</normaloff>:/icons/img/folder.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_autostart">
+               <property name="toolTip">
+                <string>Start DCSpy client when application starts</string>
+               </property>
+               <property name="text">
+                <string>Auto launch DCSpy client</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/jgmenu.svg</normaloff>:/icons/img/jgmenu.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="cb_show_gui">
+               <property name="toolTip">
+                <string>If unchecked DCSpy stay open in system tray and client will be lauched</string>
+               </property>
+               <property name="text">
+                <string>Hide GUI when started</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/view-conceal-symbolic.svg</normaloff>:/icons/img/view-conceal-symbolic.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_check_ver">
+               <property name="toolTip">
+                <string>Auto check DCSpy version during startup</string>
+               </property>
+               <property name="text">
+                <string>Auto check DCSpy version</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/xfsm-reboot.svg</normaloff>:/icons/img/xfsm-reboot.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pb_dcspy_check">
+               <property name="toolTip">
+                <string>Check updates for DCSpy</string>
+               </property>
+               <property name="text">
+                <string>Check for updates</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
           <item row="2" column="1" colspan="3">
            <widget class="QGroupBox" name="groupBox_4">
             <property name="title">
@@ -314,6 +423,10 @@
                <property name="text">
                 <string>Collect more logs</string>
                </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/cpu.svg</normaloff>:/icons/img/cpu.svg</iconset>
+               </property>
               </widget>
              </item>
              <item row="0" column="0">
@@ -324,6 +437,10 @@
                <property name="text">
                 <string>Save LCD screenshot</string>
                </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/io.photoflare.photoflare.svg</normaloff>:/icons/img/io.photoflare.photoflare.svg</iconset>
+               </property>
               </widget>
              </item>
              <item row="3" column="0">
@@ -331,93 +448,23 @@
                <property name="text">
                 <string>Collect debug data</string>
                </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="0" colspan="4">
-           <widget class="QGroupBox" name="groupBox">
-            <property name="title">
-             <string>DCSpy</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="0" column="1">
-              <widget class="QPushButton" name="pb_dcsdir">
-               <property name="toolTip">
-                <string>Location of installation DCS World (OpenBeta)</string>
-               </property>
-               <property name="text">
-                <string>DCS folder</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="cb_autostart">
-               <property name="toolTip">
-                <string>Start DCSpy client when application starts</string>
-               </property>
-               <property name="text">
-                <string>Auto launch DCSpy client</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLineEdit" name="le_dcsdir">
-               <property name="toolTip">
-                <string>Location of installation DCS World (OpenBeta)</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QCheckBox" name="cb_show_gui">
-               <property name="toolTip">
-                <string>If unchecked DCSpy stay open in system tray and client will be lauched</string>
-               </property>
-               <property name="text">
-                <string>Show GUI when started</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QCheckBox" name="cb_check_ver">
-               <property name="toolTip">
-                <string>Auto check DCSpy version during startup</string>
-               </property>
-               <property name="text">
-                <string>Auto check DCSpy version</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QPushButton" name="pb_dcspy_check">
-               <property name="toolTip">
-                <string>Check updates for DCSpy</string>
-               </property>
-               <property name="text">
-                <string>Check for updates</string>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/help-about.svg</normaloff>:/icons/img/help-about.svg</iconset>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
-          </item>
-          <item row="3" column="0" rowspan="4" colspan="4">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
         <widget class="QWidget" name="tab_bios">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/network-card.svg</normalon>
+          </iconset>
+         </attribute>
          <attribute name="title">
           <string>DCS-BIOS</string>
          </attribute>
@@ -435,6 +482,10 @@
                </property>
                <property name="text">
                 <string>Use live DCS-BIOS version:</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/git.svg</normaloff>:/icons/img/git.svg</iconset>
                </property>
               </widget>
              </item>
@@ -463,6 +514,10 @@
                <property name="text">
                 <string>Auto check DCS-BIOS</string>
                </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/xfsm-reboot.svg</normaloff>:/icons/img/xfsm-reboot.svg</iconset>
+               </property>
               </widget>
              </item>
              <item row="0" column="2">
@@ -473,6 +528,10 @@
                <property name="text">
                 <string>DCS-BIOS folder</string>
                </property>
+               <property name="icon">
+                <iconset>
+                 <normaloff>:/icons/img/folder-violet.svg</normaloff>:/icons/img/folder-violet.svg</iconset>
+               </property>
               </widget>
              </item>
              <item row="1" column="2">
@@ -482,6 +541,10 @@
                </property>
                <property name="text">
                 <string>Check for updates</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
                </property>
               </widget>
              </item>
@@ -504,6 +567,11 @@
          </layout>
         </widget>
         <widget class="QWidget" name="tab_gkeys">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/input-gaming.svg</normalon>
+          </iconset>
+         </attribute>
          <attribute name="title">
           <string>G-Keys</string>
          </attribute>
@@ -560,6 +628,10 @@
               <property name="text">
                <string>Copy cell to row</string>
               </property>
+              <property name="icon">
+               <iconset resource="../qtgui.qrc">
+                <normaloff>:/icons/img/edit-duplicate.svg</normaloff>:/icons/img/edit-duplicate.svg</iconset>
+              </property>
              </widget>
             </item>
             <item>
@@ -569,6 +641,10 @@
               </property>
               <property name="text">
                <string>Save current plane</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../qtgui.qrc">
+                <normaloff>:/icons/img/document-save-all.svg</normaloff>:/icons/img/document-save-all.svg</iconset>
               </property>
              </widget>
             </item>
@@ -633,6 +709,10 @@
           <property name="text">
            <string>Start</string>
           </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/media-playback-start.svg</normaloff>:/icons/img/media-playback-start.svg</iconset>
+          </property>
          </widget>
         </item>
         <item>
@@ -643,12 +723,20 @@
           <property name="text">
            <string>Stop</string>
           </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/media-playback-stop.svg</normaloff>:/icons/img/media-playback-stop.svg</iconset>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="pb_close">
           <property name="text">
            <string>Close</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/system-shutdown.svg</normaloff>:/icons/img/system-shutdown.svg</iconset>
           </property>
          </widget>
         </item>
@@ -673,6 +761,7 @@
     </property>
     <addaction name="a_reset_defaults"/>
     <addaction name="a_quit"/>
+    <addaction name="a_save_plane"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -712,9 +801,16 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="a_save_plane"/>
    <addaction name="a_check_updates"/>
    <addaction name="a_quit"/>
    <addaction name="separator"/>
+   <addaction name="a_show_gkeys"/>
+   <addaction name="a_show_keyboard"/>
+   <addaction name="separator"/>
+   <addaction name="a_report_issue"/>
+   <addaction name="a_donate"/>
+   <addaction name="a_about_dcspy"/>
   </widget>
   <widget class="QDockWidget" name="dw_gkeys">
    <property name="minimumSize">
@@ -728,6 +824,11 @@
      <width>524287</width>
      <height>360</height>
     </size>
+   </property>
+   <property name="windowIcon">
+    <iconset>
+     <normalon>:/icons/img/input-gaming.svg</normalon>
+    </iconset>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -906,6 +1007,11 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    </widget>
   </widget>
   <widget class="QDockWidget" name="dw_keyboard">
+   <property name="windowIcon">
+    <iconset>
+     <normalon>:/icons/img/input-keyboard.svg</normalon>
+    </iconset>
+   </property>
    <property name="floating">
     <bool>false</bool>
    </property>
@@ -936,7 +1042,7 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
   <action name="a_report_issue">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
-     <normaloff>:/icons/img/github-mark.svg</normaloff>:/icons/img/github-mark.svg</iconset>
+     <normaloff>:/icons/img/github-desktop.svg</normaloff>:/icons/img/github-desktop.svg</iconset>
    </property>
    <property name="text">
     <string>Report issue</string>
@@ -950,6 +1056,9 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    <property name="text">
     <string>About DCSpy</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
+   </property>
   </action>
   <action name="a_about_qt">
    <property name="icon">
@@ -959,11 +1068,14 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    <property name="text">
     <string>About Qt</string>
    </property>
+   <property name="menuRole">
+    <enum>QAction::AboutQtRole</enum>
+   </property>
   </action>
   <action name="a_check_updates">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
-     <normaloff>:/icons/img/system-software-update.svg</normaloff>:/icons/img/system-software-update.svg</iconset>
+     <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
    </property>
    <property name="text">
     <string>Check updates</string>
@@ -972,7 +1084,7 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
   <action name="a_quit">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
-     <normaloff>:/icons/img/backdoor-factory.svg</normaloff>:/icons/img/backdoor-factory.svg</iconset>
+     <normaloff>:/icons/img/system-shutdown.svg</normaloff>:/icons/img/system-shutdown.svg</iconset>
    </property>
    <property name="text">
     <string>Quit</string>
@@ -988,16 +1100,28 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/viewitem.svg</normaloff>:/icons/img/viewitem.svg</iconset>
+   </property>
    <property name="text">
     <string>Show toolbar</string>
    </property>
   </action>
   <action name="a_reset_defaults">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/edit-undo.svg</normaloff>:/icons/img/edit-undo.svg</iconset>
+   </property>
    <property name="text">
     <string>Reset to defaults</string>
    </property>
   </action>
   <action name="a_donate">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/taxes-finances.svg</normaloff>:/icons/img/taxes-finances.svg</iconset>
+   </property>
    <property name="text">
     <string>Donate</string>
    </property>
@@ -1005,6 +1129,10 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
   <action name="a_show_gkeys">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/input-gaming.svg</normaloff>:/icons/img/input-gaming.svg</iconset>
    </property>
    <property name="text">
     <string>Show G-Keys</string>
@@ -1014,8 +1142,27 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/input-keyboard.svg</normaloff>:/icons/img/input-keyboard.svg</iconset>
+   </property>
    <property name="text">
     <string>Show keyboard</string>
+   </property>
+  </action>
+  <action name="a_save_plane">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/document-save-all.svg</normaloff>:/icons/img/document-save-all.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Save Plane</string>
+   </property>
+   <property name="toolTip">
+    <string>Save current plane</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
    </property>
   </action>
  </widget>
