@@ -611,25 +611,23 @@ class DcsPyQtGui(QMainWindow):
                 self.le_bios_live.setStyleSheet('color: red;')
                 return False
 
-    def _get_bios_full_version(self, bios_ver: str, silence=True) -> str:
+    def _get_bios_full_version(self, silence=True) -> str:
         """
         Get full with SHA and git details DCS-BIOS version as string.
 
-        :param bios_ver: version string
         :param silence: perform action with silence
         :return: full BIOS version
         """
         sha_commit = ''
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = f' SHA: {check_github_repo(git_ref=self.le_bios_live.text(), update=False)}'
+                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
             except Exception as exc:
                 # todo: handle silence form fetch system and make custom message box
                 LOG.debug(f'{exc}')
                 if not silence:
                     self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
-        dcs_bios_ver = f'{bios_ver}{sha_commit}'
-        return dcs_bios_ver
+        return sha_commit
 
     def _cb_bios_live_toggled(self, state: bool) -> None:
         """When Live BIOS checkbox is toggled."""
