@@ -163,6 +163,7 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of menubar."""
         self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
+        self.a_save_plane.triggered.connect(self._save_gkeys_cfg)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
         self.a_show_keyboard.triggered.connect(self._show_keyboard_dock)
@@ -1250,6 +1251,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_range: Union[object, QLabel] = self.findChild(QLabel, 'l_range')
 
         self.a_quit: Union[object, QAction] = self.findChild(QAction, 'a_quit')
+        self.a_save_plane: Union[object, QAction] = self.findChild(QAction, 'a_save_plane')
         self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
         self.a_show_toolbar: Union[object, QAction] = self.findChild(QAction, 'a_show_toolbar')
         self.a_show_gkeys: Union[object, QAction] = self.findChild(QAction, 'a_show_gkeys')
