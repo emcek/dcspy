@@ -168,6 +168,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
         self.a_show_keyboard.triggered.connect(self._show_keyboard_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
+        self.a_discord.triggered.connect(partial(open_new_tab, url='https://discord.gg/SP5Yjx3'))
         self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
@@ -1261,6 +1262,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
         self.a_check_updates: Union[object, QAction] = self.findChild(QAction, 'a_check_updates')
         self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
+        self.a_discord: Union[object, QAction] = self.findChild(QAction, 'a_discord')
 
         self.pb_start: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_start')
         self.pb_stop: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_stop')
