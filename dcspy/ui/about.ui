@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../qtgui.qrc">
+    <normaloff>:/icons/img/qt.svg</normaloff>:/icons/img/qt.svg</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
@@ -41,14 +45,20 @@
      </item>
      <item row="0" column="0" rowspan="2">
       <widget class="QLabel" name="label_2">
+       <property name="maximumSize">
+        <size>
+         <width>292</width>
+         <height>280</height>
+        </size>
+       </property>
        <property name="text">
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../qtgui.qrc">:/icons/img/dcspy.ico</pixmap>
+        <pixmap resource="../qtgui.qrc">:/icons/img/dcspy_white.svg</pixmap>
        </property>
        <property name="scaledContents">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
      </item>
