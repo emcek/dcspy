@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../qtgui.qrc">
-    <normaloff>:/icons/img/dcspy.ico</normaloff>:/icons/img/dcspy.ico</iconset>
+    <normaloff>:/icons/img/dcspy_white.svg</normaloff>:/icons/img/dcspy_white.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -308,6 +308,10 @@
               <widget class="QCheckBox" name="cb_ded_font">
                <property name="text">
                 <string>use special font for F-16 Viper DED (only G19)</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/dialog-text-and-font.svg</normaloff>:/icons/img/dialog-text-and-font.svg</iconset>
                </property>
               </widget>
              </item>
@@ -1078,7 +1082,7 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
   <action name="a_about_dcspy">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
-     <normaloff>:/icons/img/dcspy.ico</normaloff>:/icons/img/dcspy.ico</iconset>
+     <normaloff>:/icons/img/dcspy_white.svg</normaloff>:/icons/img/dcspy_white.svg</iconset>
    </property>
    <property name="text">
     <string>About DCSpy</string>

@@ -1,12 +1,13 @@
 <RCC>
   <qresource prefix="icons">
-    <file>img/dcspy.ico</file>
     <file>img/G13.png</file>
     <file>img/cpu.svg</file>
     <file>img/edit-undo.svg</file>
     <file>img/document-save-all.svg</file>
     <file>img/view-conceal-symbolic.svg</file>
     <file>img/help-about.svg</file>
+    <file>img/dcspy_black.svg</file>
+    <file>img/dcspy_white.svg</file>
     <file>img/viewitem.svg</file>
     <file>img/jgmenu.svg</file>
     <file>img/github-desktop.svg</file>
@@ -17,9 +18,11 @@
     <file>img/media-playback-start.svg</file>
     <file>img/configure.svg</file>
     <file>img/kr_comparedirs.svg</file>
+    <file>img/edit-download.svg</file>
     <file>img/xfsm-reboot.svg</file>
     <file>img/list-add.svg</file>
     <file>img/list-remove.svg</file>
+    <file>img/dialog-text-and-font.svg</file>
     <file>img/go-next.svg</file>
     <file>img/go-previous.svg</file>
     <file>img/media-playback-stop.svg</file>
