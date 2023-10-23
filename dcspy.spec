@@ -1,13 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-resource = ['falconded.ttf', 'license.txt']
-logi_sdk = ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']
-
 files = [(f'dcspy/{res}', 'dcspy') for res in  ['config.yaml', 'qtgui_rc.py']]
 images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['new_splash.png', 'dcspy_white.ico']]
-resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in resource]
-headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in logi_sdk]
+resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in ['falconded.ttf', 'license.txt']]
+headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']]
 __version__ = '3.0.0-rc1'
 block_cipher = None
 
