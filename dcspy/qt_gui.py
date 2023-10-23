@@ -382,6 +382,7 @@ class DcsPyQtGui(QMainWindow):
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
                 return False
             except ValidationError as exc:
+                LOG.debug(f'{plane_name}: {plane_aliases}\nValidation errors: {exc}')
                 self._show_custom_msg_box(
                     kind_of=QMessageBox.Icon.Warning,
                     title=f'Warning with {plane_name}',
