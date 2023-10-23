@@ -539,7 +539,7 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Cont
         ctrl_key[section] = {}
         for ctrl, data in controllers.items():
             ctrl_input = Control.model_validate(data).input
-            if ctrl_input:
+            if ctrl_input and not ctrl_input.has_set_string:
                 ctrl_key[section][ctrl] = ctrl_input
         if not len(ctrl_key[section]):
             del ctrl_key[section]
