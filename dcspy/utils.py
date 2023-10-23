@@ -265,7 +265,7 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     """
     result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
     try:
-        with open(file=Path(bios_path) / 'lib' / 'CommonData.lua', encoding='utf-8') as cd_lua:
+        with open(file=Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8') as cd_lua:
             cd_lua_data = cd_lua.read()
     except FileNotFoundError as err:
         LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
@@ -292,7 +292,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -324,7 +324,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCSFlightpanels/dcs-bios'
     else:
         bios_repo.git.checkout(git_ref)
         head_commit = bios_repo.head.commit
-        sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime}'
+        sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")}'
     return sha
 
 
@@ -366,7 +366,7 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
         with open(file=lua_dst_path / lua, mode='a+', encoding='utf-8') as exportlua_dst:
             exportlua_dst.write(f'\n{lua_src_data}')
         LOG.debug(f'Add DCS-BIOS to Export.lua: {lua_src_data}')
-        result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+        result += '\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation'
     else:
         result += '\n\nDCS-BIOS entry detected.'
     return result

@@ -3,44 +3,44 @@ from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Dict, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Final, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
 
 from PIL import ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 # Network
-SEND_ADDR = ('127.0.0.1', 7778)
-RECV_ADDR = ('', 5010)
-MULTICAST_IP = '239.255.50.10'
+SEND_ADDR: Final = ('127.0.0.1', 7778)
+RECV_ADDR: Final = ('', 5010)
+MULTICAST_IP: Final = '239.255.50.10'
 
 # LCD types
-TYPE_MONO = 1
-TYPE_COLOR = 2
+TYPE_MONO: Final = 1
+TYPE_COLOR: Final = 2
 
 # LCD Monochrome size
-MONO_WIDTH = 160
-MONO_HEIGHT = 43
+MONO_WIDTH: Final = 160
+MONO_HEIGHT: Final = 43
 
 # LCD Color size
-COLOR_WIDTH = 320
-COLOR_HEIGHT = 240
+COLOR_WIDTH: Final = 320
+COLOR_HEIGHT: Final = 240
 
 # LED constants
-LOGI_LED_DURATION_INFINITE = 0
-LOGI_DEVICETYPE_MONOCHROME = 1
-LOGI_DEVICETYPE_RGB = 2
-LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
+LOGI_LED_DURATION_INFINITE: Final = 0
+LOGI_DEVICETYPE_MONOCHROME: Final = 1
+LOGI_DEVICETYPE_RGB: Final = 2
+LOGI_DEVICETYPE_ALL: Final = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 
 # G Key
-LOGITECH_MAX_GKEYS = 30
-LOGITECH_MAX_M_STATES = 4
+LOGITECH_MAX_GKEYS: Final = 30
+LOGITECH_MAX_M_STATES: Final = 4
 
 # Others
-LOCAL_APPDATA = True
-DCSPY_REPO_NAME = 'emcek/dcspy'
-DEFAULT_FONT_NAME = 'consola.ttf'
-DCS_BIOS_REPO_DIR = Path(gettempdir()) / 'dcsbios_git'
-CTRL_LIST_SEPARATOR = '--'
+LOCAL_APPDATA: Final = True
+DCSPY_REPO_NAME: Final = 'emcek/dcspy'
+DEFAULT_FONT_NAME: Final = 'consola.ttf'
+DCS_BIOS_REPO_DIR: Final = Path(gettempdir()) / 'dcsbios_git'
+CTRL_LIST_SEPARATOR: Final = '--'
 SUPPORTED_CRAFTS = {
     'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
     'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},

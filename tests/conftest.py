@@ -215,6 +215,7 @@ def switch_dcs_bios_path_in_config(resources, test_config_yaml):
     Switch path to config yaml file during testing.
 
     :param resources: path to tests/resources directory
+    :param test_config_yaml: test confi.yaml file
     """
     from dcspy import utils
 

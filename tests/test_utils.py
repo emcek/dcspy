@@ -99,7 +99,7 @@ def test_dummy_save_load_set_defaults(tmpdir):
         'completer_items': 20,
         'current_plane': 'A-10A',
         'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-        'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta',
+        'dcs': 'C:/Program Files/Eagle Dynamics/DCS World OpenBeta',
         'verbose': False,
         'check_bios': True,
         'check_ver': True,
@@ -148,8 +148,8 @@ def test_check_dcs_ver_file_not_exists(side_effect):
 
 
 def test_check_bios_ver(tmpdir):
-    makedirs(Path(tmpdir) / 'lib')
-    with open(file=Path(tmpdir) / 'lib' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
+    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
+    with open(file=Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
@@ -189,7 +189,7 @@ def test_check_github_repo(tmpdir):
     match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}\sby:\s.*', sha)
     assert match.group(1)
     sha = utils.check_github_repo(git_ref='master', update=False, repo='emcek/common_sense', repo_dir=tmpdir)
-    match = search(r'([0-9a-f]{8})\sfrom:\s\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}', sha)
+    match = search(r'([0-9a-f]{8})\sfrom:\s\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2}', sha)
     assert match.group(1)
 
 
@@ -218,7 +218,7 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
         lua_dst.write(lua_dst_data)
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
-    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation'
+    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation'
 
 
 def test_check_dcs_bios_entry_ok(tmpdir):

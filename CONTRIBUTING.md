@@ -1,5 +1,5 @@
 ## Development
-DCSpy use multicast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCSFlightpanels/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).
+DCSpy use multicast UDP to receive/send data from/to DCS-BIOS as describe [here](https://github.com/DCS-Skunkworks/dcs-bios/blob/master/Scripts/DCS-BIOS/doc/developerguide.adoc).
 Main modules of DCSpy:
 * `run.py` main script - it starts GUI in Qt6/PySide6
 * `starter.py` responsible for initialise DCS-BIOS parser, Logitech G13/G15/G510 Mono handler and G19 Color handler, as well as running connection to DCS.

@@ -113,7 +113,7 @@ ignore-setters = false
 fail-under = 90
 verbose = 1
 quiet = false
-exclude = ['tests/test_*']
+exclude = ['tests/test_*', 'dcspy/qtgui_rc.py']
 
 [tool.ruff]
 line-length = 160

@@ -3,8 +3,8 @@ check_bios: false
 check_ver: false
 completer_items: 20
 current_plane: A-10C
-dcs: C:\Program Files\Eagle Dynamics\DCS World OpenBeta
-dcsbios: D:\Users\UNKNOWN\Saved Games\DCS.openbeta\Scripts\DCS-BIOS
+dcs: C:/Program Files/Eagle Dynamics/DCS World OpenBeta
+dcsbios: D:/Users/UNKNOWN/Saved Games/DCS.openbeta/Scripts/DCS-BIOS
 f16_ded_font: true
 font_color_l: 32
 font_color_s: 22

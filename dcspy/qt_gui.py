@@ -101,7 +101,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
-        self.systray.setIcon(QIcon(':/icons/img/dcspy.ico'))
+        self.systray.setIcon(QIcon(':/icons/img/dcspy_white.svg'))
         self.systray.setVisible(True)
         self.systray.setToolTip(f'DCSpy {__version__}')
         self.traymenu.addAction(self.a_check_updates)
@@ -111,24 +111,28 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_combo_plane(self) -> None:
         """Initialize of combo box for plane selector with completer."""
-        plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
-        completer = QCompleter(plane_list)
-        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-        completer.setFilterMode(Qt.MatchFlag.MatchContains)
-        completer.setMaxVisibleItems(self.config['completer_items'])
-        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
-        self.combo_planes.addItems(plane_list)
-        self.combo_planes.setEditable(True)
-        self.combo_planes.setCompleter(completer)
-        self.input_reqs = {plane: {} for plane in plane_list}
+        try:
+            plane_list = get_planes_list(bios_dir=Path(self.config['dcsbios']))
+            completer = QCompleter(plane_list)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
+            completer.setMaxVisibleItems(self.config['completer_items'])
+            completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+            self.combo_planes.addItems(plane_list)
+            self.combo_planes.setEditable(True)
+            self.combo_planes.setCompleter(completer)
+            self.input_reqs = {plane: {} for plane in plane_list}
+        except FileNotFoundError as exc:
+            message = f'Folder not exists: \n{self.config["dcsbios"]}\n\nCheck DCS-BIOS path.\n\n{exc}'
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Planes List', message=message)
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
         self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
         self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
-        self.le_biosdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_biosdir'))
+        self.le_biosdir.textChanged.connect(partial(self._is_dir_dcs_bios, widget_name='le_biosdir'))
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
@@ -159,10 +163,12 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of menubar."""
         self.a_reset_defaults.triggered.connect(self._reset_defaults_cfg)
         self.a_quit.triggered.connect(self.close)
+        self.a_save_plane.triggered.connect(self._save_gkeys_cfg)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
         self.a_show_keyboard.triggered.connect(self._show_keyboard_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
+        self.a_discord.triggered.connect(partial(open_new_tab, url='https://discord.gg/SP5Yjx3'))
         self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
@@ -170,8 +176,8 @@ class DcsPyQtGui(QMainWindow):
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
         widget_dict = {'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
-                       'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textEdited',
-                       'le_biosdir': 'textEdited', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
+                       'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textChanged',
+                       'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
                        'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
                        'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged'}
         for widget_name, trigger_method in widget_dict.items():
@@ -180,7 +186,7 @@ class DcsPyQtGui(QMainWindow):
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
         self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
-        self._is_dir_exists(text=self.le_biosdir.text(), widget_name='le_biosdir')
+        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         if self.cb_bios_live.isChecked():
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
@@ -291,6 +297,24 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, widget_name).setStyleSheet('color: red;')
             return False
 
+    def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
+        """
+        Check if directory is valid DCS-BIOS installation.
+
+        :param text: contents of text field
+        :param widget_name: widget name
+        :return: True if valid BIOS directory, False otherwise.
+        """
+        text = Path(text)
+        bios_lua = text / 'BIOS.lua'
+        metadata_json = text / 'doc' / 'json' / 'MetadataStart.json'
+        if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
+            getattr(self, widget_name).setStyleSheet('')
+            return True
+        else:
+            getattr(self, widget_name).setStyleSheet('color: red;')
+            return False
+
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
@@ -343,21 +367,28 @@ class DcsPyQtGui(QMainWindow):
         :param plane_name: BIOS plane name
         :return:
         """
-        plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
+        try:
+            plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
+        except FileNotFoundError as exc:
+            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{exc}'
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
+            return False
+
         if self.plane_aliases != plane_aliases[plane_name]:
             try:
-                self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=Path(self.le_biosdir.text()))
+                self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=self.bios_path)
                 self.plane_aliases = plane_aliases[plane_name]
                 LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
                 return False
             except ValidationError as exc:
-                self._show_custom_msg_box(kind_of=QMessageBox.Icon.Warning,
-                                          title=f'Warning with {plane_name}',
-                                          text=f'Can not read infomodel of {plane_name}. Regenerate\ninfomodel might help. Please follow instruction:',
-                                          info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n'
-                                                   f'3. Click Fly\n4. Try again',
-                                          detail_txt=f'{exc.errors()}')
+                self._show_custom_msg_box(
+                    kind_of=QMessageBox.Icon.Warning,
+                    title=f'Warning with {plane_name}',
+                    text=f'Can not read info-model of {plane_name}. Regenerate\ninfo-model might help. Please follow instruction: ',
+                    info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n3. Click Fly\n4. Try again',
+                    detail_txt=f'{exc.errors()}'
+                )
                 if len(self.plane_aliases) > 1:
                     self.combo_planes.setCurrentText(self.plane_aliases[1])
                 else:
@@ -410,6 +441,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_category.setText('')
         self.l_description.setText('')
         self.l_identifier.setText('')
+        self.l_range.setText('')
         widget.setToolTip('')
         widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
@@ -420,6 +452,7 @@ class DcsPyQtGui(QMainWindow):
             self.l_category.setText(f'Category: {section}')
             self.l_description.setText(f'Description: {ctrl_key.description}')
             self.l_identifier.setText(f'Identifier: {text}')
+            self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
             self._checked_iface_rb_for_identifier(row=row, col=col)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
@@ -580,25 +613,23 @@ class DcsPyQtGui(QMainWindow):
                 self.le_bios_live.setStyleSheet('color: red;')
                 return False
 
-    def _get_bios_full_version(self, bios_ver: str, silence=True) -> str:
+    def _get_bios_full_version(self, silence=True) -> str:
         """
         Get full with SHA and git details DCS-BIOS version as string.
 
-        :param bios_ver: version string
         :param silence: perform action with silence
         :return: full BIOS version
         """
         sha_commit = ''
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = f' SHA: {check_github_repo(git_ref=self.le_bios_live.text(), update=False)}'
+                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
             except Exception as exc:
                 # todo: handle silence form fetch system and make custom message box
                 LOG.debug(f'{exc}')
                 if not silence:
                     self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
-        dcs_bios_ver = f'{bios_ver}{sha_commit}'
-        return dcs_bios_ver
+        return sha_commit
 
     def _cb_bios_live_toggled(self, state: bool) -> None:
         """When Live BIOS checkbox is toggled."""
@@ -628,7 +659,7 @@ class DcsPyQtGui(QMainWindow):
         ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
-            self.systray.showMessage('DCSpy', f'New version: {__version__}', QIcon(':/icons/img/system-software-update.svg'))
+            self.systray.showMessage('DCSpy', f'New version: {__version__}', QIcon(':/icons/img/edit-download.svg'))
             self._download_new_release()
         elif 'latest' in ver_string:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title='No updates', message='You are running latest version')
@@ -685,15 +716,15 @@ class DcsPyQtGui(QMainWindow):
         :return: True if path to DCS-BIOS is correct
         """
         result = True
-        bios_dir = self.le_biosdir.text()
-        if self._is_dir_exists(text=bios_dir, widget_name='le_biosdir'):
-            drive_letter = Path(bios_dir).parts[0]
+        if self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir'):
+            drive_letter = self.bios_path.parts[0]
             if not Path(drive_letter).exists():
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
                 result = False
         else:
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Empty path.\n\nCheck DCS-BIOS path.')
-            result = False
+            reply = QMessageBox.question(self, 'Install DCS-BIOS', f'There is no DCS-BIOS installed at:\n{self.bios_path}\n\nDo you want install?',
+                                         defaultButton=QMessageBox.StandardButton.Yes)
+            result = True if reply == QMessageBox.StandardButton.Yes else False
         return result
 
     def _check_bios_git(self, silence=False) -> Tuple[str, str]:
@@ -704,11 +735,10 @@ class DcsPyQtGui(QMainWindow):
         :return installation result as string
         """
         sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
-        bios_dir = self.le_biosdir.text()
-        LOG.debug(f'Remove: {bios_dir} ')
-        rmtree(path=bios_dir, ignore_errors=True)
-        LOG.debug(f'Copy Git DCS-BIOS to: {bios_dir} ')
-        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=bios_dir)
+        LOG.debug(f'Remove: {self.bios_path} ')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
+        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
         local_bios = self._check_local_bios()
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
         if not silence:
@@ -740,6 +770,7 @@ class DcsPyQtGui(QMainWindow):
         sha, install_result = result
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
+        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self._done_event.clear()
 
@@ -792,7 +823,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: release description info
         """
-        result = check_bios_ver(bios_path=self.le_biosdir.text())
+        result = check_bios_ver(bios_path=self.bios_path)
         self.l_bios = result.ver
         return result
 
@@ -802,7 +833,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: release description info
         """
-        release_info = check_ver_at_github(repo='DCSFlightpanels/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
         self.r_bios = release_info.ver
         return release_info
 
@@ -838,19 +869,20 @@ class DcsPyQtGui(QMainWindow):
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.le_biosdir.text()} ')
-        rmtree(path=self.le_biosdir.text(), ignore_errors=True)
-        LOG.debug(f'Copy DCS-BIOS to: {self.le_biosdir.text()} ')
-        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.le_biosdir.text())
+        LOG.debug(f'Remove: {self.bios_path} ')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
+        copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path)
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
             reply = QMessageBox.question(self, 'Open browser', install_result, defaultButton=QMessageBox.StandardButton.Yes)
             if reply == QMessageBox.StandardButton.Yes:
-                open_new_tab(r'https://github.com/DCSFlightpanels/DCSFlightpanels/wiki/Installation')
+                open_new_tab(r'https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
         else:
             local_bios = self._check_local_bios()
             self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
             install_result = f'{install_result}\n\nUsing stable release version.'
+            self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
 
     def _handling_export_lua(self, temp_dir: Path) -> str:
@@ -863,7 +895,7 @@ class DcsPyQtGui(QMainWindow):
         :return: result of checks
         """
         result = 'Installation Success. Done.'
-        lua_dst_path = Path(self.le_biosdir.text()).parent
+        lua_dst_path = self.bios_path.parent
         lua = 'Export.lua'
         try:
             with open(file=lua_dst_path / lua, encoding='utf-8') as lua_dst:
@@ -1011,6 +1043,15 @@ class DcsPyQtGui(QMainWindow):
         """
         return self.combo_planes.currentText()
 
+    @property
+    def bios_path(self) -> Path:
+        """
+        Get path to DCS-BIOS.
+
+        :return: full path as Path
+        """
+        return Path(self.le_biosdir.text())
+
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
         """
@@ -1080,7 +1121,7 @@ class DcsPyQtGui(QMainWindow):
         dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
-        dcs_bios_ver = self._get_bios_full_version(bios_ver=bios_ver, silence=silence)
+        dcs_bios_ver = self._get_bios_full_version(silence=silence)
         git_ver = 'Not installed'
         if self.git_exec:
             from git import cmd
@@ -1127,7 +1168,8 @@ class DcsPyQtGui(QMainWindow):
         else:
             message_box(self, title, message)
 
-    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str) -> int:
+    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: Optional[str] = None,
+                             buttons: Optional[QMessageBox.StandardButton] = None) -> int:
         """
         Show custom message box with hidden text.
 
@@ -1135,13 +1177,17 @@ class DcsPyQtGui(QMainWindow):
         :param text: first section
         :param info_txt: second section
         :param detail_txt: hidden text
+        :param buttons: tuple of buttons
         :return: code of pushed button as integer code
         """
         msg = QMessageBox(text=text, parent=self)
         msg.setIcon(kind_of)
         msg.setWindowTitle(title)
         msg.setInformativeText(info_txt)
-        msg.setDetailedText(detail_txt)
+        if detail_txt:
+            msg.setDetailedText(detail_txt)
+        if buttons:
+            msg.setStandardButtons(buttons)
         return msg.exec()
 
     def event_set(self) -> None:
@@ -1203,8 +1249,10 @@ class DcsPyQtGui(QMainWindow):
         self.l_category: Union[object, QLabel] = self.findChild(QLabel, 'l_category')
         self.l_description: Union[object, QLabel] = self.findChild(QLabel, 'l_description')
         self.l_identifier: Union[object, QLabel] = self.findChild(QLabel, 'l_identifier')
+        self.l_range: Union[object, QLabel] = self.findChild(QLabel, 'l_range')
 
         self.a_quit: Union[object, QAction] = self.findChild(QAction, 'a_quit')
+        self.a_save_plane: Union[object, QAction] = self.findChild(QAction, 'a_save_plane')
         self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
         self.a_show_toolbar: Union[object, QAction] = self.findChild(QAction, 'a_show_toolbar')
         self.a_show_gkeys: Union[object, QAction] = self.findChild(QAction, 'a_show_gkeys')
@@ -1214,6 +1262,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
         self.a_check_updates: Union[object, QAction] = self.findChild(QAction, 'a_check_updates')
         self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
+        self.a_discord: Union[object, QAction] = self.findChild(QAction, 'a_discord')
 
         self.pb_start: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_start')
         self.pb_stop: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_stop')
@@ -1262,7 +1311,7 @@ class AboutDialog(QDialog):
     def __init__(self, parent) -> None:
         """Dcspy about dialog window."""
         super().__init__(parent)
-        self.parent: DcsPyQtGui = parent
+        self.parent: Union[DcsPyQtGui, QWidget] = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
         self.l_info: Union[object, QLabel] = self.findChild(QLabel, 'l_info')
 
@@ -1270,6 +1319,7 @@ class AboutDialog(QDialog):
         """Prepare text information about DCSpy application."""
         super().showEvent(event)
         d = self.parent.fetch_system_data(silence=False)
+        sha = d.dcs_bios_ver.split(' ')[0]
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
@@ -1283,7 +1333,8 @@ class AboutDialog(QDialog):
         text += f'<br><b>Git</b>: {d.git_ver}'
         text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
-        text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCSFlightpanels/dcs-bios/releases">{d.dcs_bios_ver}</a>'
+        text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCS-Skunkworks/dcs-bios/releases">{d.bios_ver}</a> '
+        text += f'<b>SHA:</b> <a href="https://github.com/DCS-Skunkworks/dcs-bios/commit/{sha}">{d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
         text += '</p></body></html>'
         self.l_info.setText(text)

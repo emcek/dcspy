@@ -180,7 +180,7 @@
 * supporters are printed in welcome screen - I'm thrilled with support and help of community!
 
 ## 1.5.1
-* alignment for new DCS-BIOS [v0.7.43](https://github.com/DCSFlightpanels/dcs-bios/releases/tag/v0.7.43)
+* alignment for new DCS-BIOS [v0.7.43](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.7.43)
 
 ## 1.5.0
 * Support for **AV-8B N/A Harrier** with:
@@ -207,11 +207,11 @@
   * **IFF ENABLE Switch** - M1/M3 /OFF/ M3/MS
   * **IFF M-4 CODE Switch** - HOLD/ A/B /ZERO
   * **IFF MODE 4 REPLY Switch** - OUT/A/B
-* Fix alignment of (DCS-BIOS [v0.7.41](https://github.com/DCSFlightpanels/dcs-bios/releases/tag/v0.7.41)) for **F-14B Tomcat**
+* Fix alignment of (DCS-BIOS [v0.7.41](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.7.41)) for **F-14B Tomcat**
 * Internally all data fetch form DCS-BIOS is check against its specification. Sometimes due to changes DCS-BIOS protocol DCSpy couldn't fetch all data i.e. F-16 DED. It shouldn't happened anymore.
 
 ## 1.2.3
-* Fix alignment of DED (DCS-BIOS [v0.7.41](https://github.com/DCSFlightpanels/dcs-bios/releases/tag/v0.7.43)) for **F-16C Viper**
+* Fix alignment of DED (DCS-BIOS [v0.7.41](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.7.43)) for **F-16C Viper**
 
 ## 1.2.2
 * Fix alignment of DED for **F-16C Viper**
@@ -238,7 +238,7 @@
 * support for integer data to be fetch from DCS-BIOS - using IntegerBuffer()
 * bios_data in Airplanes instances allow both StringBuffer() and IntegerBuffer()
 * reformat waiting time before DCS connected
-* fix Data Entry Display for F-16C Viper - DCS-BIOS [v0.7.34](https://github.com/DCSFlightpanels/dcs-bios/releases/tag/v0.7.34) is required
+* fix Data Entry Display for F-16C Viper - DCS-BIOS [v0.7.34](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.7.34) is required
 * **Ka-50 Black Shark** - Autopilot channels show up in LCD
 
 ## 1.0.0
