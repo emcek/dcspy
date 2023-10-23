@@ -9,7 +9,7 @@ from dcspy.log import config_logger
 from dcspy.models import LOCAL_APPDATA
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, set_defaults
 
-__version__ = '3.0.0'
+__version__ = '3.0.0-rc1'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 _config = set_defaults(load_yaml(full_path=default_yaml), filename=default_yaml)
