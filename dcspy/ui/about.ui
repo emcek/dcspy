@@ -11,11 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
-  </property>
-  <property name="windowIcon">
-   <iconset resource="../qtgui.qrc">
-    <normaloff>:/icons/img/qt.svg</normaloff>:/icons/img/qt.svg</iconset>
+   <string>About DCSpy</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -45,6 +41,12 @@
      </item>
      <item row="0" column="0" rowspan="2">
       <widget class="QLabel" name="label_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="maximumSize">
         <size>
          <width>292</width>
