@@ -31,7 +31,7 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: s
               versioninfo.StringStruct('FileDescription', 'Integrating DCS Planes with Logitech keyboards with LCD'),
               versioninfo.StringStruct('FileVersion', f'{major}.{minor}.{patch}'),
               versioninfo.StringStruct('InternalName', 'dcs_py'),
-              versioninfo.StringStruct('LegalCopyright', '© Michał Plichta. All rights reserved.'),
+              versioninfo.StringStruct('LegalCopyright', '© 2023 Michał Plichta. All rights reserved.'),
               versioninfo.StringStruct('OriginalFilename', 'dcs_py.exe'),
               versioninfo.StringStruct('ProductName', 'DCSpy'),
               versioninfo.StringStruct('ProductVersion', f'{major}.{minor}.{patch} ({git_sha})')])]),
@@ -39,7 +39,7 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: s
     return ver_info
 
 
-def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '1.1.1'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
+def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.0.0'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
                   sha=environ.get('GITHUB_SHA', 'deadbeef'), ver_f='file_version_info.txt') -> Sequence[str]:
     """
     Save generated version file based on list of strings.
