@@ -533,7 +533,7 @@
                 <string>DCS-BIOS folder</string>
                </property>
                <property name="icon">
-                <iconset>
+                <iconset resource="../qtgui.qrc">
                  <normaloff>:/icons/img/folder-violet.svg</normaloff>:/icons/img/folder-violet.svg</iconset>
                </property>
               </widget>
