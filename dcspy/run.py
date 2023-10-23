@@ -11,6 +11,7 @@ from dcspy import get_config_yaml_item
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
+__version__ = '3.0.0-rc1'
 
 
 def run() -> None:
