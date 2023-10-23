@@ -1,15 +1,14 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-img = ['dcspy.ico', 'dcspy_white.ico', 'dcspy.png', 'splash.png', 'G13.png', 'G19.png', 'G510.png', 'G15v1.png', 'G15v2.png', 'G13device.png', 'G19device.png', 'G510device.png', 'G15v1device.png', 'G15v2device.png']
 resource = ['falconded.ttf', 'license.txt']
 logi_sdk = ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']
 
-files = [(f'dcspy/{res}', 'dcspy') for res in  ['config.yaml']]
-images = [(f'dcspy/img/{res}', 'dcspy/img') for res in img]
+files = [(f'dcspy/{res}', 'dcspy') for res in  ['config.yaml', 'qtgui_rc.py']]
+images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['new_splash.png', 'dcspy_white.ico']]
 resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in resource]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in logi_sdk]
-__version__ = '3.0.0'
+__version__ = '3.0.0-rc1'
 block_cipher = None
 
 
@@ -30,7 +29,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'dcspy/img/splash.png',
+    'dcspy/img/new_splash.png',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,
@@ -62,5 +61,5 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     version='file_version_info.txt',
-    icon=['dcspy/img/dcspy.ico'],
+    icon=['dcspy/img/dcspy_white.ico'],
 )
