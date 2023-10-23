@@ -35,7 +35,7 @@ from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios
                          save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.0.0'
+__version__ = '3.0.0-rc1'
 LOG = getLogger(__name__)
 
 
@@ -382,6 +382,7 @@ class DcsPyQtGui(QMainWindow):
                 self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
                 return False
             except ValidationError as exc:
+                LOG.debug(f'{plane_name}: {plane_aliases}\nValidation errors: {exc}')
                 self._show_custom_msg_box(
                     kind_of=QMessageBox.Icon.Warning,
                     title=f'Warning with {plane_name}',

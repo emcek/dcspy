@@ -145,6 +145,23 @@ class Action(Input):
         return value
 
 
+class SetString(Input):
+    """SetString input interface of inputs section of Control."""
+    interface: str = 'set_string'
+
+    @field_validator('interface')
+    def validate_interface(cls, value):
+        """
+        Validate.
+
+        :param value:
+        :return:
+        """
+        if value != 'set_string':
+            raise ValueError("Invalid value for 'interface'. Only 'set_string' is allowed.")
+        return value
+
+
 class Output(BaseModel):
     """Output base class of outputs section of Control."""
     address: int
@@ -241,7 +258,7 @@ class ControlKeyData:
         self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
-        self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action]] = []
+        self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
 
     def __repr__(self) -> str:
         return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
@@ -252,7 +269,7 @@ class ControlKeyData:
         return True
 
     @classmethod
-    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action]]) -> 'ControlKeyData':
+    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> 'ControlKeyData':
         """
         Construct object from list of dictionaries.
 
@@ -272,7 +289,7 @@ class ControlKeyData:
         return instance
 
     @staticmethod
-    def _get_max_value(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action]]) -> int:
+    def _get_max_value(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int:
         """
         Get max value from list of dictionaries.
 
@@ -390,6 +407,15 @@ class ControlKeyData:
         """
         return any([isinstance(d, Action) for d in self.list_dict])
 
+    @property
+    def has_set_string(self) -> bool:
+        """
+        Check if input has set string input.
+
+        :return: bool
+        """
+        return any([isinstance(d, SetString) for d in self.list_dict])
+
 
 class Control(BaseModel):
     """Control section of BIOS model."""
@@ -398,7 +424,7 @@ class Control(BaseModel):
     control_type: str
     description: str
     identifier: str
-    inputs: List[Union[FixedStep, VariableStep, SetState, Action]]
+    inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
     momentary_positions: Optional[str] = None
     outputs: List[Union[OutputStr, OutputInt]]
     physical_variant: Optional[str] = None

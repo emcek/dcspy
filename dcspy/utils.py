@@ -28,7 +28,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.0.0'
+__version__ = '3.0.0-rc1'
 ConfigDict = Dict[str, Union[str, int, bool]]
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
@@ -539,7 +539,7 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Cont
         ctrl_key[section] = {}
         for ctrl, data in controllers.items():
             ctrl_input = Control.model_validate(data).input
-            if ctrl_input:
+            if ctrl_input and not ctrl_input.has_set_string:
                 ctrl_key[section][ctrl] = ctrl_input
         if not len(ctrl_key[section]):
             del ctrl_key[section]

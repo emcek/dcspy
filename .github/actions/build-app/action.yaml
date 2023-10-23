@@ -13,7 +13,8 @@ runs:
         git checkout $pyi_tag
         python.exe ./waf all
         cd ..
-        python.exe setup.py bdist_wheel
+        python -m build
+        python -m twine check dist/*
         pip install dist/pyinstaller-$pyi_ver-py3-none-any.whl
 
     - name: "Generate version info file"
