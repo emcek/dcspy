@@ -31,7 +31,8 @@ def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
+                                                                       'assets': [{
+                                                                           'browser_download_url': 'github.com/fake.tgz'}],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
         assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz') == result
 
@@ -39,12 +40,16 @@ def test_check_ver_is_possible(online_tag, result):
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2',
+                                         extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '',
+                                                                                'Regular', '')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '', 'Regular', '')
+        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3',
+                                         extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '',
+                                                                                'Regular', '')
 
 
 @mark.parametrize('online_tag, result', [
@@ -55,7 +60,8 @@ def test_get_version_string_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{'browser_download_url': 'github.com/fake.tgz'}],
+                                                                       'assets': [{
+                                                                           'browser_download_url': 'github.com/fake.tgz'}],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
         assert utils.get_version_string(repo='fake1/package1', current_ver='1.1.1', check=True) == result
 
@@ -149,23 +155,28 @@ def test_check_dcs_ver_file_not_exists(side_effect):
 
 def test_check_bios_ver(tmpdir):
     makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
-    with open(file=Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
+    common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
+    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
+    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='',
+                                       published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
     makedirs(Path(tmpdir) / 'lib')
-    with open(file=Path(tmpdir) / 'lib' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
+    common_data_lua = Path(tmpdir) / 'lib' / 'CommonData.lua'
+    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='',
+                                       published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_raise_exception(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='',
+                                       published='', release_type='', asset_file='')
 
 
 def test_is_git_repo(tmpdir):
@@ -300,16 +311,17 @@ def test_get_plane_aliases_all(resources):
         'A-10C': ['CommonData', 'A-10C'],
         'A-10C_2': ['CommonData', 'A-10C'],
         'AH-64D_BLK_II': ['CommonData', 'AH-64D'],
-        'AV8BNA': ['CommonData', 'AV8BNA'],
-        'F-14A-135-GR': ['CommonData', 'F-14'],
-        'F-14B': ['CommonData', 'F-14'],
+        'AV8BNA': ['CommonData', 'AV8BNA', 'NS430'],
+        'F-14A-135-GR': ['CommonData', 'F-14', 'NS430'],
+        'F-14B': ['CommonData', 'F-14', 'NS430'],
         'F-15ESE': ['CommonData', 'F-15E'],
         'F-16C_50': ['CommonData', 'F-16C_50'],
         'FA-18C_hornet': ['CommonData', 'FA-18C_hornet'],
         'Ka-50': ['CommonData', 'Ka-50'],
         'Ka-50_3': ['CommonData', 'Ka-50'],
-        'Mi-24P': ['CommonData', 'Mi-24P'],
-        'Mi-8MT': ['CommonData', 'Mi-8MT'],
+        'Mi-24P': ['CommonData', 'Mi-24P', 'NS430'],
+        'Mi-8MT': ['CommonData', 'Mi-8MT', 'NS430'],
+        'NS430': ['CommonData'],
     }
 
 
