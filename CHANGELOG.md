@@ -9,6 +9,7 @@
 * Internal:
   * G-Keys Logitech SDK C library
   * Use Pydantic data models
+  * Auto migration of configuration file
   * Add unit tests for Qt GUI
   * improve CI process - add Python 3.12
 
