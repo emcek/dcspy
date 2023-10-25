@@ -8,7 +8,7 @@ from logging import getLogger
 from os import environ, makedirs, walk
 from pathlib import Path
 from platform import python_implementation, python_version, uname
-from pprint import pformat, pprint
+from pprint import pformat
 from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
@@ -20,7 +20,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios, DcspyConfigYaml
+from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcspyConfigYaml
 
 try:
     import git
