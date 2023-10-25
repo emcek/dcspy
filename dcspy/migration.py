@@ -1,11 +1,11 @@
-from packaging import version
+from logging import getLogger
 from pprint import pformat
 from typing import Iterator, Callable, Union
 
 from dcspy import LOG
 from dcspy.models import DcspyConfigYaml
 
-
+LOG = getLogger(__name__)
 __version__ = '3.0.0-rc1'
 
 
