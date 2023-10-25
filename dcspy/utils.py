@@ -96,23 +96,6 @@ def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file)
 
 
-def set_defaults(cfg: DcspyConfigYaml, filename: Path) -> DcspyConfigYaml:
-    """
-    Set defaults to not existing config options.
-
-    :param cfg: dict before migration
-    :param filename: path to yam file - default <package_dir>/config.yaml
-    :return: dict after migration
-    """
-    LOG.debug(f'Before migration: {cfg}')
-    migrated_cfg = {key: cfg.get(key, value) for key, value in defaults_cfg.items()}
-    if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
-        migrated_cfg['dcsbios'] = defaults_cfg['dcsbios']
-    save_yaml(data=migrated_cfg, full_path=filename)
-    LOG.debug(f'Save: {migrated_cfg}')
-    return migrated_cfg
-
-
 def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseInfo:
     """
     Check version of <organization>/<package> at GitHub.
