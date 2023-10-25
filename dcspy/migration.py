@@ -1,8 +1,9 @@
 from logging import getLogger
 from pprint import pformat
-from typing import Iterator, Callable, Union
+from typing import Callable, Iterator, Union
 
-from dcspy import LOG
+from packaging import version
+
 from dcspy.models import DcspyConfigYaml
 
 LOG = getLogger(__name__)
