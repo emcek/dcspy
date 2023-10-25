@@ -91,6 +91,7 @@ def test_proc_is_running():
 
 def test_dummy_save_load_migrate(tmpdir):
     from os import environ
+
     from dcspy.migration import migrate
     test_tmp_yaml = Path(tmpdir) / 'test_cfg.yaml'
 
