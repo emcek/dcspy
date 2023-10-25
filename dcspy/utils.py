@@ -581,17 +581,3 @@ def get_ctrl(ctrl_name: str, plane_bios: Dict[str, Dict[str, ControlKeyData]]) -
         for ctrl, data in controllers.items():
             if ctrl == ctrl_name:
                 return Control.model_validate(data)
-
-
-if __name__ == '__main__':
-    bios_local_dir = Path('D:\\Users\\mplic\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS')
-    plane_json = get_full_bios_for_plane('F-16C_50', bios_local_dir)
-    DcsBios.model_validate(plane_json)
-    print('*' * 100)
-    pprint(plane_json, width=500)
-    ctrl_inputs = get_inputs_for_plane('F-16C_50', bios_local_dir)
-    print('*' * 100)
-    pprint(ctrl_inputs, width=150)
-    in_list = get_list_of_ctrls(ctrl_inputs)
-    print('*' * 100)
-    print(in_list)
