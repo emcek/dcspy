@@ -378,7 +378,7 @@ class ControlKeyData:
 
         :return: bool
         """
-        return any([isinstance(d, FixedStep) for d in self.list_dict])
+        return any(isinstance(d, FixedStep) for d in self.list_dict)
 
     @property
     def has_variable_step(self) -> bool:
@@ -387,7 +387,7 @@ class ControlKeyData:
 
         :return: bool
         """
-        return any([isinstance(d, VariableStep) for d in self.list_dict])
+        return any(isinstance(d, VariableStep) for d in self.list_dict)
 
     @property
     def has_set_state(self) -> bool:
@@ -396,7 +396,7 @@ class ControlKeyData:
 
         :return: bool
         """
-        return any([isinstance(d, SetState) for d in self.list_dict])
+        return any(isinstance(d, SetState) for d in self.list_dict)
 
     @property
     def has_action(self) -> bool:
@@ -405,7 +405,7 @@ class ControlKeyData:
 
         :return: bool
         """
-        return any([isinstance(d, Action) for d in self.list_dict])
+        return any(isinstance(d, Action) for d in self.list_dict)
 
     @property
     def has_set_string(self) -> bool:
@@ -414,7 +414,7 @@ class ControlKeyData:
 
         :return: bool
         """
-        return any([isinstance(d, SetString) for d in self.list_dict])
+        return any(isinstance(d, SetString) for d in self.list_dict)
 
 
 class Control(BaseModel):

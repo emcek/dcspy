@@ -439,7 +439,7 @@ def collect_debug_data() -> Path:
         Path(dirpath) / filename
         for dirpath, _, filenames in walk(gettempdir())
         for filename in filenames
-        if any([True for aircraft in aircrafts if aircraft in filename and filename.endswith('png')])
+        if any(True for aircraft in aircrafts if aircraft in filename and filename.endswith('png'))
     ]
 
     log_files = []
