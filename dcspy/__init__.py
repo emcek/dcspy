@@ -6,13 +6,15 @@ from sys import executable, platform
 from typing import Optional, Union
 
 from dcspy.log import config_logger
+from dcspy.migration import migrate
 from dcspy.models import LOCAL_APPDATA
-from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, set_defaults
+from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
 __version__ = '3.0.0-rc1'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
-_config = set_defaults(load_yaml(full_path=default_yaml), filename=default_yaml)
+_config = migrate(load_yaml(full_path=default_yaml))
+save_yaml(data=_config, full_path=default_yaml)
 LOG = getLogger(__name__)
 config_logger(LOG, _config['verbose'])
 
