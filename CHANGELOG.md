@@ -14,7 +14,10 @@
   * improve CI process - add Python 3.12
 
 ## 2.3.3
+* Last version with Tkinter GUI
 * Alignment with latest DCS-BIOS for: **F-15ESE Eagle** and **AV-8B Night Attack**
+* Git is mandatory requirement since DCS-BIOS change structure with support for OB 2.9.0
+* DCS-BIOS 0.7.49 is no loger supported, use live git version instead
 * Internal:
   * formatting code across project to match style
   * update dependencies to latest version to mitigate vulnerabilities
