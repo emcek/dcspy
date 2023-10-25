@@ -20,10 +20,10 @@ def migrate(cfg: DcspyConfigYaml) -> None:
     """
     LOG.debug(f'Starting configuration:\n{pformat(cfg)}')
     src_ver = cfg.get('api_ver', '2.3.3')  # do not touch this api_ver!
-    LOG.debug('Current API version: {}'.format(src_ver))
-    for migration_func in _filter_api_ver_func(src_ver):
+    LOG.debug(f'Current API version: {src_ver}')
+    for migration_func in _filter_api_ver_func(str(src_ver)):
         migration_func(cfg)
-        LOG.debug('Migration done: {}'.format(migration_func.__name__))
+        LOG.debug(f'Migration done: {migration_func.__name__}')
     cfg['api_ver'] = __version__
     LOG.debug(f'Final configuration:\n{pformat(cfg)}')
 
