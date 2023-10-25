@@ -20,7 +20,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios
+from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios, DcspyConfigYaml
 
 try:
     import git
@@ -29,12 +29,11 @@ except ImportError:
 
 LOG = getLogger(__name__)
 __version__ = '3.0.0-rc1'
-ConfigDict = Dict[str, Union[str, int, bool]]
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
 with open(DEFAULT_YAML_FILE) as c_file:
-    defaults_cfg: ConfigDict = yaml.load(c_file, Loader=yaml.FullLoader)
+    defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.FullLoader)
     defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
@@ -97,7 +96,7 @@ def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file)
 
 
-def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
+def set_defaults(cfg: DcspyConfigYaml, filename: Path) -> DcspyConfigYaml:
     """
     Set defaults to not existing config options.
 

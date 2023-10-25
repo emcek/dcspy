@@ -26,13 +26,12 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
                                QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, FontsConfig, GuiPlaneInputRequest,
-                          KeyboardModel, MsgBoxTypes, SystemData)
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml, FontsConfig,
+                          GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
-                         get_planes_list, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command,
-                         save_yaml)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
+                         get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0-rc1'
@@ -42,7 +41,7 @@ LOG = getLogger(__name__)
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self, cfg_dict: Optional[ConfigDict] = None) -> None:
+    def __init__(self, cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
