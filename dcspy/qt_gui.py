@@ -26,13 +26,12 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
                                QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, FontsConfig, GuiPlaneInputRequest,
-                          KeyboardModel, MsgBoxTypes, SystemData)
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml, FontsConfig,
+                          GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (ConfigDict, ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
-                         get_planes_list, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command,
-                         save_yaml)
+from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
+                         get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0-rc1'
@@ -42,7 +41,7 @@ LOG = getLogger(__name__)
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self, cfg_dict: Optional[ConfigDict] = None) -> None:
+    def __init__(self, cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
@@ -980,8 +979,8 @@ class DcsPyQtGui(QMainWindow):
         self.sp_completer.setValue(cfg['completer_items'])
         self._completer_items = cfg['completer_items']
         self.combo_planes.setCurrentText(cfg['current_plane'])
-        self.mono_font = {'large': cfg['font_mono_l'], 'medium': cfg['font_mono_s'], 'small': cfg['font_mono_xs']}
-        self.color_font = {'large': cfg['font_color_l'], 'medium': cfg['font_color_s'], 'small': cfg['font_color_xs']}
+        self.mono_font = {'large': cfg['font_mono_l'], 'medium': cfg['font_mono_m'], 'small': cfg['font_mono_s']}
+        self.color_font = {'large': cfg['font_color_l'], 'medium': cfg['font_color_m'], 'small': cfg['font_color_s']}
         getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
         self.le_dcsdir.setText(cfg['dcs'])
         self.le_biosdir.setText(cfg['dcsbios'])
@@ -1005,22 +1004,22 @@ class DcsPyQtGui(QMainWindow):
             'git_bios': self.cb_bios_live.isChecked(),
             'git_bios_ref': self.le_bios_live.text(),
             'font_mono_l': self.mono_font['large'],
-            'font_mono_s': self.mono_font['medium'],
-            'font_mono_xs': self.mono_font['small'],
+            'font_mono_m': self.mono_font['medium'],
+            'font_mono_s': self.mono_font['small'],
             'font_color_l': self.color_font['large'],
-            'font_color_s': self.color_font['medium'],
-            'font_color_xs': self.color_font['small'],
+            'font_color_m': self.color_font['medium'],
+            'font_color_s': self.color_font['small'],
             'completer_items': self.sp_completer.value(),
             'current_plane': self.current_plane,
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
-                        'font_color_s': self.hs_medium_font.value(),
-                        'font_color_xs': self.hs_small_font.value()}
+                        'font_color_m': self.hs_medium_font.value(),
+                        'font_color_s': self.hs_small_font.value()}
         else:
             font_cfg = {'font_mono_l': self.hs_large_font.value(),
-                        'font_mono_s': self.hs_medium_font.value(),
-                        'font_mono_xs': self.hs_small_font.value()}
+                        'font_mono_m': self.hs_medium_font.value(),
+                        'font_mono_s': self.hs_small_font.value()}
         cfg.update(font_cfg)
         save_yaml(data=cfg, full_path=default_yaml)
 

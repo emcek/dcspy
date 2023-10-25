@@ -654,3 +654,6 @@ class SystemData(NamedTuple):
     bios_ver: str
     dcs_bios_ver: str
     git_ver: str
+
+
+DcspyConfigYaml = Dict[str, Union[str, int, bool]]

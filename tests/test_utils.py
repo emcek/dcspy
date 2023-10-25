@@ -77,7 +77,7 @@ def test_get_version_string_exception():
 
 @mark.parametrize('response, result', [(False, False), (True, True)], ids=['Download failed', 'Download success'])
 def test_download_file(response, result, tmp_path):
-    dl_file = str(tmp_path / 'tmp.txt')
+    dl_file = tmp_path / 'tmp.txt'
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=response)
         type(response_get.return_value).iter_content = MagicMock(return_value=[b'1', b'0', b'0', b'1'])
@@ -89,38 +89,39 @@ def test_proc_is_running():
     assert not utils.proc_is_running('wrong_python')
 
 
-def test_dummy_save_load_set_defaults(tmpdir):
+def test_dummy_save_load_migrate(tmpdir):
     from os import environ
+
+    from dcspy.migration import migrate
     test_tmp_yaml = Path(tmpdir) / 'test_cfg.yaml'
 
-    utils.save_yaml(data={'font_mono_xs': 9}, full_path=test_tmp_yaml)
+    utils.save_yaml(data={'font_mono_s': 9}, full_path=test_tmp_yaml)
     d_cfg = utils.load_yaml(full_path=test_tmp_yaml)
-    assert d_cfg == {'font_mono_xs': 9}
-    d_cfg = utils.set_defaults(cfg=d_cfg, filename=test_tmp_yaml)
+    assert d_cfg == {'font_mono_s': 9}
+    d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
+        'api_ver': '3.0.0-rc1',
         'keyboard': 'G13',
         'save_lcd': False,
         'show_gui': True,
         'autostart': False,
         'completer_items': 20,
-        'current_plane': 'A-10A',
+        'current_plane': 'A-10C',
         'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
         'dcs': 'C:/Program Files/Eagle Dynamics/DCS World OpenBeta',
         'verbose': False,
         'check_bios': True,
         'check_ver': True,
         'font_name': DEFAULT_FONT_NAME,
-        'font_mono_s': 11,
-        'font_mono_xs': 9,
+        'font_mono_m': 9,
+        'font_mono_s': 9,
         'font_mono_l': 16,
-        'font_color_s': 22,
-        'font_color_xs': 18,
+        'font_color_m': 22,
+        'font_color_s': 18,
         'font_color_l': 32,
         'f16_ded_font': True,
         'git_bios': False,
         'git_bios_ref': 'master',
-        'theme_mode': 'system',
-        'theme_color': 'dark-blue',
     }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')

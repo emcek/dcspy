@@ -20,7 +20,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios
+from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcsBios, DcspyConfigYaml
 
 try:
     import git
@@ -29,12 +29,11 @@ except ImportError:
 
 LOG = getLogger(__name__)
 __version__ = '3.0.0-rc1'
-ConfigDict = Dict[str, Union[str, int, bool]]
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
 with open(DEFAULT_YAML_FILE) as c_file:
-    defaults_cfg: ConfigDict = yaml.load(c_file, Loader=yaml.FullLoader)
+    defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.FullLoader)
     defaults_cfg['dcsbios'] = f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
@@ -95,23 +94,6 @@ def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
     """
     with open(file=full_path, mode='w', encoding='utf-8') as yaml_file:
         yaml.dump(data, yaml_file)
-
-
-def set_defaults(cfg: ConfigDict, filename: Path) -> ConfigDict:
-    """
-    Set defaults to not existing config options.
-
-    :param cfg: dict before migration
-    :param filename: path to yam file - default <package_dir>/config.yaml
-    :return: dict after migration
-    """
-    LOG.debug(f'Before migration: {cfg}')
-    migrated_cfg = {key: cfg.get(key, value) for key, value in defaults_cfg.items()}
-    if 'UNKNOWN' in str(migrated_cfg['dcsbios']):
-        migrated_cfg['dcsbios'] = defaults_cfg['dcsbios']
-    save_yaml(data=migrated_cfg, full_path=filename)
-    LOG.debug(f'Save: {migrated_cfg}')
-    return migrated_cfg
 
 
 def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseInfo:
