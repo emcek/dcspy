@@ -5,12 +5,13 @@ from typing import Callable, Iterator, Union
 from packaging import version
 
 from dcspy.models import DcspyConfigYaml
+from dcspy.utils import defaults_cfg
 
 LOG = getLogger(__name__)
 __version__ = '3.0.0-rc1'
 
 
-def migrate(cfg: DcspyConfigYaml) -> None:
+def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
     """
     Perform migration of configuration based on API version.
 
@@ -26,7 +27,12 @@ def migrate(cfg: DcspyConfigYaml) -> None:
         migration_func(cfg)
         LOG.debug(f'Migration done: {migration_func.__name__}')
     cfg['api_ver'] = __version__
-    LOG.debug(f'Final configuration:\n{pformat(cfg)}')
+    cfg_with_defaults = {key: cfg.get(key, value) for key, value in defaults_cfg.items()}
+    if 'UNKNOWN' in str(cfg_with_defaults['dcsbios']):
+        cfg_with_defaults['dcsbios'] = defaults_cfg['dcsbios']
+    final_cfg = {**cfg_with_defaults, **cfg}
+    LOG.debug(f'Final configuration:\n{pformat(final_cfg)}')
+    return final_cfg
 
 
 def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], None]]:
