@@ -155,16 +155,16 @@ def test_check_dcs_ver_file_not_exists(side_effect):
 
 
 def test_check_bios_ver(tmpdir):
-    makedirs(Path(tmpdir) / 'lib')
-    with open(file=Path(tmpdir) / 'lib' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
+    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
+    with open(file=Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
-    makedirs(Path(tmpdir) / 'lib')
-    with open(file=Path(tmpdir) / 'lib' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
+    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
+    with open(file=Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
