@@ -20,7 +20,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, Control, ControlKeyData, DcspyConfigYaml
+from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, DcspyConfigYaml, DcsBiosPlaneData
 
 try:
     import git
@@ -489,7 +489,7 @@ def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(data)
 
 
-def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Control]]:
+def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     """
     Collect full BIOS for plane with name.
 
@@ -503,7 +503,7 @@ def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, C
     for json_file in aircraft_aliases[plane]:
         local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
 
-    return local_json
+    return DcsBiosPlaneData.model_validate(local_json)
 
 
 def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
@@ -514,18 +514,9 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Cont
     :param bios_dir: path to DCS-BIOS
     :return: dict.
     """
-    ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
-    json_data = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
-
-    for section, controllers in json_data.items():
-        ctrl_key[section] = {}
-        for ctrl, data in controllers.items():
-            ctrl_input = Control.model_validate(data).input
-            if ctrl_input and not ctrl_input.has_set_string:
-                ctrl_key[section][ctrl] = ctrl_input
-        if not len(ctrl_key[section]):
-            del ctrl_key[section]
-    return ctrl_key
+    plane_bios = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
+    inputs = plane_bios.get_inputs()
+    return inputs
 
 
 def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
@@ -567,17 +558,3 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     if plane:
         aircraft_aliases = {plane: aircraft_aliases[plane]}
     return aircraft_aliases
-
-
-def get_ctrl(ctrl_name: str, plane_bios: Dict[str, Dict[str, Control]]) -> Optional[Control]:
-    """
-    Get Control dict for control name.
-
-    :param ctrl_name: Control name
-    :param plane_bios: dict with controls of plane
-    :return: Control instance
-    """
-    for section, controllers in plane_bios.items():
-        for ctrl, data in controllers.items():
-            if ctrl == ctrl_name:
-                return Control.model_validate(data)
