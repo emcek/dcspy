@@ -2,7 +2,7 @@ from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Dict, Final, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
 
 from PIL import ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
@@ -654,8 +654,8 @@ class MsgBoxTypes(Enum):
     ABOUT_QT = 'aboutQt'
 
 
-class SystemData(NamedTuple):
-    """Tuple to store system related information."""
+class SystemData(BaseModel):
+    """Stores system related information."""
     system: str
     release: str
     ver: str
@@ -666,6 +666,11 @@ class SystemData(NamedTuple):
     bios_ver: str
     dcs_bios_ver: str
     git_ver: str
+
+    @property
+    def sha(self) -> str:
+        """Get SHA from DCS_BIOS repo."""
+        return self.dcs_bios_ver.split(' ')[0]
 
 
 DcspyConfigYaml = Dict[str, Union[str, int, bool]]
