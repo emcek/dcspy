@@ -20,7 +20,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, DcspyConfigYaml, DcsBiosPlaneData
+from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml
 
 try:
     import git
