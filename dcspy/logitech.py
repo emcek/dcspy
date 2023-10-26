@@ -15,7 +15,7 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
                           generate_gkey)
 from dcspy.sdk import key_sdk, lcd_sdk
-from dcspy.utils import get_ctrl, get_full_bios_for_plane, get_planes_list
+from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
 
@@ -134,7 +134,7 @@ class KeyboardManager:
         """Setups DCS-BIOS parser callbacks for detected plane."""
         plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
         for ctrl_name in self.plane.bios_data:
-            ctrl = get_ctrl(ctrl_name=ctrl_name, plane_bios=plane_bios)
+            ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
             dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
