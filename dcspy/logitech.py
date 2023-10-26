@@ -12,8 +12,7 @@ from PIL import Image, ImageDraw
 from dcspy import get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510,
-                          generate_gkey)
+from dcspy.models import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
@@ -241,7 +240,7 @@ class G13(KeyboardManager):
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG13
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
-        self.gkey = generate_gkey(key=self.model.gkeys, mode=self.model.modes)
+        self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
         self.vert_space = 10
 
 
@@ -258,7 +257,7 @@ class G510(KeyboardManager):
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG510
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
-        self.gkey = generate_gkey(key=self.model.gkeys, mode=self.model.modes)
+        self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
         self.vert_space = 10
 
 
@@ -275,7 +274,7 @@ class G15v1(KeyboardManager):
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG15v1
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
-        self.gkey = generate_gkey(key=self.model.gkeys, mode=self.model.modes)
+        self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
         self.vert_space = 10
 
 
@@ -292,7 +291,7 @@ class G15v2(KeyboardManager):
         super().__init__(parser, lcd_type=LcdMono)
         self.model = ModelG15v2
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
-        self.gkey = generate_gkey(key=self.model.gkeys, mode=self.model.modes)
+        self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
         self.vert_space = 10
 
 
@@ -309,5 +308,5 @@ class G19(KeyboardManager):
         super().__init__(parser, lcd_type=LcdColor)
         self.model = ModelG19
         self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
-        self.gkey = generate_gkey(key=self.model.gkeys, mode=self.model.modes)
+        self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
         self.vert_space = 40
