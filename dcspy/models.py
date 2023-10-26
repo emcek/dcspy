@@ -508,7 +508,7 @@ class CycleButton(BaseModel):
         :param req: BIOS request string
         """
         selector, _, max_value = req.split(' ')
-        return CycleButton(ctrl_name=selector, max_value=max_value)
+        return CycleButton(ctrl_name=selector, max_value=int(max_value))
 
 
 class GuiPlaneInputRequest(BaseModel):
