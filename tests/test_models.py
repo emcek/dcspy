@@ -335,6 +335,8 @@ def test_gkey_from_yaml_value_error():
         _ = Gkey.from_yaml('G_M1')
 
 
+# <=><=><=><=><=> CycleButton <=><=><=><=><=>
+
 def test_cycle_button_default_iter():
     from dcspy.models import CycleButton
 
@@ -358,7 +360,21 @@ def test_cycle_button_custom_iter():
         next(cb.iter)
 
 
-# -------------------- DcsBiosPlaneData --------------------
+def test_cycle_button_custom_constructor():
+    from dcspy.models import CycleButton
+
+    cb = CycleButton.from_request('IFF_MASTER_KNB CYCLE 4')
+    assert cb.max_value == 4
+    assert cb.ctrl_name == 'IFF_MASTER_KNB'
+    with raises(StopIteration):
+        next(cb.iter)
+        next(cb.iter)
+        next(cb.iter)
+        next(cb.iter)
+        next(cb.iter)
+
+
+# <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
 
 def test_get_ctrl(resources):
     from dcspy.utils import get_full_bios_for_plane
