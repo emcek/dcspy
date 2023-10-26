@@ -455,28 +455,41 @@ class Control(BaseModel):
                                 value='')
 
 
-# DcsBios = RootModel(Dict[str, Dict[str, Control]])
-
-class DcsBios(RootModel):
-    """Root model of BIOS model."""
+class DcsBiosPlaneData(RootModel):
+    """DcsBios plane data model."""
     root: Dict[str, Dict[str, Control]]
 
-    def __str__(self) -> str:
-        return str(self.root)
-
-    def __getitem__(self, item):
-        # https://github.com/pydantic/pydantic/issues/1802
-        return self.root[item]
-
-    def get(self, item, default=None):
+    def get_ctrl(self, ctrl_name: str) -> Optional[Control]:
         """
-        Access item and get default when is not available.
+        Get Control from DCS-BIOS with name.
 
-        :param item:
-        :param default:
-        :return:
+        :param ctrl_name: Control name
+        :return: Control instance
         """
-        return getattr(self.root, item, default)
+        for controllers in self.root.values():
+            for ctrl, data in controllers.items():
+                if ctrl == ctrl_name:
+                    return Control.model_validate(data)
+
+    def get_inputs(self) -> Dict[str, Dict[str, ControlKeyData]]:
+        """
+        Get dict with all not empty inputs for plane.
+
+        Inputs are grouped in original sections.
+
+        :return: Dict with sections and ControlKeyData models.
+        """
+        ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
+
+        for section, controllers in self.root.items():
+            ctrl_key[section] = {}
+            for ctrl, data in controllers.items():
+                ctrl_input = Control.model_validate(data).input
+                if ctrl_input and not ctrl_input.has_set_string:
+                    ctrl_key[section][ctrl] = ctrl_input
+            if not len(ctrl_key[section]):
+                del ctrl_key[section]
+        return ctrl_key
 
 
 class CycleButton(BaseModel):
