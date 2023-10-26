@@ -489,7 +489,7 @@ def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(data)
 
 
-def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
+def get_full_bios_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Control]]:
     """
     Collect full BIOS for plane with name.
 
@@ -569,7 +569,7 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     return aircraft_aliases
 
 
-def get_ctrl(ctrl_name: str, plane_bios: Dict[str, Dict[str, ControlKeyData]]) -> Optional[Control]:
+def get_ctrl(ctrl_name: str, plane_bios: Dict[str, Dict[str, Control]]) -> Optional[Control]:
     """
     Get Control dict for control name.
 
