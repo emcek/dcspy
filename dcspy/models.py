@@ -532,9 +532,10 @@ class FontsConfig(BaseModel):
     large: int
 
 
-@dataclass
-class LcdInfo:
+class LcdInfo(BaseModel):
     """LCD info."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     width: int
     height: int
     type: LcdType
