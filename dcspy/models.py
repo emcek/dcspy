@@ -500,6 +500,16 @@ class CycleButton(BaseModel):
     max_value: int = 1
     iter: Iterator[int] = iter([0])
 
+    @classmethod
+    def from_request(cls, /, req: str) -> 'CycleButton':
+        """
+        Use BIOS request string from plane configuration yaml.
+
+        :param req: BIOS request string
+        """
+        selector, _, max_value = req.split(' ')
+        return CycleButton(ctrl_name=selector, max_value=max_value)
+
 
 class GuiPlaneInputRequest(BaseModel):
     """Input request for Control for GUI."""
