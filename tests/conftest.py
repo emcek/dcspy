@@ -144,7 +144,7 @@ def keyboard_mono(protocol_parser, lcd_font_mono):
     :param lcd_font_mono font configuration for LCD
     :return: KeyboardManager
     """
-    from dcspy.models import LcdButton, LcdMono, generate_gkey
+    from dcspy.models import Gkey, LcdButton, LcdMono
     from dcspy.sdk import key_sdk, lcd_sdk
 
     class Mono(logitech.KeyboardManager):
@@ -152,7 +152,7 @@ def keyboard_mono(protocol_parser, lcd_font_mono):
             LcdMono.set_fonts(kwargs['fonts'])
             super().__init__(parser, lcd_type=LcdMono)
             self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
-            self.gkey = generate_gkey(key=3, mode=1)
+            self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 10
 
         def _setup_plane_callback(self) -> None:
@@ -172,7 +172,7 @@ def keyboard_color(protocol_parser, lcd_font_color):
     :param lcd_font_color font configuration for LCD
     :return: KeyboardManager
     """
-    from dcspy.models import LcdButton, LcdColor, generate_gkey
+    from dcspy.models import Gkey, LcdButton, LcdColor
     from dcspy.sdk import key_sdk, lcd_sdk
 
     class Color(logitech.KeyboardManager):
@@ -180,7 +180,7 @@ def keyboard_color(protocol_parser, lcd_font_color):
             LcdColor.set_fonts(kwargs['fonts'])
             super().__init__(parser, lcd_type=LcdColor)
             self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
-            self.gkey = generate_gkey(key=3, mode=1)
+            self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 40
 
         def _setup_plane_callback(self) -> None:
