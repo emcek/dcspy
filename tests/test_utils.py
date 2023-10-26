@@ -282,11 +282,9 @@ def test_run_pip_command_failed():
 
 
 def test_get_full_bios_for_plane(resources):
-    from dcspy.models import DcsBios
-    json_data = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
-    assert isinstance(json_data, dict)
-    a10_model = DcsBios.model_validate(json_data)
-    assert a10_model
+    a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    assert len(a10_model.root) == 64
+    assert sum(len(values) for values in a10_model.root.values()) == 772
 
 
 def test_get_inputs_for_plane(resources):
@@ -353,10 +351,3 @@ def test_get_planes_list(resources):
         'Mi-24P',
         'Mi-8MT',
     ]
-
-
-def test_get_ctrl(resources):
-    json_data = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
-    c = utils.get_ctrl(ctrl_name='TACAN_MODE', plane_bios=json_data)
-    assert c.output.max_value == 4
-    assert c.input.one_input is False
