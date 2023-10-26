@@ -320,6 +320,8 @@ def test_get_next_value_for_button(control, curr_val, results):
     assert isinstance(cycle_btn['Button1']['iter'], Iterable)
 
 
+# <=><=><=><=><=> Gkey <=><=><=><=><=>
+
 def test_gkey_from_yaml_success():
     from dcspy.models import Gkey
 
@@ -333,6 +335,17 @@ def test_gkey_from_yaml_value_error():
 
     with raises(ValueError):
         _ = Gkey.from_yaml('G_M1')
+
+
+def test_generate_gkey():
+    from dcspy.models import Gkey
+
+    g_keys = Gkey.generate(key=3, mode=2)
+    assert len(g_keys) == 6
+    assert g_keys[0].key == 1
+    assert g_keys[0].mode == 1
+    assert g_keys[-1].key == 3
+    assert g_keys[-1].mode == 2
 
 
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
