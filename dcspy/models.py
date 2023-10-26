@@ -581,14 +581,14 @@ ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcdkeys=
 KEYBOARD_TYPES = [ModelG19.klass, ModelG510.klass, ModelG15v1.klass, ModelG15v2.klass, ModelG13.klass]
 
 
-@dataclass
-class Gkey:
+class Gkey(BaseModel):
     """Logitech G-Key."""
     key: int
     mode: int
 
     def __str__(self):
         """Return with format G<i>/M<j>."""
+        # fixme: change when ues in self.input_reqs[current_plane][GKey] in GUI
         return f'G{self.key}/M{self.mode}'
 
     def __bool__(self):
@@ -598,14 +598,6 @@ class Gkey:
     def __hash__(self):
         """Hash will be the same for any two Gkey instances with the same key and mode values."""
         return hash((self.key, self.mode))
-
-    def to_dict(self):
-        """
-        Convert Gkey into dict.
-
-        :return: ex. {'g_key': 2, 'mode': 1}
-        """
-        return {'g_key': self.key, 'mode': self.mode}
 
     @classmethod
     def from_yaml(cls, /, yaml_str: str) -> 'Gkey':
@@ -617,7 +609,7 @@ class Gkey:
         """
         match = search(r'G(\d+)_M(\d+)', yaml_str)
         if match:
-            return cls(*[int(i) for i in match.groups()])
+            return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
         raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
 
@@ -629,7 +621,8 @@ def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
     :param mode: number of modes
     :return:
     """
-    return tuple([Gkey(k, m) for k in range(1, key + 1) for m in range(1, mode + 1)])
+    # fixme: static method of GKey?
+    return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
 
 class MsgBoxTypes(Enum):

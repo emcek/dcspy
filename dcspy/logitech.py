@@ -166,9 +166,9 @@ class KeyboardManager:
                 if not self.gkey_pressed:
                     self.gkey_pressed = True
                     return key
-                return Gkey(0, 0)
+                return Gkey(key=0, mode=0)
         self.gkey_pressed = False
-        return Gkey(0, 0)
+        return Gkey(key=0, mode=0)
 
     def button_handle(self, sock: socket) -> None:
         """
