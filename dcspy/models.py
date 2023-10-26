@@ -235,12 +235,6 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
-class BiosValue(RootModel):
-    """BIOS values model."""
-    root: Dict[str, Union[BiosValueStr, BiosValueInt]]
-# ---------------- DCS-BIOS ----------------
-
-
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
@@ -316,6 +310,7 @@ class ControlKeyData:
 
         :return: str or dict with iterator
         """
+        # fixme: check if is needed save/load airplane.yaml in GUI
         if self.is_cycle:
             return {'bios': self.name, 'iter': iter([0])}
         elif self.one_input and self.has_fixed_step:
@@ -333,6 +328,7 @@ class ControlKeyData:
 
         :return: tuple with max value and suggested step
         """
+        # fixme: usage only in test
         return self.max_value, self.suggested_step
 
     @property
@@ -342,6 +338,7 @@ class ControlKeyData:
 
         :return: bool if input is cycle button, False otherwise.
         """
+        # fixme: usage only in request clean up after
         if self.has_set_state and self.max_value > 0:
             return True
         elif self.has_variable_step:
@@ -508,7 +505,7 @@ class CycleButton(BaseModel):
         :param req: BIOS request string
         """
         selector, _, max_value = req.split(' ')
-        return CycleButton(ctrl_name=selector, max_value=max_value)
+        return CycleButton(ctrl_name=selector, max_value=int(max_value))
 
 
 class GuiPlaneInputRequest(BaseModel):
