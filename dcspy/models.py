@@ -635,17 +635,16 @@ class Gkey(BaseModel):
             return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
         raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
+    @staticmethod
+    def generate(key: int, mode: int) -> Sequence['Gkey']:
+        """
+        Generate sequence of G-Keys.
 
-def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
-    """
-    Generate sequence of G-Keys.
-
-    :param key: number of keys
-    :param mode: number of modes
-    :return:
-    """
-    # fixme: static method of GKey?
-    return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
+        :param key: number of keys
+        :param mode: number of modes
+        :return:
+        """
+        return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
 
 class MsgBoxTypes(Enum):
