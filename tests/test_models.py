@@ -405,3 +405,13 @@ def test_get_inputs_for_plane(resources):
     bios = json_data.get_inputs()
     assert len(bios) == 47
     assert sum(len(values) for values in bios.values()) == 487
+
+
+# <=><=><=><=><=> SystemData <=><=><=><=><=>
+
+def test_get_sha_of_system_data():
+    from dcspy.models import SystemData
+
+    sys_data = SystemData(system='Windows', release='10', ver='10.0.19045', proc='Intel64 Family 6 Model 158 Stepping 9, GenuineIntel', dcs_type='openbeta',
+                          dcs_ver='2.9.0.47168', dcspy_ver='v2.9.9', bios_ver='0.7.50', dcs_bios_ver='07771667 from: 26-Oct-2023 06:59:50', git_ver='2.41.0')
+    assert sys_data.sha == '07771667'
