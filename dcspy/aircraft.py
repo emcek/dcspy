@@ -135,7 +135,7 @@ class BasicAircraft:
         """
         Get request for cycle button.
 
-        :param button: LcdButton Enum
+        :param button: LcdButton or Gkey
         :return: ready to send DCS-BIOS request
         """
         button_bios_name = self.cycle_buttons[button].ctrl_name
