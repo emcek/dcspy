@@ -18,7 +18,7 @@ LOG = getLogger(__name__)
 
 
 class MetaAircraft(type):
-    """Meta class for all BasicAircraft."""
+    """Metaclass for all BasicAircraft."""
     def __new__(mcs, name, bases, namespace):
         """
         Create new instance of any plane as BasicAircraft.

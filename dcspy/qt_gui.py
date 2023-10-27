@@ -615,7 +615,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _get_bios_full_version(self, silence=True) -> str:
         """
-        Get full with SHA and git details DCS-BIOS version as string.
+        Get full SHA and git details DCS-BIOS version as string.
 
         :param silence: perform action with silence
         :return: full BIOS version

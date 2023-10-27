@@ -99,7 +99,7 @@ class FA18Chornet(Aircraft):
 ```
 Again, look it up in `control-reference.html`, in example above, COMM1 and COMM2 knobs of F/A-18C will rotate left and right.
 
-* If there is button/switch, with more then two state, you can add them additionally to `self.cycle_buttons` dict and (do not forget add them into `bios_data` as well) then you can cycle thru fore and back. See: `_get_next_value_for_button()` and `button_request()` in `Aircraft` base class.
+* If there is button/switch, with more then two state, you can add them additionally to `self.cycle_buttons` dict and (do not forget add them into `bios_data` as well) then you can cycle through fore and back. See: `_get_next_value_for_button()` and `button_request()` in `Aircraft` base class.
 
 ```python
 class FA18Chornet(Aircraft):

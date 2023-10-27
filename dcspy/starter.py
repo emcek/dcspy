@@ -24,7 +24,7 @@ def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: s
 
     :param manager: type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
-    :param sock: multi-cast UDP socket
+    :param sock: multicast UDP socket
     :param ver_string: current version to show
     :param event: stop event for main loop
     """
@@ -91,7 +91,7 @@ def _sock_err_handler(manager: KeyboardManager, start_time: float, ver_string: s
 
 def _prepare_socket() -> socket.socket:
     """
-    Prepare multi-cast UDP socket for DCS-BIOS communication.
+    Prepare multicast UDP socket for DCS-BIOS communication.
 
     :return: socket object
     """

@@ -920,7 +920,7 @@ Avaliable for multi-possition switches and knobs with fixed step size.</string>
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>Cycle thru all values first increase and then decrease, move back and forth.
+           <string>Cycle through all values first increase and then decrease, move back and forth.
 Avaliable for most switches and knobs with fixed step size.</string>
           </property>
           <property name="text">
