@@ -654,8 +654,7 @@ class Gkey(BaseModel):
 
     def __str__(self):
         """Return with format G<i>/M<j>."""
-        # fixme: change when ues in self.input_reqs[current_plane][GKey] in GUI
-        return f'G{self.key}/M{self.mode}'
+        return f'G{self.key}_M{self.mode}'
 
     def __bool__(self):
         """Return False when any of value is zero."""
@@ -688,6 +687,16 @@ class Gkey(BaseModel):
         :return:
         """
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
+
+    @staticmethod
+    def name(row: int, col: int) -> str:
+        """
+        Return Gkey as string for row and col.
+
+        :param row: row number, zero based
+        :param col: column number, zero based
+        """
+        return str(Gkey(key=row + 1, mode=col + 1))
 
 
 class MsgBoxTypes(Enum):
