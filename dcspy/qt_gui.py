@@ -483,7 +483,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             widget_iface = self.input_reqs[self.current_plane][g_key].widget_iface
             getattr(self, widget_iface).setChecked(True)
-        except KeyError:
+        except (KeyError, AttributeError):
             pass
 
     @staticmethod
@@ -502,14 +502,14 @@ class DcsPyQtGui(QMainWindow):
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
         plane_cfg_yaml = {}
-        for r in range(0, self.tw_gkeys.rowCount()):
-            for c in range(0, self.tw_gkeys.columnCount()):
-                g_key_id = f'G{r + 1}_M{c + 1}'
+        for row in range(0, self.tw_gkeys.rowCount()):
+            for col in range(0, self.tw_gkeys.columnCount()):
+                g_key = Gkey.name(row, col)
                 try:
-                    request = self.input_reqs[self.current_plane].get(g_key_id, {}).request
-                except AttributeError:
+                    request = self.input_reqs[self.current_plane][g_key].request
+                except (KeyError, AttributeError):
                     request = ''
-                plane_cfg_yaml[g_key_id] = request
+                plane_cfg_yaml[g_key] = request
         LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
         save_yaml(data=plane_cfg_yaml, full_path=default_yaml.parent / f'{self.current_plane}.yaml')
 
