@@ -429,11 +429,12 @@ def test_get_sha_of_system_data():
 @mark.parametrize('control, rb_iface, req', [
     (AAP_PAGE, 'rb_fixed_step_inc', 'AAP_PAGE INC'),
     (AAP_PAGE, 'rb_fixed_step_dec', 'AAP_PAGE DEC'),
-    (AAP_PAGE, 'rb_set_state', 'AAP_PAGE CYCLE 3'),
+    (AAP_PAGE, 'rb_set_state', 'AAP_PAGE CYCLE 1 3'),
     (AAP_CDUPWR, 'rb_action', 'AAP_CDUPWR TOGGLE'),
     (ARC210_CHN_KNB, 'rb_variable_step_plus', 'ARC210_CHN_KNB +3200'),
     (ARC210_CHN_KNB, 'rb_variable_step_minus', 'ARC210_CHN_KNB -3200'),
-], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +', 'ARC210_CHN_KNB -'])
+    (ADI_PITCH_TRIM, 'rb_set_state', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
+], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 1 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +', 'ARC210_CHN_KNB -', 'ADI_PITCH_TRIM 3200 65535'])
 def test_plane_input_request_from_control_key(control, rb_iface, req):
     from dcspy.models import Control, GuiPlaneInputRequest
 
@@ -448,19 +449,21 @@ def test_plane_input_request_from_plane_gkeys():
     plane_gkey = {
         'G1_M1': 'AAP_PAGE INC',
         'G2_M2': 'AAP_PAGE DEC',
-        'G3_M3': 'AAP_PAGE CYCLE 3',
+        'G3_M3': 'AAP_PAGE CYCLE 1 3',
         'G4_M1': 'AAP_CDUPWR TOGGLE',
         'G5_M2': 'ARC210_CHN_KNB +3200',
         'G6_M3': 'ARC210_CHN_KNB -3200',
-        'G7_M1': '',
+        'G7_M1': 'ADI_PITCH_TRIM CYCLE 3200 65535',
+        'G8_M2': '',
     }
     gui_input_req = GuiPlaneInputRequest.from_plane_gkeys(plane_gkey)
     assert gui_input_req == {
         'G1_M1': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE INC', widget_iface='rb_fixed_step_inc'),
         'G2_M2': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE DEC', widget_iface='rb_fixed_step_dec'),
-        'G3_M3': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE CYCLE 3', widget_iface='rb_set_state'),
+        'G3_M3': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE CYCLE 1 3', widget_iface='rb_set_state'),
         'G4_M1': GuiPlaneInputRequest(identifier='AAP_CDUPWR', request='AAP_CDUPWR TOGGLE', widget_iface='rb_action'),
         'G5_M2': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB +3200', widget_iface='rb_variable_step_plus'),
         'G6_M3': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB -3200', widget_iface='rb_variable_step_minus'),
-        'G7_M1': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
+        'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_set_state'),
+        'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
     }
