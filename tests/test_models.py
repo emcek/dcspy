@@ -380,12 +380,17 @@ def test_cycle_button_custom_iter():
         next(cb.iter)
 
 
-def test_cycle_button_custom_constructor():
+@mark.parametrize('name, req, step, max_val', [
+    ('IFF_MASTER_KNB', 'CYCLE', 1, 4),
+    ('ADI_PITCH_TRIM', 'CYCLE', 3200, 15000),
+], ids=['IFF_MASTER_KNB CYCLE 1', 'ADI_PITCH_TRIM CYCLE 3200'])
+def test_cycle_button_custom_constructor(name, req, step, max_val):
     from dcspy.models import CycleButton
 
-    cb = CycleButton.from_request('IFF_MASTER_KNB CYCLE 4')
-    assert cb.max_value == 4
-    assert cb.ctrl_name == 'IFF_MASTER_KNB'
+    cb = CycleButton.from_request(f'{name} {req} {step} {max_val}')
+    assert cb.max_value == max_val
+    assert cb.step == step
+    assert cb.ctrl_name == name
     with raises(StopIteration):
         next(cb.iter)
         next(cb.iter)
