@@ -217,6 +217,36 @@ ARC210_CHN_KNB = {
         'type': 'integer'
     }]
 }
+ARC210_ACTIVE_CHANNEL = {
+    'category': 'ARC-210 Display',
+    'control_type': 'display',
+    'description': 'Active Channel',
+    'identifier': 'ARC210_ACTIVE_CHANNEL',
+    'inputs': [],
+    'outputs': [{
+        'address': 4918,
+        'address_identifier': 'A_10C_ARC210_ACTIVE_CHANNEL_A',
+        'description': 'Active Channel',
+        'max_length': 2,
+        'suffix': '',
+        'type': 'string'
+    }]
+}
+CMSP1 = {
+    'category': 'CMSP',
+    'control_type': 'display',
+    'description': 'CMSP Display Line 1',
+    'identifier': 'CMSP1',
+    'inputs': [],
+    'outputs': [{
+        'address': 4096,
+        'address_identifier': 'A_10C_CMSP1_A',
+        'description': 'CMSP Display Line 1',
+        'max_length': 19,
+        'suffix': '',
+        'type': 'string'
+    }]
+}
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
