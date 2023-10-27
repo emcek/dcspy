@@ -317,9 +317,6 @@ def test_cycle_button_custom_constructor(name, req, step, max_val):
     with raises(StopIteration):
         next(cb.iter)
         next(cb.iter)
-        next(cb.iter)
-        next(cb.iter)
-        next(cb.iter)
 
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
@@ -395,3 +392,22 @@ def test_plane_input_request_from_plane_gkeys():
         'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_set_state'),
         'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
     }
+
+
+# <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>
+
+@mark.parametrize('current, max_val, step, result', [
+    (2, 4, 1, [3, 4, 3, 2, 1, 0, 1, 2, 3, 4]),
+    (0, 4, 1, [1, 2, 3, 4, 3, 2, 1, 0, 1, 2]),
+    (4, 4, 1, [3, 2, 1, 0, 1, 2, 3, 4, 3, 2]),
+    (1, 15, 3, [4, 7, 10, 13, 15, 12, 9, 6, 3, 0, 3]),
+    (1, 15, 4, [5, 9, 13, 15, 11, 7, 3, 0, 4, 8, 12]),
+    (0, 15, 6, [6, 12, 15, 9, 3, 0, 6, 12]),
+    (15, 15, 4, [11, 7, 3, 0, 4, 8, 12, 15]),
+])
+def test_zigzag_iterator(current, max_val, step, result):
+    from dcspy.models import ZigZagIterator
+
+    zz = ZigZagIterator(current, max_val, step)
+    for i in range(len(result)):
+        assert next(zz) == result[i]
