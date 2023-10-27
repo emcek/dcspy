@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType
+from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator
 from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
@@ -121,19 +121,14 @@ class BasicAircraft:
         """
         Get next int value (cycle fore and back) for button name.
 
-        :param button: LcdButton Enum
+        :param button: LcdButton or Gkey
         """
-        if not isinstance(self.cycle_buttons[button].iter, cycle):
+        if not isinstance(self.cycle_buttons[button].iter, ZigZagIterator):
             bios = self.cycle_buttons[button].ctrl_name
-            curr_val = int(self.get_bios(bios))
-            max_val = self.cycle_buttons[button].max_value
-            step = 1
-            range_inc = list(range(0, max_val + step, step))
-            range_dec = list(range(max_val - step, 0, -step))
-            full_seed = range_inc + range_dec + range_inc
-            seed = full_seed[curr_val//step + 1:2 * (len(range_inc) - 1) + curr_val//step + 1]
-            LOG.debug(f'{type(self).__name__} {bios} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
-            self.cycle_buttons[button].iter = cycle(chain(seed))
+            self.cycle_buttons[button].iter = ZigZagIterator(current=int(self.get_bios(bios)),
+                                                             step=self.cycle_buttons[button].step,
+                                                             max_val=self.cycle_buttons[button].max_value)
+            LOG.debug(f'{type(self).__name__} {bios} ZigZag: {self.cycle_buttons[button].iter}')
         return next(self.cycle_buttons[button].iter)
 
     def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
