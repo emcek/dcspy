@@ -729,3 +729,36 @@ class SystemData(BaseModel):
 
 
 DcspyConfigYaml = Dict[str, Union[str, int, bool]]
+
+
+class ZigZagIterator:
+    def __init__(self, current: int, max_val: int, step: int = 1) -> None:
+        """
+        Iterator that returns values from 0 to max_val and back.
+
+        :param current: current value
+        :param max_val: maximum value
+        :param step: step size
+        """
+        self.current = current
+        self.step = step
+        self.max_val = max_val
+        self.direction = 1
+
+    def __iter__(self):
+        return self
+
+    def __str__(self):
+        return f'current: {self.current} step: {self.step} max value: {self.max_val}'
+
+    def __next__(self) -> int:
+        if self.current >= self.max_val:
+            self.direction = -1
+        elif self.current <= 0:
+            self.direction = 1
+        self.current += self.step * self.direction
+        if self.direction == 1:
+            self.current = min(self.current, self.max_val)
+        else:
+            self.current = max(0, self.current)
+        return self.current
