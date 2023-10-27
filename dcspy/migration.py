@@ -15,7 +15,7 @@ def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
     """
     Perform migration of configuration based on API version.
 
-    If api_ver key do not exists, it is set to 2.3.3.
+    If api_ver key do not exist, it is set to 2.3.3.
 
     :param cfg: configuration dict
     :return: Full migrated dict
@@ -101,7 +101,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     :param cfg: Configuration dictionary
     :param old_name: Old key name
     :param new_name: New key name
-    :param default_value: default value if old key do not exists
+    :param default_value: default value if old key do not exist
     """
     value = cfg.get(old_name, default_value)
     try:

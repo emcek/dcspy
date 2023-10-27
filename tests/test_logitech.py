@@ -3,7 +3,7 @@ from unittest.mock import call, patch
 from pytest import mark
 
 from dcspy.logitech import G13, G19, G510, G15v1, G15v2
-from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, Gkey, LcdButton, LcdInfo, LcdMode, LcdType, generate_gkey
+from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, Gkey, LcdButton, LcdInfo, LcdMode, LcdType
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -46,12 +46,12 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
 
 
 @mark.parametrize('keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2', [
-    ('keyboard_mono', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(2, 1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
-    ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(2, 1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
-    ('keyboard_mono', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(0, 0), [call(g_key=1, mode=1)], True),
-    ('keyboard_color', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(0, 0), [call(g_key=1, mode=1)], True),
-    ('keyboard_mono', False, [False] * 3, [str(i) for i in generate_gkey(3, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
-    ('keyboard_color', False, [False] * 3, [str(i) for i in generate_gkey(3, 1)], Gkey(0, 0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
+    ('keyboard_mono', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
+    ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
+    ('keyboard_mono', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(key=0, mode=0), [call(g_key=1, mode=1)], True),
+    ('keyboard_color', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(key=0, mode=0), [call(g_key=1, mode=1)], True),
+    ('keyboard_mono', False, [False] * 3, [str(i) for i in Gkey.generate(3, 1)], Gkey(key=0, mode=0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
+    ('keyboard_color', False, [False] * 3, [str(i) for i in Gkey.generate(3, 1)], Gkey(key=0, mode=0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
 ], ids=['Mono G2/M1', 'color G2/M1', 'Mono G1/M1 already_pressed', 'Color G1/M1 already_pressed', 'Mono None Button', 'Color None Button'])
 def test_keyboard_check_gkey(keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2, request):
     from dcspy.sdk import key_sdk

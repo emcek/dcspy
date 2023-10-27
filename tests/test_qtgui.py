@@ -4,6 +4,7 @@ from unittest.mock import patch
 from pytest import mark
 
 
+@mark.slow
 @mark.qt6
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config):

@@ -15,7 +15,7 @@ def logi_gkey_init() -> bool:
     Make necessary initializations.
 
     It must be called before your application can see G-key/button events.
-    :return: If the function succeeds, it returns True. Otherwise False.
+    :return: If the function succeeds, it returns True. Otherwise, False.
     """
     try:
         return KEY_DLL.LogiGkeyInit(ffi.NULL)

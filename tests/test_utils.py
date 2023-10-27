@@ -192,6 +192,7 @@ def test_is_git_exec_present():
     assert utils.is_git_exec_present() is True
 
 
+@mark.slow
 def test_check_github_repo(tmpdir):
     from re import search
     sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
@@ -205,6 +206,7 @@ def test_check_github_repo(tmpdir):
     assert match.group(1)
 
 
+@mark.slow
 def test_is_git_object(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
@@ -212,6 +214,7 @@ def test_is_git_object(tmpdir):
     assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
 
 
+@mark.slow
 def test_get_all_git_refs(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
@@ -249,6 +252,7 @@ def test_check_dcs_bios_entry_ok(tmpdir):
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
 
 
+@mark.slow
 def test_collect_debug_data():
     from tempfile import gettempdir
     from zipfile import ZipFile
@@ -267,6 +271,7 @@ def test_collect_debug_data():
     assert 'Ka50_999.png' in zip_list
 
 
+@mark.slow
 def test_run_pip_command_success():
     rc, err, out = utils.run_pip_command('list')
     assert rc == 0
@@ -274,6 +279,7 @@ def test_run_pip_command_success():
     assert err == '' or err == f'WARNING: There was an error checking the latest version of pip.{linesep}', err
 
 
+@mark.slow
 def test_run_pip_command_failed():
     rc, err, out = utils.run_pip_command('bullshit')
     assert rc == 1
@@ -282,11 +288,9 @@ def test_run_pip_command_failed():
 
 
 def test_get_full_bios_for_plane(resources):
-    from dcspy.models import DcsBios
-    json_data = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
-    assert isinstance(json_data, dict)
-    a10_model = DcsBios.model_validate(json_data)
-    assert a10_model
+    a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    assert len(a10_model.root) == 64
+    assert sum(len(values) for values in a10_model.root.values()) == 772
 
 
 def test_get_inputs_for_plane(resources):
@@ -353,10 +357,3 @@ def test_get_planes_list(resources):
         'Mi-24P',
         'Mi-8MT',
     ]
-
-
-def test_get_ctrl(resources):
-    json_data = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
-    c = utils.get_ctrl(ctrl_name='TACAN_MODE', plane_bios=json_data)
-    assert c.output.max_value == 4
-    assert c.input.one_input is False

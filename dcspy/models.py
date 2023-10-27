@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Dict, Final, Iterator, List, NamedTuple, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
 
 from PIL import ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
@@ -236,12 +235,6 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
-class BiosValue(RootModel):
-    """BIOS values model."""
-    root: Dict[str, Union[BiosValueStr, BiosValueInt]]
-# ---------------- DCS-BIOS ----------------
-
-
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
@@ -310,48 +303,6 @@ class ControlKeyData:
         if all([not _real_zero, not max_value]):
             max_value = 1
         return max_value
-
-    def request(self) -> Union[str, Dict[str, Union[str, Iterator]]]:
-        """
-        Generate button request for input.
-
-        :return: str or dict with iterator
-        """
-        if self.is_cycle:
-            return {'bios': self.name, 'iter': iter([0])}
-        elif self.one_input and self.has_fixed_step:
-            return f'{self.name} INC\n'   # todo: if 2 buttons/keys in one mode has the same name used 1st will be INC, 2nd DEC
-        elif self.has_set_state and self.has_action:
-            return f'{self.name} {self.max_value-self.suggested_step}\n|{self.name} {self.max_value}\n'  # 0 1
-        elif self.has_fixed_step and self.has_set_state and self.max_value == 0:
-            return f'{self.name} 0\n'
-        return '\n'
-
-    @property
-    def cycle_data(self):
-        """
-        Get cycle data. Used for cycle buttons.
-
-        :return: tuple with max value and suggested step
-        """
-        return self.max_value, self.suggested_step
-
-    @property
-    def is_cycle(self) -> bool:
-        """
-        Check if input is cycle button.
-
-        :return: bool if input is cycle button, False otherwise.
-        """
-        if self.has_set_state and self.max_value > 0:
-            return True
-        elif self.has_variable_step:
-            return True
-        elif self.has_fixed_step and self.has_action and self.input_len == 2:
-            return True
-        elif self.has_action and self.one_input:
-            return True
-        return False
 
     @property
     def input_len(self) -> int:
@@ -456,28 +407,41 @@ class Control(BaseModel):
                                 value='')
 
 
-# DcsBios = RootModel(Dict[str, Dict[str, Control]])
-
-class DcsBios(RootModel):
-    """Root model of BIOS model."""
+class DcsBiosPlaneData(RootModel):
+    """DcsBios plane data model."""
     root: Dict[str, Dict[str, Control]]
 
-    def __str__(self) -> str:
-        return str(self.root)
-
-    def __getitem__(self, item):
-        # https://github.com/pydantic/pydantic/issues/1802
-        return self.root[item]
-
-    def get(self, item, default=None):
+    def get_ctrl(self, ctrl_name: str) -> Optional[Control]:
         """
-        Access item and get default when is not available.
+        Get Control from DCS-BIOS with name.
 
-        :param item:
-        :param default:
-        :return:
+        :param ctrl_name: Control name
+        :return: Control instance
         """
-        return getattr(self.root, item, default)
+        for controllers in self.root.values():
+            for ctrl, data in controllers.items():
+                if ctrl == ctrl_name:
+                    return Control.model_validate(data)
+
+    def get_inputs(self) -> Dict[str, Dict[str, ControlKeyData]]:
+        """
+        Get dict with all not empty inputs for plane.
+
+        Inputs are grouped in original sections.
+
+        :return: Dict with sections and ControlKeyData models.
+        """
+        ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
+
+        for section, controllers in self.root.items():
+            ctrl_key[section] = {}
+            for ctrl, data in controllers.items():
+                ctrl_input = Control.model_validate(data).input
+                if ctrl_input and not ctrl_input.has_set_string:
+                    ctrl_key[section][ctrl] = ctrl_input
+            if not len(ctrl_key[section]):
+                del ctrl_key[section]
+        return ctrl_key
 
 
 class CycleButton(BaseModel):
@@ -485,8 +449,19 @@ class CycleButton(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     ctrl_name: str
+    step: int = 1
     max_value: int = 1
     iter: Iterator[int] = iter([0])
+
+    @classmethod
+    def from_request(cls, /, req: str) -> 'CycleButton':
+        """
+        Use BIOS request string from plane configuration yaml.
+
+        :param req: BIOS request string
+        """
+        selector, _, step, max_value = req.split(' ')
+        return CycleButton(ctrl_name=selector, step=int(step), max_value=int(max_value))
 
 
 class GuiPlaneInputRequest(BaseModel):
@@ -494,6 +469,52 @@ class GuiPlaneInputRequest(BaseModel):
     identifier: str
     request: str
     widget_iface: str
+
+    @classmethod
+    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str) -> 'GuiPlaneInputRequest':
+        """
+        Generate GuiPlaneInputRequest from ControlKeyData and radio button widget.
+
+        :param ctrl_key: ControlKeyData
+        :param rb_iface: widget interface
+        :return: GuiPlaneInputRequest
+        """
+        rb_iface_request = {
+            'rb_action': f'{ctrl_key.name} TOGGLE',
+            'rb_fixed_step_inc': f'{ctrl_key.name} INC',
+            'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
+            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
+            'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
+            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
+        }
+        return cls(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
+
+    @classmethod
+    def from_plane_gkeys(cls, /, plane_gkeys: Dict[str, str]) -> Dict[str, 'GuiPlaneInputRequest']:
+        """
+        Generate GuiPlaneInputRequest from plane_gkeys yaml.
+
+        :param plane_gkeys:
+        :return:
+        """
+        input_reqs = {}
+        req_keyword_rb_iface = {
+            'TOGGLE': 'rb_action',
+            'INC': 'rb_fixed_step_inc',
+            'DEC': 'rb_fixed_step_dec',
+            'CYCLE': 'rb_set_state',
+            '+': 'rb_variable_step_plus',
+            '-': 'rb_variable_step_minus',
+        }
+
+        for gkey, data in plane_gkeys.items():
+            try:
+                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
+            except StopIteration:
+                data = ''
+                iface = ''
+            input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
+        return input_reqs
 
 
 class LcdButton(Enum):
@@ -532,9 +553,10 @@ class FontsConfig(BaseModel):
     large: int
 
 
-@dataclass
-class LcdInfo:
+class LcdInfo(BaseModel):
     """LCD info."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
     width: int
     height: int
     type: LcdType
@@ -581,15 +603,14 @@ ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcdkeys=
 KEYBOARD_TYPES = [ModelG19.klass, ModelG510.klass, ModelG15v1.klass, ModelG15v2.klass, ModelG13.klass]
 
 
-@dataclass
-class Gkey:
+class Gkey(BaseModel):
     """Logitech G-Key."""
     key: int
     mode: int
 
     def __str__(self):
         """Return with format G<i>/M<j>."""
-        return f'G{self.key}/M{self.mode}'
+        return f'G{self.key}_M{self.mode}'
 
     def __bool__(self):
         """Return False when any of value is zero."""
@@ -598,14 +619,6 @@ class Gkey:
     def __hash__(self):
         """Hash will be the same for any two Gkey instances with the same key and mode values."""
         return hash((self.key, self.mode))
-
-    def to_dict(self):
-        """
-        Convert Gkey into dict.
-
-        :return: ex. {'g_key': 2, 'mode': 1}
-        """
-        return {'g_key': self.key, 'mode': self.mode}
 
     @classmethod
     def from_yaml(cls, /, yaml_str: str) -> 'Gkey':
@@ -617,19 +630,29 @@ class Gkey:
         """
         match = search(r'G(\d+)_M(\d+)', yaml_str)
         if match:
-            return cls(*[int(i) for i in match.groups()])
+            return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
         raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
+    @staticmethod
+    def generate(key: int, mode: int) -> Sequence['Gkey']:
+        """
+        Generate sequence of G-Keys.
 
-def generate_gkey(key: int, mode: int) -> Sequence[Gkey]:
-    """
-    Generate sequence of G-Keys.
+        :param key: number of keys
+        :param mode: number of modes
+        :return:
+        """
+        return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
-    :param key: number of keys
-    :param mode: number of modes
-    :return:
-    """
-    return tuple([Gkey(k, m) for k in range(1, key + 1) for m in range(1, mode + 1)])
+    @staticmethod
+    def name(row: int, col: int) -> str:
+        """
+        Return Gkey as string for row and col.
+
+        :param row: row number, zero based
+        :param col: column number, zero based
+        """
+        return str(Gkey(key=row + 1, mode=col + 1))
 
 
 class MsgBoxTypes(Enum):
@@ -642,8 +665,8 @@ class MsgBoxTypes(Enum):
     ABOUT_QT = 'aboutQt'
 
 
-class SystemData(NamedTuple):
-    """Tuple to store system related information."""
+class SystemData(BaseModel):
+    """Stores system related information."""
     system: str
     release: str
     ver: str
@@ -655,5 +678,43 @@ class SystemData(NamedTuple):
     dcs_bios_ver: str
     git_ver: str
 
+    @property
+    def sha(self) -> str:
+        """Get SHA from DCS_BIOS repo."""
+        return self.dcs_bios_ver.split(' ')[0]
+
 
 DcspyConfigYaml = Dict[str, Union[str, int, bool]]
+
+
+class ZigZagIterator:
+    def __init__(self, current: int, max_val: int, step: int = 1) -> None:
+        """
+        Iterate with values from 0 to max_val and back.
+
+        :param current: current value
+        :param max_val: maximum value
+        :param step: step size
+        """
+        self.current = current
+        self.step = step
+        self.max_val = max_val
+        self.direction = 1
+
+    def __iter__(self):
+        return self
+
+    def __str__(self):
+        return f'current: {self.current} step: {self.step} max value: {self.max_val}'
+
+    def __next__(self) -> int:
+        if self.current >= self.max_val:
+            self.direction = -1
+        elif self.current <= 0:
+            self.direction = 1
+        self.current += self.step * self.direction
+        if self.direction == 1:
+            self.current = min(self.current, self.max_val)
+        else:
+            self.current = max(0, self.current)
+        return self.current

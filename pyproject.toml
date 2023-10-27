@@ -95,7 +95,8 @@ dcspy = [
 addopts = ['-q']
 testpaths = ['tests']
 markers = [
-    'qt6: marks tests for Qt6 verfification'
+    'qt6: marks tests for Qt6 verfification',
+    'slow: marks tests as slow',
 ]
 
 [tool.interrogate]

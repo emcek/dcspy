@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
                                QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml, FontsConfig,
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml, FontsConfig, Gkey,
                           GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (ReleaseInfo, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
@@ -325,8 +325,9 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setRowCount(self.keyboard.gkeys)
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
-
-        self.input_reqs[self.current_plane] = self._load_plane_yaml_into_dict(plane_yaml=default_yaml.parent / f'{self.current_plane}.yaml')
+        plane_gkeys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
+        LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_gkeys)}')
+        self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_gkeys)
 
         for row in range(0, self.keyboard.gkeys):
             for col in range(0, self.keyboard.modes):
@@ -345,8 +346,8 @@ class DcsPyQtGui(QMainWindow):
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
                 try:
-                    identifier = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).identifier
-                except AttributeError:
+                    identifier = self.input_reqs[self.current_plane][Gkey.name(row, col)].identifier
+                except KeyError:
                     identifier = ''
                 combo.setCurrentText(identifier)
 
@@ -395,35 +396,6 @@ class DcsPyQtGui(QMainWindow):
                     self.combo_planes.setCurrentIndex(0)
                 return True
 
-    @staticmethod
-    def _load_plane_yaml_into_dict(plane_yaml: Path) -> Dict[str, GuiPlaneInputRequest]:
-        """
-        Load plane yaml file into input request dictionary.
-
-        :param plane_yaml: full path to plane config yaml file
-        :return: input requests dict for plane
-        """
-        plane_gkeys = load_yaml(full_path=plane_yaml)
-        LOG.debug(f'Load {plane_yaml}:\n{pformat(plane_gkeys)}')
-        input_reqs = {}
-        req_keyword_rb_iface = {
-            'TOGGLE': 'rb_action',
-            'INC': 'rb_fixed_step_inc',
-            'DEC': 'rb_fixed_step_dec',
-            'CYCLE': 'rb_set_state',
-            '+': 'rb_variable_step_plus',
-            '-': 'rb_variable_step_minus',
-        }
-
-        for gkey, data in plane_gkeys.items():
-            try:
-                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
-            except StopIteration:
-                data = ''
-                iface = ''
-            input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
-        return input_reqs
-
     def _cell_ctrl_content_changed(self, text: str, widget: QComboBox, row: int, col: int) -> None:
         """
         Check if control input exists in current plane control list.
@@ -447,6 +419,7 @@ class DcsPyQtGui(QMainWindow):
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
+            g_key = Gkey.name(row, col)
             widget.setToolTip(ctrl_key.description)
             widget.setStyleSheet('')
             self.l_category.setText(f'Category: {section}')
@@ -454,33 +427,14 @@ class DcsPyQtGui(QMainWindow):
             self.l_identifier.setText(f'Identifier: {text}')
             self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
-            self._checked_iface_rb_for_identifier(row=row, col=col)
+            self._checked_iface_rb_for_identifier(g_key=g_key)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            self.input_reqs[self.current_plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, rb_iface=input_iface_name)
+            self.input_reqs[self.current_plane][g_key] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
         elif text == '':
             widget.setStyleSheet('')
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
-
-    @staticmethod
-    def _get_input_iface_dict_request(ctrl_key: ControlKeyData, rb_iface: str) -> GuiPlaneInputRequest:
-        """
-        Get dictionary with request details for current input interface.
-
-        :param ctrl_key: ControlKeyData instance
-        :param rb_iface: name of radio button input interface
-        :return: dict with button request details
-        """
-        rb_iface_request = {
-            'rb_action': f'{ctrl_key.name} TOGGLE',
-            'rb_fixed_step_inc': f'{ctrl_key.name} INC',
-            'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
-            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.max_value}',
-            'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
-            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
-        }
-        return GuiPlaneInputRequest(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -520,17 +474,16 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
 
-    def _checked_iface_rb_for_identifier(self, row: int, col: int) -> None:
+    def _checked_iface_rb_for_identifier(self, g_key: str) -> None:
         """
         Enable input interfaces for current control input identifier.
 
-        :param row: current row
-        :param col: current column
+        :param g_key: Gkey as string
         """
         try:
-            widget_iface = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).widget_iface
+            widget_iface = self.input_reqs[self.current_plane][g_key].widget_iface
             getattr(self, widget_iface).setChecked(True)
-        except AttributeError:
+        except (KeyError, AttributeError):
             pass
 
     @staticmethod
@@ -549,14 +502,14 @@ class DcsPyQtGui(QMainWindow):
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
         plane_cfg_yaml = {}
-        for r in range(0, self.tw_gkeys.rowCount()):
-            for c in range(0, self.tw_gkeys.columnCount()):
-                g_key_id = f'G{r + 1}_M{c + 1}'
+        for row in range(0, self.tw_gkeys.rowCount()):
+            for col in range(0, self.tw_gkeys.columnCount()):
+                g_key = Gkey.name(row, col)
                 try:
-                    request = self.input_reqs[self.current_plane].get(g_key_id, {}).request
-                except AttributeError:
+                    request = self.input_reqs[self.current_plane][g_key].request
+                except (KeyError, AttributeError):
                     request = ''
-                plane_cfg_yaml[g_key_id] = request
+                plane_cfg_yaml[g_key] = request
         LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
         save_yaml(data=plane_cfg_yaml, full_path=default_yaml.parent / f'{self.current_plane}.yaml')
 
@@ -586,7 +539,7 @@ class DcsPyQtGui(QMainWindow):
         if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
             section = self._find_section_name(ctrl_name=current_text)
             ctrl_key = self.ctrl_input[section][current_text]
-            self.input_reqs[self.current_plane][f'G{row + 1}_M{col + 1}'] = self._get_input_iface_dict_request(ctrl_key=ctrl_key, rb_iface=button.objectName())
+            self.input_reqs[self.current_plane][Gkey.name(row, col)] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=button.objectName())
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
@@ -615,7 +568,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _get_bios_full_version(self, silence=True) -> str:
         """
-        Get full with SHA and git details DCS-BIOS version as string.
+        Get full SHA and git details DCS-BIOS version as string.
 
         :param silence: perform action with silence
         :return: full BIOS version
@@ -1319,7 +1272,6 @@ class AboutDialog(QDialog):
         """Prepare text information about DCSpy application."""
         super().showEvent(event)
         d = self.parent.fetch_system_data(silence=False)
-        sha = d.dcs_bios_ver.split(' ')[0]
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
@@ -1334,7 +1286,7 @@ class AboutDialog(QDialog):
         text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
         text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCS-Skunkworks/dcs-bios/releases">{d.bios_ver}</a> '
-        text += f'<b>SHA:</b> <a href="https://github.com/DCS-Skunkworks/dcs-bios/commit/{sha}">{d.dcs_bios_ver}</a>'
+        text += f'<b>SHA:</b> <a href="https://github.com/DCS-Skunkworks/dcs-bios/commit/{d.sha}">{d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
         text += '</p></body></html>'
         self.l_info.setText(text)

@@ -217,108 +217,105 @@ ARC210_CHN_KNB = {
         'type': 'integer'
     }]
 }
+ARC210_ACTIVE_CHANNEL = {
+    'category': 'ARC-210 Display',
+    'control_type': 'display',
+    'description': 'Active Channel',
+    'identifier': 'ARC210_ACTIVE_CHANNEL',
+    'inputs': [],
+    'outputs': [{
+        'address': 4918,
+        'address_identifier': 'A_10C_ARC210_ACTIVE_CHANNEL_A',
+        'description': 'Active Channel',
+        'max_length': 2,
+        'suffix': '',
+        'type': 'string'
+    }]
+}
+CMSP1 = {
+    'category': 'CMSP',
+    'control_type': 'display',
+    'description': 'CMSP Display Line 1',
+    'identifier': 'CMSP1',
+    'inputs': [],
+    'outputs': [{
+        'address': 4096,
+        'address_identifier': 'A_10C_CMSP1_A',
+        'description': 'CMSP Display Line 1',
+        'max_length': 19,
+        'suffix': '',
+        'type': 'string'
+    }]
+}
 
+
+# <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
 
 @mark.parametrize('control, results', [
-    (UFC_COMM1_CHANNEL_SELECT, [True, 1, True, False, False, False, 'UFC_COMM1_CHANNEL_SELECT INC\n']),
-    (PLT_WIPER_OFF, [False, 2, True, True, False, False, 'PLT_WIPER_OFF 0\n']),
-], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF'])
-def test_get_input_request_for_regular_button(control, results):
+    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False]),
+    (PLT_WIPER_OFF, [2, True, True, False, False]),
+    (AAP_PAGE, [2, True, True, False, False]),
+    (AAP_CDUPWR, [3, True, True, False, True]),
+    (TACAN_1, [2, True, False, False, True]),
+    (AAP_STEER, [1, False, True, False, False]),
+    (CLOCK_ADJUST_PULL, [1, False, False, False, True]),
+    (ADI_PITCH_TRIM, [2, False, True, True, False]),
+    (ARC210_CHN_KNB, [1, False, False, True, False]),
+], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
+def test_control_input_properties(control, results):
     from dcspy.models import Control
 
     ctrl = Control.model_validate(control)
-    assert ctrl.input.one_input is results[0]
-    assert ctrl.input.input_len == results[1]
-    assert ctrl.input.has_fixed_step is results[2]
-    assert ctrl.input.has_set_state is results[3]
-    assert ctrl.input.has_variable_step is results[4]
-    assert ctrl.input.has_action is results[5]
-    assert ctrl.input.request() == results[6]
+    assert ctrl.input.input_len == results[0]
+    assert ctrl.input.has_fixed_step is results[1]
+    assert ctrl.input.has_set_state is results[2]
+    assert ctrl.input.has_variable_step is results[3]
+    assert ctrl.input.has_action is results[4]
 
 
-@mark.parametrize('control, results', [
-    (AAP_PAGE, [False, 2, True, True, False, False, {'bios': 'AAP_PAGE'}, (3, 1)]),
-    (AAP_CDUPWR, [False, 3, True, True, False, True, {'bios': 'AAP_CDUPWR'}, (1, 1)]),
-    (TACAN_1, [False, 2, True, False, False, True, {'bios': 'TACAN_1'}, (1, 1)]),
-    (AAP_STEER, [True, 1, False, True, False, False, {'bios': 'AAP_STEER'}, (2, 1)]),
-    (CLOCK_ADJUST_PULL, [True, 1, False, False, False, True, {'bios': 'CLOCK_ADJUST_PULL'}, (1, 1)]),
-    (ADI_PITCH_TRIM, [False, 2, False, True, True, False, {'bios': 'ADI_PITCH_TRIM'}, (65535, 3200)]),
-    (ARC210_CHN_KNB, [True, 1, False, False, True, False, {'bios': 'ARC210_CHN_KNB'}, (65535, 3200)]),
-], ids=['AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
-def test_get_input_request_for_cycle_button(control, results):
-    from collections.abc import Iterable
+@mark.parametrize('control, max_value, step', [
+    (UFC_COMM1_CHANNEL_SELECT, 1, 1),
+    (PLT_WIPER_OFF, 0, 1),
+    (AAP_PAGE, 3, 1),
+    (AAP_CDUPWR, 1, 1),
+    (TACAN_1, 1, 1),
+    (AAP_STEER, 2, 1),
+    (CLOCK_ADJUST_PULL, 1, 1),
+    (ADI_PITCH_TRIM, 65535, 3200),
+    (ARC210_CHN_KNB, 65535, 3200),
+], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
+def test_control_key_data_from_dicts(control, max_value, step):
+    from dcspy.models import Control, ControlKeyData
 
+    ctrl = Control.model_validate(control)
+    ctrl_key = ControlKeyData.from_dicts(name=ctrl.identifier, description=ctrl.description, list_of_dicts=ctrl.inputs)
+    assert ctrl_key.max_value == max_value
+    assert ctrl_key.suggested_step == step
+    assert len(ctrl_key.list_dict) == len(ctrl.inputs)
+
+
+@mark.parametrize('control, result', [
+    (AAP_PAGE, 'IntegerBuffer'),
+    (ARC210_CHN_KNB, 'IntegerBuffer'),
+    (ARC210_ACTIVE_CHANNEL, 'StringBuffer'),
+    (CMSP1, 'StringBuffer'),
+], ids=['AAP_PAGE', 'ARC210_CHN_KNB', 'ARC210_ACTIVE_CHANNEL', 'CMSP1'])
+def test_control_output(control, result):
     from dcspy.models import Control
 
     ctrl = Control.model_validate(control)
-    assert ctrl.input.one_input is results[0]
-    assert ctrl.input.input_len == results[1]
-    assert ctrl.input.has_fixed_step is results[2]
-    assert ctrl.input.has_set_state is results[3]
-    assert ctrl.input.has_variable_step is results[4]
-    assert ctrl.input.has_action is results[5]
-    assert ctrl.input.request()['bios'] == results[6]['bios']
-    assert isinstance(ctrl.input.request()['iter'], Iterable)
-    assert ctrl.input.cycle_data == results[7]
+    assert ctrl.output.klass == result
 
 
-def get_next_value_for_button(button, curr_val, control):
-    # todo: move to Aircraft
-    from itertools import chain, cycle
-
+def test_control_no_output():
     from dcspy.models import Control
 
-    ctrl = Control.model_validate(control)
-    cycle_buttons = {button: ctrl.input.request()}
-    bios = ctrl.input.name
-    max_val = ctrl.input.max_value
-    step = ctrl.input.suggested_step
-    range_inc = list(range(0, max_val + step, step))
-    range_dec = list(range(max_val - step, 0, -step))
-    if range_inc[-1] != max_val:
-        del range_inc[-1]
-        range_inc.append(max_val)
-    full_seed = range_inc + range_dec + range_inc
-    if curr_val not in range_inc:
-        curr_val = min(range_inc, key=lambda x: abs(curr_val - x))
-    seed = full_seed[curr_val // step + 1:2 * (len(range_inc) - 1) + curr_val // step + 1]
-    print(f'{bios} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
-    cycle_buttons[button]['iter'] = cycle(chain(seed))
-    return next(cycle_buttons[button]['iter']), full_seed, seed, cycle_buttons
+    ctrl = Control.model_validate(UFC_COMM1_CHANNEL_SELECT)
+    with raises(IndexError):
+        assert ctrl.output
 
 
-@mark.parametrize('control, curr_val, results', [
-    (AAP_PAGE, 0, [1, [0, 1, 2, 3, 2, 1, 0, 1, 2, 3], [1, 2, 3, 2, 1, 0], 'AAP_PAGE']),
-    (AAP_PAGE, 2, [3, [0, 1, 2, 3, 2, 1, 0, 1, 2, 3], [3, 2, 1, 0, 1, 2], 'AAP_PAGE']),
-    (ARC210_CHN_KNB, 0, [
-        3200, [
-            0, 3200, 6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535,
-            62335, 59135, 55935, 52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0, 3200,
-            6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535
-        ], [
-            3200, 6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535,
-            62335, 59135, 55935, 52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0],
-        'ARC210_CHN_KNB']),
-    (ARC210_CHN_KNB, 9500, [
-        12800, [
-            0, 3200, 6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535,
-            62335, 59135, 55935, 52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0, 3200,
-            6400, 9600, 12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535
-        ], [
-            12800, 16000, 19200, 22400, 25600, 28800, 32000, 35200, 38400, 41600, 44800, 48000, 51200, 54400, 57600, 60800, 64000, 65535, 62335, 59135, 55935,
-            52735, 49535, 46335, 43135, 39935, 36735, 33535, 30335, 27135, 23935, 20735, 17535, 14335, 11135, 7935, 4735, 1535, 0, 3200, 6400, 9600],
-        'ARC210_CHN_KNB']),
-], ids=['AAP_PAGE 0', 'AAP_PAGE 2', 'ARC210_CHN_KNB 0', 'ARC210_CHN_KNB 3'])
-def test_get_next_value_for_button(control, curr_val, results):
-    from collections.abc import Iterable
-
-    n, full, seed, cycle_btn = get_next_value_for_button('Button1', curr_val, control)
-    assert n == results[0]
-    assert full == results[1]
-    assert seed == results[2]
-    assert cycle_btn['Button1']['bios'] == results[3]
-    assert isinstance(cycle_btn['Button1']['iter'], Iterable)
-
+# <=><=><=><=><=> Gkey <=><=><=><=><=>
 
 def test_gkey_from_yaml_success():
     from dcspy.models import Gkey
@@ -334,6 +331,26 @@ def test_gkey_from_yaml_value_error():
     with raises(ValueError):
         _ = Gkey.from_yaml('G_M1')
 
+
+def test_generate_gkey():
+    from dcspy.models import Gkey
+
+    g_keys = Gkey.generate(key=3, mode=2)
+    assert len(g_keys) == 6
+    assert g_keys[0].key == 1
+    assert g_keys[0].mode == 1
+    assert g_keys[-1].key == 3
+    assert g_keys[-1].mode == 2
+
+
+def test_gkey_name():
+    from dcspy.models import Gkey
+
+    assert Gkey.name(0, 1) == 'G1_M2'
+    assert Gkey.name(2, 0) == 'G3_M1'
+
+
+# <=><=><=><=><=> CycleButton <=><=><=><=><=>
 
 def test_cycle_button_default_iter():
     from dcspy.models import CycleButton
@@ -356,3 +373,113 @@ def test_cycle_button_custom_iter():
         assert next(cb.iter) == 1
         assert next(cb.iter) == 2
         next(cb.iter)
+
+
+@mark.parametrize('name, req, step, max_val', [
+    ('IFF_MASTER_KNB', 'CYCLE', 1, 4),
+    ('ADI_PITCH_TRIM', 'CYCLE', 3200, 15000),
+], ids=['IFF_MASTER_KNB CYCLE 1', 'ADI_PITCH_TRIM CYCLE 3200'])
+def test_cycle_button_custom_constructor(name, req, step, max_val):
+    from dcspy.models import CycleButton
+
+    cb = CycleButton.from_request(f'{name} {req} {step} {max_val}')
+    assert cb.max_value == max_val
+    assert cb.step == step
+    assert cb.ctrl_name == name
+    with raises(StopIteration):
+        next(cb.iter)
+        next(cb.iter)
+
+
+# <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
+
+def test_get_ctrl(resources):
+    from dcspy.utils import get_full_bios_for_plane
+
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    c = json_data.get_ctrl(ctrl_name='TACAN_MODE')
+    assert c.output.max_value == 4
+    assert c.input.one_input is False
+
+
+def test_get_inputs_for_plane(resources):
+    from dcspy.utils import get_full_bios_for_plane
+
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    bios = json_data.get_inputs()
+    assert len(bios) == 47
+    assert sum(len(values) for values in bios.values()) == 487
+
+
+# <=><=><=><=><=> SystemData <=><=><=><=><=>
+
+def test_get_sha_of_system_data():
+    from dcspy.models import SystemData
+
+    sys_data = SystemData(system='Windows', release='10', ver='10.0.19045', proc='Intel64 Family 6 Model 158 Stepping 9, GenuineIntel', dcs_type='openbeta',
+                          dcs_ver='2.9.0.47168', dcspy_ver='v2.9.9', bios_ver='0.7.50', dcs_bios_ver='07771667 from: 26-Oct-2023 06:59:50', git_ver='2.41.0')
+    assert sys_data.sha == '07771667'
+
+
+# <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
+
+@mark.parametrize('control, rb_iface, req', [
+    (AAP_PAGE, 'rb_fixed_step_inc', 'AAP_PAGE INC'),
+    (AAP_PAGE, 'rb_fixed_step_dec', 'AAP_PAGE DEC'),
+    (AAP_PAGE, 'rb_set_state', 'AAP_PAGE CYCLE 1 3'),
+    (AAP_CDUPWR, 'rb_action', 'AAP_CDUPWR TOGGLE'),
+    (ARC210_CHN_KNB, 'rb_variable_step_plus', 'ARC210_CHN_KNB +3200'),
+    (ARC210_CHN_KNB, 'rb_variable_step_minus', 'ARC210_CHN_KNB -3200'),
+    (ADI_PITCH_TRIM, 'rb_set_state', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
+], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 1 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +', 'ARC210_CHN_KNB -', 'ADI_PITCH_TRIM 3200 65535'])
+def test_plane_input_request_from_control_key(control, rb_iface, req):
+    from dcspy.models import Control, GuiPlaneInputRequest
+
+    ctrl = Control.model_validate(control)
+    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface)
+    assert gui_input_req.identifier == ctrl.identifier
+    assert gui_input_req.request == req
+
+
+def test_plane_input_request_from_plane_gkeys():
+    from dcspy.models import GuiPlaneInputRequest
+    plane_gkey = {
+        'G1_M1': 'AAP_PAGE INC',
+        'G2_M2': 'AAP_PAGE DEC',
+        'G3_M3': 'AAP_PAGE CYCLE 1 3',
+        'G4_M1': 'AAP_CDUPWR TOGGLE',
+        'G5_M2': 'ARC210_CHN_KNB +3200',
+        'G6_M3': 'ARC210_CHN_KNB -3200',
+        'G7_M1': 'ADI_PITCH_TRIM CYCLE 3200 65535',
+        'G8_M2': '',
+    }
+    gui_input_req = GuiPlaneInputRequest.from_plane_gkeys(plane_gkey)
+    assert gui_input_req == {
+        'G1_M1': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE INC', widget_iface='rb_fixed_step_inc'),
+        'G2_M2': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE DEC', widget_iface='rb_fixed_step_dec'),
+        'G3_M3': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE CYCLE 1 3', widget_iface='rb_set_state'),
+        'G4_M1': GuiPlaneInputRequest(identifier='AAP_CDUPWR', request='AAP_CDUPWR TOGGLE', widget_iface='rb_action'),
+        'G5_M2': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB +3200', widget_iface='rb_variable_step_plus'),
+        'G6_M3': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB -3200', widget_iface='rb_variable_step_minus'),
+        'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_set_state'),
+        'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
+    }
+
+
+# <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>
+
+@mark.parametrize('current, max_val, step, result', [
+    (2, 4, 1, [3, 4, 3, 2, 1, 0, 1, 2, 3, 4]),
+    (0, 4, 1, [1, 2, 3, 4, 3, 2, 1, 0, 1, 2]),
+    (4, 4, 1, [3, 2, 1, 0, 1, 2, 3, 4, 3, 2]),
+    (1, 15, 3, [4, 7, 10, 13, 15, 12, 9, 6, 3, 0, 3]),
+    (1, 15, 4, [5, 9, 13, 15, 11, 7, 3, 0, 4, 8, 12]),
+    (0, 15, 6, [6, 12, 15, 9, 3, 0, 6, 12]),
+    (15, 15, 4, [11, 7, 3, 0, 4, 8, 12, 15]),
+])
+def test_zigzag_iterator(current, max_val, step, result):
+    from dcspy.models import ZigZagIterator
+
+    zz = ZigZagIterator(current, max_val, step)
+    for i in range(len(result)):
+        assert next(zz) == result[i]
