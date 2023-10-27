@@ -253,10 +253,6 @@ class FA18Chornet(AdvancedAircraft):
             LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
             LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
             LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-            Gkey(key=1, mode=1): 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-            Gkey(key=8, mode=1): 'UFC_COMM1_CHANNEL_SELECT INC\n',
-            Gkey(key=2, mode=1): 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-            Gkey(key=9, mode=1): 'UFC_COMM2_CHANNEL_SELECT INC\n',
         })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
