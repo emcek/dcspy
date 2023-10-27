@@ -273,6 +273,48 @@ def test_control_input_properties(control, results):
     assert ctrl.input.has_action is results[4]
 
 
+@mark.parametrize('control, max_value, step', [
+    (UFC_COMM1_CHANNEL_SELECT, 1, 1),
+    (PLT_WIPER_OFF, 0, 1),
+    (AAP_PAGE, 3, 1),
+    (AAP_CDUPWR, 1, 1),
+    (TACAN_1, 1, 1),
+    (AAP_STEER, 2, 1),
+    (CLOCK_ADJUST_PULL, 1, 1),
+    (ADI_PITCH_TRIM, 65535, 3200),
+    (ARC210_CHN_KNB, 65535, 3200),
+], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
+def test_control_key_data_from_dicts(control, max_value, step):
+    from dcspy.models import Control, ControlKeyData
+
+    ctrl = Control.model_validate(control)
+    ctrl_key = ControlKeyData.from_dicts(name=ctrl.identifier, description=ctrl.description, list_of_dicts=ctrl.inputs)
+    assert ctrl_key.max_value == max_value
+    assert ctrl_key.suggested_step == step
+    assert len(ctrl_key.list_dict) == len(ctrl.inputs)
+
+
+@mark.parametrize('control, result', [
+    (AAP_PAGE, 'IntegerBuffer'),
+    (ARC210_CHN_KNB, 'IntegerBuffer'),
+    (ARC210_ACTIVE_CHANNEL, 'StringBuffer'),
+    (CMSP1, 'StringBuffer'),
+], ids=['AAP_PAGE', 'ARC210_CHN_KNB', 'ARC210_ACTIVE_CHANNEL', 'CMSP1'])
+def test_control_output(control, result):
+    from dcspy.models import Control
+
+    ctrl = Control.model_validate(control)
+    assert ctrl.output.klass == result
+
+
+def test_control_no_output():
+    from dcspy.models import Control
+
+    ctrl = Control.model_validate(UFC_COMM1_CHANNEL_SELECT)
+    with raises(IndexError):
+        assert ctrl.output
+
+
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
 
 def test_gkey_from_yaml_success():
