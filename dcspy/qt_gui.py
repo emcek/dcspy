@@ -326,7 +326,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
         plane_gkeys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
-        LOG.debug(f'Load G-Keys for: {self.current_plane}')
+        LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_gkeys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_gkeys)
 
         for row in range(0, self.keyboard.gkeys):
