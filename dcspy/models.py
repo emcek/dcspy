@@ -514,6 +514,52 @@ class GuiPlaneInputRequest(BaseModel):
     request: str
     widget_iface: str
 
+    @classmethod
+    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str) -> 'GuiPlaneInputRequest':
+        """
+        Generate GuiPlaneInputRequest from ControlKeyData and radio button widget.
+
+        :param ctrl_key: ControlKeyData
+        :param rb_iface: widget interface
+        :return: GuiPlaneInputRequest
+        """
+        rb_iface_request = {
+            'rb_action': f'{ctrl_key.name} TOGGLE',
+            'rb_fixed_step_inc': f'{ctrl_key.name} INC',
+            'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
+            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.max_value}',
+            'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
+            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
+        }
+        return cls(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
+
+    @classmethod
+    def from_plane_gkeys(cls, /, plane_gkeys: Dict[str, str]) -> Dict[str, 'GuiPlaneInputRequest']:
+        """
+        Generate GuiPlaneInputRequest from plane_gkeys yaml.
+
+        :param plane_gkeys:
+        :return:
+        """
+        input_reqs = {}
+        req_keyword_rb_iface = {
+            'TOGGLE': 'rb_action',
+            'INC': 'rb_fixed_step_inc',
+            'DEC': 'rb_fixed_step_dec',
+            'CYCLE': 'rb_set_state',
+            '+': 'rb_variable_step_plus',
+            '-': 'rb_variable_step_minus',
+        }
+
+        for gkey, data in plane_gkeys.items():
+            try:
+                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
+            except StopIteration:
+                data = ''
+                iface = ''
+            input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
+        return input_reqs
+
 
 class LcdButton(Enum):
     """LCD Buttons."""
