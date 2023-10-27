@@ -346,8 +346,8 @@ class DcsPyQtGui(QMainWindow):
                 self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
                 self.tw_gkeys.setCellWidget(row, col, combo)
                 try:
-                    identifier = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).identifier
-                except AttributeError:
+                    identifier = self.input_reqs[self.current_plane][Gkey.name(row, col)].identifier
+                except KeyError:
                     identifier = ''
                 combo.setCurrentText(identifier)
 
@@ -419,6 +419,7 @@ class DcsPyQtGui(QMainWindow):
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
+            g_key = Gkey.name(row, col)
             widget.setToolTip(ctrl_key.description)
             widget.setStyleSheet('')
             self.l_category.setText(f'Category: {section}')
@@ -426,9 +427,9 @@ class DcsPyQtGui(QMainWindow):
             self.l_identifier.setText(f'Identifier: {text}')
             self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
-            self._checked_iface_rb_for_identifier(row=row, col=col)
+            self._checked_iface_rb_for_identifier(g_key=g_key)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            self.input_reqs[self.current_plane][Gkey.name(row, col)] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
+            self.input_reqs[self.current_plane][g_key] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
         elif text == '':
             widget.setStyleSheet('')
             for rb_widget in self.bg_rb_input_iface.buttons():
@@ -473,17 +474,16 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
 
-    def _checked_iface_rb_for_identifier(self, row: int, col: int) -> None:
+    def _checked_iface_rb_for_identifier(self, g_key: str) -> None:
         """
         Enable input interfaces for current control input identifier.
 
-        :param row: current row
-        :param col: current column
+        :param g_key: Gkey as string
         """
         try:
-            widget_iface = self.input_reqs[self.current_plane].get(f'G{row + 1}_M{col + 1}', {}).widget_iface
+            widget_iface = self.input_reqs[self.current_plane][g_key].widget_iface
             getattr(self, widget_iface).setChecked(True)
-        except AttributeError:
+        except KeyError:
             pass
 
     @staticmethod
