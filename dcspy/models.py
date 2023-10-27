@@ -690,7 +690,7 @@ DcspyConfigYaml = Dict[str, Union[str, int, bool]]
 class ZigZagIterator:
     def __init__(self, current: int, max_val: int, step: int = 1) -> None:
         """
-        Iterator that returns values from 0 to max_val and back.
+        Iterate with values from 0 to max_val and back.
 
         :param current: current value
         :param max_val: maximum value
