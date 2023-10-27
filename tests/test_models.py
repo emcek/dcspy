@@ -422,3 +422,45 @@ def test_get_sha_of_system_data():
     sys_data = SystemData(system='Windows', release='10', ver='10.0.19045', proc='Intel64 Family 6 Model 158 Stepping 9, GenuineIntel', dcs_type='openbeta',
                           dcs_ver='2.9.0.47168', dcspy_ver='v2.9.9', bios_ver='0.7.50', dcs_bios_ver='07771667 from: 26-Oct-2023 06:59:50', git_ver='2.41.0')
     assert sys_data.sha == '07771667'
+
+
+# <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
+
+@mark.parametrize('control, rb_iface, req', [
+    (AAP_PAGE, 'rb_fixed_step_inc', 'AAP_PAGE INC'),
+    (AAP_PAGE, 'rb_fixed_step_dec', 'AAP_PAGE DEC'),
+    (AAP_PAGE, 'rb_set_state', 'AAP_PAGE CYCLE 3'),
+    (AAP_CDUPWR, 'rb_action', 'AAP_CDUPWR TOGGLE'),
+    (ARC210_CHN_KNB, 'rb_variable_step_plus', 'ARC210_CHN_KNB +3200'),
+    (ARC210_CHN_KNB, 'rb_variable_step_minus', 'ARC210_CHN_KNB -3200'),
+], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +', 'ARC210_CHN_KNB -'])
+def test_plane_input_request_from_control_key(control, rb_iface, req):
+    from dcspy.models import Control, GuiPlaneInputRequest
+
+    ctrl = Control.model_validate(control)
+    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface)
+    assert gui_input_req.identifier == ctrl.identifier
+    assert gui_input_req.request == req
+
+
+def test_plane_input_request_from_plane_gkeys():
+    from dcspy.models import GuiPlaneInputRequest
+    plane_gkey = {
+        'G1_M1': 'AAP_PAGE INC',
+        'G2_M2': 'AAP_PAGE DEC',
+        'G3_M3': 'AAP_PAGE CYCLE 3',
+        'G4_M1': 'AAP_CDUPWR TOGGLE',
+        'G5_M2': 'ARC210_CHN_KNB +3200',
+        'G6_M3': 'ARC210_CHN_KNB -3200',
+        'G7_M1': '',
+    }
+    gui_input_req = GuiPlaneInputRequest.from_plane_gkeys(plane_gkey)
+    assert gui_input_req == {
+        'G1_M1': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE INC', widget_iface='rb_fixed_step_inc'),
+        'G2_M2': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE DEC', widget_iface='rb_fixed_step_dec'),
+        'G3_M3': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE CYCLE 3', widget_iface='rb_set_state'),
+        'G4_M1': GuiPlaneInputRequest(identifier='AAP_CDUPWR', request='AAP_CDUPWR TOGGLE', widget_iface='rb_action'),
+        'G5_M2': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB +3200', widget_iface='rb_variable_step_plus'),
+        'G6_M3': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB -3200', widget_iface='rb_variable_step_minus'),
+        'G7_M1': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
+    }
