@@ -449,6 +449,7 @@ class CycleButton(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     ctrl_name: str
+    step: int = 1
     max_value: int = 1
     iter: Iterator[int] = iter([0])
 
@@ -459,8 +460,8 @@ class CycleButton(BaseModel):
 
         :param req: BIOS request string
         """
-        selector, _, max_value = req.split(' ')
-        return CycleButton(ctrl_name=selector, max_value=int(max_value))
+        selector, _, step, max_value = req.split(' ')
+        return CycleButton(ctrl_name=selector, step=int(step), max_value=int(max_value))
 
 
 class GuiPlaneInputRequest(BaseModel):
@@ -482,7 +483,7 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_action': f'{ctrl_key.name} TOGGLE',
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
-            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.max_value}',
+            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
