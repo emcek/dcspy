@@ -192,6 +192,7 @@ def test_is_git_exec_present():
     assert utils.is_git_exec_present() is True
 
 
+@mark.slow
 def test_check_github_repo(tmpdir):
     from re import search
     sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
@@ -205,6 +206,7 @@ def test_check_github_repo(tmpdir):
     assert match.group(1)
 
 
+@mark.slow
 def test_is_git_object(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
@@ -212,6 +214,7 @@ def test_is_git_object(tmpdir):
     assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
 
 
+@mark.slow
 def test_get_all_git_refs(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
@@ -249,6 +252,7 @@ def test_check_dcs_bios_entry_ok(tmpdir):
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
 
 
+@mark.slow
 def test_collect_debug_data():
     from tempfile import gettempdir
     from zipfile import ZipFile
@@ -267,6 +271,7 @@ def test_collect_debug_data():
     assert 'Ka50_999.png' in zip_list
 
 
+@mark.slow
 def test_run_pip_command_success():
     rc, err, out = utils.run_pip_command('list')
     assert rc == 0
@@ -274,6 +279,7 @@ def test_run_pip_command_success():
     assert err == '' or err == f'WARNING: There was an error checking the latest version of pip.{linesep}', err
 
 
+@mark.slow
 def test_run_pip_command_failed():
     rc, err, out = utils.run_pip_command('bullshit')
     assert rc == 1
