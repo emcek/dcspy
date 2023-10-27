@@ -348,6 +348,13 @@ def test_generate_gkey():
     assert g_keys[-1].mode == 2
 
 
+def test_gkey_name():
+    from dcspy.models import Gkey
+
+    assert Gkey.name(0, 1) == 'G1_M2'
+    assert Gkey.name(2, 0) == 'G3_M1'
+
+
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
 
 def test_cycle_button_default_iter():
