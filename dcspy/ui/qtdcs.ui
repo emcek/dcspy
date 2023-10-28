@@ -189,30 +189,17 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_general">
+        <widget class="QWidget" name="tab_settings">
          <attribute name="icon">
           <iconset>
            <normalon>:/icons/img/preferences-system.svg</normalon>
           </iconset>
          </attribute>
          <attribute name="title">
-          <string>General</string>
+          <string>Settings</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_4">
-          <item row="3" column="0" rowspan="4" colspan="4">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="0" column="0" colspan="4">
+          <item row="0" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox">
             <property name="title">
              <string>DCSpy</string>
@@ -298,7 +285,55 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="1" colspan="3">
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Debug</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_verbose">
+               <property name="toolTip">
+                <string>Logging more data (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Collect more logs</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/cpu.svg</normaloff>:/icons/img/cpu.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="cb_lcd_screenshot">
+               <property name="toolTip">
+                <string>Make LCD screenshot everytime when updated (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Save LCD screenshot</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/io.photoflare.photoflare.svg</normaloff>:/icons/img/io.photoflare.photoflare.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QPushButton" name="pb_collect_data">
+               <property name="text">
+                <string>Collect debug data</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/help-about.svg</normaloff>:/icons/img/help-about.svg</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="1">
            <widget class="QGroupBox" name="groupBox_4">
             <property name="title">
              <string>Fonts</string>
@@ -413,67 +448,7 @@
             </layout>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QGroupBox" name="groupBox_3">
-            <property name="title">
-             <string>Debug</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_8">
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="cb_verbose">
-               <property name="toolTip">
-                <string>Logging more data (good for troubleshooting)</string>
-               </property>
-               <property name="text">
-                <string>Collect more logs</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/cpu.svg</normaloff>:/icons/img/cpu.svg</iconset>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="cb_lcd_screenshot">
-               <property name="toolTip">
-                <string>Make LCD screenshot everytime when updated (good for troubleshooting)</string>
-               </property>
-               <property name="text">
-                <string>Save LCD screenshot</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/io.photoflare.photoflare.svg</normaloff>:/icons/img/io.photoflare.photoflare.svg</iconset>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QPushButton" name="pb_collect_data">
-               <property name="text">
-                <string>Collect debug data</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/help-about.svg</normaloff>:/icons/img/help-about.svg</iconset>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="tab_bios">
-         <attribute name="icon">
-          <iconset>
-           <normalon>:/icons/img/network-card.svg</normalon>
-          </iconset>
-         </attribute>
-         <attribute name="title">
-          <string>DCS-BIOS</string>
-         </attribute>
-         <layout class="QGridLayout" name="gridLayout_9">
-          <item row="0" column="0" colspan="2">
+          <item row="2" column="0" colspan="2">
            <widget class="QGroupBox" name="groupBox_2">
             <property name="title">
              <string>DCS-BIOS</string>
@@ -555,8 +530,8 @@
             </layout>
            </widget>
           </item>
-          <item row="1" column="0" colspan="2">
-           <spacer name="verticalSpacer_4">
+          <item row="3" column="1">
+           <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
