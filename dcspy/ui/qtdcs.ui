@@ -685,6 +685,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pb_start">
+          <property name="toolTip">
+           <string>Start client</string>
+          </property>
           <property name="text">
            <string>Start</string>
           </property>
@@ -699,6 +702,9 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Stop client</string>
+          </property>
           <property name="text">
            <string>Stop</string>
           </property>
@@ -710,6 +716,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="pb_close">
+          <property name="toolTip">
+           <string>Exit DCSpy</string>
+          </property>
           <property name="text">
            <string>Close</string>
           </property>
@@ -738,8 +747,12 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="a_start"/>
+    <addaction name="a_stop"/>
+    <addaction name="separator"/>
     <addaction name="a_reset_defaults"/>
     <addaction name="a_save_plane"/>
+    <addaction name="separator"/>
     <addaction name="a_quit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -781,9 +794,12 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="a_start"/>
+   <addaction name="a_stop"/>
+   <addaction name="a_quit"/>
+   <addaction name="separator"/>
    <addaction name="a_save_plane"/>
    <addaction name="a_check_updates"/>
-   <addaction name="a_quit"/>
    <addaction name="separator"/>
    <addaction name="a_show_gkeys"/>
    <addaction name="a_show_keyboard"/>
@@ -1181,6 +1197,33 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    </property>
    <property name="toolTip">
     <string>Discord Server</string>
+   </property>
+  </action>
+  <action name="a_start">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/media-playback-start.svg</normaloff>:/icons/img/media-playback-start.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Start</string>
+   </property>
+   <property name="toolTip">
+    <string>Start client</string>
+   </property>
+  </action>
+  <action name="a_stop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/media-playback-stop.svg</normaloff>:/icons/img/media-playback-stop.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop client</string>
    </property>
   </action>
  </widget>
