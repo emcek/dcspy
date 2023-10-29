@@ -523,7 +523,7 @@
                </property>
                <property name="icon">
                 <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
+                 <normaloff>:/icons/img/network-card.svg</normaloff>:/icons/img/network-card.svg</iconset>
                </property>
               </widget>
              </item>
@@ -766,6 +766,7 @@
     <addaction name="a_about_qt"/>
     <addaction name="separator"/>
     <addaction name="a_check_updates"/>
+    <addaction name="a_check_bios_updates"/>
     <addaction name="a_donate"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -800,6 +801,7 @@
    <addaction name="separator"/>
    <addaction name="a_save_plane"/>
    <addaction name="a_check_updates"/>
+   <addaction name="a_check_bios_updates"/>
    <addaction name="separator"/>
    <addaction name="a_show_gkeys"/>
    <addaction name="a_show_keyboard"/>
@@ -1100,7 +1102,10 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
      <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
    </property>
    <property name="text">
-    <string>Check updates</string>
+    <string>Check DCSpy updates</string>
+   </property>
+   <property name="toolTip">
+    <string>Check DCSpy updates</string>
    </property>
   </action>
   <action name="a_quit">
@@ -1110,6 +1115,9 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    </property>
    <property name="text">
     <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit DCSpy</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -1224,6 +1232,15 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    </property>
    <property name="toolTip">
     <string>Stop client</string>
+   </property>
+  </action>
+  <action name="a_check_bios_updates">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/network-card.svg</normaloff>:/icons/img/network-card.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Check DCS-BIOS updates</string>
    </property>
   </action>
  </widget>
