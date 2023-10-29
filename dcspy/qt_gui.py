@@ -137,6 +137,8 @@ class DcsPyQtGui(QMainWindow):
         self.a_start.triggered.connect(self._start_clicked)
         self.pb_stop.clicked.connect(self._stop_clicked)
         self.a_stop.triggered.connect(self._stop_clicked)
+        self.dw_gkeys.visibilityChanged.connect(partial(self._close_dock_widget, widget='gkeys'))
+        self.dw_keyboard.visibilityChanged.connect(partial(self._close_dock_widget, widget='keyboard'))
         self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
         self.pb_bios_check.clicked.connect(self._bios_check_clicked)
         self.le_bios_live.textEdited.connect(self._is_git_object_exists)
@@ -180,7 +182,8 @@ class DcsPyQtGui(QMainWindow):
                        'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'le_dcsdir': 'textChanged',
                        'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
                        'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
-                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged'}
+                       'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'dw_gkeys': 'visibilityChanged',
+                       }
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
@@ -945,6 +948,8 @@ class DcsPyQtGui(QMainWindow):
         self.le_biosdir.setText(cfg['dcsbios'])
         self.le_bios_live.setText(cfg['git_bios_ref'])
         self.cb_bios_live.setChecked(cfg['git_bios'])
+        self.addDockWidget(Qt.DockWidgetArea(int(cfg['gkeys_area'])), self.dw_gkeys)
+        self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
@@ -970,6 +975,8 @@ class DcsPyQtGui(QMainWindow):
             'font_color_s': self.color_font['small'],
             'completer_items': self.sp_completer.value(),
             'current_plane': self.current_plane,
+            'gkeys_area': self.dockWidgetArea(self.dw_gkeys).value,
+            'gkeys_float': self.dw_gkeys.isFloating(),
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1185,6 +1192,20 @@ class DcsPyQtGui(QMainWindow):
             self.dw_keyboard.show()
         else:
             self.dw_keyboard.hide()
+
+    @Slot(bool)
+    def _close_dock_widget(self, visible: bool, widget: str) -> None:
+        """
+        Close dock widget and check menu/toolbar item.
+
+        :param visible: is dock visible
+        :param widget: widget name
+        """
+        action = getattr(self, f'a_show_{widget}')
+        if not visible:
+            action.setChecked(False)
+        else:
+            action.setChecked(True)
 
     def _find_children(self) -> None:
         """Find all widgets of main window."""
