@@ -15,6 +15,8 @@ font_mono_s: 9
 font_name: consola.ttf
 git_bios: false
 git_bios_ref: master
+gkeys_area: 2
+gkeys_float: false
 keyboard: G15 v2
 save_lcd: false
 show_gui: true

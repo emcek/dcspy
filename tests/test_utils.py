@@ -122,6 +122,8 @@ def test_dummy_save_load_migrate(tmpdir):
         'f16_ded_font': True,
         'git_bios': False,
         'git_bios_ref': 'master',
+        'gkeys_area': 2,
+        'gkeys_float': False,
     }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
