@@ -175,6 +175,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
         self.a_about_qt.triggered.connect(partial(self._show_message_box, kind_of=MsgBoxTypes.ABOUT_QT, title='About Qt'))
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
+        self.a_check_bios_updates.triggered.connect(self._bios_check_clicked)
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -1243,6 +1244,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_about_qt: Union[object, QAction] = self.findChild(QAction, 'a_about_qt')
         self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
         self.a_check_updates: Union[object, QAction] = self.findChild(QAction, 'a_check_updates')
+        self.a_check_bios_updates: Union[object, QAction] = self.findChild(QAction, 'a_check_bios_updates')
         self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
         self.a_discord: Union[object, QAction] = self.findChild(QAction, 'a_discord')
 
