@@ -61,6 +61,7 @@ def _api_ver_3_0_0rc1(cfg: DcspyConfigYaml) -> None:
     _add_key(cfg, 'current_plane', 'A-10C')
     _add_key(cfg, 'gkeys_area', 2)
     _add_key(cfg, 'gkeys_float', False)
+    _add_key(cfg, 'toolbar_style', 0)
 
     _remove_key(cfg, 'theme_color')
     _remove_key(cfg, 'theme_mode')
