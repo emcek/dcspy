@@ -773,7 +773,18 @@
     <property name="title">
      <string>View</string>
     </property>
+    <widget class="QMenu" name="menuToolbar_icons">
+     <property name="title">
+      <string>Toolbar style</string>
+     </property>
+     <addaction name="a_icons_only"/>
+     <addaction name="a_text_only"/>
+     <addaction name="a_text_beside"/>
+     <addaction name="a_text_under"/>
+    </widget>
     <addaction name="a_show_toolbar"/>
+    <addaction name="menuToolbar_icons"/>
+    <addaction name="separator"/>
     <addaction name="a_show_gkeys"/>
     <addaction name="a_show_keyboard"/>
    </widget>
@@ -1247,6 +1258,44 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    </property>
    <property name="text">
     <string>Check DCS-BIOS updates</string>
+   </property>
+  </action>
+  <action name="a_icons_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Icons only</string>
+   </property>
+  </action>
+  <action name="a_text_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Text only</string>
+   </property>
+   <property name="toolTip">
+    <string>Text only</string>
+   </property>
+  </action>
+  <action name="a_text_beside">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Text beside</string>
+   </property>
+   <property name="toolTip">
+    <string>Text beside</string>
+   </property>
+  </action>
+  <action name="a_text_under">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Text under</string>
    </property>
   </action>
  </widget>
