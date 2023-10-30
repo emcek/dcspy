@@ -26,7 +26,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'dcspy/img/new_splash.png',
+    'dcspy/img/splash.png',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,
