@@ -2,7 +2,7 @@
 from PyInstaller.utils.hooks import collect_data_files
 
 files = [(f'dcspy/{res}', 'dcspy') for res in  ['config.yaml', 'qtgui_rc.py']]
-images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['new_splash.png', 'dcspy_white.ico']]
+images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['splash.png', 'dcspy_white.ico', 'dcspy_black.ico']]
 resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in ['falconded.ttf', 'license.txt']]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']]
 __version__ = '3.0.0-rc1'
