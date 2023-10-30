@@ -121,6 +121,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'font_color_l': 32,
         'f16_ded_font': True,
         'git_bios': False,
+        'toolbar_style': 0,
         'git_bios_ref': 'master',
         'gkeys_area': 2,
         'gkeys_float': False,

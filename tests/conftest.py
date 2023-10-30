@@ -205,7 +205,7 @@ def default_config():
     return {'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
             'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta', 'keyboard': 'G13', 'save_lcd': False, 'show_gui': True, 'autostart': False,
             'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
-            'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': False, 'git_bios_ref': 'master',
+            'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': False, 'git_bios_ref': 'master', 'toolbar_style': 0,
             'gkeys_area': 2, 'gkeys_float': False, 'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20, 'current_plane': 'A-10A'}
 
 
