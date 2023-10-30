@@ -19,7 +19,7 @@ from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
 from PySide6.QtCore import __version__ as qt6_ver
-from PySide6.QtGui import QAction, QIcon, QPixmap, QShowEvent, QStandardItem
+from PySide6.QtGui import QAction, QActionGroup, QIcon, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu,
                                QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
@@ -79,10 +79,10 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface = QButtonGroup(self)
         self._init_tray()
         self._init_combo_plane()
+        self._init_menu_bar()
         self.apply_configuration(cfg=self.config)
         self._init_settings()
         self._init_keyboards()
-        self._init_menu_bar()
         self._init_autosave()
         self._trigger_refresh_data()
 
@@ -177,6 +177,17 @@ class DcsPyQtGui(QMainWindow):
         self.a_check_updates.triggered.connect(self._dcspy_check_clicked)
         self.a_check_bios_updates.triggered.connect(self._bios_check_clicked)
 
+        toolbar_style = QActionGroup(self)
+        toolbar_style.addAction(self.a_icons_only)
+        toolbar_style.addAction(self.a_text_only)
+        toolbar_style.addAction(self.a_text_beside)
+        toolbar_style.addAction(self.a_text_under)
+
+        self.a_icons_only.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly))
+        self.a_text_only.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly))
+        self.a_text_beside.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon))
+        self.a_text_under.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon))
+
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
         widget_dict = {'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
@@ -184,6 +195,7 @@ class DcsPyQtGui(QMainWindow):
                        'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
                        'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
                        'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'dw_gkeys': 'visibilityChanged',
+                       'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
                        }
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
@@ -931,6 +943,8 @@ class DcsPyQtGui(QMainWindow):
 
         :param cfg: dictionary with configuration
         """
+        icon_map = {0: 'a_icons_only', 1: 'a_text_only', 2: 'a_text_beside', 3: 'a_text_under'}
+
         self.cb_autostart.setChecked(cfg['autostart'])
         self.cb_show_gui.setChecked(cfg['show_gui'])
         self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
@@ -944,13 +958,14 @@ class DcsPyQtGui(QMainWindow):
         self.combo_planes.setCurrentText(cfg['current_plane'])
         self.mono_font = {'large': cfg['font_mono_l'], 'medium': cfg['font_mono_m'], 'small': cfg['font_mono_s']}
         self.color_font = {'large': cfg['font_color_l'], 'medium': cfg['font_color_m'], 'small': cfg['font_color_s']}
-        getattr(self, f"rb_{cfg['keyboard'].lower().replace(' ', '')}").toggle()
+        getattr(self, f'rb_{cfg["keyboard"].lower().replace(" ", "")}').toggle()
         self.le_dcsdir.setText(cfg['dcs'])
         self.le_biosdir.setText(cfg['dcsbios'])
         self.le_bios_live.setText(cfg['git_bios_ref'])
         self.cb_bios_live.setChecked(cfg['git_bios'])
         self.addDockWidget(Qt.DockWidgetArea(int(cfg['gkeys_area'])), self.dw_gkeys)
         self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
+        getattr(self, icon_map[cfg['toolbar_style']]).setChecked(True)
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
@@ -978,6 +993,7 @@ class DcsPyQtGui(QMainWindow):
             'current_plane': self.current_plane,
             'gkeys_area': self.dockWidgetArea(self.dw_gkeys).value,
             'gkeys_float': self.dw_gkeys.isFloating(),
+            'toolbar_style': self.toolbar.toolButtonStyle().value,
         }
         if self.keyboard.lcd == 'color':
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1247,6 +1263,10 @@ class DcsPyQtGui(QMainWindow):
         self.a_check_bios_updates: Union[object, QAction] = self.findChild(QAction, 'a_check_bios_updates')
         self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
         self.a_discord: Union[object, QAction] = self.findChild(QAction, 'a_discord')
+        self.a_icons_only: Union[object, QAction] = self.findChild(QAction, 'a_icons_only')
+        self.a_text_only: Union[object, QAction] = self.findChild(QAction, 'a_text_only')
+        self.a_text_beside: Union[object, QAction] = self.findChild(QAction, 'a_text_beside')
+        self.a_text_under: Union[object, QAction] = self.findChild(QAction, 'a_text_under')
 
         self.pb_start: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_start')
         self.pb_stop: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_stop')
