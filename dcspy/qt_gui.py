@@ -597,7 +597,6 @@ class DcsPyQtGui(QMainWindow):
             try:
                 sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
             except Exception as exc:
-                # todo: handle silence form fetch system and make custom message box
                 LOG.debug(f'{exc}')
                 if not silence:
                     self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Error', message=f'\n\n{exc}\n\nTry remove directory and restart DCSpy.')
