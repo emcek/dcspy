@@ -265,6 +265,7 @@ class DcsPyQtGui(QMainWindow):
             hs.setMinimum(minimum)
             hs.setMaximum(maximum)
             hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
+            hs.valueChanged.connect(self.save_configuration)
             hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
 
     def _set_label_and_hs_value(self, value, name) -> None:
@@ -970,6 +971,7 @@ class DcsPyQtGui(QMainWindow):
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
         cfg = {
+            'api_ver': __version__,
             'keyboard': self.keyboard.name,
             'autostart': self.cb_autostart.isChecked(),
             'show_gui': self.cb_show_gui.isChecked(),
