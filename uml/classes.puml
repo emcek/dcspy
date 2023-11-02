@@ -154,6 +154,17 @@ package aircraft {
 }
 
 package models {
+    class Direction <<(E,yellow)>> {
+        + FORWARD = 1
+        + BACKWARD = -1
+    }
+
+    class ZigZagIterator {
+        + current: int
+        + max_value: int
+        + step: int = 1
+    }
+
     class CycleButton <<(M,orange)>> {
         + ctrl_name: str
         + max_value: int = 1
@@ -230,6 +241,8 @@ LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LcdButton -* BasicAircraft
+Direction --* ZigZagIterator
+ZigZagIterator --* BasicAircraft
 }
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
