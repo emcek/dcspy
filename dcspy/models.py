@@ -708,7 +708,7 @@ class ZigZagIterator:
         self.current = current
         self.step = step
         self.max_val = max_val
-        self.direction = 1
+        self._direction = Direction.FORWARD
 
     def __iter__(self):
         return self
@@ -718,12 +718,26 @@ class ZigZagIterator:
 
     def __next__(self) -> int:
         if self.current >= self.max_val:
-            self.direction = -1
+            self._direction = Direction.BACKWARD
         elif self.current <= 0:
-            self.direction = 1
-        self.current += self.step * self.direction
-        if self.direction == 1:
+            self._direction = Direction.FORWARD
+        self.current += self.step * self._direction.value
+        if self._direction == Direction.FORWARD:
             self.current = min(self.current, self.max_val)
         else:
             self.current = max(0, self.current)
         return self.current
+
+    @property
+    def direction(self) -> Direction:
+        """Return direction."""
+        return self._direction
+
+    @direction.setter
+    def direction(self, value: Direction) -> None:
+        """
+        Set direction.
+
+        :param value: Direction.FORWARD or Direction.BACKWARD
+        """
+        self._direction = value
