@@ -17,13 +17,23 @@
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
 ## DCSpy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
-It supports:
+Features:
 * Logitech device with 160x43 px (4 lines) monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
 * Logitech device with 320x240 px (8 lines) full RGBA LCD - **G19**
+* Setup G-Keys to any toggle, switch or knob in cockpit
+* Support for all aircraft (official and mods) with clickable cockpits - [DCS-BIOS aircraft](https://github.com/DCS-Skunkworks/dcs-bios#is-my-aircraft-supported) 
+* Modern looking GUI using Qt6/PySide6
 
 See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 
 ## Aircraft and instruments
+There are to kinds of supported aircraft:
+* **Basic** - allow to assign all G-Keys of Logitech keyboard to aircraft's instruments in cockpit (all clickable cockpits supported by DCS-BIOS)
+* **Advanced** - additionally can display some information on LCD (listed below)
+
+Why such way? Basically advanced support is for aircraft which I own and therefore can test it.
+
+# Advanced
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
 * Ka-50 Black Shark II and III - PVI-800 and autopilot channels
