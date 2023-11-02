@@ -195,6 +195,14 @@ package models {
         + color = 1
     }
 
+    class Gkey <<(M,orange)>> {
+        + key: int
+        + mode: int
+        + from_yaml(yaml_str: str) -> Gkey
+        + generate(key: int, mode: int) -> Tuple[Gkey]
+        + name(row: int, col: int) -> str
+    }
+
     class LcdButton <<(E,yellow)>> {
         + none = 0x0
         + one = 0x1
@@ -234,6 +242,15 @@ package models {
         + value: Union[int, str]
     }
 
+    class KeyboardModel <<(M,orange)>> {
+        + name: str
+        + klass: str
+        + modes: int
+        + gkeys: int
+        + lcdkeys: int
+        + lcd: str
+    }
+
 BiosValueInt *-- IntBuffArgs
 BiosValueStr *-- StrBuffArgs
 
@@ -241,8 +258,11 @@ LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LcdButton -* BasicAircraft
+Gkey --* BasicAircraft
+Gkey --* KeyboardManager
 Direction --* ZigZagIterator
 ZigZagIterator --* BasicAircraft
+KeyboardModel -* KeyboardManager
 }
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
