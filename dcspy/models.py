@@ -687,6 +687,12 @@ class SystemData(BaseModel):
 DcspyConfigYaml = Dict[str, Union[str, int, bool]]
 
 
+class Direction(Enum):
+    """Direction of iteration."""
+    FORWARD = 1
+    BACKWARD = -1
+
+
 class ZigZagIterator:
     """Iterate with values from 0 to max_val and back."""
     def __init__(self, current: int, max_val: int, step: int = 1) -> None:
