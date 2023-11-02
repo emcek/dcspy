@@ -483,3 +483,16 @@ def test_zigzag_iterator(current, max_val, step, result):
     zz = ZigZagIterator(current, max_val, step)
     for i in range(len(result)):
         assert next(zz) == result[i]
+
+
+def test_zigzag_iterator_direction():
+    from dcspy.models import Direction, ZigZagIterator
+
+    zz = ZigZagIterator(current=5, max_val=10, step=2)
+    assert zz.direction == Direction.FORWARD
+    assert next(zz) == 7
+    assert next(zz) == 9
+    zz.direction = Direction.BACKWARD
+    assert next(zz) == 7
+    assert next(zz) == 5
+    assert zz.direction == Direction.BACKWARD
