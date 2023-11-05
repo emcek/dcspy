@@ -195,7 +195,7 @@ class DcsPyQtGui(QMainWindow):
                        'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited', 'rb_g19': 'toggled', 'rb_g13': 'toggled',
                        'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged',
                        'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'dw_gkeys': 'visibilityChanged',
-                       'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
+                       'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered', 'toolbar': 'visibilityChanged',
                        }
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
@@ -965,6 +965,7 @@ class DcsPyQtGui(QMainWindow):
         self.cb_bios_live.setChecked(cfg['git_bios'])
         self.addDockWidget(Qt.DockWidgetArea(int(cfg['gkeys_area'])), self.dw_gkeys)
         self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
+        self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
         getattr(self, icon_map[cfg['toolbar_style']]).setChecked(True)
 
     def save_configuration(self) -> None:
@@ -994,6 +995,7 @@ class DcsPyQtGui(QMainWindow):
             'current_plane': self.current_plane,
             'gkeys_area': self.dockWidgetArea(self.dw_gkeys).value,
             'gkeys_float': self.dw_gkeys.isFloating(),
+            'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
         }
         if self.keyboard.lcd == 'color':
