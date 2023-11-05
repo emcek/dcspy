@@ -21,5 +21,6 @@ gkeys_float: false
 keyboard: G13
 save_lcd: false
 show_gui: true
+toolbar_area: 4
 toolbar_style: 0
 verbose: false
