@@ -44,6 +44,7 @@ def test_generate_config():
         'keyboard': 'G13',
         'save_lcd': False,
         'show_gui': True,
+        'toolbar_area': 4,
         'toolbar_style': 0,
         'verbose': False,
     }

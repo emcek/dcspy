@@ -22,5 +22,6 @@ save_lcd: false
 show_gui: true
 theme_color: dark-blue
 theme_mode: system
+toolbar_area: 4
 toolbar_style: 0
 verbose: true
