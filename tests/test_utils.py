@@ -7,22 +7,16 @@ from packaging import version
 from pytest import mark
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME
+from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo
 
 
 @mark.parametrize('online_tag, result', [
-    ('1.1.1', utils.ReleaseInfo(latest=True,
-                                ver=version.parse('1.1.1'),
-                                dl_url='github.com/fake.tgz',
-                                published='09 August 2021',
-                                release_type='Pre-release',
-                                asset_file='fake.tgz')),
-    ('3.2.1', utils.ReleaseInfo(latest=False,
-                                ver=version.parse('3.2.1'),
-                                dl_url='github.com/fake.tgz',
-                                published='09 August 2021',
-                                release_type='Pre-release',
-                                asset_file='fake.tgz'))
+    ('1.1.1', ReleaseInfo(
+        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+    )),
+    ('3.2.1', ReleaseInfo(
+        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+    ))
 ], ids=[
     'No update',
     'New version',
@@ -40,16 +34,14 @@ def test_check_ver_is_possible(online_tag, result):
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        assert utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2',
-                                         extension='.zip') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '',
-                                                                                'Regular', '')
+        rel_info = utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip')
+        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3',
-                                         extension='.exe') == utils.ReleaseInfo(False, version.parse('0.0.0'), '', '',
-                                                                                'Regular', '')
+        rel_info = utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe')
+        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
 
 
 @mark.parametrize('online_tag, result', [
@@ -164,8 +156,7 @@ def test_check_bios_ver(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='',
-                                       published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
@@ -174,14 +165,12 @@ def test_check_bios_ver_empty_lua(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='',
-                                       published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_check_bios_ver_raise_exception(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == utils.ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='',
-                                       published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
 
 
 def test_is_git_repo(tmpdir):
