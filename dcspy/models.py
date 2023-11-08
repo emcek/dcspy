@@ -4,6 +4,7 @@ from re import search
 from tempfile import gettempdir
 from typing import Any, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
 
+from packaging import version
 from PIL import ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
@@ -741,3 +742,15 @@ class ZigZagIterator:
         :param value: Direction.FORWARD or Direction.BACKWARD
         """
         self._direction = value
+
+
+class ReleaseInfo(BaseModel):
+    """Store release related information."""
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    latest: bool
+    ver: version.Version
+    dl_url: str
+    published: str
+    release_type: str
+    asset_file: str

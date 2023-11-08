@@ -13,14 +13,14 @@ from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import yaml
 from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml
+from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo
 
 try:
     import git
@@ -53,16 +53,6 @@ def get_default_yaml(local_appdata=False) -> Path:
         if not cfg_ful_path.exists():
             save_yaml(data=defaults_cfg, full_path=cfg_ful_path)
     return cfg_ful_path
-
-
-class ReleaseInfo(NamedTuple):
-    """Tuple to store release related information."""
-    latest: bool
-    ver: version.Version
-    dl_url: str
-    published: str
-    release_type: str
-    asset_file: str
 
 
 def load_yaml(full_path: Path) -> Dict[str, Any]:
