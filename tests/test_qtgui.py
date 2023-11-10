@@ -33,8 +33,8 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, tmpdir):
             qtbot.mouseClick(dcspy_gui.pb_collect_data, Qt.LeftButton)
             dcspy_gui.dw_gkeys.show()
 
-            qtbot.mouseClick(dcspy_gui.tw_gkeys.cellWidget(0, 0), Qt.LeftButton)
             dcspy_gui.tw_gkeys.cellWidget(0, 0).setCurrentText('ADI_PITCH_TRIM')
+            qtbot.mouseClick(dcspy_gui.tw_gkeys.cellWidget(0, 0), Qt.LeftButton)
             qtbot.mouseClick(dcspy_gui.rb_set_state, Qt.LeftButton)
 
             dcspy_gui.tw_gkeys.cellWidget(0, 1).setCurrentText('ARC210_CHN_KNB')
@@ -42,6 +42,8 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, tmpdir):
             dcspy_gui.tw_gkeys.cellWidget(1, 0).setCurrentIndex(5)
             qtbot.mouseClick(dcspy_gui.tw_gkeys.cellWidget(1, 0), Qt.LeftButton)
             qtbot.mouseClick(dcspy_gui.rb_fixed_step_dec, Qt.LeftButton)
+            dcspy_gui.current_row = 1
+            dcspy_gui.current_col = 0
             qtbot.mouseClick(dcspy_gui.pb_copy, Qt.LeftButton)
             qtbot.mouseClick(dcspy_gui.pb_save, Qt.LeftButton)
 
