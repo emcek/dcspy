@@ -708,7 +708,7 @@ class DcsPyQtGui(QMainWindow):
         :return installation result as string
         """
         sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
-        LOG.debug(f'Remove: {self.bios_path} ')
+        LOG.debug(f'Remove: {self.bios_path} {sha}')
         rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
         copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
