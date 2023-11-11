@@ -27,11 +27,11 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml, FontsConfig, Gkey,
-                          GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData)
+                          GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData, DCS_BIOS_VER_FILE)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data, defaults_cfg,
                          download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
-                         is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command, save_yaml)
+                         is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command, save_yaml, get_sha_for_current_git_ref)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0-rc2'
@@ -744,8 +744,15 @@ class DcsPyQtGui(QMainWindow):
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
+        self._update_bios_ver_file()
         self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self._done_event.clear()
+
+    def _update_bios_ver_file(self):
+        """Update DCS-BIOS version file with current SHA."""
+        hex_sha = get_sha_for_current_git_ref(git_ref=self.le_bios_live.text(), repo_dir=DCS_BIOS_REPO_DIR)
+        with open(file=self.bios_path / DCS_BIOS_VER_FILE, mode='w+') as bios_live_ver_file:
+            bios_live_ver_file.write(hex_sha)
 
     def _check_bios_release(self, silence=False) -> None:
         """
