@@ -394,6 +394,20 @@ def get_all_git_refs(repo_dir: Path) -> List[str]:
     return refs
 
 
+def get_sha_for_current_git_ref(git_ref: str, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
+    """
+    Get SHA for current git reference.
+
+    :param git_ref: any Git reference as string
+    :param repo: GitHub repository
+    :param repo_dir: local directory for repository
+    :return: Hex of SHA
+    """
+    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
+    head_commit = bios_repo.head.commit
+    return head_commit.hexsha
+
+
 def collect_debug_data() -> Path:
     """
     Collect add zipp all data for troubleshooting.
