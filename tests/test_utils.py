@@ -213,6 +213,13 @@ def test_get_all_git_refs(tmpdir):
     assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
 
 
+@mark.slow
+def test_get_sha_for_current_git_ref(tmpdir):
+    hex_sha = utils.get_sha_for_current_git_ref(git_ref='master', repo='emcek/common_sense', repo_dir=tmpdir)
+    assert len(hex_sha) == 40
+    assert hex_sha == '6d5d9f80a8309eec3e9cf183fc57d56559035560'
+
+
 def test_check_dcs_bios_entry_no_entry(tmpdir):
     from os import makedirs
     install_dir = tmpdir / 'install'
