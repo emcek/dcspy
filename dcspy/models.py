@@ -40,6 +40,7 @@ LOCAL_APPDATA: Final = True
 DCSPY_REPO_NAME: Final = 'emcek/dcspy'
 DEFAULT_FONT_NAME: Final = 'consola.ttf'
 DCS_BIOS_REPO_DIR: Final = Path(gettempdir()) / 'dcsbios_git'
+DCS_BIOS_VER_FILE: Final = 'bios_live_ver.txt'
 CTRL_LIST_SEPARATOR: Final = '--'
 SUPPORTED_CRAFTS = {
     'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
