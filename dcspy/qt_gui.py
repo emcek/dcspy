@@ -26,12 +26,13 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
                                QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml, FontsConfig, Gkey,
-                          GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData, DCS_BIOS_VER_FILE)
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml,
+                          FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data, defaults_cfg,
-                         download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
-                         is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running, run_pip_command, save_yaml, get_sha_for_current_git_ref)
+                         download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
+                         get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running,
+                         run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0-rc2'
