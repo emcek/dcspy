@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from pytest import mark, raises
 
-from dcspy import LcdButton
+from dcspy.models import LcdButton, ZigZagIterator
 from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 
@@ -13,12 +13,12 @@ from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 def test_check_all_aircraft_inherit_from_correct_base_class(plane, request):
     from dcspy import aircraft
     plane = request.getfixturevalue(f'{plane}_mono')
-    assert isinstance(plane, aircraft.Aircraft)
+    assert isinstance(plane, aircraft.BasicAircraft)
 
 
 @mark.parametrize('selector, data, value, c_func, effect, plane', [
-    ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], 'aircraft_mono'),
-    ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], 'aircraft_color'),
+    ('field1', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val1', 'logi_lcd_mono_set_background', [True], 'advancedaircraft_mono'),
+    ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], 'advancedaircraft_color'),
 ], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, plane, request):
     from dcspy.sdk import lcd_sdk
@@ -35,8 +35,8 @@ def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, pla
 
 
 @mark.parametrize('c_func, plane', [
-    ('logi_lcd_mono_set_background', 'aircraft_mono'),
-    ('logi_lcd_color_set_background', 'aircraft_color'),
+    ('logi_lcd_mono_set_background', 'advancedaircraft_mono'),
+    ('logi_lcd_color_set_background', 'advancedaircraft_color'),
 ], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_prepare_img(c_func, plane, request):
     from dcspy.sdk import lcd_sdk
@@ -46,6 +46,19 @@ def test_aircraft_base_class_prepare_img(c_func, plane, request):
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True), \
             raises(NotImplementedError):
         aircraft.prepare_image()
+
+
+@mark.parametrize('keyboard, plane_name', [
+    ('keyboard_mono', 'F-22A'),
+    ('keyboard_color', 'UH-60L'),
+], ids=['F-22A Mono Keyboard', 'UH-60L Color Keyboard'])
+def test_meta_plane(keyboard, plane_name, request):
+    from dcspy.aircraft import BasicAircraft, MetaAircraft
+
+    keyboard = request.getfixturevalue(keyboard)
+    plane = MetaAircraft(plane_name, (BasicAircraft,), {})(keyboard.lcd)
+    assert isinstance(plane, BasicAircraft)
+    assert type(plane).__name__ == plane_name
 
 
 # <=><=><=><=><=> Button Requests <=><=><=><=><=>
@@ -207,12 +220,11 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'CANCEL - Hornet Color',
 ])
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
-    from itertools import cycle
     plane = request.getfixturevalue(plane)
-    assert not all([isinstance(cyc_btn, cycle) for cyc_btn in plane.cycle_buttons.values()])
+    assert not all(isinstance(cyc_btn.iter, ZigZagIterator) for cyc_btn in plane.cycle_buttons.values())
     for val in values:
         assert plane.button_request(btn) == f'{btn_name} {val}\n'
-    assert isinstance(plane.cycle_buttons[btn]['iter'], cycle)
+    assert isinstance(plane.cycle_buttons[btn].iter, ZigZagIterator)
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
@@ -252,7 +264,7 @@ def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request)
 def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
-    assert plane.bios_data[bios_pairs[0][0]]['value'] == result
+    assert plane.bios_data[bios_pairs[0][0]] == result
 
 
 @mark.parametrize('plane, bios_pairs, mode', [
@@ -277,7 +289,7 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'f15ese' in model or 'av8bna' in model:
+    # if 'f14b' in model or 'f14a135gr' in model:
     #     img.save(resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
@@ -301,8 +313,8 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
     ]
     set_bios_during_test(apache, bios_pairs)
     apache.mode = ApacheEufdMode.WCA
-    with patch('dcspy.aircraft.config', return_value={'save_lcd': True}):
-        img = apache.prepare_image()
+    apache.cfg['save_lcd'] = True
+    img = apache.prepare_image()
     assert (Path(gettempdir()) / f'{type(apache).__name__}_999.png').exists()
     assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
 

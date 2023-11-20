@@ -6,50 +6,87 @@ from pprint import pformat
 from re import search, sub
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, Iterator, List, Sequence, Tuple, Union
+from typing import Dict, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import (DED_FONT, SUPPORTED_CRAFTS, BiosValue, LcdButton, LcdInfo,
-                   LcdType, config)
+from dcspy import default_yaml, load_yaml
+from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator
 from dcspy.sdk import lcd_sdk
-
-try:
-    from typing import TypedDict
-except ImportError:
-    from typing_extensions import TypedDict
 
 LOG = getLogger(__name__)
 
 
-class CycleButton(TypedDict):
-    """Map BIOS key string with iterator to keep current value."""
-    bios: str
-    iter: Iterator[int]
+class MetaAircraft(type):
+    """Metaclass for all BasicAircraft."""
+    def __new__(mcs, name, bases, namespace):
+        """
+        Create new instance of any plane as BasicAircraft.
+
+        You can crate instance of any plane:
+        f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)
+
+        :param name:
+        :param bases:
+        :param namespace:
+        """
+        return super().__new__(mcs, name, bases, namespace)
+
+    def __call__(cls, *args, **kwargs):
+        """
+        Create new instance of any BasicAircraft.
+
+        :param args:
+        :param kwargs:
+        """
+        LOG.debug(f'Creating {cls.__name__} with: {args[0].type}')
+        return super().__call__(*args, **kwargs)
 
 
-class Aircraft:
-    """Common Aircraft."""
+class BasicAircraft:
+    """Basic Aircraft."""
+    bios_name: str = ''
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
-        Create common aircraft.
+        Create basic aircraft.
 
         :param lcd_type: LCD type
         """
         self.lcd = lcd_type
-        self.bios_data: Dict[str, BiosValue] = {}
-        self.cycle_buttons: Dict[LcdButton, CycleButton] = {}
-        self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
-        self.button_actions: Dict[LcdButton, str] = {}
+        self.cfg = load_yaml(full_path=default_yaml)
+        self.bios_data: Dict[str, Union[str, int]] = {}
+        self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
+        self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
+        self._load_plane_yaml()
 
-    def button_request(self, button: LcdButton) -> str:
+    def _load_plane_yaml(self) -> None:
+        """Load plane's YAML file with configuration and apply."""
+        bios_data, cycle_buttons, button_actions = {}, {}, {}
+        plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
+        for gkey_str, request in plane_yaml.items():
+            if request:
+                gkey = Gkey.from_yaml(gkey_str)
+                if 'CYCLE' in request:
+                    cycle_button = CycleButton.from_request(request)
+                    cycle_buttons[gkey] = cycle_button
+                    bios_data[cycle_button.ctrl_name] = ''  # int or str maybe set as None
+                else:
+                    button_actions[gkey] = f'{request}\n'
+
+        self.bios_data.update(bios_data)
+        self.cycle_buttons.update(cycle_buttons)  # type: ignore
+        self.button_actions.update(button_actions)  # type: ignore
+
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Prepare aircraft specific DCS-BIOS request for button pressed.
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        Or any G-Key 1 to 29
 
-        :param button: LcdButton Enum
+        :param button: LcdButton or Gkey
         :return: ready to send DCS-BIOS request
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
@@ -59,18 +96,6 @@ class Aircraft:
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
 
-    def prepare_image(self) -> Image.Image:
-        """
-        Prepare image to be sent to correct type of LCD.
-
-        :return: image instance ready display on LCD
-        """
-        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
-        getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
-        if config.get('save_lcd', False):
-            img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
-        return img
-
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
         Set value for DCS-BIOS selector.
@@ -78,9 +103,8 @@ class Aircraft:
         :param selector:
         :param value:
         """
-        self.bios_data[selector]['value'] = value
+        self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
-        lcd_sdk.update_display(self.prepare_image())
 
     def get_bios(self, selector: str) -> Union[str, int]:
         """
@@ -89,9 +113,89 @@ class Aircraft:
         :param selector:
         """
         try:
-            return self.bios_data[selector]['value']
+            return self.bios_data[selector]
         except KeyError:
             return ''
+
+    def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
+        """
+        Get next int value (cycle fore and back) for button name.
+
+        :param button: LcdButton or Gkey
+        """
+        if not isinstance(self.cycle_buttons[button].iter, ZigZagIterator):
+            bios = self.cycle_buttons[button].ctrl_name
+            self.cycle_buttons[button].iter = ZigZagIterator(current=int(self.get_bios(bios)),
+                                                             step=self.cycle_buttons[button].step,
+                                                             max_val=self.cycle_buttons[button].max_value)
+            LOG.debug(f'{type(self).__name__} {bios} ZigZag: {self.cycle_buttons[button].iter}')
+        return next(self.cycle_buttons[button].iter)
+
+    def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
+        """
+        Get request for cycle button.
+
+        :param button: LcdButton or Gkey
+        :return: ready to send DCS-BIOS request
+        """
+        button_bios_name = self.cycle_buttons[button].ctrl_name
+        settings = self._get_next_value_for_button(button)
+        return f'{button_bios_name} {settings}\n'
+
+    def __repr__(self) -> str:
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
+
+
+class AdvancedAircraft(BasicAircraft):
+    """Advanced Aircraft."""
+    def __init__(self, lcd_type: LcdInfo) -> None:
+        """
+        Create advanced aircraft.
+
+        :param lcd_type: LCD type
+        """
+        super().__init__(lcd_type=lcd_type)
+        self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
+
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
+        """
+        Prepare aircraft specific DCS-BIOS request for button pressed.
+
+        For G13/G15/G510: 1-4
+        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        Or any G-Key 1 to 29
+
+        :param button: LcdButton or Gkey
+        :return: ready to send DCS-BIOS request
+        """
+        LOG.debug(f'{type(self).__name__} Button: {button}')
+        if button in self.cycle_buttons:
+            self.button_actions[button] = self._get_cycle_request(button)
+        request = self.button_actions.get(button, '\n')
+        LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
+        return request
+
+    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+        """
+        Set value for DCS-BIOS selector and update LCD with image.
+
+        :param selector:
+        :param value:
+        """
+        super().set_bios(selector=selector, value=value)
+        lcd_sdk.update_display(self.prepare_image())
+
+    def prepare_image(self) -> Image.Image:
+        """
+        Prepare image to be sent to correct type of LCD.
+
+        :return: image instance ready display on LCD
+        """
+        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
+        getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
+        if self.cfg.get('save_lcd', False):
+            img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
+        return img
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for Aircraft for Mono LCD."""
@@ -101,44 +205,11 @@ class Aircraft:
         """Prepare image for Aircraft for Color LCD."""
         raise NotImplementedError
 
-    def _get_next_value_for_button(self, button: LcdButton) -> int:
-        """
-        Get next int value (cycle fore and back) for button name.
 
-        :param button: LcdButton Enum
-        """
-        if not isinstance(self.cycle_buttons[button]['iter'], cycle):
-            bios = self.cycle_buttons[button]['bios']
-            curr_val = int(self.get_bios(bios))
-            max_val = self.bios_data[bios]['max_value']
-            full_seed = list(range(max_val + 1)) + list(range(max_val - 1, 0, -1)) + list(range(max_val + 1))
-            seed = full_seed[curr_val + 1:2 * max_val + curr_val + 1]
-            LOG.debug(f'{type(self).__name__} {bios} full_seed: {full_seed} seed: {seed} curr_val: {curr_val}')
-            self.cycle_buttons[button]['iter'] = cycle(chain(seed))
-        return next(self.cycle_buttons[button]['iter'])
-
-    def _get_cycle_request(self, button: LcdButton) -> str:
-        """
-        Get request for cycle button.
-
-        :param button: LcdButton Enum
-        :return: ready to send DCS-BIOS request
-        """
-        button_bios_name = self.cycle_buttons[button]['bios']
-        settings = self._get_next_value_for_button(button)
-        return f'{button_bios_name} {settings}\n'
-
-    def __repr__(self) -> str:
-        """
-        Show all details of Aircraft.
-
-        :return: string
-        """
-        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
-
-
-class FA18Chornet(Aircraft):
+class FA18Chornet(AdvancedAircraft):
     """F/A-18C Hornet."""
+    bios_name: str = 'FA-18C_hornet'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F/A-18C Hornet.
@@ -146,34 +217,34 @@ class FA18Chornet(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'UFC_SCRATCHPAD_STRING_1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x744e, 'max_length': 2}, 'value': ''},
-            'UFC_SCRATCHPAD_STRING_2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7450, 'max_length': 2}, 'value': ''},
-            'UFC_SCRATCHPAD_NUMBER_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7446, 'max_length': 8}, 'value': ''},
-            'UFC_OPTION_DISPLAY_1': {'klass': 'StringBuffer', 'args': {'address': 0x7432, 'max_length': 4}, 'value': ''},
-            'UFC_OPTION_DISPLAY_2': {'klass': 'StringBuffer', 'args': {'address': 0x7436, 'max_length': 4}, 'value': ''},
-            'UFC_OPTION_DISPLAY_3': {'klass': 'StringBuffer', 'args': {'address': 0x743a, 'max_length': 4}, 'value': ''},
-            'UFC_OPTION_DISPLAY_4': {'klass': 'StringBuffer', 'args': {'address': 0x743e, 'max_length': 4}, 'value': ''},
-            'UFC_OPTION_DISPLAY_5': {'klass': 'StringBuffer', 'args': {'address': 0x7442, 'max_length': 4}, 'value': ''},
-            'UFC_COMM1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7424, 'max_length': 2}, 'value': ''},
-            'UFC_COMM2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7426, 'max_length': 2}, 'value': ''},
-            'UFC_OPTION_CUEING_1': {'klass': 'StringBuffer', 'args': {'address': 0x7428, 'max_length': 1}, 'value': ''},
-            'UFC_OPTION_CUEING_2': {'klass': 'StringBuffer', 'args': {'address': 0x742a, 'max_length': 1}, 'value': ''},
-            'UFC_OPTION_CUEING_3': {'klass': 'StringBuffer', 'args': {'address': 0x742c, 'max_length': 1}, 'value': ''},
-            'UFC_OPTION_CUEING_4': {'klass': 'StringBuffer', 'args': {'address': 0x742e, 'max_length': 1}, 'value': ''},
-            'UFC_OPTION_CUEING_5': {'klass': 'StringBuffer', 'args': {'address': 0x7430, 'max_length': 1}, 'value': ''},
-            'IFEI_FUEL_DOWN': {'klass': 'StringBuffer', 'args': {'address': 0x748a, 'max_length': 6}, 'value': ''},
-            'IFEI_FUEL_UP': {'klass': 'StringBuffer', 'args': {'address': 0x7490, 'max_length': 6}, 'value': ''},
-            'HUD_ATT_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x742e, 'mask': 0x300, 'shift_by': 0x8}, 'value': int(), 'max_value': 2},
-            'IFEI_DWN_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x10, 'shift_by': 0x4}, 'value': int(), 'max_value': 1},
-            'IFEI_UP_BTN': {'klass': 'IntegerBuffer', 'args': {'address': 0x7466, 'mask': 0x8, 'shift_by': 0x3}, 'value': int(), 'max_value': 1},
-        }
-        self.cycle_buttons = {
-            LcdButton.OK: {'bios': 'HUD_ATT_SW', 'iter': iter([0])},
-            LcdButton.MENU: {'bios': 'IFEI_DWN_BTN', 'iter': iter([0])},
-            LcdButton.CANCEL: {'bios': 'IFEI_UP_BTN', 'iter': iter([0])},
-        }
-        self.button_actions = {
+        self.bios_data.update({
+            'UFC_SCRATCHPAD_STRING_1_DISPLAY': '',
+            'UFC_SCRATCHPAD_STRING_2_DISPLAY': '',
+            'UFC_SCRATCHPAD_NUMBER_DISPLAY':  '',
+            'UFC_OPTION_DISPLAY_1': '',
+            'UFC_OPTION_DISPLAY_2': '',
+            'UFC_OPTION_DISPLAY_3': '',
+            'UFC_OPTION_DISPLAY_4': '',
+            'UFC_OPTION_DISPLAY_5': '',
+            'UFC_COMM1_DISPLAY': '',
+            'UFC_COMM2_DISPLAY': '',
+            'UFC_OPTION_CUEING_1': '',
+            'UFC_OPTION_CUEING_2': '',
+            'UFC_OPTION_CUEING_3': '',
+            'UFC_OPTION_CUEING_4': '',
+            'UFC_OPTION_CUEING_5': '',
+            'IFEI_FUEL_DOWN': '',
+            'IFEI_FUEL_UP': '',
+            'HUD_ATT_SW': int(),
+            'IFEI_DWN_BTN': int(),
+            'IFEI_UP_BTN': int(),
+        })
+        self.cycle_buttons.update({
+            LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW', max_value=2),
+            LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN', max_value=1),
+            LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN', max_value=1),
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
             LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
             LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
@@ -182,7 +253,7 @@ class FA18Chornet(Aircraft):
             LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
             LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
             LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
@@ -236,8 +307,10 @@ class FA18Chornet(Aircraft):
         super().set_bios(selector, value)
 
 
-class F16C50(Aircraft):
+class F16C50(AdvancedAircraft):
     """F-16C Viper."""
+    bios_name: str = 'F-16C_50'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F-16C Viper.
@@ -246,30 +319,30 @@ class F16C50(Aircraft):
         """
         super().__init__(lcd_type)
         self.font = self.lcd.font_s
-        self.ded_font = config.get('f16_ded_font', True)
+        self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
-            self.font = DED_FONT
-        self.bios_data: Dict[str, BiosValue] = {
-            'DED_LINE_1': {'klass': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
-            'DED_LINE_2': {'klass': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},
-            'DED_LINE_3': {'klass': 'StringBuffer', 'args': {'address': 0x4546, 'max_length': 29}, 'value': ''},
-            'DED_LINE_4': {'klass': 'StringBuffer', 'args': {'address': 0x4564, 'max_length': 29}, 'value': ''},
-            'DED_LINE_5': {'klass': 'StringBuffer', 'args': {'address': 0x4582, 'max_length': 29}, 'value': ''},
-            'IFF_MASTER_KNB': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4},
-            'IFF_ENABLE_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
-            'IFF_M4_CODE_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
-            'IFF_M4_REPLY_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2},
-        }
-        self.cycle_buttons = {
-            LcdButton.ONE: {'bios': 'IFF_MASTER_KNB', 'iter': iter([0])},
-            LcdButton.TWO: {'bios': 'IFF_ENABLE_SW', 'iter': iter([0])},
-            LcdButton.THREE: {'bios': 'IFF_M4_CODE_SW', 'iter': iter([0])},
-            LcdButton.FOUR: {'bios': 'IFF_M4_REPLY_SW', 'iter': iter([0])},
-            LcdButton.LEFT: {'bios': 'IFF_MASTER_KNB', 'iter': iter([0])},
-            LcdButton.RIGHT: {'bios': 'IFF_ENABLE_SW', 'iter': iter([0])},
-            LcdButton.DOWN: {'bios': 'IFF_M4_CODE_SW', 'iter': iter([0])},
-            LcdButton.UP: {'bios': 'IFF_M4_REPLY_SW', 'iter': iter([0])},
-        }
+            self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
+        self.bios_data.update({
+            'DED_LINE_1': '',
+            'DED_LINE_2': '',
+            'DED_LINE_3': '',
+            'DED_LINE_4': '',
+            'DED_LINE_5': '',
+            'IFF_MASTER_KNB': int(),
+            'IFF_ENABLE_SW': int(),
+            'IFF_M4_CODE_SW': int(),
+            'IFF_M4_REPLY_SW': int(),
+        })
+        self.cycle_buttons.update({
+            LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
+            LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
+            LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
+            LcdButton.FOUR: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
+            LcdButton.LEFT: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
+            LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
+            LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
+            LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
@@ -326,8 +399,9 @@ class F16C50(Aircraft):
         super().set_bios(selector, value)
 
 
-class F15ESE(Aircraft):
+class F15ESE(AdvancedAircraft):
     """F-15ESE Eagle."""
+    bios_name: str = 'F-15ESE'
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -336,15 +410,15 @@ class F15ESE(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'F_UFC_LINE1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9214, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_LINE2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9228, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_LINE3_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x923c, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_LINE4_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9250, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_LINE5_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9264, 'max_length': 0x14}, 'value': ''},
-            'F_UFC_LINE6_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x9278, 'max_length': 0x14}, 'value': ''},
-        }
-        self.button_actions = {
+        self.bios_data.update({
+            'F_UFC_LINE1_DISPLAY': '',
+            'F_UFC_LINE2_DISPLAY': '',
+            'F_UFC_LINE3_DISPLAY': '',
+            'F_UFC_LINE4_DISPLAY': '',
+            'F_UFC_LINE5_DISPLAY': '',
+            'F_UFC_LINE6_DISPLAY': '',
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
             LcdButton.TWO: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
             LcdButton.THREE: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
@@ -355,7 +429,7 @@ class F15ESE(Aircraft):
             LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
             LcdButton.MENU: 'F_UFC_KEY_L_GUARD 1\n|F_UFC_KEY_L_GUARD 0\n',
             LcdButton.CANCEL: 'F_UFC_KEY_R_GUARD 1\n|F_UFC_KEY_R_GUARD 0\n',
-        }
+        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
@@ -374,11 +448,16 @@ class F15ESE(Aircraft):
         for i in range(1, 7):
             offset = (i - 1) * 24
             # todo: fix custom font for Color LCD
-            draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')), fill=self.lcd.foreground, font=ImageFont.truetype('consola.ttf', 29))
+            draw.text(xy=(0, offset),
+                      text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')),
+                      fill=self.lcd.foreground,
+                      font=ImageFont.truetype(DEFAULT_FONT_NAME, 29))
 
 
-class Ka50(Aircraft):
+class Ka50(AdvancedAircraft):
     """Ka-50 Black Shark."""
+    bios_name: str = 'Ka-50'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create Ka-50 Black Shark.
@@ -386,24 +465,24 @@ class Ka50(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'PVI_LINE1_APOSTROPHE1': {'klass': 'StringBuffer', 'args': {'address': 0x1934, 'max_length': 1}, 'value': ''},
-            'PVI_LINE1_APOSTROPHE2': {'klass': 'StringBuffer', 'args': {'address': 0x1936, 'max_length': 1}, 'value': ''},
-            'PVI_LINE1_POINT': {'klass': 'StringBuffer', 'args': {'address': 0x1930, 'max_length': 1}, 'value': ''},
-            'PVI_LINE1_SIGN': {'klass': 'StringBuffer', 'args': {'address': 0x1920, 'max_length': 1}, 'value': ''},
-            'PVI_LINE1_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x1924, 'max_length': 6}, 'value': ''},
-            'PVI_LINE2_APOSTROPHE1': {'klass': 'StringBuffer', 'args': {'address': 0x1938, 'max_length': 1}, 'value': ''},
-            'PVI_LINE2_APOSTROPHE2': {'klass': 'StringBuffer', 'args': {'address': 0x193a, 'max_length': 1}, 'value': ''},
-            'PVI_LINE2_POINT': {'klass': 'StringBuffer', 'args': {'address': 0x1932, 'max_length': 1}, 'value': ''},
-            'PVI_LINE2_SIGN': {'klass': 'StringBuffer', 'args': {'address': 0x1922, 'max_length': 1}, 'value': ''},
-            'PVI_LINE2_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x192a, 'max_length': 6}, 'value': ''},
-            'AP_ALT_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
-            'AP_BANK_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
-            'AP_FD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1938, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
-            'AP_HDG_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
-            'AP_PITCH_HOLD_LED': {'klass': 'IntegerBuffer', 'args': {'address': 0x1936, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
-        }
-        self.button_actions = {
+        self.bios_data.update({
+            'PVI_LINE1_APOSTROPHE1': '',
+            'PVI_LINE1_APOSTROPHE2': '',
+            'PVI_LINE1_POINT': '',
+            'PVI_LINE1_SIGN': '',
+            'PVI_LINE1_TEXT': '',
+            'PVI_LINE2_APOSTROPHE1': '',
+            'PVI_LINE2_APOSTROPHE2': '',
+            'PVI_LINE2_POINT': '',
+            'PVI_LINE2_SIGN': '',
+            'PVI_LINE2_TEXT': '',
+            'AP_ALT_HOLD_LED': int(),
+            'AP_BANK_HOLD_LED': int(),
+            'AP_FD_LED': int(),
+            'AP_HDG_HOLD_LED': int(),
+            'AP_PITCH_HOLD_LED': int(),
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\n|PVI_WAYPOINTS_BTN 0\n',
             LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
             LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
@@ -412,7 +491,7 @@ class Ka50(Aircraft):
             LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
             LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
             LcdButton.UP: 'PVI_TARGETS_BTN 1\n|PVI_TARGETS_BTN 0\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -481,11 +560,12 @@ class Ka50(Aircraft):
 
 class Ka503(Ka50):
     """Ka-50 Black Shark III."""
-    pass
+    bios_name: str = 'Ka-50_3'
 
 
-class Mi8MT(Aircraft):
+class Mi8MT(AdvancedAircraft):
     """Mi-8MTV2 Magnificent Eight."""
+    bios_name: str = 'Mi-8MT'
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -494,16 +574,16 @@ class Mi8MT(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'LMP_AP_HDG_ON': {'klass': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
-            'LMP_AP_PITCH_ROLL_ON': {'klass': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
-            'LMP_AP_HEIGHT_ON': {'klass': 'IntegerBuffer', 'args': {'address': 0x269e, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
-            'R863_CNL_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x268c, 'mask': 0x1f, 'shift_by': 0x0}, 'value': int()},
-            'R863_MOD': {'klass': 'IntegerBuffer', 'args': {'address': 0x263a, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
-            'R863_FREQ': {'klass': 'StringBuffer', 'args': {'address': 0x2804, 'max_length': 7}, 'value': ''},
-            'R828_PRST_CHAN_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x268e, 'mask': 0x780, 'shift_by': 0x7}, 'value': int()},
-            'YADRO1A_FREQ': {'klass': 'StringBuffer', 'args': {'address': 0x2692, 'max_length': 7}, 'value': ''},
-        }
+        self.bios_data.update({
+            'LMP_AP_HDG_ON': int(),
+            'LMP_AP_PITCH_ROLL_ON': int(),
+            'LMP_AP_HEIGHT_ON': int(),
+            'R863_CNL_SEL': int(),
+            'R863_MOD': int(),
+            'R863_FREQ': '',
+            'R828_PRST_CHAN_SEL': int(),
+            'YADRO1A_FREQ': '',
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -553,8 +633,10 @@ class Mi8MT(Aircraft):
         return r863, r828, yadro
 
 
-class Mi24P(Aircraft):
+class Mi24P(AdvancedAircraft):
     """Mi-24P Hind."""
+    bios_name: str = 'Mi-24P'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create Mi-24P Hind.
@@ -562,19 +644,19 @@ class Mi24P(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'PLT_R863_CHAN': {'klass': 'IntegerBuffer', 'args': {'address': 0x69ec, 'mask': 0x3e0, 'shift_by': 0x5}, 'value': int()},
-            'PLT_R863_MODUL': {'klass': 'IntegerBuffer', 'args': {'address': 0x69ec, 'mask': 0x2, 'shift_by': 0x1}, 'value': int()},
-            'PLT_R828_CHAN': {'klass': 'IntegerBuffer', 'args': {'address': 0x69fc, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
-            'JADRO_FREQ': {'klass': 'StringBuffer', 'args': {'address': 0x6a02, 'max_length': 7}, 'value': ''},
-            'PLT_SAU_HOVER_MODE_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
-            'PLT_SAU_ROUTE_MODE_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
-            'PLT_SAU_ALT_MODE_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x6902, 'mask': 0x100, 'shift_by': 0x8}, 'value': int()},
-            'PLT_SAU_H_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x80, 'shift_by': 0x7}, 'value': int()},
-            'PLT_SAU_K_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x20, 'shift_by': 0x5}, 'value': int()},
-            'PLT_SAU_T_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x800, 'shift_by': 0xb}, 'value': int()},
-            'PLT_SAU_B_ON_L': {'klass': 'IntegerBuffer', 'args': {'address': 0x68fc, 'mask': 0x200, 'shift_by': 0x9}, 'value': int()},
-        }
+        self.bios_data.update({
+            'PLT_R863_CHAN': int(),
+            'PLT_R863_MODUL': int(),
+            'PLT_R828_CHAN': int(),
+            'JADRO_FREQ': '',
+            'PLT_SAU_HOVER_MODE_ON_L': int(),
+            'PLT_SAU_ROUTE_MODE_ON_L': int(),
+            'PLT_SAU_ALT_MODE_ON_L': int(),
+            'PLT_SAU_H_ON_L': int(),
+            'PLT_SAU_K_ON_L': int(),
+            'PLT_SAU_T_ON_L': int(),
+            'PLT_SAU_B_ON_L': int(),
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -631,8 +713,10 @@ class ApacheEufdMode(Enum):
     PRE = 4
 
 
-class AH64DBLKII(Aircraft):
+class AH64DBLKII(AdvancedAircraft):
     """AH-64D Apache."""
+    bios_name: str = 'AH-64D_BLK_II'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AH-64D Apache.
@@ -642,28 +726,28 @@ class AH64DBLKII(Aircraft):
         super().__init__(lcd_type)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
-        self.bios_data: Dict[str, BiosValue] = {
-            'PLT_EUFD_LINE1': {'klass': 'StringBuffer', 'args': {'address': 0x80c2, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE2': {'klass': 'StringBuffer', 'args': {'address': 0x80fa, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE3': {'klass': 'StringBuffer', 'args': {'address': 0x8132, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE4': {'klass': 'StringBuffer', 'args': {'address': 0x816a, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE5': {'klass': 'StringBuffer', 'args': {'address': 0x81a2, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE6': {'klass': 'StringBuffer', 'args': {'address': 0x81da, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE7': {'klass': 'StringBuffer', 'args': {'address': 0x8212, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE8': {'klass': 'StringBuffer', 'args': {'address': 0x824a, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE9': {'klass': 'StringBuffer', 'args': {'address': 0x8282, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE10': {'klass': 'StringBuffer', 'args': {'address': 0x82ba, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE11': {'klass': 'StringBuffer', 'args': {'address': 0x82f2, 'max_length': 56}, 'value': ''},
-            'PLT_EUFD_LINE12': {'klass': 'StringBuffer', 'args': {'address': 0x832a, 'max_length': 56}, 'value': ''},
-        }
-        self.button_actions = {
+        self.bios_data.update({
+            'PLT_EUFD_LINE1': '',
+            'PLT_EUFD_LINE2': '',
+            'PLT_EUFD_LINE3': '',
+            'PLT_EUFD_LINE4': '',
+            'PLT_EUFD_LINE5': '',
+            'PLT_EUFD_LINE6': '',
+            'PLT_EUFD_LINE7': '',
+            'PLT_EUFD_LINE8': '',
+            'PLT_EUFD_LINE9': '',
+            'PLT_EUFD_LINE10': '',
+            'PLT_EUFD_LINE11': '',
+            'PLT_EUFD_LINE12': '',
+        })
+        self.button_actions.update({
             LcdButton.TWO: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
             LcdButton.THREE: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
             LcdButton.FOUR: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
             LcdButton.RIGHT: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
             LcdButton.DOWN: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
             LcdButton.UP: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
-        }
+        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -783,12 +867,13 @@ class AH64DBLKII(Aircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: LcdButton) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
         For G13/G15/G510: 1-4
         For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
+        Or any G-Key 1 to 29
 
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
@@ -810,8 +895,10 @@ class AH64DBLKII(Aircraft):
         return super().button_request(button)
 
 
-class A10C(Aircraft):
+class A10C(AdvancedAircraft):
     """A-10C Warthog."""
+    bios_name: str = 'A-10C'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create A-10C Warthog or A-10C II Tank Killer.
@@ -819,26 +906,26 @@ class A10C(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'VHFAM_FREQ1': {'klass': 'StringBuffer', 'args': {'address': 0x1190, 'max_length': 2}, 'value': ''},
-            'VHFAM_FREQ2': {'klass': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
-            'VHFAM_FREQ3': {'klass': 'IntegerBuffer', 'args': {'address': 0x118e, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
-            'VHFAM_FREQ4': {'klass': 'StringBuffer', 'args': {'address': 0x1192, 'max_length': 2}, 'value': ''},
-            'VHFAM_PRESET': {'klass': 'StringBuffer', 'args': {'address': 0x118a, 'max_length': 2}, 'value': ''},
-            'VHFFM_FREQ1': {'klass': 'StringBuffer', 'args': {'address': 0x119a, 'max_length': 2}, 'value': ''},
-            'VHFFM_FREQ2': {'klass': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf, 'shift_by': 0x0}, 'value': int()},
-            'VHFFM_FREQ3': {'klass': 'IntegerBuffer', 'args': {'address': 0x119c, 'mask': 0xf0, 'shift_by': 0x4}, 'value': int()},
-            'VHFFM_FREQ4': {'klass': 'StringBuffer', 'args': {'address': 0x119e, 'max_length': 2}, 'value': ''},
-            'VHFFM_PRESET': {'klass': 'StringBuffer', 'args': {'address': 0x1196, 'max_length': 2}, 'value': ''},
-            'UHF_100MHZ_SEL': {'klass': 'StringBuffer', 'args': {'address': 0x1178, 'max_length': 1}, 'value': ''},
-            'UHF_10MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1170, 'mask': 0x3c00, 'shift_by': 0xa}, 'value': int()},
-            'UHF_1MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf00, 'shift_by': 0x8}, 'value': int()},
-            'UHF_POINT1MHZ_SEL': {'klass': 'IntegerBuffer', 'args': {'address': 0x1178, 'mask': 0xf000, 'shift_by': 0xc}, 'value': int()},
-            'UHF_POINT25_SEL': {'klass': 'StringBuffer', 'args': {'address': 0x117a, 'max_length': 2}, 'value': ''},
-            'UHF_PRESET': {'klass': 'StringBuffer', 'args': {'address': 0x1188, 'max_length': 2}, 'value': ''},
-            'ARC210_FREQUENCY': {'klass': 'StringBuffer', 'args': {'address': 0x1382, 'max_length': 7}, 'value': ''},
-            'ARC210_PREV_MANUAL_FREQ': {'klass': 'StringBuffer', 'args': {'address': 0x1314, 'max_length': 7}, 'value': ''},
-        }
+        self.bios_data.update({
+            'VHFAM_FREQ1': '',
+            'VHFAM_FREQ2': int(),
+            'VHFAM_FREQ3': int(),
+            'VHFAM_FREQ4': '',
+            'VHFAM_PRESET': '',
+            'VHFFM_FREQ1': '',
+            'VHFFM_FREQ2': int(),
+            'VHFFM_FREQ3': int(),
+            'VHFFM_FREQ4': '',
+            'VHFFM_PRESET': '',
+            'UHF_100MHZ_SEL': '',
+            'UHF_10MHZ_SEL': int(),
+            'UHF_1MHZ_SEL': int(),
+            'UHF_POINT1MHZ_SEL': int(),
+            'UHF_POINT25_SEL': '',
+            'UHF_PRESET': '',
+            'ARC210_FREQUENCY': '',
+            'ARC210_PREV_MANUAL_FREQ': '',
+        })
 
     def _generate_freq_values(self) -> Sequence[str]:
         """
@@ -874,6 +961,8 @@ class A10C(Aircraft):
 
 class A10C2(A10C):
     """A-10C II Tank Killer."""
+    bios_name: str = 'A-10C_2'
+
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Mono LCD."""
         draw = ImageDraw.Draw(img)
@@ -891,8 +980,10 @@ class A10C2(A10C):
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
 
-class F14B(Aircraft):
+class F14B(AdvancedAircraft):
     """F-14B Tomcat."""
+    bios_name: str = 'F-14B'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create F-14B Tomcat.
@@ -900,13 +991,13 @@ class F14B(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'RIO_CAP_CLEAR': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x4000, 'shift_by': 0xe}, 'value': int()},
-            'RIO_CAP_SW': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x2000, 'shift_by': 0xd}, 'value': int()},
-            'RIO_CAP_NE': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x1000, 'shift_by': 0xc}, 'value': int()},
-            'RIO_CAP_ENTER': {'klass': 'IntegerBuffer', 'args': {'address': 0x12c4, 'mask': 0x8000, 'shift_by': 0xf}, 'value': int()},
-        }
-        self.button_actions = {
+        self.bios_data.update({
+            'RIO_CAP_CLEAR': int(),
+            'RIO_CAP_SW': int(),
+            'RIO_CAP_NE': int(),
+            'RIO_CAP_ENTER': int(),
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
             LcdButton.TWO: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
             LcdButton.THREE: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
@@ -915,7 +1006,7 @@ class F14B(Aircraft):
             LcdButton.RIGHT: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
             LcdButton.DOWN: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
             LcdButton.UP: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
@@ -923,7 +1014,7 @@ class F14B(Aircraft):
 
         :param draw: ImageDraw instance
         """
-        draw.text(xy=(2, 3), text=f'{SUPPORTED_CRAFTS[type(self).__name__]["name"]}', fill=self.lcd.foreground, font=self.lcd.font_l)
+        draw.text(xy=(2, 3), text=f'{self.bios_name}', fill=self.lcd.foreground, font=self.lcd.font_l)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
@@ -936,11 +1027,13 @@ class F14B(Aircraft):
 
 class F14A135GR(F14B):
     """F-14A-135-GR Tomcat."""
-    pass
+    bios_name: str = 'F-14A-135-GR'
 
 
-class AV8BNA(Aircraft):
+class AV8BNA(AdvancedAircraft):
     """AV-8B Night Attack."""
+    bios_name: str = 'AV8BNA'
+
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
         Create AV-8B Night Attack.
@@ -948,22 +1041,22 @@ class AV8BNA(Aircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data: Dict[str, BiosValue] = {
-            'UFC_SCRATCHPAD': {'klass': 'StringBuffer', 'args': {'address': 0x7976, 'max_length': 12}, 'value': ''},
-            'UFC_COMM1_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7954, 'max_length': 2}, 'value': ''},
-            'UFC_COMM2_DISPLAY': {'klass': 'StringBuffer', 'args': {'address': 0x7956, 'max_length': 2}, 'value': ''},
-            'AV8BNA_ODU_1_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7958, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_1_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x795a, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_2_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x795e, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_2_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x7960, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_3_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7964, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_3_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x7966, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_4_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x796a, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_4_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x796c, 'max_length': 4}, 'value': ''},
-            'AV8BNA_ODU_5_SELECT': {'klass': 'StringBuffer', 'args': {'address': 0x7970, 'max_length': 1}, 'value': ''},
-            'AV8BNA_ODU_5_TEXT': {'klass': 'StringBuffer', 'args': {'address': 0x7972, 'max_length': 4}, 'value': ''},
-        }
-        self.button_actions = {
+        self.bios_data.update({
+            'UFC_SCRATCHPAD': '',
+            'UFC_COMM1_DISPLAY': '',
+            'UFC_COMM2_DISPLAY': '',
+            'AV8BNA_ODU_1_SELECT': '',
+            'AV8BNA_ODU_1_TEXT': '',
+            'AV8BNA_ODU_2_SELECT': '',
+            'AV8BNA_ODU_2_TEXT': '',
+            'AV8BNA_ODU_3_SELECT': '',
+            'AV8BNA_ODU_3_TEXT': '',
+            'AV8BNA_ODU_4_SELECT': '',
+            'AV8BNA_ODU_4_TEXT': '',
+            'AV8BNA_ODU_5_SELECT': '',
+            'AV8BNA_ODU_5_TEXT': '',
+        })
+        self.button_actions.update({
             LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
             LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
             LcdButton.THREE: 'UFC_COM2_SEL -3200\n',
@@ -972,7 +1065,7 @@ class AV8BNA(Aircraft):
             LcdButton.RIGHT: 'UFC_COM1_SEL 3200\n',
             LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
             LcdButton.UP: 'UFC_COM2_SEL 3200\n',
-        }
+        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """

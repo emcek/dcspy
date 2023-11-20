@@ -11,7 +11,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         exclude:
-          - os: ubuntu-latest
+          - os: windows-latest
             python-version: '3.12'
     steps:
       - name: "Checkout"
@@ -29,7 +29,7 @@ jobs:
           curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
           sudo mkdir -p /usr/share/fonts/truetype
           sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f -v
+          fc-cache -f
 
       - name: "Install dependencies"
         run: |
@@ -37,8 +37,11 @@ jobs:
           pip install -Ur requirements_test.txt
 
       - name: "Test with pytest"
+        env:
+          PYSIDE_DESIGNER_PLUGINS: .
+          PYTEST_QT_API: PySide6
         run: |
-          python -m pytest -q -m "not dcsbios"
+          python -m pytest -q
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v3

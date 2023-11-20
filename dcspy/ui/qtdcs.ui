@@ -1,0 +1,1326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtDcs</class>
+ <widget class="QMainWindow" name="QtDcs">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>880</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>450</width>
+    <height>680</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>DCSpy</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qtgui.qrc">
+    <normaloff>:/icons/img/dcspy_white.svg</normaloff>:/icons/img/dcspy_white.svg</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTabWidget" name="tw_main">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab_keyboards">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/input-keyboard.svg</normalon>
+          </iconset>
+         </attribute>
+         <attribute name="title">
+          <string>Keyboards</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="1">
+           <widget class="QRadioButton" name="rb_g510">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G510</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G510.png</normaloff>:/icons/img/G510.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QRadioButton" name="rb_g19">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G19</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G19.png</normaloff>:/icons/img/G19.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QRadioButton" name="rb_g15v1">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G15 v1</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G15v1.png</normaloff>:/icons/img/G15v1.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="rb_g15v2">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G15 v2</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G15v2.png</normaloff>:/icons/img/G15v2.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QRadioButton" name="rb_g13">
+            <property name="maximumSize">
+             <size>
+              <width>208</width>
+              <height>68</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>G13</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../qtgui.qrc">
+              <normaloff>:/icons/img/G13.png</normaloff>:/icons/img/G13.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>123</width>
+              <height>90</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_settings">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/preferences-system.svg</normalon>
+          </iconset>
+         </attribute>
+         <attribute name="title">
+          <string>Settings</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>DCSpy</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pb_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+               <property name="text">
+                <string>DCS folder</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/folder.svg</normaloff>:/icons/img/folder.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_autostart">
+               <property name="toolTip">
+                <string>Start DCSpy client when application starts</string>
+               </property>
+               <property name="text">
+                <string>Auto launch DCSpy client</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/jgmenu.svg</normaloff>:/icons/img/jgmenu.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLineEdit" name="le_dcsdir">
+               <property name="toolTip">
+                <string>Location of installation DCS World (OpenBeta)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QCheckBox" name="cb_show_gui">
+               <property name="toolTip">
+                <string>If unchecked DCSpy stay open in system tray and client will be lauched</string>
+               </property>
+               <property name="text">
+                <string>Show GUI when started</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/view-conceal-symbolic.svg</normaloff>:/icons/img/view-conceal-symbolic.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_check_ver">
+               <property name="toolTip">
+                <string>Auto check DCSpy version during startup</string>
+               </property>
+               <property name="text">
+                <string>Auto check DCSpy version</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/xfsm-reboot.svg</normaloff>:/icons/img/xfsm-reboot.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QPushButton" name="pb_dcspy_check">
+               <property name="toolTip">
+                <string>Check updates for DCSpy</string>
+               </property>
+               <property name="text">
+                <string>Check for updates</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Debug</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_verbose">
+               <property name="toolTip">
+                <string>Logging more data (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Collect more logs</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/cpu.svg</normaloff>:/icons/img/cpu.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QCheckBox" name="cb_lcd_screenshot">
+               <property name="toolTip">
+                <string>Make LCD screenshot everytime when updated (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Save LCD screenshot</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/io.photoflare.photoflare.svg</normaloff>:/icons/img/io.photoflare.photoflare.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QPushButton" name="pb_collect_data">
+               <property name="text">
+                <string>Collect debug data</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/help-about.svg</normaloff>:/icons/img/help-about.svg</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Fonts</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="cb_ded_font">
+               <property name="text">
+                <string>use special font for F-16 Viper DED (only G19)</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/dialog-text-and-font.svg</normaloff>:/icons/img/dialog-text-and-font.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QLineEdit" name="le_font_name">
+               <property name="text">
+                <string>consola.ttf</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Medium:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Small:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QSlider" name="hs_medium_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Name:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>Large:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSlider" name="hs_large_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSlider" name="hs_small_font">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="tickPosition">
+                <enum>QSlider::TicksAbove</enum>
+               </property>
+               <property name="tickInterval">
+                <number>1</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="l_large">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="l_medium">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="l_small">
+               <property name="text">
+                <string>0</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>DCS-BIOS</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_bios_live">
+               <property name="toolTip">
+                <string>Regular release or live version (need git installed)</string>
+               </property>
+               <property name="text">
+                <string>Use live DCS-BIOS version:</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/git.svg</normaloff>:/icons/img/git.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QLineEdit" name="le_biosdir">
+               <property name="toolTip">
+                <string>Location of DCS-BIOS in Saved Games</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="le_bios_live">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string>Any valid Git reference: branch, tag, commit</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_autoupdate_bios">
+               <property name="toolTip">
+                <string>Auto check DCS-BIOS version during startup</string>
+               </property>
+               <property name="text">
+                <string>Auto check DCS-BIOS</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/xfsm-reboot.svg</normaloff>:/icons/img/xfsm-reboot.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pb_biosdir">
+               <property name="toolTip">
+                <string>Location of DCS-BIOS in Saved Games</string>
+               </property>
+               <property name="text">
+                <string>DCS-BIOS folder</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/folder-violet.svg</normaloff>:/icons/img/folder-violet.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QPushButton" name="pb_bios_check">
+               <property name="toolTip">
+                <string>Check updates for DCS-BIOS</string>
+               </property>
+               <property name="text">
+                <string>Check for updates</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/network-card.svg</normaloff>:/icons/img/network-card.svg</iconset>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_gkeys">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/input-gaming.svg</normalon>
+          </iconset>
+         </attribute>
+         <attribute name="title">
+          <string>G-Keys</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_5">
+            <property name="toolTip">
+             <string>Aircraft name (type to search)</string>
+            </property>
+            <property name="text">
+             <string>Aircraft:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+            <property name="buddy">
+             <cstring>combo_planes</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QComboBox" name="combo_planes">
+            <property name="toolTip">
+             <string>Aircraft name (type to search)</string>
+            </property>
+            <property name="editable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QTableWidget" name="tw_gkeys"/>
+          </item>
+          <item row="4" column="0" colspan="3">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="pb_copy">
+              <property name="toolTip">
+               <string>Copy selected cell to whole row</string>
+              </property>
+              <property name="text">
+               <string>Copy cell to row</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../qtgui.qrc">
+                <normaloff>:/icons/img/edit-duplicate.svg</normaloff>:/icons/img/edit-duplicate.svg</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pb_save">
+              <property name="toolTip">
+               <string>Save current plane configuration</string>
+              </property>
+              <property name="text">
+               <string>Save current plane</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../qtgui.qrc">
+                <normaloff>:/icons/img/document-save-all.svg</normaloff>:/icons/img/document-save-all.svg</iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_7">
+              <property name="toolTip">
+               <string>Show number of suggested results</string>
+              </property>
+              <property name="text">
+               <string>Number of results:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              </property>
+              <property name="buddy">
+               <cstring>sp_completer</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="sp_completer">
+              <property name="maximumSize">
+               <size>
+                <width>50</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Show number of suggested results</string>
+              </property>
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>40</number>
+              </property>
+              <property name="value">
+               <number>20</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QProgressBar" name="progressbar">
+          <property name="value">
+           <number>0</number>
+          </property>
+          <property name="textVisible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_start">
+          <property name="toolTip">
+           <string>Start client</string>
+          </property>
+          <property name="text">
+           <string>Start</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/media-playback-start.svg</normaloff>:/icons/img/media-playback-start.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_stop">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Stop client</string>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/media-playback-stop.svg</normaloff>:/icons/img/media-playback-stop.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pb_close">
+          <property name="toolTip">
+           <string>Exit DCSpy</string>
+          </property>
+          <property name="text">
+           <string>Close</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/system-shutdown.svg</normaloff>:/icons/img/system-shutdown.svg</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>880</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="a_start"/>
+    <addaction name="a_stop"/>
+    <addaction name="separator"/>
+    <addaction name="a_reset_defaults"/>
+    <addaction name="a_save_plane"/>
+    <addaction name="separator"/>
+    <addaction name="a_quit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="a_report_issue"/>
+    <addaction name="a_discord"/>
+    <addaction name="separator"/>
+    <addaction name="a_about_dcspy"/>
+    <addaction name="a_about_qt"/>
+    <addaction name="separator"/>
+    <addaction name="a_dcspy_updates"/>
+    <addaction name="a_bios_updates"/>
+    <addaction name="a_donate"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuToolbar_icons">
+     <property name="title">
+      <string>Toolbar style</string>
+     </property>
+     <addaction name="a_icons_only"/>
+     <addaction name="a_text_only"/>
+     <addaction name="a_text_beside"/>
+     <addaction name="a_text_under"/>
+    </widget>
+    <addaction name="a_show_toolbar"/>
+    <addaction name="menuToolbar_icons"/>
+    <addaction name="separator"/>
+    <addaction name="a_show_gkeys"/>
+    <addaction name="a_show_keyboard"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolbar">
+   <property name="windowTitle">
+    <string>DCSpy tools</string>
+   </property>
+   <property name="movable">
+    <bool>true</bool>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="a_start"/>
+   <addaction name="a_stop"/>
+   <addaction name="a_quit"/>
+   <addaction name="separator"/>
+   <addaction name="a_save_plane"/>
+   <addaction name="a_dcspy_updates"/>
+   <addaction name="a_bios_updates"/>
+   <addaction name="separator"/>
+   <addaction name="a_show_gkeys"/>
+   <addaction name="a_show_keyboard"/>
+   <addaction name="separator"/>
+   <addaction name="a_report_issue"/>
+   <addaction name="a_discord"/>
+   <addaction name="a_donate"/>
+   <addaction name="separator"/>
+   <addaction name="a_about_dcspy"/>
+  </widget>
+  <widget class="QDockWidget" name="dw_gkeys">
+   <property name="minimumSize">
+    <size>
+     <width>169</width>
+     <height>360</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>524287</width>
+     <height>360</height>
+    </size>
+   </property>
+   <property name="windowIcon">
+    <iconset>
+     <normalon>:/icons/img/input-gaming.svg</normalon>
+    </iconset>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::AllDockWidgetAreas</set>
+   </property>
+   <property name="windowTitle">
+    <string>G-Keys details</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QGroupBox" name="groupBox_5">
+       <property name="title">
+        <string>Inputs:</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QRadioButton" name="rb_action">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Toggle between positions back and forth.
+Avaliable for two-state switches and knobs.</string>
+          </property>
+          <property name="text">
+           <string>Toggle</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/configure.svg</normaloff>:/icons/img/configure.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fixed_step_inc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Only increase position of switch.
+Avaliable for multi-possition switches and knobs with fixed step size.</string>
+          </property>
+          <property name="text">
+           <string>Fixed step inc</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/go-next.svg</normaloff>:/icons/img/go-next.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_fixed_step_dec">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Only decrease position of switch.
+Avaliable for multi-possition switches and knobs with fixed step size.</string>
+          </property>
+          <property name="text">
+           <string>Fixed step dec</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/go-previous.svg</normaloff>:/icons/img/go-previous.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_set_state">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Cycle through all values first increase and then decrease, move back and forth.
+Avaliable for most switches and knobs with fixed step size.</string>
+          </property>
+          <property name="text">
+           <string>Cycle state</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/kr_comparedirs.svg</normaloff>:/icons/img/kr_comparedirs.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_variable_step_plus">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Only increase value of switch.
+Available for variable step knobs or potentiometers i.e. volume or brightness.</string>
+          </property>
+          <property name="text">
+           <string>Variable step inc</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/list-add.svg</normaloff>:/icons/img/list-add.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_variable_step_minus">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Only decrease value of switch.
+Available for variable step knobs or potentiometers i.e. volume or brightness.</string>
+          </property>
+          <property name="text">
+           <string>Variable step dec</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/list-remove.svg</normaloff>:/icons/img/list-remove.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_6">
+       <property name="title">
+        <string>Information:</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="l_category">
+          <property name="text">
+           <string>Category:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_description">
+          <property name="text">
+           <string>Description:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_identifier">
+          <property name="text">
+           <string>Identifier:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="l_range">
+          <property name="text">
+           <string>Range:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dw_keyboard">
+   <property name="windowIcon">
+    <iconset>
+     <normalon>:/icons/img/input-keyboard.svg</normalon>
+    </iconset>
+   </property>
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetClosable|QDockWidget::DockWidgetFloatable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::NoDockWidgetArea</set>
+   </property>
+   <property name="windowTitle">
+    <string>Keyboard View</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_5">
+     <item>
+      <widget class="QLabel" name="l_keyboard">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="a_report_issue">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/github-desktop.svg</normaloff>:/icons/img/github-desktop.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Report issue</string>
+   </property>
+  </action>
+  <action name="a_about_dcspy">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/dcspy_white.svg</normaloff>:/icons/img/dcspy_white.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About DCSpy</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutRole</enum>
+   </property>
+  </action>
+  <action name="a_about_qt">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/qt.svg</normaloff>:/icons/img/qt.svg</iconset>
+   </property>
+   <property name="text">
+    <string>About Qt</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::AboutQtRole</enum>
+   </property>
+  </action>
+  <action name="a_dcspy_updates">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
+   </property>
+   <property name="text">
+    <string>DCSpy updates</string>
+   </property>
+   <property name="toolTip">
+    <string>Check DCSpy updates</string>
+   </property>
+  </action>
+  <action name="a_quit">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/system-shutdown.svg</normaloff>:/icons/img/system-shutdown.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit DCSpy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="a_show_toolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/viewitem.svg</normaloff>:/icons/img/viewitem.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Show toolbar</string>
+   </property>
+  </action>
+  <action name="a_reset_defaults">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/edit-undo.svg</normaloff>:/icons/img/edit-undo.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Reset to defaults</string>
+   </property>
+  </action>
+  <action name="a_donate">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/taxes-finances.svg</normaloff>:/icons/img/taxes-finances.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Donate</string>
+   </property>
+  </action>
+  <action name="a_show_gkeys">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/input-gaming.svg</normaloff>:/icons/img/input-gaming.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Show G-Keys</string>
+   </property>
+  </action>
+  <action name="a_show_keyboard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/input-keyboard.svg</normaloff>:/icons/img/input-keyboard.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Show keyboard</string>
+   </property>
+  </action>
+  <action name="a_save_plane">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/document-save-all.svg</normaloff>:/icons/img/document-save-all.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Save Plane</string>
+   </property>
+   <property name="toolTip">
+    <string>Save current plane</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="a_discord">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/discord.svg</normaloff>:/icons/img/discord.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Discord</string>
+   </property>
+   <property name="toolTip">
+    <string>Discord Server</string>
+   </property>
+  </action>
+  <action name="a_start">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/media-playback-start.svg</normaloff>:/icons/img/media-playback-start.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Start</string>
+   </property>
+   <property name="toolTip">
+    <string>Start client</string>
+   </property>
+  </action>
+  <action name="a_stop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/media-playback-stop.svg</normaloff>:/icons/img/media-playback-stop.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop client</string>
+   </property>
+  </action>
+  <action name="a_bios_updates">
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/network-card.svg</normaloff>:/icons/img/network-card.svg</iconset>
+   </property>
+   <property name="text">
+    <string>BIOS updates</string>
+   </property>
+   <property name="toolTip">
+    <string>Check DCS-BIOS updates</string>
+   </property>
+  </action>
+  <action name="a_icons_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Icons only</string>
+   </property>
+  </action>
+  <action name="a_text_only">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Text only</string>
+   </property>
+   <property name="toolTip">
+    <string>Text only</string>
+   </property>
+  </action>
+  <action name="a_text_beside">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Text beside</string>
+   </property>
+   <property name="toolTip">
+    <string>Text beside</string>
+   </property>
+  </action>
+  <action name="a_text_under">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Text under</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../qtgui.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>pb_close</sender>
+   <signal>clicked()</signal>
+   <receiver>QtDcs</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>533</x>
+     <y>617</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>419</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -10,8 +10,8 @@ on:
 
 jobs:
   coverage:
-    name: ubuntu-latest py3.12
-    runs-on: ubuntu-latest
+    name: windows-latest py3.12
+    runs-on: windows-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v3
@@ -19,16 +19,12 @@ jobs:
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
-      - name: "Install MS Fonts"
-        run: |
-          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
-          sudo mkdir -p /usr/share/fonts/truetype
-          sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f
-
       - name: "Test with pytest"
+        env:
+          PYSIDE_DESIGNER_PLUGINS: .
+          PYTEST_QT_API: PySide6
         run: |
-          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing -m "not dcsbios"
+          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: "Upload pytest results"
         uses: actions/upload-artifact@v3
@@ -45,10 +41,12 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_SERVICE_NAME: github
         run: |
-           coveralls
+          pip install coveralls
+          coveralls
 
       - name: "Run codacy-coverage"
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
+          pip install codacy-coverage
           python-codacy-coverage -r coverage.xml

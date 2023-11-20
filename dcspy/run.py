@@ -1,41 +1,38 @@
+import signal
+import sys
 from logging import getLogger
 from os import environ, unlink
 from pathlib import Path
 from tempfile import gettempdir
 
-import customtkinter
+from PySide6.QtWidgets import QApplication
 
-from dcspy import config
-from dcspy.tk_gui import DcspyGui
-from dcspy.utils import check_dcs_ver
+from dcspy import get_config_yaml_item
+from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '2.3.3'
+__version__ = '3.0.0-rc2'
 
 
 def run() -> None:
-    """Start DCSpy GUI."""
-    customtkinter.set_appearance_mode(config['theme_mode'])
-    customtkinter.set_default_color_theme(config['theme_color'])
-    LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
-    dcs_type, dcs_ver = check_dcs_ver(Path(str(config['dcs'])))
-    LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
-    root = customtkinter.CTk()
-    width, height = 770, 520
-    root.geometry(f'{width}x{height}')
-    root.minsize(width=width, height=height)
-    root.iconbitmap(Path(__file__).resolve().with_name('dcspy.ico'))
-    if config['theme_mode'] == 'dark':
-        root.iconbitmap(Path(__file__).resolve().with_name('dcspy_white.ico'))
-    root.title('DCSpy')
-    DcspyGui(master=root)
-    if not config['show_gui']:
-        root.withdraw()
+    """Run DCSpy Qt6 GUI."""
+    signal.signal(signal.SIGTERM, signal.SIG_DFL)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    app = QApplication(sys.argv)
+    app.setStyle('fusion')
+
     try:
+        window = DcsPyQtGui()
+        if get_config_yaml_item('show_gui', True):
+            window.show()
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
+        app.aboutToQuit.connect(window.event_set)
     except (KeyError, FileNotFoundError):
         pass
-    root.mainloop()
+    except Exception as exp:
+        LOG.exception(f'Critical error: {exp}')
+    finally:
+        sys.exit(app.exec())
 
 
 if __name__ == '__main__':

@@ -32,6 +32,7 @@ def test_all_failure_cases(function, args, result):
     assert getattr(led_sdk, function)(*args) is result
 
 
+@mark.slow
 def test_start_led_pulse():
     from concurrent.futures import ThreadPoolExecutor
     from threading import Event

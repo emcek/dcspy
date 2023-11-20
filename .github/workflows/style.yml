@@ -66,7 +66,7 @@ jobs:
 
       - name: "Check mypy"
         run: |
-          mypy dcspy
+          mypy .
 
       - name: "Upload mypy results"
         uses: actions/upload-artifact@v3

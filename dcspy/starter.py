@@ -7,23 +7,24 @@ from threading import Event
 from time import gmtime, time
 from typing import Iterator
 
-from dcspy import MULTICAST_IP, RECV_ADDR, config
+from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
-from dcspy.logitech import LogitechKeyboard
+from dcspy.logitech import KeyboardManager
+from dcspy.models import MULTICAST_IP, RECV_ADDR, FontsConfig
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
-__version__ = '2.3.3'
+__version__ = '3.0.0-rc2'
 
 
-def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
+def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
     """
     Handle main loop where all the magic is happened.
 
-    :param logi_keyboard: type of Logitech keyboard with LCD
+    :param manager: type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
-    :param sock: multi-cast UDP socket
+    :param sock: multicast UDP socket
     :param ver_string: current version to show
     :param event: stop event for main loop
     """
@@ -36,21 +37,21 @@ def _handle_connection(logi_keyboard: LogitechKeyboard, parser: ProtocolParser, 
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
             start_time = time()
-            _load_new_plane_if_detected(logi_keyboard)
-            logi_keyboard.button_handle(sock)
+            _load_new_plane_if_detected(manager)
+            manager.button_handle(sock)
         except OSError as exp:
-            _sock_err_handler(logi_keyboard, start_time, ver_string, support_banner, exp)
+            _sock_err_handler(manager, start_time, ver_string, support_banner, exp)
 
 
-def _load_new_plane_if_detected(logi_keyboard: LogitechKeyboard) -> None:
+def _load_new_plane_if_detected(manager: KeyboardManager) -> None:
     """
     Load instance when new plane detected.
 
-    :param logi_keyboard: type of Logitech keyboard with LCD
+    :param manager: type of Logitech keyboard with LCD
     """
     global LOOP_FLAG
-    if logi_keyboard.plane_detected:
-        logi_keyboard.load_new_plane()
+    if manager.plane_detected:
+        manager.load_new_plane()
         LOOP_FLAG = True
 
 
@@ -67,11 +68,11 @@ def _supporters(text: str, width: int) -> Iterator[str]:
         queue.rotate(-1)
 
 
-def _sock_err_handler(logi_keyboard: LogitechKeyboard, start_time: float, ver_string: str, support_iter: Iterator[str], exp: Exception) -> None:
+def _sock_err_handler(manager: KeyboardManager, start_time: float, ver_string: str, support_iter: Iterator[str], exp: Exception) -> None:
     """
     Show basic data when DCS is disconnected.
 
-    :param logi_keyboard: type of Logitech keyboard with LCD
+    :param manager: type of Logitech keyboard with LCD
     :param start_time: time when connection to DCS was lost
     :param ver_string: current version to show
     :param support_iter: iterator for banner supporters
@@ -82,15 +83,15 @@ def _sock_err_handler(logi_keyboard: LogitechKeyboard, start_time: float, ver_st
         LOG.debug(f'Main loop socket error: {exp}')
         LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
-    logi_keyboard.display = ['Logitech LCD OK',
-                             f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
-                             f'{next(support_iter)}',
-                             ver_string]
+    manager.display = ['Logitech LCD OK',
+                       f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
+                       f'{next(support_iter)}',
+                       ver_string]
 
 
 def _prepare_socket() -> socket.socket:
     """
-    Prepare multi-cast UDP socket for DCS-BIOS communication.
+    Prepare multicast UDP socket for DCS-BIOS communication.
 
     :return: socket object
     """
@@ -103,20 +104,21 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(lcd_type: str, event: Event) -> None:
+def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
     """
     Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
     :param event: stop event for main loop
+    :param fonts_cfg: fonts configuration for LCD
     """
     parser = ProtocolParser()
-    logi_keyboard: LogitechKeyboard = getattr(import_module('dcspy.logitech'), lcd_type)(parser)
-    LOG.info(f'Loading: {str(logi_keyboard)}')
-    LOG.debug(f'Loading: {repr(logi_keyboard)}')
+    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, fonts=fonts_cfg)
+    LOG.info(f'Loading: {str(manager)}')
+    LOG.debug(f'Loading: {repr(manager)}')
     dcs_sock = _prepare_socket()
-    dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=config['check_ver'])
-    _handle_connection(logi_keyboard=logi_keyboard, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
+    dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
+    _handle_connection(manager=manager, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     dcs_sock.close()
     LOG.info('DCSpy stopped.')
-    logi_keyboard.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(config["dcsbios"])).ver}']
+    manager.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(get_config_yaml_item("dcsbios"))).ver}']

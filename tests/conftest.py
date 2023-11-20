@@ -3,23 +3,61 @@ from unittest.mock import MagicMock, patch
 
 from pytest import fixture
 
-import dcspy
-from dcspy import aircraft
+from dcspy import aircraft, logitech, models
+from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
 
 
-def generate_fixture(plane_model, lcdtype):
+def generate_plane_fixtures(plane, lcd_type_with_fonts):
+    """
+    Generate fixtures for any plane with any lcd type.
+
+    :param plane: any plane object
+    :param lcd_type_with_fonts: lcd_type with fonts
+    """
     @fixture()
     def _fixture():
-        return plane_model(lcdtype)
+        """Fixture."""
+        return plane(lcd_type_with_fonts)
     return _fixture
 
 
-for plane in ['Aircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+def generate_keyboard_fixtures(keyboard, lcd_font_setting):
+    """
+    Generate fixtures for any keyboard and with lcd_font_setting.
+
+    :param keyboard: any keyboard object
+    :param lcd_font_setting: FontSetting object
+    """
+    @fixture()
+    def _fixture():
+        """Fixture."""
+        from dcspy.dcsbios import ProtocolParser
+        from dcspy.sdk import key_sdk, lcd_sdk
+
+        with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+                patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+            return keyboard(parser=ProtocolParser(), fonts=lcd_font_setting)
+    return _fixture
+
+
+for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
-        airplane = getattr(aircraft, plane)
-        lcd_type = getattr(dcspy, lcd)
+        airplane = getattr(aircraft, plane_model)
+        lcd_type = getattr(models, lcd)
+        if lcd == 'LcdMono':
+            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+        else:
+            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
         name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
-        globals()[name] = generate_fixture(airplane, lcd_type)
+        globals()[name] = generate_plane_fixtures(airplane, lcd_type)
+
+for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
+    key = getattr(logitech, keyboard_model)
+    if keyboard_model == 'G19':
+        lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+    else:
+        lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+    globals()[keyboard_model] = generate_keyboard_fixtures(key, lcd_font)
 
 
 def pytest_addoption(parser) -> None:
@@ -52,6 +90,16 @@ def resources():
     return Path(__file__).resolve().with_name('resources')
 
 
+@fixture()
+def test_config_yaml(resources):
+    """
+    Path to YAML tests config file.
+
+    :return: path to yaml config file
+    """
+    return resources / 'c.yml'
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
@@ -62,45 +110,85 @@ def protocol_parser():
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
+def lcd_font_mono():
+    """Returns font configuration for mono LCD."""
+    return FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+
+
+@fixture()
+def lcd_font_color(protocol_parser):
+    """Returns font configuration for color LCD."""
+    return FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+
+
+@fixture()
 def keyboard_base(protocol_parser):
     """
-    Return instance of LogitechKeyboard.
+    Return instance of KeyboardManager.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: LogitechKeyboard
+    :return: KeyboardManager
     """
-    from dcspy.logitech import LogitechKeyboard
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return LogitechKeyboard(protocol_parser)
+    from dcspy.sdk import key_sdk, lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return logitech.KeyboardManager(protocol_parser)
 
 
 @fixture()
-def keyboard_mono(protocol_parser):
+def keyboard_mono(protocol_parser, lcd_font_mono):
     """
-    Return instance of KeyboardMono.
+    Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: KeyboardMono
+    :param lcd_font_mono font configuration for LCD
+    :return: KeyboardManager
     """
-    from dcspy.logitech import KeyboardMono
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardMono(protocol_parser)
+    from dcspy.models import Gkey, LcdButton, LcdMono
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Mono(logitech.KeyboardManager):
+        def __init__(self, parser, **kwargs) -> None:
+            LcdMono.set_fonts(kwargs['fonts'])
+            super().__init__(parser, lcd_type=LcdMono)
+            self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+            self.gkey = Gkey.generate(key=3, mode=1)
+            self.vert_space = 10
+
+        def _setup_plane_callback(self) -> None:
+            print('empty callback setup')
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Mono(parser=protocol_parser, fonts=lcd_font_mono)
 
 
 @fixture()
-def keyboard_color(protocol_parser):
+def keyboard_color(protocol_parser, lcd_font_color):
     """
-    Return instance of KeyboardColor.
+    Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
-    :return: KeyboardColor
+    :param lcd_font_color font configuration for LCD
+    :return: KeyboardManager
     """
-    from dcspy.logitech import KeyboardColor
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardColor(protocol_parser)
+    from dcspy.models import Gkey, LcdButton, LcdColor
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Color(logitech.KeyboardManager):
+        def __init__(self, parser, **kwargs) -> None:
+            LcdColor.set_fonts(kwargs['fonts'])
+            super().__init__(parser, lcd_type=LcdColor)
+            self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
+            self.gkey = Gkey.generate(key=3, mode=1)
+            self.vert_space = 40
+
+        def _setup_plane_callback(self) -> None:
+            print('empty callback setup')
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Color(parser=protocol_parser, fonts=lcd_font_color)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
@@ -110,6 +198,40 @@ def sock():
     return MagicMock()
 
 
+@fixture()
+def default_config():
+    """Get default configuration dict."""
+    from os import environ
+    return {
+        'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+        'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta', 'keyboard': 'G13', 'save_lcd': False, 'show_gui': True, 'autostart': False,
+        'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
+        'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': True, 'git_bios_ref': 'master', 'toolbar_style': 0,
+        'toolbar_area': 4, 'gkeys_area': 2, 'gkeys_float': False, 'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20,
+        'current_plane': 'A-10A',
+    }
+
+
+@fixture()
+def switch_dcs_bios_path_in_config(resources, test_config_yaml):
+    """
+    Switch path to config yaml file during testing.
+
+    :param resources: path to tests/resources directory
+    :param test_config_yaml: test confi.yaml file
+    """
+    from dcspy import utils
+
+    org = utils.load_yaml(test_config_yaml)
+    dcs_bios = org['dcsbios']
+    org['dcsbios'] = str(resources / 'dcs_bios')
+    utils.save_yaml(data=org, full_path=test_config_yaml)
+    yield
+    org['dcsbios'] = dcs_bios
+    utils.save_yaml(data=org, full_path=test_config_yaml)
+
+
+# <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
 @fixture()
 def autoupdate1_cfg():
     """Mock for correct autoupdate_cfg."""
@@ -171,6 +293,7 @@ def autoupdate3_cfg():
 """
 
 
+# <=><=><=><=><=> airplane bios data <=><=><=><=><=>
 @fixture()
 def apache_pre_mode_bios_data():
     """Bios values for AH-64D Apache PRE mode."""
