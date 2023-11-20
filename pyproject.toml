@@ -56,8 +56,6 @@ dcspy = 'dcspy.run:run'
 
 [project.optional-dependencies]
 test = [
-    'codacy-coverage',
-    'coveralls',
     'flake8',
     'interrogate',
     'lxml',
