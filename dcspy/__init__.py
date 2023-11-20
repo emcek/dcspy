@@ -10,7 +10,7 @@ from dcspy.migration import migrate
 from dcspy.models import LOCAL_APPDATA
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
-__version__ = '3.0.0-rc2'
+__version__ = '3.0.0'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 _config = migrate(load_yaml(full_path=default_yaml))

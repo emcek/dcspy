@@ -8,7 +8,7 @@ from dcspy.models import DcspyConfigYaml
 from dcspy.utils import defaults_cfg
 
 LOG = getLogger(__name__)
-__version__ = '3.0.0-rc2'
+__version__ = '3.0.0'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:

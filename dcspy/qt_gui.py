@@ -35,7 +35,7 @@ from dcspy.utils import (check_bios_ver, check_dcs_bios_entry, check_dcs_ver, ch
                          run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.0.0-rc2'
+__version__ = '3.0.0'
 LOG = getLogger(__name__)
 
 
