@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v3.0.0-blue.svg)](https://pypi.org/project/dcspy/)
+    [![image](https://img.shields.io/badge/pypi-v3.0.0-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://app.codacy.com/gh/emcek/dcspy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
@@ -50,8 +50,10 @@ Why such way? Basically advanced support is for aircraft which I own and therefo
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
 * [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be installed directly from DCSpy)
-* DCS World: [2.9.1.48111](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.9.1.48111/) Open Beta
-* (optional) [Python 3.12](https://www.python.org/downloads/) but 3.8+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
+* DCS World: [2.9.1.48335](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.9.1.48335/) Open Beta
+* optional:
+  * [Python 3.12](https://www.python.org/downloads/) but 3.8+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
+  * However DCSpy 2.3.3 and earlier do not supports Python 3.12
 
 **Notes:**
 * If you upgrade DCSpy from 1.5.1 or older you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software).
