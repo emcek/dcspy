@@ -220,7 +220,7 @@ class FA18Chornet(AdvancedAircraft):
         self.bios_data.update({
             'UFC_SCRATCHPAD_STRING_1_DISPLAY': '',
             'UFC_SCRATCHPAD_STRING_2_DISPLAY': '',
-            'UFC_SCRATCHPAD_NUMBER_DISPLAY':  '',
+            'UFC_SCRATCHPAD_NUMBER_DISPLAY': '',
             'UFC_OPTION_DISPLAY_1': '',
             'UFC_OPTION_DISPLAY_2': '',
             'UFC_OPTION_DISPLAY_3': '',
