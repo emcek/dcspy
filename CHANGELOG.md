@@ -1,3 +1,6 @@
+## 3.1.0
+* Report progress of live DCS-BIOS installation gradually
+
 ## 3.0.0
 * Use PySide6 instead of Custom Tkinter framework
   * Recognize Git objects for DCS-BIOS live repository
