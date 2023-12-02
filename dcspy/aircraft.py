@@ -19,7 +19,7 @@ LOG = getLogger(__name__)
 
 class MetaAircraft(type):
     """Metaclass for all BasicAircraft."""
-    def __new__(mcs, name, bases, namespace):
+    def __new__(cls, name, bases, namespace):
         """
         Create new instance of any plane as BasicAircraft.
 
@@ -30,7 +30,7 @@ class MetaAircraft(type):
         :param bases:
         :param namespace:
         """
-        return super().__new__(mcs, name, bases, namespace)
+        return super().__new__(cls, name, bases, namespace)
 
     def __call__(cls, *args, **kwargs):
         """
@@ -156,24 +156,6 @@ class AdvancedAircraft(BasicAircraft):
         """
         super().__init__(lcd_type=lcd_type)
         self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
-
-    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
-        """
-        Prepare aircraft specific DCS-BIOS request for button pressed.
-
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-        Or any G-Key 1 to 29
-
-        :param button: LcdButton or Gkey
-        :return: ready to send DCS-BIOS request
-        """
-        LOG.debug(f'{type(self).__name__} Button: {button}')
-        if button in self.cycle_buttons:
-            self.button_actions[button] = self._get_cycle_request(button)
-        request = self.button_actions.get(button, '\n')
-        LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
-        return request
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
