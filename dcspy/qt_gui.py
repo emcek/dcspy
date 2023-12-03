@@ -314,9 +314,8 @@ class DcsPyQtGui(QMainWindow):
         if dir_exists:
             getattr(self, widget_name).setStyleSheet('')
             return True
-        else:
-            getattr(self, widget_name).setStyleSheet('color: red;')
-            return False
+        getattr(self, widget_name).setStyleSheet('color: red;')
+        return False
 
     def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
         """
@@ -332,9 +331,8 @@ class DcsPyQtGui(QMainWindow):
         if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
             getattr(self, widget_name).setStyleSheet('')
             return True
-        else:
-            getattr(self, widget_name).setStyleSheet('color: red;')
-            return False
+        getattr(self, widget_name).setStyleSheet('color: red;')
+        return False
 
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
@@ -584,9 +582,8 @@ class DcsPyQtGui(QMainWindow):
                 self.le_bios_live.setStyleSheet('')
                 self._set_completer_for_git_ref()
                 return True
-            else:
-                self.le_bios_live.setStyleSheet('color: red;')
-                return False
+            self.le_bios_live.setStyleSheet('color: red;')
+            return False
 
     def _get_bios_full_version(self, silence=True) -> str:
         """
