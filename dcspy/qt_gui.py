@@ -29,10 +29,10 @@ from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml,
                           FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data, defaults_cfg,
-                         download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
-                         get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running,
-                         run_pip_command, save_yaml)
+from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
+                         get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command,
+                         save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0'
@@ -1401,6 +1401,46 @@ class Worker(QRunnable):
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             self.signals.result.emit(result)
+        finally:
+            self.signals.finished.emit()
+
+
+class GitCloneWorker(QRunnable):
+    """Worker for git clone with reporting progress."""
+
+    def __init__(self, git_ref: str, bios_path: Path, repo: str = 'DCS-Skunkworks/dcs-bios', to_path: Path = DCS_BIOS_REPO_DIR, silence: bool = False) -> None:
+        """
+        Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+        :param git_ref: git reference
+        :param repo: valid git repository user/name
+        :param bios_path: Path to DCS-BIOS
+        :param to_path: Path to which the repository should be cloned to
+        :param silence: perform action with silence
+        """
+        super().__init__()
+        self.git_ref = git_ref
+        self.repo = repo
+        self.to_path = to_path
+        self.bios_path = bios_path
+        self.silence = silence
+        self.signals = WorkerSignals()
+
+    @Slot()
+    def run(self):
+        """Clone repository and report progress using special object CloneProgress."""
+        try:
+            sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
+                                    progress=CloneProgress(self.signals.progress, self.signals.stage))
+            LOG.debug(f'Remove: {self.bios_path} {sha}')
+            rmtree(path=self.bios_path, ignore_errors=True)
+            LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
+            copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
+        except Exception:
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit((sha, self.silence))
         finally:
             self.signals.finished.emit()
 
