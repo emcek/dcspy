@@ -11,7 +11,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -669,12 +669,16 @@ class DcsPyQtGui(QMainWindow):
             return
 
         if self.cb_bios_live.isChecked():
-            total_time = 1 if is_git_repo(dir_path=str(DCS_BIOS_REPO_DIR)) else 24
-            self.run_in_background(job=partial(self._fake_progress, total_time=total_time, done_event=self._done_event),
-                                   signal_handlers={'progress': self._progress_by_abs_value})
-            self.run_in_background(job=partial(self._check_bios_git, silence=silence),
-                                   signal_handlers={'result': self._check_bios_git_completed,
-                                                    'error': self._error_during_bios_update})
+            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
+            signal_handlers = {
+                'progress': self._progress_by_abs_value,
+                'stage': self.statusbar.showMessage,
+                'error': self._error_during_bios_update,
+                'result': self._clone_bios_completed,
+            }
+            for signal, handler in signal_handlers.items():
+                getattr(clone_worker.signals, signal).connect(handler)
+            self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
 
@@ -701,53 +705,36 @@ class DcsPyQtGui(QMainWindow):
             result = bool(reply == QMessageBox.StandardButton.Yes)
         return result
 
-    def _check_bios_git(self, silence=False) -> Tuple[str, str]:
-        """
-        Check git/live version and configuration of DCS-BIOS.
-
-        :param silence: perform action with silence
-        :return installation result as string
-        """
-        sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
-        LOG.debug(f'Remove: {self.bios_path} {sha}')
-        rmtree(path=self.bios_path, ignore_errors=True)
-        LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
-        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
-        local_bios = self._check_local_bios()
-        LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
-        if not silence:
-            install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
-            install_result = f'{install_result}\n\nUsing Git/Live version.'
-            return sha, install_result
-
-    def _error_during_bios_update(self, exc_tuple):
+    def _error_during_bios_update(self, exc_tuple) -> None:
         """
         Show message box with error details.
 
         :param exc_tuple: Exception tuple
         """
-        self._done_event.set()
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
         self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
                                   info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
-        self._done_event.clear()
 
-    def _check_bios_git_completed(self, result):
+    def _clone_bios_completed(self, result) -> None:
         """
         Show message box with installation details.
 
         :param result:
         """
-        self._done_event.set()
-        sha, install_result = result
+        sha, silence = result
+        local_bios = self._check_local_bios()
+        LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
+        install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+        install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._update_bios_ver_file()
-        self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
-        self._done_event.clear()
+        if not silence:
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
+        self.progressbar.setValue(0)
 
     def _update_bios_ver_file(self):
         """Update DCS-BIOS version file with current SHA."""
