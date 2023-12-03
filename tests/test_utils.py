@@ -361,7 +361,11 @@ def test_get_planes_list(resources):
 
 
 def test_clone_progress():
-    from dcspy.qt_gui import WorkerSignals
+    from PySide6.QtCore import QObject, Signal
+
+    class Signals(QObject):
+        progress = Signal(int)
+        stage = Signal(str)
 
     def update_progress(progress):
         assert progress == 100
@@ -369,7 +373,7 @@ def test_clone_progress():
     def update_label(stage):
         assert stage == 'Git clone: Counting'
 
-    signals = WorkerSignals()
+    signals = Signals()
     signals.progress.connect(update_progress)
     signals.stage.connect(update_label)
     clone = utils.CloneProgress(signals.progress, signals.stage)
