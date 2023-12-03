@@ -264,7 +264,8 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git',
+                      progress: git.types.CallableProgress = None) -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -274,13 +275,14 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     :param update: perform update process
     :param repo: GitHub repository
     :param repo_dir: local directory for repository
+    :param progress: progress callback
     """
     try:
         import git
     except ImportError:
         raise OSError('Git executable is not available!')
 
-    bios_repo = _checkout_repo(repo, repo_dir)
+    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
         f_info = bios_repo.remotes[0].pull()
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
@@ -300,13 +302,14 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master') -> 'git.Repo':
+def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.types.CallableProgress = None) -> 'git.Repo':
     """
     Checkout repository at master branch or clone it when not exists in system.
 
     :param repo: repository name
     :param repo_dir: local repository directory
     :param checkout_ref: git reference to checkout
+    :param progress: progress callback
     :return: Repo object to repository
     """
     import git
@@ -317,7 +320,7 @@ def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master') -> '
         bios_repo.git.checkout(checkout_ref)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir)
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)
     return bios_repo
 
 
