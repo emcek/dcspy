@@ -13,7 +13,7 @@ from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 
 import yaml
 from packaging import version
@@ -264,7 +264,8 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
+def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git',
+                      progress: git.types.CallableProgress = None) -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -274,13 +275,14 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     :param update: perform update process
     :param repo: GitHub repository
     :param repo_dir: local directory for repository
+    :param progress: progress callback
     """
     try:
         import git
     except ImportError:
         raise OSError('Git executable is not available!')
 
-    bios_repo = _checkout_repo(repo, repo_dir)
+    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
         f_info = bios_repo.remotes[0].pull()
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
@@ -300,13 +302,14 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master') -> 'git.Repo':
+def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.types.CallableProgress = None) -> 'git.Repo':
     """
     Checkout repository at master branch or clone it when not exists in system.
 
     :param repo: repository name
     :param repo_dir: local repository directory
     :param checkout_ref: git reference to checkout
+    :param progress: progress callback
     :return: Repo object to repository
     """
     import git
@@ -317,7 +320,7 @@ def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master') -> '
         bios_repo.git.checkout(checkout_ref)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir)
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)
     return bios_repo
 
 
@@ -406,6 +409,48 @@ def get_sha_for_current_git_ref(git_ref: str, repo='DCS-Skunkworks/dcs-bios', re
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
     head_commit = bios_repo.head.commit
     return head_commit.hexsha
+
+
+class CloneProgress(git.RemoteProgress):
+    """Handler providing an interface to parse progress information emitted by git."""
+    OP_CODES: ClassVar[List[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
+    OP_CODE_MAP: ClassVar[Dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
+
+    def __init__(self, progress, stage) -> None:
+        """
+        Initialize the progress handler.
+
+        :param progress: progress Qt6 signal
+        :param stage: report stage Qt6 signal
+        """
+        super().__init__()
+        self.progress_signal = progress
+        self.stage_signal = stage
+
+    def get_curr_op(self, op_code: int) -> str:
+        """
+        Get stage name from OP code.
+
+        :param op_code: OP code
+        :return: stage name
+        """
+        op_code_masked = op_code & self.OP_MASK
+        return self.OP_CODE_MAP.get(op_code_masked, '?').title()
+
+    def update(self, op_code, cur_count, max_count=None, message=''):
+        """
+        Call whenever the progress changes.
+
+        :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
+        :param cur_count: Current absolute count of items
+        :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
+        :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
+        """
+        if op_code & git.RemoteProgress.BEGIN:
+            self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
+
+        percentage = int(cur_count / max_count * 100) if max_count else 0
+        self.progress_signal.emit(percentage)
 
 
 def collect_debug_data() -> Path:

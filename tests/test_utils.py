@@ -233,7 +233,8 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
         lua_dst.write(lua_dst_data)
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
-    assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation at:\ngithub.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation'
+    assert result == ('\n\nExport.lua exists.\n\nDCS-BIOS entry added.\n\nYou verify installation '
+                      'at:\ngithub.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
 
 
 def test_check_dcs_bios_entry_ok(tmpdir):
@@ -357,3 +358,23 @@ def test_get_planes_list(resources):
         'Mi-24P',
         'Mi-8MT',
     ]
+
+
+def test_clone_progress():
+    from PySide6.QtCore import QObject, Signal
+
+    class Signals(QObject):
+        progress = Signal(int)
+        stage = Signal(str)
+
+    def update_progress(progress):
+        assert progress == 100
+
+    def update_label(stage):
+        assert stage == 'Git clone: Counting'
+
+    signals = Signals()
+    signals.progress.connect(update_progress)
+    signals.stage.connect(update_label)
+    clone = utils.CloneProgress(signals.progress, signals.stage)
+    clone.update(5, 1, 1, 'test')

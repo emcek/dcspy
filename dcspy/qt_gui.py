@@ -11,7 +11,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -29,10 +29,10 @@ from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml,
                           FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data, defaults_cfg,
-                         download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
-                         get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, is_git_repo, load_yaml, proc_is_running,
-                         run_pip_command, save_yaml)
+from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
+                         get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_pip_command,
+                         save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0'
@@ -314,9 +314,8 @@ class DcsPyQtGui(QMainWindow):
         if dir_exists:
             getattr(self, widget_name).setStyleSheet('')
             return True
-        else:
-            getattr(self, widget_name).setStyleSheet('color: red;')
-            return False
+        getattr(self, widget_name).setStyleSheet('color: red;')
+        return False
 
     def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
         """
@@ -332,9 +331,8 @@ class DcsPyQtGui(QMainWindow):
         if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
             getattr(self, widget_name).setStyleSheet('')
             return True
-        else:
-            getattr(self, widget_name).setStyleSheet('color: red;')
-            return False
+        getattr(self, widget_name).setStyleSheet('color: red;')
+        return False
 
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
@@ -584,9 +582,8 @@ class DcsPyQtGui(QMainWindow):
                 self.le_bios_live.setStyleSheet('')
                 self._set_completer_for_git_ref()
                 return True
-            else:
-                self.le_bios_live.setStyleSheet('color: red;')
-                return False
+            self.le_bios_live.setStyleSheet('color: red;')
+            return False
 
     def _get_bios_full_version(self, silence=True) -> str:
         """
@@ -669,12 +666,16 @@ class DcsPyQtGui(QMainWindow):
             return
 
         if self.cb_bios_live.isChecked():
-            total_time = 1 if is_git_repo(dir_path=str(DCS_BIOS_REPO_DIR)) else 24
-            self.run_in_background(job=partial(self._fake_progress, total_time=total_time, done_event=self._done_event),
-                                   signal_handlers={'progress': self._progress_by_abs_value})
-            self.run_in_background(job=partial(self._check_bios_git, silence=silence),
-                                   signal_handlers={'result': self._check_bios_git_completed,
-                                                    'error': self._error_during_bios_update})
+            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
+            signal_handlers = {
+                'progress': self._progress_by_abs_value,
+                'stage': self.statusbar.showMessage,
+                'error': self._error_during_bios_update,
+                'result': self._clone_bios_completed,
+            }
+            for signal, handler in signal_handlers.items():
+                getattr(clone_worker.signals, signal).connect(handler)
+            self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
 
@@ -701,53 +702,36 @@ class DcsPyQtGui(QMainWindow):
             result = bool(reply == QMessageBox.StandardButton.Yes)
         return result
 
-    def _check_bios_git(self, silence=False) -> Tuple[str, str]:
-        """
-        Check git/live version and configuration of DCS-BIOS.
-
-        :param silence: perform action with silence
-        :return installation result as string
-        """
-        sha = check_github_repo(git_ref=self.le_bios_live.text(), update=True, repo_dir=DCS_BIOS_REPO_DIR)
-        LOG.debug(f'Remove: {self.bios_path} {sha}')
-        rmtree(path=self.bios_path, ignore_errors=True)
-        LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
-        copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
-        local_bios = self._check_local_bios()
-        LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
-        if not silence:
-            install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
-            install_result = f'{install_result}\n\nUsing Git/Live version.'
-            return sha, install_result
-
-    def _error_during_bios_update(self, exc_tuple):
+    def _error_during_bios_update(self, exc_tuple) -> None:
         """
         Show message box with error details.
 
         :param exc_tuple: Exception tuple
         """
-        self._done_event.set()
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
         self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
                                   info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
-        self._done_event.clear()
 
-    def _check_bios_git_completed(self, result):
+    def _clone_bios_completed(self, result) -> None:
         """
         Show message box with installation details.
 
         :param result:
         """
-        self._done_event.set()
-        sha, install_result = result
+        sha, silence = result
+        local_bios = self._check_local_bios()
+        LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
+        install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+        install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._update_bios_ver_file()
-        self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
-        self._done_event.clear()
+        if not silence:
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
+        self.progressbar.setValue(0)
 
     def _update_bios_ver_file(self):
         """Update DCS-BIOS version file with current SHA."""
@@ -1365,12 +1349,14 @@ class WorkerSignals(QObject):
     * error - tuple with exctype, value, traceback.format_exc()
     * result - object/any type - data returned from processing
     * progress - float between 0 and 1 as indication of progress
+    * stage - string with current stage
     """
 
     finished = Signal()
     error = Signal(tuple)
     result = Signal(object)
     progress = Signal(int)
+    stage = Signal(str)
 
 
 class Worker(QRunnable):
@@ -1399,6 +1385,46 @@ class Worker(QRunnable):
             self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             self.signals.result.emit(result)
+        finally:
+            self.signals.finished.emit()
+
+
+class GitCloneWorker(QRunnable):
+    """Worker for git clone with reporting progress."""
+
+    def __init__(self, git_ref: str, bios_path: Path, repo: str = 'DCS-Skunkworks/dcs-bios', to_path: Path = DCS_BIOS_REPO_DIR, silence: bool = False) -> None:
+        """
+        Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+        :param git_ref: git reference
+        :param repo: valid git repository user/name
+        :param bios_path: Path to DCS-BIOS
+        :param to_path: Path to which the repository should be cloned to
+        :param silence: perform action with silence
+        """
+        super().__init__()
+        self.git_ref = git_ref
+        self.repo = repo
+        self.to_path = to_path
+        self.bios_path = bios_path
+        self.silence = silence
+        self.signals = WorkerSignals()
+
+    @Slot()
+    def run(self):
+        """Clone repository and report progress using special object CloneProgress."""
+        try:
+            sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
+                                    progress=CloneProgress(self.signals.progress, self.signals.stage))
+            LOG.debug(f'Remove: {self.bios_path} {sha}')
+            rmtree(path=self.bios_path, ignore_errors=True)
+            LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
+            copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
+        except Exception:
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit((sha, self.silence))
         finally:
             self.signals.finished.emit()
 
