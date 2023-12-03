@@ -13,7 +13,7 @@ from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
 
 import yaml
 from packaging import version
@@ -406,6 +406,48 @@ def get_sha_for_current_git_ref(git_ref: str, repo='DCS-Skunkworks/dcs-bios', re
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
     head_commit = bios_repo.head.commit
     return head_commit.hexsha
+
+
+class CloneProgress(git.RemoteProgress):
+    """Handler providing an interface to parse progress information emitted by git."""
+    OP_CODES: ClassVar[List[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
+    OP_CODE_MAP: ClassVar[Dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
+
+    def __init__(self, progress, stage) -> None:
+        """
+        Initialize the progress handler.
+
+        :param progress: progress Qt6 signal
+        :param stage: report stage Qt6 signal
+        """
+        super().__init__()
+        self.progress_signal = progress
+        self.stage_signal = stage
+
+    def get_curr_op(self, op_code: int) -> str:
+        """
+        Get stage name from OP code.
+
+        :param op_code: OP code
+        :return: stage name
+        """
+        op_code_masked = op_code & self.OP_MASK
+        return self.OP_CODE_MAP.get(op_code_masked, '?').title()
+
+    def update(self, op_code, cur_count, max_count=None, message=''):
+        """
+        Call whenever the progress changes.
+
+        :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
+        :param cur_count: Current absolute count of items
+        :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
+        :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
+        """
+        if op_code & git.RemoteProgress.BEGIN:
+            self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
+
+        percentage = int(cur_count / max_count * 100) if max_count else 0
+        self.progress_signal.emit(percentage)
 
 
 def collect_debug_data() -> Path:
