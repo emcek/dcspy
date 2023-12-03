@@ -1365,12 +1365,14 @@ class WorkerSignals(QObject):
     * error - tuple with exctype, value, traceback.format_exc()
     * result - object/any type - data returned from processing
     * progress - float between 0 and 1 as indication of progress
+    * stage - string with current stage
     """
 
     finished = Signal()
     error = Signal(tuple)
     result = Signal(object)
     progress = Signal(int)
+    stage = Signal(str)
 
 
 class Worker(QRunnable):
