@@ -440,7 +440,6 @@ class DcsPyQtGui(QMainWindow):
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
-            g_key = Gkey.name(row, col)
             widget.setToolTip(ctrl_key.description)
             widget.setStyleSheet('')
             self.l_category.setText(f'Category: {section}')
