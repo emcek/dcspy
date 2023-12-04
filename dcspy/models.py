@@ -441,7 +441,7 @@ class DcsBiosPlaneData(RootModel):
                 ctrl_input = Control.model_validate(data).input
                 if ctrl_input and not ctrl_input.has_set_string:
                     ctrl_key[section][ctrl] = ctrl_input
-            if not len(ctrl_key[section]):
+            if len(ctrl_key[section]) == 0:
                 del ctrl_key[section]
         return ctrl_key
 
