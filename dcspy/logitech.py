@@ -49,7 +49,7 @@ class KeyboardManager:
         self.gkey_pressed = False
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
-        self.model = KeyboardModel(name='', klass='', modes=1, gkeys=1, lcdkeys=1, lcd='mono')
+        self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
