@@ -436,6 +436,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_range.setText('')
         widget.setToolTip('')
         widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
+        key_name = self._get_key_name_from_row_col(col, row)
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
@@ -447,7 +448,7 @@ class DcsPyQtGui(QMainWindow):
             self.l_identifier.setText(f'Identifier: {text}')
             self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
-            self._checked_iface_rb_for_identifier(g_key=g_key)
+            self._checked_iface_rb_for_identifier(key_name=key_name)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
             self.input_reqs[self.current_plane][g_key] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
         elif text == '':
@@ -455,6 +456,24 @@ class DcsPyQtGui(QMainWindow):
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
+
+    def _get_key_name_from_row_col(self, col: int, row: int) -> str:
+        """
+        Get key name from row and column.
+
+        It depends of location in table:
+        * G-Key at the tom and LCD Keys at the bottom.
+        * type of Keyboard number of G-Keys and LCD Keys are different
+
+        :param row: current row
+        :param col: current column
+        :return: string name of key
+        """
+        if row <= self.keyboard.gkeys - 1:
+            key = Gkey.name(row, col)
+        else:
+            key = self.keyboard.lcdkeys[row - self.keyboard.gkeys].name
+        return key
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -494,14 +513,14 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
 
-    def _checked_iface_rb_for_identifier(self, g_key: str) -> None:
+    def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """
         Enable input interfaces for current control input identifier.
 
-        :param g_key: Gkey as string
+        :param key_name: G-Key or LCD Key as string
         """
         try:
-            widget_iface = self.input_reqs[self.current_plane][g_key].widget_iface
+            widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
