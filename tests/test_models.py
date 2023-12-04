@@ -466,6 +466,15 @@ def test_plane_input_request_from_plane_gkeys():
     }
 
 
+def test_plane_input_request_empty():
+    from dcspy.models import GuiPlaneInputRequest
+
+    pir = GuiPlaneInputRequest.make_empty()
+    assert pir.identifier == ''
+    assert pir.request == ''
+    assert pir.widget_iface == ''
+
+
 # <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>
 
 @mark.parametrize('current, max_val, step, result', [
