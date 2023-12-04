@@ -449,9 +449,10 @@ class DcsPyQtGui(QMainWindow):
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
             self._checked_iface_rb_for_identifier(key_name=key_name)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            self.input_reqs[self.current_plane][g_key] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
         elif text == '':
             widget.setStyleSheet('')
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.make_empty()
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
