@@ -662,6 +662,20 @@ class Gkey(BaseModel):
         return str(Gkey(key=row + 1, mode=col + 1))
 
 
+def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
+    """
+    Get key instance from string.
+
+    :param key_str: key name from yaml configuration
+    :return: Gkey or LcdButton instance
+    """
+    try:
+        key = Gkey.from_yaml(key_str)
+    except ValueError:
+        key = getattr(LcdButton, key_str)
+    return key
+
+
 class MsgBoxTypes(Enum):
     """Message box types."""
     INFO = 'information'
