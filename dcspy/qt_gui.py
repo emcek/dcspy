@@ -11,7 +11,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -342,34 +342,55 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
-        self.tw_gkeys.setRowCount(self.keyboard.gkeys)
-        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
+        no_lcd_keys = len(self.keyboard.lcdkeys)
+        no_g_keys = self.keyboard.gkeys
+        self.tw_gkeys.setRowCount(no_g_keys + no_lcd_keys)
+        labels_g_key = [f'G{i}' for i in range(1, no_g_keys + 1)]
+        labels_lcd_key = [lcd_key.name for lcd_key in self.keyboard.lcdkeys]
+        self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key)
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
-        plane_gkeys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
-        LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_gkeys)}')
-        self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_gkeys)
+        plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
+        LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
+        self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
 
-        for row in range(0, self.keyboard.gkeys):
+        ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
+        for row in range(0, no_g_keys + no_lcd_keys):
             for col in range(0, self.keyboard.modes):
-                completer = QCompleter([item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item])
-                completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-                completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-                completer.setFilterMode(Qt.MatchFlag.MatchContains)
-                completer.setMaxVisibleItems(self._completer_items)
-                completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+                self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
 
-                combo = QComboBox()
-                combo.setEditable(True)
-                combo.addItems(self.ctrl_list)
-                combo.setCompleter(completer)
-                combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
-                self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
-                self.tw_gkeys.setCellWidget(row, col, combo)
-                try:
-                    identifier = self.input_reqs[self.current_plane][Gkey.name(row, col)].identifier
-                except KeyError:
-                    identifier = ''
-                combo.setCurrentText(identifier)
+    def _make_combo_with_completer_at(self, row: int, col: int, ctrl_list_no_sep: List[str]) -> None:
+        """
+        Make QComboBox widget with completer with list of strings in cell in row and column.
+
+        :param row: current row
+        :param col: current column
+        :param ctrl_list_no_sep: list of control inputs without separator
+        """
+        if col == 0 or row < self.keyboard.gkeys:
+            completer = QCompleter(ctrl_list_no_sep)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
+            completer.setMaxVisibleItems(self._completer_items)
+            completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+
+            combo = QComboBox()
+            combo.setEditable(True)
+            combo.addItems(self.ctrl_list)
+            combo.setCompleter(completer)
+            combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
+            self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
+            self.tw_gkeys.setCellWidget(row, col, combo)
+            key_name = self._get_key_name_from_row_col(col, row)
+            try:
+                identifier = self.input_reqs[self.current_plane][key_name].identifier
+            except KeyError:
+                identifier = ''
+            combo.setCurrentText(identifier)
+        else:
+            combo = QComboBox()
+            combo.setDisabled(True)
+            self.tw_gkeys.setCellWidget(row, col, combo)
 
     def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
         """
