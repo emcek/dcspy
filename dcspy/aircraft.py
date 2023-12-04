@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator
+from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator, get_key_instance
 from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
@@ -66,13 +66,13 @@ class BasicAircraft:
         plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
         for gkey_str, request in plane_yaml.items():
             if request:
-                gkey = Gkey.from_yaml(gkey_str)
+                key = get_key_instance(gkey_str)
                 if 'CYCLE' in request:
                     cycle_button = CycleButton.from_request(request)
-                    cycle_buttons[gkey] = cycle_button
+                    cycle_buttons[key] = cycle_button
                     bios_data[cycle_button.ctrl_name] = ''  # int or str maybe set as None
                 else:
-                    button_actions[gkey] = f'{request}\n'
+                    button_actions[key] = f'{request}\n'
 
         self.bios_data.update(bios_data)
         self.cycle_buttons.update(cycle_buttons)  # type: ignore
