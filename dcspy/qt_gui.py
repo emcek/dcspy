@@ -521,15 +521,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
-        plane_cfg_yaml = {}
-        for row in range(0, self.tw_gkeys.rowCount()):
-            for col in range(0, self.tw_gkeys.columnCount()):
-                g_key = Gkey.name(row, col)
-                try:
-                    request = self.input_reqs[self.current_plane][g_key].request
-                except (KeyError, AttributeError):
-                    request = ''
-                plane_cfg_yaml[g_key] = request
+        plane_cfg_yaml = {g_key: value.request for g_key, value in self.input_reqs[self.current_plane].items() if value.request}
         LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
         save_yaml(data=plane_cfg_yaml, full_path=default_yaml.parent / f'{self.current_plane}.yaml')
 
