@@ -350,6 +350,26 @@ def test_gkey_name():
     assert Gkey.name(2, 0) == 'G3_M1'
 
 
+@mark.parametrize('key_name, klass', [
+    ('G12_M3', 'Gkey'),
+    ('G1_M2', 'Gkey'),
+    ('TWO', 'LcdButton'),
+    ('MENU', 'LcdButton'),
+])
+def test_get_key_instance(key_name, klass):
+    from dcspy.models import get_key_instance
+
+    assert get_key_instance(key_name).__class__.__name__ == klass
+
+
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '',])
+def test_get_key_instance_error(key_name):
+    from dcspy.models import get_key_instance
+
+    with raises(AttributeError):
+        get_key_instance(key_name)
+
+
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
 
 def test_cycle_button_default_iter():
