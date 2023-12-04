@@ -518,6 +518,11 @@ class GuiPlaneInputRequest(BaseModel):
             input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
         return input_reqs
 
+    @classmethod
+    def make_empty(cls) -> 'GuiPlaneInputRequest':
+        """Make empty GuiPlaneInputRequest."""
+        return cls(identifier='', request='', widget_iface='')
+
 
 class LcdButton(Enum):
     """LCD Buttons."""
