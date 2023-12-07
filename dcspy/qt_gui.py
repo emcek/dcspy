@@ -234,6 +234,8 @@ class DcsPyQtGui(QMainWindow):
         * Add correct numbers of rows and columns
         * enable DED font checkbox
         * updates font sliders (range and values)
+        * update dock with image of keyboard
+
         :param keyboard: name
         :param state: of radio button
         """
