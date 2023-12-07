@@ -473,12 +473,13 @@ class GuiPlaneInputRequest(BaseModel):
     widget_iface: str
 
     @classmethod
-    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str) -> 'GuiPlaneInputRequest':
+    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str, custom_value: str = '') -> 'GuiPlaneInputRequest':
         """
         Generate GuiPlaneInputRequest from ControlKeyData and radio button widget.
 
         :param ctrl_key: ControlKeyData
         :param rb_iface: widget interface
+        :param custom_value: custom request
         :return: GuiPlaneInputRequest
         """
         rb_iface_request = {
@@ -486,6 +487,7 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
             'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
+            'rb_custom': f'{ctrl_key.name} CUSTOM {custom_value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
@@ -505,6 +507,7 @@ class GuiPlaneInputRequest(BaseModel):
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
             'CYCLE': 'rb_set_state',
+            'CUSTOM': 'rb_custom',
             '+': 'rb_variable_step_plus',
             '-': 'rb_variable_step_minus',
         }
