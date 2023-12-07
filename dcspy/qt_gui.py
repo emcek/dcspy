@@ -242,7 +242,7 @@ class DcsPyQtGui(QMainWindow):
         if state:
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.keyboard.gkeys):
+            for gkey_row in range(self.keyboard.gkeys + len(self.keyboard.lcdkeys)):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
             LOG.debug(f'Select: {self.keyboard}')
