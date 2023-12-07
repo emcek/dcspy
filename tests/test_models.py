@@ -443,20 +443,29 @@ def test_get_sha_of_system_data():
 
 # <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
 
-@mark.parametrize('control, rb_iface, req', [
-    (AAP_PAGE, 'rb_fixed_step_inc', 'AAP_PAGE INC'),
-    (AAP_PAGE, 'rb_fixed_step_dec', 'AAP_PAGE DEC'),
-    (AAP_PAGE, 'rb_set_state', 'AAP_PAGE CYCLE 1 3'),
-    (AAP_CDUPWR, 'rb_action', 'AAP_CDUPWR TOGGLE'),
-    (ARC210_CHN_KNB, 'rb_variable_step_plus', 'ARC210_CHN_KNB +3200'),
-    (ARC210_CHN_KNB, 'rb_variable_step_minus', 'ARC210_CHN_KNB -3200'),
-    (ADI_PITCH_TRIM, 'rb_set_state', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
-], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 1 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +', 'ARC210_CHN_KNB -', 'ADI_PITCH_TRIM 3200 65535'])
-def test_plane_input_request_from_control_key(control, rb_iface, req):
+@mark.parametrize('control, rb_iface, custom_value, req', [
+    (AAP_PAGE, 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
+    (AAP_PAGE, 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
+    (AAP_PAGE, 'rb_set_state', '', 'AAP_PAGE CYCLE 1 3'),
+    (AAP_CDUPWR, 'rb_action', '', 'AAP_CDUPWR TOGGLE'),
+    (ARC210_CHN_KNB, 'rb_variable_step_plus', '', 'ARC210_CHN_KNB +3200'),
+    (ARC210_CHN_KNB, 'rb_variable_step_minus', '', 'ARC210_CHN_KNB -3200'),
+    (ADI_PITCH_TRIM, 'rb_set_state', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
+    (AAP_CDUPWR, 'rb_custom', 'AAP_CDUPWR 1|AAP_CDUPWR 0', 'AAP_CDUPWR CUSTOM AAP_CDUPWR 1|AAP_CDUPWR 0'),
+], ids=[
+    'AAP_PAGE INC',
+    'AAP_PAGE DEC',
+    'AAP_PAGE CYCLE 1 3',
+    'AAP_CDUPWR TOGGLE',
+    'ARC210_CHN_KNB +',
+    'ARC210_CHN_KNB -',
+    'ADI_PITCH_TRIM 3200 65535',
+    'AAP_CDUPWR CUSTOM 1 0'])
+def test_plane_input_request_from_control_key(control, rb_iface, custom_value, req):
     from dcspy.models import Control, GuiPlaneInputRequest
 
     ctrl = Control.model_validate(control)
-    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface)
+    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface, custom_value=custom_value)
     assert gui_input_req.identifier == ctrl.identifier
     assert gui_input_req.request == req
 
