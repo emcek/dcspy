@@ -832,14 +832,14 @@
   <widget class="QDockWidget" name="dw_gkeys">
    <property name="minimumSize">
     <size>
-     <width>169</width>
-     <height>360</height>
+     <width>265</width>
+     <height>420</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>524287</width>
-     <height>360</height>
+     <height>420</height>
     </size>
    </property>
    <property name="windowIcon">
@@ -975,6 +975,27 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           <property name="icon">
            <iconset resource="../qtgui.qrc">
             <normaloff>:/icons/img/list-remove.svg</normaloff>:/icons/img/list-remove.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_custom">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>RadioButton</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/practice-setup.svg</normaloff>:/icons/img/practice-setup.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="le_custom">
+          <property name="enabled">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -1313,12 +1334,28 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>533</x>
-     <y>617</y>
+     <x>594</x>
+     <y>647</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
      <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_custom</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>le_custom</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>658</x>
+     <y>287</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>677</x>
+     <y>312</y>
     </hint>
    </hints>
   </connection>
