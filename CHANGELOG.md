@@ -1,6 +1,8 @@
 ## 3.1.0
 * LCD buttons can be assigned to any control/instrument like G-Keys
 * Report progress of live DCS-BIOS cloning repository gradually
+* Internal:
+  * Update to Pyside6 to 6.6.1
 
 ## 3.0.0
 * Use PySide6 instead of Custom Tkinter framework
