@@ -371,7 +371,7 @@ class DcsPyQtGui(QMainWindow):
         :param col: current column
         :param ctrl_list_no_sep: list of control inputs without separator
         """
-        key_name = self._get_key_name_from_row_col(col, row)
+        key_name = self._get_key_name_from_row_col(row, col)
         if col == 0 or row < self.keyboard.gkeys:
             completer = QCompleter(ctrl_list_no_sep)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -462,7 +462,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_identifier.setText('')
         self.l_range.setText('')
         widget.setToolTip('')
-        key_name = self._get_key_name_from_row_col(col, row)
+        key_name = self._get_key_name_from_row_col(row, col)
         widget.setStyleSheet(self._get_style_for_combobox(key_name, 'red'))
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
@@ -485,7 +485,7 @@ class DcsPyQtGui(QMainWindow):
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
 
-    def _get_key_name_from_row_col(self, col: int, row: int) -> str:
+    def _get_key_name_from_row_col(self, row: int, col: int) -> str:
         """
         Get key name from row and column.
 
@@ -494,7 +494,7 @@ class DcsPyQtGui(QMainWindow):
         * type of Keyboard number of G-Keys and LCD Keys are different
 
         :param row: current row
-        :param col: current column
+        :param row: current column
         :return: string name of key
         """
         if row <= self.keyboard.gkeys - 1:
@@ -602,7 +602,7 @@ class DcsPyQtGui(QMainWindow):
         if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
             section = self._find_section_name(ctrl_name=current_text)
             ctrl_key = self.ctrl_input[section][current_text]
-            key_name = self._get_key_name_from_row_col(col, row)
+            key_name = self._get_key_name_from_row_col(row, col)
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=button.objectName())
 
     def _le_custom_text_edited(self) -> None:
@@ -610,7 +610,7 @@ class DcsPyQtGui(QMainWindow):
         input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
         current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
         section = self._find_section_name(ctrl_name=current_cell_text)
-        key_name = self._get_key_name_from_row_col(self.current_col, self.current_row)
+        key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
         ctrl_key = self.ctrl_input[section][current_cell_text]
         self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                               custom_value=self.le_custom.text())
