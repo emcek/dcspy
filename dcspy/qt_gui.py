@@ -157,9 +157,9 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
         self.bg_rb_input_iface.addButton(self.rb_custom)
-        self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed)
-        self.le_custom.editingFinished.connect(self._le_custom_text_edited)
-        self.le_custom.returnPressed.connect(self._le_custom_text_edited)
+        self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed_or_custom_text_changed)
+        self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
+        self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
@@ -590,24 +590,14 @@ class DcsPyQtGui(QMainWindow):
         cell_combo = self.tw_gkeys.cellWidget(currentRow, currentColumn)
         self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=currentRow, col=currentColumn)
 
-    def _input_iface_changed(self) -> None:
+    def _input_iface_changed_or_custom_text_changed(self) -> None:
         """
-        Triggered when new input interface is selected.
+        Triggered for radio button group and custom text.
 
-        :param button: currently checked input interface radio button
+        When:
+        * new input interface is selected
+        * text is changed and user press enter or widget lose focus
         """
-        current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
-        if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
-            section = self._find_section_name(ctrl_name=current_cell_text)
-            key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
-            ctrl_key = self.ctrl_input[section][current_cell_text]
-            input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            custom_value = self.le_custom.text() if input_iface_name == 'rb_custom' else ''
-            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
-                                                                                                  custom_value=custom_value)
-
-    def _le_custom_text_edited(self) -> None:
-        """Triggered when text is changed and user press enter or widget lose focus."""
         current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
             section = self._find_section_name(ctrl_name=current_cell_text)
