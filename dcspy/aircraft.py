@@ -64,9 +64,9 @@ class BasicAircraft:
         """Load plane's YAML file with configuration and apply."""
         bios_data, cycle_buttons, button_actions = {}, {}, {}
         plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
-        for gkey_str, request in plane_yaml.items():
+        for key_str, request in plane_yaml.items():
             if request:
-                key = get_key_instance(gkey_str)
+                key = get_key_instance(key_str)
                 if 'CYCLE' in request:
                     cycle_button = CycleButton.from_request(request)
                     cycle_buttons[key] = cycle_button
