@@ -156,7 +156,10 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.addButton(self.rb_fixed_step_dec)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
+        self.bg_rb_input_iface.addButton(self.rb_custom)
         self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed)
+        self.le_custom.editingFinished.connect(self._le_custom_text_edited)
+        self.le_custom.returnPressed.connect(self._le_custom_text_edited)
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
@@ -368,6 +371,7 @@ class DcsPyQtGui(QMainWindow):
         :param col: current column
         :param ctrl_list_no_sep: list of control inputs without separator
         """
+        key_name = self._get_key_name_from_row_col(col, row)
         if col == 0 or row < self.keyboard.gkeys:
             completer = QCompleter(ctrl_list_no_sep)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -380,19 +384,19 @@ class DcsPyQtGui(QMainWindow):
             combo.setEditable(True)
             combo.addItems(self.ctrl_list)
             combo.setCompleter(completer)
-            combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
             self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
             self.tw_gkeys.setCellWidget(row, col, combo)
-            key_name = self._get_key_name_from_row_col(col, row)
             try:
                 identifier = self.input_reqs[self.current_plane][key_name].identifier
             except KeyError:
                 identifier = ''
             combo.setCurrentText(identifier)
+            combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
         else:
             combo = QComboBox()
             combo.setDisabled(True)
             self.tw_gkeys.setCellWidget(row, col, combo)
+        combo.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
 
     def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
         """
@@ -458,13 +462,13 @@ class DcsPyQtGui(QMainWindow):
         self.l_identifier.setText('')
         self.l_range.setText('')
         widget.setToolTip('')
-        widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
         key_name = self._get_key_name_from_row_col(col, row)
+        widget.setStyleSheet(self._get_style_for_combobox(key_name, 'red'))
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
             widget.setToolTip(ctrl_key.description)
-            widget.setStyleSheet('')
+            widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
             self.l_category.setText(f'Category: {section}')
             self.l_description.setText(f'Description: {ctrl_key.description}')
             self.l_identifier.setText(f'Identifier: {text}')
@@ -472,10 +476,11 @@ class DcsPyQtGui(QMainWindow):
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
             self._checked_iface_rb_for_identifier(key_name=key_name)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
+                                                                                                  custom_value=self.le_custom.text())
         elif text == '':
-            widget.setStyleSheet('')
-            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.make_empty()
+            widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.make_empty()  # maybe del
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
@@ -535,6 +540,7 @@ class DcsPyQtGui(QMainWindow):
         if ctrl_key.has_action:
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
+        self.rb_custom.setEnabled(True)
 
     def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """
@@ -544,6 +550,9 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
+            self.le_custom.setText('')
+            if widget_iface == 'rb_custom':
+                self.le_custom.setText(' '.join(self.input_reqs[self.current_plane][key_name].request.split(' ')[2:]))
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
@@ -593,7 +602,18 @@ class DcsPyQtGui(QMainWindow):
         if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
             section = self._find_section_name(ctrl_name=current_text)
             ctrl_key = self.ctrl_input[section][current_text]
-            self.input_reqs[self.current_plane][Gkey.name(row, col)] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=button.objectName())
+            key_name = self._get_key_name_from_row_col(col, row)
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=button.objectName())
+
+    def _le_custom_text_edited(self) -> None:
+        """Triggered when text is changed and user press enter or widget lose focus."""
+        input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
+        current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
+        section = self._find_section_name(ctrl_name=current_cell_text)
+        key_name = self._get_key_name_from_row_col(self.current_col, self.current_row)
+        ctrl_key = self.ctrl_input[section][current_cell_text]
+        self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
+                                                                                              custom_value=self.le_custom.text())
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
@@ -1168,6 +1188,20 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, widget_name).setText(result_path)
         return result_path
 
+    @staticmethod
+    def _get_style_for_combobox(key_name: str, fg: str) -> str:
+        """
+        Get style for QComboBox with foreground color.
+
+        :param key_name: G-Key or LCD Key as string
+        :param fg: color as string
+        :return: style sheet string
+        """
+        bg = 'lightblue'
+        if '_' in key_name:
+            bg = 'lightgreen'
+        return f'QComboBox{{color: {fg};background-color: {bg};}} QComboBox QAbstractItemView {{background-color: {bg};}}'
+
     def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '') -> None:
         """
         Show any QMessageBox delivered with Qt.
@@ -1323,6 +1357,7 @@ class DcsPyQtGui(QMainWindow):
         self.le_biosdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_biosdir')
         self.le_font_name: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_font_name')
         self.le_bios_live: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_bios_live')
+        self.le_custom: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_custom')
 
         self.rb_g19: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g19')
         self.rb_g13: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g13')
@@ -1335,6 +1370,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
         self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
         self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
+        self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
 
         self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
         self.hs_medium_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_medium_font')
