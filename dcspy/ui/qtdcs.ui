@@ -984,7 +984,7 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>RadioButton</string>
+           <string>Custom</string>
           </property>
           <property name="icon">
            <iconset resource="../qtgui.qrc">
