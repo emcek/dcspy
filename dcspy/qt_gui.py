@@ -596,13 +596,11 @@ class DcsPyQtGui(QMainWindow):
 
         :param button: currently checked input interface radio button
         """
-        row = self.current_row
-        col = self.current_col
-        current_text = self.tw_gkeys.cellWidget(row, col).currentText()
-        if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
-            section = self._find_section_name(ctrl_name=current_text)
-            ctrl_key = self.ctrl_input[section][current_text]
-            key_name = self._get_key_name_from_row_col(row, col)
+        current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
+        if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
+            section = self._find_section_name(ctrl_name=current_cell_text)
+            key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
+            ctrl_key = self.ctrl_input[section][current_cell_text]
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=button.objectName())
 
     def _le_custom_text_edited(self) -> None:
