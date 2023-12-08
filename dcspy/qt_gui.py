@@ -552,7 +552,7 @@ class DcsPyQtGui(QMainWindow):
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             self.le_custom.setText('')
             if widget_iface == 'rb_custom':
-                self.le_custom.setText(' '.join(self.input_reqs[self.current_plane][key_name].request.split(' ')[2:]))
+                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1])
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
