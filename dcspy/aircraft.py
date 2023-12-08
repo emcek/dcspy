@@ -70,7 +70,7 @@ class BasicAircraft:
                 if 'CYCLE' in request:
                     cycle_button = CycleButton.from_request(request)
                     cycle_buttons[key] = cycle_button
-                    bios_data[cycle_button.ctrl_name] = ''  # int or str maybe set as None
+                    bios_data[cycle_button.ctrl_name] = int()
                 elif 'CUSTOM' in request:
                     request = request.split('CUSTOM ')[1]
                     request = request.replace('|', '|\n')
