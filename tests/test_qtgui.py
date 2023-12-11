@@ -15,8 +15,8 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
     from PySide6.QtCore import Qt
     from PySide6.QtQuick import QQuickWindow, QSGRendererInterface
 
-    from dcspy.models import ControlKeyData
     from dcspy import qt_gui
+    from dcspy.models import ControlKeyData
 
     QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     QtCore.QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
