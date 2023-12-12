@@ -15,8 +15,8 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
     from PySide6.QtCore import Qt
     from PySide6.QtQuick import QQuickWindow, QSGRendererInterface
 
-    from dcspy.models import ControlKeyData
     from dcspy import qt_gui
+    from dcspy.models import ControlKeyData
 
     QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
     QtCore.QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
@@ -54,18 +54,6 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
             qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
             sleep(0.7)
             os.remove(resources / 'A-10C_2.yaml')
-            assert dcspy_gui.input_reqs['A-10C']['G1_M1'].request == 'AAP_CDUPWR TOGGLE'
-            assert dcspy_gui.input_reqs['A-10C']['G1_M2'].request == 'ADI_PITCH_TRIM CYCLE 3200 65535'
-            assert dcspy_gui.input_reqs['A-10C']['G1_M3'].request == 'AHCP_ALT_SCE INC'
-            assert dcspy_gui.input_reqs['A-10C']['G2_M1'].request == 'AAP_CDUPWR INC'
-            assert dcspy_gui.input_reqs['A-10C']['G2_M2'].request == 'ADI_PITCH_TRIM +3200'
-            assert dcspy_gui.input_reqs['A-10C']['G2_M3'].request == 'AHCP_ALT_SCE DEC'
-            assert dcspy_gui.input_reqs['A-10C']['G3_M1'].request == 'AAP_CDUPWR DEC'
-            assert dcspy_gui.input_reqs['A-10C']['G3_M2'].request == 'ADI_PITCH_TRIM -3200'
-            assert dcspy_gui.input_reqs['A-10C']['G3_M3'].request == 'AHCP_ALT_SCE CYCLE 1 2'
-            assert dcspy_gui.input_reqs['A-10C']['G4_M1'].request == 'AAP_CDUPWR CYCLE 1 1'
-            assert dcspy_gui.input_reqs['A-10C']['G5_M1'].request == 'AAP_STEERPT INC'
-            assert dcspy_gui.input_reqs['A-10C']['G6_M1'].request == 'ADI_PITCH_TRIM +3200'
             assert dcspy_gui.input_reqs['A-10C_2']['G1_M1'].request == 'ADI_PITCH_TRIM CYCLE 3200 65535'
             assert dcspy_gui.input_reqs['A-10C_2']['G1_M2'].request == 'ARC210_CHN_KNB +3200'
             assert dcspy_gui.input_reqs['A-10C_2']['G2_M1'].request == 'AAP_STEERPT DEC'
@@ -79,3 +67,106 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
             assert dcspy_gui.ctrl_input['UFC']['UFC_1'].input_len == 3
             assert len(dcspy_gui.ctrl_list) == 534
             assert len([ctrl for ctrl in dcspy_gui.ctrl_list if '--' in ctrl]) == 47
+
+
+@mark.slow
+@mark.qt6
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+def test_switch_between_cells(qtbot, test_config_yaml, switch_dcs_bios_path_in_config):
+    from PySide6 import QtCore
+    from PySide6.QtCore import Qt
+    from PySide6.QtQuick import QQuickWindow, QSGRendererInterface
+
+    from dcspy import qt_gui
+
+    QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
+    QtCore.QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+
+    expected = {
+        (0, 0): ('AAP_CDUPWR', 'rb_action'),
+        (0, 1): ('ADI_PITCH_TRIM', 'rb_set_state'),
+        (0, 2): ('AHCP_ALT_SCE', 'rb_fixed_step_inc'),
+        (1, 0): ('AAP_CDUPWR', 'rb_fixed_step_inc'),
+        (1, 1): ('ADI_PITCH_TRIM', 'rb_variable_step_plus'),
+        (1, 2): ('AHCP_ALT_SCE', 'rb_fixed_step_dec'),
+        (2, 0): ('AAP_CDUPWR', 'rb_fixed_step_dec'),
+        (2, 1): ('ADI_PITCH_TRIM', 'rb_variable_step_minus'),
+        (2, 2): ('AHCP_ALT_SCE', 'rb_set_state'),
+        (3, 0): ('AAP_CDUPWR', 'rb_set_state'),
+        (3, 1): ('ALT_SET_PRESSURE', 'rb_variable_step_plus'),
+        (3, 2): ('ALT_SET_PRESSURE', 'rb_variable_step_minus'),
+        (4, 0): ('AAP_STEERPT', 'rb_fixed_step_inc'),
+        (4, 1): ('ACCEL_PTS', 'rb_fixed_step_inc'),
+        (4, 2): ('ACCEL_PTS', 'rb_fixed_step_dec'),
+        (5, 0): ('ADI_PITCH_TRIM', 'rb_variable_step_plus'),
+        (5, 1): ('ARC210_GPS', 'rb_action'),
+        (5, 2): ('ARC210_GPS', 'rb_set_state'),
+    }
+
+    with patch('dcspy.qt_gui.default_yaml', test_config_yaml):
+        dcspy_gui = qt_gui.DcsPyQtGui()
+        dcspy_gui.show()
+        qtbot.addWidget(dcspy_gui)
+        assert dcspy_gui.current_plane == 'A-10C'
+
+        for row in range(6):
+            for col in range(3):
+                qtbot.mouseClick(dcspy_gui.tw_gkeys.cellWidget(row, col), Qt.LeftButton)
+                assert dcspy_gui.tw_gkeys.cellWidget(row, col).currentText() == expected[(row, col)][0]
+                assert dcspy_gui.bg_rb_input_iface.checkedButton().objectName() == expected[(row, col)][1]
+                assert dcspy_gui.input_reqs['A-10C'][f'G{row+1}_M{col+1}'].identifier == expected[(row, col)][0]
+                assert dcspy_gui.input_reqs['A-10C'][f'G{row+1}_M{col+1}'].widget_iface == expected[(row, col)][1]
+
+        assert dcspy_gui.input_reqs['A-10C']['G1_M1'].request == 'AAP_CDUPWR TOGGLE'
+        assert dcspy_gui.input_reqs['A-10C']['G1_M2'].request == 'ADI_PITCH_TRIM CYCLE 3200 65535'
+        assert dcspy_gui.input_reqs['A-10C']['G1_M3'].request == 'AHCP_ALT_SCE INC'
+        assert dcspy_gui.input_reqs['A-10C']['G2_M1'].request == 'AAP_CDUPWR INC'
+        assert dcspy_gui.input_reqs['A-10C']['G2_M2'].request == 'ADI_PITCH_TRIM +3200'
+        assert dcspy_gui.input_reqs['A-10C']['G2_M3'].request == 'AHCP_ALT_SCE DEC'
+        assert dcspy_gui.input_reqs['A-10C']['G3_M1'].request == 'AAP_CDUPWR DEC'
+        assert dcspy_gui.input_reqs['A-10C']['G3_M2'].request == 'ADI_PITCH_TRIM -3200'
+        assert dcspy_gui.input_reqs['A-10C']['G3_M3'].request == 'AHCP_ALT_SCE CYCLE 1 2'
+        assert dcspy_gui.input_reqs['A-10C']['G4_M1'].request == 'AAP_CDUPWR CYCLE 1 1'
+        assert dcspy_gui.input_reqs['A-10C']['G4_M2'].request == 'ALT_SET_PRESSURE +3200'
+        assert dcspy_gui.input_reqs['A-10C']['G4_M3'].request == 'ALT_SET_PRESSURE -3200'
+        assert dcspy_gui.input_reqs['A-10C']['G5_M1'].request == 'AAP_STEERPT INC'
+        assert dcspy_gui.input_reqs['A-10C']['G5_M2'].request == 'ACCEL_PTS INC'
+        assert dcspy_gui.input_reqs['A-10C']['G5_M3'].request == 'ACCEL_PTS DEC'
+        assert dcspy_gui.input_reqs['A-10C']['G6_M1'].request == 'ADI_PITCH_TRIM +3200'
+        assert dcspy_gui.input_reqs['A-10C']['G6_M2'].request == 'ARC210_GPS TOGGLE'
+        assert dcspy_gui.input_reqs['A-10C']['G6_M3'].request == 'ARC210_GPS CYCLE 1 1'
+
+        qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
+
+
+@mark.slow
+@mark.qt6
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+@mark.skip
+def test_cb_bios_live(qtbot, test_config_yaml, resources, tmpdir):
+    from time import sleep
+
+    from PySide6 import QtCore
+    from PySide6.QtCore import Qt
+    from PySide6.QtQuick import QQuickWindow, QSGRendererInterface
+
+    from dcspy import qt_gui
+
+    QQuickWindow.setGraphicsApi(QSGRendererInterface.OpenGLRhi)
+    QtCore.QCoreApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
+
+    with patch('dcspy.qt_gui.default_yaml', test_config_yaml):
+        dcspy_gui = qt_gui.DcsPyQtGui()
+        dcspy_gui.show()
+        qtbot.addWidget(dcspy_gui)
+        dcspy_gui.le_biosdir.setText(str(tmpdir))
+        qtbot.mouseClick(dcspy_gui.pb_bios_check, Qt.LeftButton)
+        for i in range(1, 101):
+            if 'master' not in dcspy_gui.statusbar.currentMessage():
+                print(dcspy_gui.statusbar.currentMessage())
+                sleep(1)
+                print(i)
+            else:
+                break
+        assert 'master' in dcspy_gui.statusbar.currentMessage()
+        qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
