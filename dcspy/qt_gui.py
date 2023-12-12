@@ -1,3 +1,4 @@
+import os
 import sys
 import traceback
 from functools import partial
@@ -37,6 +38,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.0.0'
 LOG = getLogger(__name__)
+NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
 
 
 class DcsPyQtGui(QMainWindow):
@@ -817,6 +819,7 @@ class DcsPyQtGui(QMainWindow):
                       f'New version {rel_info.ver} available.\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
+
         reply = QMessageBox.question(self, 'Update DCS-BIOS', msg_txt, defaultButton=QMessageBox.StandardButton.Yes)
         if reply == QMessageBox.StandardButton.Yes:
             self._update_release_bios(rel_info=rel_info)
@@ -1142,11 +1145,12 @@ class DcsPyQtGui(QMainWindow):
         :param title: Title of modal window
         :param message: text of message, default is empty
         """
-        message_box = getattr(QMessageBox, kind_of.value)
-        if kind_of == MsgBoxTypes.ABOUT_QT:
-            message_box(self, title)
-        else:
-            message_box(self, title, message)
+        if not NO_MSG_BOX:
+            message_box = getattr(QMessageBox, kind_of.value)
+            if kind_of == MsgBoxTypes.ABOUT_QT:
+                message_box(self, title)
+            else:
+                message_box(self, title, message)
 
     def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: Optional[str] = None,
                              buttons: Optional[QMessageBox.StandardButton] = None) -> int:
@@ -1160,15 +1164,16 @@ class DcsPyQtGui(QMainWindow):
         :param buttons: tuple of buttons
         :return: code of pushed button as integer code
         """
-        msg = QMessageBox(text=text, parent=self)
-        msg.setIcon(kind_of)
-        msg.setWindowTitle(title)
-        msg.setInformativeText(info_txt)
-        if detail_txt:
-            msg.setDetailedText(detail_txt)
-        if buttons:
-            msg.setStandardButtons(buttons)
-        return msg.exec()
+        if not NO_MSG_BOX:
+            msg = QMessageBox(text=text, parent=self)
+            msg.setIcon(kind_of)
+            msg.setWindowTitle(title)
+            msg.setInformativeText(info_txt)
+            if detail_txt:
+                msg.setDetailedText(detail_txt)
+            if buttons:
+                msg.setStandardButtons(buttons)
+            return msg.exec()
 
     def event_set(self) -> None:
         """Set event to close running thread."""
