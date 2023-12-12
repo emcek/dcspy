@@ -2,6 +2,7 @@
 * Report progress of live DCS-BIOS cloning repository gradually
 * Internal:
   * Update to Pyside6 to 6.6.1
+  * Add more unit tests for QT GUI module
 
 ## 3.0.0
 * Use PySide6 instead of Custom Tkinter framework
