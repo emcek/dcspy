@@ -2,6 +2,7 @@
 * Report progress of live DCS-BIOS cloning repository gradually
 * Internal:
   * Update to Pyside6 to 6.6.1
+  * Add caching when paring DCS-BIOS yaml files for planes
 
 ## 3.0.0
 * Use PySide6 instead of Custom Tkinter framework
