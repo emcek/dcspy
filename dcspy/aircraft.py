@@ -305,16 +305,6 @@ class F16C50(AdvancedAircraft):
             'IFF_M4_CODE_SW': int(),
             'IFF_M4_REPLY_SW': int(),
         })
-        self.cycle_buttons.update({
-            LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
-            LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
-            LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
-            LcdButton.FOUR: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
-            LcdButton.LEFT: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
-            LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
-            LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
-            LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
-        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
