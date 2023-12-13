@@ -7,6 +7,27 @@ from dcspy import aircraft, logitech, models
 from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
 
 
+
+@fixture()
+def resources():
+    """
+    Path to tests/resources directory.
+
+    :return: path to tests/resources directory
+    """
+    return Path(__file__).resolve().with_name('resources')
+
+
+@fixture()
+def test_config_yaml(resources):
+    """
+    Path to YAML tests config file.
+
+    :return: path to yaml config file
+    """
+    return resources / 'c.yml'
+
+
 def generate_plane_fixtures(plane, lcd_type_with_fonts):
     """
     Generate fixtures for any plane with any lcd type.
@@ -43,7 +64,7 @@ def generate_keyboard_fixtures(keyboard, lcd_font_setting):
 for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
         print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', Path(__file__).resolve().parent / 'dcspy' / 'config.yaml')
-        with patch.object(aircraft, 'default_yaml', return_value=Path(__file__).resolve().parent / 'dcspy' / 'config.yaml'):
+        with patch('dcspy.aircraft.default_yaml', Path(__file__).resolve().parent / 'dcspy' / 'config.yaml'):
             airplane = getattr(aircraft, plane_model)
             lcd_type = getattr(models, lcd)
             if lcd == 'LcdMono':
@@ -80,26 +101,6 @@ def img_precision(pytestconfig):
     :return: value from command line
     """
     return pytestconfig.getoption('img_precision')
-
-
-@fixture()
-def resources():
-    """
-    Path to tests/resources directory.
-
-    :return: path to tests/resources directory
-    """
-    return Path(__file__).resolve().with_name('resources')
-
-
-@fixture()
-def test_config_yaml(resources):
-    """
-    Path to YAML tests config file.
-
-    :return: path to yaml config file
-    """
-    return resources / 'c.yml'
 
 
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
