@@ -680,14 +680,6 @@ class AH64DBLKII(AdvancedAircraft):
             'PLT_EUFD_LINE11': '',
             'PLT_EUFD_LINE12': '',
         })
-        self.button_actions.update({
-            LcdButton.TWO: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
-            LcdButton.THREE: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
-            LcdButton.FOUR: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
-            LcdButton.RIGHT: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
-            LcdButton.DOWN: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
-            LcdButton.UP: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
-        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
