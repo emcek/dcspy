@@ -7,27 +7,6 @@ from dcspy import aircraft, logitech, models
 from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
 
 
-
-@fixture()
-def resources():
-    """
-    Path to tests/resources directory.
-
-    :return: path to tests/resources directory
-    """
-    return Path(__file__).resolve().with_name('resources')
-
-
-@fixture()
-def test_config_yaml(resources):
-    """
-    Path to YAML tests config file.
-
-    :return: path to yaml config file
-    """
-    return resources / 'c.yml'
-
-
 def generate_plane_fixtures(plane, lcd_type_with_fonts):
     """
     Generate fixtures for any plane with any lcd type.
@@ -101,6 +80,26 @@ def img_precision(pytestconfig):
     :return: value from command line
     """
     return pytestconfig.getoption('img_precision')
+
+
+@fixture()
+def resources():
+    """
+    Path to tests/resources directory.
+
+    :return: path to tests/resources directory
+    """
+    return Path(__file__).resolve().with_name('resources')
+
+
+@fixture()
+def test_config_yaml(resources):
+    """
+    Path to YAML tests config file.
+
+    :return: path to yaml config file
+    """
+    return resources / 'c.yml'
 
 
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
