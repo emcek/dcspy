@@ -73,7 +73,8 @@ class BasicAircraft:
                     bios_data[cycle_button.ctrl_name] = int()
                 elif 'CUSTOM' in request:
                     request = request.split('CUSTOM ')[1]
-                    request = request.replace('|', '|\n')
+                    request = request.replace('|', '\n|')
+                    request = request.strip('|')
                     button_actions[key] = request
                 else:
                     button_actions[key] = f'{request}\n'
