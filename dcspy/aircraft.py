@@ -226,21 +226,6 @@ class FA18Chornet(AdvancedAircraft):
             'IFEI_DWN_BTN': int(),
             'IFEI_UP_BTN': int(),
         })
-        self.cycle_buttons.update({
-            LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW', max_value=2),
-            LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN', max_value=1),
-            LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN', max_value=1),
-        })
-        self.button_actions.update({
-            LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-            LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-            LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-            LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-            LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-            LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-            LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-            LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
