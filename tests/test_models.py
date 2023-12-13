@@ -312,7 +312,7 @@ def test_control_no_output():
 
     ctrl = Control.model_validate(UFC_COMM1_CHANNEL_SELECT)
     with raises(IndexError):
-        assert ctrl.output
+        bool(ctrl.output)
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
