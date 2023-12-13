@@ -380,18 +380,6 @@ class F15ESE(AdvancedAircraft):
             'F_UFC_LINE5_DISPLAY': '',
             'F_UFC_LINE6_DISPLAY': '',
         })
-        self.button_actions.update({
-            LcdButton.ONE: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
-            LcdButton.TWO: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
-            LcdButton.THREE: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
-            LcdButton.FOUR: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
-            LcdButton.LEFT: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
-            LcdButton.RIGHT: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
-            LcdButton.DOWN: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
-            LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
-            LcdButton.MENU: 'F_UFC_KEY_L_GUARD 1\n|F_UFC_KEY_L_GUARD 0\n',
-            LcdButton.CANCEL: 'F_UFC_KEY_R_GUARD 1\n|F_UFC_KEY_R_GUARD 0\n',
-        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
