@@ -42,14 +42,16 @@ def generate_keyboard_fixtures(keyboard, lcd_font_setting):
 
 for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
-        airplane = getattr(aircraft, plane_model)
-        lcd_type = getattr(models, lcd)
-        if lcd == 'LcdMono':
-            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
-        else:
-            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
-        name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
-        globals()[name] = generate_plane_fixtures(airplane, lcd_type)
+        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', Path(__file__).resolve().parent / 'dcspy' / 'config.yaml')
+        with patch.object(aircraft, 'default_yaml', return_value=Path(__file__).resolve().parent / 'dcspy' / 'config.yaml'):
+            airplane = getattr(aircraft, plane_model)
+            lcd_type = getattr(models, lcd)
+            if lcd == 'LcdMono':
+                lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+            else:
+                lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+            name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
+            globals()[name] = generate_plane_fixtures(airplane, lcd_type)
 
 for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
     key = getattr(logitech, keyboard_model)
