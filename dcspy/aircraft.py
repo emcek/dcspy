@@ -964,16 +964,6 @@ class AV8BNA(AdvancedAircraft):
             'AV8BNA_ODU_5_SELECT': '',
             'AV8BNA_ODU_5_TEXT': '',
         })
-        self.button_actions.update({
-            LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
-            LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
-            LcdButton.THREE: 'UFC_COM2_SEL -3200\n',
-            LcdButton.FOUR: 'UFC_COM2_SEL 3200\n',
-            LcdButton.LEFT: 'UFC_COM1_SEL -3200\n',
-            LcdButton.RIGHT: 'UFC_COM1_SEL 3200\n',
-            LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
-            LcdButton.UP: 'UFC_COM2_SEL 3200\n',
-        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
