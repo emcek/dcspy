@@ -7,7 +7,6 @@ from dcspy import aircraft, logitech, models
 from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
 
 
-
 @fixture()
 def resources():
     """
