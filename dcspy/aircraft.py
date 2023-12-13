@@ -916,30 +916,6 @@ class F14B(AdvancedAircraft):
     """F-14B Tomcat."""
     bios_name: str = 'F-14B'
 
-    def __init__(self, lcd_type: LcdInfo) -> None:
-        """
-        Create F-14B Tomcat.
-
-        :param lcd_type: LCD type
-        """
-        super().__init__(lcd_type)
-        self.bios_data.update({
-            'RIO_CAP_CLEAR': int(),
-            'RIO_CAP_SW': int(),
-            'RIO_CAP_NE': int(),
-            'RIO_CAP_ENTER': int(),
-        })
-        self.button_actions.update({
-            LcdButton.ONE: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
-            LcdButton.TWO: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
-            LcdButton.THREE: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
-            LcdButton.FOUR: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
-            LcdButton.LEFT: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
-            LcdButton.RIGHT: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
-            LcdButton.DOWN: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
-            LcdButton.UP: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
-        })
-
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
         Draw common part for Mono and Color LCD.
