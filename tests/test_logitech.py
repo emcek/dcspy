@@ -33,8 +33,7 @@ def test_keyboard_base_basic_check(keyboard_base):
     'Mono None already_pressed',
     'Color None already_pressed',
     'Mono None Button',
-    'Color None Button',
-])
+    'Color None Button'])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
@@ -118,8 +117,7 @@ def test_keyboard_button_handle_gkey(keyboard, sock, request):
     'F-22A',
     'A-10A',
     'F-117 Nighthawk',
-    'Empty',
-])
+    'Empty'])
 def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, detect, keyboard_mono):
     with patch('dcspy.logitech.get_planes_list', return_value=['SpitfireLFMkIX', 'F-22A']):
         keyboard_mono.detecting_plane(plane_str)
@@ -135,13 +133,7 @@ def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, det
     (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v1),
     (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
     (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19),
-], ids=[
-    'Mono G13',
-    'Mono G510',
-    'Mono G15v1',
-    'Mono G15v2',
-    'Color G19',
-])
+], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser):
     from dcspy.aircraft import BasicAircraft
     from dcspy.sdk import lcd_sdk
@@ -167,13 +159,7 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
     (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v1),
     (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
     (FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19)
-], ids=[
-    'Mono G13',
-    'Mono G510',
-    'Mono G15v1',
-    'Mono G15v2',
-    'Color G19',
-])
+], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
 def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
     from dcspy.sdk import lcd_sdk
 

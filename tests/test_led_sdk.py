@@ -24,8 +24,7 @@ from pytest import mark
     'flash lighting',
     'pulse lighting',
     'stop effects',
-    'shutdown',
-])
+    'shutdown'])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import led_sdk
     led_sdk.LED_DLL = None

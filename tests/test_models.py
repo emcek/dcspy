@@ -261,7 +261,16 @@ CMSP1 = {
     (CLOCK_ADJUST_PULL, [1, False, False, False, True]),
     (ADI_PITCH_TRIM, [2, False, True, True, False]),
     (ARC210_CHN_KNB, [1, False, False, True, False]),
-], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
+], ids=[
+    'UFC_COMM1_CHANNEL_SELECT',
+    'PLT_WIPER_OFF',
+    'AAP_PAGE',
+    'AAP_CDUPWR',
+    'TACAN_1',
+    'AAP_STEER',
+    'CLOCK_ADJUST_PULL',
+    'ADI_PITCH_TRIM',
+    'ARC210_CHN_KNB'])
 def test_control_input_properties(control, results):
     from dcspy.models import Control
 
@@ -292,6 +301,9 @@ def test_control_key_data_from_dicts(control, max_value, step):
     assert ctrl_key.max_value == max_value
     assert ctrl_key.suggested_step == step
     assert len(ctrl_key.list_dict) == len(ctrl.inputs)
+    assert f'suggested_step={ctrl_key.suggested_step}' in repr(ctrl_key)
+    assert f'KeyControl({ctrl_key.name}' in repr(ctrl_key)
+    assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
 
 
 @mark.parametrize('control, result', [
@@ -312,7 +324,9 @@ def test_control_no_output():
 
     ctrl = Control.model_validate(UFC_COMM1_CHANNEL_SELECT)
     with raises(IndexError):
-        assert ctrl.output
+        print(ctrl.output)
+
+    assert ctrl.input.has_fixed_step
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
@@ -348,6 +362,26 @@ def test_gkey_name():
 
     assert Gkey.name(0, 1) == 'G1_M2'
     assert Gkey.name(2, 0) == 'G3_M1'
+
+
+@mark.parametrize('key_name, klass', [
+    ('G12_M3', 'Gkey'),
+    ('G1_M2', 'Gkey'),
+    ('TWO', 'LcdButton'),
+    ('MENU', 'LcdButton'),
+])
+def test_get_key_instance(key_name, klass):
+    from dcspy.models import get_key_instance
+
+    assert get_key_instance(key_name).__class__.__name__ == klass
+
+
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '',])
+def test_get_key_instance_error(key_name):
+    from dcspy.models import get_key_instance
+
+    with raises(AttributeError):
+        get_key_instance(key_name)
 
 
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
@@ -423,20 +457,29 @@ def test_get_sha_of_system_data():
 
 # <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
 
-@mark.parametrize('control, rb_iface, req', [
-    (AAP_PAGE, 'rb_fixed_step_inc', 'AAP_PAGE INC'),
-    (AAP_PAGE, 'rb_fixed_step_dec', 'AAP_PAGE DEC'),
-    (AAP_PAGE, 'rb_set_state', 'AAP_PAGE CYCLE 1 3'),
-    (AAP_CDUPWR, 'rb_action', 'AAP_CDUPWR TOGGLE'),
-    (ARC210_CHN_KNB, 'rb_variable_step_plus', 'ARC210_CHN_KNB +3200'),
-    (ARC210_CHN_KNB, 'rb_variable_step_minus', 'ARC210_CHN_KNB -3200'),
-    (ADI_PITCH_TRIM, 'rb_set_state', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
-], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 1 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +', 'ARC210_CHN_KNB -', 'ADI_PITCH_TRIM 3200 65535'])
-def test_plane_input_request_from_control_key(control, rb_iface, req):
+@mark.parametrize('control, rb_iface, custom_value, req', [
+    (AAP_PAGE, 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
+    (AAP_PAGE, 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
+    (AAP_PAGE, 'rb_set_state', '', 'AAP_PAGE CYCLE 1 3'),
+    (AAP_CDUPWR, 'rb_action', '', 'AAP_CDUPWR TOGGLE'),
+    (ARC210_CHN_KNB, 'rb_variable_step_plus', '', 'ARC210_CHN_KNB +3200'),
+    (ARC210_CHN_KNB, 'rb_variable_step_minus', '', 'ARC210_CHN_KNB -3200'),
+    (ADI_PITCH_TRIM, 'rb_set_state', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
+    (AAP_CDUPWR, 'rb_custom', 'AAP_CDUPWR 1|AAP_CDUPWR 0', 'AAP_CDUPWR CUSTOM AAP_CDUPWR 1|AAP_CDUPWR 0'),
+], ids=[
+    'AAP_PAGE INC',
+    'AAP_PAGE DEC',
+    'AAP_PAGE CYCLE 1 3',
+    'AAP_CDUPWR TOGGLE',
+    'ARC210_CHN_KNB +',
+    'ARC210_CHN_KNB -',
+    'ADI_PITCH_TRIM 3200 65535',
+    'AAP_CDUPWR CUSTOM 1 0'])
+def test_plane_input_request_from_control_key(control, rb_iface, custom_value, req):
     from dcspy.models import Control, GuiPlaneInputRequest
 
     ctrl = Control.model_validate(control)
-    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface)
+    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface, custom_value=custom_value)
     assert gui_input_req.identifier == ctrl.identifier
     assert gui_input_req.request == req
 
@@ -464,6 +507,15 @@ def test_plane_input_request_from_plane_gkeys():
         'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_set_state'),
         'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
     }
+
+
+def test_plane_input_request_empty():
+    from dcspy.models import GuiPlaneInputRequest
+
+    pir = GuiPlaneInputRequest.make_empty()
+    assert pir.identifier == ''
+    assert pir.request == ''
+    assert pir.widget_iface == ''
 
 
 # <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>

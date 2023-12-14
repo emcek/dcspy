@@ -247,7 +247,7 @@ package models {
         + klass: str
         + modes: int
         + gkeys: int
-        + lcdkeys: int
+        + lcdkeys: Sequence[LcdButton]
         + lcd: str
     }
 
@@ -258,6 +258,7 @@ LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LcdButton -* BasicAircraft
+LcdButton -* KeyboardModel
 Gkey --* BasicAircraft
 Gkey --* KeyboardManager
 Direction --* ZigZagIterator

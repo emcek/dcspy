@@ -78,27 +78,27 @@ def test_meta_plane(keyboard, plane_name, request):
     ('fa18chornet_color', LcdButton.OK, 'HUD_ATT_SW 1\n'),
     ('av8bna_mono', LcdButton.NONE, '\n'),
     ('av8bna_mono', LcdButton.ONE, 'UFC_COM1_SEL -3200\n'),
-    ('av8bna_mono', LcdButton.TWO, 'UFC_COM1_SEL 3200\n'),
+    ('av8bna_mono', LcdButton.TWO, 'UFC_COM1_SEL +3200\n'),
     ('av8bna_mono', LcdButton.THREE, 'UFC_COM2_SEL -3200\n'),
-    ('av8bna_mono', LcdButton.FOUR, 'UFC_COM2_SEL 3200\n'),
+    ('av8bna_mono', LcdButton.FOUR, 'UFC_COM2_SEL +3200\n'),
     ('av8bna_color', LcdButton.NONE, '\n'),
     ('av8bna_color', LcdButton.LEFT, 'UFC_COM1_SEL -3200\n'),
-    ('av8bna_color', LcdButton.RIGHT, 'UFC_COM1_SEL 3200\n'),
+    ('av8bna_color', LcdButton.RIGHT, 'UFC_COM1_SEL +3200\n'),
     ('av8bna_color', LcdButton.DOWN, 'UFC_COM2_SEL -3200\n'),
-    ('av8bna_color', LcdButton.UP, 'UFC_COM2_SEL 3200\n'),
+    ('av8bna_color', LcdButton.UP, 'UFC_COM2_SEL +3200\n'),
     ('av8bna_color', LcdButton.MENU, '\n'),
     ('av8bna_color', LcdButton.CANCEL, '\n'),
     ('av8bna_color', LcdButton.OK, '\n'),
     ('f15ese_mono', LcdButton.NONE, '\n'),
     ('f15ese_mono', LcdButton.ONE, 'F_UFC_PRE_CHAN_L_SEL -3200\n'),
-    ('f15ese_mono', LcdButton.TWO, 'F_UFC_PRE_CHAN_L_SEL 3200\n'),
+    ('f15ese_mono', LcdButton.TWO, 'F_UFC_PRE_CHAN_L_SEL +3200\n'),
     ('f15ese_mono', LcdButton.THREE, 'F_UFC_PRE_CHAN_R_SEL -3200\n'),
-    ('f15ese_mono', LcdButton.FOUR, 'F_UFC_PRE_CHAN_R_SEL 3200\n'),
+    ('f15ese_mono', LcdButton.FOUR, 'F_UFC_PRE_CHAN_R_SEL +3200\n'),
     ('f15ese_color', LcdButton.NONE, '\n'),
     ('f15ese_color', LcdButton.LEFT, 'F_UFC_PRE_CHAN_L_SEL -3200\n'),
-    ('f15ese_color', LcdButton.RIGHT, 'F_UFC_PRE_CHAN_L_SEL 3200\n'),
+    ('f15ese_color', LcdButton.RIGHT, 'F_UFC_PRE_CHAN_L_SEL +3200\n'),
     ('f15ese_color', LcdButton.DOWN, 'F_UFC_PRE_CHAN_R_SEL -3200\n'),
-    ('f15ese_color', LcdButton.UP, 'F_UFC_PRE_CHAN_R_SEL 3200\n'),
+    ('f15ese_color', LcdButton.UP, 'F_UFC_PRE_CHAN_R_SEL +3200\n'),
     ('f15ese_color', LcdButton.MENU, 'F_UFC_KEY_L_GUARD 1\n|F_UFC_KEY_L_GUARD 0\n'),
     ('f15ese_color', LcdButton.CANCEL, 'F_UFC_KEY_R_GUARD 1\n|F_UFC_KEY_R_GUARD 0\n'),
     ('f15ese_color', LcdButton.OK, '\n'),
@@ -217,8 +217,7 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'UP - Viper Color',
     'OK - Hornet Color',
     'MENU - Hornet Color',
-    'CANCEL - Hornet Color',
-])
+    'CANCEL - Hornet Color'])
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     plane = request.getfixturevalue(plane)
     assert not all(isinstance(cyc_btn.iter, ZigZagIterator) for cyc_btn in plane.cycle_buttons.values())
@@ -281,7 +280,6 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
-
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, request):

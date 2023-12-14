@@ -11,7 +11,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Dict, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, MsgBoxTypes, ReleaseInfo, SystemData)
+                          FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
@@ -35,7 +35,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
                          save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.0.0'
+__version__ = '3.1.0'
 LOG = getLogger(__name__)
 
 
@@ -55,7 +55,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=0, lcd='')
+        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -156,7 +156,10 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.addButton(self.rb_fixed_step_dec)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
-        self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed)
+        self.bg_rb_input_iface.addButton(self.rb_custom)
+        self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed_or_custom_text_changed)
+        self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
+        self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
@@ -234,13 +237,15 @@ class DcsPyQtGui(QMainWindow):
         * Add correct numbers of rows and columns
         * enable DED font checkbox
         * updates font sliders (range and values)
+        * update dock with image of keyboard
+
         :param keyboard: name
         :param state: of radio button
         """
         if state:
             for mode_col in range(self.keyboard.modes):
                 self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.keyboard.gkeys):
+            for gkey_row in range(self.keyboard.gkeys + len(self.keyboard.lcdkeys)):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
             LOG.debug(f'Select: {self.keyboard}')
@@ -342,34 +347,60 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setColumnCount(self.keyboard.modes)
         for mode_col in range(self.keyboard.modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
-        self.tw_gkeys.setRowCount(self.keyboard.gkeys)
-        self.tw_gkeys.setVerticalHeaderLabels([f'G{i}' for i in range(1, self.keyboard.gkeys + 1)])
+        no_lcd_keys = len(self.keyboard.lcdkeys)
+        no_g_keys = self.keyboard.gkeys
+        self.tw_gkeys.setRowCount(no_g_keys + no_lcd_keys)
+        labels_g_key = [f'G{i}' for i in range(1, no_g_keys + 1)]
+        labels_lcd_key = [lcd_key.name for lcd_key in self.keyboard.lcdkeys]
+        self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key)
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
-        plane_gkeys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
-        LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_gkeys)}')
-        self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_gkeys)
+        plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
+        LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
+        self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
 
-        for row in range(0, self.keyboard.gkeys):
+        ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
+        for row in range(0, no_g_keys + no_lcd_keys):
             for col in range(0, self.keyboard.modes):
-                completer = QCompleter([item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item])
-                completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-                completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
-                completer.setFilterMode(Qt.MatchFlag.MatchContains)
-                completer.setMaxVisibleItems(self._completer_items)
-                completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+                self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
+        if self.current_row != -1 and self.current_col != -1:
+            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row,
+                                            col=self.current_col)
 
-                combo = QComboBox()
-                combo.setEditable(True)
-                combo.addItems(self.ctrl_list)
-                combo.setCompleter(completer)
-                combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
-                self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
-                self.tw_gkeys.setCellWidget(row, col, combo)
-                try:
-                    identifier = self.input_reqs[self.current_plane][Gkey.name(row, col)].identifier
-                except KeyError:
-                    identifier = ''
-                combo.setCurrentText(identifier)
+    def _make_combo_with_completer_at(self, row: int, col: int, ctrl_list_no_sep: List[str]) -> None:
+        """
+        Make QComboBox widget with completer with list of strings in cell in row and column.
+
+        :param row: current row
+        :param col: current column
+        :param ctrl_list_no_sep: list of control inputs without separator
+        """
+        key_name = self._get_key_name_from_row_col(row, col)
+        if col == 0 or row < self.keyboard.gkeys:
+            completer = QCompleter(ctrl_list_no_sep)
+            completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+            completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+            completer.setFilterMode(Qt.MatchFlag.MatchContains)
+            completer.setMaxVisibleItems(self._completer_items)
+            completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+
+            combo = QComboBox()
+            combo.setEditable(True)
+            combo.addItems(self.ctrl_list)
+            combo.setCompleter(completer)
+            self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
+            self.tw_gkeys.setCellWidget(row, col, combo)
+            try:
+                identifier = self.input_reqs[self.current_plane][key_name].identifier
+            except KeyError:
+                identifier = ''
+            combo.setCurrentText(identifier)
+            combo.editTextChanged.connect(partial(self._cell_ctrl_content_changed, widget=combo, row=row, col=col))
+        else:
+            combo = QComboBox()
+            combo.setDisabled(True)
+            self.tw_gkeys.setCellWidget(row, col, combo)
+        combo.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
 
     def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
         """
@@ -435,26 +466,46 @@ class DcsPyQtGui(QMainWindow):
         self.l_identifier.setText('')
         self.l_range.setText('')
         widget.setToolTip('')
-        widget.setStyleSheet('QComboBox{color: red;}QComboBox::drop-down{color: black;}')
+        key_name = self._get_key_name_from_row_col(row, col)
+        widget.setStyleSheet(self._get_style_for_combobox(key_name, 'red'))
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
-            g_key = Gkey.name(row, col)
             widget.setToolTip(ctrl_key.description)
-            widget.setStyleSheet('')
+            widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
             self.l_category.setText(f'Category: {section}')
             self.l_description.setText(f'Description: {ctrl_key.description}')
             self.l_identifier.setText(f'Identifier: {text}')
             self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
-            self._checked_iface_rb_for_identifier(g_key=g_key)
+            self._checked_iface_rb_for_identifier(key_name=key_name)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            self.input_reqs[self.current_plane][g_key] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name)
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
+                                                                                                  custom_value=self.le_custom.text())
         elif text == '':
-            widget.setStyleSheet('')
+            widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.make_empty()  # maybe del
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
+
+    def _get_key_name_from_row_col(self, row: int, col: int) -> str:
+        """
+        Get key name from row and column.
+
+        It depends of location in table:
+        * G-Key at the tom and LCD Keys at the bottom.
+        * type of Keyboard number of G-Keys and LCD Keys are different
+
+        :param row: current row
+        :param row: current column
+        :return: string name of key
+        """
+        if row <= self.keyboard.gkeys - 1:
+            key = Gkey.name(row, col)
+        else:
+            key = self.keyboard.lcdkeys[row - self.keyboard.gkeys].name
+        return key
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -493,15 +544,19 @@ class DcsPyQtGui(QMainWindow):
         if ctrl_key.has_action:
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
+        self.rb_custom.setEnabled(True)
 
-    def _checked_iface_rb_for_identifier(self, g_key: str) -> None:
+    def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """
         Enable input interfaces for current control input identifier.
 
-        :param g_key: Gkey as string
+        :param key_name: G-Key or LCD Key as string
         """
         try:
-            widget_iface = self.input_reqs[self.current_plane][g_key].widget_iface
+            widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
+            self.le_custom.setText('')
+            if widget_iface == 'rb_custom':
+                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1])
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
@@ -521,15 +576,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
-        plane_cfg_yaml = {}
-        for row in range(0, self.tw_gkeys.rowCount()):
-            for col in range(0, self.tw_gkeys.columnCount()):
-                g_key = Gkey.name(row, col)
-                try:
-                    request = self.input_reqs[self.current_plane][g_key].request
-                except (KeyError, AttributeError):
-                    request = ''
-                plane_cfg_yaml[g_key] = request
+        plane_cfg_yaml = {g_key: value.request for g_key, value in self.input_reqs[self.current_plane].items() if value.request}
         LOG.debug(f'Save {self.current_plane}:\n{pformat(plane_cfg_yaml)}')
         save_yaml(data=plane_cfg_yaml, full_path=default_yaml.parent / f'{self.current_plane}.yaml')
 
@@ -547,19 +594,23 @@ class DcsPyQtGui(QMainWindow):
         cell_combo = self.tw_gkeys.cellWidget(currentRow, currentColumn)
         self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=currentRow, col=currentColumn)
 
-    def _input_iface_changed(self, button: QRadioButton) -> None:
+    def _input_iface_changed_or_custom_text_changed(self) -> None:
         """
-        Triggered when new input interface is selected.
+        Triggered for radio button group and custom text.
 
-        :param button: currently checked input interface radio button
+        When:
+        * new input interface is selected
+        * text is changed and user press enter or widget lose focus
         """
-        row = self.current_row
-        col = self.current_col
-        current_text = self.tw_gkeys.cellWidget(row, col).currentText()
-        if current_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_text:
-            section = self._find_section_name(ctrl_name=current_text)
-            ctrl_key = self.ctrl_input[section][current_text]
-            self.input_reqs[self.current_plane][Gkey.name(row, col)] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=button.objectName())
+        current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
+        if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
+            section = self._find_section_name(ctrl_name=current_cell_text)
+            key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
+            ctrl_key = self.ctrl_input[section][current_cell_text]
+            input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
+            custom_value = self.le_custom.text() if input_iface_name == 'rb_custom' else ''
+            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
+                                                                                                  custom_value=custom_value)
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
@@ -1134,6 +1185,20 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, widget_name).setText(result_path)
         return result_path
 
+    @staticmethod
+    def _get_style_for_combobox(key_name: str, fg: str) -> str:
+        """
+        Get style for QComboBox with foreground color.
+
+        :param key_name: G-Key or LCD Key as string
+        :param fg: color as string
+        :return: style sheet string
+        """
+        bg = 'lightblue'
+        if '_' in key_name:
+            bg = 'lightgreen'
+        return f'QComboBox{{color: {fg};background-color: {bg};}} QComboBox QAbstractItemView {{background-color: {bg};}}'
+
     def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '') -> None:
         """
         Show any QMessageBox delivered with Qt.
@@ -1289,6 +1354,7 @@ class DcsPyQtGui(QMainWindow):
         self.le_biosdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_biosdir')
         self.le_font_name: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_font_name')
         self.le_bios_live: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_bios_live')
+        self.le_custom: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_custom')
 
         self.rb_g19: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g19')
         self.rb_g13: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g13')
@@ -1301,6 +1367,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
         self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
         self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
+        self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
 
         self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
         self.hs_medium_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_medium_font')

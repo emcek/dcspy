@@ -28,7 +28,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.0.0'
+__version__ = '3.1.0'
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
@@ -46,8 +46,7 @@ def get_default_yaml(local_appdata=False) -> Path:
     """
     cfg_ful_path = DEFAULT_YAML_FILE
     if local_appdata:
-        localappdata = environ.get('LOCALAPPDATA', None)
-        user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+        user_appdata = get_config_yaml_location()
         makedirs(name=user_appdata, exist_ok=True)
         cfg_ful_path = Path(user_appdata / CONFIG_YAML).resolve()
         if not cfg_ful_path.exists():
@@ -460,8 +459,7 @@ def collect_debug_data() -> Path:
     :return: Path object to zip file
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
-    localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+    user_appdata = get_config_yaml_location()
     config_file = Path(user_appdata / CONFIG_YAML).resolve()
 
     conf_dict = load_yaml(config_file)
@@ -478,6 +476,13 @@ def collect_debug_data() -> Path:
         head_commit = git.Repo(Path(gettempdir()) / 'dcsbios_git').head.commit
     except (git.exc.NoSuchPathError, ImportError):
         pass
+
+    yaml_files = [
+        Path(dirpath) / filename
+        for dirpath, _, filenames in walk(config_file.parent)
+        for filename in filenames
+        if filename.endswith('yaml')
+    ]
 
     lgs_dir = '\n'.join([
         str(Path(dirpath) / filename)
@@ -505,11 +510,23 @@ def collect_debug_data() -> Path:
         zipf.write(sys_data, arcname=sys_data.name)
         for log_file in log_files:
             zipf.write(log_file, arcname=log_file.name)
-        zipf.write(config_file, arcname=config_file.name)
+        for yaml_file in yaml_files:
+            zipf.write(yaml_file, arcname=yaml_file.name)
         for png in png_files:
             zipf.write(png, arcname=png.name)
 
     return zip_file
+
+
+def get_config_yaml_location() -> Path:
+    """
+    Get location of YAML configuration files.
+
+    :rtype: Path object to directory
+    """
+    localappdata = environ.get('LOCALAPPDATA', None)
+    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+    return user_appdata
 
 
 def run_pip_command(cmd: str) -> Tuple[int, str, str]:
