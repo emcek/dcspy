@@ -292,6 +292,9 @@ def test_control_key_data_from_dicts(control, max_value, step):
     assert ctrl_key.max_value == max_value
     assert ctrl_key.suggested_step == step
     assert len(ctrl_key.list_dict) == len(ctrl.inputs)
+    assert f'suggested_step={ctrl_key.suggested_step}' in repr(ctrl_key)
+    assert f'KeyControl({ctrl_key.name}' in repr(ctrl_key)
+    assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
 
 
 @mark.parametrize('control, result', [
