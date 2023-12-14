@@ -1,4 +1,4 @@
-from os import linesep, makedirs
+from os import environ, linesep, makedirs
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
@@ -259,7 +259,8 @@ def test_collect_debug_data():
     from zipfile import ZipFile
     with open(Path(gettempdir()) / 'Ka50_999.png', 'w+') as png:
         png.write('')
-    zip_file = utils.collect_debug_data()
+    with patch('dcspy.utils.get_config_yaml_location', lambda: Path(__file__).resolve().parents[1] / 'dcspy'):
+        zip_file = utils.collect_debug_data()
     assert 'dcspy_debug_' in str(zip_file)
     assert zip_file.suffix == '.zip'
     assert zip_file.is_file()
@@ -267,7 +268,7 @@ def test_collect_debug_data():
     with ZipFile(file=zip_file, mode='r') as zipf:
         zip_list = zipf.namelist()
     assert 'system_data.txt' in zip_list
-    assert sum('.yaml' in s for s in zip_list) >= 9
+    assert sum('.yaml' in s for s in zip_list) == 10
     assert 'dcspy.log' in zip_list
     assert 'Ka50_999.png' in zip_list
 
@@ -378,3 +379,7 @@ def test_clone_progress():
     signals.stage.connect(update_label)
     clone = utils.CloneProgress(signals.progress, signals.stage)
     clone.update(5, 1, 1, 'test')
+
+
+def test_get_config_yaml_location():
+    assert utils.get_config_yaml_location() == Path(environ.get('LOCALAPPDATA', None)) / 'dcspy'
