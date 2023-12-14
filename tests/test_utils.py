@@ -267,7 +267,7 @@ def test_collect_debug_data():
     with ZipFile(file=zip_file, mode='r') as zipf:
         zip_list = zipf.namelist()
     assert 'system_data.txt' in zip_list
-    assert 'config.yaml' in zip_list
+    assert sum('.yaml' in s for s in zip_list) >= 9
     assert 'dcspy.log' in zip_list
     assert 'Ka50_999.png' in zip_list
 
