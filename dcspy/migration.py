@@ -1,5 +1,5 @@
 from logging import getLogger
-from os import environ, makedirs
+from os import makedirs
 from pathlib import Path
 from pprint import pformat
 from shutil import copy
@@ -8,7 +8,7 @@ from typing import Callable, Iterator, Union
 from packaging import version
 
 from dcspy.models import DcspyConfigYaml
-from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg
+from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
 __version__ = '3.1.0'
@@ -60,8 +60,7 @@ def _api_ver_3_1_0(cfg: DcspyConfigYaml) -> None:
 
     :param cfg: Configuration dictionary
     """
-    localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+    user_appdata = get_config_yaml_location()
     makedirs(name=user_appdata, exist_ok=True)
     for filename in ('AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml',
                      'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml'):
