@@ -46,8 +46,7 @@ def get_default_yaml(local_appdata=False) -> Path:
     """
     cfg_ful_path = DEFAULT_YAML_FILE
     if local_appdata:
-        localappdata = environ.get('LOCALAPPDATA', None)
-        user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+        user_appdata = get_config_yaml_location()
         makedirs(name=user_appdata, exist_ok=True)
         cfg_ful_path = Path(user_appdata / CONFIG_YAML).resolve()
         if not cfg_ful_path.exists():
@@ -460,8 +459,7 @@ def collect_debug_data() -> Path:
     :return: Path object to zip file
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
-    localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+    user_appdata = get_config_yaml_location()
     config_file = Path(user_appdata / CONFIG_YAML).resolve()
 
     conf_dict = load_yaml(config_file)
@@ -518,6 +516,17 @@ def collect_debug_data() -> Path:
             zipf.write(png, arcname=png.name)
 
     return zip_file
+
+
+def get_config_yaml_location() -> Path:
+    """
+    Get location of YAML configuration files.
+
+    :rtype: Path object to directory
+    """
+    localappdata = environ.get('LOCALAPPDATA', None)
+    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
+    return user_appdata
 
 
 def run_pip_command(cmd: str) -> Tuple[int, str, str]:
