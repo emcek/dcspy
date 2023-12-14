@@ -1,5 +1,6 @@
 from os import environ, linesep, makedirs
 from pathlib import Path
+from sys import platform
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
 import pytest
@@ -381,5 +382,6 @@ def test_clone_progress():
     clone.update(5, 1, 1, 'test')
 
 
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_get_config_yaml_location():
     assert utils.get_config_yaml_location() == Path(environ.get('LOCALAPPDATA', None)) / 'dcspy'
