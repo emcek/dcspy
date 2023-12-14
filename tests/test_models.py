@@ -481,8 +481,8 @@ def test_zigzag_iterator(current, max_val, step, result):
     from dcspy.models import ZigZagIterator
 
     zz = ZigZagIterator(current, max_val, step)
-    for i, _ in enumerate(result):
-        assert next(zz) == result[i]
+    for next_value in result:
+        assert next(zz) == next_value
 
 
 def test_zigzag_iterator_direction():
