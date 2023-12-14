@@ -479,6 +479,13 @@ def collect_debug_data() -> Path:
     except (git.exc.NoSuchPathError, ImportError):
         pass
 
+    yaml_files = [
+        Path(dirpath) / filename
+        for dirpath, _, filenames in walk(config_file.parent)
+        for filename in filenames
+        if filename.endswith('yaml')
+    ]
+
     lgs_dir = '\n'.join([
         str(Path(dirpath) / filename)
         for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
@@ -505,7 +512,8 @@ def collect_debug_data() -> Path:
         zipf.write(sys_data, arcname=sys_data.name)
         for log_file in log_files:
             zipf.write(log_file, arcname=log_file.name)
-        zipf.write(config_file, arcname=config_file.name)
+        for yaml_file in yaml_files:
+            zipf.write(yaml_file, arcname=yaml_file.name)
         for png in png_files:
             zipf.write(png, arcname=png.name)
 
