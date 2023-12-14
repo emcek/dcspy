@@ -24,8 +24,7 @@ from pytest import mark
     'mono set text',
     'color set background',
     'color_set title',
-    'color set text',
-])
+    'color set text'])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import lcd_sdk
     lcd_sdk.LCD_DLL = None

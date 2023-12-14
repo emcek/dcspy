@@ -1,5 +1,6 @@
-from os import linesep, makedirs
+from os import environ, linesep, makedirs
 from pathlib import Path
+from sys import platform
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
 import pytest
@@ -17,10 +18,7 @@ from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo
     ('3.2.1', ReleaseInfo(
         latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
     ))
-], ids=[
-    'No update',
-    'New version',
-])
+], ids=['No update', 'New version'])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
@@ -92,7 +90,7 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.0.0',
+        'api_ver': '3.1.0',
         'keyboard': 'G13',
         'save_lcd': False,
         'show_gui': True,
@@ -259,7 +257,8 @@ def test_collect_debug_data():
     from zipfile import ZipFile
     with open(Path(gettempdir()) / 'Ka50_999.png', 'w+') as png:
         png.write('')
-    zip_file = utils.collect_debug_data()
+    with patch('dcspy.utils.get_config_yaml_location', lambda: Path(__file__).resolve().parents[1] / 'dcspy'):
+        zip_file = utils.collect_debug_data()
     assert 'dcspy_debug_' in str(zip_file)
     assert zip_file.suffix == '.zip'
     assert zip_file.is_file()
@@ -267,7 +266,7 @@ def test_collect_debug_data():
     with ZipFile(file=zip_file, mode='r') as zipf:
         zip_list = zipf.namelist()
     assert 'system_data.txt' in zip_list
-    assert 'config.yaml' in zip_list
+    assert sum('.yaml' in s for s in zip_list) == 10
     assert 'dcspy.log' in zip_list
     assert 'Ka50_999.png' in zip_list
 
@@ -378,3 +377,8 @@ def test_clone_progress():
     signals.stage.connect(update_label)
     clone = utils.CloneProgress(signals.progress, signals.stage)
     clone.update(5, 1, 1, 'test')
+
+
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+def test_get_config_yaml_location():
+    assert utils.get_config_yaml_location() == Path(environ.get('LOCALAPPDATA', None)) / 'dcspy'
