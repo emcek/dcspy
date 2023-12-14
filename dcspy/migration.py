@@ -1,14 +1,17 @@
 from logging import getLogger
+from os import makedirs
+from pathlib import Path
 from pprint import pformat
+from shutil import copy
 from typing import Callable, Iterator, Union
 
 from packaging import version
 
 from dcspy.models import DcspyConfigYaml
-from dcspy.utils import defaults_cfg
+from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.0.0'
+__version__ = '3.1.0'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
@@ -51,7 +54,20 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
 
 
-def _api_ver_3_0_0rc1(cfg: DcspyConfigYaml) -> None:
+def _api_ver_3_1_0(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.1.0.
+
+    :param cfg: Configuration dictionary
+    """
+    user_appdata = get_config_yaml_location()
+    makedirs(name=user_appdata, exist_ok=True)
+    for filename in ('AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml',
+                     'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml'):
+        _copy_file(filename=filename, to_path=user_appdata)
+
+
+def _api_ver_3_0_0(cfg: DcspyConfigYaml) -> None:
     """
     Migrate to version 3.0.0.
 
@@ -113,3 +129,14 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     except KeyError:
         pass
     cfg[new_name] = value
+
+
+def _copy_file(filename: str, to_path: Path) -> None:
+    """
+    Copy a file from one location to another, only when the file doesn't exist.
+
+    :param filename: The name of the file to be copied.
+    :param to_path: The full path where the file should be copied to.
+    """
+    if not Path(to_path / filename).is_file():
+        copy(src=DEFAULT_YAML_FILE.parent / filename, dst=to_path)

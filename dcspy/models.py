@@ -441,7 +441,7 @@ class DcsBiosPlaneData(RootModel):
                 ctrl_input = Control.model_validate(data).input
                 if ctrl_input and not ctrl_input.has_set_string:
                     ctrl_key[section][ctrl] = ctrl_input
-            if not len(ctrl_key[section]):
+            if not ctrl_key[section]:
                 del ctrl_key[section]
         return ctrl_key
 
@@ -473,12 +473,13 @@ class GuiPlaneInputRequest(BaseModel):
     widget_iface: str
 
     @classmethod
-    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str) -> 'GuiPlaneInputRequest':
+    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str, custom_value: str = '') -> 'GuiPlaneInputRequest':
         """
         Generate GuiPlaneInputRequest from ControlKeyData and radio button widget.
 
         :param ctrl_key: ControlKeyData
         :param rb_iface: widget interface
+        :param custom_value: custom request
         :return: GuiPlaneInputRequest
         """
         rb_iface_request = {
@@ -486,6 +487,7 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
             'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
+            'rb_custom': f'{ctrl_key.name} CUSTOM {custom_value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
@@ -505,6 +507,7 @@ class GuiPlaneInputRequest(BaseModel):
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
             'CYCLE': 'rb_set_state',
+            'CUSTOM': 'rb_custom',
             '+': 'rb_variable_step_plus',
             '-': 'rb_variable_step_minus',
         }
@@ -517,6 +520,11 @@ class GuiPlaneInputRequest(BaseModel):
                 iface = ''
             input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
         return input_reqs
+
+    @classmethod
+    def make_empty(cls) -> 'GuiPlaneInputRequest':
+        """Make empty GuiPlaneInputRequest."""
+        return cls(identifier='', request='', widget_iface='')
 
 
 class LcdButton(Enum):
@@ -592,15 +600,20 @@ class KeyboardModel(BaseModel):
     klass: str
     modes: int
     gkeys: int
-    lcdkeys: int
+    lcdkeys: Sequence[LcdButton]
     lcd: str
 
 
-ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcdkeys=7, lcd='color')
-ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcdkeys=4, lcd='mono')
-ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcdkeys=4, lcd='mono')
-ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcdkeys=4, lcd='mono')
-ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcdkeys=4, lcd='mono')
+ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcd='color',
+                         lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
+ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcd='mono',
+                         lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcd='mono',
+                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcd='mono',
+                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcd='mono',
+                          lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
 KEYBOARD_TYPES = [ModelG19.klass, ModelG510.klass, ModelG15v1.klass, ModelG15v2.klass, ModelG13.klass]
 
@@ -655,6 +668,20 @@ class Gkey(BaseModel):
         :param col: column number, zero based
         """
         return str(Gkey(key=row + 1, mode=col + 1))
+
+
+def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
+    """
+    Get key instance from string.
+
+    :param key_str: key name from yaml configuration
+    :return: Gkey or LcdButton instance
+    """
+    try:
+        key = Gkey.from_yaml(key_str)
+    except ValueError:
+        key = getattr(LcdButton, key_str)
+    return key
 
 
 class MsgBoxTypes(Enum):

@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator
+from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator, get_key_instance
 from dcspy.sdk import lcd_sdk
 
 LOG = getLogger(__name__)
@@ -64,15 +64,20 @@ class BasicAircraft:
         """Load plane's YAML file with configuration and apply."""
         bios_data, cycle_buttons, button_actions = {}, {}, {}
         plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
-        for gkey_str, request in plane_yaml.items():
+        for key_str, request in plane_yaml.items():
             if request:
-                gkey = Gkey.from_yaml(gkey_str)
+                key = get_key_instance(key_str)
                 if 'CYCLE' in request:
                     cycle_button = CycleButton.from_request(request)
-                    cycle_buttons[gkey] = cycle_button
-                    bios_data[cycle_button.ctrl_name] = ''  # int or str maybe set as None
+                    cycle_buttons[key] = cycle_button
+                    bios_data[cycle_button.ctrl_name] = int()
+                elif 'CUSTOM' in request:
+                    request = request.split('CUSTOM ')[1]
+                    request = request.replace('|', '\n|')
+                    request = request.strip('|')
+                    button_actions[key] = request
                 else:
-                    button_actions[gkey] = f'{request}\n'
+                    button_actions[key] = f'{request}\n'
 
         self.bios_data.update(bios_data)
         self.cycle_buttons.update(cycle_buttons)  # type: ignore
@@ -221,21 +226,6 @@ class FA18Chornet(AdvancedAircraft):
             'IFEI_DWN_BTN': int(),
             'IFEI_UP_BTN': int(),
         })
-        self.cycle_buttons.update({
-            LcdButton.OK: CycleButton(ctrl_name='HUD_ATT_SW', max_value=2),
-            LcdButton.MENU: CycleButton(ctrl_name='IFEI_DWN_BTN', max_value=1),
-            LcdButton.CANCEL: CycleButton(ctrl_name='IFEI_UP_BTN', max_value=1),
-        })
-        self.button_actions.update({
-            LcdButton.ONE: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-            LcdButton.TWO: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-            LcdButton.THREE: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-            LcdButton.FOUR: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-            LcdButton.LEFT: 'UFC_COMM1_CHANNEL_SELECT DEC\n',
-            LcdButton.RIGHT: 'UFC_COMM1_CHANNEL_SELECT INC\n',
-            LcdButton.DOWN: 'UFC_COMM2_CHANNEL_SELECT DEC\n',
-            LcdButton.UP: 'UFC_COMM2_CHANNEL_SELECT INC\n',
-        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
@@ -315,16 +305,6 @@ class F16C50(AdvancedAircraft):
             'IFF_M4_CODE_SW': int(),
             'IFF_M4_REPLY_SW': int(),
         })
-        self.cycle_buttons.update({
-            LcdButton.ONE: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
-            LcdButton.TWO: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
-            LcdButton.THREE: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
-            LcdButton.FOUR: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
-            LcdButton.LEFT: CycleButton(ctrl_name='IFF_MASTER_KNB', max_value=4),
-            LcdButton.RIGHT: CycleButton(ctrl_name='IFF_ENABLE_SW', max_value=2),
-            LcdButton.DOWN: CycleButton(ctrl_name='IFF_M4_CODE_SW', max_value=2),
-            LcdButton.UP: CycleButton(ctrl_name='IFF_M4_REPLY_SW', max_value=2),
-        })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
@@ -400,18 +380,6 @@ class F15ESE(AdvancedAircraft):
             'F_UFC_LINE5_DISPLAY': '',
             'F_UFC_LINE6_DISPLAY': '',
         })
-        self.button_actions.update({
-            LcdButton.ONE: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
-            LcdButton.TWO: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
-            LcdButton.THREE: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
-            LcdButton.FOUR: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
-            LcdButton.LEFT: 'F_UFC_PRE_CHAN_L_SEL -3200\n',
-            LcdButton.RIGHT: 'F_UFC_PRE_CHAN_L_SEL 3200\n',
-            LcdButton.DOWN: 'F_UFC_PRE_CHAN_R_SEL -3200\n',
-            LcdButton.UP: 'F_UFC_PRE_CHAN_R_SEL 3200\n',
-            LcdButton.MENU: 'F_UFC_KEY_L_GUARD 1\n|F_UFC_KEY_L_GUARD 0\n',
-            LcdButton.CANCEL: 'F_UFC_KEY_R_GUARD 1\n|F_UFC_KEY_R_GUARD 0\n',
-        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
@@ -463,16 +431,6 @@ class Ka50(AdvancedAircraft):
             'AP_FD_LED': int(),
             'AP_HDG_HOLD_LED': int(),
             'AP_PITCH_HOLD_LED': int(),
-        })
-        self.button_actions.update({
-            LcdButton.ONE: 'PVI_WAYPOINTS_BTN 1\n|PVI_WAYPOINTS_BTN 0\n',
-            LcdButton.TWO: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
-            LcdButton.THREE: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
-            LcdButton.FOUR: 'PVI_TARGETS_BTN 1\n|PVI_TARGETS_BTN 0\n',
-            LcdButton.LEFT: 'PVI_WAYPOINTS_BTN 1\n|PVI_WAYPOINTS_BTN 0\n',
-            LcdButton.RIGHT: 'PVI_FIXPOINTS_BTN 1\n|PVI_FIXPOINTS_BTN 0\n',
-            LcdButton.DOWN: 'PVI_AIRFIELDS_BTN 1\n|PVI_AIRFIELDS_BTN 0\n',
-            LcdButton.UP: 'PVI_TARGETS_BTN 1\n|PVI_TARGETS_BTN 0\n',
         })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
@@ -722,14 +680,6 @@ class AH64DBLKII(AdvancedAircraft):
             'PLT_EUFD_LINE11': '',
             'PLT_EUFD_LINE12': '',
         })
-        self.button_actions.update({
-            LcdButton.TWO: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
-            LcdButton.THREE: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
-            LcdButton.FOUR: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
-            LcdButton.RIGHT: 'PLT_EUFD_RTS 0\n|PLT_EUFD_RTS 1\n',
-            LcdButton.DOWN: 'PLT_EUFD_PRESET 0\n|PLT_EUFD_PRESET 1\n',
-            LcdButton.UP: 'PLT_EUFD_ENT 0\n|PLT_EUFD_ENT 1\n',
-        })
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -966,30 +916,6 @@ class F14B(AdvancedAircraft):
     """F-14B Tomcat."""
     bios_name: str = 'F-14B'
 
-    def __init__(self, lcd_type: LcdInfo) -> None:
-        """
-        Create F-14B Tomcat.
-
-        :param lcd_type: LCD type
-        """
-        super().__init__(lcd_type)
-        self.bios_data.update({
-            'RIO_CAP_CLEAR': int(),
-            'RIO_CAP_SW': int(),
-            'RIO_CAP_NE': int(),
-            'RIO_CAP_ENTER': int(),
-        })
-        self.button_actions.update({
-            LcdButton.ONE: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
-            LcdButton.TWO: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
-            LcdButton.THREE: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
-            LcdButton.FOUR: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
-            LcdButton.LEFT: 'RIO_CAP_CLEAR 1\n|RIO_CAP_CLEAR 0\n',
-            LcdButton.RIGHT: 'RIO_CAP_SW 1\n|RIO_CAP_SW 0\n',
-            LcdButton.DOWN: 'RIO_CAP_NE 1\n|RIO_CAP_NE 0\n',
-            LcdButton.UP: 'RIO_CAP_ENTER 1\n|RIO_CAP_ENTER 0\n',
-        })
-
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
         Draw common part for Mono and Color LCD.
@@ -1037,16 +963,6 @@ class AV8BNA(AdvancedAircraft):
             'AV8BNA_ODU_4_TEXT': '',
             'AV8BNA_ODU_5_SELECT': '',
             'AV8BNA_ODU_5_TEXT': '',
-        })
-        self.button_actions.update({
-            LcdButton.ONE: 'UFC_COM1_SEL -3200\n',
-            LcdButton.TWO: 'UFC_COM1_SEL 3200\n',
-            LcdButton.THREE: 'UFC_COM2_SEL -3200\n',
-            LcdButton.FOUR: 'UFC_COM2_SEL 3200\n',
-            LcdButton.LEFT: 'UFC_COM1_SEL -3200\n',
-            LcdButton.RIGHT: 'UFC_COM1_SEL 3200\n',
-            LcdButton.DOWN: 'UFC_COM2_SEL -3200\n',
-            LcdButton.UP: 'UFC_COM2_SEL 3200\n',
         })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
