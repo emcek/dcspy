@@ -63,9 +63,9 @@ def _api_ver_3_1_0(cfg: DcspyConfigYaml) -> None:
     localappdata = environ.get('LOCALAPPDATA', None)
     user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
     makedirs(name=user_appdata, exist_ok=True)
-    for filename in ['AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml',
-                     'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml']:
-        _copy_file(filename, user_appdata)
+    for filename in ('AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml',
+                     'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml'):
+        _copy_file(filename=filename, to_path=user_appdata)
 
 
 def _api_ver_3_0_0(cfg: DcspyConfigYaml) -> None:
@@ -132,12 +132,12 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     cfg[new_name] = value
 
 
-def _copy_file(filename: str, full_path: Path) -> None:
+def _copy_file(filename: str, to_path: Path) -> None:
     """
     Copy a file from one location to another, only when the file doesn't exist.
 
     :param filename: The name of the file to be copied.
-    :param full_path: The full path where the file should be copied to.
+    :param to_path: The full path where the file should be copied to.
     """
-    if not Path(full_path / filename).is_file():
-        copy(src=DEFAULT_YAML_FILE.parent / filename, dst=full_path)
+    if not Path(to_path / filename).is_file():
+        copy(src=DEFAULT_YAML_FILE.parent / filename, dst=to_path)
