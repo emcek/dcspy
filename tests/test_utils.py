@@ -18,10 +18,7 @@ from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo
     ('3.2.1', ReleaseInfo(
         latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
     ))
-], ids=[
-    'No update',
-    'New version',
-])
+], ids=['No update', 'New version'])
 def test_check_ver_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)

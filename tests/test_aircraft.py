@@ -217,8 +217,7 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'UP - Viper Color',
     'OK - Hornet Color',
     'MENU - Hornet Color',
-    'CANCEL - Hornet Color',
-])
+    'CANCEL - Hornet Color'])
 def test_get_next_value_for_cycle_buttons(plane, btn_name, btn, values, request):
     plane = request.getfixturevalue(plane)
     assert not all(isinstance(cyc_btn.iter, ZigZagIterator) for cyc_btn in plane.cycle_buttons.values())
@@ -281,7 +280,6 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
-
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, request):

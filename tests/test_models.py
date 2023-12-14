@@ -261,7 +261,16 @@ CMSP1 = {
     (CLOCK_ADJUST_PULL, [1, False, False, False, True]),
     (ADI_PITCH_TRIM, [2, False, True, True, False]),
     (ARC210_CHN_KNB, [1, False, False, True, False]),
-], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
+], ids=[
+    'UFC_COMM1_CHANNEL_SELECT',
+    'PLT_WIPER_OFF',
+    'AAP_PAGE',
+    'AAP_CDUPWR',
+    'TACAN_1',
+    'AAP_STEER',
+    'CLOCK_ADJUST_PULL',
+    'ADI_PITCH_TRIM',
+    'ARC210_CHN_KNB'])
 def test_control_input_properties(control, results):
     from dcspy.models import Control
 
