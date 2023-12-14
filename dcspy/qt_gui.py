@@ -362,6 +362,10 @@ class DcsPyQtGui(QMainWindow):
         for row in range(0, no_g_keys + no_lcd_keys):
             for col in range(0, self.keyboard.modes):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
+        if self.current_row != -1 and self.current_col != -1:
+            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row,
+                                            col=self.current_col)
 
     def _make_combo_with_completer_at(self, row: int, col: int, ctrl_list_no_sep: List[str]) -> None:
         """
