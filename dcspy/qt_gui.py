@@ -524,27 +524,53 @@ class DcsPyQtGui(QMainWindow):
         """
         Enable and checked default input interface radio buttons for current identifier.
 
+        Order of execution is important.
+
         :param ctrl_key: ControlKeyData instance
         """
+        self._disable_all_widgets()
+        self._handle_variable_step(ctrl_key)
+        self._handle_set_state(ctrl_key)
+        self._handle_variable_step_and_set_state(ctrl_key)
+        self._handle_fixed_step(ctrl_key)
+        self._handle_action(ctrl_key)
+        self.rb_custom.setEnabled(True)
+
+    def _disable_all_widgets(self) -> None:
+        """Disable all radio button widgets."""
         for widget in self.bg_rb_input_iface.buttons():
             widget.setEnabled(False)
+
+    def _handle_variable_step(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for VariableStep."""
         if ctrl_key.has_variable_step:
             self.rb_variable_step_plus.setEnabled(True)
             self.rb_variable_step_minus.setEnabled(True)
             self.rb_variable_step_plus.setChecked(True)
+
+    def _handle_set_state(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for SetState."""
         if ctrl_key.has_set_state:
             self.rb_set_state.setEnabled(True)
             self.rb_set_state.setChecked(True)
+
+    def _handle_variable_step_and_set_state(self, ctrl_key: ControlKeyData):
+        """Handle the case where the control key has a VariableStep and SetState."""
         if ctrl_key.input_len == 2 and ctrl_key.has_variable_step and ctrl_key.has_set_state:
             self.rb_variable_step_plus.setChecked(True)
+
+    def _handle_fixed_step(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for FixedStep."""
         if ctrl_key.has_fixed_step:
             self.rb_fixed_step_inc.setEnabled(True)
             self.rb_fixed_step_dec.setEnabled(True)
             self.rb_fixed_step_inc.setChecked(True)
+
+    def _handle_action(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for Action."""
         if ctrl_key.has_action:
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
-        self.rb_custom.setEnabled(True)
 
     def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """
