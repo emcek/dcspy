@@ -3,7 +3,7 @@ from itertools import chain, cycle
 from logging import getLogger
 from pathlib import Path
 from pprint import pformat
-from re import search, sub
+from re import search
 from string import whitespace
 from tempfile import gettempdir
 from typing import Dict, List, Sequence, Tuple, Union
