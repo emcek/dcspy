@@ -390,11 +390,3 @@ def test_replace_symbols():
 
 def test_substitute_symbols():
     assert utils.substitute_symbols('123qwe123qwe', ((r'\d+', r'QWE'),)) == 'QWEqweQWEqwe'
-
-
-def test_replace_symbols():
-    assert utils.replace_symbols('1q2w3e', (('1', '4'), ('w', 'W'))) == '4q2W3e'
-
-
-def test_substitute_symbols():
-    assert utils.substitute_symbols('123qwe123qwe', ((r'\d+', r'QWE'),)) == 'QWEqweQWEqwe'
