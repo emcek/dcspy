@@ -13,7 +13,7 @@ from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union, Sequence
 
 import yaml
 from packaging import version
@@ -625,3 +625,29 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     if plane:
         aircraft_aliases = {plane: aircraft_aliases[plane]}
     return aircraft_aliases
+
+
+def substitute_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> str:
+    """
+    Substitute symbols in a string with specified replacements.
+
+    :param value: The input string to be processed
+    :param symbol_replacement: A list of symbol patterns and their corresponding replacements.
+    :return: The processed string with symbols replaced according to the provided symbol_replacement list.
+    """
+    for pattern, replacement in symbol_replacement:
+        value = sub(pattern, replacement, value)
+    return value
+
+
+def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> str:
+    """
+    Replace symbols in a string with specified replacements.
+
+    :param value: The string in which symbols will be replaced.
+    :param symbol_replacement: A sequence of sequences containing the original symbols and their replacement strings.
+    :return: The string with symbols replaced.
+    """
+    for original, replacement in symbol_replacement:
+        value = value.replace(original, replacement)
+    return value

@@ -3,7 +3,7 @@ from itertools import chain, cycle
 from logging import getLogger
 from pathlib import Path
 from pprint import pformat
-from re import search, sub
+from re import search
 from string import whitespace
 from tempfile import gettempdir
 from typing import Dict, List, Sequence, Tuple, Union
@@ -13,6 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 from dcspy import default_yaml, load_yaml
 from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator, get_key_instance
 from dcspy.sdk import lcd_sdk
+from dcspy.utils import replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
 
@@ -282,6 +283,28 @@ class FA18Chornet(AdvancedAircraft):
 class F16C50(AdvancedAircraft):
     """F-16C Viper."""
     bios_name: str = 'F-16C_50'
+    # List page
+    COMMON_SYMBOLS_TO_REPLACE = (
+        ('A\x10\x04', ''), ('\x82', ''), ('\x03', ''), ('\x02', ''), ('\x80', ''), ('\x08', ''), ('\x10', ''),
+        ('\x07', ''), ('\x0f', ''), ('\xfe', ''), ('\xfc', ''), ('\x03', ''), ('\xff', ''), ('\xc0', '')
+    )
+    # degree sign, 'a' to up-down arrow 2195 or black diamond 2666, INVERSE WHITE CIRCLE
+    MONO_SYMBOLS_TO_REPLACE = (('o', '\u00b0'), ('a', '\u2666'), ('*', '\u25d9'))
+    # degree sign, fix up-down triangle arrow, fix to inverse star
+    COLOR_SYMBOLS_TO_REPLACE = (('o', '\u005e'), ('a', '\u0040'), ('*', '\u00d7'))
+    COLOR_SYMBOLS_TO_SUBSTITUTE = (
+        (r'1DEST\s2BNGO\s3VIP\s{2}RINTG', '\u00c1DEST \u00c2BNGO \u00c3VIP  \u0072INTG'),
+        (r'4NAV\s{2}5MAN\s{2}6INS\s{2}EDLNK', '\u00c4NAV  \u00c5MAN  \u00c6INS  \u0065DLNK'),
+        (r'7CMDS\s8MODE\s9VRP\s{2}0MISC', '\u00c7CMDS \u00c8MODE \u00c9VRP  \u00c0MISC'),
+        (r'1CORR\s2MAGV\s3OFP\s{2}RHMCS', '\u00c1CORR \u00c2MAGV \u00c3OFP  \u0072HMCS'),
+        (r'4INSM\s5LASR\s6GPS\s{2}E', '\u00c4INSM \u00c5LASR \u00c6GPS  \u0065'),
+        (r'7DRNG\s8BULL\s9\s{5}0', '\u00c7DRNG \u00c8BULL \u00c9     \u00c0'),
+        (r'(M1\s:\d+\s+)M4(\s+\(\d\).*)', r'\1mÄ\2'),
+        (r'M1(\s:\d+\s+)M4(\s+:\s+\(\d\).*)', r'mÁ\1mÄ\2'),
+        (r'M3(\s+:\d+\s+×\s+\d×[A-Z]+\(\d\).*)', r'mÃ\1'),
+        (r'(\s[\s|×])HUD BLNK([×|\s]\s+)', r'\1hud blnk\2'),
+        (r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2')
+    )
 
     def __init__(self, lcd_type: LcdInfo) -> None:
         """
@@ -335,30 +358,44 @@ class F16C50(AdvancedAircraft):
         if 'DED_LINE_' in selector:
             value = str(value)
             LOG.debug(f'{type(self).__name__} {selector} org  : "{value}"')
-            for character in ['A\x10\x04', '\x82', '\x03', '\x02', '\x80', '\x08', '\x10', '\x07', '\x0f', '\xfe', '\xfc', '\x03', '\xff', '\xc0']:
-                value = value.replace(character, '')  # List page
-            if value and value[-1] == '@':
-                value = value.replace('@', '')  # List - 6
-            if self.lcd.type == LcdType.MONO:
-                value = value.replace('o', '\u00b0')  # 'o' to degree sign
-                value = value.replace('a', '\u2666')  # 'a' to up-down arrow 2195 or black diamond 2666
-                value = value.replace('*', '\u25d9')  # INVERSE WHITE CIRCLE
-            elif self.ded_font and self.lcd.type == LcdType.COLOR:
-                value = value.replace('o', '\u005e')  # replace 'o' to degree sign
-                value = value.replace('a', '\u0040')  # fix up-down triangle arrow
-                value = value.replace('*', '\u00d7')  # fix to inverse star
-                value = sub(r'1DEST\s2BNGO\s3VIP\s{2}RINTG', '\u00c1DEST \u00c2BNGO \u00c3VIP  \u0072INTG', value)
-                value = sub(r'4NAV\s{2}5MAN\s{2}6INS\s{2}EDLNK', '\u00c4NAV  \u00c5MAN  \u00c6INS  \u0065DLNK', value)
-                value = sub(r'7CMDS\s8MODE\s9VRP\s{2}0MISC', '\u00c7CMDS \u00c8MODE \u00c9VRP  \u00c0MISC', value)
-                value = sub(r'1CORR\s2MAGV\s3OFP\s{2}RHMCS', '\u00c1CORR \u00c2MAGV \u00c3OFP  \u0072HMCS', value)
-                value = sub(r'4INSM\s5LASR\s6GPS\s{2}E', '\u00c4INSM \u00c5LASR \u00c6GPS  \u0065', value)
-                value = sub(r'7DRNG\s8BULL\s9\s{5}0', '\u00c7DRNG \u00c8BULL \u00c9     \u00c0', value)
-                value = sub(r'(M1\s:\d+\s+)M4(\s+\(\d\).*)', r'\1mÄ\2', value)
-                value = sub(r'M1(\s:\d+\s+)M4(\s+:\s+\(\d\).*)', r'mÁ\1mÄ\2', value)
-                value = sub(r'M3(\s+:\d+\s+×\s+\d×[A-Z]+\(\d\).*)', r'mÃ\1', value)
-                value = sub(r'(\s[\s|×])HUD BLNK([×|\s]\s+)', r'\1hud blnk\2', value)
-                value = sub(r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2', value)
+            value = self._clean_and_replace(value)
         super().set_bios(selector, value)
+
+    def _clean_and_replace(self, value: str) -> str:
+        """
+        Clean and replace garbage characters before print to LCD.
+
+        :param value: The string value to be cleaned and replaced.
+        :return: The cleaned and replaced string value.
+        """
+        value = replace_symbols(value, self.COMMON_SYMBOLS_TO_REPLACE)
+        if value and value[-1] == '@':
+            value = value.replace('@', '')  # List - 6
+        if self.lcd.type == LcdType.MONO:
+            value = self._replace_symbols_for_mono_lcd(value)
+        elif self.ded_font and self.lcd.type == LcdType.COLOR:
+            value = self._replace_symbols_for_color_lcd(value)
+        return value
+
+    def _replace_symbols_for_mono_lcd(self, value: str) -> str:
+        """
+        Clean and replace garbage characters for Mono LCD.
+
+        :param value: The input string that needs to be modified.
+        :return: The modified string after replacing symbols based on the MONO_SYMBOLS_TO_REPLACE dictionary.
+        """
+        return replace_symbols(value, self.MONO_SYMBOLS_TO_REPLACE)
+
+    def _replace_symbols_for_color_lcd(self, value: str) -> str:
+        """
+        Clean and replace garbage characters for Color LCD.
+
+        :param value: The input string value.
+        :return: The modified string with replaced symbols.
+        """
+        value = replace_symbols(value, self.COLOR_SYMBOLS_TO_REPLACE)
+        value = substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
+        return value
 
 
 class F15ESE(AdvancedAircraft):
