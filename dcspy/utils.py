@@ -271,7 +271,7 @@ def is_git_repo(dir_path: str) -> bool:
 
 
 def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git',
-                      progress: git.types.CallableProgress = None) -> str:
+                      progress: Optional[git.RemoteProgress] = None) -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -308,7 +308,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.types.CallableProgress = None) -> 'git.Repo':
+def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: Optional[git.RemoteProgress] = None) -> 'git.Repo':
     """
     Checkout repository at master branch or clone it when not exists in system.
 
@@ -326,7 +326,7 @@ def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', prog
         bios_repo.git.checkout(checkout_ref)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)  # type: ignore
     return bios_repo
 
 
