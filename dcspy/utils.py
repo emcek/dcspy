@@ -13,7 +13,7 @@ from re import search
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, ClassVar, Dict, List, Optional, Tuple, Union, Sequence
+from typing import Any, ClassVar, Dict, List, Optional, Sequence, Tuple, Union
 
 import yaml
 from packaging import version
