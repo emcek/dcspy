@@ -299,7 +299,7 @@ def test_run_pip_command_failed():
 def test_get_full_bios_for_plane(resources):
     a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
     assert len(a10_model.root) == 64
-    assert sum(len(values) for values in a10_model.root.values()) == 775
+    assert sum(len(values) for values in a10_model.root.values()) == 772
 
 
 def test_get_inputs_for_plane(resources):
@@ -391,3 +391,11 @@ def test_clone_progress():
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_get_config_yaml_location():
     assert utils.get_config_yaml_location() == Path(environ.get('LOCALAPPDATA', None)) / 'dcspy'
+
+
+def test_replace_symbols():
+    assert utils.replace_symbols('1q2w3e', (('1', '4'), ('w', 'W'))) == '4q2W3e'
+
+
+def test_substitute_symbols():
+    assert utils.substitute_symbols('123qwe123qwe', ((r'\d+', r'QWE'),)) == 'QWEqweQWEqwe'
