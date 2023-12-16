@@ -418,7 +418,7 @@ class DcsPyQtGui(QMainWindow):
           - back to previous plane or first in list
 
         :param plane_name: BIOS plane name
-        :return:
+        :return: True when rebuild is not needed, False otherwise.
         """
         try:
             plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
@@ -429,25 +429,46 @@ class DcsPyQtGui(QMainWindow):
 
         if self.plane_aliases != plane_aliases[plane_name]:
             try:
-                self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=self.bios_path)
-                self.plane_aliases = plane_aliases[plane_name]
-                LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
-                self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
-                return False
-            except ValidationError as exc:
-                LOG.debug(f'{plane_name}: {plane_aliases}\nValidation errors: {exc}')
-                self._show_custom_msg_box(
-                    kind_of=QMessageBox.Icon.Warning,
-                    title=f'Warning with {plane_name}',
-                    text=f'Can not read info-model of {plane_name}. Regenerate\ninfo-model might help. Please follow instruction: ',
-                    info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n3. Click Fly\n4. Try again',
-                    detail_txt=f'{exc.errors()}'
-                )
-                if len(self.plane_aliases) > 1:
-                    self.combo_planes.setCurrentText(self.plane_aliases[1])
-                else:
-                    self.combo_planes.setCurrentIndex(0)
-                return True
+                return self._rebuild_needed(plane_aliases, plane_name)
+            except ValidationError as validation_err:
+                return self._rebuild_not_needed(plane_aliases, plane_name, validation_err)
+
+    def _rebuild_needed(self, plane_aliases: Dict[str, List[str]], plane_name: str) -> bool:
+        """
+        Rebuild is needed.
+
+        :param plane_aliases: list of all yaml files for plane definition
+        :param plane_name: BIOS plane name
+        :return: False - the rebuild is needed
+        """
+        self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=self.bios_path)
+        self.plane_aliases = plane_aliases[plane_name]
+        LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
+        self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
+        return False
+
+    def _rebuild_not_needed(self, plane_aliases, plane_name: str, exc: ValidationError) -> bool:
+        """
+        Rebuild is not needed.
+
+        :param plane_aliases: list of all yaml files for plane definition
+        :param plane_name: BIOS plane name
+        :param exc: The ValidationError object containing the validation errors.
+        :return: True - the rebuild is not needed
+        """
+        LOG.debug(f'{plane_name}: {plane_aliases}\nValidation errors: {exc}')
+        self._show_custom_msg_box(
+            kind_of=QMessageBox.Icon.Warning,
+            title=f'Warning with {plane_name}',
+            text=f'Can not read info-model of {plane_name}. Regenerate\ninfo-model might help. Please follow instruction: ',
+            info_txt=f'1. Stop DCSpy client (if running)\n2. Start any Instant Action for {plane_name}\n3. Click Fly\n4. Try again',
+            detail_txt=f'{exc.errors()}'
+        )
+        if len(self.plane_aliases) > 1:
+            self.combo_planes.setCurrentText(self.plane_aliases[1])
+        else:
+            self.combo_planes.setCurrentIndex(0)
+        return True
 
     def _cell_ctrl_content_changed(self, text: str, widget: QComboBox, row: int, col: int) -> None:
         """
@@ -526,27 +547,53 @@ class DcsPyQtGui(QMainWindow):
         """
         Enable and checked default input interface radio buttons for current identifier.
 
+        Order of execution is important.
+
         :param ctrl_key: ControlKeyData instance
         """
+        self._disable_all_widgets()
+        self._handle_variable_step(ctrl_key)
+        self._handle_set_state(ctrl_key)
+        self._handle_variable_step_and_set_state(ctrl_key)
+        self._handle_fixed_step(ctrl_key)
+        self._handle_action(ctrl_key)
+        self.rb_custom.setEnabled(True)
+
+    def _disable_all_widgets(self) -> None:
+        """Disable all radio button widgets."""
         for widget in self.bg_rb_input_iface.buttons():
             widget.setEnabled(False)
+
+    def _handle_variable_step(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for VariableStep."""
         if ctrl_key.has_variable_step:
             self.rb_variable_step_plus.setEnabled(True)
             self.rb_variable_step_minus.setEnabled(True)
             self.rb_variable_step_plus.setChecked(True)
+
+    def _handle_set_state(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for SetState."""
         if ctrl_key.has_set_state:
             self.rb_set_state.setEnabled(True)
             self.rb_set_state.setChecked(True)
+
+    def _handle_variable_step_and_set_state(self, ctrl_key: ControlKeyData):
+        """Handle the case where the control key has a VariableStep and SetState."""
         if ctrl_key.input_len == 2 and ctrl_key.has_variable_step and ctrl_key.has_set_state:
             self.rb_variable_step_plus.setChecked(True)
+
+    def _handle_fixed_step(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for FixedStep."""
         if ctrl_key.has_fixed_step:
             self.rb_fixed_step_inc.setEnabled(True)
             self.rb_fixed_step_dec.setEnabled(True)
             self.rb_fixed_step_inc.setChecked(True)
+
+    def _handle_action(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for Action."""
         if ctrl_key.has_action:
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
-        self.rb_custom.setEnabled(True)
 
     def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """

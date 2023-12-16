@@ -14,14 +14,14 @@ from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, ClassVar, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Any, ClassVar, Dict, Generator, List, Optional, Sequence, Tuple, Union
 
 import yaml
 from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo
+from dcspy.models import CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo
 
 try:
     import git
@@ -455,68 +455,119 @@ class CloneProgress(git.RemoteProgress):
 
 def collect_debug_data() -> Path:
     """
-    Collect add zipp all data for troubleshooting.
+    Collect and zip all data for troubleshooting.
 
     :return: Path object to zip file
     """
-    aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
-    user_appdata = get_config_yaml_location()
-    config_file = Path(user_appdata / CONFIG_YAML).resolve()
-
+    config_file = Path(get_config_yaml_location() / CONFIG_YAML).resolve()
     conf_dict = load_yaml(config_file)
+    sys_data = _get_sys_file(conf_dict)
+
+    zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
+    with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
+        zipf.write(sys_data, arcname=sys_data.name)
+        for log_file in _get_log_files():
+            zipf.write(log_file, arcname=log_file.name)
+        for yaml_file in _get_yaml_files(config_file):
+            zipf.write(yaml_file, arcname=yaml_file.name)
+        for png in _get_png_files():
+            zipf.write(png, arcname=png.name)
+
+    return zip_file
+
+
+def _get_sys_file(conf_dict: Dict[str, Any]) -> Path:
+    """
+    Save system information to file and return its path.
+
+    :param conf_dict: A dictionary containing configuration information.
+    :return: A Path object representing the path to the system data file.
+    """
+    system_info = _fetch_system_info(conf_dict)
+    sys_data = Path(gettempdir()) / 'system_data.txt'
+    with open(sys_data, 'w+') as debug_file:
+        debug_file.write(system_info)
+    return sys_data
+
+
+def _fetch_system_info(conf_dict: Dict[str, Any]) -> str:
+    """
+    Fetch system information.
+
+    :param conf_dict: A dictionary containing configuration information.
+    :return: system data as string
+    """
     name = uname()
     pyver = (python_version(), python_implementation())
     pyexec = sys.executable
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
-    git_ver = (0, 0, 0, 0)
-    head_commit = 'N/A'
-    try:
-        import git
-        git_ver = git.cmd.Git().version_info
-        head_commit = git.Repo(Path(gettempdir()) / 'dcsbios_git').head.commit
-    except (git.exc.NoSuchPathError, ImportError):
-        pass
-
-    yaml_files = [
-        Path(dirpath) / filename
-        for dirpath, _, filenames in walk(config_file.parent)
-        for filename in filenames
-        if filename.endswith('yaml')
-    ]
-
+    git_ver, head_commit = _fetch_git_data()
     lgs_dir = '\n'.join([
         str(Path(dirpath) / filename)
         for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
         for filename in filenames
     ])
+    return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
 
-    png_files = [
+
+def _fetch_git_data() -> Tuple[Sequence[int], str]:
+    """
+    Fetch Git version and SHA of HEAD commit.
+
+    :return: tuple of (version) and SHA of HEAD commit
+    """
+    try:
+        import git
+        git_ver = git.cmd.Git().version_info
+        head_commit = str(git.Repo(DCS_BIOS_REPO_DIR).head.commit)
+    except (git.exc.NoSuchPathError, ImportError):
+        git_ver = (0, 0, 0, 0)
+        head_commit = 'N/A'
+    return git_ver, head_commit
+
+
+def _get_log_files() -> Generator[Path, None, None]:
+    """
+    Get path to all logg files.
+
+    :return: generator of path to log files
+    """
+    return (
+        Path(gettempdir()) / logfile
+        for logfile in glob(str(Path(gettempdir()) / 'dcspy.log*'))
+    )
+
+
+def _get_yaml_files(config_file) -> Generator[Path, None, None]:
+    """
+    Get path to all configuration yaml files.
+
+    :param config_file:
+    :return: generator of path to yaml files
+    """
+    return (
+        Path(dirpath) / filename
+        for dirpath, _, filenames in walk(config_file.parent)
+        for filename in filenames
+        if filename.endswith('yaml')
+    )
+
+
+def _get_png_files() -> Generator[Path, None, None]:
+    """
+    Get path to png screenshots for all airplanes.
+
+    :return: generator of path to png files
+    """
+    aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE',
+                 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
+    return (
         Path(dirpath) / filename
         for dirpath, _, filenames in walk(gettempdir())
         for filename in filenames
         if any(True for aircraft in aircrafts if aircraft in filename and filename.endswith('png'))
-    ]
-
-    log_files = []
-    for logfile in glob(str(Path(gettempdir()) / 'dcspy.log*')):
-        log_files.append(Path(Path(gettempdir()) / logfile))
-    sys_data = Path(gettempdir()) / 'system_data.txt'
-    zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
-
-    with open(sys_data, 'w+') as debug_file:
-        debug_file.write(f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}')
-
-    with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
-        zipf.write(sys_data, arcname=sys_data.name)
-        for log_file in log_files:
-            zipf.write(log_file, arcname=log_file.name)
-        for yaml_file in yaml_files:
-            zipf.write(yaml_file, arcname=yaml_file.name)
-        for png in png_files:
-            zipf.write(png, arcname=png.name)
-
-    return zip_file
+    )
 
 
 def get_config_yaml_location() -> Path:
