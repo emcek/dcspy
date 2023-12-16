@@ -1,10 +1,11 @@
 ## 3.1.0
 * LCD buttons can be assigned to any control/instrument like G-Keys
 * Report progress of live DCS-BIOS cloning repository gradually
+* Add progress when pulling DCS-BIOS repository
 * Internal:
   * Update to Pyside6 to 6.6.1
-  * Add more unit tests for QT GUI module
   * Add caching when paring DCS-BIOS yaml files for planes
+  * Support old and new location of version file for DCS-BIOS
 
 ## 3.0.0
 * Use PySide6 instead of Custom Tkinter framework
