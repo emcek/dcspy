@@ -10,7 +10,7 @@ from os import environ, makedirs, walk
 from pathlib import Path
 from platform import python_implementation, python_version, uname
 from pprint import pformat
-from re import search
+from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
