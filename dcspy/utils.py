@@ -498,15 +498,16 @@ def collect_debug_data() -> Path:
         if any(True for aircraft in aircrafts if aircraft in filename and filename.endswith('png'))
     ]
 
-    log_files = []
-    for logfile in glob(str(Path(gettempdir()) / 'dcspy.log*')):
-        log_files.append(Path(Path(gettempdir()) / logfile))
-    sys_data = Path(gettempdir()) / 'system_data.txt'
-    zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
+    log_files = [
+        Path(gettempdir()) / logfile
+        for logfile in glob(str(Path(gettempdir()) / 'dcspy.log*'))
+    ]
 
+    sys_data = Path(gettempdir()) / 'system_data.txt'
     with open(sys_data, 'w+') as debug_file:
         debug_file.write(f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}')
 
+    zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
     with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
         zipf.write(sys_data, arcname=sys_data.name)
         for log_file in log_files:
