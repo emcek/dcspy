@@ -235,16 +235,23 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     :return: ReleaseInfo named tuple
     """
     result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
-    try:
-        with open(file=Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8') as cd_lua:
+    new_location = Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
+    old_location = Path(bios_path) / 'lib' / 'CommonData.lua'
+
+    if new_location.is_file():
+        with open(file=new_location, encoding='utf-8') as cd_lua:
             cd_lua_data = cd_lua.read()
-    except FileNotFoundError as err:
-        LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
+    elif old_location.is_file():
+        with open(file=old_location, encoding='utf-8') as cd_lua:
+            cd_lua_data = cd_lua.read()
     else:
-        bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
-        if bios_re:
-            bios = version.parse(bios_re.group(1))
-            result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
+        cd_lua_data = ''
+        LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
+
+    bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
+    if bios_re:
+        bios = version.parse(bios_re.group(1))
+        result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
     return result
 
 
@@ -283,7 +290,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
 
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
-        f_info = bios_repo.remotes[0].pull()
+        f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
         try:
             bios_repo.git.checkout(git_ref)
@@ -434,6 +441,7 @@ class CloneProgress(git.RemoteProgress):
         :return: stage name
         """
         op_code_masked = op_code & self.OP_MASK
+        print(op_code_masked)
         return self.OP_CODE_MAP.get(op_code_masked, '?').title()
 
     def update(self, op_code, cur_count, max_count=None, message=''):
@@ -445,6 +453,7 @@ class CloneProgress(git.RemoteProgress):
         :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
         :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
         """
+        print(op_code, cur_count, max_count, message)
         if op_code & git.RemoteProgress.BEGIN:
             self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
 
