@@ -2,6 +2,7 @@ import json
 import sys
 import zipfile
 from datetime import datetime
+from functools import lru_cache
 from glob import glob
 from itertools import chain
 from logging import getLogger
@@ -556,6 +557,7 @@ def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(data)
 
 
+@lru_cache
 def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     """
     Collect full BIOS for plane with name.
@@ -573,6 +575,7 @@ def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     return DcsBiosPlaneData.model_validate(local_json)
 
 
+@lru_cache
 def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
     """
     Get dict with all not empty inputs for plane.
@@ -601,6 +604,7 @@ def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]
     return result_list
 
 
+@lru_cache
 def get_planes_list(bios_dir: Path) -> List[str]:
     """
     Get list of all DCS-BIOS supported planes with clickable cockpit.
@@ -612,6 +616,7 @@ def get_planes_list(bios_dir: Path) -> List[str]:
     return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
 
 
+@lru_cache
 def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, List[str]]:
     """
     Get list of all yaml files for plane with name.
