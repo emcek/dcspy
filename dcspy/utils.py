@@ -642,6 +642,7 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
 def substitute_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> str:
     """
     Substitute symbols in a string with specified replacements.
+
     :param value: The input string to be processed
     :param symbol_replacement: A list of symbol patterns and their corresponding replacements.
     :return: The processed string with symbols replaced according to the provided symbol_replacement list.
@@ -654,6 +655,7 @@ def substitute_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) 
 def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> str:
     """
     Replace symbols in a string with specified replacements.
+
     :param value: The string in which symbols will be replaced.
     :param symbol_replacement: A sequence of sequences containing the original symbols and their replacement strings.
     :return: The string with symbols replaced.
