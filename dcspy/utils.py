@@ -442,7 +442,6 @@ class CloneProgress(git.RemoteProgress):
         :return: stage name
         """
         op_code_masked = op_code & self.OP_MASK
-        print(op_code_masked)
         return self.OP_CODE_MAP.get(op_code_masked, '?').title()
 
     def update(self, op_code, cur_count, max_count=None, message=''):
@@ -454,7 +453,6 @@ class CloneProgress(git.RemoteProgress):
         :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
         :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
         """
-        print(op_code, cur_count, max_count, message)
         if op_code & git.RemoteProgress.BEGIN:
             self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
 
