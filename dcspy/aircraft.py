@@ -302,8 +302,8 @@ class F16C50(AdvancedAircraft):
         (r'(M1\s:\d+\s+)M4(\s+\(\d\).*)', r'\1mÄ\2'),
         (r'M1(\s:\d+\s+)M4(\s+:\s+\(\d\).*)', r'mÁ\1mÄ\2'),
         (r'M3(\s+:\d+\s+×\s+\d×[A-Z]+\(\d\).*)', r'mÃ\1'),
-        (r'(\s[\s|×])HUD BLNK([×|\s]\s+)', r'\1hud blnk\2'),
-        (r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2')
+        (r'(\s[\s|×])HUD BLNK([×|\s]\s+)', r'\1hud blnk\2'),
+        (r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2')
     )
 
     def __init__(self, lcd_type: LcdInfo) -> None:
