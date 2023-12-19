@@ -236,16 +236,23 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     :return: ReleaseInfo named tuple
     """
     result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
-    try:
-        with open(file=Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua', encoding='utf-8') as cd_lua:
+    new_location = Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
+    old_location = Path(bios_path) / 'lib' / 'CommonData.lua'
+
+    if new_location.is_file():
+        with open(file=new_location, encoding='utf-8') as cd_lua:
             cd_lua_data = cd_lua.read()
-    except FileNotFoundError as err:
-        LOG.debug(f'While checking DCS-BIOS version {type(err).__name__}: {err.filename}')
+    elif old_location.is_file():
+        with open(file=old_location, encoding='utf-8') as cd_lua:
+            cd_lua_data = cd_lua.read()
     else:
-        bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
-        if bios_re:
-            bios = version.parse(bios_re.group(1))
-            result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
+        cd_lua_data = ''
+        LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
+
+    bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
+    if bios_re:
+        bios = version.parse(bios_re.group(1))
+        result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
     return result
 
 
@@ -265,7 +272,7 @@ def is_git_repo(dir_path: str) -> bool:
 
 
 def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git',
-                      progress: git.types.CallableProgress = None) -> str:
+                      progress: Optional[git.RemoteProgress] = None) -> str:
     """
     Update DCS-BIOS git repository.
 
@@ -284,7 +291,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
 
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
-        f_info = bios_repo.remotes[0].pull()
+        f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
         try:
             bios_repo.git.checkout(git_ref)
@@ -302,7 +309,7 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.types.CallableProgress = None) -> 'git.Repo':
+def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: Optional[git.RemoteProgress] = None) -> 'git.Repo':
     """
     Checkout repository at master branch or clone it when not exists in system.
 
@@ -320,7 +327,7 @@ def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', prog
         bios_repo.git.checkout(checkout_ref)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)  # type: ignore
     return bios_repo
 
 
