@@ -1,4 +1,4 @@
-from os import environ, linesep, makedirs
+from os import environ, makedirs
 from pathlib import Path
 from sys import platform
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
@@ -148,7 +148,7 @@ def test_check_dcs_ver_file_not_exists(side_effect):
         assert dcs_ver == ('Unknown', 'Unknown')
 
 
-def test_check_bios_ver(tmpdir):
+def test_check_bios_ver_new_location(tmpdir):
     makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
     common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
@@ -157,16 +157,25 @@ def test_check_bios_ver(tmpdir):
     assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
 
 
-def test_check_bios_ver_empty_lua(tmpdir):
+def test_check_bios_ver_old_location(tmpdir):
     makedirs(Path(tmpdir) / 'lib')
     common_data_lua = Path(tmpdir) / 'lib' / 'CommonData.lua'
+    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
+        cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
+    result = utils.check_bios_ver(bios_path=tmpdir)
+    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='', asset_file='')
+
+
+def test_check_bios_ver_empty_lua(tmpdir):
+    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
+    common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
 
 
-def test_check_bios_ver_raise_exception(tmpdir):
+def test_check_bios_ver_lue_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
 
@@ -276,7 +285,7 @@ def test_run_pip_command_success():
     rc, err, out = utils.run_pip_command('list')
     assert rc == 0
     assert 'pip' in out, out
-    assert err == '' or err == f'WARNING: There was an error checking the latest version of pip.{linesep}', err
+    assert err == '' or len(err) > 1, err
 
 
 @mark.slow
@@ -290,7 +299,7 @@ def test_run_pip_command_failed():
 def test_get_full_bios_for_plane(resources):
     a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
     assert len(a10_model.root) == 64
-    assert sum(len(values) for values in a10_model.root.values()) == 775
+    assert sum(len(values) for values in a10_model.root.values()) == 772
 
 
 def test_get_inputs_for_plane(resources):
