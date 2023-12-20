@@ -37,6 +37,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.1.0'
 LOG = getLogger(__name__)
+NO_MSG_BOX = environ.get('DCSPY_NO_MSG_BOXES', 0)
 
 
 class DcsPyQtGui(QMainWindow):
@@ -795,8 +796,9 @@ class DcsPyQtGui(QMainWindow):
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message=f'Wrong drive: {drive_letter}\n\nCheck DCS-BIOS path.')
                 result = False
         else:
-            reply = QMessageBox.question(self, 'Install DCS-BIOS', f'There is no DCS-BIOS installed at:\n{self.bios_path}\n\nDo you want install?',
-                                         defaultButton=QMessageBox.StandardButton.Yes)
+            reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Install DCS-BIOS',
+                                           message=f'There is no DCS-BIOS installed at:\n{self.bios_path}\n\nDo you want install?',
+                                           defaultButton=QMessageBox.StandardButton.Yes)
             result = bool(reply == QMessageBox.StandardButton.Yes)
         return result
 
@@ -915,7 +917,8 @@ class DcsPyQtGui(QMainWindow):
                       f'New version {rel_info.ver} available.\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
-        reply = QMessageBox.question(self, 'Update DCS-BIOS', msg_txt, defaultButton=QMessageBox.StandardButton.Yes)
+        reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCS-BIOS', message=msg_txt,
+                                       defaultButton=QMessageBox.StandardButton.Yes)
         if reply == QMessageBox.StandardButton.Yes:
             self._update_release_bios(rel_info=rel_info)
 
@@ -938,7 +941,8 @@ class DcsPyQtGui(QMainWindow):
         copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path)
         install_result = self._handling_export_lua(tmp_dir)
         if 'github' in install_result:
-            reply = QMessageBox.question(self, 'Open browser', install_result, defaultButton=QMessageBox.StandardButton.Yes)
+            reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Open browser', message=install_result,
+                                           defaultButton=QMessageBox.StandardButton.Yes)
             if reply == QMessageBox.StandardButton.Yes:
                 open_new_tab(r'https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
         else:
@@ -1246,19 +1250,24 @@ class DcsPyQtGui(QMainWindow):
             bg = 'lightgreen'
         return f'QComboBox{{color: {fg};background-color: {bg};}} QComboBox QAbstractItemView {{background-color: {bg};}}'
 
-    def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '') -> None:
+    def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '', **kwargs) -> QMessageBox.StandardButton:
         """
         Show any QMessageBox delivered with Qt.
 
         :param kind_of: any of MsgBoxTypes - information, question, warning, critical, about or aboutQt
         :param title: Title of modal window
         :param message: text of message, default is empty
+        :param kwargs: Additional keyword arguments for customizing the message box
+        :return: The standard button clicked by the user
         """
-        message_box = getattr(QMessageBox, kind_of.value)
-        if kind_of == MsgBoxTypes.ABOUT_QT:
-            message_box(self, title)
-        else:
-            message_box(self, title, message)
+        result = QMessageBox.StandardButton.NoButton
+        if not NO_MSG_BOX:
+            message_box = getattr(QMessageBox, kind_of.value)
+            if kind_of == MsgBoxTypes.ABOUT_QT:
+                result = message_box(self, title, **kwargs)
+            else:
+                result = message_box(self, title, message, **kwargs)
+        return result
 
     def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: Optional[str] = None,
                              buttons: Optional[QMessageBox.StandardButton] = None) -> int:
@@ -1272,15 +1281,16 @@ class DcsPyQtGui(QMainWindow):
         :param buttons: tuple of buttons
         :return: code of pushed button as integer code
         """
-        msg = QMessageBox(text=text, parent=self)
-        msg.setIcon(kind_of)
-        msg.setWindowTitle(title)
-        msg.setInformativeText(info_txt)
-        if detail_txt:
-            msg.setDetailedText(detail_txt)
-        if buttons:
-            msg.setStandardButtons(buttons)
-        return msg.exec()
+        if not NO_MSG_BOX:
+            msg = QMessageBox(text=text, parent=self)
+            msg.setIcon(kind_of)
+            msg.setWindowTitle(title)
+            msg.setInformativeText(info_txt)
+            if detail_txt:
+                msg.setDetailedText(detail_txt)
+            if buttons:
+                msg.setStandardButtons(buttons)
+            return msg.exec()
 
     def event_set(self) -> None:
         """Set event to close running thread."""

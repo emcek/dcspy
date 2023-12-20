@@ -299,7 +299,7 @@ def test_run_pip_command_failed():
 def test_get_full_bios_for_plane(resources):
     a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
     assert len(a10_model.root) == 64
-    assert sum(len(values) for values in a10_model.root.values()) == 772
+    assert sum(len(values) for values in a10_model.root.values()) == 775
 
 
 def test_get_inputs_for_plane(resources):
