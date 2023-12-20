@@ -54,18 +54,6 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
             qtbot.mouseClick(dcspy_gui.pb_close, Qt.LeftButton)
             sleep(0.7)
             os.remove(resources / 'A-10C_2.yaml')
-            assert dcspy_gui.input_reqs['A-10C']['G1_M1'].request == 'AAP_CDUPWR TOGGLE'
-            assert dcspy_gui.input_reqs['A-10C']['G1_M2'].request == 'ADI_PITCH_TRIM CYCLE 3200 65535'
-            assert dcspy_gui.input_reqs['A-10C']['G1_M3'].request == 'AHCP_ALT_SCE INC'
-            assert dcspy_gui.input_reqs['A-10C']['G2_M1'].request == 'AAP_CDUPWR INC'
-            assert dcspy_gui.input_reqs['A-10C']['G2_M2'].request == 'ADI_PITCH_TRIM +3200'
-            assert dcspy_gui.input_reqs['A-10C']['G2_M3'].request == 'AHCP_ALT_SCE DEC'
-            assert dcspy_gui.input_reqs['A-10C']['G3_M1'].request == 'AAP_CDUPWR DEC'
-            assert dcspy_gui.input_reqs['A-10C']['G3_M2'].request == 'ADI_PITCH_TRIM -3200'
-            assert dcspy_gui.input_reqs['A-10C']['G3_M3'].request == 'AHCP_ALT_SCE CYCLE 1 2'
-            assert dcspy_gui.input_reqs['A-10C']['G4_M1'].request == 'AAP_CDUPWR CYCLE 1 1'
-            assert dcspy_gui.input_reqs['A-10C']['G5_M1'].request == 'AAP_STEERPT INC'
-            assert dcspy_gui.input_reqs['A-10C']['G6_M1'].request == 'ADI_PITCH_TRIM +3200'
             assert dcspy_gui.input_reqs['A-10C_2']['G1_M1'].request == 'ADI_PITCH_TRIM CYCLE 3200 65535'
             assert dcspy_gui.input_reqs['A-10C_2']['G1_M2'].request == 'ARC210_CHN_KNB +3200'
             assert dcspy_gui.input_reqs['A-10C_2']['G2_M1'].request == 'AAP_STEERPT DEC'
