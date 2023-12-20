@@ -317,17 +317,7 @@ class F16C50(AdvancedAircraft):
         self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
-        self.bios_data.update({
-            'DED_LINE_1': '',
-            'DED_LINE_2': '',
-            'DED_LINE_3': '',
-            'DED_LINE_4': '',
-            'DED_LINE_5': '',
-            'IFF_MASTER_KNB': int(),
-            'IFF_ENABLE_SW': int(),
-            'IFF_M4_CODE_SW': int(),
-            'IFF_M4_REPLY_SW': int(),
-        })
+        self.bios_data.update({f'DED_LINE_{i}': '' for i in range(1, 6)})
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
@@ -409,14 +399,7 @@ class F15ESE(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.bios_data.update({
-            'F_UFC_LINE1_DISPLAY': '',
-            'F_UFC_LINE2_DISPLAY': '',
-            'F_UFC_LINE3_DISPLAY': '',
-            'F_UFC_LINE4_DISPLAY': '',
-            'F_UFC_LINE5_DISPLAY': '',
-            'F_UFC_LINE6_DISPLAY': '',
-        })
+        self.bios_data.update({f'F_UFC_LINE{i}_DISPLAY': '' for i in range(1, 7)})
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
@@ -703,20 +686,7 @@ class AH64DBLKII(AdvancedAircraft):
         super().__init__(lcd_type)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
-        self.bios_data.update({
-            'PLT_EUFD_LINE1': '',
-            'PLT_EUFD_LINE2': '',
-            'PLT_EUFD_LINE3': '',
-            'PLT_EUFD_LINE4': '',
-            'PLT_EUFD_LINE5': '',
-            'PLT_EUFD_LINE6': '',
-            'PLT_EUFD_LINE7': '',
-            'PLT_EUFD_LINE8': '',
-            'PLT_EUFD_LINE9': '',
-            'PLT_EUFD_LINE10': '',
-            'PLT_EUFD_LINE11': '',
-            'PLT_EUFD_LINE12': '',
-        })
+        self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 13)})
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
