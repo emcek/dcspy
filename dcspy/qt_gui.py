@@ -127,6 +127,8 @@ class DcsPyQtGui(QMainWindow):
         except FileNotFoundError as exc:
             message = f'Folder not exists: \n{self.config["dcsbios"]}\n\nCheck DCS-BIOS path.\n\n{exc}'
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Planes List', message=message)
+        except TypeError as exc:
+            LOG.warning(exc, exc_info=True)
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
@@ -1040,29 +1042,32 @@ class DcsPyQtGui(QMainWindow):
         :param cfg: dictionary with configuration
         """
         icon_map = {0: 'a_icons_only', 1: 'a_text_only', 2: 'a_text_beside', 3: 'a_text_under'}
-
-        self.cb_autostart.setChecked(cfg['autostart'])
-        self.cb_show_gui.setChecked(cfg['show_gui'])
-        self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
-        self.cb_check_ver.setChecked(cfg['check_ver'])
-        self.cb_verbose.setChecked(cfg['verbose'])
-        self.cb_ded_font.setChecked(cfg['f16_ded_font'])
-        self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
-        self.le_font_name.setText(cfg['font_name'])
-        self.sp_completer.setValue(cfg['completer_items'])
-        self._completer_items = cfg['completer_items']
-        self.combo_planes.setCurrentText(cfg['current_plane'])
-        self.mono_font = {'large': cfg['font_mono_l'], 'medium': cfg['font_mono_m'], 'small': cfg['font_mono_s']}
-        self.color_font = {'large': cfg['font_color_l'], 'medium': cfg['font_color_m'], 'small': cfg['font_color_s']}
-        getattr(self, f'rb_{cfg["keyboard"].lower().replace(" ", "")}').toggle()
-        self.le_dcsdir.setText(cfg['dcs'])
-        self.le_biosdir.setText(cfg['dcsbios'])
-        self.le_bios_live.setText(cfg['git_bios_ref'])
-        self.cb_bios_live.setChecked(cfg['git_bios'])
-        self.addDockWidget(Qt.DockWidgetArea(int(cfg['gkeys_area'])), self.dw_gkeys)
-        self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
-        self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
-        getattr(self, icon_map[cfg['toolbar_style']]).setChecked(True)
+        try:
+            self.cb_autostart.setChecked(cfg['autostart'])
+            self.cb_show_gui.setChecked(cfg['show_gui'])
+            self.cb_lcd_screenshot.setChecked(cfg['save_lcd'])
+            self.cb_check_ver.setChecked(cfg['check_ver'])
+            self.cb_verbose.setChecked(cfg['verbose'])
+            self.cb_ded_font.setChecked(cfg['f16_ded_font'])
+            self.cb_autoupdate_bios.setChecked(cfg['check_bios'])
+            self.le_font_name.setText(cfg['font_name'])
+            self.sp_completer.setValue(cfg['completer_items'])
+            self._completer_items = cfg['completer_items']
+            self.combo_planes.setCurrentText(cfg['current_plane'])
+            self.mono_font = {'large': int(cfg['font_mono_l']), 'medium': int(cfg['font_mono_m']), 'small': int(cfg['font_mono_s'])}
+            self.color_font = {'large': int(cfg['font_color_l']), 'medium': int(cfg['font_color_m']), 'small': int(cfg['font_color_s'])}
+            getattr(self, f'rb_{cfg["keyboard"].lower().replace(" ", "")}').toggle()
+            self.le_dcsdir.setText(cfg['dcs'])
+            self.le_biosdir.setText(cfg['dcsbios'])
+            self.le_bios_live.setText(cfg['git_bios_ref'])
+            self.cb_bios_live.setChecked(cfg['git_bios'])
+            self.addDockWidget(Qt.DockWidgetArea(int(cfg['gkeys_area'])), self.dw_gkeys)
+            self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
+            self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
+            getattr(self, icon_map.get(cfg['toolbar_style'], 'a_icons_only')).setChecked(True)
+        except (TypeError, AttributeError, ValueError) as exc:
+            LOG.warning(exc, exc_info=True)
+            self._reset_defaults_cfg()
 
     def save_configuration(self) -> None:
         """Save configuration from GUI."""
@@ -1112,7 +1117,8 @@ class DcsPyQtGui(QMainWindow):
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
             getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
-        self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Restart', message='DCSpy needs to be close.\nPlease start again manually!')
+        self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Reset settings',
+                               message='All settings will be reset to default values.\nDCSpy will to be close.\nIt could be necessary start DCSpy manually!')
         self.close()
 
     # <=><=><=><=><=><=><=><=><=><=><=> others <=><=><=><=><=><=><=><=><=><=><=>
