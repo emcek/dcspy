@@ -69,7 +69,7 @@ def load_yaml(full_path: Path) -> Dict[str, Any]:
                 data = {}
     except (FileNotFoundError, yaml.parser.ParserError) as err:
         makedirs(name=full_path.parent, exist_ok=True)
-        LOG.warning(f'{type(err).__name__}: {full_path}.')
+        LOG.warning(f'{type(err).__name__}: {full_path}.', exc_info=True)
         LOG.debug(f'{err}')
         data = {}
     return data
