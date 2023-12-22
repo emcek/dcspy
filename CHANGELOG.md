@@ -2,6 +2,7 @@
 * LCD buttons can be assigned to any control/instrument like G-Keys
 * Report progress of live DCS-BIOS cloning repository gradually
 * Add progress when pulling DCS-BIOS repository
+* Fix parsing wrong configuration from YAML file - [#221](https://github.com/emcek/dcspy/issues/221)
 * Internal:
   * Update to Pyside6 to 6.6.1
   * Add caching when paring DCS-BIOS yaml files for planes
