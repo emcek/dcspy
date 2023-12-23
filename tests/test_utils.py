@@ -97,7 +97,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'autostart': False,
         'completer_items': 20,
         'current_plane': 'A-10C',
-        'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+        'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
         'dcs': 'C:/Program Files/Eagle Dynamics/DCS World OpenBeta',
         'verbose': False,
         'check_bios': True,
