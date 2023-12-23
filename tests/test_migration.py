@@ -28,7 +28,7 @@ def test_generate_config():
         'completer_items': 20,
         'current_plane': 'A-10C',
         'dcs': 'C:/Program Files/Eagle Dynamics/DCS World OpenBeta',
-        'dcsbios': f'D:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+        'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
         'f16_ded_font': True,
         'font_color_l': 32,
         'font_color_m': 22,
