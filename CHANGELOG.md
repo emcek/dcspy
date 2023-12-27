@@ -5,6 +5,7 @@
 * Fix parsing wrong configuration from YAML file - [#221](https://github.com/emcek/dcspy/issues/221)
 * Update images keyboards to show all supported keys
 * Fix apply wrong configuration form config.yaml when starting
+* Fix radios for **A-10C** and **A-10C II** - - [!227](https://github.com/emcek/dcspy/pull/227)
 * Internal:
   * Update Pyside6, pydantic and psutil libraries
   * Add caching when paring DCS-BIOS yaml files for airplanes
