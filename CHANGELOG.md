@@ -3,10 +3,16 @@
 * Report progress of live DCS-BIOS cloning repository gradually
 * Add progress when pulling DCS-BIOS repository
 * Fix parsing wrong configuration from YAML file - [#221](https://github.com/emcek/dcspy/issues/221)
+* Update images keyboards to show all supported keys
+* Fix apply wrong configuration form config.yaml when starting
 * Internal:
-  * Update to Pyside6 to 6.6.1
-  * Add caching when paring DCS-BIOS yaml files for planes
+  * Update Pyside6, pydantic and psutil libraries
+  * Add caching when paring DCS-BIOS yaml files for airplanes
   * Support old and new location of version file for DCS-BIOS
+  * Fix parsing `Export.lua` file
+  * Fix donate button
+  * Add more unit test of QtGUI
+  * decrease complexity of code in few places
 
 ## 3.0.0
 * Use PySide6 instead of Custom Tkinter framework
