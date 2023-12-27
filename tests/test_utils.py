@@ -244,12 +244,15 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
                       'at:\ngithub.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
 
 
-def test_check_dcs_bios_entry_ok(tmpdir):
+@mark.parametrize('lua_dst_data', [
+    r'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])',
+    r'dofile(lfs.writedir() .. [[Scripts\DCS-BIOS\BIOS.lua]])',
+], ids=['dofile without space', 'dofile with space'])
+def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
     from os import makedirs
     install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'
-    lua_dst_data = r'dofile(lfs.writedir()..[[Scripts\DCS-BIOS\BIOS.lua]])'
 
     with open(file=tmpdir / lua, mode='a+', encoding='utf-8') as lua_from_zip:
         lua_from_zip.write('anything')
