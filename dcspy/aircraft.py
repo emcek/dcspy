@@ -921,16 +921,20 @@ class A10C(AdvancedAircraft):
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Mono LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, vhfam, vhffm, _ = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhfam}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_am = self._generate_vhf('AM')
+        vhf_fm = self._generate_vhf('FM')
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhf_am}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 10
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Color LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, vhfam, vhffm, _ = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhfam}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_am = self._generate_vhf('AM')
+        vhf_fm = self._generate_vhf('FM')
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhf_am}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 20
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -942,16 +946,20 @@ class A10C2(A10C):
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Mono LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, _, vhffm, arc = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_fm = self._generate_vhf('FM')
+        arc = self._generate_arc()
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 10
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Color LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, _, vhffm, arc = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_fm = self._generate_vhf('FM')
+        arc = self._generate_arc()
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 20
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
