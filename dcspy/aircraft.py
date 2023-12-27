@@ -874,8 +874,17 @@ class A10C(AdvancedAircraft):
         """
         vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
                 f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")} ({self.get_bios("VHFAM_PRESET")})'
-        vhffm = f'{self.get_bios("VHFFM_FREQ1")}{self.get_bios("VHFFM_FREQ2")}.' \
-                f'{self.get_bios("VHFFM_FREQ3")}{self.get_bios("VHFFM_FREQ4")} ({self.get_bios("VHFFM_PRESET")})'
+
+        try:
+            fm_freq_2 = self.get_bios("VHFFM_FREQ2")
+            fm_freq_3 = self.get_bios("VHFFM_FREQ3")
+            fm_freq_1 = int(self.get_bios("VHFFM_FREQ1")) + 3
+            fm_freq_4 = int(self.get_bios("VHFFM_FREQ4")) * 25
+            fm_preset = int(self.get_bios("VHFFM_PRESET")) + 1
+        except ValueError:
+            fm_freq_1, fm_freq_2, fm_freq_3, fm_freq_4, fm_preset = 0, 0, 0, 0, 0
+        vhffm = f'{fm_freq_1:2}{fm_freq_2}.{fm_freq_3}{fm_freq_4:02} ({fm_preset:2})'
+
         uhf = f'{self.get_bios("UHF_100MHZ_SEL")}{self.get_bios("UHF_10MHZ_SEL")}{self.get_bios("UHF_1MHZ_SEL")}.' \
               f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")} ({self.get_bios("UHF_PRESET")})'
         arc = f'{self.get_bios("ARC210_FREQUENCY")} ({self.get_bios("ARC210_PREV_MANUAL_FREQ")})'
