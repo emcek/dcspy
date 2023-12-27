@@ -580,14 +580,8 @@ class Mi8MT(AdvancedAircraft):
         :return: All 3 radios settings as strings
         """
         r863_mod = 'FM' if int(self.get_bios('R863_MOD')) else 'AM'
-        try:
-            r863_freq = float(self.get_bios('R863_FREQ'))
-        except ValueError:
-            r863_freq = 0.0
-        try:
-            yadro_freq = float(self.get_bios('YADRO1A_FREQ'))
-        except ValueError:
-            yadro_freq = 0.0
+        r863_freq = float(self.get_bios('R863_FREQ', 0.0))
+        yadro_freq = float(self.get_bios('YADRO1A_FREQ', 0.0))
         r863 = f'Ch:{int(self.get_bios("R863_CNL_SEL")) + 1:>2} {r863_mod} {r863_freq:.3f}'
         r828 = f'Ch:{int(self.get_bios("R828_PRST_CHAN_SEL")) + 1:>2}'
         yadro = f'{yadro_freq:>7.1f}'
@@ -657,10 +651,7 @@ class Mi24P(AdvancedAircraft):
         :return: All 3 radios settings as strings
         """
         r863_mod = 'FM' if int(self.get_bios('PLT_R863_MODUL')) else 'AM'
-        try:
-            yadro_freq = float(self.get_bios('JADRO_FREQ'))
-        except ValueError:
-            yadro_freq = 0.0
+        yadro_freq = float(self.get_bios('JADRO_FREQ', 0.0))
         r863 = f'Ch:{int(self.get_bios("PLT_R863_CHAN")) + 1:>2} {r863_mod}'
         r828 = f'Ch:{int(self.get_bios("PLT_R828_CHAN")) + 1:>2}'
         yadro = f'{yadro_freq:>7.1f}'
