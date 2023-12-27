@@ -1031,7 +1031,7 @@ def draw_autopilot_channels(lcd: LcdInfo,
                             c_rect: Tuple[float, float, float, float],
                             c_text: Tuple[float, float],
                             draw_obj: ImageDraw.ImageDraw,
-                            turn_on: Union[str, int]) -> None:
+                            turn_on: Union[str, int, float]) -> None:
     """
     Draw rectangles with background for autopilot channels.
 
