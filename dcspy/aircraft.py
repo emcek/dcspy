@@ -866,29 +866,57 @@ class A10C(AdvancedAircraft):
             'ARC210_PREV_MANUAL_FREQ': '',
         })
 
-    def _generate_freq_values(self) -> Sequence[str]:
+    def _generate_vhf(self, modulation: str) -> str:
         """
-        Generate frequency for all 3 radios (ARC AM, VHF AM, VHF FM and UHF).
+        Generate frequency for VHF AM, VHF FM radio.
 
-        :return: All 4 frequency settings as strings
+        :param modulation: 'AM' or 'FM'
+        :return: frequency settings as strings
         """
-        vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
-                f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")} ({self.get_bios("VHFAM_PRESET")})'
-
+        freq_2 = self.get_bios(f'VHF{modulation}_FREQ2')
+        freq_3 = self.get_bios(f'VHF{modulation}_FREQ3')
         try:
-            fm_freq_2 = self.get_bios("VHFFM_FREQ2")
-            fm_freq_3 = self.get_bios("VHFFM_FREQ3")
-            fm_freq_1 = int(self.get_bios("VHFFM_FREQ1")) + 3
-            fm_freq_4 = int(self.get_bios("VHFFM_FREQ4")) * 25
-            fm_preset = int(self.get_bios("VHFFM_PRESET")) + 1
+            freq_1 = int(self.get_bios(f'VHF{modulation}_FREQ1')) + 3
         except ValueError:
-            fm_freq_1, fm_freq_2, fm_freq_3, fm_freq_4, fm_preset = 0, 0, 0, 0, 0
-        vhffm = f'{fm_freq_1:2}{fm_freq_2}.{fm_freq_3}{fm_freq_4:02} ({fm_preset:2})'
+            freq_1 = 0
+        try:
+            freq_4 = int(self.get_bios(f'VHF{modulation}_FREQ4')) * 25
+        except ValueError:
+            freq_4 = 0
+        try:
+            preset = int(self.get_bios(f'VHF{modulation}_PRESET')) + 1
+        except ValueError:
+            preset = 0
+        return f'{freq_1:2}{freq_2}.{freq_3}{freq_4:02} ({preset:2})'
 
-        uhf = f'{self.get_bios("UHF_100MHZ_SEL")}{self.get_bios("UHF_10MHZ_SEL")}{self.get_bios("UHF_1MHZ_SEL")}.' \
-              f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")} ({self.get_bios("UHF_PRESET")})'
-        arc = f'{self.get_bios("ARC210_FREQUENCY")} ({self.get_bios("ARC210_PREV_MANUAL_FREQ")})'
-        return uhf, vhfam, vhffm, arc
+    def _generate_uhf(self) -> str:
+        """
+        Generate frequency for UHF radio.
+
+        :return: frequency settings as strings
+        """
+        uhf_10 = self.get_bios('UHF_10MHZ_SEL')
+        uhf_1 = self.get_bios('UHF_1MHZ_SEL')
+        uhf_01 = self.get_bios('UHF_POINT1MHZ_SEL')
+        uhf_preset = self.get_bios('UHF_PRESET')
+        try:
+            uhf_100 = int(self.get_bios('UHF_100MHZ_SEL')) + 2
+            uhf_100 = 'A' if uhf_100 == 4 else uhf_100
+        except ValueError:
+            uhf_100 = 0
+        try:
+            uhf_25 = int(self.get_bios('UHF_POINT25_SEL')) * 25
+        except ValueError:
+            uhf_25 = 0
+        return f'{uhf_100}{uhf_10}{uhf_1}.{uhf_01}{uhf_25:02} ({uhf_preset})'
+
+    def _generate_arc(self) -> str:
+        """
+        Generate frequency for ARC AM radio.
+
+        :return: frequency settings as strings
+        """
+        return f'{self.get_bios('ARC210_FREQUENCY')} ({self.get_bios('ARC210_PREV_MANUAL_FREQ')})'
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Mono LCD."""
