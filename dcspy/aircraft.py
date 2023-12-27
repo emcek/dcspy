@@ -112,16 +112,17 @@ class BasicAircraft:
         self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
 
-    def get_bios(self, selector: str) -> Union[str, int]:
+    def get_bios(self, selector: str, default: Union[str, int] = '') -> Union[str, int]:
         """
         Get value for DCS-BIOS selector.
 
-        :param selector:
+        :param selector: name of selector
+        :param default: return this when fetch fail
         """
         try:
             return self.bios_data[selector]
-        except KeyError:
-            return ''
+        except (KeyError, ValueError):
+            return default
 
     def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
         """
