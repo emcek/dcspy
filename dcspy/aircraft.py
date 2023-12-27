@@ -112,16 +112,17 @@ class BasicAircraft:
         self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
 
-    def get_bios(self, selector: str) -> Union[str, int]:
+    def get_bios(self, selector: str, default: Union[str, int] = '') -> Union[str, int]:
         """
         Get value for DCS-BIOS selector.
 
-        :param selector:
+        :param selector: name of selector
+        :param default: return this when fetch fail
         """
         try:
             return self.bios_data[selector]
-        except KeyError:
-            return ''
+        except (KeyError, ValueError):
+            return default
 
     def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
         """
@@ -846,54 +847,80 @@ class A10C(AdvancedAircraft):
         """
         super().__init__(lcd_type)
         self.bios_data.update({
-            'VHFAM_FREQ1': '',
+            'VHFAM_FREQ1': int(),
             'VHFAM_FREQ2': int(),
             'VHFAM_FREQ3': int(),
-            'VHFAM_FREQ4': '',
-            'VHFAM_PRESET': '',
-            'VHFFM_FREQ1': '',
+            'VHFAM_FREQ4': int(),
+            'VHFAM_PRESET': int(),
+            'VHFFM_FREQ1': int(),
             'VHFFM_FREQ2': int(),
             'VHFFM_FREQ3': int(),
-            'VHFFM_FREQ4': '',
-            'VHFFM_PRESET': '',
-            'UHF_100MHZ_SEL': '',
+            'VHFFM_FREQ4': int(),
+            'VHFFM_PRESET': int(),
+            'UHF_100MHZ_SEL': int(),
             'UHF_10MHZ_SEL': int(),
             'UHF_1MHZ_SEL': int(),
             'UHF_POINT1MHZ_SEL': int(),
-            'UHF_POINT25_SEL': '',
+            'UHF_POINT25_SEL': int(),
             'UHF_PRESET': '',
             'ARC210_FREQUENCY': '',
             'ARC210_PREV_MANUAL_FREQ': '',
         })
 
-    def _generate_freq_values(self) -> Sequence[str]:
+    def _generate_vhf(self, modulation: str) -> str:
         """
-        Generate frequency for all 3 radios (ARC AM, VHF AM, VHF FM and UHF).
+        Generate frequency for VHF AM, VHF FM radio.
 
-        :return: All 4 frequency settings as strings
+        :param modulation: 'AM' or 'FM'
+        :return: frequency settings as strings
         """
-        vhfam = f'{self.get_bios("VHFAM_FREQ1")}{self.get_bios("VHFAM_FREQ2")}.' \
-                f'{self.get_bios("VHFAM_FREQ3")}{self.get_bios("VHFAM_FREQ4")} ({self.get_bios("VHFAM_PRESET")})'
-        vhffm = f'{self.get_bios("VHFFM_FREQ1")}{self.get_bios("VHFFM_FREQ2")}.' \
-                f'{self.get_bios("VHFFM_FREQ3")}{self.get_bios("VHFFM_FREQ4")} ({self.get_bios("VHFFM_PRESET")})'
-        uhf = f'{self.get_bios("UHF_100MHZ_SEL")}{self.get_bios("UHF_10MHZ_SEL")}{self.get_bios("UHF_1MHZ_SEL")}.' \
-              f'{self.get_bios("UHF_POINT1MHZ_SEL")}{self.get_bios("UHF_POINT25_SEL")} ({self.get_bios("UHF_PRESET")})'
-        arc = f'{self.get_bios("ARC210_FREQUENCY")} ({self.get_bios("ARC210_PREV_MANUAL_FREQ")})'
-        return uhf, vhfam, vhffm, arc
+        freq_2 = self.get_bios(f'VHF{modulation}_FREQ2')
+        freq_3 = self.get_bios(f'VHF{modulation}_FREQ3')
+        freq_1 = int(self.get_bios(f'VHF{modulation}_FREQ1', 0)) + 3
+        freq_4 = int(self.get_bios(f'VHF{modulation}_FREQ4', 0)) * 25
+        preset = int(self.get_bios(f'VHF{modulation}_PRESET', 0)) + 1
+        return f'{freq_1:2}{freq_2}.{freq_3}{freq_4:02} ({preset:2})'
+
+    def _generate_uhf(self) -> str:
+        """
+        Generate frequency for UHF radio.
+
+        :return: frequency settings as strings
+        """
+        uhf_10 = self.get_bios('UHF_10MHZ_SEL')
+        uhf_1 = self.get_bios('UHF_1MHZ_SEL')
+        uhf_01 = self.get_bios('UHF_POINT1MHZ_SEL')
+        uhf_preset = self.get_bios('UHF_PRESET')
+        uhf_100 = int(self.get_bios('UHF_100MHZ_SEL', 0)) + 2
+        uhf_100 = 'A' if uhf_100 == 4 else uhf_100  # type: ignore
+        uhf_25 = int(self.get_bios('UHF_POINT25_SEL', 0)) * 25
+        return f'{uhf_100}{uhf_10}{uhf_1}.{uhf_01}{uhf_25:02} ({uhf_preset})'
+
+    def _generate_arc(self) -> str:
+        """
+        Generate frequency for ARC AM radio.
+
+        :return: frequency settings as strings
+        """
+        return f'{self.get_bios("ARC210_FREQUENCY")} ({self.get_bios("ARC210_PREV_MANUAL_FREQ")})'
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Mono LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, vhfam, vhffm, _ = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhfam}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_am = self._generate_vhf('AM')
+        vhf_fm = self._generate_vhf('FM')
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhf_am}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 10
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Color LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, vhfam, vhffm, _ = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhfam}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_am = self._generate_vhf('AM')
+        vhf_fm = self._generate_vhf('FM')
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhf_am}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 20
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -905,16 +932,20 @@ class A10C2(A10C):
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Mono LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, _, vhffm, arc = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_fm = self._generate_vhf('FM')
+        arc = self._generate_arc()
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 10
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Color LCD."""
         draw = ImageDraw.Draw(img)
-        uhf, _, vhffm, arc = self._generate_freq_values()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhffm}']):
+        uhf = self._generate_uhf()
+        vhf_fm = self._generate_vhf('FM')
+        arc = self._generate_arc()
+        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
             offset = i * 20
             draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
