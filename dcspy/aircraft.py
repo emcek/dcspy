@@ -876,18 +876,9 @@ class A10C(AdvancedAircraft):
         """
         freq_2 = self.get_bios(f'VHF{modulation}_FREQ2')
         freq_3 = self.get_bios(f'VHF{modulation}_FREQ3')
-        try:
-            freq_1 = int(self.get_bios(f'VHF{modulation}_FREQ1')) + 3
-        except ValueError:
-            freq_1 = 0
-        try:
-            freq_4 = int(self.get_bios(f'VHF{modulation}_FREQ4')) * 25
-        except ValueError:
-            freq_4 = 0
-        try:
-            preset = int(self.get_bios(f'VHF{modulation}_PRESET')) + 1
-        except ValueError:
-            preset = 0
+        freq_1 = int(self.get_bios(f'VHF{modulation}_FREQ1', 0)) + 3
+        freq_4 = int(self.get_bios(f'VHF{modulation}_FREQ4', 0)) * 25
+        preset = int(self.get_bios(f'VHF{modulation}_PRESET', 0)) + 1
         return f'{freq_1:2}{freq_2}.{freq_3}{freq_4:02} ({preset:2})'
 
     def _generate_uhf(self) -> str:
@@ -900,15 +891,9 @@ class A10C(AdvancedAircraft):
         uhf_1 = self.get_bios('UHF_1MHZ_SEL')
         uhf_01 = self.get_bios('UHF_POINT1MHZ_SEL')
         uhf_preset = self.get_bios('UHF_PRESET')
-        try:
-            uhf_100 = int(self.get_bios('UHF_100MHZ_SEL')) + 2
-            uhf_100 = 'A' if uhf_100 == 4 else uhf_100
-        except ValueError:
-            uhf_100 = 0
-        try:
-            uhf_25 = int(self.get_bios('UHF_POINT25_SEL')) * 25
-        except ValueError:
-            uhf_25 = 0
+        uhf_100 = int(self.get_bios('UHF_100MHZ_SEL', 0)) + 2
+        uhf_100 = 'A' if uhf_100 == 4 else uhf_100  # type: ignore
+        uhf_25 = int(self.get_bios('UHF_POINT25_SEL', 0)) * 25
         return f'{uhf_100}{uhf_10}{uhf_1}.{uhf_01}{uhf_25:02} ({uhf_preset})'
 
     def _generate_arc(self) -> str:
