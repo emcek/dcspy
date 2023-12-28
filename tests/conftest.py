@@ -470,11 +470,11 @@ def mi24p_color_bios(mi24p_mono_bios):
 def ah64dblkii_mono_bios():
     """Bios values for AH-64D Apache for Logitech mono LCD."""
     return [
-        ('PLT_EUFD_LINE8', '~<>VHF*  121.000   -----              121.500   -----   '),
-        ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----              305.000   -----   '),
-        ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM       30.000   -----   '),
-        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----               30.000   -----   '),
-        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A -----    LOW         2.0000A -----   '),
+        ('PLT_EUFD_LINE8', '~<>VHF*  134.000   MAN                121.500   MAN     '),
+        ('PLT_EUFD_LINE9', ' ==UHF*  240.000   PRE 2         L2   305.000   MAN     '),
+        ('PLT_EUFD_LINE10', ' ==FM1*   30.015   PRE 3    NORM L3    30.000   MAN     '),
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.020   PRE 4         L4    30.000   MAN     '),
+        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A          LOW         2.0000A         '),
     ]
 
 
