@@ -678,7 +678,7 @@ class AH64DBLKII(AdvancedAircraft):
         super().__init__(lcd_type)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
-        self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 13)})
+        self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 15)})
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -809,9 +809,9 @@ class AH64DBLKII(AdvancedAircraft):
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = 'PLT_EUFD_WCA 0\n|PLT_EUFD_WCA 1\n'
+        wca_or_idm = 'PLT_EUFD_WCA 0\n|PLT_EUFD_WCA 1\n|'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = 'PLT_EUFD_IDM 0\n|PLT_EUFD_IDM 1\n'
+            wca_or_idm = 'PLT_EUFD_IDM 0\n|PLT_EUFD_IDM 1\n|'
 
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
