@@ -344,5 +344,4 @@ def test_apache_pre_mode(model, apache_pre_mode_bios_data, resources, img_precis
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
-    img.save(resources / platform / f'{model}_pre_mode.png')
-    # assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png', precision=img_precision)
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png', precision=img_precision)
