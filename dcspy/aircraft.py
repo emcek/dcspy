@@ -686,8 +686,8 @@ class AH64DBLKII(AdvancedAircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['xcords'] = [0] * 5 + [80] * 5
-            kwargs['ycords'] = [j * 8 for j in range(0, 5)] * 2
+            kwargs['x_cords'] = [0] * 5 + [80] * 5
+            kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
@@ -698,8 +698,8 @@ class AH64DBLKII(AdvancedAircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['xcords'] = [0] * 10
-            kwargs['ycords'] = [j * 24 for j in range(0, 10)]
+            kwargs['x_cords'] = [0] * 10
+            kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
@@ -750,13 +750,13 @@ class AH64DBLKII(AdvancedAircraft):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
-    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, xcords: List[int], ycords: List[int], font: ImageFont.FreeTypeFont) -> None:
+    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, x_cords: List[int], y_cords: List[int], font: ImageFont.FreeTypeFont) -> None:
         """
         Draw image for PRE mode.
 
         :param draw: ImageDraw instance
-        :param xcords: list of X coordinates
-        :param ycords: list of Y coordinates
+        :param x_cords: list of X coordinates
+        :param y_cords: list of Y coordinates
         :param font: font instance
         """
         match_dict = {
@@ -771,10 +771,10 @@ class AH64DBLKII(AdvancedAircraft):
             10: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
             11: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
         }
-        for i, xcord, ycord in zip(range(2, 12), xcords, ycords):
+        for i, x_cord, y_cord in zip(range(2, 12), x_cords, y_cords):
             mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
-                draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
+                draw.text(xy=(x_cord, y_cord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
