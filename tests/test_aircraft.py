@@ -336,16 +336,15 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
         apache.prepare_image()
     assert apache.warning_line == 3
     img = apache.prepare_image()
-    img.save(resources / platform / f'{model}_wca_mode_scroll_3.png')
-    # assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_3.png', precision=img_precision)
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_3.png', precision=img_precision)
 
     for i in range(1, 3):
         apache.warning_line += 1
         apache.prepare_image()
 
     img = apache.prepare_image()
-    img.save(resources / platform / f'{model}_wca_mode_scroll_1.png')
     assert apache.warning_line == 1
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_1.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
