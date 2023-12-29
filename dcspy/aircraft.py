@@ -678,7 +678,7 @@ class AH64DBLKII(AdvancedAircraft):
         super().__init__(lcd_type)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
-        self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 13)})
+        self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 15)})
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -686,8 +686,8 @@ class AH64DBLKII(AdvancedAircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['xcords'] = [0] * 5 + [80] * 5
-            kwargs['ycords'] = [j * 8 for j in range(0, 5)] * 2
+            kwargs['x_cords'] = [0] * 5 + [80] * 5
+            kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
@@ -698,8 +698,8 @@ class AH64DBLKII(AdvancedAircraft):
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
         mode = self.mode.name.lower()
         if mode == 'pre':
-            kwargs['xcords'] = [0] * 10
-            kwargs['ycords'] = [j * 24 for j in range(0, 10)]
+            kwargs['x_cords'] = [0] * 10
+            kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
         getattr(self, f'_draw_for_{mode}')(**kwargs)
@@ -713,7 +713,7 @@ class AH64DBLKII(AdvancedAircraft):
         """
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
-            mat = search(r'(.*\*)\s+(\d+)([.\dULCA]+)[-\sA-Z]*(\d+)([.\dULCA]+)[\s-]+', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
+            mat = search(r'(.*\*)\s+(\d+)([.\dULCA]+)[\s\dA-Z]*\s+(\d+)([.\dULCA]+)[\sA-Z]+', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
                 spacer = ' ' * (6 - len(mat.group(3)))
                 text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
@@ -750,31 +750,31 @@ class AH64DBLKII(AdvancedAircraft):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
-    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, xcords: List[int], ycords: List[int], font: ImageFont.FreeTypeFont) -> None:
+    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, x_cords: List[int], y_cords: List[int], font: ImageFont.FreeTypeFont) -> None:
         """
         Draw image for PRE mode.
 
         :param draw: ImageDraw instance
-        :param xcords: list of X coordinates
-        :param ycords: list of Y coordinates
+        :param x_cords: list of X coordinates
+        :param y_cords: list of Y coordinates
         :param font: font instance
         """
         match_dict = {
-            2: r'.*\|.*\|([\u2192\s]CO CMD)\s*([\d\.]*)\s+',
-            3: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            4: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            5: r'.*\|.*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            6: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            7: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            8: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            9: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            10: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
-            11: r'\s*\|([\u2192\s][A-Z\d\/]*)\s*([\d\.]*)\s+',
+            2: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
+            3: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
+            4: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
+            5: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
+            6: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
+            7: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
+            8: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
+            9: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
+            10: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
+            11: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
         }
-        for i, xcord, ycord in zip(range(2, 12), xcords, ycords):
+        for i, x_cord, y_cord in zip(range(2, 12), x_cords, y_cords):
             mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
             if mat:
-                draw.text(xy=(xcord, ycord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
+                draw.text(xy=(x_cord, y_cord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:

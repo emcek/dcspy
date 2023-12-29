@@ -287,7 +287,7 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'mi' in model or 'ka50' in model:
+    # if 'ah64dblkii' in model:
     #     img.save(resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
@@ -336,7 +336,15 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
         apache.prepare_image()
     assert apache.warning_line == 3
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll.png', precision=img_precision)
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_3.png', precision=img_precision)
+
+    for i in range(1, 3):
+        apache.warning_line += 1
+        apache.prepare_image()
+
+    img = apache.prepare_image()
+    assert apache.warning_line == 1
+    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_1.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
