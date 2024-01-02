@@ -1,5 +1,5 @@
 ## 3.1.1
-* Fix parsing data for * **AH-64D Apache**
+* Fix parsing data for **AH-64D Apache**
 
 ## 3.1.0
 * LCD buttons can be assigned to any control/instrument like G-Keys
