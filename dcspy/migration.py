@@ -131,12 +131,13 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     cfg[new_name] = value
 
 
-def _copy_file(filename: str, to_path: Path) -> None:
+def _copy_file(filename: str, to_path: Path, force=False) -> None:
     """
     Copy a file from one location to another, only when the file doesn't exist.
 
     :param filename: The name of the file to be copied.
     :param to_path: The full path where the file should be copied to.
+    :param force: force to overwrite existing file
     """
-    if not Path(to_path / filename).is_file():
+    if not Path(to_path / filename).is_file() or force:
         copy(src=DEFAULT_YAML_FILE.parent / filename, dst=to_path)
