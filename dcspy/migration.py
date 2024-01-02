@@ -54,6 +54,17 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
 
 
+def _api_ver_3_1_1(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.1.1.
+
+    :param cfg: Configuration dictionary
+    """
+    user_appdata = get_config_yaml_location()
+    makedirs(name=user_appdata, exist_ok=True)
+    _copy_file(filename='AH-64D_BLK_II.yaml', to_path=user_appdata, force=True)
+
+
 def _api_ver_3_1_0(cfg: DcspyConfigYaml) -> None:
     """
     Migrate to version 3.1.0.
