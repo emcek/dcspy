@@ -15,7 +15,7 @@ from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
-__version__ = '3.1.0'
+__version__ = '3.1.1'
 
 
 def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
