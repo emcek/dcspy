@@ -2,7 +2,7 @@ from logging import getLogger
 from os import makedirs
 from pathlib import Path
 from pprint import pformat
-from shutil import copy
+from shutil import SameFileError, copy
 from typing import Callable, Iterator, Union
 
 from packaging import version
@@ -151,4 +151,7 @@ def _copy_file(filename: str, to_path: Path, force=False) -> None:
     :param force: force to overwrite existing file
     """
     if not Path(to_path / filename).is_file() or force:
-        copy(src=DEFAULT_YAML_FILE.parent / filename, dst=to_path)
+        try:
+            copy(src=DEFAULT_YAML_FILE.parent / filename, dst=to_path)
+        except SameFileError:
+            pass
