@@ -200,8 +200,8 @@ def proc_is_running(name: str) -> int:
     :return: PID as int
     """
     for proc in process_iter(['pid', 'name']):
-        if name in proc.info['name']:
-            return proc.info['pid']
+        if name in proc.info['name']:  # type: ignore[attr-defined]
+            return proc.info['pid']  # type: ignore[attr-defined]
     return 0
 
 
