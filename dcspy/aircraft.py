@@ -1034,12 +1034,12 @@ def draw_autopilot_channels(lcd: LcdInfo,
                             draw_obj: ImageDraw.ImageDraw,
                             turn_on: Union[str, int, float]) -> None:
     """
-    Draw rectangles with background for autopilot channels.
+    Draw rectangles with a background for autopilot channels.
 
     :param lcd: instance of LCD
     :param ap_channel: channel name
     :param c_rect: coordinates for rectangle
-    :param c_text: coordinates for name
+    :param c_text: coordinates for a name
     :param draw_obj: ImageDraw instance
     :param turn_on: channel on/off, fill on/off
     """

@@ -101,8 +101,8 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseI
 
     :param repo: format '<organization or user>/<package>'
     :param current_ver: current local version
-    :param extension: file extension to be returned
-    :return: ReleaseInfo NamedTuple with information
+    :param extension: file extension
+    :return: ReleaseInfo with data
     """
     latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
     package = repo.split('/')[1]
