@@ -425,6 +425,7 @@ class DcsBiosPlaneData(RootModel):
             for ctrl, data in controllers.items():
                 if ctrl == ctrl_name:
                     return Control.model_validate(data)
+        return None
 
     def get_inputs(self) -> Dict[str, Dict[str, ControlKeyData]]:
         """
