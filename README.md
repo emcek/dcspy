@@ -49,11 +49,11 @@ Why such way? Basically advanced support is for aircraft which I own and therefo
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
-* [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be installed directly from DCSpy)
-* DCS World: [2.9.1.48335](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.9.1.48335/) Open Beta
+* [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
+* DCS World: [2.9.2.49940](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.9.2.49940/) Open Beta, but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.12](https://www.python.org/downloads/) but 3.8+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
-  * However DCSpy 2.3.3 and earlier do not supports Python 3.12
+  * However, DCSpy 2.3.3 and earlier do not support Python 3.12
 
 **Notes:**
 * If you upgrade DCSpy from 1.5.1 or older you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software).
