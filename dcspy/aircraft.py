@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from enum import Enum
 from itertools import chain, cycle
 from logging import getLogger
@@ -6,7 +7,7 @@ from pprint import pformat
 from re import search
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, List, Sequence, Tuple, Union
+from typing import Dict, List, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 

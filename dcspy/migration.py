@@ -1,9 +1,10 @@
+from collections.abc import Callable, Iterator
 from logging import getLogger
 from os import makedirs
 from pathlib import Path
 from pprint import pformat
 from shutil import SameFileError, copy
-from typing import Callable, Iterator, Union
+from typing import Union
 
 from packaging import version
 

@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -5,7 +6,7 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List, Sequence, Union
+from typing import List, Union
 
 from PIL import Image, ImageDraw
 

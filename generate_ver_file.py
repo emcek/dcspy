@@ -1,6 +1,6 @@
+from collections.abc import Sequence
 from os import environ
 from sys import argv
-from typing import Sequence
 
 from PyInstaller.utils.win32 import versioninfo
 
