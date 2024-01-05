@@ -6,7 +6,7 @@ from cffi import FFI
 from dcspy.sdk import KeyDll, load_dll
 
 LOG = getLogger(__name__)
-KEY_DLL: Lib = load_dll(KeyDll)
+KEY_DLL: Lib = load_dll(KeyDll)  # type: ignore[assignment]
 ffi = FFI()
 
 
@@ -18,7 +18,7 @@ def logi_gkey_init() -> bool:
     :return: If the function succeeds, it returns True. Otherwise, False.
     """
     try:
-        return KEY_DLL.LogiGkeyInit(ffi.NULL)
+        return KEY_DLL.LogiGkeyInit(ffi.NULL)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -32,7 +32,7 @@ def logi_gkey_is_keyboard_gkey_pressed(g_key: int, mode: int) -> bool:
     :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise.
     """
     try:
-        return KEY_DLL.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)
+        return KEY_DLL.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -46,7 +46,7 @@ def logi_gkey_is_keyboard_gkey_string(g_key: int, mode: int) -> str:
     :return: Friendly string for specified G-key and Mode number. For example 'G5/M1'.
     """
     try:
-        return ffi.string(KEY_DLL.LogiGkeyGetKeyboardGkeyString(g_key, mode))
+        return ffi.string(KEY_DLL.LogiGkeyGetKeyboardGkeyString(g_key, mode))  # type: ignore[attr-defined,return-value]
     except AttributeError:
         return ''
 
@@ -54,6 +54,6 @@ def logi_gkey_is_keyboard_gkey_string(g_key: int, mode: int) -> str:
 def logi_gkey_shutdown() -> None:
     """Unload the corresponding DLL and frees up any allocated resources."""
     try:
-        KEY_DLL.LogiGkeyShutdown()
+        KEY_DLL.LogiGkeyShutdown()  # type: ignore[attr-defined]
     except AttributeError:
         pass
