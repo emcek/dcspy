@@ -10,7 +10,7 @@ from dcspy.models import LOGI_DEVICETYPE_ALL
 from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
-LED_DLL: Lib = load_dll(LedDll)
+LED_DLL: Lib = load_dll(LedDll)  # type: ignore[assignment]
 
 
 def logi_led_init() -> bool:
@@ -22,7 +22,7 @@ def logi_led_init() -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedInit()
+        return LED_DLL.LogiLedInit()  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -39,7 +39,7 @@ def logi_led_init_with_name(name: str) -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedInitWithName(FFI().new('wchar_t[]', name))
+        return LED_DLL.LogiLedInitWithName(FFI().new('wchar_t[]', name))  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -55,7 +55,7 @@ def logi_led_set_target_device(target_device: int) -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedSetTargetDevice(target_device)
+        return LED_DLL.LogiLedSetTargetDevice(target_device)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -69,7 +69,7 @@ def logi_led_save_current_lighting() -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedSaveCurrentLighting()
+        return LED_DLL.LogiLedSaveCurrentLighting()  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -84,7 +84,7 @@ def logi_led_restore_lighting() -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedRestoreLighting()
+        return LED_DLL.LogiLedRestoreLighting()  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -95,14 +95,14 @@ def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
 
     Do not call this function immediately after logi_led_init(). Instead of leave a little of time after logi_led_init().
     For devices that only support a single color, the highest percentage value given of the three colors will
-    define the intensity. For monochrome device, Logitech Gaming Software will reduce
-    proportionally the value of the highest color, according to the user hardware brightness setting.
+    define the intensity. For monochrome device, Logitech Gaming Software will proportionally reduce
+    the value of the highest color, according to the user hardware brightness setting.
 
     :param rgb: tuple with integer values range 0 to 100 as amount of red, green, blue
     :return: result
     """
     try:
-        return LED_DLL.LogiLedSetLighting(*rgb)
+        return LED_DLL.LogiLedSetLighting(*rgb)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -119,7 +119,7 @@ def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
     :return: result
     """
     try:
-        return LED_DLL.LogiLedFlashLighting(*rgb, duration, interval)
+        return LED_DLL.LogiLedFlashLighting(*rgb, duration, interval)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -136,7 +136,7 @@ def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
     :return: result
     """
     try:
-        return LED_DLL.LogiLedPulseLighting(*rgb, duration, interval)
+        return LED_DLL.LogiLedPulseLighting(*rgb, duration, interval)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -149,7 +149,7 @@ def logi_led_stop_effects() -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedStopEffects()
+        return LED_DLL.LogiLedStopEffects()  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -157,7 +157,7 @@ def logi_led_stop_effects() -> bool:
 def logi_led_shutdown() -> None:
     """Restore the last saved lighting and frees memory used by the SDK."""
     try:
-        LED_DLL.LogiLedShutdown()
+        LED_DLL.LogiLedShutdown()  # type: ignore[attr-defined]
     except AttributeError:
         pass
 
