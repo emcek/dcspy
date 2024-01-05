@@ -378,7 +378,7 @@ def is_git_object(repo_dir: Path, git_obj: str) -> bool:
     :param git_obj: git reference to check
     :return: True if git_obj is git reference, False otherwise
     """
-    import gitdb
+    import gitdb  # type: ignore[import-untyped]
     result = False
     if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
@@ -523,7 +523,7 @@ def _fetch_git_data() -> Tuple[Sequence[int], str]:
     """
     Fetch Git version and SHA of HEAD commit.
 
-    :return: tuple of (version) and SHA of HEAD commit
+    :return: Tuple of (a version) and SHA of HEAD commit
     """
     try:
         import git
