@@ -1,9 +1,8 @@
-from collections.abc import Iterator, Sequence
 from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Dict, Final, List, Optional, Tuple, Union
+from typing import Any, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
 
 from packaging import version
 from PIL import ImageFont

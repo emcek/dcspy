@@ -1,6 +1,5 @@
 import sys
 import traceback
-from collections.abc import Callable
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -12,7 +11,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Dict, List, Optional, Union
+from typing import Callable, Dict, List, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
