@@ -9,7 +9,7 @@ from dcspy.models import COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH, TYP
 from dcspy.sdk import LcdDll, load_dll
 
 LOG = getLogger(__name__)
-LCD_DLL: Lib = load_dll(LcdDll)
+LCD_DLL: Lib = load_dll(LcdDll)  # type: ignore[assignment]
 
 
 def logi_lcd_init(name: str, lcd_type: int) -> bool:
@@ -22,7 +22,7 @@ def logi_lcd_init(name: str, lcd_type: int) -> bool:
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)
+        return LCD_DLL.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -35,7 +35,7 @@ def logi_lcd_is_connected(lcd_type: int) -> bool:
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdIsConnected(lcd_type)
+        return LCD_DLL.LogiLcdIsConnected(lcd_type)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -48,7 +48,7 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdIsButtonPressed(button)
+        return LCD_DLL.LogiLcdIsButtonPressed(button)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -56,7 +56,7 @@ def logi_lcd_is_button_pressed(button: int) -> bool:
 def logi_lcd_update() -> None:
     """Update the LCD."""
     try:
-        LCD_DLL.LogiLcdUpdate()
+        LCD_DLL.LogiLcdUpdate()  # type: ignore[attr-defined]
     except AttributeError:
         pass
 
@@ -64,7 +64,7 @@ def logi_lcd_update() -> None:
 def logi_lcd_shutdown() -> None:
     """Kill the applet and frees memory used by the SDK."""
     try:
-        LCD_DLL.LogiLcdShutdown()
+        LCD_DLL.LogiLcdShutdown()  # type: ignore[attr-defined]
     except AttributeError:
         pass
 
@@ -83,7 +83,7 @@ def logi_lcd_mono_set_background(pixels: List[int]) -> bool:
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))
+        return LCD_DLL.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))  # type: ignore[attr-defined]
     except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
         return False
 
@@ -97,7 +97,7 @@ def logi_lcd_mono_set_text(line_no: int, text: str) -> bool:
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))
+        return LCD_DLL.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -114,7 +114,7 @@ def logi_lcd_color_set_background(pixels: List[Tuple[int, int, int, int]]) -> bo
     """
     img_bytes = [byte for pixel in pixels for byte in pixel]
     try:
-        return LCD_DLL.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))
+        return LCD_DLL.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))  # type: ignore[attr-defined]
     except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
         return False
 
@@ -131,7 +131,7 @@ def logi_lcd_color_set_title(text: str, rgb: Tuple[int, int, int] = (255, 255, 2
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)
+        return LCD_DLL.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -147,7 +147,7 @@ def logi_lcd_color_set_text(line_no: int, text: str, rgb: Tuple[int, int, int] =
     :return: result
     """
     try:
-        return LCD_DLL.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)
+        return LCD_DLL.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
