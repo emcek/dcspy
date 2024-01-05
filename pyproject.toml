@@ -126,8 +126,8 @@ extend-exclude = [
 max-complexity = 6
 
 [tool.mypy]
-ignore_missing_imports = true
-no_warn_no_return = true
+#ignore_missing_imports = true
+#no_warn_no_return = true
 html_report = 'mypyhtml'
 exclude = [
     '/qt_gui\.py$',
