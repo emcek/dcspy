@@ -1,3 +1,6 @@
+## 3.1.2
+* Show messagebox during stat-up when Git executable is missing. 
+
 ## 3.1.1
 * Fix parsing data for **AH-64D Apache**
 
