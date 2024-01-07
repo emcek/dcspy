@@ -15,7 +15,7 @@ try:
 except NameError as exc:
     app = QApplication([])
     msg = QMessageBox()
-    msg.setTextFormat(Qt.RichText)
+    msg.setTextFormat(Qt.TextFormat.RichText)
     msg.setText('Git is not installed!'
                 '<br><br>Download from: <a href="https://git-scm.com/download/win">https://git-scm.com/download/win</a> 64-bit version.'
                 '<br><br>Install with default settings.')
