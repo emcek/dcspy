@@ -13,7 +13,7 @@ except ImportError:
 try:
     from dcspy.run import run
 except NameError as exc:
-    app = QApplication([])
+    _ = QApplication([])
     msg = QMessageBox()
     msg.setTextFormat(Qt.TextFormat.RichText)
     msg.setText('Git is not installed!'
