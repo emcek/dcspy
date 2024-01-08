@@ -1336,7 +1336,7 @@
 2024-01-03 15:03:24.349 DEBUG   Scripting (Main): Speech module loaded
 2024-01-03 15:03:26.472 DEBUG   LuaGUI (Main): ED_PUBLIC_AVAILABLE = true
 2024-01-03 15:03:26.472 DEBUG   LuaGUI (Main): supercarrier_authorized = nil
-2024-01-03 15:03:26.546 DEBUG   LuaGUI (Main): locale:	en	
+2024-01-03 15:03:26.546 DEBUG   LuaGUI (Main): locale:	en
 2024-01-03 15:03:27.150 DEBUG   LuaGUI (Main): me_db_api creation started
 2024-01-03 15:03:27.696 DEBUG   LuaGUI (Main): WARNING: task 36 is missing
 2024-01-03 15:03:28.016 WARNING LOG (9900): 3 duplicate message(s) skipped.
@@ -1526,8 +1526,8 @@
 2024-01-03 15:03:54.806 DEBUG   LuaHooks (Main): me_db_api creation complete
 2024-01-03 15:03:54.918 INFO    LuaNET (Main): Loading - DCS-SRS GameGUI - Ciribob: 2.0.9.1
 2024-01-03 15:03:54.970 INFO    LuaNET (Main): Loaded - DCS-SRS GameGUI - Ciribob: 2.0.9.1
-2024-01-03 15:03:55.004 INFO    LuaNET (Main): Loading - DCS-SRS Overlay GameGUI - Ciribob: 2.0.9.1 
-2024-01-03 15:03:55.005 INFO    LuaNET (Main): Loaded - DCS-SRS Overlay GameGUI - Ciribob: 2.0.9.1 
+2024-01-03 15:03:55.004 INFO    LuaNET (Main): Loading - DCS-SRS Overlay GameGUI - Ciribob: 2.0.9.1
+2024-01-03 15:03:55.005 INFO    LuaNET (Main): Loaded - DCS-SRS Overlay GameGUI - Ciribob: 2.0.9.1
 2024-01-03 15:03:55.005 INFO    APP (Main): Loaded D:\Users\mplic\Saved Games\DCS.openbeta\Scripts\Hooks\DCS-SRS-hook.lua
 2024-01-03 15:03:55.026 INFO    Olympus.HOOKS.LUA (Main): Executing OlympusHook.lua
 2024-01-03 15:03:55.026 INFO    Olympus.HOOKS.LUA (Main): Loading olympus.dll from [D:\Users\mplic\Saved Games\DCS.openbeta\Mods\Services\Olympus\bin\]
@@ -1551,7 +1551,7 @@
 2024-01-03 15:03:56.667 INFO    EDCORE (Main): (dDispatcher)enterToState_:3
 2024-01-03 15:03:56.667 INFO    LUA (Main): Lua: States: 648, CPU load: 61.7%, Mem: 347.5 MB
 2024-01-03 15:03:56.667 DEBUG   LuaGUI (Main): removing	C:\Users\mplic\AppData\Local\Temp\DCS.openbeta\tempMission.miz
-2024-01-03 15:03:56.715 DEBUG   LuaGUI (Main): ---- openReturnScreen=	
+2024-01-03 15:03:56.715 DEBUG   LuaGUI (Main): ---- openReturnScreen=
 2024-01-03 15:04:19.399 INFO    ED_SOUND (27008): Using SSSE3 for peak calc.
 2024-01-03 15:04:19.408 INFO    ASYNCNET (Main): client has started
 2024-01-03 15:04:19.964 INFO    ASYNCNET (Main): got 1753 servers from the master.
@@ -1581,7 +1581,7 @@
 2024-01-03 15:05:44.610 INFO    TACVIEW.DLL (Main): Tacview is set to [Record All Available Data]
 2024-01-03 15:05:44.610 INFO    TACVIEW.DLL (Main): Export path: [D:\Users\mplic\Documents\Tacview\]
 2024-01-03 15:05:44.649 INFO    OpenKneeboard (Main): onMissionLoadBegin: Shift Method
-2024-01-03 15:05:44.649 INFO    OpenKneeboard (Main): Mission: is multiplayer: 
+2024-01-03 15:05:44.649 INFO    OpenKneeboard (Main): Mission: is multiplayer:
 2024-01-03 15:05:44.653 INFO    OpenKneeboard (Main): Setting mission to track file: ElSanchoPancho_1642276605_Fire distibution-20220115-211012.trk
 2024-01-03 15:05:44.653 INFO    OpenKneeboard (Main): Terrain: Caucasus
 2024-01-03 15:05:44.713 INFO    Dispatcher (Main): Terrain theatre Caucasus
@@ -1594,7 +1594,7 @@
 2024-01-03 15:05:44.837 INFO    EDOBJECTS (Main): lTypeObjectManagerImpl::clear 13
 2024-01-03 15:05:53.267 INFO    EDTERRAIN4 (Main): TERRAIN_REVISION = 5124
 2024-01-03 15:05:53.317 INFO    EDTERRAIN4 (Main): Open terrain cfg "./Mods/terrains/Caucasus\terrain.cfg.lua"
-2024-01-03 15:05:53.317 INFO    EDTERRAIN4 (Main): Build date: 
+2024-01-03 15:05:53.317 INFO    EDTERRAIN4 (Main): Build date:
 2024-01-03 15:05:53.317 INFO    EDTERRAIN4 (Main): Texture quality: "min"
 2024-01-03 15:05:53.317 INFO    EDTERRAIN4 (Main): Language: "en"
 2024-01-03 15:05:53.993 INFO    EDCORE (Main): 0.673 s  terrain references
@@ -1698,8 +1698,8 @@
 2024-01-03 15:06:40.855 INFO    EDCORE (29708): 0.002 s  landscape4::lReferenceFile
 2024-01-03 15:06:40.858 INFO    EDTERRAINGRAPHICS41 (29708): 0.000896s Loaded reference file "shrub" buffers: 0
 2024-01-03 15:06:40.858 INFO    EDCORE (29708): 0.001 s  landscape4::lReferenceFile
-2024-01-03 15:06:40.858 INFO    EDTERRAINGRAPHICS41 (29708): InstanceManager2 is completing initialization... 
-2024-01-03 15:06:40.886 INFO    EDTERRAINGRAPHICS41 (29708): InstanceManager2 complete initialization: 
+2024-01-03 15:06:40.858 INFO    EDTERRAINGRAPHICS41 (29708): InstanceManager2 is completing initialization...
+2024-01-03 15:06:40.886 INFO    EDTERRAINGRAPHICS41 (29708): InstanceManager2 complete initialization:
 2024-01-03 15:06:40.886 INFO    EDTERRAINGRAPHICS41 (29708):   objects:    1338
 2024-01-03 15:06:40.886 INFO    EDTERRAINGRAPHICS41 (29708):   subObjects: 1090
 2024-01-03 15:06:40.886 INFO    EDTERRAINGRAPHICS41 (29708):   objectLods: 5788
@@ -1876,7 +1876,7 @@
 2024-01-03 15:07:57.360 INFO    ASYNCNET (Main): onPlayerSlot(1, 1)
 2024-01-03 15:07:57.360 DEBUG   LuaGUI (Main): ---onPlayerTryChangeSlot-----	1	1	1
 2024-01-03 15:07:57.360 INFO    ASYNCNET (Main): passed onPlayerTryChangeSlot
-2024-01-03 15:07:57.360 INFO    ASYNCNET (Main): release unit 
+2024-01-03 15:07:57.360 INFO    ASYNCNET (Main): release unit
 2024-01-03 15:07:57.362 INFO    ASYNCNET (Main): client[1] occupied unit 1
 2024-01-03 15:07:57.362 DEBUG   NET (Main): ServerInfo json size is: raw = 415, gzip = 281. 1 chunks.
 2024-01-03 15:07:57.466 DEBUG   LuaGUI (Main): --- onChatMessage---	NEUTRAL player emc occupied RED Mi-8MTV2	nil	nil
@@ -1934,7 +1934,7 @@
 2024-01-03 15:12:17.592 DEBUG   LuaGUI (Main): ---- openReturnScreen=	multiplayer
 2024-01-03 15:12:18.059 INFO    TERRAIN (Main): lSystem::CleanScenes()
 2024-01-03 15:12:18.075 INFO    VISUALIZER (29708): Stopped collection of statistic.
-2024-01-03 14:59:57.000 ERROR_ONCE  (): 
+2024-01-03 14:59:57.000 ERROR_ONCE  ():
 2024-01-03 15:12:18.184 ERROR_ONCE DX11BACKEND (29708): render target 'uiTargetColor' not found
 2024-01-03 15:12:18.184 ERROR_ONCE DX11BACKEND (29708): render target 'uiTargetDepth' not found
 2024-01-03 15:12:18.184 INFO    VISUALIZER (29708): DCSSceneRenderer initialized
@@ -1943,7 +1943,7 @@
 2024-01-03 15:12:18.254 DEBUG   LuaGUI (Main): --onShowIntermission-GAMEGUI---
 2024-01-03 15:12:19.234 INFO    ASYNCNET (Main): client has started
 2024-01-03 15:12:29.011 INFO    ASYNCNET (Main): client has stopped
-2024-01-03 15:12:33.817 DEBUG   LuaGUI (Main): ~~~Gui.doQuit() 
+2024-01-03 15:12:33.817 DEBUG   LuaGUI (Main): ~~~Gui.doQuit()
 2024-01-03 15:12:33.824 INFO    EDCORE (Main): (dDispatcher)enterToState_:5
 2024-01-03 15:12:33.838 INFO    APP (Main): application shutdown
 2024-01-03 15:12:34.595 INFO    EDOBJECTS (Main): lTypeObjectManagerImpl::clear 0
