@@ -99,7 +99,7 @@ def test_config_yaml(resources):
 
     :return: path to yaml config file
     """
-    return resources / 'c.yml'
+    return resources / 'config.yaml'
 
 
 @fixture()
