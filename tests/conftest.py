@@ -225,18 +225,18 @@ def default_config():
 
 
 @fixture()
-def switch_dcs_bios_path_in_config(resources, test_config_yaml):
+def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
     """
     Switch path to config yaml file during testing.
 
-    :param resources: path to tests/resources directory
+    :param test_dcs_bios: path to DCS-BIOS in tests
     :param test_config_yaml: test confi.yaml file
     """
     from dcspy import utils
 
     org = utils.load_yaml(test_config_yaml)
     dcs_bios = org['dcsbios']
-    org['dcsbios'] = str(resources / 'dcs_bios')
+    org['dcsbios'] = str(test_dcs_bios)
     utils.save_yaml(data=org, full_path=test_config_yaml)
     yield
     org['dcsbios'] = dcs_bios
