@@ -223,11 +223,11 @@ def test_test_keyboard_color_load_basic_plane(keyboard_color):
 @mark.parametrize('keyboard', [
     'G13', 'G510', 'G15v1', 'G15v2', 'G19'
 ])
-def test_all_keyboard_all_plane_load(model, keyboard, resources, request):
+def test_all_keyboard_all_plane_load(model, keyboard, test_dcs_bios, request):
     from dcspy.aircraft import AdvancedAircraft
 
     keyboard = request.getfixturevalue(keyboard)
-    with patch('dcspy.logitech.get_config_yaml_item', return_value=resources / 'dcs_bios'):
+    with patch('dcspy.logitech.get_config_yaml_item', return_value=test_dcs_bios):
         keyboard.plane_name = model
         keyboard.load_new_plane()
 
