@@ -102,6 +102,16 @@ def test_config_yaml(resources):
     return resources / 'c.yml'
 
 
+@fixture()
+def test_dcs_bios(resources):
+    """
+    Path to DCS-BIOS for test purposes.
+
+    :return: path to DCS-BIOS
+    """
+    return resources / 'DCS.openbeta' / 'Scripts' / 'DCS-BIOS'
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
