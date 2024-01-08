@@ -534,6 +534,17 @@ def _fetch_git_data() -> Tuple[Sequence[int], str]:
     return git_ver, head_commit
 
 
+def _get_dcs_log(conf_dict: Dict[str, Any]) -> Path:
+    """
+    Get path to dcs.log path.
+
+    :param conf_dict: A dictionary containing configuration information.
+    :return: A Path object representing the path to the dcs.log file.
+    """
+    dcs_log_file = Path(conf_dict['dcsbios']).parents[1] / 'Logs' / 'dcs.log'
+    return dcs_log_file if dcs_log_file.is_file() else Path()
+
+
 def _get_log_files() -> Generator[Path, None, None]:
     """
     Get path to all logg files.
