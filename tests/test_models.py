@@ -427,19 +427,19 @@ def test_cycle_button_custom_constructor(name, req, step, max_val):
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
 
-def test_get_ctrl(resources):
+def test_get_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
-    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     c = json_data.get_ctrl(ctrl_name='TACAN_MODE')
     assert c.output.max_value == 4
     assert c.input.one_input is False
 
 
-def test_get_inputs_for_plane(resources):
+def test_get_inputs_for_plane(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
-    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     bios = json_data.get_inputs()
     assert len(bios) == 47
     assert sum(len(values) for values in bios.values()) == 487
