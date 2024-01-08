@@ -183,7 +183,9 @@ class AdvancedAircraft(BasicAircraft):
         img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
         getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
         if self.cfg.get('save_lcd', False):
-            img.save(Path(gettempdir()) / f'{type(self).__name__}_{next(self._debug_img)}.png', 'PNG')
+            screen_shot_file = f'{type(self).__name__}_{next(self._debug_img)}.png'
+            img.save(Path(gettempdir()) / screen_shot_file, 'PNG')
+            LOG.debug(f'Save screenshot: {screen_shot_file}')
         return img
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
