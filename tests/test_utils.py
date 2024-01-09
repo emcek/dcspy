@@ -264,7 +264,7 @@ def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
 
 
 @mark.slow
-def test_collect_debug_data(resources):
+def test_collect_debug_data(switch_dcs_bios_path_in_config, resources):
     from tempfile import gettempdir
     from zipfile import ZipFile
     with open(Path(gettempdir()) / 'Ka50_999.png', 'w+') as png:
