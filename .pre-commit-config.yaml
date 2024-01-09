@@ -54,7 +54,7 @@ repos:
         args: [--omit-covered-files, --fail-under=90]
 
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.6.2
+    rev: v2.6.3
     hooks:
       -   id: pip-audit
           args: [--local]
