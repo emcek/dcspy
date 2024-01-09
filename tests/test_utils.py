@@ -264,12 +264,12 @@ def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
 
 
 @mark.slow
-def test_collect_debug_data():
+def test_collect_debug_data(switch_dcs_bios_path_in_config, resources):
     from tempfile import gettempdir
     from zipfile import ZipFile
     with open(Path(gettempdir()) / 'Ka50_999.png', 'w+') as png:
         png.write('')
-    with patch('dcspy.utils.get_config_yaml_location', lambda: Path(__file__).resolve().parents[1] / 'dcspy'):
+    with patch('dcspy.utils.get_config_yaml_location', lambda: resources):
         zip_file = utils.collect_debug_data()
     assert 'dcspy_debug_' in str(zip_file)
     assert zip_file.suffix == '.zip'
@@ -278,9 +278,10 @@ def test_collect_debug_data():
     with ZipFile(file=zip_file, mode='r') as zipf:
         zip_list = zipf.namelist()
     assert 'system_data.txt' in zip_list
-    assert sum('.yaml' in s for s in zip_list) == 10
+    assert sum('.yaml' in s for s in zip_list) == 2
     assert 'dcspy.log' in zip_list
     assert 'Ka50_999.png' in zip_list
+    assert 'dcs.log' in zip_list
 
 
 @mark.slow
@@ -299,15 +300,15 @@ def test_run_pip_command_failed():
     assert err != '', err
 
 
-def test_get_full_bios_for_plane(resources):
-    a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+def test_get_full_bios_for_plane(test_dcs_bios):
+    a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     assert len(a10_model.root) == 64
     assert sum(len(values) for values in a10_model.root.values()) == 775
 
 
-def test_get_inputs_for_plane(resources):
+def test_get_inputs_for_plane(test_dcs_bios):
     from dcspy.models import CTRL_LIST_SEPARATOR, ControlKeyData
-    bios = utils.get_inputs_for_plane(plane='A-10C', bios_dir=resources / 'dcs_bios')
+    bios = utils.get_inputs_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     for section, ctrls in bios.items():
         for name, ctrl in ctrls.items():
             assert isinstance(ctrl, ControlKeyData), f'Wrong type fpr {section} / {name}'
@@ -317,13 +318,13 @@ def test_get_inputs_for_plane(resources):
     assert CTRL_LIST_SEPARATOR in list_of_ctrls[0], list_of_ctrls[0]
 
 
-def test_get_inputs_for_wrong_plane(resources):
+def test_get_inputs_for_wrong_plane(test_dcs_bios):
     with pytest.raises(KeyError):
-        _ = utils.get_inputs_for_plane(plane='Wrong', bios_dir=resources / 'dcs_bios')
+        _ = utils.get_inputs_for_plane(plane='Wrong', bios_dir=test_dcs_bios)
 
 
-def test_get_plane_aliases_all(resources):
-    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios')
+def test_get_plane_aliases_all(test_dcs_bios):
+    s = utils.get_plane_aliases(bios_dir=test_dcs_bios)
     assert s == {
         'A-10C': ['CommonData', 'A-10C'],
         'A-10C_2': ['CommonData', 'A-10C'],
@@ -342,18 +343,18 @@ def test_get_plane_aliases_all(resources):
     }
 
 
-def test_get_plane_aliases_one_plane(resources):
-    s = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', plane='A-10C')
+def test_get_plane_aliases_one_plane(test_dcs_bios):
+    s = utils.get_plane_aliases(bios_dir=test_dcs_bios, plane='A-10C')
     assert s == {'A-10C': ['CommonData', 'A-10C']}
 
 
-def test_get_plane_aliases_wrong_plane(resources):
+def test_get_plane_aliases_wrong_plane(test_dcs_bios):
     with pytest.raises(KeyError):
-        _ = utils.get_plane_aliases(bios_dir=resources / 'dcs_bios', plane='A-Wrong')
+        _ = utils.get_plane_aliases(bios_dir=test_dcs_bios, plane='A-Wrong')
 
 
-def test_get_planes_list(resources):
-    plane_list = utils.get_planes_list(bios_dir=resources / 'dcs_bios')
+def test_get_planes_list(test_dcs_bios):
+    plane_list = utils.get_planes_list(bios_dir=test_dcs_bios)
     assert plane_list == [
         'A-10C',
         'A-10C_2',

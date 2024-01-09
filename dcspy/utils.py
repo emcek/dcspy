@@ -469,10 +469,12 @@ def collect_debug_data() -> Path:
     config_file = Path(get_config_yaml_location() / CONFIG_YAML).resolve()
     conf_dict = load_yaml(config_file)
     sys_data = _get_sys_file(conf_dict)
+    dcs_log = _get_dcs_log(conf_dict)
 
     zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
     with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
         zipf.write(sys_data, arcname=sys_data.name)
+        zipf.write(dcs_log, arcname=dcs_log.name)
         for log_file in _get_log_files():
             zipf.write(log_file, arcname=log_file.name)
         for yaml_file in _get_yaml_files(config_file):
@@ -532,6 +534,17 @@ def _fetch_git_data() -> Tuple[Sequence[int], str]:
         git_ver = (0, 0, 0, 0)
         head_commit = 'N/A'
     return git_ver, head_commit
+
+
+def _get_dcs_log(conf_dict: Dict[str, Any]) -> Path:
+    """
+    Get path to dcs.log path.
+
+    :param conf_dict: A dictionary containing configuration information.
+    :return: A Path object representing the path to the dcs.log file.
+    """
+    dcs_log_file = Path(conf_dict['dcsbios']).parents[1] / 'Logs' / 'dcs.log'
+    return dcs_log_file if dcs_log_file.is_file() else Path()
 
 
 def _get_log_files() -> Generator[Path, None, None]:
