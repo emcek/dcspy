@@ -1,6 +1,8 @@
 ## 3.1.2
 * Show messagebox during stat-up when Git executable is missing
 * Add dcs.log to debug data collection
+* Internal:
+  * Update GitPython library
 
 ## 3.1.1
 * Fix parsing data for **AH-64D Apache**
