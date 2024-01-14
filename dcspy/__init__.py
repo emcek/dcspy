@@ -11,12 +11,11 @@ from dcspy.models import LOCAL_APPDATA
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
 __version__ = '3.1.2'
-LOG = getLogger(__name__)
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
-_basic_config = load_yaml(full_path=default_yaml)
-config_logger(LOG, _basic_config['verbose'])
-_config = migrate(_basic_config)
+_start_cfg = load_yaml(full_path=default_yaml)
+config_logger(LOG, _start_cfg.get('verbose', False))
+_config = migrate(_start_cfg)
 save_yaml(data=_config, full_path=default_yaml)
 
 LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
