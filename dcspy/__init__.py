@@ -10,13 +10,14 @@ from dcspy.migration import migrate
 from dcspy.models import LOCAL_APPDATA
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
+LOG = getLogger(__name__)
 __version__ = '3.1.2'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
-_config = migrate(load_yaml(full_path=default_yaml))
+_start_cfg = load_yaml(full_path=default_yaml)
+config_logger(LOG, _start_cfg.get('verbose', False))
+_config = migrate(_start_cfg)
 save_yaml(data=_config, full_path=default_yaml)
-LOG = getLogger(__name__)
-config_logger(LOG, _config['verbose'])
 
 LOG.debug(f'Arch: {name} / {platform} / {" / ".join(architecture())}')
 LOG.debug(f'Python: {python_implementation()}-{python_version()}')
