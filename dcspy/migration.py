@@ -136,7 +136,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     """
     value = cfg.get(old_name, default_value)
     try:
-        del cfg['old_name']
+        del cfg[old_name]
     except KeyError:
         pass
     cfg[new_name] = value
