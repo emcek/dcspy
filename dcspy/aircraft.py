@@ -59,7 +59,8 @@ class BasicAircraft:
         self.bios_data: Dict[str, Union[str, int]] = {}
         self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
-        self._load_plane_yaml()
+        if self.bios_name:
+            self._load_plane_yaml()
 
     def _load_plane_yaml(self) -> None:
         """Load plane's YAML file with configuration and apply."""
