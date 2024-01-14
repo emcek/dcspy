@@ -110,6 +110,7 @@ def _add_key(cfg: DcspyConfigYaml, key: str, default_value: Union[str, int, bool
     """
     if key not in cfg:
         cfg[key] = default_value
+        LOG.debug(f'Added key: {key} with: {default_value}')
 
 
 def _remove_key(cfg: DcspyConfigYaml, key: str) -> None:
@@ -121,6 +122,7 @@ def _remove_key(cfg: DcspyConfigYaml, key: str) -> None:
     """
     try:
         del cfg[key]
+        LOG.debug(f'Remove key: {key}')
     except KeyError:
         pass
 
@@ -140,6 +142,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     except KeyError:
         pass
     cfg[new_name] = value
+    LOG.debug(f'Rename key {old_name} -> {new_name} with: {value}')
 
 
 def _copy_file(filename: str, to_path: Path, force=False) -> None:
@@ -153,5 +156,6 @@ def _copy_file(filename: str, to_path: Path, force=False) -> None:
     if not Path(to_path / filename).is_file() or force:
         try:
             copy(src=DEFAULT_YAML_FILE.parent / filename, dst=to_path)
+            LOG.debug(f'Copy file: {filename} to {to_path}')
         except SameFileError:
             pass
