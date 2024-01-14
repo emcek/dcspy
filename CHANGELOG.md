@@ -9,6 +9,7 @@ Internal:
 * Add dcs.log to debug data collection
 * Internal:
   * Update GitPython library
+  * Fix old migration from 3.0.0 release
 
 ## 3.1.1
 * Fix parsing data for **AH-64D Apache**
