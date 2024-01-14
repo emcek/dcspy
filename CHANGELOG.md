@@ -1,5 +1,6 @@
 ## 3.1.3
 * Fix loading empty YAML file when Loading Logitech Keyboard instance
+* Start loging form very beginning
 
 ## 3.1.2
 * Show messagebox during stat-up when Git executable is missing
