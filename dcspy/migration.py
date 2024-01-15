@@ -54,6 +54,18 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
 
 
+def _api_ver_3_1_3(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.1.3.
+
+    :param cfg: Configuration dictionary
+    """
+    user_appdata = get_config_yaml_location()
+    makedirs(name=user_appdata, exist_ok=True)
+    _remove_key(cfg, 'font_mono_xs')
+    _remove_key(cfg, 'font_color_xs')
+
+
 def _api_ver_3_1_1(cfg: DcspyConfigYaml) -> None:
     """
     Migrate to version 3.1.1.
