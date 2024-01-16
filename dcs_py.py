@@ -1,4 +1,4 @@
-from sys import exit
+import sys
 from traceback import format_exc
 
 from PySide6.QtCore import Qt
@@ -24,7 +24,7 @@ except NameError as exc:
     msg.setInformativeText(f'Error text: {exc}')
     msg.setDetailedText(format_exc())
     msg.exec()
-    exit(1)
+    sys.exit(1)
 
 
 if __name__ == '__main__':
