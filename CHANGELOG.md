@@ -1,5 +1,6 @@
 ## 3.1.3
 * Fix loading empty YAML file when Loading Logitech Keyboard instance
+* Show saved collection debug file in status bar
 Internal:
   * Start loging form very beginning
   * Fixing one of migration functions, old configuration could be not cleared
