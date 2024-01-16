@@ -305,6 +305,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             destination = Path(directory) / zip_file.name
             copy(zip_file, destination)
+            self.statusbar.showMessage(f'Save: {destination}')
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
