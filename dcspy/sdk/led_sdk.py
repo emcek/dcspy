@@ -1,14 +1,12 @@
-from ctypes import c_bool, c_wchar_p, c_int
 from logging import getLogger
 from threading import Event
 from time import sleep
 from typing import Tuple
 
-from _cffi_backend import Lib
 from cffi import FFI
 
 from dcspy.models import LOGI_DEVICETYPE_ALL
-from dcspy.sdk import LedDll, load_dll
+from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
