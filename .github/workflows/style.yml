@@ -1,0 +1,91 @@
+name: Style
+
+on: workflow_call
+
+jobs:
+  pycodestyle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Check PyCodeStyle"
+        run: |
+          pycodestyle --statistics --count dcspy
+
+  pydocstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Check PyDocStyle"
+        run: |
+          pydocstyle --count dcspy
+
+  interrogate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Check interrogate"
+        run: |
+          interrogate -c pyproject.toml -vv
+
+  ruff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Check Ruff"
+        run: |
+          ruff check dcspy
+
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Check mypy"
+        run: |
+          mypy .
+
+      - name: "Upload mypy results"
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mypy_3_12
+          path: |
+            mypyhtml/*
+          retention-days: 4
+
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Check flake8"
+        run: |
+          flake8 .

@@ -1,0 +1,70 @@
+---
+ci:
+  autoupdate_schedule: monthly
+  skip: [pip-audit]
+
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-docstring-first
+      - id: debug-statements
+      - id: double-quote-string-fixer
+      - id: check-toml
+      - id: check-yaml
+      - id: check-json
+      - id: requirements-txt-fixer
+      - id: fix-byte-order-marker
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        exclude: '/qt_gui\.py$|tests/|generate_ver_file\.py$'
+        additional_dependencies: [types-cffi, types-Pillow, types-psutil, types-pyinstaller, types-PyYAML, types-requests, lxml]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.11
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/PyCQA/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        exclude: tests
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.15.0
+    hooks:
+      - id: pyupgrade
+        args: [--py38-plus]
+
+  - repo: https://github.com/econchick/interrogate
+    rev: 1.5.0
+    hooks:
+      - id: interrogate
+        exclude: '/qtgui_rc.py$|tests/'
+        args: [--omit-covered-files, --fail-under=90]
+
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.6.3
+    hooks:
+      -   id: pip-audit
+          args: [--local]
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.15
+    hooks:
+      - id: validate-pyproject
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort

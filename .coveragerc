@@ -3,7 +3,8 @@ source = dcspy
 
 [report]
 omit = tests/*
-       dcspy/tk_gui.py
+       dcspy/qt_gui.py
+       dcspy/qtgui_rc.py
 
 [html]
 directory = covhtml

@@ -1,274 +1,252 @@
-from unittest.mock import patch, MagicMock
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 from pytest import fixture
 
-from dcspy import LcdInfo
+from dcspy import aircraft, logitech, models
+from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
+
+
+def generate_plane_fixtures(plane, lcd_type_with_fonts):
+    """
+    Generate fixtures for any plane with any lcd type.
+
+    :param plane: any plane object
+    :param lcd_type_with_fonts: lcd_type with fonts
+    """
+    @fixture()
+    def _fixture():
+        """Fixture."""
+        with patch('dcspy.aircraft.default_yaml', Path(__file__).resolve().parents[1] / 'dcspy' / 'config.yaml'):
+            plane_instance = plane(lcd_type_with_fonts)
+        return plane_instance
+    return _fixture
+
+
+def generate_keyboard_fixtures(keyboard, lcd_font_setting):
+    """
+    Generate fixtures for any keyboard and with lcd_font_setting.
+
+    :param keyboard: any keyboard object
+    :param lcd_font_setting: FontSetting object
+    """
+    @fixture()
+    def _fixture():
+        """Fixture."""
+        from dcspy.dcsbios import ProtocolParser
+        from dcspy.sdk import key_sdk, lcd_sdk
+
+        with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+                patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+            return keyboard(parser=ProtocolParser(), fonts=lcd_font_setting)
+    return _fixture
+
+
+for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+    for lcd in ['LcdMono', 'LcdColor']:
+        airplane = getattr(aircraft, plane_model)
+        lcd_type = getattr(models, lcd)
+        if lcd == 'LcdMono':
+            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+        else:
+            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+        name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
+        globals()[name] = generate_plane_fixtures(airplane, lcd_type)
+
+for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
+    key = getattr(logitech, keyboard_model)
+    if keyboard_model == 'G19':
+        lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+    else:
+        lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+    globals()[keyboard_model] = generate_keyboard_fixtures(key, lcd_font)
+
+
+def pytest_addoption(parser) -> None:
+    """
+    Register img_precision CLI argument.
+
+    :param parser:
+    """
+    parser.addoption('--img_precision', action='store',  type=int, default=0)
+
+
+@fixture(scope='session')
+def img_precision(pytestconfig):
+    """
+    Get value of img_precision parameter form command line.
+
+    :param pytestconfig:
+    :return: value from command line
+    """
+    return pytestconfig.getoption('img_precision')
+
+
+@fixture()
+def resources():
+    """
+    Path to tests/resources directory.
+
+    :return: path to tests/resources directory
+    """
+    return Path(__file__).resolve().with_name('resources')
+
+
+@fixture()
+def test_config_yaml(resources):
+    """
+    Path to YAML tests config file.
+
+    :return: path to yaml config file
+    """
+    return resources / 'config.yaml'
+
+
+@fixture()
+def test_dcs_bios(resources):
+    """
+    Path to DCS-BIOS for test purposes.
+
+    :return: path to DCS-BIOS
+    """
+    return resources / 'DCS.openbeta' / 'Scripts' / 'DCS-BIOS'
 
 
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
-    """Basic instance of ProtocolParser"""
+    """Instance of ProtocolParser."""
     from dcspy.dcsbios import ProtocolParser
     return ProtocolParser()
 
 
-# <=><=><=><=><=> lcd <=><=><=><=><=>
-@fixture()
-def lcd_mono() -> LcdInfo:
-    """
-    Return of mono LCD.
-
-    :return: mono lcd type
-    """
-    from dcspy import LcdMono
-    return LcdMono
-
-
-@fixture()
-def lcd_color() -> LcdInfo:
-    """
-    Return of color LCD.
-
-    :return: color lcd type
-    """
-    from dcspy import LcdColor
-    return LcdColor
-
-
-# <=><=><=><=><=> aircraft mono <=><=><=><=><=>
-@fixture()
-def aircraft(lcd_mono: LcdInfo):
-    """
-    Return instance of Aircraft base class for Logitech mono LCD.
-    :param lcd_mono:
-    :return: Aircraft instance
-    """
-    from dcspy.aircraft import Aircraft
-    return Aircraft(lcd_mono)
-
-
-@fixture()
-def hornet_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F/A-18C Hornet for Logitech mono LCD.
-    :param lcd_mono:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircraft import FA18Chornet
-    return FA18Chornet(lcd_mono)
-
-
-@fixture()
-def viper_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F16C Viper for Logitech mono LCD.
-    :param lcd_mono:
-    :return: F-16C Viper instance
-    """
-    from dcspy.aircraft import F16C50
-    return F16C50(lcd_mono)
-
-
-@fixture()
-def black_shark_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of Ka-50 Black Shark for Logitech mono LCD.
-    :param lcd_mono:
-    :return: Ka-50 Black Shark instance
-    """
-    from dcspy.aircraft import Ka50
-    return Ka50(lcd_mono)
-
-
-@fixture()
-def warthog_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of A-10C Warthog for Logitech mono LCD.
-    :param lcd_mono:
-    :return: A-10C Warthog instance
-    """
-    from dcspy.aircraft import A10C
-    return A10C(lcd_mono)
-
-
-@fixture()
-def warthog2_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of A-10C II Tank Killer for Logitech mono LCD.
-    :param lcd_mono:
-    :return: A-10C II Tank Killer instance
-    """
-    from dcspy.aircraft import A10C2
-    return A10C2(lcd_mono)
-
-
-@fixture()
-def tomcata_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F-14A-135-GR Tomcat for Logitech mono LCD.
-    :param lcd_mono:
-    :return: F-14A-135-GR Tomcat instance
-    """
-    from dcspy.aircraft import F14A135GR
-    return F14A135GR(lcd_mono)
-
-
-@fixture()
-def tomcatb_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of F-14B Tomcat for Logitech mono LCD.
-    :param lcd_mono:
-    :return: F-14B Tomcat instance
-    """
-    from dcspy.aircraft import F14B
-    return F14B(lcd_mono)
-
-
-@fixture()
-def harrier_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of AV-8B N/A Harrier for Logitech mono LCD.
-    :param lcd_mono:
-    :return: AV-8B N/A Harrier instance
-    """
-    from dcspy.aircraft import AV8BNA
-    return AV8BNA(lcd_mono)
-
-
-@fixture()
-def apache_mono(lcd_mono: LcdInfo):
-    """
-    Return instance of AH-64D Apache for Logitech mono LCD.
-    :param lcd_mono:
-    :return: AH-64D Apache instance
-    """
-    from dcspy.aircraft import AH64D
-    return AH64D(lcd_mono)
-
-
-# <=><=><=><=><=> aircraft color <=><=><=><=><=>
-@fixture()
-def hornet_color(lcd_color: LcdInfo):
-    """
-    Return instance of F/A-18C Hornet for Logitech color LCD.
-    :param lcd_color:
-    :return: F/A-18C Hornet instance
-    """
-    from dcspy.aircraft import FA18Chornet
-    return FA18Chornet(lcd_color)
-
-
-@fixture()
-def viper_color(lcd_color: LcdInfo):
-    """
-    Return instance of F16C Viper for Logitech color LCD.
-    :param lcd_color:
-    :return: F-16C Viper instance
-    """
-    from dcspy.aircraft import F16C50
-    return F16C50(lcd_color)
-
-
-@fixture()
-def black_shark_color(lcd_color: LcdInfo):
-    """
-    Return instance of Ka-50 Black Shark for Logitech color LCD.
-    :param lcd_color:
-    :return: Ka-50 Black Shark instance
-    """
-    from dcspy.aircraft import Ka50
-    return Ka50(lcd_color)
-
-
-@fixture()
-def warthog2_color(lcd_color: LcdInfo):
-    """
-    Return instance of A-10C II Tank Killer for Logitech mono LCD.
-    :param lcd_color:
-    :return: A-10C II Tank Killer instance
-    """
-    from dcspy.aircraft import A10C2
-    return A10C2(lcd_color)
-
-
-@fixture()
-def tomcata_color(lcd_color: LcdInfo):
-    """
-    Return instance of F-14A-135-GR Tomcat for Logitech color LCD.
-    :param lcd_color:
-    :return: F-14A-135-GR Tomcat instance
-    """
-    from dcspy.aircraft import F14A135GR
-    return F14A135GR(lcd_color)
-
-
-@fixture()
-def tomcatb_color(lcd_color: LcdInfo):
-    """
-    Return instance of F-14B Tomcat for Logitech color LCD.
-    :param lcd_color:
-    :return: F-14B Tomcat instance
-    """
-    from dcspy.aircraft import F14B
-    return F14B(lcd_color)
-
-
-@fixture()
-def harrier_color(lcd_color: LcdInfo):
-    """
-    Return instance of AV-8B N/A Harrier for Logitech color LCD.
-    :param lcd_color:
-    :return: AV-8B N/A Harrier instance
-    """
-    from dcspy.aircraft import AV8BNA
-    return AV8BNA(lcd_color)
-
-
-@fixture()
-def apache_color(lcd_color: LcdInfo):
-    """
-    Return instance of AH-64D Apache for Logitech color LCD.
-    :param lcd_color:
-    :return: AH-64D Apache instance
-    """
-    from dcspy.aircraft import AH64D
-    return AH64D(lcd_color)
-
-
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
+def lcd_font_mono():
+    """Returns font configuration for mono LCD."""
+    return FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+
+
+@fixture()
+def lcd_font_color(protocol_parser):
+    """Returns font configuration for color LCD."""
+    return FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+
+
+@fixture()
 def keyboard_base(protocol_parser):
-    from dcspy.logitech import LogitechKeyboard
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return LogitechKeyboard(protocol_parser)
+    """
+    Return instance of KeyboardManager.
+
+    :param protocol_parser: instance of ProtocolParser
+    :return: KeyboardManager
+    """
+    from dcspy.sdk import key_sdk, lcd_sdk
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return logitech.KeyboardManager(protocol_parser)
 
 
 @fixture()
-def keyboard_mono(protocol_parser):
-    from dcspy.logitech import KeyboardMono
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardMono(protocol_parser)
+def keyboard_mono(protocol_parser, lcd_font_mono):
+    """
+    Return instance of Keyboard with LcdMono.
+
+    :param protocol_parser: instance of ProtocolParser
+    :param lcd_font_mono font configuration for LCD
+    :return: KeyboardManager
+    """
+    from dcspy.models import Gkey, LcdButton, LcdMono
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Mono(logitech.KeyboardManager):
+        def __init__(self, parser, **kwargs) -> None:
+            LcdMono.set_fonts(kwargs['fonts'])
+            super().__init__(parser, lcd_type=LcdMono)
+            self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+            self.gkey = Gkey.generate(key=3, mode=1)
+            self.vert_space = 10
+
+        def _setup_plane_callback(self) -> None:
+            print('empty callback setup')
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Mono(parser=protocol_parser, fonts=lcd_font_mono)
 
 
 @fixture()
-def keyboard_color(protocol_parser):
-    from dcspy.logitech import KeyboardColor
-    from dcspy.sdk import lcd_sdk
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        return KeyboardColor(protocol_parser)
+def keyboard_color(protocol_parser, lcd_font_color):
+    """
+    Return instance of Keyboard with LcdColor.
+
+    :param protocol_parser: instance of ProtocolParser
+    :param lcd_font_color font configuration for LCD
+    :return: KeyboardManager
+    """
+    from dcspy.models import Gkey, LcdButton, LcdColor
+    from dcspy.sdk import key_sdk, lcd_sdk
+
+    class Color(logitech.KeyboardManager):
+        def __init__(self, parser, **kwargs) -> None:
+            LcdColor.set_fonts(kwargs['fonts'])
+            super().__init__(parser, lcd_type=LcdColor)
+            self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
+            self.gkey = Gkey.generate(key=3, mode=1)
+            self.vert_space = 40
+
+        def _setup_plane_callback(self) -> None:
+            print('empty callback setup')
+
+    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
+            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
+        return Color(parser=protocol_parser, fonts=lcd_font_color)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
 @fixture()
 def sock():
+    """Socket mock instance."""
     return MagicMock()
 
 
 @fixture()
+def default_config():
+    """Get default configuration dict."""
+    from os import environ
+    return {
+        'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
+        'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta', 'keyboard': 'G13', 'save_lcd': False, 'show_gui': True, 'autostart': False,
+        'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
+        'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': True, 'git_bios_ref': 'master', 'toolbar_style': 0,
+        'toolbar_area': 4, 'gkeys_area': 2, 'gkeys_float': False, 'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20,
+        'current_plane': 'A-10A',
+    }
+
+
+@fixture()
+def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
+    """
+    Switch path to config yaml file during testing.
+
+    :param test_dcs_bios: path to DCS-BIOS in tests
+    :param test_config_yaml: test confi.yaml file
+    """
+    from dcspy import utils
+
+    org = utils.load_yaml(test_config_yaml)
+    dcs_bios = org['dcsbios']
+    org['dcsbios'] = str(test_dcs_bios)
+    utils.save_yaml(data=org, full_path=test_config_yaml)
+    yield
+    org['dcsbios'] = dcs_bios
+    utils.save_yaml(data=org, full_path=test_config_yaml)
+
+
+# <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
+@fixture()
 def autoupdate1_cfg():
+    """Mock for correct autoupdate_cfg."""
     return """{
  "WARNING": "DO NOT EDIT this file. You may break your install!",
  "branch": "openbeta",
@@ -289,6 +267,7 @@ def autoupdate1_cfg():
 
 @fixture()
 def autoupdate2_cfg():
+    """Mock for wrong autoupdate_cfg."""
     return """{
  "WARNING": "DO NOT EDIT this file. You may break your install!",
  "branch": "openbeta",
@@ -304,3 +283,305 @@ def autoupdate2_cfg():
   "UH-1H",
   "A-10C",
 """
+
+
+@fixture()
+def autoupdate3_cfg():
+    """Mock for wrong autoupdate_cfg."""
+    return """{
+ "WARNING": "DO NOT EDIT this file. You may break your install!",
+ "version": "2.7.18.28157",
+ "timestamp": "20220729-154039",
+ "arch": "x86_64",
+ "lang": "EN",
+ "modules": [
+  "WORLD",
+  "FA-18C",
+  "NS430_MI-8MTV2",
+  "NS430",
+  "MI-8MTV2",
+  "UH-1H",
+  "A-10C",
+"""
+
+
+# <=><=><=><=><=> airplane bios data <=><=><=><=><=>
+@fixture()
+def apache_pre_mode_bios_data():
+    """Bios values for AH-64D Apache PRE mode."""
+    return [
+        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
+        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!PRESET 1 127.000 '),
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | PRESET 2 135.000 '),
+        ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | PRESET 3 136.000 '),
+        ('PLT_EUFD_LINE5', '                  |                  | PRESET 4 127.000 '),
+        ('PLT_EUFD_LINE6', '                                     | PRESET 5 125.000 '),
+        ('PLT_EUFD_LINE7', '                                     | PRESET 6 121.000 '),
+        ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | PRESET 7 141.000 '),
+        ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | PRESET 8 128.000 '),
+        ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | PRESET 9 126.000 '),
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | PRESET10 137.000 '),
+    ]
+
+
+@fixture()
+def fa18chornet_mono_bios():
+    """Bios values for F/A-18C Hornet for Logitech mono LCD."""
+    return [
+        ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
+        ('UFC_SCRATCHPAD_STRING_2_DISPLAY', '22'),
+        ('UFC_SCRATCHPAD_NUMBER_DISPLAY', '1234567890'),
+        ('UFC_OPTION_DISPLAY_1', '1234'),
+        ('UFC_OPTION_DISPLAY_2', '2345'),
+        ('UFC_OPTION_DISPLAY_3', '3456'),
+        ('UFC_OPTION_DISPLAY_4', '4567'),
+        ('UFC_OPTION_DISPLAY_5', '5678'),
+        ('UFC_COMM1_DISPLAY', '11'),
+        ('UFC_COMM2_DISPLAY', '22'),
+        ('UFC_OPTION_CUEING_1', '1'),
+        ('UFC_OPTION_CUEING_2', '2'),
+        ('UFC_OPTION_CUEING_3', '3'),
+        ('UFC_OPTION_CUEING_4', '4'),
+        ('UFC_OPTION_CUEING_5', '5'),
+        ('IFEI_FUEL_DOWN', '123456'),
+        ('IFEI_FUEL_UP', '234567'),
+    ]
+
+
+@fixture()
+def fa18chornet_color_bios(fa18chornet_mono_bios):
+    """Bios values for F/A-18C Hornet for Logitech color LCD."""
+    return fa18chornet_mono_bios
+
+
+@fixture()
+def f16c50_mono_bios():
+    """Bios values for F16C Viper for Logitech mono LCD."""
+    return [
+        ('DED_LINE_1', '  INS  08.0/ 6        1a '),
+        ('DED_LINE_2', "  LAT *N 43o06.2'*       @"),
+        ('DED_LINE_3', "  LNG  E040o34.2'        "),
+        ('DED_LINE_4', ' SALT      74FT          '),
+        ('DED_LINE_5', ' THDG   25.0o   G/S    0 '),
+    ]
+
+
+@fixture()
+def f16c50_color_bios(f16c50_mono_bios):
+    """Bios values for F16C Viper for Logitech color LCD."""
+    return f16c50_mono_bios
+
+
+@fixture()
+def f15ese_mono_bios():
+    """Bios values for F-15ESE Eagle for Logitech mono LCD."""
+    return [
+        ('F_UFC_LINE1_DISPLAY', '*R2-35     141000-AM'),
+        ('F_UFC_LINE2_DISPLAY', 'MARITIME      MAN-'),
+        ('F_UFC_LINE3_DISPLAY', ' HQ       AJ PROGRAM'),
+        ('F_UFC_LINE4_DISPLAY', 'KY-58       SQUELCH*'),
+        ('F_UFC_LINE5_DISPLAY', '*U262000    U133000*'),
+        ('F_UFC_LINE6_DISPLAY', ' 10               G '),
+    ]
+
+
+@fixture()
+def f15ese_color_bios(f15ese_mono_bios):
+    """Bios values for F-15ESE Eagle for Logitech color LCD."""
+    return f15ese_mono_bios
+
+
+@fixture()
+def ka50_mono_bios():
+    """Bios values for Ka-50 Black Shark II for Logitech mono LCD."""
+    return [
+        ('PVI_LINE1_APOSTROPHE1', '`'),
+        ('PVI_LINE1_APOSTROPHE2', '`'),
+        ('PVI_LINE1_POINT', '1'),
+        ('PVI_LINE1_SIGN', '-'),
+        ('PVI_LINE1_TEXT', '123456'),
+        ('PVI_LINE2_APOSTROPHE1', '`'),
+        ('PVI_LINE2_APOSTROPHE2', '`'),
+        ('PVI_LINE2_POINT', '2'),
+        ('PVI_LINE2_SIGN', ' '),
+        ('PVI_LINE2_TEXT', '654321'),
+        ('AP_ALT_HOLD_LED', 1),
+        ('AP_BANK_HOLD_LED', 0),
+        ('AP_FD_LED', 1),
+        ('AP_HDG_HOLD_LED', 0),
+        ('AP_PITCH_HOLD_LED', 1),
+    ]
+
+
+@fixture()
+def ka50_color_bios(ka50_mono_bios):
+    """Bios values for Ka-50 Black Shark II for Logitech color LCD."""
+    return ka50_mono_bios
+
+
+@fixture()
+def ka503_mono_bios(ka50_mono_bios):
+    """Bios values for Ka-50 Black Shark III for Logitech mono LCD."""
+    return ka50_mono_bios
+
+
+@fixture()
+def ka503_color_bios(ka50_mono_bios):
+    """Bios values for Ka-50 Black Shark III for Logitech color LCD."""
+    return ka50_mono_bios
+
+
+@fixture()
+def mi8mt_mono_bios():
+    """Bios values for Mi-8MTV2 Magnificent Eight for Logitech mono LCD."""
+    return [
+        ('LMP_AP_HDG_ON', 1),
+        ('LMP_AP_PITCH_ROLL_ON', 0),
+        ('LMP_AP_HEIGHT_ON', 1),
+        ('R863_CNL_SEL', 9),
+        ('R863_MOD', 1),
+        ('R863_FREQ', '123.525'),
+        ('R828_PRST_CHAN_SEL', 9),
+        ('YADRO1A_FREQ', '09091.9'),
+    ]
+
+
+@fixture()
+def mi8mt_color_bios(mi8mt_mono_bios):
+    """Bios values for Mi-8MTV2 Magnificent Eight for Logitech color LCD."""
+    return mi8mt_mono_bios
+
+
+@fixture()
+def mi24p_mono_bios():
+    """Bios values for Mi-24P Hind for Logitech mono LCD."""
+    return [
+        ('PLT_R863_CHAN', 9),
+        ('PLT_R863_MODUL', 1),
+        ('PLT_R828_CHAN', 9),
+        ('JADRO_FREQ', '08082.8'),
+        ('PLT_SAU_HOVER_MODE_ON_L', 1),
+        ('PLT_SAU_ROUTE_MODE_ON_L', 0),
+        ('PLT_SAU_ALT_MODE_ON_L', 1),
+        ('PLT_SAU_H_ON_L', 0),
+        ('PLT_SAU_K_ON_L', 0),
+        ('PLT_SAU_T_ON_L', 0),
+        ('PLT_SAU_B_ON_L', 1),
+    ]
+
+
+@fixture()
+def mi24p_color_bios(mi24p_mono_bios):
+    """Bios values for Mi-24P Hind for Logitech color LCD."""
+    return mi24p_mono_bios
+
+
+@fixture()
+def ah64dblkii_mono_bios():
+    """Bios values for AH-64D Apache for Logitech mono LCD."""
+    return [
+        ('PLT_EUFD_LINE8', '~<>VHF*  134.000   MAN                121.500   MAN     '),
+        ('PLT_EUFD_LINE9', ' ==UHF*  240.000   PRE 2         L2   305.000   MAN     '),
+        ('PLT_EUFD_LINE10', ' ==FM1*   30.015   PRE 3    NORM L3    30.000   MAN     '),
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.020   PRE 4         L4    30.000   MAN     '),
+        ('PLT_EUFD_LINE12', ' ==HF *    2.0000A          LOW         2.0000A         '),
+    ]
+
+
+@fixture()
+def ah64dblkii_color_bios(ah64dblkii_mono_bios):
+    """Bios values for AH-64D Apache for Logitech color LCD."""
+    return ah64dblkii_mono_bios
+
+
+@fixture()
+def a10c_mono_bios():
+    """Bios values for A-10C Warthog for Logitech mono LCD."""
+    return [
+        ('VHFAM_FREQ1', 9),
+        ('VHFAM_FREQ2', 1),
+        ('VHFAM_FREQ3', 1),
+        ('VHFAM_FREQ4', 3),
+        ('VHFAM_PRESET', 1),
+        ('VHFFM_FREQ1', 3),
+        ('VHFFM_FREQ2', 2),
+        ('VHFFM_FREQ3', 2),
+        ('VHFFM_FREQ4', 0),
+        ('VHFFM_PRESET', 3),
+        ('UHF_100MHZ_SEL', 2),
+        ('UHF_10MHZ_SEL', 3),
+        ('UHF_1MHZ_SEL', 2),
+        ('UHF_POINT1MHZ_SEL', 1),
+        ('UHF_POINT25_SEL', 1),
+        ('UHF_PRESET', '01'),
+        ('ARC210_FREQUENCY', '123.125'),
+        ('ARC210_PREV_MANUAL_FREQ', '234.075'),
+    ]
+
+
+@fixture()
+def a10c_color_bios(a10c_mono_bios):
+    """Bios values for A-10C Warthog for Logitech color LCD."""
+    return a10c_mono_bios
+
+
+@fixture()
+def a10c2_mono_bios(a10c_mono_bios):
+    """Bios values for A-10C II Tank Killer for Logitech mono LCD."""
+    return a10c_mono_bios
+
+
+@fixture()
+def a10c2_color_bios(a10c_mono_bios):
+    """Bios values for A-10C II Tank Killer for Logitech color LCD."""
+    return a10c_mono_bios
+
+
+@fixture()
+def av8bna_mono_bios():
+    """Bios values for AV-8B N/A Harrier for Logitech mono LCD."""
+    return [
+        ('UFC_SCRATCHPAD', '123456789012'),
+        ('UFC_COMM1_DISPLAY', '11'),
+        ('UFC_COMM2_DISPLAY', '22'),
+        ('AV8BNA_ODU_1_SELECT', '1'),
+        ('AV8BNA_ODU_1_TEXT', '1234'),
+        ('AV8BNA_ODU_2_SELECT', '2'),
+        ('AV8BNA_ODU_2_TEXT', '2345'),
+        ('AV8BNA_ODU_3_SELECT', '3'),
+        ('AV8BNA_ODU_3_TEXT', '3456'),
+        ('AV8BNA_ODU_4_SELECT', '4'),
+        ('AV8BNA_ODU_4_TEXT', '4567'),
+        ('AV8BNA_ODU_5_SELECT', '5'),
+        ('AV8BNA_ODU_5_TEXT', '5678'),
+    ]
+
+
+@fixture()
+def av8bna_color_bios(av8bna_mono_bios):
+    """Bios values for AV-8B N/A Harrier for Logitech color LCD."""
+    return av8bna_mono_bios
+
+
+@fixture()
+def f14a135gr_mono_bios():
+    """Bios values for F-14A-135-GR Tomcat for Logitech mono LCD."""
+    return []
+
+
+@fixture()
+def f14a135gr_color_bios(f14a135gr_mono_bios):
+    """Bios values for F-14A-135-GR Tomcat for Logitech color LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
+def f14b_mono_bios(f14a135gr_mono_bios):
+    """Bios values for F-14B Tomcat for Logitech mono LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
+def f14b_color_bios(f14a135gr_mono_bios):
+    """Bios values for F-14B Tomcat for Logitech color LCD."""
+    return f14a135gr_mono_bios

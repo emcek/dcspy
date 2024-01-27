@@ -1,12 +1,25 @@
+from enum import Enum, auto
 from functools import partial
 from struct import pack
 from typing import Callable, Set
 
 
+class ParserState(Enum):
+    """Protocol parser states."""
+    ADDRESS_LOW = auto()
+    ADDRESS_HIGH = auto()
+    COUNT_LOW = auto()
+    COUNT_HIGH = auto()
+    DATA_LOW = auto()
+    DATA_HIGH = auto()
+    WAIT_FOR_SYNC = auto()
+
+
 class ProtocolParser:
+    """DCS_BIOS protocol parser."""
     def __init__(self) -> None:
-        """Basic constructor."""
-        self.state = 'WAIT_FOR_SYNC'
+        """Initialize instance."""
+        self.state = ParserState.WAIT_FOR_SYNC
         self.sync_byte_count = 0
         self.address = 0
         self.count = 0
@@ -18,11 +31,11 @@ class ProtocolParser:
         """
         State machine - processing of byte.
 
-        Allowed states are: ADDRESS_LOW, ADDRESS_HIGH, COUNT_LOW, COUNT_HIGH, DATA_LOW, DATA_HIGH, WAIT_FOR_SYNC
+        Allowed states are: ParserState
         :param int_byte:
         """
-        state_handling = getattr(self, f'_{self.state.lower()}')
-        if self.state == 'WAIT_FOR_SYNC':
+        state_handling = getattr(self, f'_{self.state.name.lower()}')
+        if self.state == ParserState.WAIT_FOR_SYNC:
             state_handling()
         else:
             state_handling(int_byte)
@@ -36,56 +49,56 @@ class ProtocolParser:
 
     def _address_low(self, int_byte: int) -> None:
         """
-        Handling of ADDRESS_LOW state.
+        Handle ADDRESS_LOW state.
 
         :param int_byte: data to process
         """
         self.address = int_byte
-        self.state = 'ADDRESS_HIGH'
+        self.state = ParserState.ADDRESS_HIGH
 
     def _address_high(self, int_byte: int) -> None:
         """
-        Handling of ADDRESS_HIGH state.
+        Handle ADDRESS_HIGH state.
 
         :param int_byte: data to process
         """
         self.address += int_byte * 256
         if self.address != 0x5555:
-            self.state = 'COUNT_LOW'
+            self.state = ParserState.COUNT_LOW
         else:
-            self.state = 'WAIT_FOR_SYNC'
+            self.state = ParserState.WAIT_FOR_SYNC
 
     def _count_low(self, int_byte: int) -> None:
         """
-        Handling of COUNT_LOW state.
+        Handle COUNT_LOW state.
 
         :param int_byte: data to process
         """
         self.count = int_byte
-        self.state = 'COUNT_HIGH'
+        self.state = ParserState.COUNT_HIGH
 
     def _count_high(self, int_byte: int) -> None:
         """
-        Handling of COUNT_HIGH state.
+        Handle COUNT_HIGH state.
 
         :param int_byte: data to process
         """
         self.count += 256 * int_byte
-        self.state = 'DATA_LOW'
+        self.state = ParserState.DATA_LOW
 
     def _data_low(self, int_byte: int) -> None:
         """
-        Handling of DATA_LOW state.
+        Handle DATA_LOW state.
 
         :param int_byte: data to process
         """
         self.data = int_byte
         self.count -= 1
-        self.state = 'DATA_HIGH'
+        self.state = ParserState.DATA_HIGH
 
     def _data_high(self, int_byte: int) -> None:
         """
-        Handling of DATA_HIGH state.
+        Handle DATA_HIGH state.
 
         :param int_byte: data to process
         """
@@ -95,23 +108,24 @@ class ProtocolParser:
             callback(self.address, self.data)
         self.address += 2
         if self.count == 0:
-            self.state = 'ADDRESS_LOW'
+            self.state = ParserState.ADDRESS_LOW
         else:
-            self.state = 'DATA_LOW'
+            self.state = ParserState.DATA_LOW
 
     def _wait_for_sync(self) -> None:
-        """Handling of WAIT_FOR_SYNC state."""
+        """Handle WAIT_FOR_SYNC state."""
         if self.sync_byte_count == 4:
-            self.state = 'ADDRESS_LOW'
+            self.state = ParserState.ADDRESS_LOW
             self.sync_byte_count = 0
             for callback in self.frame_sync_callbacks:
                 callback()
 
 
 class StringBuffer:
+    """String buffer for DCS-BIOS protocol."""
     def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable) -> None:
         """
-        Basic constructor.
+        Initialize instance.
 
         :param parser:
         :param address:
@@ -123,8 +137,7 @@ class StringBuffer:
         self.__dirty = False
         self.buffer = bytearray(max_length)
         self.callbacks: Set[Callable] = set()
-        if callback:
-            self.callbacks.add(callback)
+        self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def set_char(self, index, char) -> None:
@@ -140,7 +153,7 @@ class StringBuffer:
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
-        Callback function.
+        Set callback function.
 
         :param address:
         :param data:
@@ -159,9 +172,10 @@ class StringBuffer:
 
 
 class IntegerBuffer:
+    """Integer buffer for DCS-BIOS protocol."""
     def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable) -> None:
         """
-        Basic constructor.
+        Initialize instance.
 
         :param parser:
         :param address:
@@ -174,13 +188,12 @@ class IntegerBuffer:
         self.__shift_by = shift_by
         self.__value = int()
         self.callbacks: Set[Callable] = set()
-        if callback:
-            self.callbacks.add(callback)
+        self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
-        Callback function.
+        Set callback function.
 
         :param address:
         :param data:

@@ -1,14 +1,26 @@
+api_ver: 3.1.3
 autostart: false
-dcs: C:\Program Files\Eagle Dynamics\DCS World OpenBeta
-dcsbios: D:\Users\UNKNOWN\Saved Games\DCS.openbeta\Scripts\DCS-BIOS
+check_bios: true
+check_ver: true
+completer_items: 20
+current_plane: A-10C
+dcs: C:/Program Files/Eagle Dynamics/DCS World OpenBeta
+dcsbios: C:/Users/UNKNOWN/Saved Games/DCS.openbeta/Scripts/DCS-BIOS
+f16_ded_font: true
 font_color_l: 32
-font_color_s: 22
-font_color_xs: 18
+font_color_m: 22
+font_color_s: 18
 font_mono_l: 16
-font_mono_s: 11
-font_mono_xs: 9
+font_mono_m: 11
+font_mono_s: 9
 font_name: consola.ttf
+git_bios: true
+git_bios_ref: master
+gkeys_area: 2
+gkeys_float: false
 keyboard: G13
-led_effect: true
+save_lcd: false
 show_gui: true
+toolbar_area: 4
+toolbar_style: 0
 verbose: false
