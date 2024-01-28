@@ -3,19 +3,14 @@ from threading import Event
 from time import sleep
 from typing import Tuple
 
+from _cffi_backend import Lib
 from cffi import FFI
 
 from dcspy.models import LOGI_DEVICETYPE_ALL
-from dcspy.sdk import load_dll
+from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
-
-LOGI_LED_DURATION_INFINITE = 0
-LOGI_DEVICETYPE_MONOCHROME = 1
-LOGI_DEVICETYPE_RGB = 2
-LOGI_DEVICETYPE_ALL = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
-
-LED_DLL = load_dll('LED')
+LED_DLL: Lib = load_dll(LedDll)  # type: ignore[assignment]
 
 
 def logi_led_init() -> bool:
