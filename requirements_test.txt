@@ -16,4 +16,4 @@ types-Pillow==10.2.0.20240125
 types-psutil==5.9.5.20240106
 types-pyinstaller==6.3.0.20240106
 types-PyYAML==6.0.12.12
-types-requests==2.31.0.20240106
+types-requests==2.31.0.20240125
