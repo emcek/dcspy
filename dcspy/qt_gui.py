@@ -670,6 +670,18 @@ class DcsPyQtGui(QMainWindow):
         for col in set(range(self.keyboard.modes)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
+    def _reload_table_gkeys(self) -> None:
+        """
+        Reload the table with G-Keys.
+
+        * Disconnects the currentIndexChanged signal of the combo_planes widget
+        * _load_table_gkeys method to load the table with gkeys,
+        * reconnects the currentIndexChanged signal of the combo_planes widget
+        """
+        self.combo_planes.currentIndexChanged.disconnect()
+        self._load_table_gkeys()
+        self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
+
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool:
         """
@@ -781,6 +793,7 @@ class DcsPyQtGui(QMainWindow):
             self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
+            self._reload_table_gkeys()
 
     def _check_dcs_bios_path(self) -> bool:
         """
@@ -833,6 +846,7 @@ class DcsPyQtGui(QMainWindow):
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._update_bios_ver_file()
+        self._reload_table_gkeys()
         if not silence:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self.progressbar.setValue(0)
