@@ -1,5 +1,7 @@
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS
+* Internal:
+  * update lib dependencies and tools: pydantic, psutil
 
 ## 3.1.3
 * Fix loading empty YAML file when Loading Logitech Keyboard instance
