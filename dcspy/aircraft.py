@@ -411,8 +411,7 @@ class F15ESE(AdvancedAircraft):
         for i in range(1, 6):
             offset = (i - 1) * 8
             draw.text(xy=(0, offset), text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')), fill=self.lcd.foreground, font=self.lcd.font_s)
-        mat = search(r'\s*([0-9G]{1,2})\s+([0-9GV]{1,2})\s+', str(self.get_bios('F_UFC_LINE6_DISPLAY')))
-        if mat:
+        if mat := search(r'\s*([0-9G]{1,2})\s+([0-9GV]{1,2})\s+', str(self.get_bios('F_UFC_LINE6_DISPLAY'))):
             uhf, v_uhf = mat.groups()
             draw.text(xy=(130, 30), text=f'{uhf:>2} {v_uhf:>2}', fill=self.lcd.foreground, font=self.lcd.font_s)
 
@@ -483,13 +482,11 @@ class Ka50(AdvancedAircraft):
         :return: tuple of string
         """
         text1, text2 = '', ''
-        line1_text = str(self.get_bios('PVI_LINE1_TEXT'))
-        line2_text = str(self.get_bios('PVI_LINE2_TEXT'))
-        if line1_text:
+        if line1_text := str(self.get_bios('PVI_LINE1_TEXT')):
             l1_apostr1 = self.get_bios('PVI_LINE1_APOSTROPHE1')
             l1_apostr2 = self.get_bios('PVI_LINE1_APOSTROPHE2')
             text1 = f'{line1_text[-6:-3]}{l1_apostr1}{line1_text[-3:-1]}{l1_apostr2}{line1_text[-1]}'
-        if line2_text:
+        if line2_text := str(self.get_bios('PVI_LINE2_TEXT')):
             l2_apostr1 = self.get_bios('PVI_LINE2_APOSTROPHE1')
             l2_apostr2 = self.get_bios('PVI_LINE2_APOSTROPHE2')
             text2 = f'{line2_text[-6:-3]}{l2_apostr1}{line2_text[-3:-1]}{l2_apostr2}{line2_text[-1]}'
@@ -687,8 +684,7 @@ class AH64DBLKII(AdvancedAircraft):
         """Prepare image for AH-64D Apache for Mono LCD."""
         LOG.debug(f'Mode: {self.mode}')
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
-        mode = self.mode.name.lower()
-        if mode == 'pre':
+        if (mode := self.mode.name.lower()) == 'pre':
             kwargs['x_cords'] = [0] * 5 + [80] * 5
             kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
@@ -699,8 +695,7 @@ class AH64DBLKII(AdvancedAircraft):
         """Prepare image for AH-64D Apache for Color LCD."""
         LOG.debug(f'Mode: {self.mode}')
         kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
-        mode = self.mode.name.lower()
-        if mode == 'pre':
+        if (mode := self.mode.name.lower()) == 'pre':
             kwargs['x_cords'] = [0] * 10
             kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
@@ -716,8 +711,7 @@ class AH64DBLKII(AdvancedAircraft):
         """
         for i in range(8, 13):
             offset = (i - 8) * 8 * scale
-            mat = search(r'(.*\*)\s+(\d+)([.\dULCA]+)[\s\dA-Z]*\s+(\d+)([.\dULCA]+)[\sA-Z]+', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
-            if mat:
+            if mat := search(r'(.*\*)\s+(\d+)([.\dULCA]+)[\s\dA-Z]*\s+(\d+)([.\dULCA]+)[\sA-Z]+', str(self.get_bios(f'PLT_EUFD_LINE{i}'))):
                 spacer = ' ' * (6 - len(mat.group(3)))
                 text = f'{mat.group(1):>7}{mat.group(2):>4}{mat.group(3):5<}{spacer}{mat.group(4):>4}{mat.group(5):5<}'
                 draw.text(xy=(0, offset), text=text, fill=self.lcd.foreground, font=self.lcd.font_xs)
@@ -748,8 +742,7 @@ class AH64DBLKII(AdvancedAircraft):
         """
         warn = []
         for i in range(1, 8):
-            mat = search(r'(.*)\|(.*)\|(.*)', str(self.get_bios(f'PLT_EUFD_LINE{i}')))
-            if mat:
+            if mat := search(r'(.*)\|(.*)\|(.*)', str(self.get_bios(f'PLT_EUFD_LINE{i}'))):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
@@ -775,8 +768,7 @@ class AH64DBLKII(AdvancedAircraft):
             11: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
         }
         for i, x_cord, y_cord in zip(range(2, 12), x_cords, y_cords):
-            mat = search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}')))
-            if mat:
+            if mat := search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}'))):
                 draw.text(xy=(x_cord, y_cord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
@@ -788,9 +780,8 @@ class AH64DBLKII(AdvancedAircraft):
         :param value:
         """
         if selector == 'PLT_EUFD_LINE1':
-            match = search(r'.*\|.*\|(PRESET TUNE)\s\w+', str(value))
             self.mode = ApacheEufdMode.IDM
-            if match:
+            if search(r'.*\|.*\|(PRESET TUNE)\s\w+', str(value)):
                 self.mode = ApacheEufdMode.PRE
         if selector in ('PLT_EUFD_LINE8', 'PLT_EUFD_LINE9', 'PLT_EUFD_LINE10', 'PLT_EUFD_LINE11', 'PLT_EUFD_LINE12'):
             LOG.debug(f'{type(self).__name__} {selector} original: "{value}"')
