@@ -36,6 +36,7 @@ LOGITECH_MAX_GKEYS: Final = 30
 LOGITECH_MAX_M_STATES: Final = 4
 
 # Others
+NO_OF_LCD_SCREENSHOTS: Final = 301
 LOCAL_APPDATA: Final = True
 DCSPY_REPO_NAME: Final = 'emcek/dcspy'
 DEFAULT_FONT_NAME: Final = 'consola.ttf'
