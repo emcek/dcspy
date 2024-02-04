@@ -494,7 +494,9 @@ def test_plane_input_request_from_plane_gkeys():
         'G5_M2': 'ARC210_CHN_KNB +3200',
         'G6_M3': 'ARC210_CHN_KNB -3200',
         'G7_M1': 'ADI_PITCH_TRIM CYCLE 3200 65535',
+        'G8_M1': 'ICP_COM1_BTN CUSTOM ICP_COM1_BTN 1|ICP_COM1_BTN 0|',
         'G8_M2': '',
+        'G9_M1': 'ICP_COM2_BTN CUSTOM ICP_COM2_BTN INC|ICP_COM2_BTN DEC|',
     }
     gui_input_req = GuiPlaneInputRequest.from_plane_gkeys(plane_gkey)
     assert gui_input_req == {
@@ -505,7 +507,9 @@ def test_plane_input_request_from_plane_gkeys():
         'G5_M2': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB +3200', widget_iface='rb_variable_step_plus'),
         'G6_M3': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB -3200', widget_iface='rb_variable_step_minus'),
         'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_set_state'),
+        'G8_M1': GuiPlaneInputRequest(identifier='ICP_COM1_BTN', request='ICP_COM1_BTN CUSTOM ICP_COM1_BTN 1|ICP_COM1_BTN 0|', widget_iface='rb_custom'),
         'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
+        'G9_M1': GuiPlaneInputRequest(identifier='ICP_COM2_BTN', request='ICP_COM2_BTN CUSTOM ICP_COM2_BTN INC|ICP_COM2_BTN DEC|', widget_iface='rb_custom'),
     }
 
 

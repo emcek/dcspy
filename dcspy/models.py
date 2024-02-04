@@ -504,11 +504,11 @@ class GuiPlaneInputRequest(BaseModel):
         """
         input_reqs = {}
         req_keyword_rb_iface = {
+            'CUSTOM': 'rb_custom',
             'TOGGLE': 'rb_action',
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
             'CYCLE': 'rb_set_state',
-            'CUSTOM': 'rb_custom',
             '+': 'rb_variable_step_plus',
             '-': 'rb_variable_step_minus',
         }
