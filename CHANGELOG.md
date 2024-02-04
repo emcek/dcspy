@@ -2,6 +2,7 @@
 * Refresh G-Keys tab, after installation of DCS-BIOS
 * Some custom request from config file are set as a different type
 * Keep more LCD screenshots to make troubleshooting easier
+* Make sure last character in CUSTOM request is always pipe
 * Internal:
   * update lib dependencies and tools: pydantic, psutil
 
