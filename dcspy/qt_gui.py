@@ -659,8 +659,9 @@ class DcsPyQtGui(QMainWindow):
             section = self._find_section_name(ctrl_name=current_cell_text)
             key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
             ctrl_key = self.ctrl_input[section][current_cell_text]
-            input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
-            custom_value = self.le_custom.text() if input_iface_name == 'rb_custom' else ''
+            custom_value = ''
+            if (input_iface_name := self.bg_rb_input_iface.checkedButton().objectName()) == 'rb_custom':
+                custom_value = self.le_custom.text() if self.le_custom.text()[-1] == '|' else f'{self.le_custom.text()}|'
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                                   custom_value=custom_value)
 
