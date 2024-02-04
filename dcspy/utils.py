@@ -219,11 +219,9 @@ def check_dcs_ver(dcs_path: Path) -> Tuple[str, str]:
         LOG.debug(f'{type(err).__name__}: {err.filename}')
     else:
         result_type = 'stable'
-        dcs_type = search(r'"branch":\s"([\w.]*)"', autoupdate_data)
-        if dcs_type:
+        if dcs_type := search(r'"branch":\s"([\w.]*)"', autoupdate_data):
             result_type = str(dcs_type.group(1))
-        dcs_ver = search(r'"version":\s"([\d.]*)"', autoupdate_data)
-        if dcs_ver:
+        if dcs_ver := search(r'"version":\s"([\d.]*)"', autoupdate_data):
             result_ver = str(dcs_ver.group(1))
     return result_type, result_ver
 
@@ -249,8 +247,7 @@ def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
         cd_lua_data = ''
         LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
 
-    bios_re = search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data)
-    if bios_re:
+    if bios_re := search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data):
         bios = version.parse(bios_re.group(1))
         result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
     return result
