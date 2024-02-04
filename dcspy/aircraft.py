@@ -1,5 +1,5 @@
 from enum import Enum
-from itertools import chain, cycle
+from itertools import cycle
 from logging import getLogger
 from pathlib import Path
 from pprint import pformat
@@ -11,7 +11,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator, get_key_instance
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator, get_key_instance
 from dcspy.sdk import lcd_sdk
 from dcspy.utils import replace_symbols, substitute_symbols
 
@@ -163,7 +163,7 @@ class AdvancedAircraft(BasicAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type=lcd_type)
-        self._debug_img = cycle(chain([f'{x:02}' for x in range(10)], range(10, 99)))
+        self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
         """
