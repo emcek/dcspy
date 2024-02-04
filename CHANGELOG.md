@@ -1,6 +1,6 @@
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS
-* Some custom request from config file are set as a diffrent type
+* Some custom request from config file are set as a different type
 * Internal:
   * update lib dependencies and tools: pydantic, psutil
 
