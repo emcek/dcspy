@@ -5,7 +5,7 @@ files = [(f'dcspy/{res}', 'dcspy') for res in  ['AH-64D_BLK_II.yaml', 'AV8BNA.ya
 images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['splash.png', 'dcspy_white.ico', 'dcspy_black.ico']]
 resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in ['falconded.ttf', 'license.txt']]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']]
-__version__ = '3.1.3'
+__version__ = '3.1.4'
 block_cipher = None
 
 
