@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from enum import Enum
 from itertools import cycle
 from logging import getLogger
@@ -6,7 +7,8 @@ from pprint import pformat
 from re import search
 from string import whitespace
 from tempfile import gettempdir
-from typing import Dict, List, Sequence, Tuple, Union
+from threading import Timer
+from typing import Dict, List, Sequence, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -15,6 +17,8 @@ from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, CycleButton, 
 from dcspy.sdk import lcd_sdk
 from dcspy.utils import replace_symbols, substitute_symbols
 
+RED_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
+YELLOW_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
 
 
@@ -59,6 +63,10 @@ class BasicAircraft:
         self.bios_data: Dict[str, Union[str, int]] = {}
         self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
+        self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
+        self.led_effect = load_cfg()['led_effect']
+        self.led_counter = 16
+        self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
         if self.bios_name:
             self._load_plane_yaml()
 
@@ -139,6 +147,32 @@ class BasicAircraft:
             LOG.debug(f'{type(self).__name__} {bios} ZigZag: {self.cycle_buttons[button].iter}')
         return next(self.cycle_buttons[button].iter)
 
+    def led_handler(self, selector: str, value: int, effect: led_sdk.EffectInfo) -> None:
+        """
+        Switch on and off LED effect for DCS-BIOS selector.
+
+        :param selector:
+        :param value:
+        :param effect:
+        """
+        self.bios_data[selector]['value'] = value
+        if self.led_effect and not self.led_counter:
+            if value:
+                LOG.debug(f'LED on {selector} val: {value} with {effect}')
+                led_sdk.logi_led_shutdown()
+                self.led_counter = 16
+                LOG.debug(f'Th: {self.led_shutdown}')
+                self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
+                self.led_shutdown.start()
+                led_sdk.start_led_effect(effect=effect)
+                self.led_stack[selector] = effect
+            else:
+                LOG.debug(f'LED off {selector}')
+                self._popitem_and_reply_last_effect(selector)
+        else:
+            self.led_counter -= 1
+        LOG.debug(f'Couter: {value} {self.led_counter}')
+
     def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
         Get request for cycle button.
@@ -149,6 +183,16 @@ class BasicAircraft:
         button_bios_name = self.cycle_buttons[button].ctrl_name
         settings = self._get_next_value_for_button(button)
         return f'{button_bios_name} {settings}\n'
+
+    def _popitem_and_reply_last_effect(self, selector: str) -> None:
+        del self.led_stack[selector]
+        if self.led_stack:
+            selector, effect = self.led_stack.popitem()
+            LOG.debug(f'Replay effect for {selector}')
+            value = int(self.bios_data[selector]['value'])
+            self.led_handler(selector, value, effect)
+        else:
+            led_sdk.logi_led_shutdown()
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
@@ -317,11 +361,17 @@ class F16C50(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type)
-        self.font = self.lcd.font_s
-        self.ded_font = self.cfg.get('f16_ded_font', True)
-        if self.ded_font and self.lcd.type == LcdType.COLOR:
-            self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
-        self.bios_data.update({f'DED_LINE_{i}': '' for i in range(1, 6)})
+        self.bios_data: Dict[str, BIOS_VALUE] = {
+            'DED_LINE_1': {'class': 'StringBuffer', 'args': {'address': 0x450a, 'max_length': 29}, 'value': ''},
+            'DED_LINE_2': {'class': 'StringBuffer', 'args': {'address': 0x4528, 'max_length': 29}, 'value': ''},
+            'DED_LINE_3': {'class': 'StringBuffer', 'args': {'address': 0x4546, 'max_length': 29}, 'value': ''},
+            'DED_LINE_4': {'class': 'StringBuffer', 'args': {'address': 0x4564, 'max_length': 29}, 'value': ''},
+            'DED_LINE_5': {'class': 'StringBuffer', 'args': {'address': 0x4582, 'max_length': 29}, 'value': ''},
+            'IFF_MASTER_KNB': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xe, 'shift_by': 0x1}, 'value': int(), 'max_value': 4},
+            'IFF_ENABLE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x600, 'shift_by': 0x9}, 'value': int(), 'max_value': 2},
+            'IFF_M4_CODE_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0x30, 'shift_by': 0x4}, 'value': int(), 'max_value': 2},
+            'IFF_M4_REPLY_SW': {'class': 'IntegerBuffer', 'args': {'address': 0x4450, 'mask': 0xc0, 'shift_by': 0x6}, 'value': int(), 'max_value': 2}}
+        self.cycle_buttons = {'IFF_MASTER_KNB': '', 'IFF_ENABLE_SW': '', 'IFF_M4_CODE_SW': '', 'IFF_M4_REPLY_SW': ''}  # type: ignore
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
