@@ -73,6 +73,10 @@ class BasicAircraft:
                     cycle_button = CycleButton.from_request(request)
                     cycle_buttons[key] = cycle_button
                     bios_data[cycle_button.ctrl_name] = int()
+                elif 'CUSTOM BUTTON' in request:
+                    request = request.split(' CUSTOM BUTTON')[0]
+                    request = f'{request} 1\n|{request} 0\n'
+                    button_actions[key] = request
                 elif 'CUSTOM' in request:
                     request = request.split('CUSTOM ')[1]
                     request = request.replace('|', '\n|')
