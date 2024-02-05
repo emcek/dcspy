@@ -657,18 +657,20 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Cont
     return inputs
 
 
-def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> Dict[str, str]:
     """
     Get list of all controllers from dict with sections and inputs.
 
     :param inputs: dict with ControlKeyData
     :return: list of string
     """
-    result_list = []
+    result_list = {}
     for section, controllers in inputs.items():
-        result_list.append(f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}')
-        for ctrl_name in controllers:
-            result_list.append(ctrl_name)
+        # result_list.append(f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}')
+        result_list[f'{CTRL_LIST_SEPARATOR} {section} {CTRL_LIST_SEPARATOR}'] = ''
+        for ctrl_name, ctrl in controllers.items():
+            # result_list.append(ctrl_name)
+            result_list[ctrl_name] = ctrl.description
     return result_list
 
 

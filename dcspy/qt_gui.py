@@ -65,7 +65,7 @@ class DcsPyQtGui(QMainWindow):
         self._git_refs_count = 0
         self.plane_aliases = ['']
         self.ctrl_input: Dict[str, Dict[str, ControlKeyData]] = {}
-        self.ctrl_list = ['']
+        self.ctrl_list = {'': ''}
         self.input_reqs: Dict[str, Dict[str, GuiPlaneInputRequest]] = {}
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
@@ -363,7 +363,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
 
-        ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
+        ctrl_list_without_sep = [item for item in list(self.ctrl_list.keys()) if item and CTRL_LIST_SEPARATOR not in item]
         for row in range(0, no_g_keys + no_lcd_keys):
             for col in range(0, self.keyboard.modes):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
@@ -391,7 +391,11 @@ class DcsPyQtGui(QMainWindow):
 
             combo = QComboBox()
             combo.setEditable(True)
-            combo.addItems(self.ctrl_list)
+            combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+            ctrl_with_desc = [f'{ctrl_name} - {desc}' for ctrl_name, desc in self.ctrl_list.items()]
+            characters = max((len(i) for i in ctrl_with_desc))
+            combo.setMinimumContentsLength(characters)
+            combo.addItems(ctrl_with_desc)
             combo.setCompleter(completer)
             self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
             self.tw_gkeys.setCellWidget(row, col, combo)
@@ -494,7 +498,7 @@ class DcsPyQtGui(QMainWindow):
         widget.setToolTip('')
         key_name = self._get_key_name_from_row_col(row, col)
         widget.setStyleSheet(self._get_style_for_combobox(key_name, 'red'))
-        if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
+        if text in list(self.ctrl_list.keys()) and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
             widget.setToolTip(ctrl_key.description)
@@ -540,8 +544,9 @@ class DcsPyQtGui(QMainWindow):
         :param ctrl_name: input name of controller.
         :return: section name as string
         """
-        idx = self.ctrl_list.index(ctrl_name)
-        for element in reversed(self.ctrl_list[:idx]):
+        l = list(self.ctrl_list.keys())
+        idx = l.index(ctrl_name)
+        for element in reversed(l[:idx]):
             if element.startswith(CTRL_LIST_SEPARATOR):
                 return element.strip(f' {CTRL_LIST_SEPARATOR}')
         return ''
@@ -655,7 +660,7 @@ class DcsPyQtGui(QMainWindow):
         * text is changed and user press enter or widget lose focus
         """
         current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
-        if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
+        if current_cell_text in list(self.ctrl_list.keys()) and CTRL_LIST_SEPARATOR not in current_cell_text:
             section = self._find_section_name(ctrl_name=current_cell_text)
             key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
             ctrl_key = self.ctrl_input[section][current_cell_text]
