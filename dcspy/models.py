@@ -241,7 +241,7 @@ class BiosValueStr(BaseModel):
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
-    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
+    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1, physical_variant: Optional[str] = '') -> None:
         """
         Define type of input for cockpit controller.
 
@@ -255,9 +255,10 @@ class ControlKeyData:
         self.max_value = max_value
         self.suggested_step = suggested_step
         self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
+        self.physical_variant = physical_variant
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, physical_variant={self.physical_variant})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
@@ -265,7 +266,7 @@ class ControlKeyData:
         return True
 
     @classmethod
-    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> 'ControlKeyData':
+    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]], physical_variant = None) -> 'ControlKeyData':
         """
         Construct object from list of dictionaries.
 
@@ -280,7 +281,7 @@ class ControlKeyData:
         except ValueError:
             max_value = 0
             suggested_step = 0
-        instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
+        instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step, physical_variant=physical_variant)
         instance.list_dict = list_of_dicts
         return instance
 
@@ -370,6 +371,13 @@ class ControlKeyData:
         """
         return any(isinstance(d, SetString) for d in self.list_dict)
 
+    @property
+    def has_push_button(self) -> bool:
+        if self.physical_variant == 'push_button':
+            return True
+        else:
+            return False
+
 
 class Control(BaseModel):
     """Control section of BIOS model."""
@@ -390,7 +398,7 @@ class Control(BaseModel):
 
         :return: ControlKeyData
         """
-        return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs)
+        return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs, physical_variant=self.physical_variant)
 
     @property
     def output(self) -> Union[BiosValueInt, BiosValueStr]:
