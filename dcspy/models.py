@@ -276,25 +276,22 @@ class ControlKeyData:
         return True
 
     @classmethod
-    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]],
-                   physical_variant: PhysicalVariant = PhysicalVariant.EMPTY) -> 'ControlKeyData':
+    def from_control(cls, /, ctrl: 'Control') -> 'ControlKeyData':
         """
-        Construct object from list of dictionaries.
+        Construct object based on Control BIOS model.
 
-        :param name: name of the input
-        :param description: short description
-        :param list_of_dicts: list of dicts with inputs
-        :param physical_variant: physical variant of cockpit controller
+        :param ctrl: Control BIOS model
         :return: ControlKeyData instance
         """
         try:
-            max_value = cls._get_max_value(list_of_dicts)
-            suggested_step: int = max(d.get('suggested_step', 1) for d in list_of_dicts)  # type: ignore
+            max_value = cls._get_max_value(ctrl.inputs)
+            suggested_step: int = max(d.get('suggested_step', 1) for d in ctrl.inputs)  # type: ignore
         except ValueError:
             max_value = 0
             suggested_step = 0
-        instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step, physical_variant=physical_variant)
-        instance.list_dict = list_of_dicts
+        instance = cls(name=ctrl.identifier, description=ctrl.description, max_value=max_value, suggested_step=suggested_step,
+                       physical_variant=ctrl.physical_variant)
+        instance.list_dict = ctrl.inputs
         return instance
 
     @staticmethod
@@ -412,7 +409,7 @@ class Control(BaseModel):
 
         :return: ControlKeyData
         """
-        return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs, physical_variant=self.physical_variant)
+        return ControlKeyData.from_control(ctrl=self)
 
     @property
     def output(self) -> Union[BiosValueInt, BiosValueStr]:
