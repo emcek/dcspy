@@ -405,7 +405,7 @@ class Control(BaseModel):
     inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
     momentary_positions: Optional[str] = None
     outputs: List[Union[OutputStr, OutputInt]]
-    physical_variant: Optional[str] = None
+    physical_variant: PhysicalVariant = PhysicalVariant.EMPTY
 
     @property
     def input(self) -> ControlKeyData:
