@@ -601,7 +601,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _handle_push_button(self, ctrl_key: ControlKeyData) -> None:
         """Handle the control key for Action."""
-        if ctrl_key.has_push_button:
+        if ctrl_key.is_push_button:
             self.rb_custom.setChecked(True)
 
     def _checked_iface_rb_for_identifier(self, ctrl_key: ControlKeyData, key_name: str) -> None:
@@ -618,7 +618,7 @@ class DcsPyQtGui(QMainWindow):
                 # if there is a request value then use this, otherwise if this is a push_button then default to BUTTON
                 if custom_request:
                     self.le_custom.setText(custom_request)
-                elif ctrl_key.has_push_button:
+                elif ctrl_key.is_push_button:
                     self.le_custom.setText('BUTTON')
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
@@ -674,7 +674,7 @@ class DcsPyQtGui(QMainWindow):
             if (input_iface_name := self.bg_rb_input_iface.checkedButton().objectName()) == 'rb_custom':
                 # if there is no custom text and this is a push_button then default to BUTTON,
                 # otherwise add a trailing pipe character if one is missing from the end
-                if not self.le_custom.text() and ctrl_key.has_push_button:
+                if not self.le_custom.text() and ctrl_key.is_push_button:
                     custom_value = 'BUTTON'
                 elif self.le_custom.text()[-1] == '|':
                     custom_value = self.le_custom.text()
