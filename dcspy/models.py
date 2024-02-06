@@ -376,11 +376,14 @@ class ControlKeyData:
     @property
     def has_push_button(self) -> bool:
         """
-        Check if the physical variant value for the control is a push button
+        Check if the physical variant value for the control is a push button.
 
         :return: bool
         """
-        return self.physical_variant and self.physical_variant == 'push_button'
+        if self.physical_variant == 'push_button':
+            return True
+        else:
+            return False
 
 
 class Control(BaseModel):
