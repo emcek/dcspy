@@ -258,7 +258,8 @@ class ControlKeyData:
         self.physical_variant = physical_variant
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, physical_variant={self.physical_variant})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, \
+            physical_variant={self.physical_variant})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
@@ -266,7 +267,8 @@ class ControlKeyData:
         return True
 
     @classmethod
-    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]], physical_variant = None) -> 'ControlKeyData':
+    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]],
+                   physical_variant=None) -> 'ControlKeyData':
         """
         Construct object from list of dictionaries.
 
@@ -373,10 +375,12 @@ class ControlKeyData:
 
     @property
     def has_push_button(self) -> bool:
-        if self.physical_variant == 'push_button':
-            return True
-        else:
-            return False
+        """
+        Check if the physical variant value for the control is a push button
+
+        :return: bool
+        """
+        return self.physical_variant and self.physical_variant == 'push_button'
 
 
 class Control(BaseModel):
