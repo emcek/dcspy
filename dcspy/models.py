@@ -386,6 +386,15 @@ class ControlKeyData:
             return False
 
 
+class PhysicalVariant(Enum):
+    PUSH_BUTTON = 'push_button'
+    TOGGLE_SWITCH = 'toggle_switch'
+    THREE_POSITION_SWITCH = '3_position_switch'
+    INFINITE_ROTARY = 'infinite_rotary'
+    LIMITED_ROTARY = 'limited_rotary'
+    EMPTY = None
+
+
 class Control(BaseModel):
     """Control section of BIOS model."""
     api_variant: Optional[str] = None
