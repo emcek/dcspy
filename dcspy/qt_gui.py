@@ -504,7 +504,7 @@ class DcsPyQtGui(QMainWindow):
             self.l_identifier.setText(f'Identifier: {text}')
             self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
-            self._checked_iface_rb_for_identifier(key_name=key_name)
+            self._checked_iface_rb_for_identifier(ctrl_key=ctrl_key, key_name=key_name)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                                   custom_value=self.le_custom.text())
@@ -561,6 +561,7 @@ class DcsPyQtGui(QMainWindow):
         self._handle_fixed_step(ctrl_key)
         self._handle_action(ctrl_key)
         self.rb_custom.setEnabled(True)
+        self._handle_push_button(ctrl_key)
 
     def _disable_all_widgets(self) -> None:
         """Disable all radio button widgets."""
@@ -598,7 +599,12 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
 
-    def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
+    def _handle_push_button(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for Action."""
+        if ctrl_key.has_push_button:
+            self.rb_custom.setChecked(True)
+
+    def _checked_iface_rb_for_identifier(self, ctrl_key: ControlKeyData, key_name: str) -> None:
         """
         Enable input interfaces for current control input identifier.
 
@@ -608,7 +614,12 @@ class DcsPyQtGui(QMainWindow):
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             self.le_custom.setText('')
             if widget_iface == 'rb_custom':
-                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1])
+                custom_request = self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1]
+                # if there is a request value then use this, otherwise if this is a push_button then default to BUTTON
+                if custom_request:
+                    self.le_custom.setText(custom_request)
+                elif ctrl_key.has_push_button:
+                    self.le_custom.setText('BUTTON')
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
@@ -661,7 +672,14 @@ class DcsPyQtGui(QMainWindow):
             ctrl_key = self.ctrl_input[section][current_cell_text]
             custom_value = ''
             if (input_iface_name := self.bg_rb_input_iface.checkedButton().objectName()) == 'rb_custom':
-                custom_value = self.le_custom.text() if self.le_custom.text()[-1] == '|' else f'{self.le_custom.text()}|'
+                # if there is no custom text and this is a push_button then default to BUTTON,
+                # otherwise add a trailing pipe character if one is missing from the end
+                if not self.le_custom.text() and ctrl_key.has_push_button:
+                    custom_value = 'BUTTON'
+                elif self.le_custom.text()[-1] == '|':
+                    custom_value = self.le_custom.text()
+                else:
+                    custom_value = f'{self.le_custom.text()}|'
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                                   custom_value=custom_value)
 
