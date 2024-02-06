@@ -414,7 +414,7 @@ def test_get_key_instance(key_name, klass):
     assert get_key_instance(key_name).__class__.__name__ == klass
 
 
-@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '',])
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', ''])
 def test_get_key_instance_error(key_name):
     from dcspy.models import get_key_instance
 
