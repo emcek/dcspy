@@ -238,6 +238,15 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
+class PhysicalVariant(Enum):
+    PUSH_BUTTON = 'push_button'
+    TOGGLE_SWITCH = 'toggle_switch'
+    THREE_POSITION_SWITCH = '3_position_switch'
+    INFINITE_ROTARY = 'infinite_rotary'
+    LIMITED_ROTARY = 'limited_rotary'
+    EMPTY = None
+
+
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
@@ -384,15 +393,6 @@ class ControlKeyData:
             return True
         else:
             return False
-
-
-class PhysicalVariant(Enum):
-    PUSH_BUTTON = 'push_button'
-    TOGGLE_SWITCH = 'toggle_switch'
-    THREE_POSITION_SWITCH = '3_position_switch'
-    INFINITE_ROTARY = 'infinite_rotary'
-    LIMITED_ROTARY = 'limited_rotary'
-    EMPTY = None
 
 
 class Control(BaseModel):
