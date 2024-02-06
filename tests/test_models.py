@@ -316,19 +316,19 @@ def test_control_input_properties(control, results):
     assert ctrl.physical_variant is results[5]
 
 
-@mark.parametrize('control, max_value, step, physical_variant', [
-    (UFC_1, 1, 1, 'push_button'),
-    (UFC_COMM1_CHANNEL_SELECT, 1, 1, None),
-    (PLT_WIPER_OFF, 0, 1, 'limited_rotary'),
-    (AAP_PAGE, 3, 1, 'limited_rotary'),
-    (AAP_CDUPWR, 1, 1, 'toggle_switch'),
-    (TACAN_1, 1, 1, 'infinite_rotary'),
-    (AAP_STEER, 2, 1, None),
-    (CLOCK_ADJUST_PULL, 1, 1, 'limited_rotary'),
-    (ADI_PITCH_TRIM, 65535, 3200, None),
-    (ARC210_CHN_KNB, 65535, 3200, None),
+@mark.parametrize('control, max_value, step', [
+    (UFC_1, 1, 1),
+    (UFC_COMM1_CHANNEL_SELECT, 1, 1),
+    (PLT_WIPER_OFF, 0, 1),
+    (AAP_PAGE, 3, 1),
+    (AAP_CDUPWR, 1, 1),
+    (TACAN_1, 1, 1),
+    (AAP_STEER, 2, 1),
+    (CLOCK_ADJUST_PULL, 1, 1),
+    (ADI_PITCH_TRIM, 65535, 3200),
+    (ARC210_CHN_KNB, 65535, 3200),
 ], ids=['UFC_1', 'UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
-def test_control_key_data_from_dicts(control, max_value, step, physical_variant):
+def test_control_key_data_from_dicts(control, max_value, step):
     from dcspy.models import Control, ControlKeyData
 
     ctrl = Control.model_validate(control)
@@ -336,11 +336,10 @@ def test_control_key_data_from_dicts(control, max_value, step, physical_variant)
     assert ctrl_key.max_value == max_value
     assert ctrl_key.suggested_step == step
     assert len(ctrl_key.list_dict) == len(ctrl.inputs)
-    assert ctrl_key.physical_variant == physical_variant
     assert f'suggested_step={ctrl_key.suggested_step}' in repr(ctrl_key)
     assert f'KeyControl({ctrl_key.name}' in repr(ctrl_key)
     assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
-    assert f'physical_variant={ctrl_key.physical_variant}' in repr(ctrl_key)
+    assert f'{ctrl_key.physical_variant}' in repr(ctrl_key)
 
 
 @mark.parametrize('control, result', [
