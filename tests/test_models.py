@@ -1,5 +1,7 @@
 from pytest import mark, raises
 
+from dcspy.models import PhysicalVariant
+
 AAP_PAGE = {
     'category': 'AAP',
     'control_type': 'selector',
@@ -283,15 +285,15 @@ CMSP1 = {
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
 
 @mark.parametrize('control, results', [
-    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False]),
-    (PLT_WIPER_OFF, [2, True, True, False, False]),
-    (AAP_PAGE, [2, True, True, False, False]),
-    (AAP_CDUPWR, [3, True, True, False, True]),
-    (TACAN_1, [2, True, False, False, True]),
-    (AAP_STEER, [1, False, True, False, False]),
-    (CLOCK_ADJUST_PULL, [1, False, False, False, True]),
-    (ADI_PITCH_TRIM, [2, False, True, True, False]),
-    (ARC210_CHN_KNB, [1, False, False, True, False]),
+    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False, PhysicalVariant.EMPTY]),
+    (PLT_WIPER_OFF, [2, True, True, False, False, PhysicalVariant.LIMITED_ROTARY]),
+    (AAP_PAGE, [2, True, True, False, False, PhysicalVariant.LIMITED_ROTARY]),
+    (AAP_CDUPWR, [3, True, True, False, True, PhysicalVariant.TOGGLE_SWITCH]),
+    (TACAN_1, [2, True, False, False, True, PhysicalVariant.INFINITE_ROTARY]),
+    (AAP_STEER, [1, False, True, False, False, PhysicalVariant.EMPTY]),
+    (CLOCK_ADJUST_PULL, [1, False, False, False, True, PhysicalVariant.LIMITED_ROTARY]),
+    (ADI_PITCH_TRIM, [2, False, True, True, False, PhysicalVariant.EMPTY]),
+    (ARC210_CHN_KNB, [1, False, False, True, False, PhysicalVariant.EMPTY]),
 ], ids=[
     'UFC_COMM1_CHANNEL_SELECT',
     'PLT_WIPER_OFF',
@@ -311,6 +313,7 @@ def test_control_input_properties(control, results):
     assert ctrl.input.has_set_state is results[2]
     assert ctrl.input.has_variable_step is results[3]
     assert ctrl.input.has_action is results[4]
+    assert ctrl.physical_variant is results[5]
 
 
 @mark.parametrize('control, max_value, step, physical_variant', [
