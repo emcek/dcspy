@@ -104,7 +104,7 @@ UFC_1 = {
         'interface': 'action'
     }],
     'momentary_positions': 'none',
-    'outputs': [ {
+    'outputs': [{
         'address': 4328,
         'address_mask_identifier': 'A_10C_UFC_1_AM',
         'address_mask_shift_identifier': 'A_10C_UFC_1',
@@ -294,6 +294,7 @@ CMSP1 = {
     (CLOCK_ADJUST_PULL, [1, False, False, False, True, PhysicalVariant.LIMITED_ROTARY]),
     (ADI_PITCH_TRIM, [2, False, True, True, False, PhysicalVariant.EMPTY]),
     (ARC210_CHN_KNB, [1, False, False, True, False, PhysicalVariant.EMPTY]),
+    (UFC_1, [3, True, True, False, True, PhysicalVariant.PUSH_BUTTON]),
 ], ids=[
     'UFC_COMM1_CHANNEL_SELECT',
     'PLT_WIPER_OFF',
@@ -303,7 +304,8 @@ CMSP1 = {
     'AAP_STEER',
     'CLOCK_ADJUST_PULL',
     'ADI_PITCH_TRIM',
-    'ARC210_CHN_KNB'])
+    'ARC210_CHN_KNB',
+    'UFC_1'])
 def test_control_input_properties(control, results):
     from dcspy.models import Control
 
