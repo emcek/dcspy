@@ -250,7 +250,7 @@ class PhysicalVariant(Enum):
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
-    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1, physical_variant: Optional[str] = '') -> None:
+    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1, physical_variant: PhysicalVariant = PhysicalVariant.EMPTY) -> None:
         """
         Define type of input for cockpit controller.
 
@@ -258,6 +258,7 @@ class ControlKeyData:
         :param description: short description
         :param max_value: max value (zero based)
         :param suggested_step: 1 by default
+        :param physical_variant: physical variant of cockpit controller, EMPTY by default
         """
         self.name = name
         self.description = description
@@ -267,8 +268,7 @@ class ControlKeyData:
         self.physical_variant = physical_variant
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, \
-            physical_variant={self.physical_variant})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, {self.physical_variant})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
@@ -277,13 +277,14 @@ class ControlKeyData:
 
     @classmethod
     def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]],
-                   physical_variant=None) -> 'ControlKeyData':
+                   physical_variant: PhysicalVariant = PhysicalVariant.EMPTY) -> 'ControlKeyData':
         """
         Construct object from list of dictionaries.
 
         :param name: name of the input
         :param description: short description
-        :param list_of_dicts:
+        :param list_of_dicts: list of dicts with inputs
+        :param physical_variant: physical variant of cockpit controller
         :return: ControlKeyData instance
         """
         try:
@@ -383,16 +384,13 @@ class ControlKeyData:
         return any(isinstance(d, SetString) for d in self.list_dict)
 
     @property
-    def has_push_button(self) -> bool:
+    def is_push_button(self) -> bool:
         """
-        Check if the physical variant value for the control is a push button.
+        Check if the controller is a push button type.
 
         :return: bool
         """
-        if self.physical_variant == 'push_button':
-            return True
-        else:
-            return False
+        return bool(self.physical_variant is PhysicalVariant.PUSH_BUTTON)
 
 
 class Control(BaseModel):
