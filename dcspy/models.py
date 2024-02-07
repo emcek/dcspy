@@ -244,6 +244,8 @@ class PhysicalVariant(Enum):
     THREE_POSITION_SWITCH = '3_position_switch'
     INFINITE_ROTARY = 'infinite_rotary'
     LIMITED_ROTARY = 'limited_rotary'
+    ROCKER_SWITCH = 'rocker_switch'
+    BUTTON_LIGHT = 'button_light'
     EMPTY = None
 
 
