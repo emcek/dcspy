@@ -160,6 +160,7 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
         self.bg_rb_input_iface.addButton(self.rb_custom)
+        self.bg_rb_input_iface.addButton(self.rb_button)
         self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
@@ -600,9 +601,9 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setChecked(True)
 
     def _handle_push_button(self, ctrl_key: ControlKeyData) -> None:
-        """Handle the control key for Action."""
+        """Handle the control key for Button action."""
         if ctrl_key.is_push_button:
-            self.rb_custom.setChecked(True)
+            self.rb_button.setEnabled(True)
 
     def _checked_iface_rb_for_identifier(self, ctrl_key: ControlKeyData, key_name: str) -> None:
         """
