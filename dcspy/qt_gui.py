@@ -1465,6 +1465,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
         self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
         self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
+        self.rb_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_button')
         self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
 
         self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
