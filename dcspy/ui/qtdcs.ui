@@ -979,6 +979,20 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
          </widget>
         </item>
         <item>
+         <widget class="QRadioButton" name="rb_button">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Button</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/KittehPlayer.svg</normaloff>:/icons/img/KittehPlayer.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QRadioButton" name="rb_custom">
           <property name="enabled">
            <bool>false</bool>
