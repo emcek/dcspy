@@ -21,7 +21,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo
+from dcspy.models import CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo
 
 try:
     import git
@@ -700,6 +700,20 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     if plane:
         aircraft_aliases = {plane: aircraft_aliases[plane]}
     return aircraft_aliases
+
+
+def get_depiction_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> Dict[str, ControlDepiction]:
+    """
+    Get the depiction of controls.
+
+    :param inputs: dict with ControlKeyData
+    :return: A dictionary containing the depiction of controls.
+    """
+    result = {}
+    for section, controllers in inputs.items():
+        for ctrl_name, ctrl in controllers.items():
+            result[ctrl_name] = ctrl.depiction
+    return result
 
 
 def substitute_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> str:
