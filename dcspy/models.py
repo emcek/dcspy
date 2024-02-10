@@ -239,6 +239,13 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
+class ControlDepiction(BaseModel):
+    """Represent the depiction of a control."""
+    name: str
+    description: str
+    physical_variant: str = ''
+
+
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
@@ -307,6 +314,15 @@ class ControlKeyData:
         if all([not _real_zero, not max_value]):
             max_value = 1
         return max_value
+
+    @property
+    def depiction(self) -> ControlDepiction:
+        """
+        Return the depiction of the control.
+
+        :return: ControlDepiction object representing the control's name, description and physical variant.
+        """
+        return ControlDepiction(name=self.name, description=self.description)
 
     @property
     def input_len(self) -> int:
