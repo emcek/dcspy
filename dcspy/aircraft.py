@@ -59,12 +59,13 @@ class BasicAircraft:
         self.bios_data: Dict[str, Union[str, int]] = {}
         self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
         self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
+        self.push_buttons: Dict[Union[LcdButton, Gkey], str] = {}
         if self.bios_name:
             self._load_plane_yaml()
 
     def _load_plane_yaml(self) -> None:
         """Load plane's YAML file with configuration and apply."""
-        bios_data, cycle_buttons, button_actions = {}, {}, {}
+        bios_data, cycle_buttons, button_actions, push_buttons = {}, {}, {}, {}
         plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
         for key_str, request in plane_yaml.items():
             if request:
@@ -73,21 +74,30 @@ class BasicAircraft:
                     cycle_button = CycleButton.from_request(request)
                     cycle_buttons[key] = cycle_button
                     bios_data[cycle_button.ctrl_name] = int()
-                elif 'CUSTOM BUTTON' in request:
-                    request = request.split(' CUSTOM BUTTON')[0]
-                    request = f'{request} 1\n|{request} 0\n'
-                    button_actions[key] = request
                 elif 'CUSTOM' in request:
                     request = request.split('CUSTOM ')[1]
                     request = request.replace('|', '\n|')
                     request = request.strip('|')
                     button_actions[key] = request
+                elif 'BUTTON' in request:
+                    request = request.split(' BUTTON')[0]
+                    push_buttons[key] = request
                 else:
                     button_actions[key] = f'{request}\n'
 
         self.bios_data.update(bios_data)
         self.cycle_buttons.update(cycle_buttons)  # type: ignore
+        self.push_buttons.update(push_buttons)  # type: ignore
         self.button_actions.update(button_actions)  # type: ignore
+
+    def is_push_button(self, button: Union[LcdButton, Gkey]) -> bool:
+        """
+        Check if button is push button.
+
+        :param button: LcdButton or Gkey
+        :return: True if button is push button
+        """
+        return button in self.push_buttons
 
     def button_request(self, button: Union[LcdButton, Gkey]) -> str:
         """
@@ -103,6 +113,10 @@ class BasicAircraft:
         LOG.debug(f'{type(self).__name__} Button: {button}')
         if button in self.cycle_buttons:
             self.button_actions[button] = self._get_cycle_request(button)
+        elif button in self.push_buttons:
+            request = self.push_buttons[button]
+            LOG.debug(f'Push button request: {request}')
+            return request
         request = self.button_actions.get(button, '\n')
         LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
         return request
