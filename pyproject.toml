@@ -119,8 +119,8 @@ exclude = ['tests/test_*', 'dcspy/qtgui_rc.py']
 
 [tool.ruff]
 line-length = 160
-select = ['E', 'F', 'C90', 'D', 'RUF']
-ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
+lint.select = ['E', 'F', 'C90', 'D', 'RUF']
+lint.ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
 extend-exclude = [
     "qtgui_rc.py",
     "tests/",
