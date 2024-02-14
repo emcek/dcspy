@@ -143,25 +143,25 @@ class KeyboardManager:
             dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
-    def gkey_callback_handler(self, gkeyOrButtonString: str, key: int, mode: int, keyDown: int) -> None:
+    def gkey_callback_handler(self, gkey_or_button_str: str, key: int, mode: int, key_down: int) -> None:
         """
         Logitech G-Key callback handler.
 
         Send action to DCS-BIOS via network socket.
 
-        :param gkeyOrButtonString: G-Key string
-        :param key: indxex number of G-Key
+        :param gkey_or_button_str: G-Key string
+        :param key: index number of G-Key
         :param mode: mode of G-Key
-        :param keyDown: key state, 1 - pressed, 0 - released
+        :param key_down: key state, 1 - pressed, 0 - released
         """
-        LOG.debug(f'Button {gkeyOrButtonString} is pressed, key down: {keyDown}')
+        LOG.debug(f'Button {gkey_or_button_str} is pressed, key down: {key_down}')
         gkey = Gkey(key=key, mode=mode)
         gkey_request = self.plane.button_request(gkey)
         if gkey_request:
             if self.plane.is_push_button(gkey):
-                request = f'{gkey_request} {keyDown}\n'
+                request = f'{gkey_request} {key_down}\n'
                 self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
-            elif not keyDown:
+            elif not key_down:
                 return
             else:
                 self._send_request(gkey, self.socket)
