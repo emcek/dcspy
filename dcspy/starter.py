@@ -30,7 +30,8 @@ def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: s
     """
     start_time = time()
     LOG.info('Waiting for DCS connection...')
-    support_banner = _supporters(text='Huge thanks to: Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ', width=26)
+    support_banner = _supporters(text='Huge thanks to: Simon Leigh, Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ',
+                                 width=26)
     while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
