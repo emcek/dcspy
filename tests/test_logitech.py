@@ -44,6 +44,7 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     assert keyboard.lcdbutton_pressed is pressed2
 
 
+@mark.skip  # check_gkey() remove from logitech
 @mark.parametrize('keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2', [
     ('keyboard_mono', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
     ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
@@ -72,6 +73,7 @@ def test_keyboard_button_handle_lcdbutton(keyboard, sock, request):
     sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
 
+@mark.skip  # check_gkey() remove from logitech's button_handle()
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_keyboard_button_handle_gkey(keyboard, sock, request):
     from dcspy.sdk import key_sdk
@@ -134,12 +136,12 @@ def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, det
     (LcdMode.BLACK_WHITE, (160, 43), LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
     (LcdMode.TRUE_COLOR, (320, 240), LcdType.COLOR, FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19),
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
-def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser):
+def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser, sock):
     from dcspy.aircraft import BasicAircraft
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        keyboard = keyboard(parser=protocol_parser, fonts=lcd_font)
+        keyboard = keyboard(parser=protocol_parser, socket=sock, fonts=lcd_font)
     assert isinstance(keyboard.plane, BasicAircraft)
     assert isinstance(keyboard.lcd, LcdInfo)
     assert keyboard.lcd.type == lcd_type
@@ -160,11 +162,11 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
     (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
     (FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19)
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
-def test_check_keyboard_text(lcd_font, keyboard, protocol_parser):
+def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        keyboard = keyboard(parser=protocol_parser, fonts=lcd_font)
+        keyboard = keyboard(parser=protocol_parser, socket=sock, fonts=lcd_font)
 
     with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
         keyboard.text(['1', '2'])
