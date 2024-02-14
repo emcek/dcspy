@@ -44,7 +44,7 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     assert keyboard.lcdbutton_pressed is pressed2
 
 
-@mark.skip  # check_gkey() remove from logitech
+@mark.skip(reason='check_gkey() remove from logitech')
 @mark.parametrize('keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2', [
     ('keyboard_mono', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
     ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
@@ -73,7 +73,7 @@ def test_keyboard_button_handle_lcdbutton(keyboard, sock, request):
     sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
 
-@mark.skip  # check_gkey() remove from logitech's button_handle()
+@mark.skip(reason='check_gkey() remove from logitech`s button_handle()')
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_keyboard_button_handle_gkey(keyboard, sock, request):
     from dcspy.sdk import key_sdk
