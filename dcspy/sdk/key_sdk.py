@@ -37,7 +37,7 @@ class GkeySdkManager:
         :param gkey_callback_handler: callback handler
         """
         self.gkey_callback_handler = gkey_callback_handler
-        self.KEY_DLL: CDLL = load_dll(KeyDll)
+        self.KEY_DLL: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
 
     def callback(self, gKeyCode, gkeyOrButtonString, context) -> None:
         """

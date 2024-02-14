@@ -5,7 +5,7 @@ from os import environ
 from pathlib import Path
 from platform import architecture
 from sys import maxsize
-from typing import Optional
+from typing import Optional, Union
 
 from _cffi_backend import Lib
 from cffi import FFI
@@ -33,7 +33,7 @@ LedDll = DllSdk(name='LED', dir='LED', header=led_header)
 KeyDll = DllSdk(name='Gkey', dir='G-key', header=key_header)
 
 
-def load_dll(lib_type: DllSdk) -> Optional[Lib | CDLL]:
+def load_dll(lib_type: DllSdk) -> Optional[Union[Lib, CDLL]]:
     """
     Initialize and load of C dynamic linking library.
 
