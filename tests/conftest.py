@@ -29,16 +29,15 @@ def generate_plane_fixtures(plane, lcd_type_with_fonts):
     return _fixture
 
 
-def generate_keyboard_fixtures(keyboard, sock, lcd_font_setting):
+def generate_keyboard_fixtures(keyboard, lcd_font_setting):
     """
     Generate fixtures for any keyboard and with lcd_font_setting.
 
     :param keyboard: any keyboard object
-    :param sock: net socket object
     :param lcd_font_setting: FontSetting object
     """
     @fixture()
-    def _fixture():
+    def _fixture(sock):
         """Fixture."""
         from dcspy.dcsbios import ProtocolParser
         from dcspy.sdk import lcd_sdk
@@ -46,7 +45,7 @@ def generate_keyboard_fixtures(keyboard, sock, lcd_font_setting):
 
         with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
                 patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-            return keyboard(parser=ProtocolParser(), socket=sock, fonts=lcd_font_setting)
+            return keyboard(parser=ProtocolParser(), sock=sock, fonts=lcd_font_setting)
     return _fixture
 
 
@@ -68,7 +67,7 @@ for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
         lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
     else:
         lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
-    globals()[keyboard_model] = generate_keyboard_fixtures(key, sock, lcd_font)
+    globals()[keyboard_model] = generate_keyboard_fixtures(key, lcd_font)
 
 
 def pytest_addoption(parser) -> None:
@@ -156,7 +155,7 @@ def keyboard_base(protocol_parser, sock):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return logitech.KeyboardManager(protocol_parser, socket=sock)
+        return logitech.KeyboardManager(protocol_parser, sock=sock)
 
 
 @fixture()
