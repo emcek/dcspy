@@ -39,6 +39,7 @@ class KeyboardManager:
         - pass lcd_type argument as LcdInfo to super constructor
 
         :param parser: DCS-BIOS parser instance
+        :param socket: DCS-BIOS network socket
         """
         detect_plane = {'parser': parser, 'address': 0x0, 'max_length': 0x10, 'callback': partial(self.detecting_plane)}
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(**detect_plane)
@@ -145,11 +146,12 @@ class KeyboardManager:
         """
         Logitech G-Key callback handler.
 
-        Sent action to DCS-BIOS via network socket.
+        Send action to DCS-BIOS via network socket.
 
-        :param gkey: G-Key number
         :param gkeyOrButtonString: G-Key string
-        :param context: context
+        :param key: indxex number of G-Key
+        :param mode: mode of G-Key
+        :param keyDown: key state, 1 - pressed, 0 - released
         """
         LOG.debug(f'Button {gkeyOrButtonString} is pressed, key down: {keyDown}')
         gkey = Gkey(key=key, mode=mode)
