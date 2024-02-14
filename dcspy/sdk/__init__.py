@@ -54,7 +54,7 @@ def load_dll(lib_type: DllSdk) -> Optional[Union[Lib, CDLL]]:
         else:
             ffi = FFI()
             ffi.cdef(lib_type.header)
-            dll = ffi.dlopen(dll_path)
+            dll = ffi.dlopen(dll_path)  # type: ignore[assignment]
 
         LOG.info(f'Loading of {lib_type.name} SDK success')
         return dll
