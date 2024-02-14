@@ -12,7 +12,8 @@ from PIL import Image, ImageDraw
 from dcspy import get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.models import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510
+from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
+                          ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import lcd_sdk
 from dcspy.sdk.key_sdk import GkeySdkManager
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
@@ -203,7 +204,7 @@ class KeyboardManager:
         """
         for request in self.plane.button_request(button).split('|'):
             sock.sendto(bytes(request, 'utf-8'), SEND_ADDR)
-            sleep(0.05)
+            sleep(TIME_BETWEEN_REQUESTS)
 
     def clear(self, true_clear=False) -> None:
         """

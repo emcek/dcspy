@@ -256,9 +256,10 @@ BiosValueStr *-- StrBuffArgs
 
 LcdType --* LcdInfo
 LcdMode --* LcdInfo
-LcdButton --* LcdInfo
+LcdButton -* LcdInfo
 LcdButton -* BasicAircraft
 LcdButton -* KeyboardModel
+LcdButton -* KeyboardManager
 Gkey --* BasicAircraft
 Gkey --* KeyboardManager
 Direction --* ZigZagIterator
