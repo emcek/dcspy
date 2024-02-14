@@ -7,6 +7,12 @@ from dcspy import aircraft, logitech, models
 from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
 
 
+@fixture()
+def sock():
+    """Socket mock instance."""
+    return MagicMock()
+
+
 def generate_plane_fixtures(plane, lcd_type_with_fonts):
     """
     Generate fixtures for any plane with any lcd type.
@@ -23,11 +29,12 @@ def generate_plane_fixtures(plane, lcd_type_with_fonts):
     return _fixture
 
 
-def generate_keyboard_fixtures(keyboard, lcd_font_setting):
+def generate_keyboard_fixtures(keyboard, sock, lcd_font_setting):
     """
     Generate fixtures for any keyboard and with lcd_font_setting.
 
     :param keyboard: any keyboard object
+    :param sock: net socket object
     :param lcd_font_setting: FontSetting object
     """
     @fixture()
@@ -39,7 +46,7 @@ def generate_keyboard_fixtures(keyboard, lcd_font_setting):
 
         with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
                 patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-            return keyboard(parser=ProtocolParser(), socket=sock(), fonts=lcd_font_setting)
+            return keyboard(parser=ProtocolParser(), socket=sock, fonts=lcd_font_setting)
     return _fixture
 
 
@@ -61,7 +68,7 @@ for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
         lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
     else:
         lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
-    globals()[keyboard_model] = generate_keyboard_fixtures(key, lcd_font)
+    globals()[keyboard_model] = generate_keyboard_fixtures(key, sock, lcd_font)
 
 
 def pytest_addoption(parser) -> None:
@@ -141,6 +148,7 @@ def keyboard_base(protocol_parser, sock):
     Return instance of KeyboardManager.
 
     :param protocol_parser: instance of ProtocolParser
+    :param sock: net socket object
     :return: KeyboardManager
     """
     from dcspy.sdk import lcd_sdk
@@ -157,6 +165,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono):
     Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
+    :param sock: net socket object
     :param lcd_font_mono font configuration for LCD
     :return: KeyboardManager
     """
@@ -186,6 +195,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color):
     Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
+    :param sock: net socket object
     :param lcd_font_color font configuration for LCD
     :return: KeyboardManager
     """
@@ -210,12 +220,6 @@ def keyboard_color(protocol_parser, sock, lcd_font_color):
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
-@fixture()
-def sock():
-    """Socket mock instance."""
-    return MagicMock()
-
-
 @fixture()
 def default_config():
     """Get default configuration dict."""
