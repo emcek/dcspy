@@ -141,7 +141,7 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        keyboard = keyboard(parser=protocol_parser, socket=sock, fonts=lcd_font)
+        keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
     assert isinstance(keyboard.plane, BasicAircraft)
     assert isinstance(keyboard.lcd, LcdInfo)
     assert keyboard.lcd.type == lcd_type
@@ -166,7 +166,7 @@ def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
     from dcspy.sdk import lcd_sdk
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
-        keyboard = keyboard(parser=protocol_parser, socket=sock, fonts=lcd_font)
+        keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
 
     with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
         keyboard.text(['1', '2'])
