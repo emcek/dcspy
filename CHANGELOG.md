@@ -1,5 +1,5 @@
 ## 3.2.0
-* Add support for "BUTTON" text to use in the Custom option text field for push button actions
+* Add new Push button option to support push button controls
 
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS

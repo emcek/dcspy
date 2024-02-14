@@ -1,4 +1,4 @@
-from ctypes import c_void_p, sizeof
+from ctypes import CDLL, c_void_p, sizeof
 from dataclasses import dataclass
 from logging import getLogger
 from os import environ
@@ -33,7 +33,7 @@ LedDll = DllSdk(name='LED', dir='LED', header=led_header)
 KeyDll = DllSdk(name='Gkey', dir='G-key', header=key_header)
 
 
-def load_dll(lib_type: DllSdk) -> Optional[Lib]:
+def load_dll(lib_type: DllSdk) -> Optional[Lib | CDLL]:
     """
     Initialize and load of C dynamic linking library.
 
@@ -48,11 +48,18 @@ def load_dll(lib_type: DllSdk) -> Optional[Lib]:
             prog_files = environ['PROGRAMFILES']
         dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.dir}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll'
         LOG.debug(f'Selected DLL: {dll_path}')
-        ffi = FFI()
-        ffi.cdef(lib_type.header)
-        dll = ffi.dlopen(dll_path)
-        LOG.info(f'Loading of {lib_type.name} SDK success')
-        return dll
+        # use CDLL for Gkey SDK as it will be used with the ctypes library
+        # for the callback function
+        if lib_type.name == 'Gkey':
+            cdll = CDLL(dll_path)
+            LOG.info(f'Loading of {lib_type.name} SDK success')
+            return cdll
+        else:
+            ffi = FFI()
+            ffi.cdef(lib_type.header)
+            dll = ffi.dlopen(dll_path)
+            LOG.info(f'Loading of {lib_type.name} SDK success')
+            return dll
     except (KeyError, OSError) as err:
         header = '*' * 44
         LOG.error(f'\n{header}\n*{type(err).__name__:^42}*\n{header}\nLoading of {lib_type.name} SDK failed !', exc_info=True)

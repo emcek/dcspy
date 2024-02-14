@@ -13,7 +13,8 @@ from dcspy import get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
 from dcspy.models import SEND_ADDR, SUPPORTED_CRAFTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1, ModelG15v2, ModelG19, ModelG510
-from dcspy.sdk import key_sdk, lcd_sdk
+from dcspy.sdk import lcd_sdk
+from dcspy.sdk.key_sdk import GkeySdkManager
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
@@ -21,7 +22,7 @@ LOG = getLogger(__name__)
 
 class KeyboardManager:
     """General keyboard with LCD from Logitech."""
-    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
         """
         General keyboard with LCD from Logitech.
 
@@ -38,10 +39,12 @@ class KeyboardManager:
         - pass lcd_type argument as LcdInfo to super constructor
 
         :param parser: DCS-BIOS parser instance
+        :param socket: DCS-BIOS network socket
         """
         detect_plane = {'parser': parser, 'address': 0x0, 'max_length': 0x10, 'callback': partial(self.detecting_plane)}
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(**detect_plane)
         self.parser = parser
+        self.socket = socket
         self.plane_name = ''
         self.bios_name = ''
         self.plane_detected = False
@@ -53,7 +56,9 @@ class KeyboardManager:
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
-        key_sdk.logi_gkey_init()
+        self.key_sdk = GkeySdkManager(self.gkey_callback_handler)
+        success = self.key_sdk.logi_gkey_init()
+        LOG.info(f'logitech gkey sdk initialised: {success}')
         self.plane = BasicAircraft(self.lcd)
         self.vert_space = 0
 
@@ -137,6 +142,29 @@ class KeyboardManager:
             dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
+    def gkey_callback_handler(self, gkeyOrButtonString: str, key: int, mode: int, keyDown: int) -> None:
+        """
+        Logitech G-Key callback handler.
+
+        Send action to DCS-BIOS via network socket.
+
+        :param gkeyOrButtonString: G-Key string
+        :param key: indxex number of G-Key
+        :param mode: mode of G-Key
+        :param keyDown: key state, 1 - pressed, 0 - released
+        """
+        LOG.debug(f'Button {gkeyOrButtonString} is pressed, key down: {keyDown}')
+        gkey = Gkey(key=key, mode=mode)
+        gkey_request = self.plane.button_request(gkey)
+        if gkey_request:
+            if self.plane.is_push_button(gkey):
+                request = f'{gkey_request} {keyDown}\n'
+                self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
+            elif not keyDown:
+                return
+            else:
+                self._send_request(gkey, self.socket)
+
     def check_buttons(self) -> LcdButton:
         """
         Check if button was pressed and return it`s enum.
@@ -152,23 +180,6 @@ class KeyboardManager:
         self.lcdbutton_pressed = False
         return LcdButton.NONE
 
-    def check_gkey(self) -> Gkey:
-        """
-        Check if G-Key was pressed and return it`s enum.
-
-        :return: Gkey enum of pressed button
-        """
-        for key in self.gkey:
-            if key_sdk.logi_gkey_is_keyboard_gkey_pressed(g_key=key.key, mode=key.mode):
-                gkey = key_sdk.logi_gkey_is_keyboard_gkey_string(g_key=key.key, mode=key.mode).replace('/', '_')
-                LOG.debug(f'Button {gkey} is pressed')
-                if not self.gkey_pressed:
-                    self.gkey_pressed = True
-                    return key
-                return Gkey(key=0, mode=0)
-        self.gkey_pressed = False
-        return Gkey(key=0, mode=0)
-
     def button_handle(self, sock: socket) -> None:
         """
         Button handler.
@@ -180,11 +191,8 @@ class KeyboardManager:
         :param sock: network socket
         """
         button = self.check_buttons()
-        gkey = self.check_gkey()
         if button.value:
             self._send_request(button, sock)
-        if gkey:
-            self._send_request(gkey, sock)
 
     def _send_request(self, button: Union[LcdButton, Gkey], sock) -> None:
         """
@@ -229,7 +237,7 @@ class KeyboardManager:
 
 class G13(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -237,7 +245,7 @@ class G13(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, lcd_type=LcdMono)
+        super().__init__(parser, socket, lcd_type=LcdMono)
         self.model = ModelG13
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -246,7 +254,7 @@ class G13(KeyboardManager):
 
 class G510(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -254,7 +262,7 @@ class G510(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, lcd_type=LcdMono)
+        super().__init__(parser, socket, lcd_type=LcdMono)
         self.model = ModelG510
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -263,7 +271,7 @@ class G510(KeyboardManager):
 
 class G15v1(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -271,7 +279,7 @@ class G15v1(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, lcd_type=LcdMono)
+        super().__init__(parser, socket, lcd_type=LcdMono)
         self.model = ModelG15v1
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -280,7 +288,7 @@ class G15v1(KeyboardManager):
 
 class G15v2(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -288,7 +296,7 @@ class G15v2(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, lcd_type=LcdMono)
+        super().__init__(parser, socket, lcd_type=LcdMono)
         self.model = ModelG15v2
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -297,7 +305,7 @@ class G15v2(KeyboardManager):
 
 class G19(KeyboardManager):
     """Logitech`s keyboard with color LCD."""
-    def __init__(self, parser: ProtocolParser, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with color LCD.
 
@@ -305,7 +313,7 @@ class G19(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdColor.set_fonts(kwargs['fonts'])
-        super().__init__(parser, lcd_type=LcdColor)
+        super().__init__(parser, socket, lcd_type=LcdColor)
         self.model = ModelG19
         self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)

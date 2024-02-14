@@ -511,7 +511,7 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
             'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
             'rb_custom': f'{ctrl_key.name} CUSTOM {custom_value}',
-            'rb_button': f'{ctrl_key.name} BUTTON {ctrl_key.name} 1|{ctrl_key.name} 0|',
+            'rb_button': f'{ctrl_key.name} BUTTON',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
