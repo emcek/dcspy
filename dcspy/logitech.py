@@ -23,7 +23,7 @@ LOG = getLogger(__name__)
 
 class KeyboardManager:
     """General keyboard with LCD from Logitech."""
-    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
         """
         General keyboard with LCD from Logitech.
 
@@ -40,12 +40,12 @@ class KeyboardManager:
         - pass lcd_type argument as LcdInfo to super constructor
 
         :param parser: DCS-BIOS parser instance
-        :param socket: DCS-BIOS network socket
+        :param sock: multicast UDP socket
         """
         detect_plane = {'parser': parser, 'address': 0x0, 'max_length': 0x10, 'callback': partial(self.detecting_plane)}
         getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(**detect_plane)
         self.parser = parser
-        self.socket = socket
+        self.socket = sock
         self.plane_name = ''
         self.bios_name = ''
         self.plane_detected = False
@@ -238,7 +238,7 @@ class KeyboardManager:
 
 class G13(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -246,7 +246,7 @@ class G13(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, socket, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono)
         self.model = ModelG13
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -255,15 +255,16 @@ class G13(KeyboardManager):
 
 class G510(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G510
         :param parser: DCS-BIOS parser instance
+        :param sock: multicast UDP socket
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, socket, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono)
         self.model = ModelG510
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -272,15 +273,16 @@ class G510(KeyboardManager):
 
 class G15v1(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G15 v1
         :param parser: DCS-BIOS parser instance
+        :param sock: multicast UDP socket
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, socket, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono)
         self.model = ModelG15v1
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -289,15 +291,16 @@ class G15v1(KeyboardManager):
 
 class G15v2(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G15 v2
         :param parser: DCS-BIOS parser instance
+        :param sock: multicast UDP socket
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, socket, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono)
         self.model = ModelG15v2
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -306,15 +309,16 @@ class G15v2(KeyboardManager):
 
 class G19(KeyboardManager):
     """Logitech`s keyboard with color LCD."""
-    def __init__(self, parser: ProtocolParser, socket: socket, **kwargs) -> None:
+    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with color LCD.
 
         Support for: G19
         :param parser: DCS-BIOS parser instance
+        :param sock: multicast UDP socket
         """
         LcdColor.set_fonts(kwargs['fonts'])
-        super().__init__(parser, socket, lcd_type=LcdColor)
+        super().__init__(parser, sock, lcd_type=LcdColor)
         self.model = ModelG19
         self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
