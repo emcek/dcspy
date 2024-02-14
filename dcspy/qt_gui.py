@@ -561,8 +561,8 @@ class DcsPyQtGui(QMainWindow):
         self._handle_variable_step_and_set_state(ctrl_key)
         self._handle_fixed_step(ctrl_key)
         self._handle_action(ctrl_key)
-        self.rb_custom.setEnabled(True)
         self._handle_push_button(ctrl_key)
+        self.rb_custom.setEnabled(True)
 
     def _disable_all_widgets(self) -> None:
         """Disable all radio button widgets."""
@@ -615,12 +615,7 @@ class DcsPyQtGui(QMainWindow):
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             self.le_custom.setText('')
             if widget_iface == 'rb_custom':
-                custom_request = self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1]
-                # if there is a request value then use this, otherwise if this is a push_button then default to BUTTON
-                if custom_request:
-                    self.le_custom.setText(custom_request)
-                elif ctrl_key.is_push_button:
-                    self.le_custom.setText('BUTTON')
+                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1])
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
@@ -673,14 +668,7 @@ class DcsPyQtGui(QMainWindow):
             ctrl_key = self.ctrl_input[section][current_cell_text]
             custom_value = ''
             if (input_iface_name := self.bg_rb_input_iface.checkedButton().objectName()) == 'rb_custom':
-                # if there is no custom text and this is a push_button then default to BUTTON,
-                # otherwise add a trailing pipe character if one is missing from the end
-                if not self.le_custom.text() and ctrl_key.is_push_button:
-                    custom_value = 'BUTTON'
-                elif self.le_custom.text()[-1] == '|':
-                    custom_value = self.le_custom.text()
-                else:
-                    custom_value = f'{self.le_custom.text()}|'
+                custom_value = self.le_custom.text() if self.le_custom.text()[-1] == '|' else f'{self.le_custom.text()}|'
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                                   custom_value=custom_value)
 
