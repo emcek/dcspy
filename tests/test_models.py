@@ -436,6 +436,14 @@ def test_get_ctrl(test_dcs_bios):
     assert c.input.one_input is False
 
 
+def test_get_empty_ctrl(test_dcs_bios):
+    from dcspy.utils import get_full_bios_for_plane
+
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
+    c = json_data.get_ctrl(ctrl_name='WRONG_CTRL')
+    assert c is None
+
+
 def test_get_inputs_for_plane(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
