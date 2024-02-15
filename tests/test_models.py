@@ -394,6 +394,12 @@ def test_get_key_bool_test(key, mode, result):
         assert not result
 
 
+def test_get_key_as_dict_key():
+    from dcspy.models import Gkey
+
+    g1 = Gkey(key=2, mode=1)
+    assert len({g1: g1.name}) == 1
+
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
 
 def test_cycle_button_default_iter():
