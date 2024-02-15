@@ -283,7 +283,6 @@ CMSP1 = {
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
-
 @mark.parametrize('control, results', [
     (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False, PhysicalVariant.EMPTY]),
     (PLT_WIPER_OFF, [2, True, True, False, False, PhysicalVariant.LIMITED_ROTARY]),
@@ -368,7 +367,6 @@ def test_control_no_output():
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
-
 def test_gkey_from_yaml_success():
     from dcspy.models import Gkey
 
@@ -422,8 +420,24 @@ def test_get_key_instance_error(key_name):
         get_key_instance(key_name)
 
 
-# <=><=><=><=><=> CycleButton <=><=><=><=><=>
+@mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
+def test_get_key_bool_test(key, mode, result):
+    from dcspy.models import Gkey
 
+    if Gkey(key=key, mode=mode):
+        assert result
+    else:
+        assert not result
+
+
+def test_get_key_as_dict_key():
+    from dcspy.models import Gkey
+
+    g1 = Gkey(key=2, mode=1)
+    assert len({g1: g1.name}) == 1
+
+
+# <=><=><=><=><=> CycleButton <=><=><=><=><=>
 def test_cycle_button_default_iter():
     from dcspy.models import CycleButton
 
@@ -464,7 +478,6 @@ def test_cycle_button_custom_constructor(name, req, step, max_val):
 
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
-
 def test_get_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
@@ -472,6 +485,14 @@ def test_get_ctrl(test_dcs_bios):
     c = json_data.get_ctrl(ctrl_name='TACAN_MODE')
     assert c.output.max_value == 4
     assert c.input.one_input is False
+
+
+def test_get_empty_ctrl(test_dcs_bios):
+    from dcspy.utils import get_full_bios_for_plane
+
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
+    c = json_data.get_ctrl(ctrl_name='WRONG_CTRL')
+    assert c is None
 
 
 def test_get_inputs_for_plane(test_dcs_bios):
@@ -484,7 +505,6 @@ def test_get_inputs_for_plane(test_dcs_bios):
 
 
 # <=><=><=><=><=> SystemData <=><=><=><=><=>
-
 def test_get_sha_of_system_data():
     from dcspy.models import SystemData
 
@@ -494,7 +514,6 @@ def test_get_sha_of_system_data():
 
 
 # <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
-
 @mark.parametrize('control, rb_iface, custom_value, req', [
     (AAP_PAGE, 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
     (AAP_PAGE, 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
@@ -561,7 +580,6 @@ def test_plane_input_request_empty():
 
 
 # <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>
-
 @mark.parametrize('current, max_val, step, result', [
     (2, 4, 1, [3, 4, 3, 2, 1, 0, 1, 2, 3, 4]),
     (0, 4, 1, [1, 2, 3, 4, 3, 2, 1, 0, 1, 2]),
