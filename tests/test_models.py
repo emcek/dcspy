@@ -384,6 +384,16 @@ def test_get_key_instance_error(key_name):
         get_key_instance(key_name)
 
 
+@mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
+def test_get_key_bool_test(key, mode, result):
+    from dcspy.models import Gkey
+
+    if Gkey(key=key, mode=mode):
+        assert result
+    else:
+        assert not result
+
+
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
 
 def test_cycle_button_default_iter():
