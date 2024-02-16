@@ -115,7 +115,7 @@ def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
     """
     dcs_sock = _prepare_socket()
     parser = ProtocolParser()
-    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, socket=dcs_sock, fonts=fonts_cfg)
+    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg)
     LOG.info(f'Loading: {str(manager)}')
     LOG.debug(f'Loading: {repr(manager)}')
     dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
