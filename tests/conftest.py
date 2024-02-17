@@ -185,7 +185,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return Mono(parser=protocol_parser, sock=sock, fonts=lcd_font_mono)
+        return Mono(parser=protocol_parser, socket=sock, fonts=lcd_font_mono)
 
 
 @fixture()
@@ -215,7 +215,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return Color(parser=protocol_parser, sock=sock, fonts=lcd_font_color)
+        return Color(parser=protocol_parser, socket=sock, fonts=lcd_font_color)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
