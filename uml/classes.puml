@@ -12,7 +12,6 @@ package dcsbios {
         + frame_sync_callbacks : Set[Callable]
         + process_byte(byte: int)
     }
-
     class StringBuffer {
         + buffer : bytearray
         + callbacks: Set[Callable]
@@ -20,7 +19,6 @@ package dcsbios {
         + set_char(index, char)
         + on_dcsbios_write(address, data)
     }
-
     class IntegerBuffer {
         + callbacks: Set[Callable]
         + __init__(parser, address, mask, shift_by, callback)
@@ -50,6 +48,7 @@ package logitech {
         + plane : BasicAircraft
         + plane_name = '' : str
         + bios_name = '' : str
+        + socket: socket
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
         + gkey_pressed = False : bool
@@ -64,37 +63,33 @@ package logitech {
         + load_new_plane(value : str)
         + check_buttons() -> LcdButton
         + check_gkey() -> Gkey
-        + button_handle(sock : socket)
+        + button_handle()
+        + gkey_callback_handler(key: int, mode: int, key_down: int)
         + clear()
         + text(List[str])
         # _prepare_image() -> Image
-        # _send_request()
+        # _send_request(btn_or_str: Union[LcdButton, Gkey, str])
     }
-
     class G13 {
         + gkey: Sequence[Gkey]
         + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
-
     class G510 {
         + gkey: Sequence[Gkey]
         + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
-
     class G15v1 {
         + gkey: Sequence[Gkey]
         + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
-
     class G15v2 {
         + gkey: Sequence[Gkey]
         + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
-
     class G19 {
         + gkey: Sequence[Gkey]
         + buttons: Sequence[LcdButton]
@@ -123,7 +118,6 @@ package aircraft {
         + __new__(name, bases, namespace)
         + __call__()
     }
-
     class BasicAircraft {
         + bios_data : Dict[str, BiosValue]
         + cycle_buttons : Dict[LcdButton, CycleButton]
@@ -137,14 +131,12 @@ package aircraft {
         # _get_next_value_for_button(button: LcdButton) -> int
         # _get_cycle_request(button: LcdButton) -> str
     }
-
     class AdvancedAircraft {
         # _debug_img : Iterator[int]
         + prepare_image() -> Image
         + {abstract} draw_for_lcd_mono(img: Image)
         + {abstract} draw_for_lcd_color(img: Image)
     }
-
     class ApacheEufdMode <<(E,yellow)>> {
         + UNK = 0
         + IDM = 1
@@ -158,20 +150,17 @@ package models {
         + FORWARD = 1
         + BACKWARD = -1
     }
-
     class ZigZagIterator {
         + current: int
         + max_value: int
         + step: int = 1
     }
-
     class CycleButton <<(M,orange)>> {
         + ctrl_name: str
         + max_value: int = 1
         + iter: Iterator[int]
         + from_request(req: str) -> CycleButton
     }
-
     class LcdInfo <<(M,orange)>> {
         + height : int
         + width : int
@@ -184,17 +173,14 @@ package models {
         + font_s: ImageFont.FreeTypeFont
         + font_l: ImageFont.FreeTypeFont
     }
-
     class LcdMode <<(E,yellow)>> {
         + BLACK_WHITE = '1'
         + TRUE_COLOR = 'RGBA'
     }
-
     class LcdType <<(E,yellow)>> {
         + mono = 0
         + color = 1
     }
-
     class Gkey <<(M,orange)>> {
         + key: int
         + mode: int
@@ -202,7 +188,6 @@ package models {
         + generate(key: int, mode: int) -> Tuple[Gkey]
         + name(row: int, col: int) -> str
     }
-
     class LcdButton <<(E,yellow)>> {
         + none = 0x0
         + one = 0x1
@@ -217,31 +202,26 @@ package models {
         + down = 0x2000
         + menu = 0x4000
     }
-
     class IntBuffArgs <<(M,orange)>> {
         + address: int
         + mask: int
         + shift_by: int
     }
-
     class StrBuffArgs <<(M,orange)>> {
         + address: int
         + max_length: int
     }
-
     class BiosValueInt <<(M,orange)>> {
         + klass : str
         + args: IntBuffArgs]
         + value: Union[int, str]
         + max_value: int
     }
-
     class BiosValueStr <<(M,orange)>> {
         + klass : str
         + args: StrBuffArgs
         + value: Union[int, str]
     }
-
     class KeyboardModel <<(M,orange)>> {
         + name: str
         + klass: str
@@ -249,6 +229,16 @@ package models {
         + gkeys: int
         + lcdkeys: Sequence[LcdButton]
         + lcd: str
+    }
+    class PhysicalVariant <<(E,yellow)>> {
+        PUSH_BUTTON = 'push_button'
+        TOGGLE_SWITCH = 'toggle_switch'
+        THREE_POSITION_SWITCH = '3_position_switch'
+        INFINITE_ROTARY = 'infinite_rotary'
+        LIMITED_ROTARY = 'limited_rotary'
+        ROCKER_SWITCH = 'rocker_switch'
+        BUTTON_LIGHT = 'button_light'
+        EMPTY = None
     }
 
 BiosValueInt *-- IntBuffArgs
@@ -297,11 +287,27 @@ package sdk{
         + logi_led_shutdown()
         + start_led_pulse()
     }
-    class key_sdk <<(L,lightblue)>> {
+    class GkeySdkManager <<(L,lightblue)>> {
+        + KEY_DLL: CDLL
+        + gkey_context: LogiGkeyCBContext
+        + user_callback: Callable[[int, int, int], None]
+        + gkey_context_ptr: pointer[gkey_contex]
         + logi_gkey_init()
         + logi_gkey_is_keyboard_gkey_pressed()
         + logi_gkey_is_keyboard_gkey_string()
         + logi_gkey_shutdown()
+    }
+    class GkeyCode <<(S,pink)>> {
+        + keyIdx: c_uint
+        + keyDown: c_uint
+        + mState: c_uint
+        + mouse: c_uint
+        + reserved1: c_uint
+        + reserved2: c_uint
+    }
+    class LogiGkeyCBContext <<(S,pink)>> {
+        + gkeyCallBack: GKEY_CALLBACK
+        + gkeyContext: c_void_p
     }
 }
 
@@ -309,7 +315,7 @@ KeyboardManager *- BasicAircraft
 LcdInfo -* KeyboardManager
 KeyboardManager *--- ProtocolParser
 KeyboardManager *-- lcd_sdk
-KeyboardManager *-- key_sdk
+KeyboardManager *-- GkeySdkManager
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
