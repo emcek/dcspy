@@ -39,7 +39,7 @@ def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: s
                 parser.process_byte(int_byte)
             start_time = time()
             _load_new_plane_if_detected(manager)
-            manager.button_handle(sock)
+            manager.button_handle()
         except OSError as exp:
             _sock_err_handler(manager, start_time, ver_string, support_banner, exp)
 
