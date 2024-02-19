@@ -153,7 +153,6 @@ class KeyboardManager:
         :param mode: mode of G-Key
         :param key_down: key state, 1 - pressed, 0 - released
         """
-
         gkey = Gkey(key=key_idx, mode=mode)
         LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
         gkey_request = self.plane.button_request(gkey)
