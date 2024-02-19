@@ -45,21 +45,6 @@ class GkeySdkManager:
         self.gkey_context.gkeyContext = c_void_p()
         self.gkey_context_ptr = pointer(self.gkey_context)
 
-    def callback(self, g_key_code, gkey_or_button_str, context) -> None:
-        """
-        Receive callback events for G-key button pushes.
-
-        This function is provided to the Logitech GKey SDK when initialised
-        and is called whenever a G-key event occurs. This then calls the
-        callback handler provided by the user.
-
-        :param g_key_code: The gkey code object representing the current gkey event.
-        :param gkey_or_button_str: The string representation of the gkey or button being pressed.
-        :param context: The context in which the gkey event occurred.
-        """
-        LOG.debug(f'Gkey callback: gkey {gkey_or_button_str}, key down: {g_key_code.keyDown}')
-        self.gkey_callback_handler(gkey_or_button_str, g_key_code.keyIdx, g_key_code.mState, g_key_code.keyDown)
-
     def logi_gkey_init(self) -> bool:
         """
         Make necessary initializations.
