@@ -159,13 +159,14 @@ class KeyboardManager:
         LOG.debug(f'Button {gkey_or_button_str} is pressed, key down: {key_down} {context=}')
         gkey_request = self.plane.button_request(gkey)
         if gkey_request:
-            if self.plane.is_push_button(gkey):
+            if 'BUTTON' in gkey_request:
+                gkey_request = gkey_request.split(' BUTTON')[0]
                 request = f'{gkey_request} {key_down}\n'
-                self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
+                self._send_request(request)
             elif not key_down:
                 return
             else:
-                self._send_request(gkey, self.socket)
+                self._send_request(gkey)
 
     def check_buttons(self) -> LcdButton:
         """
@@ -182,30 +183,30 @@ class KeyboardManager:
         self.lcdbutton_pressed = False
         return LcdButton.NONE
 
-    def button_handle(self, sock: socket) -> None:
+    def button_handle(self) -> None:
         """
         Button handler.
 
         * detect if button was pressed
         * fetch DCS-BIOS request from current plane
         * sent action to DCS-BIOS via network socket
-
-        :param sock: network socket
         """
         button = self.check_buttons()
         if button.value:
-            self._send_request(button, sock)
+            self._send_request(button)
 
-    def _send_request(self, button: Union[LcdButton, Gkey], sock) -> None:
+    def _send_request(self, btn_or_str: Union[LcdButton, Gkey, str], /) -> None:
         """
         Sent action to DCS-BIOS via network socket.
 
-        :param button: LcdButton or Gkey
-        :param sock: network socket
+        :param btn_or_str: LcdButton, Gkey or request string
         """
-        for request in self.plane.button_request(button).split('|'):
-            sock.sendto(bytes(request, 'utf-8'), SEND_ADDR)
-            sleep(TIME_BETWEEN_REQUESTS)
+        if isinstance(btn_or_str, (LcdButton, Gkey)):
+            for request in self.plane.button_request(btn_or_str).split('|'):
+                self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
+                sleep(TIME_BETWEEN_REQUESTS)
+        else:
+            self.socket.sendto(bytes(btn_or_str, 'utf-8'), SEND_ADDR)
 
     def clear(self, true_clear=False) -> None:
         """
