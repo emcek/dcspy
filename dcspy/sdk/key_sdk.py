@@ -32,7 +32,7 @@ class LogiGkeyCBContext(Structure):
 
 class GkeySdkManager:
     """G-key SDK manager."""
-    def __init__(self, callback: Callable[[GkeyCode, str, Optional[int]], None]) -> None:
+    def __init__(self, callback: Callable[[int, int, int], None]) -> None:
         """
         Create G-key SDK manager.
 
@@ -40,9 +40,24 @@ class GkeySdkManager:
         """
         self.KEY_DLL: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
         self.gkey_context = LogiGkeyCBContext()
-        self.gkey_context.gkeyCallBack = GKEY_CALLBACK(callback)
+        self.user_callback = callback
+        self.gkey_context.gkeyCallBack = GKEY_CALLBACK(self._callback)
         self.gkey_context.gkeyContext = c_void_p()
         self.gkey_context_ptr = pointer(self.gkey_context)
+
+    def _callback(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
+        """
+        Receive callback events for G-key button pushes.
+
+        This function is called whenever a G-key event occurs.
+        This then calls the callback handler provided by the user.
+
+        :param g_key_code: The gkey code object representing the current gkey event.
+        :param gkey_or_button_str: The string representation of the gkey or button being pressed.
+        :param context: The context in which the gkey event occurred.
+        """
+        LOG.debug(f'Gkey callback: gkey {gkey_or_button_str}, key code: {g_key_code} {context=}')
+        self.user_callback(g_key_code.keyIdx, g_key_code.mState, g_key_code.keyDown)
 
     def logi_gkey_init(self) -> bool:
         """
