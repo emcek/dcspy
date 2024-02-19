@@ -8,10 +8,10 @@ from pytest import mark
     ('logi_gkey_shutdown', (), None),
 ], ids=['init', 'is gkey pressed', 'is gkey string', 'shutdown'])
 def test_all_failure_cases(function, args, result):
-    from dcspy.sdk.key_sdk import GkeyCode, GkeySdkManager
+    from dcspy.sdk.key_sdk import GkeySdkManager
 
-    def gkey_callback(g_key_code: GkeyCode, gkey_or_button_str='', context=None) -> None:
-        print(g_key_code, gkey_or_button_str, context)
+    def gkey_callback(key_idx: int, mode: int, key_down) -> None:
+        print(key_idx, mode, key_down)
 
     key_sdk = GkeySdkManager(callback=gkey_callback)
     key_sdk.KEY_DLL = None
