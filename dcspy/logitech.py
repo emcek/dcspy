@@ -5,7 +5,7 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List, Sequence, Union
+from typing import List, Optional, Sequence, Union
 
 from PIL import Image, ImageDraw
 
@@ -15,7 +15,7 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import lcd_sdk
-from dcspy.sdk.key_sdk import GkeySdkManager
+from dcspy.sdk.key_sdk import GkeyCode, GkeySdkManager
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
@@ -57,8 +57,8 @@ class KeyboardManager:
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
-        self.key_sdk = GkeySdkManager(self.gkey_callback_handler)
-        success = self.key_sdk.logi_gkey_init()
+        key_sdk = GkeySdkManager(self.gkey_callback_handler)
+        success = key_sdk.logi_gkey_init()
         LOG.info(f'logitech gkey sdk initialised: {success}')
         self.plane = BasicAircraft(self.lcd)
         self.vert_space = 0
@@ -143,19 +143,20 @@ class KeyboardManager:
             dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
-    def gkey_callback_handler(self, gkey_or_button_str: str, key: int, mode: int, key_down: int) -> None:
+    def gkey_callback_handler(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
         """
         Logitech G-Key callback handler.
 
         Send action to DCS-BIOS via network socket.
 
-        :param gkey_or_button_str: G-Key string
-        :param key: index number of G-Key
-        :param mode: mode of G-Key
-        :param key_down: key state, 1 - pressed, 0 - released
+        :param g_key_code: The gkey code object representing the current gkey event.
+        :param gkey_or_button_str: The string representation of the gkey or button being pressed.
+        :param context: The context in which the gkey event occurred.
         """
-        LOG.debug(f'Button {gkey_or_button_str} is pressed, key down: {key_down}')
-        gkey = Gkey(key=key, mode=mode)
+        key_down = g_key_code.keyDown
+
+        gkey = Gkey(key=g_key_code.keyIdx, mode=g_key_code.mStat)
+        LOG.debug(f'Button {gkey_or_button_str} is pressed, key down: {key_down} {context=}')
         gkey_request = self.plane.button_request(gkey)
         if gkey_request:
             if self.plane.is_push_button(gkey):
