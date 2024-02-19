@@ -5,7 +5,7 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List, Optional, Sequence, Union
+from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
@@ -15,7 +15,7 @@ from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import lcd_sdk
-from dcspy.sdk.key_sdk import GkeyCode, GkeySdkManager
+from dcspy.sdk.key_sdk import GkeySdkManager
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
@@ -143,20 +143,19 @@ class KeyboardManager:
             dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
-    def gkey_callback_handler(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
+    def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int) -> None:
         """
         Logitech G-Key callback handler.
 
         Send action to DCS-BIOS via network socket.
 
-        :param g_key_code: The gkey code object representing the current gkey event.
-        :param gkey_or_button_str: The string representation of the gkey or button being pressed.
-        :param context: The context in which the gkey event occurred.
+        :param key_idx: index number of G-Key
+        :param mode: mode of G-Key
+        :param key_down: key state, 1 - pressed, 0 - released
         """
-        key_down = g_key_code.keyDown
 
-        gkey = Gkey(key=g_key_code.keyIdx, mode=g_key_code.mStat)
-        LOG.debug(f'Button {gkey_or_button_str} is pressed, key down: {key_down} {context=}')
+        gkey = Gkey(key=key_idx, mode=mode)
+        LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
         gkey_request = self.plane.button_request(gkey)
         if gkey_request:
             if 'BUTTON' in gkey_request:
