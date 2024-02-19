@@ -65,12 +65,12 @@ def test_keyboard_check_gkey(keyboard, pressed1, effect1, effect2, chk_btn, call
 
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
-def test_keyboard_button_handle_lcdbutton(keyboard, sock, request):
+def test_keyboard_button_handle_lcdbutton(keyboard, request):
     from dcspy.sdk import lcd_sdk
     keyboard = request.getfixturevalue(keyboard)
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=[True]):
-        keyboard.button_handle(sock)
-    sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
+        keyboard.button_handle()
+    keyboard.socket.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
 
 @mark.skip(reason='check_gkey() remove from logitech`s button_handle()')
