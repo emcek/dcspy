@@ -8,6 +8,7 @@ LOG = getLogger(__name__)
 
 
 class GkeyCode(Structure):
+    """Represent a structure that defines the layout of G key codes."""
     _fields_: ClassVar = [
         ('keyIdx', c_uint, 8),
         ('keyDown', c_uint, 1),
@@ -22,6 +23,7 @@ CALLBACK = CFUNCTYPE(None, GkeyCode, c_wchar_p, c_void_p)
 
 
 class LogiGkeyCBContext(Structure):
+    """A class representing the Logitech G-Key Callback Context."""
     _fields_: ClassVar = [
         ('gkeyCallBack', CALLBACK),
         ('gkeyContext', c_void_p)
