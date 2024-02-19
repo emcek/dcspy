@@ -1,6 +1,6 @@
 from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, c_bool, c_uint, c_void_p, c_wchar_p, pointer
 from logging import getLogger
-from typing import ClassVar
+from typing import Callable, ClassVar, Optional
 
 from dcspy.sdk import KeyDll, load_dll
 
@@ -19,29 +19,28 @@ class GkeyCode(Structure):
     ]
 
 
-CALLBACK = CFUNCTYPE(None, GkeyCode, c_wchar_p, c_void_p)
+GKEY_CALLBACK = CFUNCTYPE(None, GkeyCode, c_wchar_p, c_void_p)
 
 
 class LogiGkeyCBContext(Structure):
     """A class representing the Logitech G-Key Callback Context."""
     _fields_: ClassVar = [
-        ('gkeyCallBack', CALLBACK),
+        ('gkeyCallBack', GKEY_CALLBACK),
         ('gkeyContext', c_void_p)
     ]
 
 
 class GkeySdkManager:
     """G-key SDK manager."""
-    def __init__(self, gkey_callback_handler) -> None:
+    def __init__(self, callback: Callable[[GkeyCode, str, Optional[int]], None]) -> None:
         """
         Create G-key SDK manager.
 
         :param gkey_callback_handler: callback handler
         """
-        self.gkey_callback_handler = gkey_callback_handler
         self.KEY_DLL: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
         self.gkey_context = LogiGkeyCBContext()
-        self.gkey_context.gkeyCallBack = CALLBACK(self.callback)
+        self.gkey_context.gkeyCallBack = GKEY_CALLBACK(callback)
         self.gkey_context.gkeyContext = c_void_p()
         self.gkey_context_ptr = pointer(self.gkey_context)
 
