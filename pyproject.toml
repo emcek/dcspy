@@ -126,7 +126,7 @@ extend-exclude = [
     "tests/",
 ]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 6
 
 [tool.mypy]
