@@ -200,7 +200,11 @@ class KeyboardManager:
         :param btn_or_str: LcdButton, Gkey or request string
         """
         if isinstance(btn_or_str, (LcdButton, Gkey)):
-            for request in self.plane.button_request(btn_or_str).split('|'):
+            button_request = self.plane.button_request(btn_or_str)
+            if 'BUTTON' in button_request:
+                button_request = button_request.split(' BUTTON')[0]
+                button_request = f'{button_request} 1\n|{button_request} 0\n'
+            for request in button_request.split('|'):
                 self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
                 sleep(TIME_BETWEEN_REQUESTS)
         else:
