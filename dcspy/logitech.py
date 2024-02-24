@@ -57,8 +57,8 @@ class KeyboardManager:
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
         lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
-        key_sdk = GkeySdkManager(self.gkey_callback_handler)
-        success = key_sdk.logi_gkey_init()
+        self.key_sdk = GkeySdkManager(self.gkey_callback_handler)
+        success = self.key_sdk.logi_gkey_init()
         LOG.info(f'logitech gkey sdk initialised: {success}')
         self.plane = BasicAircraft(self.lcd)
         self.vert_space = 0
