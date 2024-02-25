@@ -78,7 +78,7 @@ class BasicAircraft:
                     request = request.replace('|', '\n|')
                     request = request.strip('|')
                     button_actions[key] = request
-                elif 'BUTTON' in request:
+                elif 'PUSH_BUTTON' in request:
                     button_actions[key] = request
                 else:
                     button_actions[key] = f'{request}\n'

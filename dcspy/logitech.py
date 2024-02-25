@@ -157,8 +157,8 @@ class KeyboardManager:
         LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
         gkey_request = self.plane.button_request(gkey)
         if gkey_request:
-            if 'BUTTON' in gkey_request:
-                gkey_request = gkey_request.split(' BUTTON')[0]
+            if 'PUSH_BUTTON' in gkey_request:
+                gkey_request = gkey_request.split(' PUSH_BUTTON')[0]
                 request = f'{gkey_request} {key_down}\n'
                 self._send_request(request)
             elif not key_down:
@@ -201,8 +201,8 @@ class KeyboardManager:
         """
         if isinstance(btn_or_str, (LcdButton, Gkey)):
             button_request = self.plane.button_request(btn_or_str)
-            if 'BUTTON' in button_request:
-                button_request = button_request.split(' BUTTON')[0]
+            if 'PUSH_BUTTON' in button_request:
+                button_request = button_request.split(' PUSH_BUTTON')[0]
                 button_request = f'{button_request} 1\n|{button_request} 0\n'
             for request in button_request.split('|'):
                 self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
