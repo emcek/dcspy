@@ -751,9 +751,9 @@ class AH64DBLKII(AdvancedAircraft):
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = 'CUSTOM PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
+        wca_or_idm = 'PLT_EUFD_WCA CUSTOM PLT_EUFD_WCA 1|PLT_EUFD_WCA 0|'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = 'CUSTOM PLT_EUFD_IDM 0|PLT_EUFD_IDM 1|'
+            wca_or_idm = 'PLT_EUFD_IDM CUSTOM PLT_EUFD_IDM 1|PLT_EUFD_IDM 0|'
 
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
