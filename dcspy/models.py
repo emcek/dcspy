@@ -491,6 +491,10 @@ class CycleButton(BaseModel):
         selector, _, step, max_value = req.split(' ')
         return CycleButton(ctrl_name=selector, step=int(step), max_value=int(max_value))
 
+    def __bool__(self) -> bool:
+        """Return True if any of the attributes: `step`, `max_value`, `ctrl_name` is truthy, False otherwise."""
+        return not all([not self.step, not self.max_value, not self.ctrl_name])
+
 
 class GuiPlaneInputRequest(BaseModel):
     """Input request for Control for GUI."""
