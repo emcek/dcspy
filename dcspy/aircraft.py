@@ -10,7 +10,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, Gkey, LcdButton, LcdInfo, LcdType, RequestModel
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, Gkey, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
 from dcspy.sdk import lcd_sdk
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
@@ -751,9 +751,9 @@ class AH64DBLKII(AdvancedAircraft):
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = 'PLT_EUFD_WCA CUSTOM PLT_EUFD_WCA 1|PLT_EUFD_WCA 0|'
+        wca_or_idm = f'PLT_EUFD_WCA {RequestType.CUSTOM.value} PLT_EUFD_WCA 1|PLT_EUFD_WCA 0|'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = 'PLT_EUFD_IDM CUSTOM PLT_EUFD_IDM 1|PLT_EUFD_IDM 0|'
+            wca_or_idm = f'PLT_EUFD_IDM {RequestType.CUSTOM.value} PLT_EUFD_IDM 1|PLT_EUFD_IDM 0|'
 
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA

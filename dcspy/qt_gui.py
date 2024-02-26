@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, SystemData)
+                          FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list,
@@ -615,7 +615,7 @@ class DcsPyQtGui(QMainWindow):
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             self.le_custom.setText('')
             if widget_iface == 'rb_custom':
-                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1])
+                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split(f'{RequestType.CUSTOM.value} ')[1])
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass

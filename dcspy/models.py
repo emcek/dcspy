@@ -519,8 +519,8 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
             'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
-            'rb_custom': f'{ctrl_key.name} CUSTOM {custom_value}',
-            'rb_push_button': f'{ctrl_key.name} PUSH_BUTTON',
+            'rb_custom': f'{ctrl_key.name} {RequestType.CUSTOM.value} {custom_value}',
+            'rb_push_button': f'{ctrl_key.name} {RequestType.PUSH_BUTTON.value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
@@ -536,8 +536,8 @@ class GuiPlaneInputRequest(BaseModel):
         """
         input_reqs = {}
         req_keyword_rb_iface = {
-            'CUSTOM': 'rb_custom',
-            'PUSH_BUTTON': 'rb_push_button',
+            RequestType.CUSTOM.value: 'rb_custom',
+            RequestType.PUSH_BUTTON.value: 'rb_push_button',
             'TOGGLE': 'rb_action',
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
