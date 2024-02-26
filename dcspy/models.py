@@ -240,6 +240,8 @@ class BiosValueStr(BaseModel):
 
 
 class PhysicalVariant(Enum):
+    """Physical variants of BIOS selectors."""
+
     PUSH_BUTTON = 'push_button'
     TOGGLE_SWITCH = 'toggle_switch'
     THREE_POSITION_SWITCH = '3_position_switch'
@@ -814,3 +816,109 @@ class ReleaseInfo(BaseModel):
     published: str
     release_type: str
     asset_file: str
+
+
+class RequestType(Enum):
+    """Internal request types."""
+    CYCLE = 'CYCLE'
+    CUSTOM = 'CUSTOM'
+    PUSH_BUTTON = 'PUSH_BUTTON'
+
+
+class RequestModel(BaseModel):
+    """Abstract request representation with common interface to send requests via UDE socket."""
+
+    ctrl_name: str
+    raw_request: str
+    get_bios_fn: Callable[[str], Union[str, int, float]]
+    cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
+    key: Union[LcdButton, Gkey]
+
+    @field_validator('ctrl_name')
+    def validate_interface(cls, value):
+        """
+        Validate.
+
+        :param value:
+        :return:
+        """
+        if not value or not all(ch.isupper() or ch == '_' or ch.isdigit() for ch in value):
+            raise ValueError("Invalid value for 'ctrl_name'. Only A-Z, 0-9 and _ are allowed.")
+        return value
+
+    @classmethod
+    def from_request(cls, key: Union[LcdButton, Gkey], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
+        """
+        Build object based on string request.
+
+        For cycle request `get_bios_fn` is used to update current value of BIOS selector.
+
+        :param key: LcdButton or Gkey
+        :param request: The raw request string.
+        :param get_bios_fn: A callable function that return current value for BIOS selector.
+        :return: An instance of the RequestModel class.
+        """
+        cycle_button = CycleButton(ctrl_name='', step=0, max_value=0)
+        if RequestType.CYCLE.value in request:
+            cycle_button = CycleButton.from_request(request)
+        ctrl_name = request.split(' ')[0]
+        return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
+
+    @classmethod
+    def empty(cls, key: Union[LcdButton, Gkey]) -> 'RequestModel':
+        """
+        Create an empty request model, for key which isn't assign.
+
+        :param key: LcdButton or Gkey
+        :return: The created request model.
+        """
+        return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
+
+    def _get_next_value_for_button(self) -> int:
+        """Get next int value (cycle fore and back) for ctrl_name BIOS selector."""
+        if not isinstance(self.cycle.iter, ZigZagIterator):
+            self.cycle.iter = ZigZagIterator(current=int(self.get_bios_fn(self.ctrl_name)),
+                                             step=self.cycle.step,
+                                             max_val=self.cycle.max_value)
+        return next(self.cycle.iter)
+
+    @property
+    def is_cycle(self) -> bool:
+        """Return True if cycle request, False otherwise."""
+        return bool(self.cycle)
+
+    @property
+    def is_custom(self) -> bool:
+        """Return True if custom request, False otherwise."""
+        return RequestType.CUSTOM.value in self.raw_request
+
+    @property
+    def is_push_button(self) -> bool:
+        """Return True if push button request, False otherwise."""
+        return RequestType.PUSH_BUTTON.value in self.raw_request
+
+    def bytes_requests(self, key_down: Optional[int] = None) -> List[bytes]:
+        """
+        Generate list of bytes that represent the individual requests based on the current state of the model.
+
+        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        :return: a list of bytes representing the individual requests
+        """
+        if self.is_cycle:
+            request = f'{self.ctrl_name} {self._get_next_value_for_button()}\n'
+        elif self.is_custom:
+            request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
+            request = request.replace('|', '\n|')
+            request = request.strip('|')
+        elif self.is_push_button and isinstance(self.key, LcdButton):
+            request = f'{self.ctrl_name} 1\n|{self.ctrl_name} 0\n'
+        elif self.is_push_button and isinstance(self.key, Gkey) and key_down:
+            request = f'{self.ctrl_name} 1\n'
+        elif self.is_push_button and isinstance(self.key, Gkey) and not key_down:
+            request = f'{self.ctrl_name} 0\n'
+        else:
+            request = f'{self.raw_request}\n'
+        return [bytes(req, 'utf-8') for req in request.split('|')]
+
+    def __str__(self) -> str:
+        return f'{self.ctrl_name}: {self.raw_request}'
