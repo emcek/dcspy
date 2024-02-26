@@ -278,7 +278,7 @@ def test_collect_debug_data(switch_dcs_bios_path_in_config, resources):
     with ZipFile(file=zip_file, mode='r') as zipf:
         zip_list = zipf.namelist()
     assert 'system_data.txt' in zip_list
-    assert sum('.yaml' in s for s in zip_list) == 2
+    assert sum('.yaml' in s for s in zip_list) == 4
     assert 'dcspy.log' in zip_list
     assert 'Ka50_999.png' in zip_list
     assert 'dcs.log' in zip_list
