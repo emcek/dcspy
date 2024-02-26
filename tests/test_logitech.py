@@ -3,7 +3,7 @@ from unittest.mock import call, patch
 from pytest import mark
 
 from dcspy.logitech import G13, G19, G510, G15v1, G15v2
-from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, Gkey, LcdButton, LcdInfo, LcdMode, LcdType
+from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, LcdMode, LcdType
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -11,7 +11,7 @@ def test_keyboard_base_basic_check(keyboard_base):
 
     assert str(keyboard_base) == 'KeyboardManager: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'gkey_pressed', 'buttons',
+    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
             '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel')
     for test_string in data:
         assert test_string in logitech_repr
@@ -50,7 +50,7 @@ def test_keyboard_button_handle_lcdbutton(keyboard, request):
     keyboard = request.getfixturevalue(keyboard)
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=[True]):
         keyboard.button_handle()
-    keyboard.socket.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
+    keyboard.socket.sendto.assert_called_once_with(b'TEST 1\n', ('127.0.0.1', 7778))
 
 
 @mark.parametrize('plane_str, bios_name, plane, display, detect', [
