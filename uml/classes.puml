@@ -51,24 +51,23 @@ package logitech {
         + socket: socket
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
-        + gkey_pressed = False : bool
         + gkey: Sequence[Gkey]
         + buttons: Sequence[LcdButton]
         + lcd : LcdInfo
         + model: KeyboardModel
         + vert_space = 0 : int
         + __init__(parser: ProtocolParser)
-        + dislay(message : List[str]) -> List[str]
+        + display(message : List[str]) -> List[str]
         + detecting_plane()
         + load_new_plane(value : str)
         + check_buttons() -> LcdButton
-        + check_gkey() -> Gkey
         + button_handle()
+        + key_sdk: GkeySdkManager
         + gkey_callback_handler(key: int, mode: int, key_down: int)
         + clear()
         + text(List[str])
         # _prepare_image() -> Image
-        # _send_request(btn_or_str: Union[LcdButton, Gkey, str])
+        # _send_request(button: Union[LcdButton, Gkey], Optional[int])
     }
     class G13 {
         + gkey: Sequence[Gkey]
@@ -120,16 +119,13 @@ package aircraft {
     }
     class BasicAircraft {
         + bios_data : Dict[str, BiosValue]
-        + cycle_buttons : Dict[LcdButton, CycleButton]
-        + button_actions: Dict[LcdButton, str]
+        + key_req: KeyRequest
         + lcd : LcdInfo
         + cfg: Dict[str, Union[str, int]]
         + __init__(lcd_type: LcdInfo)
-        + button_request(button: LcdButton) -> str
+        + button_request(button: Union[LcdButton, Gkey]) -> RequestModel
         + set_bios(selector: str, value: Union[str, int])
         + get_bios(selector: str) -> Union[str, int]
-        # _get_next_value_for_button(button: LcdButton) -> int
-        # _get_cycle_request(button: LcdButton) -> str
     }
     class AdvancedAircraft {
         # _debug_img : Iterator[int]
@@ -143,6 +139,16 @@ package aircraft {
         + WCA = 2
         + PRE = 4
     }
+}
+
+package utils {
+    class KeyRequest {
+        + buttons: Dict[Union[LcdButton, Gkey], RequestModel] = {}
+        + cycle_button_ctrl_name() -> Dict[str, int]
+        + get_request(Union[LcdButton, Gkey]) -> RequestModel
+        + set_request(Union[LcdButton, Gkey], str)
+    }
+    KeyRequest -* BasicAircraft
 }
 
 package models {
@@ -240,6 +246,19 @@ package models {
         BUTTON_LIGHT = 'button_light'
         EMPTY = None
     }
+    class RequestModel{
+        + ctrl_name: str
+        + raw_request: str
+        + get_bios_fn: Callable[[str], Union[str, int, float]]
+        + cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
+        + from_request(str, Callable[[str], Union[str, int, float]]) -> RequestModel
+        + empty(Union[LcdButton, Gkey]) -> RequestModel
+        + is_cycle -> bool
+        + is_custom -> bool
+        + is_push_button -> bool
+        # _get_next_value_for_button(button: LcdButton) -> int
+        + bytes_requests(Optional[int]) -> List[bytes]:
+    }
 
 BiosValueInt *-- IntBuffArgs
 BiosValueStr *-- StrBuffArgs
@@ -253,8 +272,10 @@ LcdButton -* KeyboardManager
 Gkey --* BasicAircraft
 Gkey --* KeyboardManager
 Direction --* ZigZagIterator
-ZigZagIterator --* BasicAircraft
+ZigZagIterator --* RequestModel
 KeyboardModel -* KeyboardManager
+RequestModel --* KeyRequest
+CycleButton -* RequestModel
 }
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
@@ -321,5 +342,4 @@ LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
 BasicAircraft *--- IntegerBuffer
 BasicAircraft *-- lcd_sdk
-AdvancedAircraft *- CycleButton
 @enduml
