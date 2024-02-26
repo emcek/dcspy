@@ -5,6 +5,7 @@ from pytest import fixture
 
 from dcspy import aircraft, logitech, models
 from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
+from dcspy.utils import KeyRequest
 
 
 @fixture()
@@ -159,15 +160,17 @@ def keyboard_base(protocol_parser, sock):
 
 
 @fixture()
-def keyboard_mono(protocol_parser, sock, lcd_font_mono):
+def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     """
     Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
     :param sock: net socket object
-    :param lcd_font_mono font configuration for LCD
+    :param lcd_font_mono: font configuration for LCD
+    :param resources: Path to tests/resources directory.
     :return: KeyboardManager
     """
+    from dcspy.aircraft import BasicAircraft
     from dcspy.models import Gkey, LcdButton, LcdMono
     from dcspy.sdk import lcd_sdk
     from dcspy.sdk.key_sdk import GkeySdkManager
@@ -179,6 +182,9 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono):
             self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
             self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 10
+            plane = BasicAircraft(lcd_type=self.lcd)
+            plane.key_req = KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
+            self.plane = plane
 
         def _setup_plane_callback(self) -> None:
             print('empty callback setup')
@@ -189,15 +195,17 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono):
 
 
 @fixture()
-def keyboard_color(protocol_parser, sock, lcd_font_color):
+def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     """
     Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
     :param sock: net socket object
-    :param lcd_font_color font configuration for LCD
+    :param lcd_font_color: font configuration for LCD
+    :param resources: Path to tests/resources directory.
     :return: KeyboardManager
     """
+    from dcspy.aircraft import BasicAircraft
     from dcspy.models import Gkey, LcdButton, LcdColor
     from dcspy.sdk import lcd_sdk
     from dcspy.sdk.key_sdk import GkeySdkManager
@@ -209,6 +217,9 @@ def keyboard_color(protocol_parser, sock, lcd_font_color):
             self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
             self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 40
+            plane = BasicAircraft(lcd_type=self.lcd)
+            plane.key_req = KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
+            self.plane = plane
 
         def _setup_plane_callback(self) -> None:
             print('empty callback setup')
