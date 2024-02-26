@@ -92,7 +92,7 @@ def test_switch_between_cells(qtbot, test_config_yaml, switch_dcs_bios_path_in_c
         (2, 0): ('AAP_CDUPWR', 'rb_fixed_step_dec'),
         (2, 1): ('ADI_PITCH_TRIM', 'rb_variable_step_minus'),
         (2, 2): ('AHCP_ALT_SCE', 'rb_set_state'),
-        (3, 0): ('AAP_CDUPWR', 'rb_set_state'),
+        (3, 0): ('AAP_CDUPWR', 'rb_push_button'),
         (3, 1): ('ALT_SET_PRESSURE', 'rb_variable_step_plus'),
         (3, 2): ('ALT_SET_PRESSURE', 'rb_variable_step_minus'),
         (4, 0): ('AAP_STEERPT', 'rb_fixed_step_inc'),
@@ -126,7 +126,7 @@ def test_switch_between_cells(qtbot, test_config_yaml, switch_dcs_bios_path_in_c
         assert dcspy_gui.input_reqs['A-10C']['G3_M1'].request == 'AAP_CDUPWR DEC'
         assert dcspy_gui.input_reqs['A-10C']['G3_M2'].request == 'ADI_PITCH_TRIM -3200'
         assert dcspy_gui.input_reqs['A-10C']['G3_M3'].request == 'AHCP_ALT_SCE CYCLE 1 2'
-        assert dcspy_gui.input_reqs['A-10C']['G4_M1'].request == 'AAP_CDUPWR CYCLE 1 1'
+        assert dcspy_gui.input_reqs['A-10C']['G4_M1'].request == 'AAP_CDUPWR PUSH_BUTTON'
         assert dcspy_gui.input_reqs['A-10C']['G4_M2'].request == 'ALT_SET_PRESSURE +3200'
         assert dcspy_gui.input_reqs['A-10C']['G4_M3'].request == 'ALT_SET_PRESSURE -3200'
         assert dcspy_gui.input_reqs['A-10C']['G5_M1'].request == 'AAP_STEERPT INC'

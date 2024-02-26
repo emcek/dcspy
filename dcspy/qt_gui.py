@@ -160,7 +160,7 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
         self.bg_rb_input_iface.addButton(self.rb_custom)
-        self.bg_rb_input_iface.addButton(self.rb_button)
+        self.bg_rb_input_iface.addButton(self.rb_push_button)
         self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
@@ -603,7 +603,7 @@ class DcsPyQtGui(QMainWindow):
     def _handle_push_button(self, ctrl_key: ControlKeyData) -> None:
         """Handle the control key for Button action."""
         if ctrl_key.is_push_button:
-            self.rb_button.setEnabled(True)
+            self.rb_push_button.setEnabled(True)
 
     def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """
@@ -1454,7 +1454,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
         self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
         self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
-        self.rb_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_button')
+        self.rb_push_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_push_button')
         self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
 
         self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')

@@ -982,7 +982,7 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="rb_button">
+         <widget class="QRadioButton" name="rb_push_button">
           <property name="enabled">
            <bool>false</bool>
           </property>
