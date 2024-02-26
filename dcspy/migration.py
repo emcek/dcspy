@@ -4,7 +4,7 @@ from pathlib import Path
 from pprint import pformat
 from shutil import SameFileError, copy
 from typing import Callable, Iterator, Union
-
+import re
 from packaging import version
 
 from dcspy.models import DcspyConfigYaml
@@ -52,6 +52,20 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
     for api_ver in api_ver_list:
         if version.Version(api_ver) > version.Version(cfg_ver) <= version.Version(__version__):
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
+
+
+def _api_ver_3_2_0(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.2.0.
+
+    :param cfg: Configuration dictionary
+    """
+    user_appdata = get_config_yaml_location()
+    makedirs(name=user_appdata, exist_ok=True)
+    pattern = re.compile(r'(\S+):\s*(\S+)\sCUSTOM\s+(\S+)\s+\d\s*\|\s*(\S+)\s*\d\s*\|')
+    for filename in ('AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml', 'F-16C_50.yaml', 'FA-18C_hornet.yaml',
+                     'Ka-50.yaml', 'Ka-50_3.yaml', 'Mi-8MT.yaml', 'Mi-24P.yaml', 'A-10C.yaml', 'A-10C_2.yaml'):
+        _replace_line_in_file(filename=filename, dir_path=user_appdata, pattern=pattern, new_text=r'\1: \2 PUSH_BUTTON')
 
 
 def _api_ver_3_1_3(cfg: DcspyConfigYaml) -> None:
@@ -171,3 +185,16 @@ def _copy_file(filename: str, to_path: Path, force=False) -> None:
             LOG.debug(f'Copy file: {filename} to {to_path}')
         except SameFileError:
             pass
+
+
+def _replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
+    yaml_filename = dir_path / filename
+    try:
+        with open(yaml_filename, 'r') as yaml_file:
+            file_content = yaml_file.read()
+        LOG.debug(yaml_filename)
+        updated_content = re.sub(pattern, new_text, file_content)
+        with open(yaml_filename, 'w') as yaml_file:
+            yaml_file.write(updated_content)
+    except FileNotFoundError:
+        pass
