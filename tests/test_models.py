@@ -619,3 +619,57 @@ def test_zigzag_iterator_direction():
     assert next(zz) == 7
     assert next(zz) == 5
     assert zz.direction == Direction.BACKWARD
+
+
+# <=><=><=><=><=> RequestModel <=><=><=><=><=>
+@mark.parametrize('str_req, key, key_down, result', [
+    ('COM1 CYCLE 1 3', 'G1_M1', 1, [True, False, False, [b'COM1 3\n']]),
+    ('COM1 CYCLE 1 3', 'G1_M1', 0, [True, False, False, [b'COM1 3\n']]),
+    ('COM1 CYCLE 1 3', 'ONE', None, [True, False, False, [b'COM1 3\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', 1, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', 0, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'TWO', None, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'G3_M3', 1, [False, False, True, [b'RADIO_1 1\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'G3_M3', 0, [False, False, True, [b'RADIO_1 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'LEFT', None, [False, False, True, [b'RADIO_1 1\n', b'RADIO_1 0\n']]),
+    ('MASTER_ARM 2', 'G1_M2', 1, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('MASTER_ARM 2', 'G1_M2', 0, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('MASTER_ARM 2', 'RIGHT', None, [False, False, False, [b'MASTER_ARM 2\n']]),
+], ids=[
+    'GKey CYCLE down',
+    'GKey CYCLE up',
+    'Lcd CYCLE',
+    'GKey CUSTOM down',
+    'GKey CUSTOM up',
+    'Lcd CUSTOM',
+    'GKey PUSH_BUTTON down',
+    'GKey PUSH_BUTTON up',
+    'Lcd PUSH_BUTTON',
+    'GKey REGULAR down',
+    'GKey REGULAR up',
+    'Lcd REGULAR',
+])
+def test_request_model_properties(str_req, key, key_down, result):
+    from dcspy.models import RequestModel, get_key_instance
+
+    def get_bios_fn(val: str) -> int:
+        return 2
+
+    req = RequestModel.from_request(request=str_req, get_bios_fn=get_bios_fn, key=get_key_instance(key))
+    assert req.is_cycle is result[0]
+    assert req.is_custom is result[1]
+    assert req.is_push_button is result[2]
+    assert req.bytes_requests(key_down=key_down) == result[3]
+    assert str(req) == f'{req.ctrl_name}: {str_req}'
+
+
+@mark.parametrize('key, key_down', [
+    ('ONE', None),
+    ('G1_M1', 1),
+    ('G1_M1', 0),
+])
+def test_empty_request_model_(key, key_down):
+    from dcspy.models import RequestModel, get_key_instance
+
+    empty_req = RequestModel.empty(key=get_key_instance(key))
+    assert empty_req.bytes_requests(key_down=key_down) == [b'\n']
