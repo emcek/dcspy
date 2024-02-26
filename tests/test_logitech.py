@@ -44,26 +44,6 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     assert keyboard.lcdbutton_pressed is pressed2
 
 
-@mark.skip(reason='check_gkey() remove from logitech')
-@mark.parametrize('keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2', [
-    ('keyboard_mono', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
-    ('keyboard_color', False, [False, True], ['G1/M1', 'G2/M1'], Gkey(key=2, mode=1), [call(g_key=1, mode=1), call(g_key=2, mode=1)], True),
-    ('keyboard_mono', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(key=0, mode=0), [call(g_key=1, mode=1)], True),
-    ('keyboard_color', True, [True, False, False], ['G1/M1', 'G2/M1', 'G3/M1'], Gkey(key=0, mode=0), [call(g_key=1, mode=1)], True),
-    ('keyboard_mono', False, [False] * 3, [str(i) for i in Gkey.generate(3, 1)], Gkey(key=0, mode=0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
-    ('keyboard_color', False, [False] * 3, [str(i) for i in Gkey.generate(3, 1)], Gkey(key=0, mode=0), [call(g_key=1, mode=1), call(g_key=2, mode=1), call(g_key=3, mode=1)], False),
-], ids=['Mono G2/M1', 'color G2/M1', 'Mono G1/M1 already_pressed', 'Color G1/M1 already_pressed', 'Mono None Button', 'Color None Button'])
-def test_keyboard_check_gkey(keyboard, pressed1, effect1, effect2, chk_btn, calls, pressed2, request):
-    from dcspy.sdk import key_sdk
-    keyboard = request.getfixturevalue(keyboard)
-    keyboard.gkey_pressed = pressed1
-    with patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_pressed', side_effect=effect1) as gkey_pressed, \
-            patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_string', side_effect=effect2):
-        assert keyboard.check_gkey() == chk_btn
-    gkey_pressed.assert_has_calls(calls)
-    assert keyboard.gkey_pressed is pressed2
-
-
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_keyboard_button_handle_lcdbutton(keyboard, request):
     from dcspy.sdk import lcd_sdk
@@ -71,17 +51,6 @@ def test_keyboard_button_handle_lcdbutton(keyboard, request):
     with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=[True]):
         keyboard.button_handle()
     keyboard.socket.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
-
-
-@mark.skip(reason='check_gkey() remove from logitech`s button_handle()')
-@mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
-def test_keyboard_button_handle_gkey(keyboard, sock, request):
-    from dcspy.sdk import key_sdk
-    keyboard = request.getfixturevalue(keyboard)
-    with patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_pressed', side_effect=[True]), \
-            patch.object(key_sdk, 'logi_gkey_is_keyboard_gkey_string', side_effect=['G1/M1']):
-        keyboard.button_handle(sock)
-    sock.sendto.assert_called_once_with(b'\n', ('127.0.0.1', 7778))
 
 
 @mark.parametrize('plane_str, bios_name, plane, display, detect', [
