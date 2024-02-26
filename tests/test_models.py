@@ -478,6 +478,16 @@ def test_cycle_button_custom_constructor(name, req, step, max_val):
         next(cb.iter)
 
 
+@mark.parametrize('name, req, step, max_val, result', [
+    ('IFF_MASTER_KNB', 'CYCLE', 1, 4, True),
+    ('', 'CYCLE', 0, 0, False),
+], ids=['IFF_MASTER_KNB CYCLE 1', 'EMPTY CYCLE 0 0'])
+def test_cycle_button_bool_test(name, req, step, max_val, result):
+    from dcspy.models import CycleButton
+
+    assert bool(CycleButton.from_request(f'{name} {req} {step} {max_val}')) is result
+
+
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
 def test_get_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
