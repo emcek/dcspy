@@ -1,10 +1,11 @@
+import re
 from logging import getLogger
 from os import makedirs
 from pathlib import Path
 from pprint import pformat
 from shutil import SameFileError, copy
 from typing import Callable, Iterator, Union
-import re
+
 from packaging import version
 
 from dcspy.models import DcspyConfigYaml
@@ -190,7 +191,7 @@ def _copy_file(filename: str, to_path: Path, force=False) -> None:
 def _replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
     yaml_filename = dir_path / filename
     try:
-        with open(yaml_filename, 'r') as yaml_file:
+        with open(yaml_filename) as yaml_file:
             file_content = yaml_file.read()
         LOG.debug(yaml_filename)
         updated_content = re.sub(pattern, new_text, file_content)
