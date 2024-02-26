@@ -8,7 +8,7 @@ from packaging import version
 from pytest import mark
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo
+from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
 
 
 @mark.parametrize('online_tag, result', [
@@ -403,3 +403,30 @@ def test_replace_symbols():
 
 def test_substitute_symbols():
     assert utils.substitute_symbols('123qwe123qwe', ((r'\d+', r'QWE'),)) == 'QWEqweQWEqwe'
+
+
+def test_key_request_create(test_config_yaml):
+    def get_bios_fn(val: str) -> int:
+        return 1
+
+    key_req = utils.KeyRequest(yaml_path=test_config_yaml.parent / 'F-16C_50.yaml', get_bios_fn=get_bios_fn)
+    assert key_req.buttons[get_key_instance('ONE')].is_cycle is True
+    assert key_req.buttons[get_key_instance('G1_M1')].is_push_button is True
+    assert key_req.buttons[get_key_instance('G2_M1')].is_custom is True
+
+    req_model = key_req.get_request(get_key_instance('G3_M1'))
+    assert req_model.is_cycle is False
+    assert req_model.is_push_button is False
+    assert req_model.is_custom is False
+
+
+def test_key_request_update_bios_data_and_set_req(test_config_yaml):
+    def get_bios_fn(val: str) -> int:
+        return 1
+
+    key_req = utils.KeyRequest(yaml_path=test_config_yaml.parent / 'F-16C_50.yaml', get_bios_fn=get_bios_fn)
+    key = get_key_instance('G3_M1')
+    req = 'MASTER_ARM_SW 1'
+    assert key_req.cycle_button_ctrl_name == {'IFF_MASTER_KNB': 0}
+    key_req.set_request(key, req)
+    assert key_req.get_request(key).raw_request == req
