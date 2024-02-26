@@ -390,7 +390,9 @@ class ControlKeyData:
 
         :return: bool
         """
-        return bool(self.physical_variant is PhysicalVariant.PUSH_BUTTON)
+        push_btn = self.physical_variant is PhysicalVariant.PUSH_BUTTON
+        two_states = self.has_fixed_step and self.has_set_state and self.max_value == 1
+        return push_btn or two_states
 
 
 class Control(BaseModel):
