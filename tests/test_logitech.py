@@ -145,11 +145,13 @@ def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
-def test_keyboard_mono_load_advanced_plane(model, keyboard_mono):
+def test_keyboard_mono_load_advanced_plane(model, keyboard_mono, test_config_yaml):
     from dcspy.aircraft import AdvancedAircraft
 
-    keyboard_mono.plane_name = model
-    keyboard_mono.load_new_plane()
+    with patch('dcspy.aircraft.default_yaml', test_config_yaml):
+        keyboard_mono.plane_name = model
+        keyboard_mono.load_new_plane()
+
     assert isinstance(keyboard_mono.plane, AdvancedAircraft)
     assert model in type(keyboard_mono.plane).__name__
 
@@ -168,11 +170,13 @@ def test_test_keyboard_mono_load_basic_plane(keyboard_mono):
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
-def test_keyboard_color_load_advanced_plane(model, keyboard_color):
+def test_keyboard_color_load_advanced_plane(model, keyboard_color, test_config_yaml):
     from dcspy.aircraft import AdvancedAircraft
 
-    keyboard_color.plane_name = model
-    keyboard_color.load_new_plane()
+    with patch('dcspy.aircraft.default_yaml', test_config_yaml):
+        keyboard_color.plane_name = model
+        keyboard_color.load_new_plane()
+
     assert isinstance(keyboard_color.plane, AdvancedAircraft)
     assert model in type(keyboard_color.plane).__name__
 
@@ -194,13 +198,14 @@ def test_test_keyboard_color_load_basic_plane(keyboard_color):
 @mark.parametrize('keyboard', [
     'G13', 'G510', 'G15v1', 'G15v2', 'G19'
 ])
-def test_all_keyboard_all_plane_load(model, keyboard, test_dcs_bios, request):
+def test_all_keyboard_all_plane_load(model, keyboard, test_dcs_bios, test_config_yaml, request):
     from dcspy.aircraft import AdvancedAircraft
 
     keyboard = request.getfixturevalue(keyboard)
     with patch('dcspy.logitech.get_config_yaml_item', return_value=test_dcs_bios):
-        keyboard.plane_name = model
-        keyboard.load_new_plane()
+        with patch('dcspy.aircraft.default_yaml', test_config_yaml):
+            keyboard.plane_name = model
+            keyboard.load_new_plane()
 
     assert isinstance(keyboard.plane, AdvancedAircraft)
     assert model in type(keyboard.plane).__name__
