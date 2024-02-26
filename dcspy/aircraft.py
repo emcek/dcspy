@@ -84,7 +84,7 @@ class BasicAircraft:
         :param value:
         """
         self.bios_data[selector] = value
-        LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
+        LOG.debug(f'{type(self).__name__} {selector} value: "{value}" ({type(value).__name__})')
 
     def get_bios(self, selector: str, default: Union[str, int, float] = '') -> Union[str, int, float]:
         """
