@@ -1,5 +1,7 @@
 ## 3.2.0
-* Add new Push button option to support push button controls
+* Add new Push button option to support push button controls with only two states (@sleighzy, @emcek)
+* Internal: 
+  * G-Key SDK callback support (@sleighzy)
 
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS
