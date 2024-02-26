@@ -5,7 +5,7 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List, Sequence, Union
+from typing import List, Optional, Sequence, Union
 
 from PIL import Image, ImageDraw
 
@@ -50,7 +50,6 @@ class KeyboardManager:
         self.bios_name = ''
         self.plane_detected = False
         self.lcdbutton_pressed = False
-        self.gkey_pressed = False
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
@@ -155,16 +154,7 @@ class KeyboardManager:
         """
         gkey = Gkey(key=key_idx, mode=mode)
         LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
-        gkey_request = self.plane.button_request(gkey)
-        if gkey_request:
-            if 'PUSH_BUTTON' in gkey_request:
-                gkey_request = gkey_request.split(' PUSH_BUTTON')[0]
-                request = f'{gkey_request} {key_down}\n'
-                self._send_request(request)
-            elif not key_down:
-                return
-            else:
-                self._send_request(gkey)
+        self._send_request(button=gkey, key_down=key_down)
 
     def check_buttons(self) -> LcdButton:
         """
@@ -186,29 +176,24 @@ class KeyboardManager:
         Button handler.
 
         * detect if button was pressed
-        * fetch DCS-BIOS request from current plane
         * sent action to DCS-BIOS via network socket
         """
         button = self.check_buttons()
         if button.value:
             self._send_request(button)
 
-    def _send_request(self, btn_or_str: Union[LcdButton, Gkey, str], /) -> None:
+    def _send_request(self, button: Union[LcdButton, Gkey], key_down: Optional[int] = None) -> None:
         """
         Sent action to DCS-BIOS via network socket.
 
-        :param btn_or_str: LcdButton, Gkey or request string
+        :param button: LcdButton or Gkey
+        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
         """
-        if isinstance(btn_or_str, (LcdButton, Gkey)):
-            button_request = self.plane.button_request(btn_or_str)
-            if 'PUSH_BUTTON' in button_request:
-                button_request = button_request.split(' PUSH_BUTTON')[0]
-                button_request = f'{button_request} 1\n|{button_request} 0\n'
-            for request in button_request.split('|'):
-                self.socket.sendto(bytes(request, 'utf-8'), SEND_ADDR)
-                sleep(TIME_BETWEEN_REQUESTS)
-        else:
-            self.socket.sendto(bytes(btn_or_str, 'utf-8'), SEND_ADDR)
+        req_model = self.plane.button_request(button)
+        for request in req_model.bytes_requests(key_down=key_down):
+            LOG.debug(f'{button=}: {request=}')
+            self.socket.sendto(request, SEND_ADDR)
+            sleep(TIME_BETWEEN_REQUESTS)
 
     def clear(self, true_clear=False) -> None:
         """
