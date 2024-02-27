@@ -168,10 +168,10 @@ def test_meta_plane(keyboard, plane_name, request):
     ('f16c50_color', LcdButton.CANCEL, [b'\n']),
     ('f16c50_color', LcdButton.OK, [b'\n']),
     ('ah64dblkii_mono', LcdButton.NONE, [b'\n']),
-    ('ah64dblkii_mono', LcdButton.ONE, [b'PLT_EUFD_IDM 1\n', b'PLT_EUFD_IDM 0\n']),
-    ('ah64dblkii_mono', LcdButton.TWO, [b'PLT_EUFD_RTS 1\n', b'PLT_EUFD_RTS 0\n']),
-    ('ah64dblkii_mono', LcdButton.THREE, [b'PLT_EUFD_PRESET 1\n', b'PLT_EUFD_PRESET 0\n']),
-    ('ah64dblkii_mono', LcdButton.FOUR, [b'PLT_EUFD_ENT 1\n', b'PLT_EUFD_ENT 0\n']),
+    ('ah64dblkii_mono', LcdButton.ONE, [b'PLT_EUFD_IDM 0\n', b'PLT_EUFD_IDM 1\n']),
+    ('ah64dblkii_mono', LcdButton.TWO, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
+    ('ah64dblkii_mono', LcdButton.THREE, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
+    ('ah64dblkii_mono', LcdButton.FOUR, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
 ])
 def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
@@ -181,10 +181,10 @@ def test_button_pressed_for_planes(plane, button, result, request):
 
 @mark.parametrize('button, result', [
     (LcdButton.NONE, [b'\n']),
-    (LcdButton.LEFT, [b'PLT_EUFD_WCA 1\n', b'PLT_EUFD_WCA 0\n']),
-    (LcdButton.RIGHT, [b'PLT_EUFD_RTS 1\n', b'PLT_EUFD_RTS 0\n']),
-    (LcdButton.DOWN, [b'PLT_EUFD_PRESET 1\n', b'PLT_EUFD_PRESET 0\n']),
-    (LcdButton.UP, [b'PLT_EUFD_ENT 1\n', b'PLT_EUFD_ENT 0\n']),
+    (LcdButton.LEFT, [b'PLT_EUFD_WCA 0\n', b'PLT_EUFD_WCA 1\n']),
+    (LcdButton.RIGHT, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
+    (LcdButton.DOWN, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
+    (LcdButton.UP, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
     (LcdButton.MENU, [b'\n']),
     (LcdButton.CANCEL, [b'\n']),
     (LcdButton.OK, [b'\n']),
