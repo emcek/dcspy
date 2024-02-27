@@ -74,6 +74,7 @@ def test_download_file(response, result, tmp_path):
         assert utils.download_file('https://test.com', dl_file) is result
 
 
+@mark.slow
 def test_proc_is_running():
     assert utils.proc_is_running('python')
     assert not utils.proc_is_running('wrong_python')
