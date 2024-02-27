@@ -30,7 +30,8 @@ def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: s
     """
     start_time = time()
     LOG.info('Waiting for DCS connection...')
-    support_banner = _supporters(text='Huge thanks to: Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ', width=26)
+    support_banner = _supporters(text='Huge thanks to: Simon Leigh, Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ',
+                                 width=26)
     while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -38,7 +39,7 @@ def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: s
                 parser.process_byte(int_byte)
             start_time = time()
             _load_new_plane_if_detected(manager)
-            manager.button_handle(sock)
+            manager.button_handle()
         except OSError as exp:
             _sock_err_handler(manager, start_time, ver_string, support_banner, exp)
 
@@ -112,11 +113,11 @@ def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
     :param event: stop event for main loop
     :param fonts_cfg: fonts configuration for LCD
     """
+    dcs_sock = _prepare_socket()
     parser = ProtocolParser()
-    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, fonts=fonts_cfg)
+    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg)
     LOG.info(f'Loading: {str(manager)}')
     LOG.debug(f'Loading: {repr(manager)}')
-    dcs_sock = _prepare_socket()
     dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
     _handle_connection(manager=manager, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     dcs_sock.close()

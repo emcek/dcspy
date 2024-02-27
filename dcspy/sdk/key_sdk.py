@@ -1,59 +1,109 @@
+from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, c_bool, c_uint, c_void_p, c_wchar_p, pointer
 from logging import getLogger
-
-from _cffi_backend import Lib
-from cffi import FFI
+from typing import Callable, ClassVar, Optional
 
 from dcspy.sdk import KeyDll, load_dll
 
 LOG = getLogger(__name__)
-KEY_DLL: Lib = load_dll(KeyDll)  # type: ignore[assignment]
-ffi = FFI()
 
 
-def logi_gkey_init() -> bool:
-    """
-    Make necessary initializations.
-
-    It must be called before your application can see G-key/button events.
-    :return: If the function succeeds, it returns True. Otherwise, False.
-    """
-    try:
-        return KEY_DLL.LogiGkeyInit(ffi.NULL)  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
-
-
-def logi_gkey_is_keyboard_gkey_pressed(g_key: int, mode: int) -> bool:
-    """
-    Indicate whether a keyboard G-key is currently being pressed.
-
-    :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
-    :param mode: number of the mode currently selected (1, 2 or 3)
-    :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise.
-    """
-    try:
-        return KEY_DLL.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+class GkeyCode(Structure):
+    """Represent a structure that defines the layout of G key codes."""
+    _fields_: ClassVar = [
+        ('keyIdx', c_uint, 8),
+        ('keyDown', c_uint, 1),
+        ('mState', c_uint, 2),
+        ('mouse', c_uint, 1),
+        ('reserved1', c_uint, 4),
+        ('reserved2', c_uint, 16)
+    ]
 
 
-def logi_gkey_is_keyboard_gkey_string(g_key: int, mode: int) -> str:
-    """
-    Return a G-key-specific friendly string.
-
-    :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
-    :param mode: number of the mode currently selected (1, 2 or 3)
-    :return: Friendly string for specified G-key and Mode number. For example 'G5/M1'.
-    """
-    try:
-        return ffi.string(KEY_DLL.LogiGkeyGetKeyboardGkeyString(g_key, mode))  # type: ignore[attr-defined,return-value]
-    except AttributeError:
-        return ''
+GKEY_CALLBACK = CFUNCTYPE(None, GkeyCode, c_wchar_p, c_void_p)
 
 
-def logi_gkey_shutdown() -> None:
-    """Unload the corresponding DLL and frees up any allocated resources."""
-    try:
-        KEY_DLL.LogiGkeyShutdown()  # type: ignore[attr-defined]
-    except AttributeError:
-        pass
+class LogiGkeyCBContext(Structure):
+    """A class representing the Logitech G-Key Callback Context."""
+    _fields_: ClassVar = [
+        ('gkeyCallBack', GKEY_CALLBACK),
+        ('gkeyContext', c_void_p)
+    ]
+
+
+class GkeySdkManager:
+    """G-key SDK manager."""
+    def __init__(self, callback: Callable[[int, int, int], None]) -> None:
+        """
+        Create G-key SDK manager.
+
+        :param gkey_callback_handler: callback handler
+        """
+        self.KEY_DLL: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
+        self.gkey_context = LogiGkeyCBContext()
+        self.user_callback = callback
+        self.gkey_context.gkeyCallBack = GKEY_CALLBACK(self._callback)
+        self.gkey_context.gkeyContext = c_void_p()
+        self.gkey_context_ptr = pointer(self.gkey_context)
+
+    def _callback(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
+        """
+        Receive callback events for G-key button pushes.
+
+        This function is called whenever a G-key event occurs.
+        This then calls the callback handler provided by the user.
+
+        :param g_key_code: The gkey code object representing the current gkey event.
+        :param gkey_or_button_str: The string representation of the gkey or button being pressed.
+        :param context: The context in which the gkey event occurred.
+        """
+        LOG.debug(f'Gkey callback: gkey {gkey_or_button_str}, key code: {g_key_code} {context=}')
+        self.user_callback(g_key_code.keyIdx, g_key_code.mState, g_key_code.keyDown)
+
+    def logi_gkey_init(self) -> bool:
+        """
+        Make necessary initializations.
+
+        It must be called before your application can see G-key/button events.
+        :return: If the function succeeds, it returns True. Otherwise, False.
+        """
+        try:
+            LOG.info('Initialising Logitech Gkey SDK...')
+            self.KEY_DLL.LogiGkeyInit.restype = c_bool
+            self.KEY_DLL.LogiGkeyInit.argtypes = [POINTER(LogiGkeyCBContext)]
+
+            return self.KEY_DLL.LogiGkeyInit(self.gkey_context_ptr)
+        except AttributeError:
+            return False
+
+    def logi_gkey_shutdown(self) -> None:
+        """Unload the corresponding DLL and frees up any allocated resources."""
+        try:
+            self.KEY_DLL.LogiGkeyShutdown()
+        except AttributeError:
+            pass
+
+    def logi_gkey_is_keyboard_gkey_pressed(self, g_key: int, mode: int) -> bool:
+        """
+        Indicate whether a keyboard G-key is currently being pressed.
+
+        :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
+        :param mode: number of the mode currently selected (1, 2 or 3)
+        :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise.
+        """
+        try:
+            return self.KEY_DLL.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)
+        except AttributeError:
+            return False
+
+    def logi_gkey_is_keyboard_gkey_string(self, g_key: int, mode: int) -> str:
+        """
+        Return a G-key-specific friendly string.
+
+        :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
+        :param mode: number of the mode currently selected (1, 2 or 3)
+        :return: Friendly string for specified G-key and Mode number. For example 'G5/M1'.
+        """
+        try:
+            return self.KEY_DLL.LogiGkeyGetKeyboardGkeyString(g_key, mode)
+        except AttributeError:
+            return ''

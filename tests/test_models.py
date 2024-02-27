@@ -1,5 +1,7 @@
 from pytest import mark, raises
 
+from dcspy.models import PhysicalVariant
+
 AAP_PAGE = {
     'category': 'AAP',
     'control_type': 'selector',
@@ -83,6 +85,37 @@ TACAN_1 = {
         'type': 'integer'
     }],
     'physical_variant': 'infinite_rotary'}
+UFC_1 = {
+    'api_variant': 'momentary_last_position',
+    'category': 'UFC',
+    'control_type': 'selector',
+    'description': '1',
+    'identifier': 'UFC_1',
+    'inputs': [{
+        'description': 'switch to previous or next state',
+        'interface': 'fixed_step'
+    }, {
+        'description': 'set position',
+        'interface': 'set_state',
+        'max_value': 1
+    }, {
+        'argument': 'TOGGLE',
+        'description': 'Toggle switch state',
+        'interface': 'action'
+    }],
+    'momentary_positions': 'none',
+    'outputs': [{
+        'address': 4328,
+        'address_mask_identifier': 'A_10C_UFC_1_AM',
+        'address_mask_shift_identifier': 'A_10C_UFC_1',
+        'description': 'selector position',
+        'mask': 32768,
+        'max_value': 1,
+        'shift_by': 15,
+        'suffix': '',
+        'type': 'integer'
+    }],
+    'physical_variant': 'push_button'}
 UFC_COMM1_CHANNEL_SELECT = {
     'category': 'Up Front Controller (UFC)',
     'control_type': 'fixed_step_dial',
@@ -250,17 +283,17 @@ CMSP1 = {
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
-
 @mark.parametrize('control, results', [
-    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False]),
-    (PLT_WIPER_OFF, [2, True, True, False, False]),
-    (AAP_PAGE, [2, True, True, False, False]),
-    (AAP_CDUPWR, [3, True, True, False, True]),
-    (TACAN_1, [2, True, False, False, True]),
-    (AAP_STEER, [1, False, True, False, False]),
-    (CLOCK_ADJUST_PULL, [1, False, False, False, True]),
-    (ADI_PITCH_TRIM, [2, False, True, True, False]),
-    (ARC210_CHN_KNB, [1, False, False, True, False]),
+    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False, False, PhysicalVariant.EMPTY]),
+    (PLT_WIPER_OFF, [2, True, True, False, False, False, PhysicalVariant.LIMITED_ROTARY]),
+    (AAP_PAGE, [2, True, True, False, False, False, PhysicalVariant.LIMITED_ROTARY]),
+    (AAP_CDUPWR, [3, True, True, False, True, True, PhysicalVariant.TOGGLE_SWITCH]),
+    (TACAN_1, [2, True, False, False, True, False, PhysicalVariant.INFINITE_ROTARY]),
+    (AAP_STEER, [1, False, True, False, False, False, PhysicalVariant.EMPTY]),
+    (CLOCK_ADJUST_PULL, [1, False, False, False, True, False, PhysicalVariant.LIMITED_ROTARY]),
+    (ADI_PITCH_TRIM, [2, False, True, True, False, False, PhysicalVariant.EMPTY]),
+    (ARC210_CHN_KNB, [1, False, False, True, False, False, PhysicalVariant.EMPTY]),
+    (UFC_1, [3, True, True, False, True, True, PhysicalVariant.PUSH_BUTTON]),
 ], ids=[
     'UFC_COMM1_CHANNEL_SELECT',
     'PLT_WIPER_OFF',
@@ -270,7 +303,8 @@ CMSP1 = {
     'AAP_STEER',
     'CLOCK_ADJUST_PULL',
     'ADI_PITCH_TRIM',
-    'ARC210_CHN_KNB'])
+    'ARC210_CHN_KNB',
+    'UFC_1'])
 def test_control_input_properties(control, results):
     from dcspy.models import Control
 
@@ -280,9 +314,12 @@ def test_control_input_properties(control, results):
     assert ctrl.input.has_set_state is results[2]
     assert ctrl.input.has_variable_step is results[3]
     assert ctrl.input.has_action is results[4]
+    assert ctrl.input.is_push_button is results[5]
+    assert ctrl.physical_variant is results[6]
 
 
 @mark.parametrize('control, max_value, step', [
+    (UFC_1, 1, 1),
     (UFC_COMM1_CHANNEL_SELECT, 1, 1),
     (PLT_WIPER_OFF, 0, 1),
     (AAP_PAGE, 3, 1),
@@ -292,18 +329,19 @@ def test_control_input_properties(control, results):
     (CLOCK_ADJUST_PULL, 1, 1),
     (ADI_PITCH_TRIM, 65535, 3200),
     (ARC210_CHN_KNB, 65535, 3200),
-], ids=['UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
-def test_control_key_data_from_dicts(control, max_value, step):
+], ids=['UFC_1', 'UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
+def test_control_key_data_from_control(control, max_value, step):
     from dcspy.models import Control, ControlKeyData
 
     ctrl = Control.model_validate(control)
-    ctrl_key = ControlKeyData.from_dicts(name=ctrl.identifier, description=ctrl.description, list_of_dicts=ctrl.inputs)
+    ctrl_key = ControlKeyData.from_control(ctrl=ctrl)
     assert ctrl_key.max_value == max_value
     assert ctrl_key.suggested_step == step
     assert len(ctrl_key.list_dict) == len(ctrl.inputs)
     assert f'suggested_step={ctrl_key.suggested_step}' in repr(ctrl_key)
     assert f'KeyControl({ctrl_key.name}' in repr(ctrl_key)
     assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
+    assert f'{ctrl_key.physical_variant}' in repr(ctrl_key)
 
 
 @mark.parametrize('control, result', [
@@ -330,7 +368,6 @@ def test_control_no_output():
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
-
 def test_gkey_from_yaml_success():
     from dcspy.models import Gkey
 
@@ -376,7 +413,7 @@ def test_get_key_instance(key_name, klass):
     assert get_key_instance(key_name).__class__.__name__ == klass
 
 
-@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '',])
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', ''])
 def test_get_key_instance_error(key_name):
     from dcspy.models import get_key_instance
 
@@ -384,8 +421,24 @@ def test_get_key_instance_error(key_name):
         get_key_instance(key_name)
 
 
-# <=><=><=><=><=> CycleButton <=><=><=><=><=>
+@mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
+def test_get_key_bool_test(key, mode, result):
+    from dcspy.models import Gkey
 
+    if Gkey(key=key, mode=mode):
+        assert result
+    else:
+        assert not result
+
+
+def test_get_key_as_dict_key():
+    from dcspy.models import Gkey
+
+    g1 = Gkey(key=2, mode=1)
+    assert len({g1: g1.name}) == 1
+
+
+# <=><=><=><=><=> CycleButton <=><=><=><=><=>
 def test_cycle_button_default_iter():
     from dcspy.models import CycleButton
 
@@ -425,8 +478,17 @@ def test_cycle_button_custom_constructor(name, req, step, max_val):
         next(cb.iter)
 
 
-# <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
+@mark.parametrize('name, req, step, max_val, result', [
+    ('IFF_MASTER_KNB', 'CYCLE', 1, 4, True),
+    ('', 'CYCLE', 0, 0, False),
+], ids=['IFF_MASTER_KNB CYCLE 1', 'EMPTY CYCLE 0 0'])
+def test_cycle_button_bool_test(name, req, step, max_val, result):
+    from dcspy.models import CycleButton
 
+    assert bool(CycleButton.from_request(f'{name} {req} {step} {max_val}')) is result
+
+
+# <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
 def test_get_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
@@ -434,6 +496,14 @@ def test_get_ctrl(test_dcs_bios):
     c = json_data.get_ctrl(ctrl_name='TACAN_MODE')
     assert c.output.max_value == 4
     assert c.input.one_input is False
+
+
+def test_get_empty_ctrl(test_dcs_bios):
+    from dcspy.utils import get_full_bios_for_plane
+
+    json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
+    c = json_data.get_ctrl(ctrl_name='WRONG_CTRL')
+    assert c is None
 
 
 def test_get_inputs_for_plane(test_dcs_bios):
@@ -446,7 +516,6 @@ def test_get_inputs_for_plane(test_dcs_bios):
 
 
 # <=><=><=><=><=> SystemData <=><=><=><=><=>
-
 def test_get_sha_of_system_data():
     from dcspy.models import SystemData
 
@@ -456,7 +525,6 @@ def test_get_sha_of_system_data():
 
 
 # <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
-
 @mark.parametrize('control, rb_iface, custom_value, req', [
     (AAP_PAGE, 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
     (AAP_PAGE, 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
@@ -523,7 +591,6 @@ def test_plane_input_request_empty():
 
 
 # <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>
-
 @mark.parametrize('current, max_val, step, result', [
     (2, 4, 1, [3, 4, 3, 2, 1, 0, 1, 2, 3, 4]),
     (0, 4, 1, [1, 2, 3, 4, 3, 2, 1, 0, 1, 2]),
@@ -552,3 +619,57 @@ def test_zigzag_iterator_direction():
     assert next(zz) == 7
     assert next(zz) == 5
     assert zz.direction == Direction.BACKWARD
+
+
+# <=><=><=><=><=> RequestModel <=><=><=><=><=>
+@mark.parametrize('str_req, key, key_down, result', [
+    ('COM1 CYCLE 1 3', 'G1_M1', 1, [True, False, False, [b'COM1 3\n']]),
+    ('COM1 CYCLE 1 3', 'G1_M1', 0, [True, False, False, [b'COM1 3\n']]),
+    ('COM1 CYCLE 1 3', 'ONE', None, [True, False, False, [b'COM1 3\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', 1, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', 0, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'TWO', None, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'G3_M3', 1, [False, False, True, [b'RADIO_1 1\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'G3_M3', 0, [False, False, True, [b'RADIO_1 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'LEFT', None, [False, False, True, [b'RADIO_1 1\n', b'RADIO_1 0\n']]),
+    ('MASTER_ARM 2', 'G1_M2', 1, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('MASTER_ARM 2', 'G1_M2', 0, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('MASTER_ARM 2', 'RIGHT', None, [False, False, False, [b'MASTER_ARM 2\n']]),
+], ids=[
+    'GKey CYCLE down',
+    'GKey CYCLE up',
+    'Lcd CYCLE',
+    'GKey CUSTOM down',
+    'GKey CUSTOM up',
+    'Lcd CUSTOM',
+    'GKey PUSH_BUTTON down',
+    'GKey PUSH_BUTTON up',
+    'Lcd PUSH_BUTTON',
+    'GKey REGULAR down',
+    'GKey REGULAR up',
+    'Lcd REGULAR',
+])
+def test_request_model_properties(str_req, key, key_down, result):
+    from dcspy.models import RequestModel, get_key_instance
+
+    def get_bios_fn(val: str) -> int:
+        return 2
+
+    req = RequestModel.from_request(request=str_req, get_bios_fn=get_bios_fn, key=get_key_instance(key))
+    assert req.is_cycle is result[0]
+    assert req.is_custom is result[1]
+    assert req.is_push_button is result[2]
+    assert req.bytes_requests(key_down=key_down) == result[3]
+    assert str(req) == f'{req.ctrl_name}: {str_req}'
+
+
+@mark.parametrize('key, key_down', [
+    ('ONE', None),
+    ('G1_M1', 1),
+    ('G1_M1', 0),
+])
+def test_empty_request_model_(key, key_down):
+    from dcspy.models import RequestModel, get_key_instance
+
+    empty_req = RequestModel.empty(key=get_key_instance(key))
+    assert empty_req.bytes_requests(key_down=key_down) == [b'\n']

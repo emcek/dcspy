@@ -27,7 +27,8 @@ from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, Q
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, SystemData)
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, RequestType,
+                          SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
@@ -161,6 +162,7 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.addButton(self.rb_variable_step_plus)
         self.bg_rb_input_iface.addButton(self.rb_variable_step_minus)
         self.bg_rb_input_iface.addButton(self.rb_custom)
+        self.bg_rb_input_iface.addButton(self.rb_push_button)
         self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
@@ -562,6 +564,7 @@ class DcsPyQtGui(QMainWindow):
         self._handle_variable_step_and_set_state(ctrl_key)
         self._handle_fixed_step(ctrl_key)
         self._handle_action(ctrl_key)
+        self._handle_push_button(ctrl_key)
         self.rb_custom.setEnabled(True)
 
     def _disable_all_widgets(self) -> None:
@@ -600,6 +603,11 @@ class DcsPyQtGui(QMainWindow):
             self.rb_action.setEnabled(True)
             self.rb_action.setChecked(True)
 
+    def _handle_push_button(self, ctrl_key: ControlKeyData) -> None:
+        """Handle the control key for Button action."""
+        if ctrl_key.is_push_button:
+            self.rb_push_button.setEnabled(True)
+
     def _checked_iface_rb_for_identifier(self, key_name: str) -> None:
         """
         Enable input interfaces for current control input identifier.
@@ -610,7 +618,7 @@ class DcsPyQtGui(QMainWindow):
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             self.le_custom.setText('')
             if widget_iface == 'rb_custom':
-                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split('CUSTOM ')[1])
+                self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split(f'{RequestType.CUSTOM.value} ')[1])
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
@@ -1449,6 +1457,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
         self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
         self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
+        self.rb_push_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_push_button')
         self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
 
         self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')

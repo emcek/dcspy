@@ -32,12 +32,12 @@ keywords = ['logitech', 'logitech sdk', 'logitech keyboards', 'logitech gaming',
 dynamic = ['version']
 dependencies = [
     'cffi==1.16.0',
-    'GitPython==3.1.41',
+    'GitPython==3.1.42',
     'packaging==23.2',
     'Pillow==10.2.0',
     'psutil==5.9.8',
-    'pydantic==2.6.1',
-    'PySide6==6.6.1',
+    'pydantic==2.6.3',
+    'PySide6==6.6.2',
     'PyYAML==6.0.1',
     'requests==2.31.0',
 ]
@@ -74,6 +74,14 @@ test = [
     'types-pyinstaller',
     'types-PyYAML',
     'types-requests',
+]
+dev = [
+    'build',
+    'detect-test-pollution',
+    'isort',
+    'pipdeptree',
+    'pre-commit',
+    'pyinstaller',
 ]
 
 [tool.setuptools.dynamic]
@@ -119,14 +127,14 @@ exclude = ['tests/test_*', 'dcspy/qtgui_rc.py']
 
 [tool.ruff]
 line-length = 160
-select = ['E', 'F', 'C90', 'D', 'RUF']
-ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
+lint.select = ['E', 'F', 'C90', 'D', 'RUF']
+lint.ignore = ['D100', 'D101','D104', 'D105', 'D203', 'D204', 'D212', 'RUF001', 'RUF010']
 extend-exclude = [
     "qtgui_rc.py",
     "tests/",
 ]
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 6
 
 [tool.mypy]
