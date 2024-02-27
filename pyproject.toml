@@ -75,6 +75,14 @@ test = [
     'types-PyYAML',
     'types-requests',
 ]
+dev = [
+    'build',
+    'detect-test-pollution',
+    'isort',
+    'pipdeptree',
+    'pre-commit',
+    'pyinstaller',
+]
 
 [tool.setuptools.dynamic]
 version = {attr = 'dcspy.run.__version__'}
