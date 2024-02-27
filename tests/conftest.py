@@ -5,6 +5,13 @@ from pytest import fixture
 
 from dcspy import aircraft, logitech, models
 from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
+from dcspy.utils import KeyRequest
+
+
+@fixture()
+def sock():
+    """Socket mock instance."""
+    return MagicMock()
 
 
 def generate_plane_fixtures(plane, lcd_type_with_fonts):
@@ -31,18 +38,20 @@ def generate_keyboard_fixtures(keyboard, lcd_font_setting):
     :param lcd_font_setting: FontSetting object
     """
     @fixture()
-    def _fixture():
+    def _fixture(sock):
         """Fixture."""
         from dcspy.dcsbios import ProtocolParser
-        from dcspy.sdk import key_sdk, lcd_sdk
+        from dcspy.sdk import lcd_sdk
+        from dcspy.sdk.key_sdk import GkeySdkManager
 
         with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
-                patch.object(key_sdk, 'logi_gkey_init', return_value=True):
-            return keyboard(parser=ProtocolParser(), fonts=lcd_font_setting)
+                patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
+            return keyboard(parser=ProtocolParser(), sock=sock, fonts=lcd_font_setting)
     return _fixture
 
 
-for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT',
+                    'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
         airplane = getattr(aircraft, plane_model)
         lcd_type = getattr(models, lcd)
@@ -134,82 +143,93 @@ def lcd_font_color(protocol_parser):
 
 
 @fixture()
-def keyboard_base(protocol_parser):
+def keyboard_base(protocol_parser, sock):
     """
     Return instance of KeyboardManager.
 
     :param protocol_parser: instance of ProtocolParser
+    :param sock: net socket object
     :return: KeyboardManager
     """
-    from dcspy.sdk import key_sdk, lcd_sdk
+    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.key_sdk import GkeySdkManager
+
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
-            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
-        return logitech.KeyboardManager(protocol_parser)
+            patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
+        return logitech.KeyboardManager(protocol_parser, sock=sock)
 
 
 @fixture()
-def keyboard_mono(protocol_parser, lcd_font_mono):
+def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     """
     Return instance of Keyboard with LcdMono.
 
     :param protocol_parser: instance of ProtocolParser
-    :param lcd_font_mono font configuration for LCD
+    :param sock: net socket object
+    :param lcd_font_mono: font configuration for LCD
+    :param resources: Path to tests/resources directory.
     :return: KeyboardManager
     """
+    from dcspy.aircraft import BasicAircraft
     from dcspy.models import Gkey, LcdButton, LcdMono
-    from dcspy.sdk import key_sdk, lcd_sdk
+    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.key_sdk import GkeySdkManager
 
     class Mono(logitech.KeyboardManager):
-        def __init__(self, parser, **kwargs) -> None:
+        def __init__(self, parser, socket, **kwargs) -> None:
             LcdMono.set_fonts(kwargs['fonts'])
-            super().__init__(parser, lcd_type=LcdMono)
+            super().__init__(parser, socket, lcd_type=LcdMono)
             self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
             self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 10
+            plane = BasicAircraft(lcd_type=self.lcd)
+            plane.key_req = KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
+            self.plane = plane
 
         def _setup_plane_callback(self) -> None:
             print('empty callback setup')
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
-            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
-        return Mono(parser=protocol_parser, fonts=lcd_font_mono)
+            patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
+        return Mono(parser=protocol_parser, socket=sock, fonts=lcd_font_mono)
 
 
 @fixture()
-def keyboard_color(protocol_parser, lcd_font_color):
+def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     """
     Return instance of Keyboard with LcdColor.
 
     :param protocol_parser: instance of ProtocolParser
-    :param lcd_font_color font configuration for LCD
+    :param sock: net socket object
+    :param lcd_font_color: font configuration for LCD
+    :param resources: Path to tests/resources directory.
     :return: KeyboardManager
     """
+    from dcspy.aircraft import BasicAircraft
     from dcspy.models import Gkey, LcdButton, LcdColor
-    from dcspy.sdk import key_sdk, lcd_sdk
+    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.key_sdk import GkeySdkManager
 
     class Color(logitech.KeyboardManager):
-        def __init__(self, parser, **kwargs) -> None:
+        def __init__(self, parser, socket, **kwargs) -> None:
             LcdColor.set_fonts(kwargs['fonts'])
-            super().__init__(parser, lcd_type=LcdColor)
+            super().__init__(parser, socket, lcd_type=LcdColor)
             self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
             self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 40
+            plane = BasicAircraft(lcd_type=self.lcd)
+            plane.key_req = KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
+            self.plane = plane
 
         def _setup_plane_callback(self) -> None:
             print('empty callback setup')
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
-            patch.object(key_sdk, 'logi_gkey_init', return_value=True):
-        return Color(parser=protocol_parser, fonts=lcd_font_color)
+            patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
+        return Color(parser=protocol_parser, socket=sock, fonts=lcd_font_color)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
-@fixture()
-def sock():
-    """Socket mock instance."""
-    return MagicMock()
-
-
 @fixture()
 def default_config():
     """Get default configuration dict."""

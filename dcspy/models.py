@@ -2,7 +2,7 @@ from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
 
 from packaging import version
 from PIL import ImageFont
@@ -239,10 +239,23 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
+class PhysicalVariant(Enum):
+    """Physical variants of BIOS selectors."""
+
+    PUSH_BUTTON = 'push_button'
+    TOGGLE_SWITCH = 'toggle_switch'
+    THREE_POSITION_SWITCH = '3_position_switch'
+    INFINITE_ROTARY = 'infinite_rotary'
+    LIMITED_ROTARY = 'limited_rotary'
+    ROCKER_SWITCH = 'rocker_switch'
+    BUTTON_LIGHT = 'button_light'
+    EMPTY = None
+
+
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
-    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
+    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1, physical_variant: PhysicalVariant = PhysicalVariant.EMPTY) -> None:
         """
         Define type of input for cockpit controller.
 
@@ -250,15 +263,17 @@ class ControlKeyData:
         :param description: short description
         :param max_value: max value (zero based)
         :param suggested_step: 1 by default
+        :param physical_variant: physical variant of cockpit controller, EMPTY by default
         """
         self.name = name
         self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
         self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
+        self.physical_variant = physical_variant
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, {self.physical_variant})'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
@@ -266,23 +281,22 @@ class ControlKeyData:
         return True
 
     @classmethod
-    def from_dicts(cls, /, name, description, list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> 'ControlKeyData':
+    def from_control(cls, /, ctrl: 'Control') -> 'ControlKeyData':
         """
-        Construct object from list of dictionaries.
+        Construct object based on Control BIOS model.
 
-        :param name: name of the input
-        :param description: short description
-        :param list_of_dicts:
+        :param ctrl: Control BIOS model
         :return: ControlKeyData instance
         """
         try:
-            max_value = cls._get_max_value(list_of_dicts)
-            suggested_step: int = max(d.get('suggested_step', 1) for d in list_of_dicts)  # type: ignore
+            max_value = cls._get_max_value(ctrl.inputs)
+            suggested_step: int = max(d.get('suggested_step', 1) for d in ctrl.inputs)  # type: ignore
         except ValueError:
             max_value = 0
             suggested_step = 0
-        instance = cls(name=name, description=description, max_value=max_value, suggested_step=suggested_step)
-        instance.list_dict = list_of_dicts
+        instance = cls(name=ctrl.identifier, description=ctrl.description, max_value=max_value, suggested_step=suggested_step,
+                       physical_variant=ctrl.physical_variant)
+        instance.list_dict = ctrl.inputs
         return instance
 
     @staticmethod
@@ -371,6 +385,17 @@ class ControlKeyData:
         """
         return any(isinstance(d, SetString) for d in self.list_dict)
 
+    @property
+    def is_push_button(self) -> bool:
+        """
+        Check if the controller is a push button type.
+
+        :return: bool
+        """
+        push_btn = self.physical_variant is PhysicalVariant.PUSH_BUTTON
+        two_states = self.has_fixed_step and self.has_set_state and self.max_value == 1
+        return push_btn or two_states
+
 
 class Control(BaseModel):
     """Control section of BIOS model."""
@@ -382,7 +407,7 @@ class Control(BaseModel):
     inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
     momentary_positions: Optional[str] = None
     outputs: List[Union[OutputStr, OutputInt]]
-    physical_variant: Optional[str] = None
+    physical_variant: PhysicalVariant = PhysicalVariant.EMPTY
 
     @property
     def input(self) -> ControlKeyData:
@@ -391,7 +416,7 @@ class Control(BaseModel):
 
         :return: ControlKeyData
         """
-        return ControlKeyData.from_dicts(name=self.identifier, description=self.description, list_of_dicts=self.inputs)
+        return ControlKeyData.from_control(ctrl=self)
 
     @property
     def output(self) -> Union[BiosValueInt, BiosValueStr]:
@@ -468,6 +493,10 @@ class CycleButton(BaseModel):
         selector, _, step, max_value = req.split(' ')
         return CycleButton(ctrl_name=selector, step=int(step), max_value=int(max_value))
 
+    def __bool__(self) -> bool:
+        """Return True if any of the attributes: `step`, `max_value`, `ctrl_name` is truthy, False otherwise."""
+        return not all([not self.step, not self.max_value, not self.ctrl_name])
+
 
 class GuiPlaneInputRequest(BaseModel):
     """Input request for Control for GUI."""
@@ -490,7 +519,8 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
             'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
-            'rb_custom': f'{ctrl_key.name} CUSTOM {custom_value}',
+            'rb_custom': f'{ctrl_key.name} {RequestType.CUSTOM.value} {custom_value}',
+            'rb_push_button': f'{ctrl_key.name} {RequestType.PUSH_BUTTON.value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
             'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
         }
@@ -506,7 +536,8 @@ class GuiPlaneInputRequest(BaseModel):
         """
         input_reqs = {}
         req_keyword_rb_iface = {
-            'CUSTOM': 'rb_custom',
+            RequestType.CUSTOM.value: 'rb_custom',
+            RequestType.PUSH_BUTTON.value: 'rb_push_button',
             'TOGGLE': 'rb_action',
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
@@ -785,3 +816,107 @@ class ReleaseInfo(BaseModel):
     published: str
     release_type: str
     asset_file: str
+
+
+class RequestType(Enum):
+    """Internal request types."""
+    CYCLE = 'CYCLE'
+    CUSTOM = 'CUSTOM'
+    PUSH_BUTTON = 'PUSH_BUTTON'
+
+
+class RequestModel(BaseModel):
+    """Abstract request representation with common interface to send requests via UDE socket."""
+
+    ctrl_name: str
+    raw_request: str
+    get_bios_fn: Callable[[str], Union[str, int, float]]
+    cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
+    key: Union[LcdButton, Gkey]
+
+    @field_validator('ctrl_name')
+    def validate_interface(cls, value):
+        """
+        Validate.
+
+        :param value:
+        :return:
+        """
+        if not value or not all(ch.isupper() or ch == '_' or ch.isdigit() for ch in value):
+            raise ValueError("Invalid value for 'ctrl_name'. Only A-Z, 0-9 and _ are allowed.")
+        return value
+
+    @classmethod
+    def from_request(cls, key: Union[LcdButton, Gkey], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
+        """
+        Build object based on string request.
+
+        For cycle request `get_bios_fn` is used to update current value of BIOS selector.
+
+        :param key: LcdButton or Gkey
+        :param request: The raw request string.
+        :param get_bios_fn: A callable function that return current value for BIOS selector.
+        :return: An instance of the RequestModel class.
+        """
+        cycle_button = CycleButton(ctrl_name='', step=0, max_value=0)
+        if RequestType.CYCLE.value in request:
+            cycle_button = CycleButton.from_request(request)
+        ctrl_name = request.split(' ')[0]
+        return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
+
+    @classmethod
+    def empty(cls, key: Union[LcdButton, Gkey]) -> 'RequestModel':
+        """
+        Create an empty request model, for key which isn't assign.
+
+        :param key: LcdButton or Gkey
+        :return: The created request model.
+        """
+        return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
+
+    def _get_next_value_for_button(self) -> int:
+        """Get next int value (cycle fore and back) for ctrl_name BIOS selector."""
+        if not isinstance(self.cycle.iter, ZigZagIterator):
+            self.cycle.iter = ZigZagIterator(current=int(self.get_bios_fn(self.ctrl_name)),
+                                             step=self.cycle.step,
+                                             max_val=self.cycle.max_value)
+        return next(self.cycle.iter)
+
+    @property
+    def is_cycle(self) -> bool:
+        """Return True if cycle request, False otherwise."""
+        return bool(self.cycle)
+
+    @property
+    def is_custom(self) -> bool:
+        """Return True if custom request, False otherwise."""
+        return RequestType.CUSTOM.value in self.raw_request
+
+    @property
+    def is_push_button(self) -> bool:
+        """Return True if push button request, False otherwise."""
+        return RequestType.PUSH_BUTTON.value in self.raw_request
+
+    def bytes_requests(self, key_down: Optional[int] = None) -> List[bytes]:
+        """
+        Generate list of bytes that represent the individual requests based on the current state of the model.
+
+        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        :return: a list of bytes representing the individual requests
+        """
+        if self.is_cycle:
+            request = f'{self.ctrl_name} {self._get_next_value_for_button()}\n'
+        elif self.is_custom:
+            request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
+            request = request.replace('|', '\n|')
+            request = request.strip('|')
+        elif self.is_push_button and isinstance(self.key, LcdButton):
+            request = f'{self.ctrl_name} 1\n|{self.ctrl_name} 0\n'
+        elif self.is_push_button and isinstance(self.key, Gkey):
+            request = f'{self.ctrl_name} {key_down}\n'
+        else:
+            request = f'{self.raw_request}\n'
+        return [bytes(req, 'utf-8') for req in request.split('|')]
+
+    def __str__(self) -> str:
+        return f'{self.ctrl_name}: {self.raw_request}'

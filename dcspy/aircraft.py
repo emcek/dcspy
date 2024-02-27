@@ -4,16 +4,15 @@ from logging import getLogger
 from pathlib import Path
 from pprint import pformat
 from re import search
-from string import whitespace
 from tempfile import gettempdir
 from typing import Dict, List, Sequence, Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, CycleButton, Gkey, LcdButton, LcdInfo, LcdType, ZigZagIterator, get_key_instance
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, Gkey, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
 from dcspy.sdk import lcd_sdk
-from dcspy.utils import replace_symbols, substitute_symbols
+from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
 
@@ -57,35 +56,11 @@ class BasicAircraft:
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: Dict[str, Union[str, int]] = {}
-        self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
-        self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
         if self.bios_name:
-            self._load_plane_yaml()
+            self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
+            self.bios_data.update(self.key_req.cycle_button_ctrl_name)
 
-    def _load_plane_yaml(self) -> None:
-        """Load plane's YAML file with configuration and apply."""
-        bios_data, cycle_buttons, button_actions = {}, {}, {}
-        plane_yaml = load_yaml(full_path=default_yaml.parent / f'{self.bios_name}.yaml')
-        for key_str, request in plane_yaml.items():
-            if request:
-                key = get_key_instance(key_str)
-                if 'CYCLE' in request:
-                    cycle_button = CycleButton.from_request(request)
-                    cycle_buttons[key] = cycle_button
-                    bios_data[cycle_button.ctrl_name] = int()
-                elif 'CUSTOM' in request:
-                    request = request.split('CUSTOM ')[1]
-                    request = request.replace('|', '\n|')
-                    request = request.strip('|')
-                    button_actions[key] = request
-                else:
-                    button_actions[key] = f'{request}\n'
-
-        self.bios_data.update(bios_data)
-        self.cycle_buttons.update(cycle_buttons)  # type: ignore
-        self.button_actions.update(button_actions)  # type: ignore
-
-    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
         """
         Prepare aircraft specific DCS-BIOS request for button pressed.
 
@@ -97,10 +72,8 @@ class BasicAircraft:
         :return: ready to send DCS-BIOS request
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
-        if button in self.cycle_buttons:
-            self.button_actions[button] = self._get_cycle_request(button)
-        request = self.button_actions.get(button, '\n')
-        LOG.debug(f'Request: {request.replace(whitespace[2], " ")}')
+        request = self.key_req.get_request(button)
+        LOG.debug(f'Request: {request}')
         return request
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
@@ -111,7 +84,7 @@ class BasicAircraft:
         :param value:
         """
         self.bios_data[selector] = value
-        LOG.debug(f'{type(self).__name__} {selector} value: "{value}"')
+        LOG.debug(f'{type(self).__name__} {selector} value: "{value}" ({type(value).__name__})')
 
     def get_bios(self, selector: str, default: Union[str, int, float] = '') -> Union[str, int, float]:
         """
@@ -124,31 +97,6 @@ class BasicAircraft:
             return type(default)(self.bios_data[selector])
         except (KeyError, ValueError):
             return default
-
-    def _get_next_value_for_button(self, button: Union[LcdButton, Gkey]) -> int:
-        """
-        Get next int value (cycle fore and back) for button name.
-
-        :param button: LcdButton or Gkey
-        """
-        if not isinstance(self.cycle_buttons[button].iter, ZigZagIterator):
-            bios = self.cycle_buttons[button].ctrl_name
-            self.cycle_buttons[button].iter = ZigZagIterator(current=int(self.get_bios(bios)),
-                                                             step=self.cycle_buttons[button].step,
-                                                             max_val=self.cycle_buttons[button].max_value)
-            LOG.debug(f'{type(self).__name__} {bios} ZigZag: {self.cycle_buttons[button].iter}')
-        return next(self.cycle_buttons[button].iter)
-
-    def _get_cycle_request(self, button: Union[LcdButton, Gkey]) -> str:
-        """
-        Get request for cycle button.
-
-        :param button: LcdButton or Gkey
-        :return: ready to send DCS-BIOS request
-        """
-        button_bios_name = self.cycle_buttons[button].ctrl_name
-        settings = self._get_next_value_for_button(button)
-        return f'{button_bios_name} {settings}\n'
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
@@ -792,7 +740,7 @@ class AH64DBLKII(AdvancedAircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: Union[LcdButton, Gkey]) -> str:
+    def button_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
@@ -803,9 +751,9 @@ class AH64DBLKII(AdvancedAircraft):
         :param button: LcdButton Enum
         :return: ready to send DCS-BIOS request
         """
-        wca_or_idm = 'PLT_EUFD_WCA 0\n|PLT_EUFD_WCA 1\n'
+        wca_or_idm = f'PLT_EUFD_WCA {RequestType.CUSTOM.value} PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = 'PLT_EUFD_IDM 0\n|PLT_EUFD_IDM 1\n'
+            wca_or_idm = f'PLT_EUFD_IDM {RequestType.CUSTOM.value} PLT_EUFD_IDM 0|PLT_EUFD_IDM 1|'
 
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
@@ -815,8 +763,8 @@ class AH64DBLKII(AdvancedAircraft):
         if button in (LcdButton.ONE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
 
-        self.button_actions[LcdButton.ONE] = wca_or_idm
-        self.button_actions[LcdButton.LEFT] = wca_or_idm
+        self.key_req.set_request(LcdButton.ONE, wca_or_idm)
+        self.key_req.set_request(LcdButton.LEFT, wca_or_idm)
         return super().button_request(button)
 
 

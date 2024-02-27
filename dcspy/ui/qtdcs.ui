@@ -833,7 +833,7 @@
    <property name="minimumSize">
     <size>
      <width>265</width>
-     <height>420</height>
+     <height>450</height>
     </size>
    </property>
    <property name="maximumSize">
@@ -846,6 +846,9 @@
     <iconset>
      <normalon>:/icons/img/input-gaming.svg</normalon>
     </iconset>
+   </property>
+   <property name="toolTip">
+    <string>Use for push button or controlers with only 2 states.</string>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -975,6 +978,20 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           <property name="icon">
            <iconset resource="../qtgui.qrc">
             <normaloff>:/icons/img/list-remove.svg</normaloff>:/icons/img/list-remove.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="rb_push_button">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Push button</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/KittehPlayer.svg</normaloff>:/icons/img/KittehPlayer.svg</iconset>
           </property>
          </widget>
         </item>

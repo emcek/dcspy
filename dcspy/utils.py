@@ -14,14 +14,15 @@ from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, ClassVar, Dict, Generator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, ClassVar, Dict, Generator, List, Optional, Sequence, Tuple, Union
 
 import yaml
 from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton, ReleaseInfo, RequestModel,
+                          get_key_instance)
 
 try:
     import git
@@ -724,3 +725,44 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
     for original, replacement in symbol_replacement:
         value = value.replace(original, replacement)
     return value
+
+
+class KeyRequest:
+    """Map LCD button ot G-Key with abstract request model."""
+
+    def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], Union[str, int, float]]) -> None:
+        """
+        Load YAML with BIOS request for G-Keys and LCD buttons.
+
+        :param yaml_path: Path to the airplane YAML file.
+        :param get_bios_fn: Function used to obtain current BIOS value.
+        """
+        plane_yaml = load_yaml(full_path=yaml_path)
+        self.buttons: Dict[Union[LcdButton, Gkey], RequestModel] = {}
+        for key_str, request in plane_yaml.items():
+            if request:
+                key = get_key_instance(key_str)
+                self.buttons[key] = RequestModel.from_request(key=key, request=request, get_bios_fn=get_bios_fn)
+
+    @property
+    def cycle_button_ctrl_name(self) -> Dict[str, int]:
+        """Return a dictionary with BIOS selectors to track chnages of values for Cyclce button to get current values."""
+        return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
+
+    def get_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
+        """
+        Get abstract representation for request ti be sent gor requested button.
+
+        :param button: LcdButton or Gkey
+        :return: RequestModel object
+        """
+        return self.buttons.get(button, RequestModel.empty(key=button))
+
+    def set_request(self, button: Union[LcdButton, Gkey], req: str) -> None:
+        """
+        Update the internal string request for the specified button.
+
+        :param button: LcdButton or Gkey.
+        :param req: The raw request to set.
+        """
+        self.buttons[button].raw_request = req
