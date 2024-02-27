@@ -2,6 +2,7 @@
 * Add new Push button option to support push button controls with only two states (@sleighzy, @emcek)
 * Internal:
   * G-Key SDK callback support (@sleighzy)
+  * Update Qt6/PySide6 to 6.6.2
 
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS
