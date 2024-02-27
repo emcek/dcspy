@@ -55,20 +55,6 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
 
 
-def _api_ver_3_2_0(cfg: DcspyConfigYaml) -> None:
-    """
-    Migrate to version 3.2.0.
-
-    :param cfg: Configuration dictionary
-    """
-    user_appdata = get_config_yaml_location()
-    makedirs(name=user_appdata, exist_ok=True)
-    pattern = re.compile(r'(\S+):\s*(\S+)\sCUSTOM\s+(\S+)\s+0\s*\|\s*(\S+)\s*1\s*\|')
-    for filename in ('AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml', 'F-16C_50.yaml', 'FA-18C_hornet.yaml',
-                     'Ka-50.yaml', 'Ka-50_3.yaml', 'Mi-8MT.yaml', 'Mi-24P.yaml', 'A-10C.yaml', 'A-10C_2.yaml'):
-        _replace_line_in_file(filename=filename, dir_path=user_appdata, pattern=pattern, new_text=r'\1: \2 PUSH_BUTTON')
-
-
 def _api_ver_3_1_3(cfg: DcspyConfigYaml) -> None:
     """
     Migrate to version 3.1.3.
