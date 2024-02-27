@@ -21,8 +21,8 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton, ReleaseInfo, RequestModel,
-                          get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
+                          ReleaseInfo, RequestModel, get_key_instance)
 
 try:
     import git
