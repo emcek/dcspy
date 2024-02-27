@@ -175,6 +175,14 @@ def _copy_file(filename: str, to_path: Path, force=False) -> None:
 
 
 def _replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
+    """
+    Replace a line in a file based on a given pattern.
+
+    :param filename: The name of the file to replace the line in.
+    :param dir_path: The directory path where the file is located.
+    :param pattern: The regular expression pattern to search for in the file.
+    :param new_text: The text to replace the line matching the pattern with.
+    """
     yaml_filename = dir_path / filename
     try:
         with open(yaml_filename) as yaml_file:
