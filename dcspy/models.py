@@ -912,10 +912,8 @@ class RequestModel(BaseModel):
             request = request.strip('|')
         elif self.is_push_button and isinstance(self.key, LcdButton):
             request = f'{self.ctrl_name} 1\n|{self.ctrl_name} 0\n'
-        elif self.is_push_button and isinstance(self.key, Gkey) and key_down:
-            request = f'{self.ctrl_name} 1\n'
-        elif self.is_push_button and isinstance(self.key, Gkey) and not key_down:
-            request = f'{self.ctrl_name} 0\n'
+        elif self.is_push_button and isinstance(self.key, Gkey):
+            request = f'{self.ctrl_name} {key_down}\n'
         else:
             request = f'{self.raw_request}\n'
         return [bytes(req, 'utf-8') for req in request.split('|')]
