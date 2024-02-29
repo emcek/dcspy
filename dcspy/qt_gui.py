@@ -19,11 +19,11 @@ from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
 from PySide6.QtCore import __version__ as qt6_ver
-from PySide6.QtGui import QAction, QActionGroup, QIcon, QPixmap, QShowEvent, QStandardItem
+from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import (QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QMainWindow, QMenu,
-                               QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget,
-                               QToolBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QListView,
+                               QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon,
+                               QTableWidget, QTabWidget, QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlDepiction, ControlKeyData,
@@ -451,7 +451,45 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Get input list: {plane_name} {plane_aliases}, old: {self.plane_aliases}')
         self.ctrl_list = get_list_of_ctrls(inputs=self.ctrl_input)
         self.ctrl_depiction = get_depiction_of_ctrls(inputs=self.ctrl_input)
+        self._update_combo_search()
         return False
+
+    def _update_combo_search(self) -> None:
+        """Update the combo search widget with new control depiction data."""
+        max_name, max_desc, max_variant = (max(len(i[1]) for i in depiction_val) for depiction_val in zip(*self.ctrl_depiction.values()))
+        ctrl_desc_list = [f'{i.name:<{max_name}} | {i.description:<{max_desc}} | {i.physical_variant:<{max_variant}}' for i in self.ctrl_depiction.values()]
+        completer = QCompleter(ctrl_desc_list)
+        completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
+        completer.setFilterMode(Qt.MatchFlag.MatchContains)
+        completer.setMaxVisibleItems(self._completer_items)
+        completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
+        completer.popup().setFont(QFont('Courier', 9))
+        self.combo_search.clear()
+        view = QListView(self.combo_search)
+        self.combo_search.setView(view)
+        view.setTextElideMode(Qt.TextElideMode.ElideRight)
+        view.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.combo_search.addItems(ctrl_desc_list)
+        self.combo_search.setCompleter(completer)
+        self.combo_search.textActivated.connect(self._copy_text_to_clipboard)
+        self.combo_search.clearEditText()
+
+    def _copy_text_to_clipboard(self, text: str) -> None:
+        """
+        Copy the specified text to the clipboard.
+
+        It select only first word before space and update status bar message.
+
+        :param text: The text to be copied to the clipboard.
+        """
+        clipboard = QApplication.clipboard()
+        try:
+            key_name = text.split(' ')[0]
+            clipboard.setText(key_name)
+            self.statusbar.showMessage(f'{key_name} copied to clipboard')
+        except IndexError:
+            LOG.debug(f'Can not split: {text=}.')
 
     def _rebuild_not_needed(self, plane_aliases, plane_name: str, exc: ValidationError) -> bool:
         """
@@ -1384,8 +1422,10 @@ class DcsPyQtGui(QMainWindow):
         self.toolbar: Union[object, QToolBar] = self.findChild(QToolBar, 'toolbar')
         self.tw_gkeys: Union[object, QTableWidget] = self.findChild(QTableWidget, 'tw_gkeys')
         self.sp_completer: Union[object, QSpinBox] = self.findChild(QSpinBox, 'sp_completer')
-        self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
         self.tw_main: Union[object, QTabWidget] = self.findChild(QTabWidget, 'tw_main')
+
+        self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
+        self.combo_search: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_search')
 
         self.dw_gkeys: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_gkeys')
         self.dw_keyboard: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_keyboard')
