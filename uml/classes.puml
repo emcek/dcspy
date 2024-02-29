@@ -244,7 +244,7 @@ package models {
         LIMITED_ROTARY = 'limited_rotary'
         ROCKER_SWITCH = 'rocker_switch'
         BUTTON_LIGHT = 'button_light'
-        EMPTY = None
+        EMPTY = ''
     }
     class RequestModel{
         + ctrl_name: str
@@ -258,6 +258,43 @@ package models {
         + is_push_button -> bool
         # _get_next_value_for_button(button: LcdButton) -> int
         + bytes_requests(Optional[int]) -> List[bytes]:
+    }
+    class ControlDepiction {
+        + name: str
+        + description: str
+        + physical_variant: PhysicalVariant
+    }
+    class ControlKeyData {
+        + name: str
+        + description: str
+        + max_value: int
+        + suggested_step: int
+        + list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
+        + physical_variant: PhysicalVariant
+        + from_control(Control) -> ControlKeyData
+        # _get_max_value(List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int
+        + depiction() -> ControlDepiction
+        + input_len() -> int
+        + one_input() -> bool
+        + has_fixed_step() -> bool
+        + has_variable_step() -> bool
+        + has_set_state() -> bool
+        + has_action() -> bool
+        + has_set_string() -> bool
+        + is_push_button() -> bool
+    }
+    class Control {
+        + api_variant: Optional[str]
+        + category: str
+        + control_type: str
+        + description: str
+        + identifier: str
+        + inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
+        + momentary_positions: Optional[str]
+        + outputs: List[Union[OutputStr, OutputInt]]
+        + physical_variant: PhysicalVariant = PhysicalVariant.EMPTY
+        + input() -> ControlKeyData
+        + output() -> Union[BiosValueInt, BiosValueStr]
     }
 
 BiosValueInt *-- IntBuffArgs
@@ -276,6 +313,9 @@ ZigZagIterator --* RequestModel
 KeyboardModel -* KeyboardManager
 RequestModel --* KeyRequest
 CycleButton -* RequestModel
+PhysicalVariant --* ControlDepiction
+PhysicalVariant --*  ControlKeyData
+PhysicalVariant --* Control
 }
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
