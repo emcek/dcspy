@@ -367,6 +367,19 @@ def test_control_no_output():
     assert ctrl.input.has_fixed_step
 
 
+# <=><=><=><=><=> PhysicalVariant <=><=><=><=><=>
+@mark.parametrize('variant, length, name', [
+    ('3_position_switch', 17, '3 position switch'),
+    ('push_button', 11, 'push button'),
+    ('', 0, ''),
+])
+def test_physical_variant_enum_methods(variant, length, name):
+    from dcspy.models import PhysicalVariant
+    pv = PhysicalVariant(variant)
+    assert len(pv) == length
+    assert str(pv) == name
+
+
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
 def test_gkey_from_yaml_success():
     from dcspy.models import Gkey

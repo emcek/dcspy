@@ -249,7 +249,20 @@ class PhysicalVariant(Enum):
     LIMITED_ROTARY = 'limited_rotary'
     ROCKER_SWITCH = 'rocker_switch'
     BUTTON_LIGHT = 'button_light'
-    EMPTY = None
+    EMPTY = ''
+
+    def __len__(self) -> int:
+        return len(self.value)
+
+    def __str__(self) -> str:
+        return self.value.replace('_', ' ')
+
+
+class ControlDepiction(BaseModel):
+    """Represent the depiction of a control."""
+    name: str
+    description: str
+    physical_variant: PhysicalVariant
 
 
 class ControlKeyData:
@@ -321,6 +334,15 @@ class ControlKeyData:
         if all([not _real_zero, not max_value]):
             max_value = 1
         return max_value
+
+    @property
+    def depiction(self) -> ControlDepiction:
+        """
+        Return the depiction of the control.
+
+        :return: ControlDepiction object representing the control's name, description and physical variant.
+        """
+        return ControlDepiction(name=self.name, description=self.description, physical_variant=self.physical_variant)
 
     @property
     def input_len(self) -> int:

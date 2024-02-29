@@ -319,6 +319,13 @@ def test_get_inputs_for_plane(test_dcs_bios):
     assert CTRL_LIST_SEPARATOR in list_of_ctrls[0], list_of_ctrls[0]
 
 
+def test_get_depiction_of_ctrls(test_dcs_bios):
+    from dcspy.models import ControlDepiction
+    bios = utils.get_inputs_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
+    ctrls_depiction = utils.get_depiction_of_ctrls(inputs=bios)
+    assert isinstance(ctrls_depiction['IFF_CODE'], ControlDepiction)
+
+
 def test_get_inputs_for_wrong_plane(test_dcs_bios):
     with pytest.raises(KeyError):
         _ = utils.get_inputs_for_plane(plane='Wrong', bios_dir=test_dcs_bios)
