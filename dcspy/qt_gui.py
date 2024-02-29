@@ -1515,8 +1515,8 @@ class AboutDialog(QDialog):
 
     def showEvent(self, event: QShowEvent):
         """Prepare text information about DCSpy application."""
-        super().showEvent(event)
         d = self.parent.fetch_system_data(silence=False)
+        super().showEvent(event)
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
