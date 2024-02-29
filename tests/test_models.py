@@ -368,7 +368,7 @@ def test_control_no_output():
 
 
 # <=><=><=><=><=> PhysicalVariant <=><=><=><=><=>
-@mark.parametrize("variant, length, name", [
+@mark.parametrize('variant, length, name', [
     ('3_position_switch', 17, '3 position switch'),
     ('push_button', 11, 'push button'),
     ('', 0, ''),
