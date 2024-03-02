@@ -239,18 +239,6 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
-class PhysicalVariant(Enum):
-    """Physical variants of BIOS selectors."""
-
-    PUSH_BUTTON = 'push_button'
-    TOGGLE_SWITCH = 'toggle_switch'
-    THREE_POSITION_SWITCH = '3_position_switch'
-    INFINITE_ROTARY = 'infinite_rotary'
-    LIMITED_ROTARY = 'limited_rotary'
-    ROCKER_SWITCH = 'rocker_switch'
-    BUTTON_LIGHT = 'button_light'
-    EMPTY = ''
-
     def __len__(self) -> int:
         return len(self.value)
 
@@ -262,13 +250,12 @@ class ControlDepiction(BaseModel):
     """Represent the depiction of a control."""
     name: str
     description: str
-    physical_variant: PhysicalVariant
 
 
 class ControlKeyData:
     """Describes input data for cockpit controller."""
 
-    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1, physical_variant: PhysicalVariant = PhysicalVariant.EMPTY) -> None:
+    def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
         """
         Define type of input for cockpit controller.
 
@@ -276,17 +263,15 @@ class ControlKeyData:
         :param description: short description
         :param max_value: max value (zero based)
         :param suggested_step: 1 by default
-        :param physical_variant: physical variant of cockpit controller, EMPTY by default
         """
         self.name = name
         self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
         self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
-        self.physical_variant = physical_variant
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}, {self.physical_variant})'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}'
 
     def __bool__(self) -> bool:
         if not all([self.max_value, self.suggested_step]):
@@ -307,8 +292,7 @@ class ControlKeyData:
         except ValueError:
             max_value = 0
             suggested_step = 0
-        instance = cls(name=ctrl.identifier, description=ctrl.description, max_value=max_value, suggested_step=suggested_step,
-                       physical_variant=ctrl.physical_variant)
+        instance = cls(name=ctrl.identifier, description=ctrl.description, max_value=max_value, suggested_step=suggested_step)
         instance.list_dict = ctrl.inputs
         return instance
 
@@ -342,7 +326,7 @@ class ControlKeyData:
 
         :return: ControlDepiction object representing the control's name, description and physical variant.
         """
-        return ControlDepiction(name=self.name, description=self.description, physical_variant=self.physical_variant)
+        return ControlDepiction(name=self.name, description=self.description)
 
     @property
     def input_len(self) -> int:
@@ -414,9 +398,7 @@ class ControlKeyData:
 
         :return: bool
         """
-        push_btn = self.physical_variant is PhysicalVariant.PUSH_BUTTON
-        two_states = self.has_fixed_step and self.has_set_state and self.max_value == 1
-        return push_btn or two_states
+        return self.has_fixed_step and self.has_set_state and self.max_value == 1
 
 
 class Control(BaseModel):
@@ -427,9 +409,7 @@ class Control(BaseModel):
     description: str
     identifier: str
     inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
-    momentary_positions: Optional[str] = None
     outputs: List[Union[OutputStr, OutputInt]]
-    physical_variant: PhysicalVariant = PhysicalVariant.EMPTY
 
     @property
     def input(self) -> ControlKeyData:
