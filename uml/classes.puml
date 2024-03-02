@@ -236,16 +236,6 @@ package models {
         + lcdkeys: Sequence[LcdButton]
         + lcd: str
     }
-    class PhysicalVariant <<(E,yellow)>> {
-        PUSH_BUTTON = 'push_button'
-        TOGGLE_SWITCH = 'toggle_switch'
-        THREE_POSITION_SWITCH = '3_position_switch'
-        INFINITE_ROTARY = 'infinite_rotary'
-        LIMITED_ROTARY = 'limited_rotary'
-        ROCKER_SWITCH = 'rocker_switch'
-        BUTTON_LIGHT = 'button_light'
-        EMPTY = ''
-    }
     class RequestModel{
         + ctrl_name: str
         + raw_request: str
@@ -262,7 +252,6 @@ package models {
     class ControlDepiction {
         + name: str
         + description: str
-        + physical_variant: PhysicalVariant
     }
     class ControlKeyData {
         + name: str
@@ -270,7 +259,6 @@ package models {
         + max_value: int
         + suggested_step: int
         + list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
-        + physical_variant: PhysicalVariant
         + from_control(Control) -> ControlKeyData
         # _get_max_value(List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int
         + depiction() -> ControlDepiction
@@ -290,9 +278,7 @@ package models {
         + description: str
         + identifier: str
         + inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
-        + momentary_positions: Optional[str]
         + outputs: List[Union[OutputStr, OutputInt]]
-        + physical_variant: PhysicalVariant = PhysicalVariant.EMPTY
         + input() -> ControlKeyData
         + output() -> Union[BiosValueInt, BiosValueStr]
     }
@@ -313,9 +299,6 @@ ZigZagIterator --* RequestModel
 KeyboardModel -* KeyboardManager
 RequestModel --* KeyRequest
 CycleButton -* RequestModel
-PhysicalVariant --* ControlDepiction
-PhysicalVariant --*  ControlKeyData
-PhysicalVariant --* Control
 }
 package sdk{
     class lcd_sdk <<(L,lightblue)>> {
