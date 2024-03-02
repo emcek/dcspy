@@ -129,6 +129,23 @@ def protocol_parser():
     return ProtocolParser()
 
 
+@fixture
+def get_ctrl_fro_plane(test_dcs_bios, request):
+    """
+    Get Control object from DCS-BIOS for plane.
+
+    :param test_dcs_bios: The directory containing the DCS-BIOS configuration files.
+    :param request: The request object containing parameters for the test.
+    """
+    from dcspy.utils import get_full_bios_for_plane
+
+    bios_plane = request.param[0]
+    ctrl_name = request.param[1]
+    plane_bios = get_full_bios_for_plane(plane=bios_plane, bios_dir=test_dcs_bios)
+    ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
+    return ctrl
+
+
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
 def lcd_font_mono():
