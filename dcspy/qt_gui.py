@@ -456,8 +456,8 @@ class DcsPyQtGui(QMainWindow):
 
     def _update_combo_search(self) -> None:
         """Update the combo search widget with new control depiction data."""
-        max_name, max_desc, max_variant = (max(len(i[1]) for i in depiction_val) for depiction_val in zip(*self.ctrl_depiction.values()))
-        ctrl_desc_list = [f'{i.name:<{max_name}} | {i.description:<{max_desc}} | {i.physical_variant:<{max_variant}}' for i in self.ctrl_depiction.values()]
+        max_name, max_desc = (max(len(i[1]) for i in depiction_val) for depiction_val in zip(*self.ctrl_depiction.values()))
+        ctrl_desc_list = [f'{i.name:<{max_name}} | {i.description:<{max_desc}}' for i in self.ctrl_depiction.values()]
         completer = QCompleter(ctrl_desc_list)
         completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
