@@ -239,13 +239,6 @@ class BiosValueStr(BaseModel):
     value: Union[int, str]
 
 
-    def __len__(self) -> int:
-        return len(self.value)
-
-    def __str__(self) -> str:
-        return self.value.replace('_', ' ')
-
-
 class ControlDepiction(BaseModel):
     """Represent the depiction of a control."""
     name: str
