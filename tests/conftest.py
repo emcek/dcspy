@@ -130,7 +130,7 @@ def protocol_parser():
 
 
 @fixture
-def get_ctrl_fro_plane(test_dcs_bios, request):
+def get_ctrl_for_plane(test_dcs_bios, request):
     """
     Get Control object from DCS-BIOS for plane.
 
