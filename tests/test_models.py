@@ -1,7 +1,5 @@
 from pytest import mark, raises
 
-from dcspy.models import PhysicalVariant
-
 AAP_PAGE = {
     'category': 'AAP',
     'control_type': 'selector',
@@ -15,7 +13,6 @@ AAP_PAGE = {
         'interface': 'set_state',
         'max_value': 3
     }],
-    'momentary_positions': 'none',
     'outputs': [{
         'address': 4346,
         'address_identifier': 'A_10C_AAP_PAGE',
@@ -27,7 +24,6 @@ AAP_PAGE = {
         'suffix': '',
         'type': 'integer'
     }],
-    'physical_variant': 'limited_rotary'
 }
 AAP_CDUPWR = {
     'category': 'AAP',
@@ -46,7 +42,6 @@ AAP_CDUPWR = {
         'description': 'Toggle switch state',
         'interface': 'action'
     }],
-    'momentary_positions': 'none',
     'outputs': [{
         'address': 4346,
         'address_identifier': 'A_10C_AAP_CDUPWR',
@@ -58,7 +53,7 @@ AAP_CDUPWR = {
         'suffix': '',
         'type': 'integer'
     }],
-    'physical_variant': 'toggle_switch'}
+}
 TACAN_1 = {
     'category': 'TACAN Panel',
     'control_type': 'discrete_dial',
@@ -72,7 +67,6 @@ TACAN_1 = {
         'description': 'Toggle TACAN Channel X/Y',
         'interface': 'action'
     }],
-    'momentary_positions': 'none',
     'outputs': [{
         'address': 4440,
         'address_identifier': 'A_10C_TACAN_1',
@@ -84,7 +78,7 @@ TACAN_1 = {
         'suffix': '',
         'type': 'integer'
     }],
-    'physical_variant': 'infinite_rotary'}
+}
 UFC_1 = {
     'api_variant': 'momentary_last_position',
     'category': 'UFC',
@@ -103,7 +97,6 @@ UFC_1 = {
         'description': 'Toggle switch state',
         'interface': 'action'
     }],
-    'momentary_positions': 'none',
     'outputs': [{
         'address': 4328,
         'address_mask_identifier': 'A_10C_UFC_1_AM',
@@ -114,8 +107,8 @@ UFC_1 = {
         'shift_by': 15,
         'suffix': '',
         'type': 'integer'
-    }],
-    'physical_variant': 'push_button'}
+    }]
+}
 UFC_COMM1_CHANNEL_SELECT = {
     'category': 'Up Front Controller (UFC)',
     'control_type': 'fixed_step_dial',
@@ -139,7 +132,6 @@ PLT_WIPER_OFF = {
         'interface': 'set_state',
         'max_value': 0
     }],
-    'momentary_positions': 'none',
     'outputs': [{
         'address': 26624,
         'address_identifier': 'Mi_24P_PLT_WIPER_OFF',
@@ -150,8 +142,7 @@ PLT_WIPER_OFF = {
         'shift_by': 16,
         'suffix': '',
         'type': 'integer'
-    }],
-    'physical_variant': 'limited_rotary'
+    }]
 }
 AAP_STEER = {
     'category': 'AAP',
@@ -185,7 +176,6 @@ CLOCK_ADJUST_PULL = {
         'description': 'toggle switch state',
         'interface': 'action'
     }],
-    'momentary_positions': 'none',
     'outputs': [{
         'address': 5308,
         'address_identifier': 'UH_1H_CLOCK_ADJUST_PULL',
@@ -197,7 +187,6 @@ CLOCK_ADJUST_PULL = {
         'suffix': '',
         'type': 'integer'
     }],
-    'physical_variant': 'limited_rotary'
 }
 ADI_PITCH_TRIM = {
     'category': 'ADI',
@@ -284,16 +273,16 @@ CMSP1 = {
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
 @mark.parametrize('control, results', [
-    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False, False, PhysicalVariant.EMPTY]),
-    (PLT_WIPER_OFF, [2, True, True, False, False, False, PhysicalVariant.LIMITED_ROTARY]),
-    (AAP_PAGE, [2, True, True, False, False, False, PhysicalVariant.LIMITED_ROTARY]),
-    (AAP_CDUPWR, [3, True, True, False, True, True, PhysicalVariant.TOGGLE_SWITCH]),
-    (TACAN_1, [2, True, False, False, True, False, PhysicalVariant.INFINITE_ROTARY]),
-    (AAP_STEER, [1, False, True, False, False, False, PhysicalVariant.EMPTY]),
-    (CLOCK_ADJUST_PULL, [1, False, False, False, True, False, PhysicalVariant.LIMITED_ROTARY]),
-    (ADI_PITCH_TRIM, [2, False, True, True, False, False, PhysicalVariant.EMPTY]),
-    (ARC210_CHN_KNB, [1, False, False, True, False, False, PhysicalVariant.EMPTY]),
-    (UFC_1, [3, True, True, False, True, True, PhysicalVariant.PUSH_BUTTON]),
+    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False, False]),
+    (PLT_WIPER_OFF, [2, True, True, False, False, False]),
+    (AAP_PAGE, [2, True, True, False, False, False]),
+    (AAP_CDUPWR, [3, True, True, False, True, True]),
+    (TACAN_1, [2, True, False, False, True, False]),
+    (AAP_STEER, [1, False, True, False, False, False]),
+    (CLOCK_ADJUST_PULL, [1, False, False, False, True, False]),
+    (ADI_PITCH_TRIM, [2, False, True, True, False, False]),
+    (ARC210_CHN_KNB, [1, False, False, True, False, False]),
+    (UFC_1, [3, True, True, False, True, True]),
 ], ids=[
     'UFC_COMM1_CHANNEL_SELECT',
     'PLT_WIPER_OFF',
@@ -315,7 +304,6 @@ def test_control_input_properties(control, results):
     assert ctrl.input.has_variable_step is results[3]
     assert ctrl.input.has_action is results[4]
     assert ctrl.input.is_push_button is results[5]
-    assert ctrl.physical_variant is results[6]
 
 
 @mark.parametrize('control, max_value, step', [
@@ -341,7 +329,6 @@ def test_control_key_data_from_control(control, max_value, step):
     assert f'suggested_step={ctrl_key.suggested_step}' in repr(ctrl_key)
     assert f'KeyControl({ctrl_key.name}' in repr(ctrl_key)
     assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
-    assert f'{ctrl_key.physical_variant}' in repr(ctrl_key)
 
 
 @mark.parametrize('control, result', [
@@ -365,19 +352,6 @@ def test_control_no_output():
         print(ctrl.output)
 
     assert ctrl.input.has_fixed_step
-
-
-# <=><=><=><=><=> PhysicalVariant <=><=><=><=><=>
-@mark.parametrize('variant, length, name', [
-    ('3_position_switch', 17, '3 position switch'),
-    ('push_button', 11, 'push button'),
-    ('', 0, ''),
-])
-def test_physical_variant_enum_methods(variant, length, name):
-    from dcspy.models import PhysicalVariant
-    pv = PhysicalVariant(variant)
-    assert len(pv) == length
-    assert str(pv) == name
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
