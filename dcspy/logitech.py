@@ -12,7 +12,7 @@ from PIL import Image, ImageDraw
 from dcspy import get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.dcsbios import ProtocolParser
-from dcspy.models import (SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
+from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import lcd_sdk
 from dcspy.sdk.key_sdk import GkeySdkManager
@@ -49,7 +49,6 @@ class KeyboardManager:
         self.plane_name = ''
         self.bios_name = ''
         self.plane_detected = False
-        self.lcdbutton_pressed = False
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
@@ -164,11 +163,7 @@ class KeyboardManager:
         """
         for btn in self.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
-                if not self.lcdbutton_pressed:
-                    self.lcdbutton_pressed = True
-                    return LcdButton(btn)
-                return LcdButton.NONE
-        self.lcdbutton_pressed = False
+                return LcdButton(btn)
         return LcdButton.NONE
 
     def button_handle(self) -> None:
@@ -180,7 +175,7 @@ class KeyboardManager:
         """
         button = self.check_buttons()
         if button.value:
-            self._send_request(button)
+            self._send_request(button, key_down=KEY_DOWN)
 
     def _send_request(self, button: Union[LcdButton, Gkey], key_down: Optional[int] = None) -> None:
         """
