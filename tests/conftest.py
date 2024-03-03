@@ -347,17 +347,17 @@ def autoupdate3_cfg():
 def apache_pre_mode_bios_data():
     """Bios values for AH-64D Apache PRE mode."""
     return [
-        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF   '),
-        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!PRESET 1 127.000 '),
-        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | PRESET 2 135.000 '),
-        ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | PRESET 3 136.000 '),
-        ('PLT_EUFD_LINE5', '                  |                  | PRESET 4 127.000 '),
-        ('PLT_EUFD_LINE6', '                                     | PRESET 5 125.000 '),
-        ('PLT_EUFD_LINE7', '                                     | PRESET 6 121.000 '),
-        ('PLT_EUFD_LINE8', '~<>VHF*  127.000   -----             | PRESET 7 141.000 '),
-        ('PLT_EUFD_LINE9', ' ==UHF*  305.000   -----             | PRESET 8 128.000 '),
-        ('PLT_EUFD_LINE10', ' ==FM1*   30.000   -----    NORM     | PRESET 9 126.000 '),
-        ('PLT_EUFD_LINE11', ' ==FM2*   30.000   -----             | PRESET10 137.000 '),
+        ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF  |'),
+        ('PLT_EUFD_LINE2', 'ENGINE 2 OUT      |GENERATOR 2 FAIL  |!PRESET 1 134.000|'),
+        ('PLT_EUFD_LINE3', 'ENGINE 1 OUT      |AFT FUEL LOW      | PRESET 2 134.000|'),
+        ('PLT_EUFD_LINE4', '                  |FORWARD FUEL LOW  | PRESET 3 136.000|'),
+        ('PLT_EUFD_LINE5', '                  |                  | PRESET 4 127.000|'),
+        ('PLT_EUFD_LINE6', '                  |                  | PRESET 5 125.000|'),
+        ('PLT_EUFD_LINE7', '                  |                  | PRESET 6 121.000|'),
+        ('PLT_EUFD_LINE8', '~<>VHF*  134.000   MAN               | PRESET 7 141.000|'),
+        ('PLT_EUFD_LINE9', ' ==UHF*  240.000   PRE 2         L2  | PRESET 8 128.000|'),
+        ('PLT_EUFD_LINE10', ' ==FM1*   30.015   PRE 3    NORM L3  | PRESET 9 126.000|'),
+        ('PLT_EUFD_LINE11', ' ==FM2*   30.020   PRE 4         L4  | PRESET10 137.000|'),
     ]
 
 
