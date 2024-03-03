@@ -5,7 +5,7 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List, Optional, Sequence, Union
+from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
@@ -177,7 +177,7 @@ class KeyboardManager:
         if button.value:
             self._send_request(button, key_down=KEY_DOWN)
 
-    def _send_request(self, button: Union[LcdButton, Gkey], key_down: Optional[int] = None) -> None:
+    def _send_request(self, button: Union[LcdButton, Gkey], key_down: int) -> None:
         """
         Sent action to DCS-BIOS via network socket.
 
