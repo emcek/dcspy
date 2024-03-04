@@ -35,7 +35,7 @@ CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
 with open(DEFAULT_YAML_FILE) as c_file:
-    defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.FullLoader)
+    defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
     defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
@@ -65,7 +65,7 @@ def load_yaml(full_path: Path) -> Dict[str, Any]:
     """
     try:
         with open(file=full_path, encoding='utf-8') as yaml_file:
-            data = yaml.load(yaml_file, Loader=yaml.FullLoader)
+            data = yaml.load(yaml_file, Loader=yaml.SafeLoader)
             if not isinstance(data, dict):
                 data = {}
     except (FileNotFoundError, yaml.parser.ParserError) as err:
@@ -84,7 +84,7 @@ def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
     :param full_path: full path to yaml file
     """
     with open(file=full_path, mode='w', encoding='utf-8') as yaml_file:
-        yaml.dump(data, yaml_file)
+        yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
 
 
 def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseInfo:
