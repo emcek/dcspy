@@ -49,6 +49,7 @@ class KeyboardManager:
         self.plane_name = ''
         self.bios_name = ''
         self.plane_detected = False
+        self.lcdbutton_pressed = False
         self._display: List[str] = []
         self.lcd = kwargs.get('lcd_type', LcdMono)
         self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
@@ -163,7 +164,11 @@ class KeyboardManager:
         """
         for btn in self.buttons:
             if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
-                return LcdButton(btn)
+                if not self.lcdbutton_pressed:
+                    self.lcdbutton_pressed = True
+                    return LcdButton(btn)
+                return LcdButton.NONE
+        self.lcdbutton_pressed = False
         return LcdButton.NONE
 
     def button_handle(self) -> None:
