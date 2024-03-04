@@ -3,9 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from pytest import fixture
 
-from dcspy import aircraft, logitech, models
-from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
-from dcspy.utils import KeyRequest
+from dcspy import aircraft, logitech, models, utils
 
 
 @fixture()
@@ -56,18 +54,18 @@ for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50
         airplane = getattr(aircraft, plane_model)
         lcd_type = getattr(models, lcd)
         if lcd == 'LcdMono':
-            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+            lcd_type.set_fonts(models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16))
         else:
-            lcd_type.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+            lcd_type.set_fonts(models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32))
         name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
         globals()[name] = generate_plane_fixtures(airplane, lcd_type)
 
 for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
     key = getattr(logitech, keyboard_model)
     if keyboard_model == 'G19':
-        lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+        lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
     else:
-        lcd_font = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+        lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
     globals()[keyboard_model] = generate_keyboard_fixtures(key, lcd_font)
 
 
@@ -150,13 +148,13 @@ def get_ctrl_for_plane(test_dcs_bios, request):
 @fixture()
 def lcd_font_mono():
     """Returns font configuration for mono LCD."""
-    return FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+    return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
 
 
 @fixture()
 def lcd_font_color(protocol_parser):
     """Returns font configuration for color LCD."""
-    return FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+    return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
 
 
 @fixture()
@@ -200,7 +198,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
             self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 10
             plane = BasicAircraft(lcd_type=self.lcd)
-            plane.key_req = KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
+            plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
             self.plane = plane
 
         def _setup_plane_callback(self) -> None:
@@ -235,7 +233,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
             self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 40
             plane = BasicAircraft(lcd_type=self.lcd)
-            plane.key_req = KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
+            plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
             self.plane = plane
 
         def _setup_plane_callback(self) -> None:
@@ -254,7 +252,7 @@ def default_config():
     return {
         'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
         'dcs': 'C:\\Program Files\\Eagle Dynamics\\DCS World OpenBeta', 'keyboard': 'G13', 'save_lcd': False, 'show_gui': True, 'autostart': False,
-        'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
+        'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': models.DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
         'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': True, 'git_bios_ref': 'master', 'toolbar_style': 0,
         'toolbar_area': 4, 'gkeys_area': 2, 'gkeys_float': False, 'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20,
         'current_plane': 'A-10A',
