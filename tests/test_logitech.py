@@ -11,7 +11,7 @@ def test_keyboard_base_basic_check(keyboard_base):
 
     assert str(keyboard_base) == 'KeyboardManager: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
+    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'buttons',
             '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel')
     for test_string in data:
         assert test_string in logitech_repr
