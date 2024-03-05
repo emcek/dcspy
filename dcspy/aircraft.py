@@ -450,11 +450,11 @@ class Ka50(AdvancedAircraft):
         :param scale: scaling factor (Mono 1, Color 2)
         """
         for c_rect, c_text, ap_channel, turn_on in (
-                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'B', self.get_bios('AP_BANK_HOLD_LED')),
-                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('AP_PITCH_HOLD_LED')),
-                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'F', self.get_bios('AP_FD_LED')),
-                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (113 * scale, 24 * scale), 'H', self.get_bios('AP_HDG_HOLD_LED')),
-                ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'A', self.get_bios('AP_ALT_HOLD_LED')),
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'B', self.get_bios('AP_BANK_HOLD_LED', 0)),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('AP_PITCH_HOLD_LED', 0)),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'F', self.get_bios('AP_FD_LED', 0)),
+                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (113 * scale, 24 * scale), 'H', self.get_bios('AP_HDG_HOLD_LED', 0)),
+                ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'A', self.get_bios('AP_ALT_HOLD_LED', 0)),
         ):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw_obj, turn_on)
 
@@ -502,9 +502,9 @@ class Mi8MT(AdvancedAircraft):
         :param scale: scaling factor (Mono 1, Color 2)
         """
         for c_rect, c_text, ap_channel, turn_on in (
-                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON')),
-                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON')),
-                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON')),
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('LMP_AP_HDG_ON', 0)),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'P', self.get_bios('LMP_AP_PITCH_ROLL_ON', 0)),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('LMP_AP_HEIGHT_ON', 0)),
         ):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
@@ -569,13 +569,13 @@ class Mi24P(AdvancedAircraft):
         :param scale: scaling factor (Mono 1, Color 2)
         """
         for c_rect, c_text, ap_channel, turn_on in (
-                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('PLT_SAU_HOVER_MODE_ON_L')),
-                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'R', self.get_bios('PLT_SAU_ROUTE_MODE_ON_L')),
-                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('PLT_SAU_ALT_MODE_ON_L')),
-                ((94 * scale, 22 * scale, 107 * scale, 39 * scale), (96 * scale, 24 * scale), 'Y', self.get_bios('PLT_SAU_H_ON_L')),
-                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (113 * scale, 24 * scale), 'R', self.get_bios('PLT_SAU_K_ON_L')),
-                ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'P', self.get_bios('PLT_SAU_T_ON_L')),
-                ((145 * scale, 22 * scale, 158 * scale, 39 * scale), (147 * scale, 24 * scale), 'A', self.get_bios('PLT_SAU_B_ON_L')),
+                ((111 * scale, 1 * scale, 124 * scale, 18 * scale), (113 * scale, 3 * scale), 'H', self.get_bios('PLT_SAU_HOVER_MODE_ON_L', 0)),
+                ((128 * scale, 1 * scale, 141 * scale, 18 * scale), (130 * scale, 3 * scale), 'R', self.get_bios('PLT_SAU_ROUTE_MODE_ON_L', 0)),
+                ((145 * scale, 1 * scale, 158 * scale, 18 * scale), (147 * scale, 3 * scale), 'A', self.get_bios('PLT_SAU_ALT_MODE_ON_L', 0)),
+                ((94 * scale, 22 * scale, 107 * scale, 39 * scale), (96 * scale, 24 * scale), 'Y', self.get_bios('PLT_SAU_H_ON_L', 0)),
+                ((111 * scale, 22 * scale, 124 * scale, 39 * scale), (113 * scale, 24 * scale), 'R', self.get_bios('PLT_SAU_K_ON_L', 0)),
+                ((128 * scale, 22 * scale, 141 * scale, 39 * scale), (130 * scale, 24 * scale), 'P', self.get_bios('PLT_SAU_T_ON_L', 0)),
+                ((145 * scale, 22 * scale, 158 * scale, 39 * scale), (147 * scale, 24 * scale), 'A', self.get_bios('PLT_SAU_B_ON_L', 0)),
         ):
             draw_autopilot_channels(self.lcd, ap_channel, c_rect, c_text, draw, turn_on)
 
@@ -704,16 +704,16 @@ class AH64DBLKII(AdvancedAircraft):
         :param font: font instance
         """
         match_dict = {
-            2: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
-            3: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
-            4: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
-            5: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)\s+',
-            6: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
-            7: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
-            8: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
-            9: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
-            10: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
-            11: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)\s+',
+            2: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)',
+            3: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)',
+            4: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)',
+            5: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)',
+            6: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)',
+            7: r'.*\|.*\|([\u2192\s][A-Z]*\s\d)\s*([\d\.]*)',
+            8: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)',
+            9: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)',
+            10: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)',
+            11: r'\s*\|([\u2192\s][A-Z]*\s*\d*)\s*([\d\.]*)',
         }
         for i, x_cord, y_cord in zip(range(2, 12), x_cords, y_cords):
             if mat := search(match_dict[i], str(self.get_bios(f'PLT_EUFD_LINE{i}'))):
@@ -835,7 +835,7 @@ class A10C(AdvancedAircraft):
 
         :return: frequency settings as strings
         """
-        return f'{self.get_bios("ARC210_FREQUENCY")} ({self.get_bios("ARC210_PREV_MANUAL_FREQ")})'
+        return f'{self.get_bios("ARC210_FREQUENCY")} ({str(self.get_bios("ARC210_PREV_MANUAL_FREQ")).strip():>7})'
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Mono LCD."""

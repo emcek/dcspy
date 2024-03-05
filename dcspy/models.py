@@ -35,6 +35,10 @@ LOGI_DEVICETYPE_ALL: Final = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 LOGITECH_MAX_GKEYS: Final = 30
 LOGITECH_MAX_M_STATES: Final = 4
 
+# Key press
+KEY_DOWN: Final = 1
+KEY_UP: Final = 0
+
 # Others
 NO_OF_LCD_SCREENSHOTS: Final = 301
 TIME_BETWEEN_REQUESTS: Final = 0.2
@@ -317,7 +321,7 @@ class ControlKeyData:
         """
         Return the depiction of the control.
 
-        :return: ControlDepiction object representing the control's name, description and physical variant.
+        :return: ControlDepiction object representing the control's name amd description.
         """
         return ControlDepiction(name=self.name, description=self.description)
 
@@ -899,16 +903,20 @@ class RequestModel(BaseModel):
         :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
         :return: a list of bytes representing the individual requests
         """
-        if self.is_cycle:
+        if self.is_push_button and isinstance(self.key, Gkey):
+            request = f'{self.ctrl_name} {key_down}\n'
+        elif self.is_push_button and isinstance(self.key, LcdButton):
+            request = f'{self.ctrl_name} {KEY_DOWN}\n|{self.ctrl_name} {KEY_UP}\n'
+        # Ignore key up events for non-push button requests so that
+        # these are not triggered again when the G-Key is released.
+        elif key_down is None or key_down == KEY_UP:
+            return []
+        elif self.is_cycle:
             request = f'{self.ctrl_name} {self._get_next_value_for_button()}\n'
         elif self.is_custom:
             request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
             request = request.replace('|', '\n|')
             request = request.strip('|')
-        elif self.is_push_button and isinstance(self.key, LcdButton):
-            request = f'{self.ctrl_name} 1\n|{self.ctrl_name} 0\n'
-        elif self.is_push_button and isinstance(self.key, Gkey):
-            request = f'{self.ctrl_name} {key_down}\n'
         else:
             request = f'{self.raw_request}\n'
         return [bytes(req, 'utf-8') for req in request.split('|')]

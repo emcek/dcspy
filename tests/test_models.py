@@ -1,357 +1,76 @@
 from pytest import mark, raises
 
-AAP_PAGE = {
-    'category': 'AAP',
-    'control_type': 'selector',
-    'description': 'PAGE OTHER - POSITION - STEER - WAYPT',
-    'identifier': 'AAP_PAGE',
-    'inputs': [{
-        'description': 'switch to previous or next state',
-        'interface': 'fixed_step'
-    }, {
-        'description': 'set position',
-        'interface': 'set_state',
-        'max_value': 3
-    }],
-    'outputs': [{
-        'address': 4346,
-        'address_identifier': 'A_10C_AAP_PAGE',
-        'address_only_identifier': 'A_10C_AAP_PAGE_ADDR',
-        'description': 'selector position',
-        'mask': 12288,
-        'max_value': 3,
-        'shift_by': 12,
-        'suffix': '',
-        'type': 'integer'
-    }],
-}
-AAP_CDUPWR = {
-    'category': 'AAP',
-    'control_type': 'selector',
-    'description': 'CDU Power',
-    'identifier': 'AAP_CDUPWR',
-    'inputs': [{
-        'description': 'switch to previous or next state',
-        'interface': 'fixed_step'
-    }, {
-        'description': 'set position',
-        'interface': 'set_state',
-        'max_value': 1
-    }, {
-        'argument': 'TOGGLE',
-        'description': 'Toggle switch state',
-        'interface': 'action'
-    }],
-    'outputs': [{
-        'address': 4346,
-        'address_identifier': 'A_10C_AAP_CDUPWR',
-        'address_only_identifier': 'A_10C_AAP_CDUPWR_ADDR',
-        'description': 'selector position',
-        'mask': 16384,
-        'max_value': 1,
-        'shift_by': 14,
-        'suffix': '',
-        'type': 'integer'
-    }],
-}
-TACAN_1 = {
-    'category': 'TACAN Panel',
-    'control_type': 'discrete_dial',
-    'description': 'Right Channel Selector',
-    'identifier': 'TACAN_1',
-    'inputs': [{
-        'description': 'switch to previous or next state',
-        'interface': 'fixed_step'
-    }, {
-        'argument': 'TOGGLE_XY',
-        'description': 'Toggle TACAN Channel X/Y',
-        'interface': 'action'
-    }],
-    'outputs': [{
-        'address': 4440,
-        'address_identifier': 'A_10C_TACAN_1',
-        'address_only_identifier': 'A_10C_TACAN_1_ADDR',
-        'description': 'selector position',
-        'mask': 61440,
-        'max_value': 10,
-        'shift_by': 12,
-        'suffix': '',
-        'type': 'integer'
-    }],
-}
-UFC_1 = {
-    'api_variant': 'momentary_last_position',
-    'category': 'UFC',
-    'control_type': 'selector',
-    'description': '1',
-    'identifier': 'UFC_1',
-    'inputs': [{
-        'description': 'switch to previous or next state',
-        'interface': 'fixed_step'
-    }, {
-        'description': 'set position',
-        'interface': 'set_state',
-        'max_value': 1
-    }, {
-        'argument': 'TOGGLE',
-        'description': 'Toggle switch state',
-        'interface': 'action'
-    }],
-    'outputs': [{
-        'address': 4328,
-        'address_mask_identifier': 'A_10C_UFC_1_AM',
-        'address_mask_shift_identifier': 'A_10C_UFC_1',
-        'description': 'selector position',
-        'mask': 32768,
-        'max_value': 1,
-        'shift_by': 15,
-        'suffix': '',
-        'type': 'integer'
-    }]
-}
-UFC_COMM1_CHANNEL_SELECT = {
-    'category': 'Up Front Controller (UFC)',
-    'control_type': 'fixed_step_dial',
-    'description': 'COMM 1 Channel Select Knob',
-    'identifier': 'UFC_COMM1_CHANNEL_SELECT',
-    'inputs': [{
-        'description': 'turn left or right',
-        'interface': 'fixed_step'
-    }],
-    'outputs': []}
-PLT_WIPER_OFF = {
-    'category': 'Wiper',
-    'control_type': 'selector',
-    'description': 'PILOT Windscreen Wiper Control Switch, OFF',
-    'identifier': 'PLT_WIPER_OFF',
-    'inputs': [{
-        'description': 'switch to previous or next state',
-        'interface': 'fixed_step'
-    }, {
-        'description': 'set position',
-        'interface': 'set_state',
-        'max_value': 0
-    }],
-    'outputs': [{
-        'address': 26624,
-        'address_identifier': 'Mi_24P_PLT_WIPER_OFF',
-        'address_only_identifier': 'Mi_24P_PLT_WIPER_OFF_ADDR',
-        'description': 'selector position',
-        'mask': 0,
-        'max_value': 0,
-        'shift_by': 16,
-        'suffix': '',
-        'type': 'integer'
-    }]
-}
-AAP_STEER = {
-    'category': 'AAP',
-    'control_type': '3Pos_2Command_Switch_OpenClose',
-    'description': 'Toggle Steerpoint',
-    'identifier': 'AAP_STEER',
-    'inputs': [{
-        'description': 'set the switch position',
-        'interface': 'set_state',
-        'max_value': 2
-    }],
-    'outputs': [{
-        'address': 4346,
-        'address_identifier': 'A_10C_AAP_STEER',
-        'address_only_identifier': 'A_10C_AAP_STEER_ADDR',
-        'description': 'switch position -- 0 = Down, 1 = Mid,  2 = Up',
-        'mask': 3072,
-        'max_value': 2,
-        'shift_by': 10,
-        'suffix': '',
-        'type': 'integer'
-    }]
-}
-CLOCK_ADJUST_PULL = {
-    'category': 'Clock',
-    'control_type': 'action',
-    'description': 'Adjustment Dial Pull',
-    'identifier': 'CLOCK_ADJUST_PULL',
-    'inputs': [{
-        'argument': 'TOGGLE',
-        'description': 'toggle switch state',
-        'interface': 'action'
-    }],
-    'outputs': [{
-        'address': 5308,
-        'address_identifier': 'UH_1H_CLOCK_ADJUST_PULL',
-        'address_only_identifier': 'UH_1H_CLOCK_ADJUST_PULL_ADDR',
-        'description': 'selector position',
-        'mask': 32768,
-        'max_value': 1,
-        'shift_by': 15,
-        'suffix': '',
-        'type': 'integer'
-    }],
-}
-ADI_PITCH_TRIM = {
-    'category': 'ADI',
-    'control_type': 'limited_dial',
-    'description': 'ADI Pitch Trim',
-    'identifier': 'ADI_PITCH_TRIM',
-    'inputs': [{
-        'description': 'set the position of the dial',
-        'interface': 'set_state',
-        'max_value': 65535
-    }, {
-        'description': 'turn the dial left or right',
-        'interface': 'variable_step',
-        'max_value': 65535,
-        'suggested_step': 3200
-    }],
-    'outputs': [{
-        'address': 4446,
-        'address_identifier': 'A_10C_ADI_PITCH_TRIM',
-        'address_only_identifier': 'A_10C_ADI_PITCH_TRIM_ADDR',
-        'description': 'position of the potentiometer',
-        'mask': 65535,
-        'max_value': 65535,
-        'shift_by': 0,
-        'suffix': '',
-        'type': 'integer'
-    }]
-}
-ARC210_CHN_KNB = {
-    'api_variant': 'multiturn',
-    'category': 'ARC-210',
-    'control_type': 'analog_dial',
-    'description': 'ARC-210 Channel Selector Knob',
-    'identifier': 'ARC210_CHN_KNB',
-    'inputs': [{
-        'description': 'turn the dial left or right',
-        'interface': 'variable_step',
-        'max_value': 65535,
-        'suggested_step': 3200
-    }],
-    'outputs': [{
-        'address': 4990,
-        'address_identifier': 'A_10C_ARC210_CHN_KNB',
-        'address_only_identifier': 'A_10C_ARC210_CHN_KNB_ADDR',
-        'description': 'the rotation of the knob in the cockpit (not the value that is controlled by this knob!)',
-        'mask': 65535,
-        'max_value': 65535,
-        'shift_by': 0,
-        'suffix': '_KNOB_POS',
-        'type': 'integer'
-    }]
-}
-ARC210_ACTIVE_CHANNEL = {
-    'category': 'ARC-210 Display',
-    'control_type': 'display',
-    'description': 'Active Channel',
-    'identifier': 'ARC210_ACTIVE_CHANNEL',
-    'inputs': [],
-    'outputs': [{
-        'address': 4918,
-        'address_identifier': 'A_10C_ARC210_ACTIVE_CHANNEL_A',
-        'description': 'Active Channel',
-        'max_length': 2,
-        'suffix': '',
-        'type': 'string'
-    }]
-}
-CMSP1 = {
-    'category': 'CMSP',
-    'control_type': 'display',
-    'description': 'CMSP Display Line 1',
-    'identifier': 'CMSP1',
-    'inputs': [],
-    'outputs': [{
-        'address': 4096,
-        'address_identifier': 'A_10C_CMSP1_A',
-        'description': 'CMSP Display Line 1',
-        'max_length': 19,
-        'suffix': '',
-        'type': 'string'
-    }]
-}
+from dcspy.models import KEY_DOWN, KEY_UP
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
-@mark.parametrize('control, results', [
-    (UFC_COMM1_CHANNEL_SELECT, [1, True, False, False, False, False]),
-    (PLT_WIPER_OFF, [2, True, True, False, False, False]),
-    (AAP_PAGE, [2, True, True, False, False, False]),
-    (AAP_CDUPWR, [3, True, True, False, True, True]),
-    (TACAN_1, [2, True, False, False, True, False]),
-    (AAP_STEER, [1, False, True, False, False, False]),
-    (CLOCK_ADJUST_PULL, [1, False, False, False, True, False]),
-    (ADI_PITCH_TRIM, [2, False, True, True, False, False]),
-    (ARC210_CHN_KNB, [1, False, False, True, False, False]),
-    (UFC_1, [3, True, True, False, True, True]),
+@mark.parametrize('get_ctrl_for_plane, results', [
+    (('FA-18C_hornet', 'UFC_COMM1_CHANNEL_SELECT'), [1, True, False, False, False, False]),
+    (('Mi-24P', 'PLT_WIPER_OFF'), [2, True, True, False, False, False]),
+    (('A-10C', 'AAP_PAGE'), [2, True, True, False, False, False]),
+    (('A-10C', 'AAP_CDUPWR'), [3, True, True, False, True, True]),
+    (('A-10C', 'TACAN_1'), [1, True, False, False, False, False]),
+    (('A-10C', 'AAP_STEER'), [1, False, True, False, False, False]),
+    (('F-14B', 'RIO_HCU_DDD'), [3, True, True, False, True, True]),
+    (('A-10C', 'ADI_PITCH_TRIM'), [2, False, True, True, False, False]),
+    (('A-10C', 'ARC210_CHN_KNB'), [1, False, False, True, False, False]),
+    (('A-10C', 'UFC_1'), [3, True, True, False, True, True]),
 ], ids=[
-    'UFC_COMM1_CHANNEL_SELECT',
-    'PLT_WIPER_OFF',
-    'AAP_PAGE',
-    'AAP_CDUPWR',
-    'TACAN_1',
-    'AAP_STEER',
-    'CLOCK_ADJUST_PULL',
-    'ADI_PITCH_TRIM',
-    'ARC210_CHN_KNB',
-    'UFC_1'])
-def test_control_input_properties(control, results):
-    from dcspy.models import Control
-
-    ctrl = Control.model_validate(control)
-    assert ctrl.input.input_len == results[0]
-    assert ctrl.input.has_fixed_step is results[1]
-    assert ctrl.input.has_set_state is results[2]
-    assert ctrl.input.has_variable_step is results[3]
-    assert ctrl.input.has_action is results[4]
-    assert ctrl.input.is_push_button is results[5]
+    'UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'RIO_HCU_DDD', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB', 'UFC_1',
+], indirect=['get_ctrl_for_plane'])
+def test_control_input_properties(get_ctrl_for_plane, results):
+    assert get_ctrl_for_plane.input.input_len == results[0]
+    assert get_ctrl_for_plane.input.has_fixed_step is results[1]
+    assert get_ctrl_for_plane.input.has_set_state is results[2]
+    assert get_ctrl_for_plane.input.has_variable_step is results[3]
+    assert get_ctrl_for_plane.input.has_action is results[4]
+    assert get_ctrl_for_plane.input.is_push_button is results[5]
 
 
-@mark.parametrize('control, max_value, step', [
-    (UFC_1, 1, 1),
-    (UFC_COMM1_CHANNEL_SELECT, 1, 1),
-    (PLT_WIPER_OFF, 0, 1),
-    (AAP_PAGE, 3, 1),
-    (AAP_CDUPWR, 1, 1),
-    (TACAN_1, 1, 1),
-    (AAP_STEER, 2, 1),
-    (CLOCK_ADJUST_PULL, 1, 1),
-    (ADI_PITCH_TRIM, 65535, 3200),
-    (ARC210_CHN_KNB, 65535, 3200),
-], ids=['UFC_1', 'UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'CLOCK_ADJUST_PULL', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB'])
-def test_control_key_data_from_control(control, max_value, step):
-    from dcspy.models import Control, ControlKeyData
+@mark.parametrize('get_ctrl_for_plane, max_value, step', [
+    (('A-10C', 'UFC_1'), 1, 1),
+    (('FA-18C_hornet', 'UFC_COMM1_CHANNEL_SELECT'), 1, 1),
+    (('Mi-24P', 'PLT_WIPER_OFF'), 0, 1),
+    (('A-10C', 'AAP_PAGE'), 3, 1),
+    (('A-10C', 'AAP_CDUPWR'), 1, 1),
+    (('A-10C', 'TACAN_1'), 1, 1),
+    (('A-10C', 'AAP_STEER'), 2, 1),
+    (('F-14B', 'RIO_HCU_DDD'), 1, 1),
+    (('A-10C', 'ADI_PITCH_TRIM'), 65535, 3200),
+    (('A-10C', 'ARC210_CHN_KNB'), 65535, 3200),
+], ids=[
+    'UFC_1', 'UFC_COMM1_CHANNEL_SELECT', 'PLT_WIPER_OFF', 'AAP_PAGE', 'AAP_CDUPWR', 'TACAN_1', 'AAP_STEER', 'RIO_HCU_DDD', 'ADI_PITCH_TRIM', 'ARC210_CHN_KNB',
+], indirect=['get_ctrl_for_plane'])
+def test_control_key_data_from_control(get_ctrl_for_plane, max_value, step):
+    from dcspy.models import ControlKeyData
 
-    ctrl = Control.model_validate(control)
-    ctrl_key = ControlKeyData.from_control(ctrl=ctrl)
+    ctrl_key = ControlKeyData.from_control(ctrl=get_ctrl_for_plane)
     assert ctrl_key.max_value == max_value
     assert ctrl_key.suggested_step == step
-    assert len(ctrl_key.list_dict) == len(ctrl.inputs)
+    assert len(ctrl_key.list_dict) == len(get_ctrl_for_plane.inputs)
     assert f'suggested_step={ctrl_key.suggested_step}' in repr(ctrl_key)
     assert f'KeyControl({ctrl_key.name}' in repr(ctrl_key)
     assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
 
 
-@mark.parametrize('control, result', [
-    (AAP_PAGE, 'IntegerBuffer'),
-    (ARC210_CHN_KNB, 'IntegerBuffer'),
-    (ARC210_ACTIVE_CHANNEL, 'StringBuffer'),
-    (CMSP1, 'StringBuffer'),
-], ids=['AAP_PAGE', 'ARC210_CHN_KNB', 'ARC210_ACTIVE_CHANNEL', 'CMSP1'])
-def test_control_output(control, result):
-    from dcspy.models import Control
+@mark.parametrize('get_ctrl_for_plane, result', [
+    (('A-10C', 'AAP_PAGE'), 'IntegerBuffer'),
+    (('A-10C', 'ARC210_CHN_KNB'), 'IntegerBuffer'),
+    (('A-10C', 'ARC210_ACTIVE_CHANNEL'), 'StringBuffer'),
+    (('A-10C', 'CMSP1'), 'StringBuffer'),
+], ids=[
+    'AAP_PAGE', 'ARC210_CHN_KNB', 'ARC210_ACTIVE_CHANNEL', 'CMSP1',
+], indirect=['get_ctrl_for_plane'])
+def test_control_output(get_ctrl_for_plane, result):
+    assert get_ctrl_for_plane.output.klass == result
 
-    ctrl = Control.model_validate(control)
-    assert ctrl.output.klass == result
 
-
-def test_control_no_output():
-    from dcspy.models import Control
-
-    ctrl = Control.model_validate(UFC_COMM1_CHANNEL_SELECT)
+@mark.parametrize('get_ctrl_for_plane', [('FA-18C_hornet', 'UFC_COMM1_CHANNEL_SELECT')], indirect=True)
+def test_control_no_output(get_ctrl_for_plane):
     with raises(IndexError):
-        print(ctrl.output)
+        print(get_ctrl_for_plane.output)
 
-    assert ctrl.input.has_fixed_step
+    assert get_ctrl_for_plane.input.has_fixed_step
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
@@ -512,15 +231,16 @@ def test_get_sha_of_system_data():
 
 
 # <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
-@mark.parametrize('control, rb_iface, custom_value, req', [
-    (AAP_PAGE, 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
-    (AAP_PAGE, 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
-    (AAP_PAGE, 'rb_set_state', '', 'AAP_PAGE CYCLE 1 3'),
-    (AAP_CDUPWR, 'rb_action', '', 'AAP_CDUPWR TOGGLE'),
-    (ARC210_CHN_KNB, 'rb_variable_step_plus', '', 'ARC210_CHN_KNB +3200'),
-    (ARC210_CHN_KNB, 'rb_variable_step_minus', '', 'ARC210_CHN_KNB -3200'),
-    (ADI_PITCH_TRIM, 'rb_set_state', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
-    (AAP_CDUPWR, 'rb_custom', 'AAP_CDUPWR 1|AAP_CDUPWR 0', 'AAP_CDUPWR CUSTOM AAP_CDUPWR 1|AAP_CDUPWR 0'),
+@mark.parametrize('get_ctrl_for_plane, rb_iface, custom_value, req', [
+    (('A-10C', 'AAP_PAGE'), 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
+    (('A-10C', 'AAP_PAGE'), 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
+    (('A-10C', 'AAP_PAGE'), 'rb_set_state', '', 'AAP_PAGE CYCLE 1 3'),
+    (('A-10C', 'AAP_CDUPWR'), 'rb_action', '', 'AAP_CDUPWR TOGGLE'),
+    (('A-10C', 'ARC210_CHN_KNB'), 'rb_variable_step_plus', '', 'ARC210_CHN_KNB +3200'),
+    (('A-10C', 'ARC210_CHN_KNB'), 'rb_variable_step_minus', '', 'ARC210_CHN_KNB -3200'),
+    (('A-10C', 'ADI_PITCH_TRIM'), 'rb_set_state', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
+    (('A-10C', 'AAP_CDUPWR'), 'rb_custom', 'AAP_CDUPWR 1|AAP_CDUPWR 0', 'AAP_CDUPWR CUSTOM AAP_CDUPWR 1|AAP_CDUPWR 0'),
+    (('A-10C', 'AAP_CDUPWR'), 'rb_push_button', '', 'AAP_CDUPWR PUSH_BUTTON'),
 ], ids=[
     'AAP_PAGE INC',
     'AAP_PAGE DEC',
@@ -529,13 +249,14 @@ def test_get_sha_of_system_data():
     'ARC210_CHN_KNB +',
     'ARC210_CHN_KNB -',
     'ADI_PITCH_TRIM 3200 65535',
-    'AAP_CDUPWR CUSTOM 1 0'])
-def test_plane_input_request_from_control_key(control, rb_iface, custom_value, req):
-    from dcspy.models import Control, GuiPlaneInputRequest
+    'AAP_CDUPWR CUSTOM 1 0',
+    'AAP_CDUPWR PUSH_BUTTON',
+], indirect=['get_ctrl_for_plane'])
+def test_plane_input_request_from_control_key(get_ctrl_for_plane, rb_iface, custom_value, req):
+    from dcspy.models import GuiPlaneInputRequest
 
-    ctrl = Control.model_validate(control)
-    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl.input, rb_iface=rb_iface, custom_value=custom_value)
-    assert gui_input_req.identifier == ctrl.identifier
+    gui_input_req = GuiPlaneInputRequest.from_control_key(ctrl_key=get_ctrl_for_plane.input, rb_iface=rb_iface, custom_value=custom_value)
+    assert gui_input_req.identifier == get_ctrl_for_plane.identifier
     assert gui_input_req.request == req
 
 
@@ -552,6 +273,7 @@ def test_plane_input_request_from_plane_gkeys():
         'G8_M1': 'ICP_COM1_BTN CUSTOM ICP_COM1_BTN 1|ICP_COM1_BTN 0|',
         'G8_M2': '',
         'G9_M1': 'ICP_COM2_BTN CUSTOM ICP_COM2_BTN INC|ICP_COM2_BTN DEC|',
+        'G9_M2': 'AAP_CDUPWR PUSH_BUTTON',
     }
     gui_input_req = GuiPlaneInputRequest.from_plane_gkeys(plane_gkey)
     assert gui_input_req == {
@@ -565,6 +287,7 @@ def test_plane_input_request_from_plane_gkeys():
         'G8_M1': GuiPlaneInputRequest(identifier='ICP_COM1_BTN', request='ICP_COM1_BTN CUSTOM ICP_COM1_BTN 1|ICP_COM1_BTN 0|', widget_iface='rb_custom'),
         'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
         'G9_M1': GuiPlaneInputRequest(identifier='ICP_COM2_BTN', request='ICP_COM2_BTN CUSTOM ICP_COM2_BTN INC|ICP_COM2_BTN DEC|', widget_iface='rb_custom'),
+        'G9_M2': GuiPlaneInputRequest(identifier='AAP_CDUPWR', request='AAP_CDUPWR PUSH_BUTTON', widget_iface='rb_push_button'),
     }
 
 
@@ -610,18 +333,18 @@ def test_zigzag_iterator_direction():
 
 # <=><=><=><=><=> RequestModel <=><=><=><=><=>
 @mark.parametrize('str_req, key, key_down, result', [
-    ('COM1 CYCLE 1 3', 'G1_M1', 1, [True, False, False, [b'COM1 3\n']]),
-    ('COM1 CYCLE 1 3', 'G1_M1', 0, [True, False, False, [b'COM1 3\n']]),
-    ('COM1 CYCLE 1 3', 'ONE', None, [True, False, False, [b'COM1 3\n']]),
-    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', 1, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
-    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', 0, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
-    ('COM2 CUSTOM COM2 1|COM2 0|', 'TWO', None, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
-    ('RADIO_1 PUSH_BUTTON', 'G3_M3', 1, [False, False, True, [b'RADIO_1 1\n']]),
-    ('RADIO_1 PUSH_BUTTON', 'G3_M3', 0, [False, False, True, [b'RADIO_1 0\n']]),
-    ('RADIO_1 PUSH_BUTTON', 'LEFT', None, [False, False, True, [b'RADIO_1 1\n', b'RADIO_1 0\n']]),
-    ('MASTER_ARM 2', 'G1_M2', 1, [False, False, False, [b'MASTER_ARM 2\n']]),
-    ('MASTER_ARM 2', 'G1_M2', 0, [False, False, False, [b'MASTER_ARM 2\n']]),
-    ('MASTER_ARM 2', 'RIGHT', None, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('COM1 CYCLE 1 3', 'G1_M1', KEY_DOWN, [True, False, False, [b'COM1 3\n']]),
+    ('COM1 CYCLE 1 3', 'G1_M1', KEY_UP, [True, False, False, []]),
+    ('COM1 CYCLE 1 3', 'ONE', KEY_DOWN, [True, False, False, [b'COM1 3\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', KEY_DOWN, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', KEY_UP, [False, True, False, []]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'TWO', KEY_DOWN, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'G3_M3', KEY_DOWN, [False, False, True, [b'RADIO_1 1\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'G3_M3', KEY_UP, [False, False, True, [b'RADIO_1 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'LEFT', KEY_DOWN, [False, False, True, [b'RADIO_1 1\n', b'RADIO_1 0\n']]),
+    ('MASTER_ARM 2', 'G1_M2', KEY_DOWN, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('MASTER_ARM 2', 'G1_M2', KEY_UP, [False, False, False, []]),
+    ('MASTER_ARM 2', 'RIGHT', KEY_DOWN, [False, False, False, [b'MASTER_ARM 2\n']]),
 ], ids=[
     'GKey CYCLE down',
     'GKey CYCLE up',
@@ -650,13 +373,13 @@ def test_request_model_properties(str_req, key, key_down, result):
     assert str(req) == f'{req.ctrl_name}: {str_req}'
 
 
-@mark.parametrize('key, key_down', [
-    ('ONE', None),
-    ('G1_M1', 1),
-    ('G1_M1', 0),
+@mark.parametrize('key, key_down, result', [
+    ('ONE', KEY_DOWN, [b'\n']),
+    ('G1_M1', KEY_DOWN, [b'\n']),
+    ('G1_M1', KEY_UP, []),
 ])
-def test_empty_request_model_(key, key_down):
+def test_empty_request_model_(key, key_down, result):
     from dcspy.models import RequestModel, get_key_instance
 
     empty_req = RequestModel.empty(key=get_key_instance(key))
-    assert empty_req.bytes_requests(key_down=key_down) == [b'\n']
+    assert empty_req.bytes_requests(key_down=key_down) == result

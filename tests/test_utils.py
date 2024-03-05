@@ -3,9 +3,8 @@ from pathlib import Path
 from sys import platform
 from unittest.mock import MagicMock, PropertyMock, mock_open, patch
 
-import pytest
 from packaging import version
-from pytest import mark
+from pytest import mark, raises
 
 from dcspy import utils
 from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
@@ -327,7 +326,7 @@ def test_get_depiction_of_ctrls(test_dcs_bios):
 
 
 def test_get_inputs_for_wrong_plane(test_dcs_bios):
-    with pytest.raises(KeyError):
+    with raises(KeyError):
         _ = utils.get_inputs_for_plane(plane='Wrong', bios_dir=test_dcs_bios)
 
 
@@ -357,7 +356,7 @@ def test_get_plane_aliases_one_plane(test_dcs_bios):
 
 
 def test_get_plane_aliases_wrong_plane(test_dcs_bios):
-    with pytest.raises(KeyError):
+    with raises(KeyError):
         _ = utils.get_plane_aliases(bios_dir=test_dcs_bios, plane='A-Wrong')
 
 

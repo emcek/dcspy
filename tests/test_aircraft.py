@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from pytest import mark, raises
 
-from dcspy.models import LcdButton
+from dcspy.models import KEY_DOWN, LcdButton
 from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 
@@ -176,7 +176,7 @@ def test_meta_plane(keyboard, plane_name, request):
 def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
     key_req = plane.button_request(button)
-    assert list(key_req.bytes_requests(key_down=None)) == result
+    assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
 
 @mark.parametrize('button, result', [
@@ -193,7 +193,7 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     from dcspy.aircraft import ApacheEufdMode
     ah64dblkii_color.mode = ApacheEufdMode.WCA
     key_req = ah64dblkii_color.button_request(button)
-    assert list(key_req.bytes_requests(key_down=None)) == result
+    assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
 
 @mark.parametrize('plane, ctrl_name, btn, values', [
@@ -226,7 +226,7 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, values, request
     expected_out = []
     for val in values:
         key_req = plane.button_request(btn)
-        generated_out.extend(key_req.bytes_requests(key_down=None))
+        generated_out.extend(key_req.bytes_requests(key_down=KEY_DOWN))
         expected_out.extend([f'{ctrl_name} {val}\n'.encode('ascii')])
     assert generated_out == expected_out
 
@@ -292,8 +292,8 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'ah64dblkii' in model:
-    #     img.save(resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    # if 'ka50' in model or 'mi8' in model or 'mi24' in model:
+    #     img.save(resources / platform / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 

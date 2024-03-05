@@ -4,7 +4,8 @@
 * Internal:
   * G-Key SDK callback support (@sleighzy)
   * Update Qt6/PySide6 to 6.6.2
-  * remove `physical_variant` from models, due to chnages is DCS-BIOS (@emcek)
+  * remove `physical_variant` from models, due to changes is DCS-BIOS (@emcek)
+  * bug fixing and release stabilization (@sleighzy, @emcek)
 
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS
