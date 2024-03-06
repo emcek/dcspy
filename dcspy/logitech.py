@@ -9,9 +9,8 @@ from typing import List, Sequence, Union
 
 from PIL import Image, ImageDraw
 
-from dcspy import get_config_yaml_item
+from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.dcsbios import ProtocolParser
 from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import lcd_sdk
@@ -23,7 +22,7 @@ LOG = getLogger(__name__)
 
 class KeyboardManager:
     """General keyboard with LCD from Logitech."""
-    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
         General keyboard with LCD from Logitech.
 
@@ -42,8 +41,7 @@ class KeyboardManager:
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        detect_plane = {'parser': parser, 'address': 0x0, 'max_length': 0x10, 'callback': partial(self.detecting_plane)}
-        getattr(import_module('dcspy.dcsbios'), 'StringBuffer')(**detect_plane)
+        dcsbios.StringBuffer(parser=parser, address=0x0, max_length=0x10, callback=partial(self.detecting_plane))
         self.parser = parser
         self.socket = sock
         self.plane_name = ''
@@ -227,7 +225,7 @@ class KeyboardManager:
 
 class G13(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -244,7 +242,7 @@ class G13(KeyboardManager):
 
 class G510(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -262,7 +260,7 @@ class G510(KeyboardManager):
 
 class G15v1(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -280,7 +278,7 @@ class G15v1(KeyboardManager):
 
 class G15v2(KeyboardManager):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -298,7 +296,7 @@ class G15v2(KeyboardManager):
 
 class G19(KeyboardManager):
     """Logitech`s keyboard with color LCD."""
-    def __init__(self, parser: ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
         Logitech`s keyboard with color LCD.
 
