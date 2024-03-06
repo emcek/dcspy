@@ -1,3 +1,6 @@
+## 3.3.0
+* Add new State action to set particular value for any controller.
+
 ## 3.2.0
 * Add new Push button option to support push button controls with only two states (@sleighzy, @emcek)
 * Add search bar to search BIOS data (controls name, description etc.) for current aircraft (@emcek)
