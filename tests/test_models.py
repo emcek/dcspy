@@ -234,11 +234,11 @@ def test_get_sha_of_system_data():
 @mark.parametrize('get_ctrl_for_plane, rb_iface, custom_value, req', [
     (('A-10C', 'AAP_PAGE'), 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
     (('A-10C', 'AAP_PAGE'), 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
-    (('A-10C', 'AAP_PAGE'), 'rb_set_state', '', 'AAP_PAGE CYCLE 1 3'),
+    (('A-10C', 'AAP_PAGE'), 'rb_cycle', '', 'AAP_PAGE CYCLE 1 3'),
     (('A-10C', 'AAP_CDUPWR'), 'rb_action', '', 'AAP_CDUPWR TOGGLE'),
     (('A-10C', 'ARC210_CHN_KNB'), 'rb_variable_step_plus', '', 'ARC210_CHN_KNB +3200'),
     (('A-10C', 'ARC210_CHN_KNB'), 'rb_variable_step_minus', '', 'ARC210_CHN_KNB -3200'),
-    (('A-10C', 'ADI_PITCH_TRIM'), 'rb_set_state', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
+    (('A-10C', 'ADI_PITCH_TRIM'), 'rb_cycle', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
     (('A-10C', 'AAP_CDUPWR'), 'rb_custom', 'AAP_CDUPWR 1|AAP_CDUPWR 0', 'AAP_CDUPWR CUSTOM AAP_CDUPWR 1|AAP_CDUPWR 0'),
     (('A-10C', 'AAP_CDUPWR'), 'rb_push_button', '', 'AAP_CDUPWR PUSH_BUTTON'),
 ], ids=[
@@ -279,11 +279,11 @@ def test_plane_input_request_from_plane_gkeys():
     assert gui_input_req == {
         'G1_M1': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE INC', widget_iface='rb_fixed_step_inc'),
         'G2_M2': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE DEC', widget_iface='rb_fixed_step_dec'),
-        'G3_M3': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE CYCLE 1 3', widget_iface='rb_set_state'),
+        'G3_M3': GuiPlaneInputRequest(identifier='AAP_PAGE', request='AAP_PAGE CYCLE 1 3', widget_iface='rb_cycle'),
         'G4_M1': GuiPlaneInputRequest(identifier='AAP_CDUPWR', request='AAP_CDUPWR TOGGLE', widget_iface='rb_action'),
         'G5_M2': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB +3200', widget_iface='rb_variable_step_plus'),
         'G6_M3': GuiPlaneInputRequest(identifier='ARC210_CHN_KNB', request='ARC210_CHN_KNB -3200', widget_iface='rb_variable_step_minus'),
-        'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_set_state'),
+        'G7_M1': GuiPlaneInputRequest(identifier='ADI_PITCH_TRIM', request='ADI_PITCH_TRIM CYCLE 3200 65535', widget_iface='rb_cycle'),
         'G8_M1': GuiPlaneInputRequest(identifier='ICP_COM1_BTN', request='ICP_COM1_BTN CUSTOM ICP_COM1_BTN 1|ICP_COM1_BTN 0|', widget_iface='rb_custom'),
         'G8_M2': GuiPlaneInputRequest(identifier='', request='', widget_iface=''),
         'G9_M1': GuiPlaneInputRequest(identifier='ICP_COM2_BTN', request='ICP_COM2_BTN CUSTOM ICP_COM2_BTN INC|ICP_COM2_BTN DEC|', widget_iface='rb_custom'),

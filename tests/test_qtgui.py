@@ -39,7 +39,7 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
 
             dcspy_gui.tw_gkeys.cellWidget(0, 0).setCurrentText('ADI_PITCH_TRIM')
             qtbot.mouseClick(dcspy_gui.tw_gkeys.cellWidget(0, 0), Qt.LeftButton)
-            qtbot.mouseClick(dcspy_gui.rb_set_state, Qt.LeftButton)
+            qtbot.mouseClick(dcspy_gui.rb_cycle, Qt.LeftButton)
 
             dcspy_gui.tw_gkeys.cellWidget(0, 1).setCurrentText('ARC210_CHN_KNB')
 
@@ -84,14 +84,14 @@ def test_switch_between_cells(qtbot, test_config_yaml, switch_dcs_bios_path_in_c
 
     expected = {
         (0, 0): ('AAP_CDUPWR', 'rb_action'),
-        (0, 1): ('ADI_PITCH_TRIM', 'rb_set_state'),
+        (0, 1): ('ADI_PITCH_TRIM', 'rb_cycle'),
         (0, 2): ('AHCP_ALT_SCE', 'rb_fixed_step_inc'),
         (1, 0): ('AAP_CDUPWR', 'rb_fixed_step_inc'),
         (1, 1): ('ADI_PITCH_TRIM', 'rb_variable_step_plus'),
         (1, 2): ('AHCP_ALT_SCE', 'rb_fixed_step_dec'),
         (2, 0): ('AAP_CDUPWR', 'rb_fixed_step_dec'),
         (2, 1): ('ADI_PITCH_TRIM', 'rb_variable_step_minus'),
-        (2, 2): ('AHCP_ALT_SCE', 'rb_set_state'),
+        (2, 2): ('AHCP_ALT_SCE', 'rb_cycle'),
         (3, 0): ('AAP_CDUPWR', 'rb_push_button'),
         (3, 1): ('ALT_SET_PRESSURE', 'rb_variable_step_plus'),
         (3, 2): ('ALT_SET_PRESSURE', 'rb_variable_step_minus'),
@@ -100,7 +100,7 @@ def test_switch_between_cells(qtbot, test_config_yaml, switch_dcs_bios_path_in_c
         (4, 2): ('ACCEL_PTS', 'rb_fixed_step_dec'),
         (5, 0): ('ADI_PITCH_TRIM', 'rb_variable_step_plus'),
         (5, 1): ('ARC210_GPS', 'rb_action'),
-        (5, 2): ('ARC210_GPS', 'rb_set_state'),
+        (5, 2): ('ARC210_GPS', 'rb_cycle'),
     }
 
     with patch('dcspy.qt_gui.default_yaml', test_config_yaml):
