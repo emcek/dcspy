@@ -155,6 +155,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_save.clicked.connect(self._save_gkeys_cfg)
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
         self.bg_rb_input_iface.addButton(self.rb_action)
+        self.bg_rb_input_iface.addButton(self.rb_cycle)
         self.bg_rb_input_iface.addButton(self.rb_set_state)
         self.bg_rb_input_iface.addButton(self.rb_fixed_step_inc)
         self.bg_rb_input_iface.addButton(self.rb_fixed_step_dec)
@@ -165,6 +166,7 @@ class DcsPyQtGui(QMainWindow):
         self.bg_rb_input_iface.buttonClicked.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
+        self.hs_set_state.valueChanged.connect(self._input_iface_changed_or_custom_text_changed)
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
@@ -547,8 +549,9 @@ class DcsPyQtGui(QMainWindow):
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
             self._checked_iface_rb_for_identifier(key_name=key_name)
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
+            custom_value = self._get_custom_value(input_iface_name)
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
-                                                                                                  custom_value=self.le_custom.text())
+                                                                                                  custom_value=custom_value)
         elif text == '':
             widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.make_empty()  # maybe del
@@ -617,10 +620,14 @@ class DcsPyQtGui(QMainWindow):
             self.rb_variable_step_plus.setChecked(True)
 
     def _handle_set_state(self, ctrl_key: ControlKeyData) -> None:
-        """Handle the control key for SetState."""
+        """Handle the control key for SetState and cycle action."""
         if ctrl_key.has_set_state:
             self.rb_set_state.setEnabled(True)
             self.rb_set_state.setChecked(True)
+            self.rb_cycle.setEnabled(True)
+            self.rb_cycle.setChecked(True)
+            self.hs_set_state.setMinimum(0)
+            self.hs_set_state.setMaximum(ctrl_key.max_value)
 
     def _handle_variable_step_and_set_state(self, ctrl_key: ControlKeyData):
         """Handle the case where the control key has a VariableStep and SetState."""
@@ -653,9 +660,13 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
-            self.le_custom.setText('')
             if widget_iface == 'rb_custom':
                 self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split(f'{RequestType.CUSTOM.value} ')[1])
+            elif widget_iface == 'rb_set_state':
+                self.hs_set_state.setValue(int(self.input_reqs[self.current_plane][key_name].request.split(' ')[1]))
+            else:
+                self.le_custom.setText('')
+                self.hs_set_state.setValue(0)
             getattr(self, widget_iface).setChecked(True)
         except (KeyError, AttributeError):
             pass
@@ -706,9 +717,8 @@ class DcsPyQtGui(QMainWindow):
             section = self._find_section_name(ctrl_name=current_cell_text)
             key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
             ctrl_key = self.ctrl_input[section][current_cell_text]
-            custom_value = ''
-            if (input_iface_name := self.bg_rb_input_iface.checkedButton().objectName()) == 'rb_custom':
-                custom_value = self.le_custom.text() if self.le_custom.text()[-1] == '|' else f'{self.le_custom.text()}|'
+            input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
+            custom_value = self._get_custom_value(input_iface_name)
             self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                                   custom_value=custom_value)
 
@@ -729,6 +739,20 @@ class DcsPyQtGui(QMainWindow):
         self.combo_planes.currentIndexChanged.disconnect()
         self._load_table_gkeys()
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
+
+    def _get_custom_value(self, selected_rb_name: str) -> str:
+        """
+        Get custom value for request depending of currently selected action radio button.
+
+        :param selected_rb_name: radio button widget name
+        :return: custom value as string
+        """
+        custom_value = ''
+        if selected_rb_name == 'rb_custom':
+            custom_value = self.le_custom.text() if self.le_custom.text()[-1] == '|' else f'{self.le_custom.text()}|'
+        elif selected_rb_name == 'rb_set_state':
+            custom_value = str(self.hs_set_state.value())
+        return custom_value
 
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool:
@@ -1494,6 +1518,7 @@ class DcsPyQtGui(QMainWindow):
         self.rb_fixed_step_inc: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_inc')
         self.rb_fixed_step_dec: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_dec')
         self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
+        self.rb_cycle: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_cycle')
         self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
         self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
         self.rb_push_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_push_button')
@@ -1502,6 +1527,7 @@ class DcsPyQtGui(QMainWindow):
         self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
         self.hs_medium_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_medium_font')
         self.hs_small_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_small_font')
+        self.hs_set_state: Union[object, QSlider] = self.findChild(QSlider, 'hs_set_state')
 
 
 class AboutDialog(QDialog):

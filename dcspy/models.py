@@ -517,11 +517,12 @@ class GuiPlaneInputRequest(BaseModel):
             'rb_action': f'{ctrl_key.name} TOGGLE',
             'rb_fixed_step_inc': f'{ctrl_key.name} INC',
             'rb_fixed_step_dec': f'{ctrl_key.name} DEC',
-            'rb_set_state': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
+            'rb_cycle': f'{ctrl_key.name} CYCLE {ctrl_key.suggested_step} {ctrl_key.max_value}',
             'rb_custom': f'{ctrl_key.name} {RequestType.CUSTOM.value} {custom_value}',
             'rb_push_button': f'{ctrl_key.name} {RequestType.PUSH_BUTTON.value}',
             'rb_variable_step_plus': f'{ctrl_key.name} +{ctrl_key.suggested_step}',
-            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}'
+            'rb_variable_step_minus': f'{ctrl_key.name} -{ctrl_key.suggested_step}',
+            'rb_set_state': f'{ctrl_key.name} {custom_value}',
         }
         return cls(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
 
@@ -540,9 +541,10 @@ class GuiPlaneInputRequest(BaseModel):
             'TOGGLE': 'rb_action',
             'INC': 'rb_fixed_step_inc',
             'DEC': 'rb_fixed_step_dec',
-            'CYCLE': 'rb_set_state',
+            'CYCLE': 'rb_cycle',
             '+': 'rb_variable_step_plus',
             '-': 'rb_variable_step_minus',
+            ' ': 'rb_set_state',
         }
 
         for gkey, data in plane_gkeys.items():
