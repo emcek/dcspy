@@ -1,5 +1,6 @@
 ## 3.3.0
-* Add new State action to set particular value for any controller.
+* Add new State action to set particular value for any controller
+* Make handling of **A-10C** and **A-10C II** radios more effective 
 
 ## 3.2.0
 * Add new Push button option to support push button controls with only two states (@sleighzy, @emcek)
