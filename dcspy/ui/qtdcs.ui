@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>880</width>
-    <height>680</height>
+    <width>900</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>450</width>
-    <height>680</height>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -770,7 +770,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>880</width>
+     <width>900</width>
      <height>22</height>
     </rect>
    </property>
@@ -864,13 +864,13 @@
    <property name="minimumSize">
     <size>
      <width>265</width>
-     <height>450</height>
+     <height>480</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
      <width>524287</width>
-     <height>450</height>
+     <height>480</height>
     </size>
    </property>
    <property name="windowIcon">
@@ -879,7 +879,7 @@
     </iconset>
    </property>
    <property name="toolTip">
-    <string>Use for push button or controlers with only 2 states.</string>
+    <string/>
    </property>
    <property name="floating">
     <bool>false</bool>
@@ -903,80 +903,27 @@
        <property name="title">
         <string>Inputs:</string>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QRadioButton" name="rb_action">
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="7" column="1">
+         <widget class="QSlider" name="hs_set_state">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="toolTip">
-           <string>Toggle between positions back and forth.
-Avaliable for two-state switches and knobs.</string>
+           <string>Set one particular value for keystroke.</string>
           </property>
-          <property name="text">
-           <string>Toggle</string>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
-          <property name="icon">
-           <iconset resource="../qtgui.qrc">
-            <normaloff>:/icons/img/configure.svg</normaloff>:/icons/img/configure.svg</iconset>
+          <property name="tickPosition">
+           <enum>QSlider::TicksAbove</enum>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="rb_fixed_step_inc">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Only increase position of switch.
-Avaliable for multi-possition switches and knobs with fixed step size.</string>
-          </property>
-          <property name="text">
-           <string>Fixed step inc</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../qtgui.qrc">
-            <normaloff>:/icons/img/go-next.svg</normaloff>:/icons/img/go-next.svg</iconset>
+          <property name="tickInterval">
+           <number>1</number>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QRadioButton" name="rb_fixed_step_dec">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Only decrease position of switch.
-Avaliable for multi-possition switches and knobs with fixed step size.</string>
-          </property>
-          <property name="text">
-           <string>Fixed step dec</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../qtgui.qrc">
-            <normaloff>:/icons/img/go-previous.svg</normaloff>:/icons/img/go-previous.svg</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="rb_set_state">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="toolTip">
-           <string>Cycle through all values first increase and then decrease, move back and forth.
-Avaliable for most switches and knobs with fixed step size.</string>
-          </property>
-          <property name="text">
-           <string>Cycle state</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../qtgui.qrc">
-            <normaloff>:/icons/img/kr_comparedirs.svg</normaloff>:/icons/img/kr_comparedirs.svg</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
+        <item row="4" column="0" colspan="2">
          <widget class="QRadioButton" name="rb_variable_step_plus">
           <property name="enabled">
            <bool>false</bool>
@@ -994,7 +941,54 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           </property>
          </widget>
         </item>
-        <item>
+        <item row="11" column="0">
+         <spacer name="verticalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <widget class="QRadioButton" name="rb_push_button">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Use for push button or controlers with only 2 states.</string>
+          </property>
+          <property name="text">
+           <string>Push button</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/KittehPlayer.svg</normaloff>:/icons/img/KittehPlayer.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QRadioButton" name="rb_set_state">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Set one particular value for keystroke.</string>
+          </property>
+          <property name="text">
+           <string>State</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/downloading.svg</normaloff>:/icons/img/downloading.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="2">
          <widget class="QRadioButton" name="rb_variable_step_minus">
           <property name="enabled">
            <bool>false</bool>
@@ -1012,21 +1006,79 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QRadioButton" name="rb_push_button">
+        <item row="3" column="0" colspan="2">
+         <widget class="QRadioButton" name="rb_cycle">
           <property name="enabled">
            <bool>false</bool>
           </property>
+          <property name="toolTip">
+           <string>Cycle through all values first increase and then decrease, move back and forth.
+Avaliable for most switches and knobs with fixed step size.</string>
+          </property>
           <property name="text">
-           <string>Push button</string>
+           <string>Cycle state</string>
           </property>
           <property name="icon">
            <iconset resource="../qtgui.qrc">
-            <normaloff>:/icons/img/KittehPlayer.svg</normaloff>:/icons/img/KittehPlayer.svg</iconset>
+            <normaloff>:/icons/img/kr_comparedirs.svg</normaloff>:/icons/img/kr_comparedirs.svg</iconset>
           </property>
          </widget>
         </item>
-        <item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QRadioButton" name="rb_fixed_step_dec">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Only decrease position of switch.
+Avaliable for multi-possition switches and knobs with fixed step size.</string>
+          </property>
+          <property name="text">
+           <string>Fixed step dec</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/go-previous.svg</normaloff>:/icons/img/go-previous.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="2">
+         <widget class="QRadioButton" name="rb_fixed_step_inc">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Only increase position of switch.
+Avaliable for multi-possition switches and knobs with fixed step size.</string>
+          </property>
+          <property name="text">
+           <string>Fixed step inc</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/go-next.svg</normaloff>:/icons/img/go-next.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QRadioButton" name="rb_action">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="toolTip">
+           <string>Toggle between positions back and forth.
+Avaliable for two-state switches and knobs.</string>
+          </property>
+          <property name="text">
+           <string>Toggle</string>
+          </property>
+          <property name="icon">
+           <iconset resource="../qtgui.qrc">
+            <normaloff>:/icons/img/configure.svg</normaloff>:/icons/img/configure.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0" colspan="2">
          <widget class="QRadioButton" name="rb_custom">
           <property name="enabled">
            <bool>false</bool>
@@ -1040,25 +1092,12 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
           </property>
          </widget>
         </item>
-        <item>
+        <item row="10" column="0" colspan="2">
          <widget class="QLineEdit" name="le_custom">
           <property name="enabled">
            <bool>false</bool>
           </property>
          </widget>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
         </item>
        </layout>
       </widget>
@@ -1398,12 +1437,28 @@ Available for variable step knobs or potentiometers i.e. volume or brightness.</
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>658</x>
-     <y>287</y>
+     <x>880</x>
+     <y>357</y>
     </hint>
     <hint type="destinationlabel">
-     <x>677</x>
-     <y>312</y>
+     <x>880</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_set_state</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>hs_set_state</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>687</x>
+     <y>313</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>730</x>
+     <y>317</y>
     </hint>
    </hints>
   </connection>
