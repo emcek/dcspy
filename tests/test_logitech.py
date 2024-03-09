@@ -225,7 +225,7 @@ def test_unload_plane(keyboard, models, test_dcs_bios, test_config_yaml, request
             for partial_obj in keyboard.parser.write_callbacks:
                 for callback in partial_obj.func.__self__.callbacks:
                     args_list.extend([arg for arg in callback.args])
-            assert args_list.sort() is list(keyboard.plane.bios_data.keys()).sort()
+            assert set(args_list) == set(keyboard.plane.bios_data.keys())
 
             keyboard.unload_old_plane()
             assert len(keyboard.parser.write_callbacks) == 1
@@ -237,4 +237,4 @@ def test_unload_plane(keyboard, models, test_dcs_bios, test_config_yaml, request
             for partial_obj in keyboard.parser.write_callbacks:
                 for callback in partial_obj.func.__self__.callbacks:
                     args_list.extend([arg for arg in callback.args])
-            assert args_list.sort() == list(keyboard.plane.bios_data.keys()).sort()
+            assert set(args_list) == set(keyboard.plane.bios_data.keys())
