@@ -209,3 +209,32 @@ def test_all_keyboard_all_plane_load(model, keyboard, test_dcs_bios, test_config
 
     assert isinstance(keyboard.plane, AdvancedAircraft)
     assert model in type(keyboard.plane).__name__
+
+
+@mark.parametrize('keyboard, models', [('G13', ('A10C', 'Ka50'))])
+def test_unload_plane(keyboard, models, test_dcs_bios, test_config_yaml, request):
+    from dcspy.aircraft import A10C, Ka50
+
+    keyboard = request.getfixturevalue(keyboard)
+    with patch('dcspy.logitech.get_config_yaml_item', return_value=test_dcs_bios):
+        with patch('dcspy.aircraft.default_yaml', test_config_yaml):
+            args_list = []
+            keyboard.plane_name = models[0]
+            keyboard.load_new_plane()
+            assert isinstance(keyboard.plane, A10C)
+            for partial_obj in keyboard.parser.write_callbacks:
+                for callback in partial_obj.func.__self__.callbacks:
+                    args_list.extend([arg for arg in callback.args])
+            assert set(args_list) == set(keyboard.plane.bios_data.keys())
+
+            keyboard.unload_old_plane()
+            assert len(keyboard.parser.write_callbacks) == 1
+
+            args_list = []
+            keyboard.plane_name = models[1]
+            keyboard.load_new_plane()
+            assert isinstance(keyboard.plane, Ka50)
+            for partial_obj in keyboard.parser.write_callbacks:
+                for callback in partial_obj.func.__self__.callbacks:
+                    args_list.extend([arg for arg in callback.args])
+            assert set(args_list) == set(keyboard.plane.bios_data.keys())

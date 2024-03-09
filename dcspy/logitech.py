@@ -115,6 +115,16 @@ class KeyboardManager:
                 LOG.warning(f'Not supported aircraft: {value}')
                 self.display = ['Detected aircraft:', value, 'Not supported yet!']
 
+    def unload_old_plane(self):
+        """Unloads the previous plane by remove all callbacks and keep only one."""
+        LOG.debug(f'Unload start: {self.plane_name} Number of callbacks: {len(self.parser.write_callbacks)}')
+        for partial_obj in self.parser.write_callbacks:
+            for callback in partial_obj.func.__self__.callbacks:
+                if callback.func.__name__ == 'detecting_plane':
+                    self.parser.write_callbacks = {partial_obj}
+            if len(self.parser.write_callbacks) == 1:
+                break
+
     def load_new_plane(self) -> None:
         """
         Dynamic load of new detected aircraft.
@@ -137,7 +147,7 @@ class KeyboardManager:
         plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
         for ctrl_name in self.plane.bios_data:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
-            dcsbios_buffer = getattr(import_module('dcspy.dcsbios'), ctrl.output.klass)
+            dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
     def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int) -> None:
