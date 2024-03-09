@@ -1,5 +1,6 @@
 ## 3.3.0
 * Add new State action to set particular value for any controller
+* Unload previous plane when loading next one - remove old BIOS callbacks
 * Make handling of **A-10C** and **A-10C II** radios more effective
 
 ## 3.2.0

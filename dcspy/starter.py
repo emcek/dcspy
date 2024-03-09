@@ -52,6 +52,7 @@ def _load_new_plane_if_detected(manager: KeyboardManager) -> None:
     """
     global LOOP_FLAG
     if manager.plane_detected:
+        manager.unload_old_plane()
         manager.load_new_plane()
         LOOP_FLAG = True
 
