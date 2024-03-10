@@ -1,11 +1,15 @@
 from pathlib import Path
+from socket import AF_INET, SOCK_DGRAM, socket
+from time import sleep
 from typing import List, Tuple, Union
 from unittest.mock import patch
 
 from PIL import Image, ImageChops
 
 from dcspy.aircraft import BasicAircraft
+from dcspy.models import MULTICAST_IP, UDP_PORT
 from dcspy.sdk import lcd_sdk
+from dcspy.utils import load_json
 
 all_plane_list = ['fa18chornet', 'f16c50', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna']
 
@@ -66,3 +70,22 @@ def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> Tuple[float, int]:
     except IndexError:
         pass
     return float(f'{percents / len(ref_bytes) * 100:.2f}'), len(ref_bytes) - len(test_bytes)
+
+
+def send_bios_data(data_file: Path) -> None:
+    """
+    Read the BIOS data from the given JSON file.
+
+    Converts it into a list of tuples containing the timing and data, and sends the data over UDP socket using elapsed time.
+
+    :param data_file: The file path of the JSON file containing the BIOS data.
+    """
+    json_payload = load_json(full_path=data_file)
+    messages = [(item['timing'], bytes.fromhex(item['data'])) for item in json_payload]
+
+    with socket(AF_INET, SOCK_DGRAM) as sock:
+        for elapsed_time, data in messages:
+            elapsed_time_float = float(elapsed_time)
+            print(f'Sending message of {len(data)} bytes with elapsed time {elapsed_time_float} seconds')
+            sock.sendto(data, (MULTICAST_IP, UDP_PORT))
+            sleep(elapsed_time_float)
