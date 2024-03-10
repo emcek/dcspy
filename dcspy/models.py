@@ -10,7 +10,8 @@ from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
-RECV_ADDR: Final = ('', 5010)
+UDP_PORT: Final = 5010
+RECV_ADDR: Final = ('', UDP_PORT)
 MULTICAST_IP: Final = '239.255.50.10'
 
 # LCD types
