@@ -1,6 +1,8 @@
 import socket
 from unittest.mock import patch
 
+from pytest import mark
+
 
 def test_load_new_plane_if_detected():
     from dcspy import starter
@@ -35,3 +37,23 @@ def test_prepare_socket():
     assert sock.proto == 17
     assert sock.type in (2050, 2)
     assert sock.family == 2
+
+
+@mark.slow
+@mark.e2e
+def test_run_dcs_with_bios_data(resources):
+    from threading import Event, Thread
+
+    from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
+    from dcspy.starter import dcspy_run
+    from tests.helpers import send_bios_data
+
+    event = Event()
+    fonts_cfg = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+    app_params = {'lcd_type': 'G13', 'event': event, 'fonts_cfg': fonts_cfg}
+    app_thread = Thread(target=dcspy_run, kwargs=app_params)
+    app_thread.name = 'dcspy-test-app'
+    app_thread.start()
+
+    send_bios_data(data_file=resources / 'dcs_bios_data.json')
+    event.set()
