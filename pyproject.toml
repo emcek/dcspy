@@ -107,6 +107,7 @@ testpaths = ['tests']
 markers = [
     'qt6: marks tests for Qt6 verfification',
     'slow: marks tests as slow',
+    'e2e: marks test as E2E',
 ]
 
 [tool.interrogate]
