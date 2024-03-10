@@ -614,14 +614,14 @@ def run_pip_command(cmd: str) -> Tuple[int, str, str]:
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
 
 
-def load_json(path: Path) -> Dict[str, Any]:
+def load_json(full_path: Path) -> Any:
     """
     Load json from file into dictionary.
 
-    :param path: full path
-    :return: dict
+    :param full_path: full path
+    :return: python representation of json
     """
-    with open(path, encoding='utf-8') as json_file:
+    with open(full_path, encoding='utf-8') as json_file:
         data = json_file.read()
     return json.loads(data)
 
@@ -637,9 +637,9 @@ def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     local_json: Dict[str, Any] = {}
-    aircraft_aliases = load_json(path=alias_path)
+    aircraft_aliases = load_json(full_path=alias_path)
     for json_file in aircraft_aliases[plane]:
-        local_json = {**local_json, **load_json(path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
+        local_json = {**local_json, **load_json(full_path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
 
     return DcsBiosPlaneData.model_validate(local_json)
 
@@ -695,7 +695,7 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     :return: list of all yaml files for plane definition
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
-    aircraft_aliases = load_json(path=alias_path)
+    aircraft_aliases = load_json(full_path=alias_path)
     if plane:
         aircraft_aliases = {plane: aircraft_aliases[plane]}
     return aircraft_aliases
