@@ -56,7 +56,7 @@ jobs:
           ($changelog | Select-Object -First $last_change -Skip 1) -join "`n" | Out-File .\RELEASENOTES.md
 
       - name: "Create Release"
-        uses: softprops/action-gh-release@d99959edae48b5ffffd7b00da66dcdb0a33a52ee
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.REL_TOKEN }}
         with:
