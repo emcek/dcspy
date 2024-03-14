@@ -39,6 +39,7 @@ def test_all_failure_cases(function, lcd, args, result):
 ], ids=['Mono', 'Color'])
 def test_update_display(c_func, effect, lcd, size):
     from PIL import Image
+
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     lcd_sdk = LcdSdkManager('test', lcd)
@@ -100,6 +101,7 @@ def test_update_text_no_lcd():
 
 def test_update_display_no_lcd():
     from PIL import Image
+
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     lcd_sdk = LcdSdkManager('test', 2)
