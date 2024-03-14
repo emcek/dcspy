@@ -110,7 +110,7 @@ class AdvancedAircraft(BasicAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type=lcd_type)
-        self.update_display = kwargs['update_display']
+        self.update_display = kwargs.get('update_display', None)
         self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
 
     def set_bios(self, selector: str, value: Union[str, int]) -> None:
@@ -121,7 +121,8 @@ class AdvancedAircraft(BasicAircraft):
         :param value:
         """
         super().set_bios(selector=selector, value=value)
-        self.update_display(self.prepare_image())
+        if self.update_display:
+            self.update_display(self.prepare_image())
 
     def prepare_image(self) -> Image.Image:
         """
@@ -157,28 +158,29 @@ class FA18Chornet(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({
-            'UFC_SCRATCHPAD_STRING_1_DISPLAY': '',
-            'UFC_SCRATCHPAD_STRING_2_DISPLAY': '',
-            'UFC_SCRATCHPAD_NUMBER_DISPLAY': '',
-            'UFC_OPTION_DISPLAY_1': '',
-            'UFC_OPTION_DISPLAY_2': '',
-            'UFC_OPTION_DISPLAY_3': '',
-            'UFC_OPTION_DISPLAY_4': '',
-            'UFC_OPTION_DISPLAY_5': '',
-            'UFC_COMM1_DISPLAY': '',
-            'UFC_COMM2_DISPLAY': '',
-            'UFC_OPTION_CUEING_1': '',
-            'UFC_OPTION_CUEING_2': '',
-            'UFC_OPTION_CUEING_3': '',
-            'UFC_OPTION_CUEING_4': '',
-            'UFC_OPTION_CUEING_5': '',
-            'IFEI_FUEL_DOWN': '',
-            'IFEI_FUEL_UP': '',
-            'HUD_ATT_SW': int(),
-            'IFEI_DWN_BTN': int(),
-            'IFEI_UP_BTN': int(),
-        })
+        if self.update_display:
+            self.bios_data.update({
+                'UFC_SCRATCHPAD_STRING_1_DISPLAY': '',
+                'UFC_SCRATCHPAD_STRING_2_DISPLAY': '',
+                'UFC_SCRATCHPAD_NUMBER_DISPLAY': '',
+                'UFC_OPTION_DISPLAY_1': '',
+                'UFC_OPTION_DISPLAY_2': '',
+                'UFC_OPTION_DISPLAY_3': '',
+                'UFC_OPTION_DISPLAY_4': '',
+                'UFC_OPTION_DISPLAY_5': '',
+                'UFC_COMM1_DISPLAY': '',
+                'UFC_COMM2_DISPLAY': '',
+                'UFC_OPTION_CUEING_1': '',
+                'UFC_OPTION_CUEING_2': '',
+                'UFC_OPTION_CUEING_3': '',
+                'UFC_OPTION_CUEING_4': '',
+                'UFC_OPTION_CUEING_5': '',
+                'IFEI_FUEL_DOWN': '',
+                'IFEI_FUEL_UP': '',
+                'HUD_ATT_SW': int(),
+                'IFEI_DWN_BTN': int(),
+                'IFEI_UP_BTN': int(),
+            })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
@@ -269,7 +271,8 @@ class F16C50(AdvancedAircraft):
         self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
             self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
-        self.bios_data.update({f'DED_LINE_{i}': '' for i in range(1, 6)})
+        if self.update_display:
+            self.bios_data.update({f'DED_LINE_{i}': '' for i in range(1, 6)})
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
@@ -351,7 +354,8 @@ class F15ESE(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({f'F_UFC_LINE{i}_DISPLAY': '' for i in range(1, 7)})
+        if self.update_display:
+            self.bios_data.update({f'F_UFC_LINE{i}_DISPLAY': '' for i in range(1, 7)})
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
@@ -386,23 +390,24 @@ class Ka50(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({
-            'PVI_LINE1_APOSTROPHE1': '',
-            'PVI_LINE1_APOSTROPHE2': '',
-            'PVI_LINE1_POINT': '',
-            'PVI_LINE1_SIGN': '',
-            'PVI_LINE1_TEXT': '',
-            'PVI_LINE2_APOSTROPHE1': '',
-            'PVI_LINE2_APOSTROPHE2': '',
-            'PVI_LINE2_POINT': '',
-            'PVI_LINE2_SIGN': '',
-            'PVI_LINE2_TEXT': '',
-            'AP_ALT_HOLD_LED': int(),
-            'AP_BANK_HOLD_LED': int(),
-            'AP_FD_LED': int(),
-            'AP_HDG_HOLD_LED': int(),
-            'AP_PITCH_HOLD_LED': int(),
-        })
+        if self.update_display:
+            self.bios_data.update({
+                'PVI_LINE1_APOSTROPHE1': '',
+                'PVI_LINE1_APOSTROPHE2': '',
+                'PVI_LINE1_POINT': '',
+                'PVI_LINE1_SIGN': '',
+                'PVI_LINE1_TEXT': '',
+                'PVI_LINE2_APOSTROPHE1': '',
+                'PVI_LINE2_APOSTROPHE2': '',
+                'PVI_LINE2_POINT': '',
+                'PVI_LINE2_SIGN': '',
+                'PVI_LINE2_TEXT': '',
+                'AP_ALT_HOLD_LED': int(),
+                'AP_BANK_HOLD_LED': int(),
+                'AP_FD_LED': int(),
+                'AP_HDG_HOLD_LED': int(),
+                'AP_PITCH_HOLD_LED': int(),
+            })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -483,16 +488,17 @@ class Mi8MT(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({
-            'LMP_AP_HDG_ON': int(),
-            'LMP_AP_PITCH_ROLL_ON': int(),
-            'LMP_AP_HEIGHT_ON': int(),
-            'R863_CNL_SEL': int(),
-            'R863_MOD': int(),
-            'R863_FREQ': '',
-            'R828_PRST_CHAN_SEL': int(),
-            'YADRO1A_FREQ': '',
-        })
+        if self.update_display:
+            self.bios_data.update({
+                'LMP_AP_HDG_ON': int(),
+                'LMP_AP_PITCH_ROLL_ON': int(),
+                'LMP_AP_HEIGHT_ON': int(),
+                'R863_CNL_SEL': int(),
+                'R863_MOD': int(),
+                'R863_FREQ': '',
+                'R828_PRST_CHAN_SEL': int(),
+                'YADRO1A_FREQ': '',
+            })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -547,19 +553,20 @@ class Mi24P(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({
-            'PLT_R863_CHAN': int(),
-            'PLT_R863_MODUL': int(),
-            'PLT_R828_CHAN': int(),
-            'JADRO_FREQ': '',
-            'PLT_SAU_HOVER_MODE_ON_L': int(),
-            'PLT_SAU_ROUTE_MODE_ON_L': int(),
-            'PLT_SAU_ALT_MODE_ON_L': int(),
-            'PLT_SAU_H_ON_L': int(),
-            'PLT_SAU_K_ON_L': int(),
-            'PLT_SAU_T_ON_L': int(),
-            'PLT_SAU_B_ON_L': int(),
-        })
+        if self.update_display:
+            self.bios_data.update({
+                'PLT_R863_CHAN': int(),
+                'PLT_R863_MODUL': int(),
+                'PLT_R828_CHAN': int(),
+                'JADRO_FREQ': '',
+                'PLT_SAU_HOVER_MODE_ON_L': int(),
+                'PLT_SAU_ROUTE_MODE_ON_L': int(),
+                'PLT_SAU_ALT_MODE_ON_L': int(),
+                'PLT_SAU_H_ON_L': int(),
+                'PLT_SAU_K_ON_L': int(),
+                'PLT_SAU_T_ON_L': int(),
+                'PLT_SAU_B_ON_L': int(),
+            })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -626,7 +633,8 @@ class AH64DBLKII(AdvancedAircraft):
         super().__init__(lcd_type, **kwargs)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
-        self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 15)})
+        if self.update_display:
+            self.bios_data.update({f'PLT_EUFD_LINE{i}': '' for i in range(1, 15)})
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
@@ -779,26 +787,27 @@ class A10C(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({
-            'VHFAM_FREQ1': int(),
-            'VHFAM_FREQ2': int(),
-            'VHFAM_FREQ3': int(),
-            'VHFAM_FREQ4': int(),
-            'VHFAM_PRESET': int(),
-            'VHFFM_FREQ1': int(),
-            'VHFFM_FREQ2': int(),
-            'VHFFM_FREQ3': int(),
-            'VHFFM_FREQ4': int(),
-            'VHFFM_PRESET': int(),
-            'UHF_100MHZ_SEL': int(),
-            'UHF_10MHZ_SEL': int(),
-            'UHF_1MHZ_SEL': int(),
-            'UHF_POINT1MHZ_SEL': int(),
-            'UHF_POINT25_SEL': int(),
-            'UHF_PRESET': '',
-            'ARC210_FREQUENCY': '',
-            'ARC210_PREV_MANUAL_FREQ': '',
-        })
+        if self.update_display:
+            self.bios_data.update({
+                'VHFAM_FREQ1': int(),
+                'VHFAM_FREQ2': int(),
+                'VHFAM_FREQ3': int(),
+                'VHFAM_FREQ4': int(),
+                'VHFAM_PRESET': int(),
+                'VHFFM_FREQ1': int(),
+                'VHFFM_FREQ2': int(),
+                'VHFFM_FREQ3': int(),
+                'VHFFM_FREQ4': int(),
+                'VHFFM_PRESET': int(),
+                'UHF_100MHZ_SEL': int(),
+                'UHF_10MHZ_SEL': int(),
+                'UHF_1MHZ_SEL': int(),
+                'UHF_POINT1MHZ_SEL': int(),
+                'UHF_POINT25_SEL': int(),
+                'UHF_PRESET': '',
+                'ARC210_FREQUENCY': '',
+                'ARC210_PREV_MANUAL_FREQ': '',
+            })
 
     def _generate_vhf(self, modulation: str) -> str:
         """
@@ -920,21 +929,22 @@ class AV8BNA(AdvancedAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type, **kwargs)
-        self.bios_data.update({
-            'UFC_SCRATCHPAD': '',
-            'UFC_COMM1_DISPLAY': '',
-            'UFC_COMM2_DISPLAY': '',
-            'AV8BNA_ODU_1_SELECT': '',
-            'AV8BNA_ODU_1_TEXT': '',
-            'AV8BNA_ODU_2_SELECT': '',
-            'AV8BNA_ODU_2_TEXT': '',
-            'AV8BNA_ODU_3_SELECT': '',
-            'AV8BNA_ODU_3_TEXT': '',
-            'AV8BNA_ODU_4_SELECT': '',
-            'AV8BNA_ODU_4_TEXT': '',
-            'AV8BNA_ODU_5_SELECT': '',
-            'AV8BNA_ODU_5_TEXT': '',
-        })
+        if self.update_display:
+            self.bios_data.update({
+                'UFC_SCRATCHPAD': '',
+                'UFC_COMM1_DISPLAY': '',
+                'UFC_COMM2_DISPLAY': '',
+                'AV8BNA_ODU_1_SELECT': '',
+                'AV8BNA_ODU_1_TEXT': '',
+                'AV8BNA_ODU_2_SELECT': '',
+                'AV8BNA_ODU_2_TEXT': '',
+                'AV8BNA_ODU_3_SELECT': '',
+                'AV8BNA_ODU_3_TEXT': '',
+                'AV8BNA_ODU_4_SELECT': '',
+                'AV8BNA_ODU_4_TEXT': '',
+                'AV8BNA_ODU_5_SELECT': '',
+                'AV8BNA_ODU_5_TEXT': '',
+            })
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
