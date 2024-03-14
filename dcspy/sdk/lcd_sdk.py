@@ -14,10 +14,18 @@ LOG = getLogger(__name__)
 class LcdSdkManager:
     """Lcd SDK manager."""
 
-    def __init__(self, name: str, lcd_type: int) -> None:
-        """Create Lcd SDK manager."""
-        self.LCD_DLL: Lib = load_dll(LcdDll)  # type: ignore[assignment]
-        result = self.logi_lcd_init(name=name, lcd_type=lcd_type)
+    def __init__(self, name: str, lcd_type: int, skip=False) -> None:
+        """
+        Create Lcd SDK manager.
+
+        :param name: A name of the LCD
+        :param lcd_type: An integer representing the type of the LCD
+        :param skip: A boolean indicating whether to skip initialization - default value is False
+        """
+        result = None
+        if not skip:
+            self.LCD_DLL: Lib = load_dll(LcdDll)  # type: ignore[assignment]
+            result = self.logi_lcd_init(name=name, lcd_type=lcd_type)
         LOG.debug(f'LCD is connected: {result}')
 
     def logi_lcd_init(self, name: str, lcd_type: int) -> bool:
