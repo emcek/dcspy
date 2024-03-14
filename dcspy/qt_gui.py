@@ -1,5 +1,6 @@
 import sys
 import traceback
+from argparse import Namespace
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -43,10 +44,11 @@ NO_MSG_BOX = environ.get('DCSPY_NO_MSG_BOXES', 0)
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self, cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
+    def __init__(self, cli_args: Optional[Namespace], cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
+        :param cli_args: CLI arguments
         :param cfg_dict: dict with configuration
         """
         super().__init__()
@@ -54,6 +56,7 @@ class DcsPyQtGui(QMainWindow):
         self._find_children()
         self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
+        self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
         self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
@@ -1100,7 +1103,7 @@ class DcsPyQtGui(QMainWindow):
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
         fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.keyboard.lcd}_font'))
-        app_params = {'lcd_type': self.keyboard.klass, 'event': self.event, 'fonts_cfg': fonts_cfg}
+        app_params = {'lcd_type': self.keyboard.klass, 'event': self.event, 'fonts_cfg': fonts_cfg, 'skip_lcd': self.cli_args.no_lcd}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
