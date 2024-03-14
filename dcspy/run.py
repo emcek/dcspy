@@ -1,6 +1,5 @@
 import signal
 import sys
-from argparse import Namespace
 from logging import getLogger
 from os import environ, unlink
 from pathlib import Path
