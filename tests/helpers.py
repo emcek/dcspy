@@ -8,7 +8,7 @@ from PIL import Image, ImageChops
 
 from dcspy.aircraft import BasicAircraft
 from dcspy.models import MULTICAST_IP, UDP_PORT
-from dcspy.sdk import lcd_sdk
+from dcspy.sdk.lcd_sdk import LcdSdkManager
 from dcspy.utils import load_json
 
 all_plane_list = ['fa18chornet', 'f16c50', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna']
@@ -22,15 +22,13 @@ def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: List[Tuple[s
     :param bios_pairs:
     """
     if aircraft_model.lcd.type.name == 'COLOR':
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, True] * len(bios_pairs)), \
-                patch.object(lcd_sdk, 'logi_lcd_color_set_background', return_value=True), \
-                patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        with patch.object(LcdSdkManager, 'logi_lcd_color_set_background', return_value=True), \
+                patch.object(LcdSdkManager, 'logi_lcd_update', return_value=True):
             for selector, value in bios_pairs:
                 aircraft_model.set_bios(selector, value)
     else:
-        with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[True] * len(bios_pairs)), \
-                patch.object(lcd_sdk, 'logi_lcd_mono_set_background', return_value=True), \
-                patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+        with patch.object(LcdSdkManager, 'logi_lcd_mono_set_background', return_value=True), \
+                patch.object(LcdSdkManager, 'logi_lcd_update', return_value=True):
             for selector, value in bios_pairs:
                 aircraft_model.set_bios(selector, value)
 
