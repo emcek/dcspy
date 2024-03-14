@@ -67,7 +67,6 @@ class GkeySdkManager:
         :return: If the function succeeds, it returns True. Otherwise, False.
         """
         try:
-            LOG.info('Initialising Logitech Gkey SDK...')
             self.KEY_DLL.LogiGkeyInit.restype = c_bool
             self.KEY_DLL.LogiGkeyInit.argtypes = [POINTER(LogiGkeyCBContext)]
 
