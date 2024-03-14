@@ -1,5 +1,6 @@
 import signal
 import sys
+from argparse import Namespace
 from logging import getLogger
 from os import environ, unlink
 from pathlib import Path
@@ -33,7 +34,3 @@ def run() -> None:
         LOG.exception(f'Critical error: {exp}')
     finally:
         sys.exit(app.exec())
-
-
-if __name__ == '__main__':
-    run()
