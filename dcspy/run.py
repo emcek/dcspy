@@ -1,5 +1,6 @@
 import signal
 import sys
+from argparse import Namespace
 from logging import getLogger
 from os import environ, unlink
 from pathlib import Path
@@ -14,7 +15,7 @@ LOG = getLogger(__name__)
 __version__ = '3.2.0'
 
 
-def run() -> None:
+def run(cli_args: Namespace) -> None:
     """Run DCSpy Qt6 GUI."""
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
@@ -22,7 +23,7 @@ def run() -> None:
     app.setStyle('fusion')
 
     try:
-        window = DcsPyQtGui()
+        window = DcsPyQtGui(cli_args)
         if get_config_yaml_item('show_gui', True):
             window.show()
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
