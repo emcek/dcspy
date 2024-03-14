@@ -23,7 +23,7 @@ def generate_plane_fixtures(plane, lcd_type_with_fonts):
     def _fixture():
         """Fixture."""
         with patch('dcspy.aircraft.default_yaml', Path(__file__).resolve().parents[1] / 'dcspy' / 'config.yaml'):
-            plane_instance = plane(lcd_type_with_fonts)
+            plane_instance = plane(lcd_type=lcd_type_with_fonts, update_display=bool)
         return plane_instance
     return _fixture
 
