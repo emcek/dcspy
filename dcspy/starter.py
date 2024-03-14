@@ -106,17 +106,18 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
+def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig, skip_lcd=False) -> None:
     """
     Real starting point of DCSpy.
 
     :param lcd_type: LCD handling class as string
     :param event: stop event for main loop
     :param fonts_cfg: fonts configuration for LCD
+    :param skip_lcd: do not initialize LCD
     """
     dcs_sock = _prepare_socket()
     parser = ProtocolParser()
-    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg)
+    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg, skip_lcd=skip_lcd)
     LOG.info(f'Loading: {str(manager)}')
     LOG.debug(f'Loading: {repr(manager)}')
     dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
