@@ -44,11 +44,11 @@ NO_MSG_BOX = environ.get('DCSPY_NO_MSG_BOXES', 0)
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self, cli_args: Optional[Namespace] = None, cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
+    def __init__(self, cli_args=Namespace(no_lcd=False), cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
-        :param cli_args: CLI arguments
+        :param cli_args: Namespace of CLI arguments
         :param cfg_dict: dict with configuration
         """
         super().__init__()
