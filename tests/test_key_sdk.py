@@ -19,7 +19,7 @@ def test_all_failure_cases(function, args, result):
 
 
 def test_user_callback():
-    from dcspy.sdk.key_sdk import GkeySdkManager, GkeyCode
+    from dcspy.sdk.key_sdk import GkeyCode, GkeySdkManager
 
     def gkey_callback(key_idx: int, mode: int, key_down) -> None:
         assert key_idx == 2
