@@ -5,7 +5,6 @@ files = [(f'dcspy/{res}', 'dcspy') for res in  ['AH-64D_BLK_II.yaml', 'AV8BNA.ya
 images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['splash.png', 'dcspy_white.ico', 'dcspy_black.ico']]
 resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in ['falconded.ttf', 'license.txt']]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']]
-__version__ = '3.2.0'
 block_cipher = None
 
 
@@ -44,7 +43,7 @@ exe = EXE(
     splash,
     splash.binaries,
     [],
-    name=f'dcspy_{__version__}',
+    name=f'dcspy',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
