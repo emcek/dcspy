@@ -1,10 +1,10 @@
+import os
 import sys
 import traceback
 from argparse import Namespace
 from functools import partial
 from importlib import import_module
 from logging import getLogger
-from os import environ
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
@@ -38,7 +38,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.2.0'
 LOG = getLogger(__name__)
-NO_MSG_BOX = environ.get('DCSPY_NO_MSG_BOXES', 0)
+NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
 
 
 class DcsPyQtGui(QMainWindow):
@@ -305,7 +305,7 @@ class DcsPyQtGui(QMainWindow):
         """Collect data for troubleshooting and ask user where to save."""
         zip_file = collect_debug_data()
         try:
-            dst_dir = str(Path(environ['USERPROFILE']) / 'Desktop')
+            dst_dir = str(Path(os.environ['USERPROFILE']) / 'Desktop')
         except KeyError:
             dst_dir = 'C:\\'
         directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
@@ -816,7 +816,7 @@ class DcsPyQtGui(QMainWindow):
 
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self) -> None:
-        """Check version of DCSpy and show message box."""
+        """Check a version of DCSpy and show message box."""
         ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
@@ -828,22 +828,41 @@ class DcsPyQtGui(QMainWindow):
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Unable to check DCSpy version online')
 
     def _download_new_release(self) -> None:
-        """Download new release if running PyInstaller version or show instruction when running Pip version."""
+        """Download the new release if running PyInstaller version or Pip version."""
         if getattr(sys, 'frozen', False):
-            rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
-            directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: str(Path.cwd()))
+            self._restart_pyinstaller_ver()
+        else:
+            self._restart_pip_ver()
+
+    def _restart_pyinstaller_ver(self):
+        """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
+        rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+        exe_parent_dir = Path(sys.executable).parent
+        reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
+                                       message=f'Download new version {rel_info.ver} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
+                                       defaultButton=QMessageBox.StandardButton.Yes)
+        if bool(reply == QMessageBox.StandardButton.Yes):
             try:
-                destination = Path(directory) / rel_info.asset_file
+                destination = exe_parent_dir / rel_info.asset_file
                 download_file(url=rel_info.dl_url, save_path=destination)
-                LOG.debug(f'Save new release: {destination}')
+                old_ver_dst = exe_parent_dir / f'dcspy_{__version__}.exe'
+                new_ver_dst = exe_parent_dir / 'dcspy.exe'
+                os.rename(src=Path(sys.executable), dst=old_ver_dst)
+                LOG.debug(f'Rename: {Path(sys.executable)} -> {old_ver_dst}')
+                os.rename(src=destination, dst=new_ver_dst)
+                LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
+                LOG.info('Restart to run new version.')
+                os.execv(exe_parent_dir / 'dcspy.exe', sys.argv)
             except PermissionError as exc:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
+
+    def _restart_pip_ver(self):
+        """Download and restart a new version of DCSpy when using a Pip version."""
+        rc, err, out = run_pip_command('install --upgrade dcspy')
+        if not rc:
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Pip Install', message=out.split('\r\n')[-2])
         else:
-            rc, err, out = run_pip_command('install --upgrade dcspy')
-            if not rc:
-                self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Pip Install', message=out.split('\r\n')[-2])
-            else:
-                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Pip Install', message=err)
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Pip Install', message=err)
 
     # <=><=><=><=><=><=><=><=><=><=><=> check bios updates <=><=><=><=><=><=><=><=><=><=><=>
     def _bios_check_clicked(self, silence=False) -> None:
