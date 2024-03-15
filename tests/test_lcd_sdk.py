@@ -29,7 +29,7 @@ def test_all_failure_cases(function, lcd, args, result):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     lcd_sdk = LcdSdkManager('test', lcd)
-    lcd_sdk.LCD_DLL = None
+    lcd_sdk.lcd_dll = None
     assert getattr(lcd_sdk, function)(*args) is result
 
 

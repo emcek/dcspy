@@ -24,7 +24,7 @@ class LcdSdkManager:
         """
         result = None
         if not skip:
-            self.LCD_DLL: Lib = load_dll(LcdDll)  # type: ignore[assignment]
+            self.lcd_dll: Lib = load_dll(LcdDll)  # type: ignore[assignment]
             result = self.logi_lcd_init(name=name, lcd_type=lcd_type)
         LOG.debug(f'LCD is connected: {result}')
 
@@ -38,7 +38,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
@@ -50,7 +50,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdIsConnected(lcd_type)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdIsConnected(lcd_type)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
@@ -62,21 +62,21 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdIsButtonPressed(button)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdIsButtonPressed(button)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
     def logi_lcd_update(self) -> None:
         """Update the LCD."""
         try:
-            self.LCD_DLL.LogiLcdUpdate()  # type: ignore[attr-defined]
+            self.lcd_dll.LogiLcdUpdate()  # type: ignore[attr-defined]
         except AttributeError:
             pass
 
     def logi_lcd_shutdown(self) -> None:
         """Kill the applet and frees memory used by the SDK."""
         try:
-            self.LCD_DLL.LogiLcdShutdown()  # type: ignore[attr-defined]
+            self.lcd_dll.LogiLcdShutdown()  # type: ignore[attr-defined]
         except AttributeError:
             pass
 
@@ -94,7 +94,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))  # type: ignore[attr-defined]
         except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
             return False
 
@@ -107,7 +107,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
@@ -123,7 +123,7 @@ class LcdSdkManager:
         """
         img_bytes = [byte for pixel in pixels for byte in pixel]
         try:
-            return self.LCD_DLL.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))  # type: ignore[attr-defined]
         except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
             return False
 
@@ -139,7 +139,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
@@ -154,7 +154,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.LCD_DLL.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
