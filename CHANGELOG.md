@@ -1,6 +1,9 @@
 ## 3.3.0
-* Add new State action to set particular value for any controller
-* Unload previous plane when loading next one - remove old BIOS callbacks
+* Add new State action to set a particular value for any controller
+* Unload the previous plane when loading the next one - remove old BIOS callbacks
+* When a new version is downloaded, DCSpy will restart itself
+* Internal:
+  * Make LCD SDK more flexible and allow to start DCSpy without working LCD
 
 ## 3.2.0
 * Add new Push button option to support push button controls with only two states (@sleighzy, @emcek)
