@@ -13,8 +13,7 @@ from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
-from dcspy.sdk import lcd_sdk
-from dcspy.sdk.key_sdk import GkeySdkManager
+from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
@@ -53,10 +52,11 @@ class KeyboardManager:
         self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
-        lcd_sdk.logi_lcd_init('DCS World', self.lcd.type.value)
-        self.key_sdk = GkeySdkManager(self.gkey_callback_handler)
+        self.skip_lcd = kwargs.get('skip_lcd', False)
+        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type.value, skip=self.skip_lcd)
+        self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
         success = self.key_sdk.logi_gkey_init()
-        LOG.info(f'logitech gkey sdk initialised: {success}')
+        LOG.debug(f'G-Key is connected: {success}')
         self.plane = BasicAircraft(self.lcd)
         self.vert_space = 0
 
@@ -79,10 +79,10 @@ class KeyboardManager:
         :param message: List of strings to display, row by row.
         """
         self._display = message
-        lcd_sdk.update_display(self._prepare_image())
+        if not self.skip_lcd:
+            self.lcd_sdk.update_display(self._prepare_image())
 
-    @staticmethod
-    def text(message: List[str]) -> None:
+    def text(self, message: List[str]) -> None:
         """
         Display message at LCD.
 
@@ -90,7 +90,8 @@ class KeyboardManager:
         For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :param message: List of strings to display, row by row.
         """
-        lcd_sdk.update_text(message)
+        if not self.skip_lcd:
+            self.lcd_sdk.update_text(message)
 
     def detecting_plane(self, value: str) -> None:
         """
@@ -133,7 +134,8 @@ class KeyboardManager:
         """
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
-            self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd)
+            lcd_update_func = self.lcd_sdk.update_display if not self.skip_lcd else None
+            self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd, update_display=lcd_update_func)
             LOG.debug(f'Dynamic load of: {self.plane_name} as AdvancedAircraft | BIOS: {self.plane.bios_name}')
             self._setup_plane_callback()
         else:
@@ -171,7 +173,7 @@ class KeyboardManager:
         :return: LcdButton enum of pressed button
         """
         for btn in self.buttons:
-            if lcd_sdk.logi_lcd_is_button_pressed(btn.value):
+            if self.lcd_sdk.logi_lcd_is_button_pressed(btn.value):
                 if not self.lcdbutton_pressed:
                     self.lcdbutton_pressed = True
                     return LcdButton(btn)
@@ -186,9 +188,10 @@ class KeyboardManager:
         * detect if button was pressed
         * sent action to DCS-BIOS via network socket
         """
-        button = self.check_buttons()
-        if button.value:
-            self._send_request(button, key_down=KEY_DOWN)
+        if not self.skip_lcd:
+            button = self.check_buttons()
+            if button.value:
+                self._send_request(button, key_down=KEY_DOWN)
 
     def _send_request(self, button: Union[LcdButton, Gkey], key_down: int) -> None:
         """
@@ -210,7 +213,7 @@ class KeyboardManager:
         :param true_clear:
         """
         LOG.debug(f'Clear LCD type: {self.lcd.type}')
-        lcd_sdk.clear_display(true_clear)
+        self.lcd_sdk.clear_display(true_clear)
 
     def _prepare_image(self) -> Image.Image:
         """
@@ -243,7 +246,7 @@ class G13(KeyboardManager):
         :param parser: DCS-BIOS parser instance
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG13
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -261,7 +264,7 @@ class G510(KeyboardManager):
         :param sock: multicast UDP socket
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG510
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -279,7 +282,7 @@ class G15v1(KeyboardManager):
         :param sock: multicast UDP socket
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG15v1
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -297,7 +300,7 @@ class G15v2(KeyboardManager):
         :param sock: multicast UDP socket
         """
         LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono)
+        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG15v2
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)
@@ -315,7 +318,7 @@ class G19(KeyboardManager):
         :param sock: multicast UDP socket
         """
         LcdColor.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdColor)
+        super().__init__(parser, sock, lcd_type=LcdColor, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG19
         self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
         self.gkey = Gkey.generate(key=self.model.gkeys, mode=self.model.modes)

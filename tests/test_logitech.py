@@ -7,16 +7,17 @@ from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, Lcd
 
 
 def test_keyboard_base_basic_check(keyboard_base):
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     assert str(keyboard_base) == 'KeyboardManager: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
-            '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel')
+            '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel',
+            'lcd_sdk', 'key_sdk')
     for test_string in data:
         assert test_string in logitech_repr
 
-    with patch.object(lcd_sdk, 'clear_display', return_value=True):
+    with patch.object(LcdSdkManager, 'clear_display', return_value=True):
         keyboard_base.clear()
 
 
@@ -35,10 +36,11 @@ def test_keyboard_base_basic_check(keyboard_base):
     'Mono None Button',
     'Color None Button'])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
+
     keyboard = request.getfixturevalue(keyboard)
     keyboard.lcdbutton_pressed = pressed1
-    with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
+    with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
         assert keyboard.check_buttons() == chk_btn
     lcd_btn_pressed.assert_has_calls(calls)
     assert keyboard.lcdbutton_pressed is pressed2
@@ -46,9 +48,10 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_keyboard_button_handle_lcdbutton(keyboard, request):
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
+
     keyboard = request.getfixturevalue(keyboard)
-    with patch.object(lcd_sdk, 'logi_lcd_is_button_pressed', side_effect=[True]):
+    with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=[True]):
         keyboard.button_handle()
     keyboard.socket.sendto.assert_called_once_with(b'TEST 1\n', ('127.0.0.1', 7778))
 
@@ -107,15 +110,14 @@ def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, det
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
 def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font, keyboard, protocol_parser, sock):
     from dcspy.aircraft import BasicAircraft
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
+    with patch.object(LcdSdkManager, 'update_text', return_value=True):
         keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
-    assert isinstance(keyboard.plane, BasicAircraft)
-    assert isinstance(keyboard.lcd, LcdInfo)
-    assert keyboard.lcd.type == lcd_type
-    assert isinstance(keyboard.display, list)
-    with patch.object(lcd_sdk, 'update_display', return_value=True):
+        assert isinstance(keyboard.plane, BasicAircraft)
+        assert isinstance(keyboard.lcd, LcdInfo)
+        assert keyboard.lcd.type == lcd_type
+        assert isinstance(keyboard.display, list)
         keyboard.display = ['1', '2']
         assert len(keyboard.display) == 2
 
@@ -132,12 +134,10 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
     (FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19)
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
 def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True):
+    with patch.object(LcdSdkManager, 'update_text', return_value=True) as upd_txt:
         keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
-
-    with patch.object(lcd_sdk, 'update_text', return_value=True) as upd_txt:
         keyboard.text(['1', '2'])
         upd_txt.assert_called()
 

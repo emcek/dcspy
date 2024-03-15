@@ -21,13 +21,14 @@ def test_check_all_aircraft_inherit_from_correct_base_class(plane, request):
     ('field2', {'addr': 0xdeadbeef, 'len': 16, 'value': ''}, 'val2', 'logi_lcd_color_set_background', [False, True], 'advancedaircraft_color'),
 ], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, plane, request):
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
+
     aircraft = request.getfixturevalue(plane)
     assert aircraft.bios_data == {}
     aircraft.bios_data = {selector: data}
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=effect), \
-            patch.object(lcd_sdk, c_func, return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
+
+    with patch.object(LcdSdkManager, c_func, return_value=True), \
+            patch.object(LcdSdkManager, 'logi_lcd_update', return_value=True):
         assert aircraft.bios_data[selector]['value'] == ''
         assert aircraft.get_bios('none') == ''
         with raises(NotImplementedError):
@@ -39,11 +40,11 @@ def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, pla
     ('logi_lcd_color_set_background', 'advancedaircraft_color'),
 ], ids=['Mono LCD', 'Color LCD'])
 def test_aircraft_base_class_prepare_img(c_func, plane, request):
-    from dcspy.sdk import lcd_sdk
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
+
     aircraft = request.getfixturevalue(plane)
-    with patch.object(lcd_sdk, 'logi_lcd_is_connected', return_value=True), \
-            patch.object(lcd_sdk, c_func, return_value=True), \
-            patch.object(lcd_sdk, 'logi_lcd_update', return_value=True), \
+    with patch.object(LcdSdkManager, c_func, return_value=True), \
+            patch.object(LcdSdkManager, 'logi_lcd_update', return_value=True), \
             raises(NotImplementedError):
         aircraft.prepare_image()
 

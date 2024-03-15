@@ -38,7 +38,7 @@ class GkeySdkManager:
 
         :param gkey_callback_handler: callback handler
         """
-        self.KEY_DLL: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
+        self.key_dll: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
         self.gkey_context = LogiGkeyCBContext()
         self.user_callback = callback
         self.gkey_context.gkeyCallBack = GKEY_CALLBACK(self._callback)
@@ -67,18 +67,17 @@ class GkeySdkManager:
         :return: If the function succeeds, it returns True. Otherwise, False.
         """
         try:
-            LOG.info('Initialising Logitech Gkey SDK...')
-            self.KEY_DLL.LogiGkeyInit.restype = c_bool
-            self.KEY_DLL.LogiGkeyInit.argtypes = [POINTER(LogiGkeyCBContext)]
+            self.key_dll.LogiGkeyInit.restype = c_bool
+            self.key_dll.LogiGkeyInit.argtypes = [POINTER(LogiGkeyCBContext)]
 
-            return self.KEY_DLL.LogiGkeyInit(self.gkey_context_ptr)
+            return self.key_dll.LogiGkeyInit(self.gkey_context_ptr)
         except AttributeError:
             return False
 
     def logi_gkey_shutdown(self) -> None:
         """Unload the corresponding DLL and frees up any allocated resources."""
         try:
-            self.KEY_DLL.LogiGkeyShutdown()
+            self.key_dll.LogiGkeyShutdown()
         except AttributeError:
             pass
 
@@ -91,7 +90,7 @@ class GkeySdkManager:
         :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise.
         """
         try:
-            return self.KEY_DLL.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)
+            return self.key_dll.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)
         except AttributeError:
             return False
 
@@ -104,6 +103,6 @@ class GkeySdkManager:
         :return: Friendly string for specified G-key and Mode number. For example 'G5/M1'.
         """
         try:
-            return self.KEY_DLL.LogiGkeyGetKeyboardGkeyString(g_key, mode)
+            return self.key_dll.LogiGkeyGetKeyboardGkeyString(g_key, mode)
         except AttributeError:
             return ''
