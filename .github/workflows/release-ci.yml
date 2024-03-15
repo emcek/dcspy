@@ -66,8 +66,8 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy_${{ steps.version.outputs.number }}.exe
-            dcspy_cli_${{ steps.version.outputs.number }}.exe
+            dcspy.exe
+            dcspy_cli.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
