@@ -14,7 +14,7 @@ def test_all_failure_cases(function, args, result):
         print(key_idx, mode, key_down)
 
     key_sdk = GkeySdkManager(callback=gkey_callback)
-    key_sdk.KEY_DLL = None
+    key_sdk.key_dll = None
     assert getattr(key_sdk, function)(*args) is result
 
 
