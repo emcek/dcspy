@@ -16,3 +16,20 @@ def test_all_failure_cases(function, args, result):
     key_sdk = GkeySdkManager(callback=gkey_callback)
     key_sdk.KEY_DLL = None
     assert getattr(key_sdk, function)(*args) is result
+
+
+def test_user_callback():
+    from dcspy.sdk.key_sdk import GkeySdkManager, GkeyCode
+
+    def gkey_callback(key_idx: int, mode: int, key_down) -> None:
+        assert key_idx == 2
+        assert mode == 3
+        assert key_down == 1
+
+    key_sdk = GkeySdkManager(callback=gkey_callback)
+    gkey_code = GkeyCode()
+    gkey_code.keyIdx = 2
+    gkey_code.mState = 3
+    gkey_code.keyDown = 1
+
+    key_sdk._callback(gkey_code, 'G2/M3', None)
