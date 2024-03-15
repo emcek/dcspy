@@ -305,7 +305,7 @@ CycleButton -* RequestModel
 }
 package sdk{
     class LcdSdkManager <<(L,lightblue)>> {
-        + LCD_DLL: CDLL
+        + lcd_dll: CDLL
         + logi_lcd_init()
         + logi_lcd_is_connected()
         + logi_lcd_is_button_pressed()
@@ -336,7 +336,7 @@ package sdk{
         + start_led_pulse()
     }
     class GkeySdkManager <<(L,lightblue)>> {
-        + KEY_DLL: CDLL
+        + key_dll: CDLL
         + gkey_context: LogiGkeyCBContext
         + user_callback: Callable[[int, int, int], None]
         + gkey_context_ptr: pointer[gkey_contex]
