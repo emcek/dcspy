@@ -53,7 +53,7 @@ class KeyboardManager:
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
         self.skip_lcd = kwargs.get('skip_lcd', False)
-        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type.value, skip=self.skip_lcd)
+        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type, skip=self.skip_lcd)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
         success = self.key_sdk.logi_gkey_init()
         LOG.debug(f'G-Key is connected: {success}')
@@ -173,7 +173,7 @@ class KeyboardManager:
         :return: LcdButton enum of pressed button
         """
         for btn in self.buttons:
-            if self.lcd_sdk.logi_lcd_is_button_pressed(btn.value):
+            if self.lcd_sdk.logi_lcd_is_button_pressed(btn):
                 if not self.lcdbutton_pressed:
                     self.lcdbutton_pressed = True
                     return LcdButton(btn)
@@ -223,14 +223,14 @@ class KeyboardManager:
         For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
+        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width.value, self.lcd.height.value), color=self.lcd.background)
         draw = ImageDraw.Draw(img)
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
         return img
 
     def __str__(self) -> str:
-        return f'{type(self).__name__}: {self.lcd.width}x{self.lcd.height}'
+        return f'{type(self).__name__}: {self.lcd.width.value}x{self.lcd.height.value}'
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
