@@ -306,34 +306,34 @@ CycleButton -* RequestModel
 package sdk{
     class LcdSdkManager <<(L,lightblue)>> {
         + lcd_dll: CDLL
-        + logi_lcd_init()
-        + logi_lcd_is_connected()
-        + logi_lcd_is_button_pressed()
+        + logi_lcd_init(str, LcdType)
+        + logi_lcd_is_connected(LcdType)
+        + logi_lcd_is_button_pressed(LcdButton)
         + logi_lcd_update()
         + logi_lcd_shutdown()
-        + logi_lcd_mono_set_background()
-        + logi_lcd_mono_set_text()
-        + logi_lcd_color_set_background()
-        + logi_lcd_color_set_title()
-        + logi_lcd_color_set_text()
-        + update_text()
-        + update_display()
-        + clear_display()
-        # _clear_mono()
-        # _clear_color()
+        + logi_lcd_mono_set_background(List[int])
+        + logi_lcd_mono_set_text(int, str)
+        + logi_lcd_color_set_background(List[Tuple[int, int, int, int]])
+        + logi_lcd_color_set_title(str, Tuple[int, int, int])
+        + logi_lcd_color_set_text(int, str, Tuple[int, int, int])
+        + update_text(List[str])
+        + update_display(Image)
+        + clear_display(bool)
+        # _clear_mono(bool)
+        # _clear_color(bool)
     }
     class led_sdk <<(L,lightblue)>> {
         + logi_led_init()
-        + logi_led_init_with_name()
-        + logi_led_set_target_device()
+        + logi_led_init_with_name(str)
+        + logi_led_set_target_device(LedConstants)
         + logi_led_save_current_lighting()
         + logi_led_restore_lighting()
-        + logi_led_set_lighting()
-        + logi_led_flash_lighting()
-        + logi_led_pulse_lighting()
+        + logi_led_set_lighting(Tuple[int, int, int])
+        + logi_led_flash_lighting(Tuple[int, int, int], int, int)
+        + logi_led_pulse_lighting(Tuple[int, int, int], int, int)
         + logi_led_stop_effects()
         + logi_led_shutdown()
-        + start_led_pulse()
+        + start_led_pulse(Tuple[int, int, int], int, int, Event)
     }
     class GkeySdkManager <<(L,lightblue)>> {
         + key_dll: CDLL
@@ -341,8 +341,8 @@ package sdk{
         + user_callback: Callable[[int, int, int], None]
         + gkey_context_ptr: pointer[gkey_contex]
         + logi_gkey_init()
-        + logi_gkey_is_keyboard_gkey_pressed()
-        + logi_gkey_is_keyboard_gkey_string()
+        + logi_gkey_is_keyboard_gkey_pressed(int, int)
+        + logi_gkey_is_keyboard_gkey_string(int, int)
         + logi_gkey_shutdown()
     }
     class GkeyCode <<(S,pink)>> {
