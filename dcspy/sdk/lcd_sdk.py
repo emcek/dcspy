@@ -5,7 +5,7 @@ from _cffi_backend import Lib
 from cffi import FFI, CDefError
 from PIL import Image
 
-from dcspy.models import COLOR_HEIGHT, COLOR_WIDTH, MONO_HEIGHT, MONO_WIDTH, TYPE_COLOR, TYPE_MONO
+from dcspy.models import LcdButton, LcdSize, LcdType
 from dcspy.sdk import LcdDll, load_dll
 
 LOG = getLogger(__name__)
@@ -14,7 +14,7 @@ LOG = getLogger(__name__)
 class LcdSdkManager:
     """Lcd SDK manager."""
 
-    def __init__(self, name: str, lcd_type: int, skip=False) -> None:
+    def __init__(self, name: str, lcd_type: LcdType, skip=False) -> None:
         """
         Create Lcd SDK manager.
 
@@ -28,7 +28,7 @@ class LcdSdkManager:
             result = self.logi_lcd_init(name=name, lcd_type=lcd_type)
         LOG.debug(f'LCD is connected: {result}')
 
-    def logi_lcd_init(self, name: str, lcd_type: int) -> bool:
+    def logi_lcd_init(self, name: str, lcd_type: LcdType) -> bool:
         """
         Make necessary initializations.
 
@@ -38,11 +38,11 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.lcd_dll.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type.value)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
-    def logi_lcd_is_connected(self, lcd_type: int) -> bool:
+    def logi_lcd_is_connected(self, lcd_type: LcdType) -> bool:
         """
         Check if a device of the type specified by the parameter is connected.
 
@@ -50,11 +50,11 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.lcd_dll.LogiLcdIsConnected(lcd_type)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdIsConnected(lcd_type.value)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
-    def logi_lcd_is_button_pressed(self, button: int) -> bool:
+    def logi_lcd_is_button_pressed(self, button: LcdButton) -> bool:
         """
         Check if the button specified by the parameter is being pressed.
 
@@ -62,7 +62,7 @@ class LcdSdkManager:
         :return: result
         """
         try:
-            return self.lcd_dll.LogiLcdIsButtonPressed(button)  # type: ignore[attr-defined]
+            return self.lcd_dll.LogiLcdIsButtonPressed(button.value)  # type: ignore[attr-defined]
         except AttributeError:
             return False
 
@@ -166,11 +166,11 @@ class LcdSdkManager:
         For color LCD  takes 8 elements of list and display as 8 rows.
         :param txt: List of strings to display, row by row
         """
-        if self.logi_lcd_is_connected(TYPE_MONO):
+        if self.logi_lcd_is_connected(LcdType.MONO):
             for line_no, line in enumerate(txt):
                 self.logi_lcd_mono_set_text(line_no, line)
             self.logi_lcd_update()
-        elif self.logi_lcd_is_connected(TYPE_COLOR):
+        elif self.logi_lcd_is_connected(LcdType.COLOR):
             for line_no, line in enumerate(txt):
                 self.logi_lcd_color_set_text(line_no, line)
             self.logi_lcd_update()
@@ -183,10 +183,10 @@ class LcdSdkManager:
 
         :param image: image object from pillow library
         """
-        if self.logi_lcd_is_connected(TYPE_MONO):
+        if self.logi_lcd_is_connected(LcdType.MONO):
             self.logi_lcd_mono_set_background(list(image.getdata()))
             self.logi_lcd_update()
-        elif self.logi_lcd_is_connected(TYPE_COLOR):
+        elif self.logi_lcd_is_connected(LcdType.COLOR):
             self.logi_lcd_color_set_background(list(image.getdata()))
             self.logi_lcd_update()
         else:
@@ -198,9 +198,9 @@ class LcdSdkManager:
 
         :param true_clear:
         """
-        if self.logi_lcd_is_connected(TYPE_MONO):
+        if self.logi_lcd_is_connected(LcdType.MONO):
             self._clear_mono(true_clear)
-        elif self.logi_lcd_is_connected(TYPE_COLOR):
+        elif self.logi_lcd_is_connected(LcdType.COLOR):
             self._clear_color(true_clear)
         self.logi_lcd_update()
 
@@ -210,7 +210,7 @@ class LcdSdkManager:
 
         :param true_clear:
         """
-        self.logi_lcd_mono_set_background([0] * MONO_WIDTH * MONO_HEIGHT)
+        self.logi_lcd_mono_set_background([0] * LcdSize.MONO_WIDTH.value * LcdSize.MONO_HEIGHT.value)
         if true_clear:
             for i in range(4):
                 self.logi_lcd_mono_set_text(i, '')
@@ -221,7 +221,7 @@ class LcdSdkManager:
 
         :param true_clear:
         """
-        self.logi_lcd_color_set_background([(0,) * 4] * COLOR_WIDTH * COLOR_HEIGHT)
+        self.logi_lcd_color_set_background([(0,) * 4] * LcdSize.COLOR_WIDTH.value * LcdSize.COLOR_HEIGHT.value)
         if true_clear:
             for i in range(8):
                 self.logi_lcd_color_set_text(i, '')
