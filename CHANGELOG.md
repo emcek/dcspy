@@ -5,7 +5,7 @@
 * Now all executable files do not contain a version, so LGS will not complains about profile name
 * Internal:
   * Make LCD SDK more flexible and allow to start DCSpy without working LCD
-  * add E2E test to run locally full flow of DCS-BIOS  
+  * add E2E test to run locally full flow of DCS-BIOS
 
 ## 3.2.0
 * Add new Push button option to support push button controls with only two states (@sleighzy, @emcek)
