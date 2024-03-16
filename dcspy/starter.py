@@ -115,13 +115,12 @@ def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig, skip_lcd=Fals
     :param fonts_cfg: fonts configuration for LCD
     :param skip_lcd: do not initialize LCD
     """
-    dcs_sock = _prepare_socket()
-    parser = ProtocolParser()
-    manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg, skip_lcd=skip_lcd)
-    LOG.info(f'Loading: {str(manager)}')
-    LOG.debug(f'Loading: {repr(manager)}')
-    dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
-    _handle_connection(manager=manager, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
-    dcs_sock.close()
+    with _prepare_socket() as dcs_sock:
+        parser = ProtocolParser()
+        manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg, skip_lcd=skip_lcd)
+        LOG.info(f'Loading: {str(manager)}')
+        LOG.debug(f'Loading: {repr(manager)}')
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
+        _handle_connection(manager=manager, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     LOG.info('DCSpy stopped.')
     manager.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(get_config_yaml_item("dcsbios"))).ver}']
