@@ -6,7 +6,7 @@ from typing import Tuple
 from _cffi_backend import Lib
 from cffi import FFI
 
-from dcspy.models import LOGI_DEVICETYPE_ALL
+from dcspy.models import LedConstants
 from dcspy.sdk import LedDll, load_dll
 
 LOG = getLogger(__name__)
@@ -44,7 +44,7 @@ def logi_led_init_with_name(name: str) -> bool:
         return False
 
 
-def logi_led_set_target_device(target_device: int) -> bool:
+def logi_led_set_target_device(target_device: LedConstants) -> bool:
     """
     Set the target device type for future calls.
 
@@ -55,7 +55,7 @@ def logi_led_set_target_device(target_device: int) -> bool:
     :return: result
     """
     try:
-        return LED_DLL.LogiLedSetTargetDevice(target_device)  # type: ignore[attr-defined]
+        return LED_DLL.LogiLedSetTargetDevice(target_device.value)  # type: ignore[attr-defined]
     except AttributeError:
         return False
 
@@ -175,7 +175,7 @@ def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, eve
     LOG.debug('Start LED thread')
     logi_led_init()
     sleep(0.05)
-    logi_led_set_target_device(LOGI_DEVICETYPE_ALL)
+    logi_led_set_target_device(LedConstants.LOGI_DEVICETYPE_ALL)
     sleep_time = duration + 0.2
     logi_led_pulse_lighting(rgb, duration, interval)
     sleep(sleep_time)
