@@ -22,12 +22,12 @@ def test_keyboard_base_basic_check(keyboard_base):
 
 
 @mark.parametrize('keyboard, pressed1, effect, chk_btn, calls, pressed2', [
-    ('keyboard_mono', False, [False] * 3 + [True], LcdButton.FOUR, [call(1), call(2), call(4), call(8)], True),
-    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.OK, [call(256), call(512), call(4096), call(8192), call(1024)], True),
-    ('keyboard_mono', True, [True, False, False, False], LcdButton.NONE, [call(1)], True),
-    ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE, [call(256)], True),
-    ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(1), call(2), call(4), call(8)], False),
-    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(256), call(512), call(4096), call(8192), call(1024), call(2048), call(16384)], False),
+    ('keyboard_mono', False, [False] * 3 + [True], LcdButton.FOUR, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], True),
+    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.OK, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.UP), call(LcdButton.DOWN), call(LcdButton.OK)], True),
+    ('keyboard_mono', True, [True, False, False, False], LcdButton.NONE, [call(LcdButton.ONE)], True),
+    ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE, [call(LcdButton.LEFT)], True),
+    ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], False),
+    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.UP), call(LcdButton.DOWN), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.MENU)], False),
 ], ids=[
     'Mono 4 Button',
     'Color Ok Button',
