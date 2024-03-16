@@ -685,6 +685,7 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of keyboards."""
         for keyboard_type in KEYBOARD_TYPES:
             getattr(self, f'rb_{keyboard_type.lower()}').toggled.connect(partial(self._select_keyboard, keyboard_type))
+
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
         """
