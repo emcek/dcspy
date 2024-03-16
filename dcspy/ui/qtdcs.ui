@@ -909,9 +909,6 @@
           <property name="enabled">
            <bool>false</bool>
           </property>
-          <property name="toolTip">
-           <string>Set one particular value for keystroke.</string>
-          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>

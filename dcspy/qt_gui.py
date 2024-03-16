@@ -170,11 +170,7 @@ class DcsPyQtGui(QMainWindow):
         self.le_custom.editingFinished.connect(self._input_iface_changed_or_custom_text_changed)
         self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
         self.hs_set_state.valueChanged.connect(self._input_iface_changed_or_custom_text_changed)
-
-    def _init_keyboards(self) -> None:
-        """Initialize of keyboards."""
-        for keyboard_type in KEYBOARD_TYPES:
-            getattr(self, f'rb_{keyboard_type.lower()}').toggled.connect(partial(self._select_keyboard, keyboard_type))
+        self.hs_set_state.valueChanged.connect(self._hs_set_state_moved)
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
@@ -631,6 +627,9 @@ class DcsPyQtGui(QMainWindow):
             self.rb_cycle.setChecked(True)
             self.hs_set_state.setMinimum(0)
             self.hs_set_state.setMaximum(ctrl_key.max_value)
+            self.hs_set_state.setSingleStep(ctrl_key.suggested_step)
+            self.hs_set_state.setPageStep(ctrl_key.suggested_step)
+            self.hs_set_state.setTickInterval(ctrl_key.suggested_step)
 
     def _handle_variable_step_and_set_state(self, ctrl_key: ControlKeyData):
         """Handle the case where the control key has a VariableStep and SetState."""
@@ -674,6 +673,18 @@ class DcsPyQtGui(QMainWindow):
         except (KeyError, AttributeError):
             pass
 
+    def _hs_set_state_moved(self, value: int) -> None:
+        """
+        Set tooltip with current value of slider.
+
+        :param value: The new value to set.
+        """
+        self.hs_set_state.setToolTip(str(value))
+
+    def _init_keyboards(self) -> None:
+        """Initialize of keyboards."""
+        for keyboard_type in KEYBOARD_TYPES:
+            getattr(self, f'rb_{keyboard_type.lower()}').toggled.connect(partial(self._select_keyboard, keyboard_type))
     @staticmethod
     def _disable_items_with(text: str, widget: QComboBox) -> None:
         """
