@@ -762,7 +762,7 @@ class DcsPyQtGui(QMainWindow):
         :return: custom value as string
         """
         custom_value = ''
-        if selected_rb_name == 'rb_custom':
+        if selected_rb_name == 'rb_custom' and self.le_custom.text():
             custom_value = self.le_custom.text() if self.le_custom.text()[-1] == '|' else f'{self.le_custom.text()}|'
         elif selected_rb_name == 'rb_set_state':
             custom_value = str(self.hs_set_state.value())
