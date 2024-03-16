@@ -1,8 +1,8 @@
 ## 3.3.0
-* Add new State action to set a particular value for any controller
-* Unload the previous plane when loading the next one - remove old BIOS callbacks
-* When a new version is downloaded, DCSpy will restart itself
-* Now all executable files do not contain a version, so LGS will not complains about profile name
+* Add new State action to set a particular value for any controller (@emcek)
+* Unload the previous plane when loading the next one - remove old BIOS callbacks (@emcek)
+* When a new version is downloaded, DCSpy will restart itself (@emcek)
+* Now all executable files do not contain a version, so LGS will not complains about profile name (@emcek)
 * Internal:
   * Make LCD SDK more flexible and allow to start DCSpy without working LCD
   * add E2E test to run locally full flow of DCS-BIOS
