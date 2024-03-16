@@ -12,27 +12,28 @@ def sock():
     return MagicMock()
 
 
-def generate_plane_fixtures(plane, lcd_type_with_fonts):
+def generate_plane_fixtures(plane, lcd_info_with_fonts: models.LcdInfo):
     """
     Generate fixtures for any plane with any lcd type.
 
     :param plane: any plane object
-    :param lcd_type_with_fonts: lcd_type with fonts
+    :param lcd_info_with_fonts: LcdInfo with fonts
     """
     @fixture()
     def _fixture():
         """Fixture."""
         with patch('dcspy.aircraft.default_yaml', Path(__file__).resolve().parents[1] / 'dcspy' / 'config.yaml'):
-            plane_instance = plane(lcd_type=lcd_type_with_fonts, update_display=bool)
+            plane_instance = plane(lcd_type=lcd_info_with_fonts, update_display=bool)
         return plane_instance
     return _fixture
 
 
-def generate_keyboard_fixtures(keyboard, lcd_type, lcd_font_setting):
+def generate_keyboard_fixtures(keyboard, lcd_type: models.LcdType, lcd_font_setting: models.FontsConfig):
     """
     Generate fixtures for any keyboard and with lcd_font_setting.
 
     :param keyboard: any keyboard object
+    :param lcd_type: LCD type enum
     :param lcd_font_setting: FontSetting object
     """
     @fixture()
@@ -54,23 +55,23 @@ for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50
                     'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in ['LcdMono', 'LcdColor']:
         airplane = getattr(aircraft, plane_model)
-        lcd_type = getattr(models, lcd)
+        lcd_info_inst = getattr(models, lcd)
         if lcd == 'LcdMono':
-            lcd_type.set_fonts(models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+            lcd_info_inst.set_fonts(models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16))
         else:
-            lcd_type.set_fonts(models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32))
-        name = f'{airplane.__name__.lower()}_{lcd_type.type.name.lower()}'
-        globals()[name] = generate_plane_fixtures(airplane, lcd_type)
+            lcd_info_inst.set_fonts(models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+        name = f'{airplane.__name__.lower()}_{lcd_info_inst.type.name.lower()}'
+        globals()[name] = generate_plane_fixtures(plane=airplane, lcd_info_with_fonts=lcd_info_inst)
 
 for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
     key = getattr(logitech, keyboard_model)
     if keyboard_model == 'G19':
         lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
-        lcd_type = 2
+        lcd_type_enum = models.LcdType.MONO
     else:
         lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
-        lcd_type = 1
-    globals()[keyboard_model] = generate_keyboard_fixtures(key, lcd_type, lcd_font)
+        lcd_type_enum = models.LcdType.COLOR
+    globals()[keyboard_model] = generate_keyboard_fixtures(keyboard=key, lcd_type=lcd_type_enum, lcd_font_setting=lcd_font)
 
 
 def pytest_addoption(parser) -> None:
@@ -173,7 +174,7 @@ def keyboard_base(protocol_parser, sock):
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    lcd_sdk = LcdSdkManager('test', 1)
+    lcd_sdk = LcdSdkManager('test', models.LcdType.MONO)
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
@@ -210,7 +211,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
         def _setup_plane_callback(self) -> None:
             print('empty callback setup')
 
-    lcd_sdk = LcdSdkManager('test', 1)
+    lcd_sdk = LcdSdkManager('test', models.LcdType.MONO)
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
@@ -247,7 +248,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
         def _setup_plane_callback(self) -> None:
             print('empty callback setup')
 
-    lcd_sdk = LcdSdkManager('test', 2)
+    lcd_sdk = LcdSdkManager('test', models.LcdType.COLOR)
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
