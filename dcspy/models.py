@@ -14,24 +14,6 @@ UDP_PORT: Final = 5010
 RECV_ADDR: Final = ('', UDP_PORT)
 MULTICAST_IP: Final = '239.255.50.10'
 
-# LCD types
-TYPE_MONO: Final = 1
-TYPE_COLOR: Final = 2
-
-# LCD Monochrome size
-MONO_WIDTH: Final = 160
-MONO_HEIGHT: Final = 43
-
-# LCD Color size
-COLOR_WIDTH: Final = 320
-COLOR_HEIGHT: Final = 240
-
-# LED constants
-LOGI_LED_DURATION_INFINITE: Final = 0
-LOGI_DEVICETYPE_MONOCHROME: Final = 1
-LOGI_DEVICETYPE_RGB: Final = 2
-LOGI_DEVICETYPE_ALL: Final = LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
-
 # G Key
 LOGITECH_MAX_GKEYS: Final = 30
 LOGITECH_MAX_M_STATES: Final = 4
@@ -563,32 +545,46 @@ class GuiPlaneInputRequest(BaseModel):
         return cls(identifier='', request='', widget_iface='')
 
 
+class LedConstants(Enum):
+    LOGI_LED_DURATION_INFINITE: Final = 0
+    LOGI_DEVICETYPE_MONOCHROME: Final = 1
+    LOGI_DEVICETYPE_RGB: Final = 2
+    LOGI_DEVICETYPE_ALL: Final = 3  # LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
+
+
 class LcdButton(Enum):
     """LCD Buttons."""
-    NONE = 0x0
-    ONE = 0x1
-    TWO = 0x2
-    THREE = 0x4
-    FOUR = 0x8
-    LEFT = 0x100
-    RIGHT = 0x200
-    OK = 0x400
-    CANCEL = 0x800
-    UP = 0x1000
-    DOWN = 0x2000
-    MENU = 0x4000
+    NONE: Final = 0x0
+    ONE: Final = 0x1
+    TWO: Final = 0x2
+    THREE: Final = 0x4
+    FOUR: Final = 0x8
+    LEFT: Final = 0x100
+    RIGHT: Final = 0x200
+    OK: Final = 0x400
+    CANCEL: Final = 0x800
+    UP: Final = 0x1000
+    DOWN: Final = 0x2000
+    MENU: Final = 0x4000
 
 
 class LcdType(Enum):
     """LCD Type."""
-    MONO = TYPE_MONO
-    COLOR = TYPE_COLOR
+    MONO: Final = 1
+    COLOR: Final = 2
+
+
+class LcdSize(Enum):
+    MONO_WIDTH: Final = 160
+    MONO_HEIGHT: Final = 43
+    COLOR_WIDTH: Final = 320
+    COLOR_HEIGHT: Final = 240
 
 
 class LcdMode(Enum):
     """LCD Mode."""
-    BLACK_WHITE = '1'
-    TRUE_COLOR = 'RGBA'
+    BLACK_WHITE: Final = '1'
+    TRUE_COLOR: Final = 'RGBA'
 
 
 class FontsConfig(BaseModel):
@@ -603,8 +599,8 @@ class LcdInfo(BaseModel):
     """LCD info."""
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    width: int
-    height: int
+    width: LcdSize
+    height: LcdSize
     type: LcdType
     foreground: Union[int, Tuple[int, int, int, int]]
     background: Union[int, Tuple[int, int, int, int]]
@@ -624,9 +620,9 @@ class LcdInfo(BaseModel):
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
 
 
-LcdMono = LcdInfo(width=MONO_WIDTH, height=MONO_HEIGHT, type=LcdType.MONO, foreground=255,
+LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
                   background=0, mode=LcdMode.BLACK_WHITE)
-LcdColor = LcdInfo(width=COLOR_WIDTH, height=COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
+LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
                    background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
 
 
