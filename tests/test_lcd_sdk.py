@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.models import LcdButton, LcdType, LcdSize
+from dcspy.models import LcdButton, LcdSize, LcdType
 
 
 @mark.parametrize('function, lcd, args, result', [
