@@ -132,7 +132,7 @@ class AdvancedAircraft(BasicAircraft):
 
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width, self.lcd.height), color=self.lcd.background)
+        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width.value, self.lcd.height.value), color=self.lcd.background)
         getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
         if self.cfg.get('save_lcd', False):
             screen_shot_file = f'{type(self).__name__}_{next(self._debug_img)}.png'
