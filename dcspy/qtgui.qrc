@@ -1,6 +1,21 @@
 <RCC>
   <qresource prefix="icons">
     <file>img/G13.png</file>
+    <file>img/G9.png</file>
+    <file>img/G11.png</file>
+    <file>img/G35.png</file>
+    <file>img/G103.png</file>
+    <file>img/G105.png</file>
+    <file>img/G110.png</file>
+    <file>img/G300.png</file>
+    <file>img/G400.png</file>
+    <file>img/G402.png</file>
+    <file>img/G502.png</file>
+    <file>img/G600.png</file>
+    <file>img/G602.png</file>
+    <file>img/G700.png</file>
+    <file>img/G710.png</file>
+    <file>img/G930.png</file>
     <file>img/cpu.svg</file>
     <file>img/edit-undo.svg</file>
     <file>img/document-save-all.svg</file>
@@ -9,6 +24,7 @@
     <file>img/dcspy_black.svg</file>
     <file>img/dcspy_white.svg</file>
     <file>img/viewitem.svg</file>
+    <file>img/drive-multidisk.svg</file>
     <file>img/jgmenu.svg</file>
     <file>img/github-desktop.svg</file>
     <file>img/preferences-system.svg</file>
@@ -17,8 +33,12 @@
     <file>img/KittehPlayer.svg</file>
     <file>img/input-gaming.svg</file>
     <file>img/media-playback-start.svg</file>
+    <file>img/mouse.svg</file>
+    <file>img/audio-headphones.svg</file>
+    <file>img/computer-laptop.svg</file>
     <file>img/configure.svg</file>
     <file>img/kr_comparedirs.svg</file>
+    <file>img/MX518.png</file>
     <file>img/folder-violet.svg</file>
     <file>img/edit-download.svg</file>
     <file>img/xfsm-reboot.svg</file>
