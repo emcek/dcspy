@@ -3,7 +3,7 @@ from unittest.mock import call, patch
 from pytest import mark
 
 from dcspy.logitech import G13, G19, G510, G15v1, G15v2
-from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, LcdMode, LcdType, LcdSize
+from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType
 
 
 def test_keyboard_base_basic_check(keyboard_base):
