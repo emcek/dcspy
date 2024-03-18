@@ -9,7 +9,7 @@ from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, Lcd
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    assert str(keyboard_base) == 'KeyboardManager: 160x43'
+    assert str(keyboard_base) == 'LcdDevice: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
             '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel',
@@ -112,7 +112,7 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
     from dcspy.aircraft import BasicAircraft
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    with patch.object(LcdSdkManager, 'update_text', return_value=True):
+    with patch.object(LcdSdkManager, 'update_display') as upd_display:
         keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
         assert isinstance(keyboard.plane, BasicAircraft)
         assert isinstance(keyboard.lcd, LcdInfo)
@@ -120,6 +120,7 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
         assert isinstance(keyboard.display, list)
         keyboard.display = ['1', '2']
         assert len(keyboard.display) == 2
+        upd_display.assert_called_once()
 
     img = keyboard._prepare_image()
     assert img.mode == mode.value
@@ -136,10 +137,10 @@ def test_check_keyboard_display_and_prepare_image(mode, size, lcd_type, lcd_font
 def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    with patch.object(LcdSdkManager, 'update_text', return_value=True) as upd_txt:
+    with patch.object(LcdSdkManager, 'update_text') as upd_txt:
         keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
         keyboard.text(['1', '2'])
-        upd_txt.assert_called()
+        upd_txt.assert_called_once()
 
 
 @mark.parametrize('model', [
