@@ -638,6 +638,10 @@ class KeyboardModel(BaseModel):
     lcdkeys: Sequence[LcdButton]
     lcd: str
 
+    def __str__(self) -> str:
+        lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcdkeys])
+        return f"G-Keys: {self.gkeys} in {self.modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd}"
+
 
 ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcd='color',
                          lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
