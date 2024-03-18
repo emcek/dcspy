@@ -567,6 +567,9 @@ class LcdButton(Enum):
     DOWN: Final = 0x2000
     MENU: Final = 0x4000
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class LcdType(Enum):
     """LCD Type."""
