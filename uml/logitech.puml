@@ -79,6 +79,7 @@ package logitech {
     LcdKeyboard <|-- G15v2
     LcdKeyboard <|-- G19
 
+    Keyboard <|-- G910
     Keyboard <|-- G710
     Keyboard <|-- G110
     Keyboard <|-- G103

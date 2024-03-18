@@ -284,6 +284,10 @@ class Keyboard(LogitechDevice):
     pass
 
 
+class G910(Keyboard):
+    pass
+
+
 class G710(Keyboard):
     pass
 
