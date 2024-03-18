@@ -20,7 +20,69 @@ LOG = getLogger(__name__)
 
 
 class LogitechDevice:
-    pass
+    """
+    General Logitech device.
+
+    Child class needs redefine:
+    - pass lcd_type argument as LcdInfo to super constructor
+
+    :param parser: DCS-BIOS parser instance
+    :param sock: multicast UDP socket
+    """
+
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
+        dcsbios.StringBuffer(parser=parser, address=0x0, max_length=0x10, callback=partial(self.detecting_plane))
+        self.parser = parser
+        self.socket = sock
+        self.plane_name = ''
+        self.bios_name = ''
+        self.plane_detected = False
+        self.lcdbutton_pressed = False
+        self._display: List[str] = []
+        self.lcd = kwargs.get('lcd_type', LcdMono)
+        self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
+        self.gkey: Sequence[Gkey] = ()
+        self.buttons: Sequence[LcdButton] = ()
+        self.skip_lcd = kwargs.get('skip_lcd', False)
+        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type, skip=self.skip_lcd)
+        self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
+        success = self.key_sdk.logi_gkey_init()
+        LOG.debug(f'G-Key is connected: {success}')
+        self.plane = BasicAircraft(self.lcd)
+        self.vert_space = 0
+
+    def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int) -> None:
+        """
+        Logitech G-Key callback handler.
+
+        Send action to DCS-BIOS via network socket.
+
+        :param key_idx: index number of G-Key
+        :param mode: mode of G-Key
+        :param key_down: key state, 1 - pressed, 0 - released
+        """
+        gkey = Gkey(key=key_idx, mode=mode)
+        LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
+        self._send_request(button=gkey, key_down=key_down)
+
+    def _send_request(self, button: Union[LcdButton, Gkey], key_down: int) -> None:
+        """
+        Sent action to DCS-BIOS via network socket.
+
+        :param button: LcdButton or Gkey
+        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        """
+        req_model = self.plane.button_request(button)
+        for request in req_model.bytes_requests(key_down=key_down):
+            LOG.debug(f'{button=}: {request=}')
+            self.socket.sendto(request, SEND_ADDR)
+            sleep(TIME_BETWEEN_REQUESTS)
+
+    def __str__(self) -> str:
+        return f'{type(self).__name__}: {self.lcd.width.value}x{self.lcd.height.value}'
+
+    def __repr__(self) -> str:
+        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class Headphone(LogitechDevice):
@@ -56,24 +118,10 @@ class LcdKeyboard(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        dcsbios.StringBuffer(parser=parser, address=0x0, max_length=0x10, callback=partial(self.detecting_plane))
-        self.parser = parser
-        self.socket = sock
-        self.plane_name = ''
-        self.bios_name = ''
-        self.plane_detected = False
-        self.lcdbutton_pressed = False
-        self._display: List[str] = []
+        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.lcd = kwargs.get('lcd_type', LcdMono)
         self.model = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
-        self.gkey: Sequence[Gkey] = ()
-        self.buttons: Sequence[LcdButton] = ()
-        self.skip_lcd = kwargs.get('skip_lcd', False)
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type, skip=self.skip_lcd)
-        self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
-        success = self.key_sdk.logi_gkey_init()
-        LOG.debug(f'G-Key is connected: {success}')
-        self.plane = BasicAircraft(self.lcd)
         self.vert_space = 0
 
     @property
@@ -168,20 +216,6 @@ class LcdKeyboard(LogitechDevice):
             dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
-    def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int) -> None:
-        """
-        Logitech G-Key callback handler.
-
-        Send action to DCS-BIOS via network socket.
-
-        :param key_idx: index number of G-Key
-        :param mode: mode of G-Key
-        :param key_down: key state, 1 - pressed, 0 - released
-        """
-        gkey = Gkey(key=key_idx, mode=mode)
-        LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
-        self._send_request(button=gkey, key_down=key_down)
-
     def check_buttons(self) -> LcdButton:
         """
         Check if button was pressed and return it`s enum.
@@ -209,19 +243,6 @@ class LcdKeyboard(LogitechDevice):
             if button.value:
                 self._send_request(button, key_down=KEY_DOWN)
 
-    def _send_request(self, button: Union[LcdButton, Gkey], key_down: int) -> None:
-        """
-        Sent action to DCS-BIOS via network socket.
-
-        :param button: LcdButton or Gkey
-        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
-        """
-        req_model = self.plane.button_request(button)
-        for request in req_model.bytes_requests(key_down=key_down):
-            LOG.debug(f'{button=}: {request=}')
-            self.socket.sendto(request, SEND_ADDR)
-            sleep(TIME_BETWEEN_REQUESTS)
-
     def clear(self, true_clear=False) -> None:
         """
         Clear LCD.
@@ -244,12 +265,6 @@ class LcdKeyboard(LogitechDevice):
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
         return img
-
-    def __str__(self) -> str:
-        return f'{type(self).__name__}: {self.lcd.width.value}x{self.lcd.height.value}'
-
-    def __repr__(self) -> str:
-        return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
 class G13(LcdKeyboard):
