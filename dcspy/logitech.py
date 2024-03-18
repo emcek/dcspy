@@ -19,7 +19,23 @@ from dcspy.utils import get_full_bios_for_plane, get_planes_list
 LOG = getLogger(__name__)
 
 
-class KeyboardManager:
+class LogitechDevice:
+    pass
+
+
+class Headphone(LogitechDevice):
+    pass
+
+
+class Mouse(LogitechDevice):
+    pass
+
+
+class Keyboard(LogitechDevice):
+    pass
+
+
+class LcdKeyboard(LogitechDevice):
     """General keyboard with LCD from Logitech."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -236,7 +252,7 @@ class KeyboardManager:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
-class G13(KeyboardManager):
+class G13(LcdKeyboard):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -253,7 +269,7 @@ class G13(KeyboardManager):
         self.vert_space = 10
 
 
-class G510(KeyboardManager):
+class G510(LcdKeyboard):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -271,7 +287,7 @@ class G510(KeyboardManager):
         self.vert_space = 10
 
 
-class G15v1(KeyboardManager):
+class G15v1(LcdKeyboard):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -289,7 +305,7 @@ class G15v1(KeyboardManager):
         self.vert_space = 10
 
 
-class G15v2(KeyboardManager):
+class G15v2(LcdKeyboard):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -307,7 +323,7 @@ class G15v2(KeyboardManager):
         self.vert_space = 10
 
 
-class G19(KeyboardManager):
+class G19(LcdKeyboard):
     """Logitech`s keyboard with color LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """

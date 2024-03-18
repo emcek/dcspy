@@ -37,13 +37,13 @@ package dcsbios {
 }
 
 package logitech {
-    KeyboardManager <|-- G13
-    KeyboardManager <|-- G510
-    KeyboardManager <|-- G15v1
-    KeyboardManager <|-- G15v2
-    KeyboardManager <|-- G19
+    LcdKeyboard <|-- G13
+    LcdKeyboard <|-- G510
+    LcdKeyboard <|-- G15v1
+    LcdKeyboard <|-- G15v2
+    LcdKeyboard <|-- G19
 
-    class KeyboardManager {
+    class LcdKeyboard {
         + parser : ProtocolParser
         + plane : BasicAircraft
         + plane_name = '' : str
@@ -294,12 +294,12 @@ LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LcdButton -* BasicAircraft
 LcdButton -* KeyboardModel
-LcdButton -* KeyboardManager
+LcdButton -* LcdKeyboard
 Gkey --* BasicAircraft
-Gkey --* KeyboardManager
+Gkey --* LcdKeyboard
 Direction --* ZigZagIterator
 ZigZagIterator --* RequestModel
-KeyboardModel -* KeyboardManager
+KeyboardModel -* LcdKeyboard
 RequestModel --* KeyRequest
 CycleButton -* RequestModel
 }
@@ -359,11 +359,11 @@ package sdk{
     }
 }
 
-KeyboardManager *- BasicAircraft
-LcdInfo --* KeyboardManager
-KeyboardManager *-- ProtocolParser
-KeyboardManager *-- LcdSdkManager
-KeyboardManager *-- GkeySdkManager
+LcdKeyboard *- BasicAircraft
+LcdInfo --* LcdKeyboard
+LcdKeyboard *-- ProtocolParser
+LcdKeyboard *-- LcdSdkManager
+LcdKeyboard *-- GkeySdkManager
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer

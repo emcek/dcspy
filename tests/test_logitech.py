@@ -9,7 +9,7 @@ from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, Lcd
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    assert str(keyboard_base) == 'LcdDevice: 160x43'
+    assert str(keyboard_base) == 'LcdKeyboard: 160x43'
     logitech_repr = repr(keyboard_base)
     data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
             '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel',

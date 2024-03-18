@@ -9,7 +9,7 @@ from typing import Iterator
 
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
-from dcspy.logitech import KeyboardManager
+from dcspy.logitech import LcdKeyboard
 from dcspy.models import MULTICAST_IP, RECV_ADDR, FontsConfig
 from dcspy.utils import check_bios_ver, get_version_string
 
@@ -18,7 +18,7 @@ LOOP_FLAG = True
 __version__ = '3.3.0'
 
 
-def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
+def _handle_connection(manager: LcdKeyboard, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
     """
     Handle main loop where all the magic is happened.
 
@@ -44,7 +44,7 @@ def _handle_connection(manager: KeyboardManager, parser: ProtocolParser, sock: s
             _sock_err_handler(manager, start_time, ver_string, support_banner, exp)
 
 
-def _load_new_plane_if_detected(manager: KeyboardManager) -> None:
+def _load_new_plane_if_detected(manager: LcdKeyboard) -> None:
     """
     Load instance when new plane detected.
 
@@ -70,7 +70,7 @@ def _supporters(text: str, width: int) -> Iterator[str]:
         queue.rotate(-1)
 
 
-def _sock_err_handler(manager: KeyboardManager, start_time: float, ver_string: str, support_iter: Iterator[str], exp: Exception) -> None:
+def _sock_err_handler(manager: LcdKeyboard, start_time: float, ver_string: str, support_iter: Iterator[str], exp: Exception) -> None:
     """
     Show basic data when DCS is disconnected.
 
@@ -117,7 +117,7 @@ def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig, skip_lcd=Fals
     """
     with _prepare_socket() as dcs_sock:
         parser = ProtocolParser()
-        manager: KeyboardManager = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg, skip_lcd=skip_lcd)
+        manager: LcdKeyboard = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg, skip_lcd=skip_lcd)
         LOG.info(f'Loading: {str(manager)}')
         LOG.debug(f'Loading: {repr(manager)}')
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))

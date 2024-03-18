@@ -165,11 +165,11 @@ def lcd_font_color(protocol_parser):
 @fixture()
 def keyboard_base(protocol_parser, sock):
     """
-    Return instance of KeyboardManager.
+    Return instance of LcdKeyboard.
 
     :param protocol_parser: instance of ProtocolParser
     :param sock: net socket object
-    :return: KeyboardManager
+    :return: LcdKeyboard
     """
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
@@ -178,7 +178,7 @@ def keyboard_base(protocol_parser, sock):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return logitech.KeyboardManager(protocol_parser, sock=sock)
+        return logitech.LcdKeyboard(protocol_parser, sock=sock)
 
 
 @fixture()
@@ -190,14 +190,14 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     :param sock: net socket object
     :param lcd_font_mono: font configuration for LCD
     :param resources: Path to tests/resources directory.
-    :return: KeyboardManager
+    :return: LcdKeyboard
     """
     from dcspy.aircraft import BasicAircraft
     from dcspy.models import Gkey, LcdButton, LcdMono
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    class Mono(logitech.KeyboardManager):
+    class Mono(logitech.LcdKeyboard):
         def __init__(self, parser, socket, **kwargs) -> None:
             LcdMono.set_fonts(kwargs['fonts'])
             super().__init__(parser, socket, lcd_type=LcdMono)
@@ -227,14 +227,14 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     :param sock: net socket object
     :param lcd_font_color: font configuration for LCD
     :param resources: Path to tests/resources directory.
-    :return: KeyboardManager
+    :return: LcdKeyboard
     """
     from dcspy.aircraft import BasicAircraft
     from dcspy.models import Gkey, LcdButton, LcdColor
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    class Color(logitech.KeyboardManager):
+    class Color(logitech.LcdKeyboard):
         def __init__(self, parser, socket, **kwargs) -> None:
             LcdColor.set_fonts(kwargs['fonts'])
             super().__init__(parser, socket, lcd_type=LcdColor)
