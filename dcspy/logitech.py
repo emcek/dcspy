@@ -244,6 +244,10 @@ class G930(Headphone):
     pass
 
 
+class G933(Headphone):
+    pass
+
+
 class Mouse(LogitechDevice):
     pass
 

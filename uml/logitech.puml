@@ -89,6 +89,7 @@ package logitech {
     Headphone <|-- G35
     Headphone <|-- G633
     Headphone <|-- G930
+    Headphone <|-- G933
 
     Mouse <|-- G600
     Mouse <|-- G300
