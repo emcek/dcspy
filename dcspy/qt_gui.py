@@ -175,7 +175,9 @@ class DcsPyQtGui(QMainWindow):
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
         for keyboard_type in KEYBOARD_TYPES:
-            getattr(self, f'rb_{keyboard_type.lower()}').toggled.connect(partial(self._select_keyboard, keyboard_type))
+            rb_device: QRadioButton = getattr(self, f'rb_{keyboard_type.klass.lower()}')
+            rb_device.toggled.connect(partial(self._select_keyboard, keyboard_type))
+            rb_device.setToolTip(str(keyboard_type))
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
