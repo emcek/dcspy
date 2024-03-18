@@ -87,6 +87,7 @@ package logitech {
     Keyboard <|-- G11
 
     Headphone <|-- G35
+    Headphone <|-- G633
     Headphone <|-- G930
 
     Mouse <|-- G600

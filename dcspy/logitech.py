@@ -236,6 +236,10 @@ class G35(Headphone):
     pass
 
 
+class G633(Headphone):
+    pass
+
+
 class G930(Headphone):
     pass
 
