@@ -89,11 +89,75 @@ class Headphone(LogitechDevice):
     pass
 
 
+class G35(Headphone):
+    pass
+
+
+class G930(Headphone):
+    pass
+
+
 class Mouse(LogitechDevice):
     pass
 
 
+class G600(Mouse):
+    pass
+
+
+class G300(Mouse):
+    pass
+
+
+class G400(Mouse):
+    pass
+
+
+class G700(Mouse):
+    pass
+
+
+class G9(Mouse):
+    pass
+
+
+class Mx518(Mouse):
+    pass
+
+
+class G402(Mouse):
+    pass
+
+
+class G502(Mouse):
+    pass
+
+
+class G602(Mouse):
+    pass
+
+
 class Keyboard(LogitechDevice):
+    pass
+
+
+class G710(Keyboard):
+    pass
+
+
+class G110(Keyboard):
+    pass
+
+
+class G103(Keyboard):
+    pass
+
+
+class G105(Keyboard):
+    pass
+
+
+class G11(Keyboard):
     pass
 
 
