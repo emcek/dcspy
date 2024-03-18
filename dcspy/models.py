@@ -654,7 +654,7 @@ ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcd='
 ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcd='mono',
                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
-KEYBOARD_TYPES = [ModelG19.klass, ModelG510.klass, ModelG15v1.klass, ModelG15v2.klass, ModelG13.klass]
+KEYBOARD_TYPES = [ModelG19, ModelG510, ModelG15v1, ModelG15v2, ModelG13]
 
 
 class Gkey(BaseModel):
