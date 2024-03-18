@@ -228,7 +228,7 @@ class DcsPyQtGui(QMainWindow):
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
         for keyboard_type in KEYBOARD_TYPES:
-            keyboard = getattr(self, f'rb_{keyboard_type.lower()}')
+            keyboard = getattr(self, f'rb_{keyboard_type.klass.lower()}')
             if keyboard.isChecked():
                 self._select_keyboard(keyboard=keyboard_type, state=True)
                 break
@@ -243,7 +243,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Set number of results: {value}')
         self._load_table_gkeys()
 
-    def _select_keyboard(self, keyboard: str, state: bool) -> None:
+    def _select_keyboard(self, keyboard: KeyboardModel, state: bool) -> None:
         """
         Triggered when new keyboard is selected.
 
@@ -253,7 +253,7 @@ class DcsPyQtGui(QMainWindow):
         * updates font sliders (range and values)
         * update dock with image of keyboard
 
-        :param keyboard: name
+        :param keyboard: Keyboard model object
         :param state: of radio button
         """
         if state:
@@ -261,8 +261,8 @@ class DcsPyQtGui(QMainWindow):
                 self.tw_gkeys.removeColumn(mode_col)
             for gkey_row in range(self.keyboard.gkeys + len(self.keyboard.lcdkeys)):
                 self.tw_gkeys.removeRow(gkey_row)
-            self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard}')
-            LOG.debug(f'Select: {self.keyboard}')
+            self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard.klass}')
+            LOG.debug(f'Select: {repr(self.keyboard)}')
             self._set_ded_font_and_font_sliders()
             self._update_dock()
             self._load_table_gkeys()
