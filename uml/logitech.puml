@@ -9,9 +9,6 @@ package logitech {
         + socket: socket
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
-        + lcd : LcdInfo
         + model: KeyboardModel
         + vert_space = 0 : int
         + __init__(parser: ProtocolParser)

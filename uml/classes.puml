@@ -234,10 +234,12 @@ package models {
     class KeyboardModel <<(M,orange)>> {
         + name: str
         + klass: str
-        + modes: int
-        + gkeys: int
-        + lcdkeys: Sequence[LcdButton]
-        + lcd: str
+        + no_g_modes: int
+        + no_g_keys: int
+        + lcd_keys: Sequence[LcdButton]
+        + lcd_info: LcdInfo
+        + g_keys() -> Sequence[Gkey]]
+        + lcd_name() -> str
     }
     class RequestModel{
         + ctrl_name: str
