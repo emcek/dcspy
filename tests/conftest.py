@@ -193,7 +193,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     :return: LcdKeyboard
     """
     from dcspy.aircraft import BasicAircraft
-    from dcspy.models import Gkey, LcdButton, LcdMono
+    from dcspy.models import LcdButton, LcdMono
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
@@ -202,7 +202,6 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
             LcdMono.set_fonts(kwargs['fonts'])
             super().__init__(parser, socket, lcd_type=LcdMono)
             self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
-            self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 10
             plane = BasicAircraft(lcd_type=self.lcd)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
@@ -230,7 +229,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     :return: LcdKeyboard
     """
     from dcspy.aircraft import BasicAircraft
-    from dcspy.models import Gkey, LcdButton, LcdColor
+    from dcspy.models import LcdButton, LcdColor
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
@@ -239,7 +238,6 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
             LcdColor.set_fonts(kwargs['fonts'])
             super().__init__(parser, socket, lcd_type=LcdColor)
             self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
-            self.gkey = Gkey.generate(key=3, mode=1)
             self.vert_space = 40
             plane = BasicAircraft(lcd_type=self.lcd)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)

@@ -59,7 +59,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', modes=0, gkeys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
+        self.keyboard = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -257,9 +257,9 @@ class DcsPyQtGui(QMainWindow):
         :param state: of radio button
         """
         if state:
-            for mode_col in range(self.keyboard.modes):
+            for mode_col in range(self.keyboard.no_g_modes):
                 self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.keyboard.gkeys + len(self.keyboard.lcdkeys)):
+            for gkey_row in range(self.keyboard.no_g_keys + len(self.keyboard.lcdkeys)):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard.klass}')
             LOG.debug(f'Select: {repr(self.keyboard)}')
@@ -359,23 +359,23 @@ class DcsPyQtGui(QMainWindow):
         """Initialize table with cockpit data."""
         if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
             return
-        self.tw_gkeys.setColumnCount(self.keyboard.modes)
-        for mode_col in range(self.keyboard.modes):
+        self.tw_gkeys.setColumnCount(self.keyboard.no_g_modes)
+        for mode_col in range(self.keyboard.no_g_modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
         no_lcd_keys = len(self.keyboard.lcdkeys)
-        no_g_keys = self.keyboard.gkeys
+        no_g_keys = self.keyboard.no_g_keys
         self.tw_gkeys.setRowCount(no_g_keys + no_lcd_keys)
         labels_g_key = [f'G{i}' for i in range(1, no_g_keys + 1)]
         labels_lcd_key = [lcd_key.name for lcd_key in self.keyboard.lcdkeys]
         self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key)
-        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.modes + 1)])
+        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.no_g_modes + 1)])
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
 
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
         for row in range(0, no_g_keys + no_lcd_keys):
-            for col in range(0, self.keyboard.modes):
+            for col in range(0, self.keyboard.no_g_modes):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
             cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
@@ -577,10 +577,10 @@ class DcsPyQtGui(QMainWindow):
         :param row: current column
         :return: string name of key
         """
-        if row <= self.keyboard.gkeys - 1:
+        if row <= self.keyboard.no_g_keys - 1:
             key = Gkey.name(row, col)
         else:
-            key = self.keyboard.lcdkeys[row - self.keyboard.gkeys].name
+            key = self.keyboard.lcdkeys[row - self.keyboard.no_g_keys].name
         return key
 
     def _find_section_name(self, ctrl_name: str) -> str:
@@ -742,7 +742,7 @@ class DcsPyQtGui(QMainWindow):
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
         current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
-        for col in set(range(self.keyboard.modes)) - {self.current_col}:
+        for col in set(range(self.keyboard.no_g_modes)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
     def _reload_table_gkeys(self) -> None:

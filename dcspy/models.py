@@ -629,34 +629,6 @@ LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=
                    background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
 
 
-class KeyboardModel(BaseModel):
-    """Light LCD keyboard model."""
-    name: str
-    klass: str
-    modes: int
-    gkeys: int
-    lcdkeys: Sequence[LcdButton]
-    lcd: str
-
-    def __str__(self) -> str:
-        lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcdkeys])
-        return f"G-Keys: {self.gkeys} in {self.modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd}"
-
-
-ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcd='color',
-                         lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
-ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcd='mono',
-                         lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcd='mono',
-                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcd='mono',
-                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcd='mono',
-                          lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-
-KEYBOARD_TYPES = [ModelG19, ModelG510, ModelG15v1, ModelG15v2, ModelG13]
-
-
 class Gkey(BaseModel):
     """Logitech G-Key."""
     key: int
@@ -707,6 +679,44 @@ class Gkey(BaseModel):
         :param col: column number, zero based
         """
         return str(Gkey(key=row + 1, mode=col + 1))
+
+
+class KeyboardModel(BaseModel):
+    """Light LCD keyboard model."""
+    name: str
+    klass: str
+    no_g_modes: int
+    no_g_keys: int
+    lcdkeys: Sequence[LcdButton]
+    lcd: str
+
+    def __str__(self) -> str:
+        lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcdkeys])
+        return f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd}"
+
+    @property
+    def g_keys(self) -> Sequence[Gkey]:
+        """
+        Generate a sequence of G-Keys.
+
+        :return: A sequence of G-Keys.
+        """
+        return Gkey.generate(key=self.no_g_keys, mode=self.no_g_modes)
+
+
+ModelG19 = KeyboardModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd='color',
+                         lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
+ModelG13 = KeyboardModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd='mono',
+                         lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd='mono',
+                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd='mono',
+                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+ModelG510 = KeyboardModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd='mono',
+                          lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+
+
+KEYBOARD_TYPES = [ModelG19, ModelG510, ModelG15v1, ModelG15v2, ModelG13]
 
 
 def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
