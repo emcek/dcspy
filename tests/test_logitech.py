@@ -115,8 +115,8 @@ def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type,
     with patch.object(LcdSdkManager, 'update_display') as upd_display:
         keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
         assert isinstance(keyboard.plane, BasicAircraft)
-        assert isinstance(keyboard.lcd, LcdInfo)
-        assert keyboard.lcd.type == lcd_type
+        assert isinstance(keyboard.model.lcd_info, LcdInfo)
+        assert keyboard.model.lcd_info.type == lcd_type
         assert isinstance(keyboard.display, list)
         keyboard.display = ['1', '2']
         assert len(keyboard.display) == 2
