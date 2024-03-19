@@ -41,6 +41,5 @@ def start_dcspy(cli_args: Namespace) -> None:
 if __name__ == '__main__':
     parser = ArgumentParser(description='DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.')
     parser.add_argument('-V', '--version', action='version', version='%(prog)s version: ' + __version__)
-    parser.add_argument('-n', '--no-lcd',  action='store_true', help='Make LCD optional, not loading Logitech LCD SKD')
     args = parser.parse_args()
     start_dcspy(args)

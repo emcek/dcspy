@@ -1137,7 +1137,7 @@ class DcsPyQtGui(QMainWindow):
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
         fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.keyboard.lcd_name}_font'))
-        app_params = {'lcd_type': self.keyboard.klass, 'event': self.event, 'fonts_cfg': fonts_cfg, 'skip_lcd': self.cli_args.no_lcd}
+        app_params = {'lcd_type': self.keyboard.klass, 'event': self.event, 'fonts_cfg': fonts_cfg}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')

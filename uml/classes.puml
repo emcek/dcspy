@@ -51,15 +51,12 @@ package logitech {
         + socket: socket
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
-        + lcd : LcdInfo
         + model: KeyboardModel
         + vert_space = 0 : int
-        + __init__(parser: ProtocolParser)
+        + __init__(ProtocolParser, socket, FontsConfig)
         + display(message : List[str]) -> List[str]
         + detecting_plane()
-        + load_new_plane(value : str)
+        + load_new_plane(str)
         + check_buttons() -> LcdButton
         + button_handle()
         + key_sdk: GkeySdkManager
@@ -67,33 +64,22 @@ package logitech {
         + gkey_callback_handler(key: int, mode: int, key_down: int)
         + clear()
         + text(List[str])
-        + skip_lcd: bool = False
         # _prepare_image() -> Image
         # _send_request(button: Union[LcdButton, Gkey], Optional[int])
     }
     class G13 {
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
     class G510 {
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
     class G15v1 {
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
     class G15v2 {
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
         + vert_space = 10 : int
     }
     class G19 {
-        + gkey: Sequence[Gkey]
-        + buttons: Sequence[LcdButton]
         + vert_space = 40 : int
     }
 }
@@ -183,12 +169,13 @@ package models {
         + font_l: ImageFont.FreeTypeFont
     }
     class LcdMode <<(E,yellow)>> {
+        + NONE = '0'
         + BLACK_WHITE = '1'
         + TRUE_COLOR = 'RGBA'
     }
     class LcdType <<(E,yellow)>> {
-        + mono = 0
-        + color = 1
+        + MONO = 0
+        + COLOR = 1
     }
     class Gkey <<(M,orange)>> {
         + key: int

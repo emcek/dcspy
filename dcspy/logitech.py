@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdMono, ModelG13, ModelG15v1,
+from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdMono, LcdType, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
@@ -41,8 +41,7 @@ class LogitechDevice:
         self.lcdbutton_pressed = False
         self._display: List[str] = []
         self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
-        self.skip_lcd = kwargs.get('skip_lcd', False)
-        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type, skip=self.skip_lcd)
+        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
         success = self.key_sdk.logi_gkey_init()
         LOG.debug(f'G-Key is connected: {success}')
@@ -68,7 +67,7 @@ class LogitechDevice:
         :param message: List of strings to display, row by row.
         """
         self._display = message
-        if not self.skip_lcd:
+        if not self.model.lcd_info.type == LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
 
     def text(self, message: List[str]) -> None:
@@ -79,7 +78,7 @@ class LogitechDevice:
         For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :param message: List of strings to display, row by row.
         """
-        if not self.skip_lcd:
+        if not self.model.lcd_info.type == LcdType.NONE:
             self.lcd_sdk.update_text(message)
 
     def detecting_plane(self, value: str) -> None:
@@ -123,7 +122,7 @@ class LogitechDevice:
         """
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
-            lcd_update_func = self.lcd_sdk.update_display if not self.skip_lcd else None
+            lcd_update_func = self.lcd_sdk.update_display if not self.model.lcd_info.type == LcdType.NONE else None
             self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.model.lcd_info, update_display=lcd_update_func)
             LOG.debug(f'Dynamic load of: {self.plane_name} as AdvancedAircraft | BIOS: {self.plane.bios_name}')
             self._setup_plane_callback()
@@ -177,7 +176,7 @@ class LogitechDevice:
         * detect if button was pressed
         * sent action to DCS-BIOS via network socket
         """
-        if not self.skip_lcd:
+        if not self.model.lcd_info.type == LcdType.NONE:
             button = self.check_buttons()
             if button.value:
                 self._send_request(button, key_down=KEY_DOWN)
@@ -201,8 +200,9 @@ class LogitechDevice:
 
         :param true_clear:
         """
-        LOG.debug(f'Clear LCD type: {self.model.lcd_info.type}')
-        self.lcd_sdk.clear_display(true_clear)
+        if not self.model.lcd_info.type == LcdType.NONE:
+            LOG.debug(f'Clear LCD type: {self.model.lcd_info.type}')
+            self.lcd_sdk.clear_display(true_clear)
 
     def _prepare_image(self) -> Image.Image:
         """
@@ -323,7 +323,7 @@ class G13(LogitechDevice):
         Support for: G13
         :param parser: DCS-BIOS parser instance
         """
-        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock)
         self.model = ModelG13
         self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.vert_space = 10
@@ -339,7 +339,7 @@ class G510(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock)
         self.model = ModelG510
         self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.vert_space = 10
@@ -355,7 +355,7 @@ class G15v1(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock)
         self.model = ModelG15v1
         self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.vert_space = 10
@@ -371,7 +371,7 @@ class G15v2(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock)
         self.model = ModelG15v2
         self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.vert_space = 10
@@ -387,7 +387,7 @@ class G19(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock)
         self.model = ModelG19
         self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.vert_space = 40

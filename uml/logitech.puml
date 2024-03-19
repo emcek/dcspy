@@ -11,10 +11,10 @@ package logitech {
         + lcdbutton_pressed = False : bool
         + model: KeyboardModel
         + vert_space = 0 : int
-        + __init__(parser: ProtocolParser)
+        + __init__(ProtocolParser, socket, FontsConfig)
         + display(message : List[str]) -> List[str]
         + detecting_plane()
-        + load_new_plane(value : str)
+        + load_new_plane(str)
         + check_buttons() -> LcdButton
         + button_handle()
         + key_sdk: GkeySdkManager
@@ -22,7 +22,6 @@ package logitech {
         + gkey_callback_handler(key: int, mode: int, key_down: int)
         + clear()
         + text(List[str])
-        + skip_lcd: bool = False
         # _prepare_image() -> Image
         # _send_request(button: Union[LcdButton, Gkey], Optional[int])
     }
