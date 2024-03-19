@@ -6,7 +6,7 @@ from pytest import mark
 
 def test_load_new_plane_if_detected():
     from dcspy import starter
-    with patch.object(starter, 'LcdKeyboard') as lcd:
+    with patch.object(starter, 'LogitechDevice') as lcd:
         starter._load_new_plane_if_detected(lcd)
         lcd.load_new_plane.assert_called_once_with()
 
