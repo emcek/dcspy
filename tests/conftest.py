@@ -170,9 +170,9 @@ def keyboard_base(protocol_parser, sock):
     :param sock: net socket object
     :return: LcdKeyboard
     """
+    from dcspy.models import KeyboardModel, LcdButton, LcdMono
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
-    from dcspy.models import KeyboardModel, LcdButton, LcdMono
 
     lcd_sdk = LcdSdkManager('test', models.LcdType.MONO)
 
