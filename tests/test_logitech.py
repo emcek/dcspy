@@ -38,8 +38,8 @@ def test_keyboard_base_basic_check(keyboard_base):
     'Mono None Button',
     'Color None Button'])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
-    from dcspy.sdk.lcd_sdk import LcdSdkManager
     from dcspy.logitech import LogitechDevice
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     keyboard: LogitechDevice = request.getfixturevalue(keyboard)
     keyboard.lcdbutton_pressed = pressed1
