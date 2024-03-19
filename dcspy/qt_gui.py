@@ -28,7 +28,8 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, RequestType, SystemData)
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, RequestType, SystemData,
+                          LcdMono, LcdType)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
@@ -59,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
+        self.keyboard = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -269,7 +270,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _set_ded_font_and_font_sliders(self) -> None:
         """Enable DED font checkbox and updates font sliders."""
-        if self.keyboard.lcd == 'color':
+        if self.keyboard.lcd_info == LcdType.COLOR:
             self.cb_ded_font.setEnabled(True)
             minimum = 15
             maximum = 40
@@ -288,7 +289,7 @@ class DcsPyQtGui(QMainWindow):
             hs.setMaximum(maximum)
             hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
             hs.valueChanged.connect(self.save_configuration)
-            hs.setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
+            hs.setValue(getattr(self, f'{self.keyboard.lcd_name}_font')[name])
 
     def _set_label_and_hs_value(self, value, name) -> None:
         """
@@ -297,7 +298,7 @@ class DcsPyQtGui(QMainWindow):
         :param value: of slider
         :param name: of slider
         """
-        getattr(self, f'{self.keyboard.lcd}_font')[name] = value
+        getattr(self, f'{self.keyboard.lcd_name}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
 
     def _update_dock(self) -> None:
@@ -391,7 +392,7 @@ class DcsPyQtGui(QMainWindow):
         :param ctrl_list_no_sep: list of control inputs without separator
         """
         key_name = self._get_key_name_from_row_col(row, col)
-        if col == 0 or row < self.keyboard.gkeys:
+        if col == 0 or row < self.keyboard.no_g_keys:
             completer = QCompleter(ctrl_list_no_sep)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
             completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
@@ -1135,7 +1136,7 @@ class DcsPyQtGui(QMainWindow):
         for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
-        fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.keyboard.lcd}_font'))
+        fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.keyboard.lcd_name}_font'))
         app_params = {'lcd_type': self.keyboard.klass, 'event': self.event, 'fonts_cfg': fonts_cfg, 'skip_lcd': self.cli_args.no_lcd}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
@@ -1223,7 +1224,7 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
         }
-        if self.keyboard.lcd == 'color':
+        if self.keyboard.lcd_info == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
                         'font_color_m': self.hs_medium_font.value(),
                         'font_color_s': self.hs_small_font.value()}
@@ -1240,7 +1241,7 @@ class DcsPyQtGui(QMainWindow):
         self.config = load_yaml(full_path=default_yaml)
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
-            getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd}_font')[name])
+            getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd_name}_font')[name])
         self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Reset settings',
                                message='All settings will be reset to default values.\nDCSpy will to be close.\nIt could be necessary start DCSpy manually!')
         self.close()
