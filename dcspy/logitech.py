@@ -314,62 +314,7 @@ class G11(Keyboard):
     pass
 
 
-class LcdKeyboard(LogitechDevice):
-    """General keyboard with LCD from Logitech."""
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
-        """
-        General keyboard with LCD from Logitech.
-
-        It can be easily extended for any of:
-        - Mono LCD: G13, G15 (v1 and v2) and G510
-        - RGB LCD: G19
-
-        However, it defines a bunch of functionally to be used be child class:
-        - DCS-BIOS callback for currently used aircraft in DCS
-        - auto-detecting aircraft and load its handling class
-        - send button request to DCS-BIOS
-
-        Child class needs redefine:
-        - pass lcd_type argument as LcdInfo to super constructor
-
-        :param parser: DCS-BIOS parser instance
-        :param sock: multicast UDP socket
-        """
-        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
-        self.lcd = kwargs.get('lcd_type', LcdMono)
-        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd_info=LcdMono)
-        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type, skip=self.skip_lcd)
-        self.vert_space = 0
-
-    def check_buttons(self) -> LcdButton:
-        """
-        Check if button was pressed and return it`s enum.
-
-        :return: LcdButton enum of pressed button
-        """
-        for btn in self.buttons:
-            if self.lcd_sdk.logi_lcd_is_button_pressed(btn):
-                if not self.lcdbutton_pressed:
-                    self.lcdbutton_pressed = True
-                    return LcdButton(btn)
-                return LcdButton.NONE
-        self.lcdbutton_pressed = False
-        return LcdButton.NONE
-
-    def button_handle(self) -> None:
-        """
-        Button handler.
-
-        * detect if button was pressed
-        * sent action to DCS-BIOS via network socket
-        """
-        if not self.skip_lcd:
-            button = self.check_buttons()
-            if button.value:
-                self._send_request(button, key_down=KEY_DOWN)
-
-
-class G13(LcdKeyboard):
+class G13(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -384,7 +329,7 @@ class G13(LcdKeyboard):
         self.vert_space = 10
 
 
-class G510(LcdKeyboard):
+class G510(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -400,7 +345,7 @@ class G510(LcdKeyboard):
         self.vert_space = 10
 
 
-class G15v1(LcdKeyboard):
+class G15v1(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -416,7 +361,7 @@ class G15v1(LcdKeyboard):
         self.vert_space = 10
 
 
-class G15v2(LcdKeyboard):
+class G15v2(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
@@ -432,7 +377,7 @@ class G15v2(LcdKeyboard):
         self.vert_space = 10
 
 
-class G19(LcdKeyboard):
+class G19(LogitechDevice):
     """Logitech`s keyboard with color LCD."""
     def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
         """
