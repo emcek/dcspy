@@ -2,8 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.logitech import G13, G19, G510, G15v1, G15v2
-from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType
+from dcspy.models import LcdButton, LcdInfo, LcdMode, LcdSize, LcdType
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -104,19 +103,19 @@ def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, det
     assert keyboard_mono.plane_detected is detect
 
 
-@mark.parametrize('mode, width, height,  lcd_type, lcd_font, keyboard', [
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G13),
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G510),
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v1),
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
-    (LcdMode.TRUE_COLOR, LcdSize.COLOR_WIDTH, LcdSize.COLOR_HEIGHT, LcdType.COLOR, FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19),
+@mark.parametrize('mode, width, height,  lcd_type, keyboard', [
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G13'),
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G510'),
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G15v1'),
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G15v2'),
+    (LcdMode.TRUE_COLOR, LcdSize.COLOR_WIDTH, LcdSize.COLOR_HEIGHT, LcdType.COLOR, 'G19'),
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
-def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type, lcd_font, keyboard, protocol_parser, sock):
+def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type, keyboard, protocol_parser, sock, request):
     from dcspy.aircraft import BasicAircraft
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
+    keyboard = request.getfixturevalue(keyboard)
     with patch.object(LcdSdkManager, 'update_display') as upd_display:
-        keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
         assert isinstance(keyboard.plane, BasicAircraft)
         assert isinstance(keyboard.model.lcd_info, LcdInfo)
         assert keyboard.model.lcd_info.type == lcd_type
@@ -130,18 +129,14 @@ def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type,
     assert img.size == (width.value, height.value)
 
 
-@mark.parametrize('lcd_font, keyboard', [
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G13),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G510),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v1),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19)
+@mark.parametrize('keyboard', [
+    'G13', 'G510', 'G15v1', 'G15v2', 'G19',
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
-def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
+def test_check_keyboard_text(keyboard, protocol_parser, sock, request):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
+    keyboard = request.getfixturevalue(keyboard)
     with patch.object(LcdSdkManager, 'update_text') as upd_txt:
-        keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
         keyboard.text(['1', '2'])
         upd_txt.assert_called_once()
 

@@ -28,13 +28,12 @@ def generate_plane_fixtures(plane, lcd_info_with_fonts: models.LcdInfo):
     return _fixture
 
 
-def generate_keyboard_fixtures(keyboard, lcd_type: models.LcdType, lcd_font_setting: models.FontsConfig):
+def generate_keyboard_fixtures(keyboard, model: models.KeyboardModel):
     """
     Generate fixtures for any keyboard and with lcd_font_setting.
 
     :param keyboard: any keyboard object
-    :param lcd_type: LCD type enum
-    :param lcd_font_setting: FontSetting object
+    :param model: Logitech device
     """
     @fixture()
     def _fixture(sock):
@@ -43,11 +42,11 @@ def generate_keyboard_fixtures(keyboard, lcd_type: models.LcdType, lcd_font_sett
         from dcspy.sdk.key_sdk import GkeySdkManager
         from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-        lcd_sdk = LcdSdkManager('test', lcd_type)
+        lcd_sdk = LcdSdkManager('test', model.lcd_info.type)
 
         with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
                 patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-            return keyboard(parser=ProtocolParser(), sock=sock, fonts=lcd_font_setting)
+            return keyboard(parser=ProtocolParser(), sock=sock, model=model)
     return _fixture
 
 
@@ -65,13 +64,13 @@ for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50
 
 for keyboard_model in ['G13', 'G510', 'G15v1', 'G15v2', 'G19']:
     key = getattr(logitech, keyboard_model)
+    model = getattr(models, f'Model{keyboard_model}')
     if keyboard_model == 'G19':
         lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
-        lcd_type_enum = models.LcdType.MONO
     else:
         lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
-        lcd_type_enum = models.LcdType.COLOR
-    globals()[keyboard_model] = generate_keyboard_fixtures(keyboard=key, lcd_type=lcd_type_enum, lcd_font_setting=lcd_font)
+    model.lcd_info.set_fonts(lcd_font)
+    globals()[keyboard_model] = generate_keyboard_fixtures(keyboard=key, model=model)
 
 
 def pytest_addoption(parser) -> None:
@@ -173,12 +172,14 @@ def keyboard_base(protocol_parser, sock):
     """
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
+    from dcspy.models import KeyboardModel, LcdButton, LcdMono
 
     lcd_sdk = LcdSdkManager('test', models.LcdType.MONO)
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return logitech.LogitechDevice(protocol_parser, sock=sock)
+        model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        return logitech.LogitechDevice(protocol_parser, sock=sock, model=model)
 
 
 @fixture()
@@ -198,10 +199,9 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     class Mono(logitech.LogitechDevice):
-        def __init__(self, parser, socket, **kwargs) -> None:
-            super().__init__(parser, socket)
-            self.model = ModelG510
-            self.model.lcd_info.set_fonts(kwargs['fonts'])
+        def __init__(self, parser, socket, model) -> None:
+            model.lcd_info.set_fonts(lcd_font_mono)
+            super().__init__(parser, socket, model)
             self.vert_space = 10
             plane = BasicAircraft(lcd_type=self.model.lcd_info)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
@@ -214,7 +214,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return Mono(parser=protocol_parser, socket=sock, fonts=lcd_font_mono)
+        return Mono(parser=protocol_parser, socket=sock, model=ModelG510)
 
 
 @fixture()
@@ -234,10 +234,9 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     class Color(logitech.LogitechDevice):
-        def __init__(self, parser, socket, **kwargs) -> None:
-            super().__init__(parser, socket)
-            self.model = ModelG19
-            self.model.lcd_info.set_fonts(kwargs['fonts'])
+        def __init__(self, parser, socket, model) -> None:
+            model.lcd_info.set_fonts(lcd_font_color)
+            super().__init__(parser, socket, model)
             self.vert_space = 40
             plane = BasicAircraft(lcd_type=self.model.lcd_info)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
@@ -250,7 +249,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return Color(parser=protocol_parser, socket=sock, fonts=lcd_font_color)
+        return Color(parser=protocol_parser, socket=sock, model=ModelG19)
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
