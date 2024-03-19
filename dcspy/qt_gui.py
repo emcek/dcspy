@@ -28,8 +28,8 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, MsgBoxTypes, ReleaseInfo, RequestType, SystemData,
-                          LcdMono, LcdType)
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, LcdMono, LcdType, MsgBoxTypes, ReleaseInfo,
+                          RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
