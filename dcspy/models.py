@@ -573,11 +573,13 @@ class LcdButton(Enum):
 
 class LcdType(Enum):
     """LCD Type."""
+    NONE: Final = 0
     MONO: Final = 1
     COLOR: Final = 2
 
 
 class LcdSize(Enum):
+    NONE: Final = 0
     MONO_WIDTH: Final = 160
     MONO_HEIGHT: Final = 43
     COLOR_WIDTH: Final = 320
@@ -586,6 +588,7 @@ class LcdSize(Enum):
 
 class LcdMode(Enum):
     """LCD Mode."""
+    NONE: Final = '0'
     BLACK_WHITE: Final = '1'
     TRUE_COLOR: Final = 'RGBA'
 
@@ -623,10 +626,12 @@ class LcdInfo(BaseModel):
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
 
 
-LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
-                  background=0, mode=LcdMode.BLACK_WHITE)
-LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
-                   background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
+NoneLcd = LcdInfo(width=LcdSize.NONE, height=LcdSize.NONE, type=LcdType.NONE,
+                  foreground=0, background=0, mode=LcdMode.NONE)
+LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO,
+                  foreground=255, background=0, mode=LcdMode.BLACK_WHITE)
+LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR,
+                   foreground=(0, 255, 0, 255), background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
 
 
 class Gkey(BaseModel):
