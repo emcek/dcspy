@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdColor, LcdMono, ModelG13, ModelG15v1,
+from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdMono, ModelG13, ModelG15v1,
                           ModelG15v2, ModelG19, ModelG510)
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
@@ -214,7 +214,8 @@ class LogitechDevice:
         For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode=self.model.lcd_info.mode.value, size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value), color=self.model.lcd_info.background)
+        img = Image.new(mode=self.model.lcd_info.mode.value, color=self.model.lcd_info.background,
+                        size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
         draw = ImageDraw.Draw(img)
         for line_no, line in enumerate(self._display):
             draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.model.lcd_info.foreground, font=self.model.lcd_info.font_s)
