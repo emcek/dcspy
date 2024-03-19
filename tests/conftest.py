@@ -178,7 +178,7 @@ def keyboard_base(protocol_parser, sock):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        return logitech.LcdKeyboard(protocol_parser, sock=sock)
+        return logitech.LogitechDevice(protocol_parser, sock=sock)
 
 
 @fixture()
@@ -193,17 +193,17 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     :return: LcdKeyboard
     """
     from dcspy.aircraft import BasicAircraft
-    from dcspy.models import LcdButton, LcdMono
+    from dcspy.models import ModelG510
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    class Mono(logitech.LcdKeyboard):
+    class Mono(logitech.LogitechDevice):
         def __init__(self, parser, socket, **kwargs) -> None:
-            LcdMono.set_fonts(kwargs['fonts'])
-            super().__init__(parser, socket, lcd_type=LcdMono)
-            self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
+            super().__init__(parser, socket)
+            self.model = ModelG510
+            self.model.lcd_info.set_fonts(kwargs['fonts'])
             self.vert_space = 10
-            plane = BasicAircraft(lcd_type=self.lcd)
+            plane = BasicAircraft(lcd_type=self.model.lcd_info)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
             self.plane = plane
 
@@ -229,17 +229,17 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     :return: LcdKeyboard
     """
     from dcspy.aircraft import BasicAircraft
-    from dcspy.models import LcdButton, LcdColor
+    from dcspy.models import ModelG19
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    class Color(logitech.LcdKeyboard):
+    class Color(logitech.LogitechDevice):
         def __init__(self, parser, socket, **kwargs) -> None:
-            LcdColor.set_fonts(kwargs['fonts'])
-            super().__init__(parser, socket, lcd_type=LcdColor)
-            self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
+            super().__init__(parser, socket)
+            self.model = ModelG19
+            self.model.lcd_info.set_fonts(kwargs['fonts'])
             self.vert_space = 40
-            plane = BasicAircraft(lcd_type=self.lcd)
+            plane = BasicAircraft(lcd_type=self.model.lcd_info)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
             self.plane = plane
 
