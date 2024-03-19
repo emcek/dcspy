@@ -11,8 +11,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdMono, LcdType, ModelG13, ModelG15v1,
-                          ModelG15v2, ModelG19, ModelG510)
+from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, KeyboardModel, LcdButton, LcdType
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
@@ -20,18 +19,16 @@ LOG = getLogger(__name__)
 
 
 class LogitechDevice:
-    """
-    General Logitech device.
+    """General Logitech device."""
 
-    Child class needs redefine:
-    - pass lcd_type argument as LcdInfo to super constructor
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: KeyboardModel) -> None:
+        """
+        General Logitech device.
 
-    :param parser: DCS-BIOS parser instance
-    :param sock: multicast UDP socket
-    """
-
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
-        """General Logitech device."""
+        :param parser: DCS-BIOS parser instance
+        :param sock: multicast UDP socket
+        :param model: device model
+        """
         dcsbios.StringBuffer(parser=parser, address=0x0, max_length=0x10, callback=partial(self.detecting_plane))
         self.parser = parser
         self.socket = sock
@@ -40,7 +37,7 @@ class LogitechDevice:
         self.plane_detected = False
         self.lcdbutton_pressed = False
         self._display: List[str] = []
-        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        self.model = model
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
         success = self.key_sdk.logi_gkey_init()
@@ -316,22 +313,20 @@ class G11(Keyboard):
 
 class G13(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: KeyboardModel) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
         Support for: G13
         :param parser: DCS-BIOS parser instance
         """
-        super().__init__(parser, sock)
-        self.model = ModelG13
-        self.model.lcd_info.set_fonts(kwargs['fonts'])
+        super().__init__(parser, sock, model)
         self.vert_space = 10
 
 
 class G510(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: KeyboardModel) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -339,15 +334,13 @@ class G510(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock)
-        self.model = ModelG510
-        self.model.lcd_info.set_fonts(kwargs['fonts'])
+        super().__init__(parser, sock, model)
         self.vert_space = 10
 
 
 class G15v1(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: KeyboardModel) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -355,15 +348,13 @@ class G15v1(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock)
-        self.model = ModelG15v1
-        self.model.lcd_info.set_fonts(kwargs['fonts'])
+        super().__init__(parser, sock, model)
         self.vert_space = 10
 
 
 class G15v2(LogitechDevice):
     """Logitech`s keyboard with mono LCD."""
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: KeyboardModel) -> None:
         """
         Logitech`s keyboard with mono LCD.
 
@@ -371,15 +362,13 @@ class G15v2(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock)
-        self.model = ModelG15v2
-        self.model.lcd_info.set_fonts(kwargs['fonts'])
+        super().__init__(parser, sock, model)
         self.vert_space = 10
 
 
 class G19(LogitechDevice):
     """Logitech`s keyboard with color LCD."""
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, **kwargs) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: KeyboardModel) -> None:
         """
         Logitech`s keyboard with color LCD.
 
@@ -387,7 +376,5 @@ class G19(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        super().__init__(parser, sock)
-        self.model = ModelG19
-        self.model.lcd_info.set_fonts(kwargs['fonts'])
+        super().__init__(parser, sock, model)
         self.vert_space = 40

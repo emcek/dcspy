@@ -10,7 +10,7 @@ from typing import Iterator
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechDevice
-from dcspy.models import MULTICAST_IP, RECV_ADDR, FontsConfig
+from dcspy.models import MULTICAST_IP, RECV_ADDR, KeyboardModel
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
@@ -106,17 +106,16 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(lcd_type: str, event: Event, fonts_cfg: FontsConfig) -> None:
+def dcspy_run(model: KeyboardModel, event: Event) -> None:
     """
     Real starting point of DCSpy.
 
-    :param lcd_type: LCD handling class as string
+    :param model: Logitech device model
     :param event: stop event for main loop
-    :param fonts_cfg: fonts configuration for LCD
     """
     with _prepare_socket() as dcs_sock:
         parser = ProtocolParser()
-        manager: LogitechDevice = getattr(import_module('dcspy.logitech'), lcd_type)(parser=parser, sock=dcs_sock, fonts=fonts_cfg)
+        manager: LogitechDevice = getattr(import_module('dcspy.logitech'), model.klass)(parser=parser, sock=dcs_sock, model=model)
         LOG.info(f'Loading: {str(manager)}')
         LOG.debug(f'Loading: {repr(manager)}')
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
