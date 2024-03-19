@@ -40,16 +40,15 @@ class LogitechDevice:
         self.plane_detected = False
         self.lcdbutton_pressed = False
         self._display: List[str] = []
-        self.lcd = kwargs.get('lcd_type', LcdMono)
-        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
+        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.gkey: Sequence[Gkey] = ()
         self.buttons: Sequence[LcdButton] = ()
         self.skip_lcd = kwargs.get('skip_lcd', False)
-        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type, skip=self.skip_lcd)
+        self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type, skip=self.skip_lcd)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
         success = self.key_sdk.logi_gkey_init()
         LOG.debug(f'G-Key is connected: {success}')
-        self.plane = BasicAircraft(self.lcd)
+        self.plane = BasicAircraft(self.model.lcd_info)
         self.vert_space = 0
 
     @property
@@ -127,11 +126,11 @@ class LogitechDevice:
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
             lcd_update_func = self.lcd_sdk.update_display if not self.skip_lcd else None
-            self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.lcd, update_display=lcd_update_func)
+            self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.model.lcd_info, update_display=lcd_update_func)
             LOG.debug(f'Dynamic load of: {self.plane_name} as AdvancedAircraft | BIOS: {self.plane.bios_name}')
             self._setup_plane_callback()
         else:
-            self.plane = MetaAircraft(self.plane_name, (BasicAircraft,), {})(self.lcd)
+            self.plane = MetaAircraft(self.plane_name, (BasicAircraft,), {})(self.model.lcd_info)
             self.plane.bios_name = self.bios_name
             LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')
         LOG.debug(f'{repr(self)}')
@@ -204,7 +203,7 @@ class LogitechDevice:
 
         :param true_clear:
         """
-        LOG.debug(f'Clear LCD type: {self.lcd.type}')
+        LOG.debug(f'Clear LCD type: {self.model.lcd_info.type}')
         self.lcd_sdk.clear_display(true_clear)
 
     def _prepare_image(self) -> Image.Image:
@@ -215,14 +214,14 @@ class LogitechDevice:
         For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :return: image instance ready display on LCD
         """
-        img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width.value, self.lcd.height.value), color=self.lcd.background)
+        img = Image.new(mode=self.model.lcd_info.mode.value, size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value), color=self.model.lcd_info.background)
         draw = ImageDraw.Draw(img)
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+            draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.model.lcd_info.foreground, font=self.model.lcd_info.font_s)
         return img
 
     def __str__(self) -> str:
-        return f'{type(self).__name__}: {self.lcd.width.value}x{self.lcd.height.value}'
+        return f'{type(self).__name__}: {self.model.lcd_info.width.value}x{self.model.lcd_info.height.value}'
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
@@ -339,7 +338,7 @@ class LcdKeyboard(LogitechDevice):
         """
         super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.lcd = kwargs.get('lcd_type', LcdMono)
-        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd='mono')
+        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.lcd.type, skip=self.skip_lcd)
         self.vert_space = 0
 
@@ -380,9 +379,9 @@ class G13(LcdKeyboard):
         Support for: G13
         :param parser: DCS-BIOS parser instance
         """
-        LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG13
+        self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
@@ -397,9 +396,9 @@ class G510(LcdKeyboard):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG510
+        self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
@@ -414,9 +413,9 @@ class G15v1(LcdKeyboard):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG15v1
+        self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
@@ -431,9 +430,9 @@ class G15v2(LcdKeyboard):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        LcdMono.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdMono, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG15v2
+        self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
@@ -448,8 +447,8 @@ class G19(LcdKeyboard):
         :param parser: DCS-BIOS parser instance
         :param sock: multicast UDP socket
         """
-        LcdColor.set_fonts(kwargs['fonts'])
-        super().__init__(parser, sock, lcd_type=LcdColor, skip_lcd=kwargs.get('skip_lcd', False))
+        super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG19
+        self.model.lcd_info.set_fonts(kwargs['fonts'])
         self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
         self.vert_space = 40
