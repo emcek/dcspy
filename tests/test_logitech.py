@@ -9,11 +9,13 @@ from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, Lcd
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    assert str(keyboard_base) == 'LcdKeyboard: 160x43'
+    assert str(keyboard_base) == 'LogitechDevice: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
-            '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel',
-            'lcd_sdk', 'key_sdk')
+    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'skip_lcd', 'vert_space', 'socket', '_display',
+            'parser', 'ProtocolParser',
+            'plane', 'BasicAircraft',
+            'model', 'KeyboardModel', 'LcdInfo', 'LcdButton', 'LcdMode', 'FreeTypeFont',
+            'lcd_sdk', 'LcdSdkManager', 'key_sdk', 'GkeySdkManager')
     for test_string in data:
         assert test_string in logitech_repr
 
@@ -23,22 +25,23 @@ def test_keyboard_base_basic_check(keyboard_base):
 
 @mark.parametrize('keyboard, pressed1, effect, chk_btn, calls, pressed2', [
     ('keyboard_mono', False, [False] * 3 + [True], LcdButton.FOUR, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], True),
-    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.OK, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.UP), call(LcdButton.DOWN), call(LcdButton.OK)], True),
+    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.UP, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL)], True),
     ('keyboard_mono', True, [True, False, False, False], LcdButton.NONE, [call(LcdButton.ONE)], True),
     ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE, [call(LcdButton.LEFT)], True),
     ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], False),
-    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.UP), call(LcdButton.DOWN), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.MENU)], False),
+    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.UP), call(LcdButton.DOWN),  call(LcdButton.MENU)], False),
 ], ids=[
     'Mono 4 Button',
-    'Color Ok Button',
+    'Color Up Button',
     'Mono None already_pressed',
     'Color None already_pressed',
     'Mono None Button',
     'Color None Button'])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
+    from dcspy.logitech import LogitechDevice
 
-    keyboard = request.getfixturevalue(keyboard)
+    keyboard: LogitechDevice = request.getfixturevalue(keyboard)
     keyboard.lcdbutton_pressed = pressed1
     with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
         assert keyboard.check_buttons() == chk_btn
