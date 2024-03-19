@@ -693,11 +693,11 @@ class KeyboardModel(BaseModel):
     no_g_modes: int
     no_g_keys: int
     lcdkeys: Sequence[LcdButton]
-    lcd: str
+    lcd_info: LcdInfo
 
     def __str__(self) -> str:
         lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcdkeys])
-        return f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd}"
+        return f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd_info}"
 
     @property
     def g_keys(self) -> Sequence[Gkey]:
@@ -708,16 +708,25 @@ class KeyboardModel(BaseModel):
         """
         return Gkey.generate(key=self.no_g_keys, mode=self.no_g_modes)
 
+    @property
+    def lcd_name(self) -> str:
+        """
+        Get the LCD name in lower case.
 
-ModelG19 = KeyboardModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd='color',
+        :return: The name of the LCD as a lowercase string.
+        """
+        return self.lcd_info.type.name.lower()
+
+
+ModelG19 = KeyboardModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
                          lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
-ModelG13 = KeyboardModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd='mono',
+ModelG13 = KeyboardModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
                          lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd='mono',
+ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                            lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd='mono',
+ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
                            lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG510 = KeyboardModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd='mono',
+ModelG510 = KeyboardModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
 
