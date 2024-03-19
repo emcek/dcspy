@@ -60,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd_info=LcdMono)
+        self.keyboard = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -260,7 +260,7 @@ class DcsPyQtGui(QMainWindow):
         if state:
             for mode_col in range(self.keyboard.no_g_modes):
                 self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.keyboard.no_g_keys + len(self.keyboard.lcdkeys)):
+            for gkey_row in range(self.keyboard.no_g_keys + len(self.keyboard.lcd_keys)):
                 self.tw_gkeys.removeRow(gkey_row)
             self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard.klass}')
             LOG.debug(f'Select: {repr(self.keyboard)}')
@@ -363,11 +363,11 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setColumnCount(self.keyboard.no_g_modes)
         for mode_col in range(self.keyboard.no_g_modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
-        no_lcd_keys = len(self.keyboard.lcdkeys)
+        no_lcd_keys = len(self.keyboard.lcd_keys)
         no_g_keys = self.keyboard.no_g_keys
         self.tw_gkeys.setRowCount(no_g_keys + no_lcd_keys)
         labels_g_key = [f'G{i}' for i in range(1, no_g_keys + 1)]
-        labels_lcd_key = [lcd_key.name for lcd_key in self.keyboard.lcdkeys]
+        labels_lcd_key = [lcd_key.name for lcd_key in self.keyboard.lcd_keys]
         self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key)
         self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.no_g_modes + 1)])
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
@@ -581,7 +581,7 @@ class DcsPyQtGui(QMainWindow):
         if row <= self.keyboard.no_g_keys - 1:
             key = Gkey.name(row, col)
         else:
-            key = self.keyboard.lcdkeys[row - self.keyboard.no_g_keys].name
+            key = self.keyboard.lcd_keys[row - self.keyboard.no_g_keys].name
         return key
 
     def _find_section_name(self, ctrl_name: str) -> str:

@@ -692,11 +692,11 @@ class KeyboardModel(BaseModel):
     klass: str
     no_g_modes: int
     no_g_keys: int
-    lcdkeys: Sequence[LcdButton]
+    lcd_keys: Sequence[LcdButton]
     lcd_info: LcdInfo
 
     def __str__(self) -> str:
-        lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcdkeys])
+        lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
         return f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd_info}"
 
     @property
@@ -719,15 +719,15 @@ class KeyboardModel(BaseModel):
 
 
 ModelG19 = KeyboardModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
-                         lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
+                         lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
 ModelG13 = KeyboardModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
-                         lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                         lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
-                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                           lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
-                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                           lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 ModelG510 = KeyboardModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
-                          lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                          lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
 
 KEYBOARD_TYPES = [ModelG19, ModelG510, ModelG15v1, ModelG15v2, ModelG13]

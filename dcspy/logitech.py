@@ -40,9 +40,7 @@ class LogitechDevice:
         self.plane_detected = False
         self.lcdbutton_pressed = False
         self._display: List[str] = []
-        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcdkeys=(LcdButton.NONE,), lcd_info=LcdMono)
-        self.gkey: Sequence[Gkey] = ()
-        self.buttons: Sequence[LcdButton] = ()
+        self.model = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.skip_lcd = kwargs.get('skip_lcd', False)
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type, skip=self.skip_lcd)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
@@ -163,11 +161,11 @@ class LogitechDevice:
 
         :return: LcdButton enum of pressed button
         """
-        for btn in self.buttons:
-            if self.lcd_sdk.logi_lcd_is_button_pressed(btn):
+        for lcd_btn in self.model.lcd_keys:
+            if self.lcd_sdk.logi_lcd_is_button_pressed(lcd_btn):
                 if not self.lcdbutton_pressed:
                     self.lcdbutton_pressed = True
-                    return LcdButton(btn)
+                    return LcdButton(lcd_btn)
                 return LcdButton.NONE
         self.lcdbutton_pressed = False
         return LcdButton.NONE
@@ -383,7 +381,6 @@ class G13(LcdKeyboard):
         super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG13
         self.model.lcd_info.set_fonts(kwargs['fonts'])
-        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
 
@@ -400,7 +397,6 @@ class G510(LcdKeyboard):
         super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG510
         self.model.lcd_info.set_fonts(kwargs['fonts'])
-        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
 
@@ -417,7 +413,6 @@ class G15v1(LcdKeyboard):
         super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG15v1
         self.model.lcd_info.set_fonts(kwargs['fonts'])
-        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
 
@@ -434,7 +429,6 @@ class G15v2(LcdKeyboard):
         super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG15v2
         self.model.lcd_info.set_fonts(kwargs['fonts'])
-        self.buttons = (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR)
         self.vert_space = 10
 
 
@@ -451,5 +445,4 @@ class G19(LcdKeyboard):
         super().__init__(parser, sock, skip_lcd=kwargs.get('skip_lcd', False))
         self.model = ModelG19
         self.model.lcd_info.set_fonts(kwargs['fonts'])
-        self.buttons = (LcdButton.LEFT, LcdButton.RIGHT, LcdButton.UP, LcdButton.DOWN, LcdButton.OK, LcdButton.CANCEL, LcdButton.MENU)
         self.vert_space = 40
