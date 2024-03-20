@@ -24,7 +24,7 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
 
     with patch('dcspy.qt_gui.default_yaml', test_config_yaml):
         with patch.object(qt_gui.DcsPyQtGui, '_run_file_dialog', return_value=tmpdir):
-            dcspy_gui = qt_gui.DcsPyQtGui(cli_args=Namespace())
+            dcspy_gui = qt_gui.DcsPyQtGui(cli_args=Namespace(no_lcd=False))
             dcspy_gui.show()
             qtbot.addWidget(dcspy_gui)
             dcspy_gui.rb_g19.setChecked(True)
