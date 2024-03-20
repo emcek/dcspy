@@ -70,7 +70,7 @@ for keyboard_model in models.KEYBOARD_TYPES:
     else:
         lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
 
-    globals()[keyboard_model.name.replace(' ', '')] = generate_keyboard_fixtures(model=keyboard_model, fonts=lcd_font)
+    globals()[keyboard_model.klass] = generate_keyboard_fixtures(model=keyboard_model, fonts=lcd_font)
 
 
 def pytest_addoption(parser) -> None:
@@ -178,7 +178,7 @@ def keyboard_base(protocol_parser, sock):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        model = LogitechDeviceModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        model = LogitechDeviceModel(klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
         return logitech.LogitechDevice(protocol_parser, sock=sock, model=model)
 
 
