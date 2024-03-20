@@ -734,7 +734,7 @@ G510 = LogitechDeviceModel(klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=Lc
                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
 
-KEYBOARD_TYPES = [G19, G510, G15v1, G15v2, G13]
+LCD_KEYBOARD = [G19, G510, G15v1, G15v2, G13]
 
 
 def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
