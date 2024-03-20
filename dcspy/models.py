@@ -572,32 +572,42 @@ class LcdButton(Enum):
         return self.name
 
 
-class MouseButton(Enum):
+class MouseButton(BaseModel):
     """LCD Buttons."""
-    NONE: Final = 0
-    M1: Final = 1
-    M2: Final = 2
-    M3: Final = 3
-    M4: Final = 4
-    M5: Final = 5
-    M6: Final = 6
-    M7: Final = 7
-    M8: Final = 8
-    M9: Final = 9
-    M10: Final = 10
-    M11: Final = 11
-    M12: Final = 12
-    M13: Final = 13
-    M14: Final = 14
-    M15: Final = 15
-    M16: Final = 16
-    M17: Final = 17
-    M18: Final = 18
-    M19: Final = 19
-    M20: Final = 20
+    button: int = 0
 
     def __str__(self) -> str:
-        return self.name
+        return f'M_{self.button}'
+
+    def __bool__(self):
+        """Return False when button value is zero."""
+        return bool(self.button)
+
+    def __hash__(self):
+        """Hash will be the same for any two MouseButton instances with the same button value."""
+        return hash(self.button)
+
+    @classmethod
+    def from_yaml(cls, /, yaml_str: str) -> 'MouseButton':
+        """
+        Construct MouseButton from YAML string.
+
+        :param yaml_str: ex. M_3
+        :return: MouseButton instance
+        """
+        match = search(r'M_(\d+)', yaml_str)
+        if match:
+            return cls(button=int(match.group(1)))
+        raise ValueError(f'Invalid MouseButton format: {yaml_str}. Expected: M_<i>')
+
+    @staticmethod
+    def generate(button_range: Tuple[int, int]) -> Sequence['MouseButton']:
+        """
+        Generate a sequence of MouseButton-Keys.
+
+        :param button_range: start and stop (inclusive) of range for mouse buttons
+        """
+        return tuple([MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1)])
 
 
 class LcdType(Enum):
@@ -726,9 +736,9 @@ class LogitechDeviceModel(BaseModel):
     klass: str
     no_g_modes: int = 0
     no_g_keys: int = 0
+    btn_m_range: Tuple[int, int] = (0, 0)
     lcd_keys: Sequence[LcdButton] = (LcdButton.NONE,)
     lcd_info: LcdInfo = NoneLcd
-    mouse_key: Sequence[MouseButton] = (MouseButton.NONE,)
 
     def __str__(self) -> str:
         lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
@@ -742,6 +752,15 @@ class LogitechDeviceModel(BaseModel):
         :return: A sequence of G-Keys.
         """
         return Gkey.generate(key=self.no_g_keys, mode=self.no_g_modes)
+
+    @property
+    def mouse_keys(self) -> Sequence[MouseButton]:
+        """
+        Generate a sequence of MouseButtons.
+
+        :return: A sequence of MouseButtons.
+        """
+        return MouseButton.generate(button_range=self.btn_m_range)
 
     @property
     def lcd_name(self) -> str:
@@ -779,32 +798,40 @@ G930 = LogitechDeviceModel(klass='G930', no_g_modes=1, no_g_keys=3)
 G933 = LogitechDeviceModel(klass='G933', no_g_modes=1, no_g_keys=3)
 HEADPHONES_DEV = [G35, G633, G930, G933]
 
-G600 = LogitechDeviceModel(klass='G600')
-G300 = LogitechDeviceModel(klass='G300')
-G400 = LogitechDeviceModel(klass='G400')
-G700 = LogitechDeviceModel(klass='G700')
-G9 = LogitechDeviceModel(klass='G9')
-MX518 = LogitechDeviceModel(klass='MX518')
-G402 = LogitechDeviceModel(klass='G402')
-G502 = LogitechDeviceModel(klass='G502')
-G602 = LogitechDeviceModel(klass='G602')
+G600 = LogitechDeviceModel(klass='G600', btn_m_range=(6, 20))
+G300 = LogitechDeviceModel(klass='G300', btn_m_range=(6, 9))
+G400 = LogitechDeviceModel(klass='G400', btn_m_range=(6, 8))
+G700 = LogitechDeviceModel(klass='G700', btn_m_range=(1, 13))
+G9 = LogitechDeviceModel(klass='G9', btn_m_range=(4, 8))
+MX518 = LogitechDeviceModel(klass='MX518', btn_m_range=(6, 8))
+G402 = LogitechDeviceModel(klass='G402', btn_m_range=(1, 5))
+G502 = LogitechDeviceModel(klass='G502', btn_m_range=(4, 8))
+G602 = LogitechDeviceModel(klass='G602', btn_m_range=(6, 10))
 MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
-def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
+def get_key_instance(key_str: str) -> Union[Gkey, LcdButton, MouseButton]:
     """
     Get key instance from string.
 
     :param key_str: key name from yaml configuration
-    :return: Gkey or LcdButton instance
+    :return: Gkey, LcdButton or MouseButton instance
     """
     try:
-        key = Gkey.from_yaml(key_str)
+        return Gkey.from_yaml(key_str)
     except ValueError:
-        key = getattr(LcdButton, key_str)
-    return key
+        try:
+            return MouseButton.from_yaml(key_str)
+        except ValueError:
+            pass
+    try:
+        return getattr(LcdButton, key_str)
+    except AttributeError:
+        pass
+
+    raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
 
 
 class MsgBoxTypes(Enum):
