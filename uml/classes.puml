@@ -199,7 +199,6 @@ package models {
         + value: Union[int, str]
     }
     class LogitechDeviceModel <<(M,orange)>> {
-        + name: str
         + klass: str
         + no_g_modes: int
         + no_g_keys: int
