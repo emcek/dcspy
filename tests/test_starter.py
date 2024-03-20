@@ -17,7 +17,7 @@ def test_sock_err_handler(keyboard_mono):
     from dcspy import starter
     ver_string = f'v{starter.__version__} (latest)'
     start_time = time()
-    starter._sock_err_handler(manager=keyboard_mono, start_time=start_time, ver_string=ver_string,
+    starter._sock_err_handler(logi_device=keyboard_mono, start_time=start_time, ver_string=ver_string,
                               support_iter=(i for i in '12'), exp=Exception())
     assert keyboard_mono.display == ['Logitech LCD OK', 'No data from DCS:   00:00', '1', ver_string]
 
