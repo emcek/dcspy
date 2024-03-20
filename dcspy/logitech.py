@@ -43,7 +43,6 @@ class LogitechDevice:
         success = self.key_sdk.logi_gkey_init()
         LOG.debug(f'G-Key is connected: {success}')
         self.plane = BasicAircraft(self.model.lcd_info)
-        self.vert_space = 0
 
     @property
     def display(self) -> List[str]:
@@ -213,7 +212,7 @@ class LogitechDevice:
                         size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
         draw = ImageDraw.Draw(img)
         for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, self.vert_space * line_no), text=line, fill=self.model.lcd_info.foreground, font=self.model.lcd_info.font_s)
+            draw.text(xy=(0, self.model.lcd_info.line_spacing * line_no), text=line, fill=self.model.lcd_info.foreground, font=self.model.lcd_info.font_s)
         return img
 
     def __str__(self) -> str:
@@ -321,7 +320,6 @@ class G13(LogitechDevice):
         :param parser: DCS-BIOS parser instance
         """
         super().__init__(parser, sock, model)
-        self.vert_space = 10
 
 
 class G510(LogitechDevice):
@@ -335,7 +333,6 @@ class G510(LogitechDevice):
         :param sock: multicast UDP socket
         """
         super().__init__(parser, sock, model)
-        self.vert_space = 10
 
 
 class G15v1(LogitechDevice):
@@ -349,7 +346,6 @@ class G15v1(LogitechDevice):
         :param sock: multicast UDP socket
         """
         super().__init__(parser, sock, model)
-        self.vert_space = 10
 
 
 class G15v2(LogitechDevice):
@@ -363,7 +359,6 @@ class G15v2(LogitechDevice):
         :param sock: multicast UDP socket
         """
         super().__init__(parser, sock, model)
-        self.vert_space = 10
 
 
 class G19(LogitechDevice):
@@ -377,4 +372,3 @@ class G19(LogitechDevice):
         :param sock: multicast UDP socket
         """
         super().__init__(parser, sock, model)
-        self.vert_space = 40
