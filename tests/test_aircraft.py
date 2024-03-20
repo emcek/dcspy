@@ -57,8 +57,8 @@ def test_meta_plane(keyboard, plane_name, request):
     from dcspy.aircraft import BasicAircraft, MetaAircraft
     from dcspy.logitech import LogitechDevice
 
-    keyboard: LogitechDevice = request.getfixturevalue(keyboard)
-    plane = MetaAircraft(plane_name, (BasicAircraft,), {})(keyboard.model.lcd_info)
+    logi_keyboard: LogitechDevice = request.getfixturevalue(keyboard)
+    plane = MetaAircraft(plane_name, (BasicAircraft,), {})(logi_keyboard.model.lcd_info)
     assert isinstance(plane, BasicAircraft)
     assert type(plane).__name__ == plane_name
 

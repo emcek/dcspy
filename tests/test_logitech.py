@@ -40,12 +40,12 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     from dcspy.logitech import LogitechDevice
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    keyboard: LogitechDevice = request.getfixturevalue(keyboard)
-    keyboard.lcdbutton_pressed = pressed1
+    logi_keyboard: LogitechDevice = request.getfixturevalue(keyboard)
+    logi_keyboard.lcdbutton_pressed = pressed1
     with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
-        assert keyboard.check_buttons() == chk_btn
+        assert logi_keyboard.check_buttons() == chk_btn
     lcd_btn_pressed.assert_has_calls(calls)
-    assert keyboard.lcdbutton_pressed is pressed2
+    assert logi_keyboard.lcdbutton_pressed is pressed2
 
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
