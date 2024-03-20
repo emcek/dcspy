@@ -112,6 +112,8 @@ def test_gkey_name():
     ('G1_M2', 'Gkey'),
     ('TWO', 'LcdButton'),
     ('MENU', 'LcdButton'),
+    ('M_2', 'MouseButton'),
+    ('M_12', 'MouseButton'),
 ])
 def test_get_key_instance(key_name, klass):
     from dcspy.models import get_key_instance
@@ -119,7 +121,7 @@ def test_get_key_instance(key_name, klass):
     assert get_key_instance(key_name).__class__.__name__ == klass
 
 
-@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', ''])
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '', 'M_a3', 'm_2', 'M3'])
 def test_get_key_instance_error(key_name):
     from dcspy.models import get_key_instance
 
@@ -128,7 +130,7 @@ def test_get_key_instance_error(key_name):
 
 
 @mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
-def test_get_key_bool_test(key, mode, result):
+def test_get_gkey_bool_test(key, mode, result):
     from dcspy.models import Gkey
 
     if Gkey(key=key, mode=mode):
@@ -137,11 +139,59 @@ def test_get_key_bool_test(key, mode, result):
         assert not result
 
 
-def test_get_key_as_dict_key():
+def test_get_gkey_as_dict_key():
     from dcspy.models import Gkey
 
     g1 = Gkey(key=2, mode=1)
     assert len({g1: g1.name}) == 1
+
+
+# <=><=><=><=> MouseButton <=><=><=><=>
+def test_mouse_button_from_yaml_success():
+    from dcspy.models import MouseButton
+
+    m_btn = MouseButton.from_yaml('M_3')
+    assert m_btn.button == 3
+
+
+def test_mouse_button_from_yaml_value_error():
+    from dcspy.models import MouseButton
+
+    with raises(ValueError):
+        _ = MouseButton.from_yaml('M_a1')
+
+
+def test_generate_mouse_button():
+    from dcspy.models import MouseButton
+
+    mouse = MouseButton.generate((4, 8))
+    assert len(mouse) == 5
+    assert mouse[0].button == 4
+    assert mouse[-1].button == 8
+
+
+def test_mouse_button_name():
+    from dcspy.models import MouseButton
+
+    assert str(MouseButton(button=1)) == 'M_1'
+    assert str(MouseButton(button=2)) == 'M_2'
+
+
+@mark.parametrize('btn, result', [(0, False), (1, True), (2, True)])
+def test_get_mouse_button_bool_test(btn,  result):
+    from dcspy.models import MouseButton
+
+    if MouseButton(button=btn):
+        assert result
+    else:
+        assert not result
+
+
+def test_get_mouse_button_as_dict_key():
+    from dcspy.models import MouseButton
+
+    b_btn = MouseButton(button=2)
+    assert len({b_btn: b_btn.button}) == 1
 
 
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
