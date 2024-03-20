@@ -45,7 +45,7 @@ package logitech {
         + socket: socket
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
-        + model: KeyboardModel
+        + model: LogitechDeviceModel
         + __init__(ProtocolParser, socket, FontsConfig)
         + display(message : List[str]) -> List[str]
         + detecting_plane()
@@ -198,7 +198,7 @@ package models {
         + args: StrBuffArgs
         + value: Union[int, str]
     }
-    class KeyboardModel <<(M,orange)>> {
+    class LogitechDeviceModel <<(M,orange)>> {
         + name: str
         + klass: str
         + no_g_modes: int
@@ -261,15 +261,15 @@ BiosValueStr *-- StrBuffArgs
 LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
-KeyboardModel --* LcdInfo
+LogitechDeviceModel --* LcdInfo
 LcdButton -* BasicAircraft
-LcdButton -* KeyboardModel
+LcdButton -* LogitechDeviceModel
 LcdButton -* LogitechDevice
 Gkey --* BasicAircraft
 Gkey --* LogitechDevice
 Direction --* ZigZagIterator
 ZigZagIterator --* RequestModel
-KeyboardModel -* LogitechDevice
+LogitechDeviceModel -* LogitechDevice
 RequestModel --* KeyRequest
 CycleButton -* RequestModel
 }
