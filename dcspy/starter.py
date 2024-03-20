@@ -10,7 +10,7 @@ from typing import Iterator
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechDevice
-from dcspy.models import MULTICAST_IP, RECV_ADDR, KeyboardModel
+from dcspy.models import MULTICAST_IP, RECV_ADDR, LogitechDeviceModel
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
@@ -106,7 +106,7 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(model: KeyboardModel, event: Event) -> None:
+def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
     """
     Real starting point of DCSpy.
 
