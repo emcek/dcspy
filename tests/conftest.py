@@ -202,7 +202,6 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
         def __init__(self, parser, socket, model) -> None:
             model.lcd_info.set_fonts(lcd_font_mono)
             super().__init__(parser, socket, model)
-            self.vert_space = 10
             plane = BasicAircraft(lcd_type=self.model.lcd_info)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
             self.plane = plane
@@ -237,7 +236,6 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
         def __init__(self, parser, socket, model) -> None:
             model.lcd_info.set_fonts(lcd_font_color)
             super().__init__(parser, socket, model)
-            self.vert_space = 40
             plane = BasicAircraft(lcd_type=self.model.lcd_info)
             plane.key_req = utils.KeyRequest(yaml_path=resources / 'test_plane.yaml', get_bios_fn=lambda x: 1)
             self.plane = plane

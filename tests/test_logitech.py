@@ -10,7 +10,7 @@ def test_keyboard_base_basic_check(keyboard_base):
 
     assert str(keyboard_base) == 'LogitechDevice: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'vert_space', 'socket', '_display',
+    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'socket', '_display',
             'parser', 'ProtocolParser',
             'plane', 'BasicAircraft',
             'model', 'KeyboardModel', 'LcdInfo', 'LcdButton', 'LcdMode', 'FreeTypeFont',
