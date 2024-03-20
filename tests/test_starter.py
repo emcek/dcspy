@@ -44,10 +44,9 @@ def test_prepare_socket():
 def test_run_dcs_with_bios_data(resources):
     from threading import Event, Thread
 
-    from dcspy.models import DEFAULT_FONT_NAME, FontsConfig
+    from dcspy.models import DEFAULT_FONT_NAME, G13, FontsConfig
     from dcspy.starter import dcspy_run
     from tests.helpers import send_bios_data
-    from dcspy.models import G13
 
     event = Event()
     fonts_cfg = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
