@@ -60,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = LogitechDeviceModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        self.keyboard = LogitechDeviceModel(klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -1182,7 +1182,7 @@ class DcsPyQtGui(QMainWindow):
             self.combo_planes.setCurrentText(cfg['current_plane'])
             self.mono_font = {'large': int(cfg['font_mono_l']), 'medium': int(cfg['font_mono_m']), 'small': int(cfg['font_mono_s'])}
             self.color_font = {'large': int(cfg['font_color_l']), 'medium': int(cfg['font_color_m']), 'small': int(cfg['font_color_s'])}
-            getattr(self, f'rb_{cfg["keyboard"].lower().replace(" ", "")}').toggle()
+            getattr(self, f'rb_{cfg["keyboard"].lower()}').toggle()
             self.le_dcsdir.setText(cfg['dcs'])
             self.le_biosdir.setText(cfg['dcsbios'])
             self.le_bios_live.setText(cfg['git_bios_ref'])
