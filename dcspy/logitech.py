@@ -64,7 +64,7 @@ class LogitechDevice:
         :param message: List of strings to display, row by row.
         """
         self._display = message
-        if not self.model.lcd_info.type == LcdType.NONE:
+        if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
 
     def text(self, message: List[str]) -> None:
@@ -75,7 +75,7 @@ class LogitechDevice:
         For G19 takes first 8 or fewer elements of list and display as 8 rows.
         :param message: List of strings to display, row by row.
         """
-        if not self.model.lcd_info.type == LcdType.NONE:
+        if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_text(message)
 
     def detecting_plane(self, value: str) -> None:
@@ -119,7 +119,7 @@ class LogitechDevice:
         """
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
-            lcd_update_func = self.lcd_sdk.update_display if not self.model.lcd_info.type == LcdType.NONE else None
+            lcd_update_func = self.lcd_sdk.update_display if self.model.lcd_info.type != LcdType.NONE else None
             self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.model.lcd_info, update_display=lcd_update_func)
             LOG.debug(f'Dynamic load of: {self.plane_name} as AdvancedAircraft | BIOS: {self.plane.bios_name}')
             self._setup_plane_callback()
@@ -173,7 +173,7 @@ class LogitechDevice:
         * detect if button was pressed
         * sent action to DCS-BIOS via network socket
         """
-        if not self.model.lcd_info.type == LcdType.NONE:
+        if self.model.lcd_info.type != LcdType.NONE:
             button = self.check_buttons()
             if button.value:
                 self._send_request(button, key_down=KEY_DOWN)

@@ -22,7 +22,7 @@ class LcdSdkManager:
         :param lcd_type: An integer representing the type of the LCD
         """
         result = None
-        if not lcd_type == LcdType.NONE:
+        if lcd_type != LcdType.NONE:
             self.lcd_dll: Lib = load_dll(LcdDll)  # type: ignore[assignment]
             result = self.logi_lcd_init(name=name, lcd_type=lcd_type)
         LOG.debug(f'LCD is connected: {result}')
