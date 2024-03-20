@@ -37,13 +37,7 @@ package dcsbios {
 }
 
 package logitech {
-    LcdKeyboard <|-- G13
-    LcdKeyboard <|-- G510
-    LcdKeyboard <|-- G15v1
-    LcdKeyboard <|-- G15v2
-    LcdKeyboard <|-- G19
-
-    class LcdKeyboard {
+    class LogitechDevice {
         + parser : ProtocolParser
         + plane : BasicAircraft
         + plane_name = '' : str
@@ -52,7 +46,6 @@ package logitech {
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
         + model: KeyboardModel
-        + vert_space = 0 : int
         + __init__(ProtocolParser, socket, FontsConfig)
         + display(message : List[str]) -> List[str]
         + detecting_plane()
@@ -66,21 +59,6 @@ package logitech {
         + text(List[str])
         # _prepare_image() -> Image
         # _send_request(button: Union[LcdButton, Gkey], Optional[int])
-    }
-    class G13 {
-        + vert_space = 10 : int
-    }
-    class G510 {
-        + vert_space = 10 : int
-    }
-    class G15v1 {
-        + vert_space = 10 : int
-    }
-    class G15v2 {
-        + vert_space = 10 : int
-    }
-    class G19 {
-        + vert_space = 40 : int
     }
 }
 
@@ -157,16 +135,17 @@ package models {
         + from_request(req: str) -> CycleButton
     }
     class LcdInfo <<(M,orange)>> {
-        + height : int
         + width : int
+        + height : int
         + type : LcdType
-        + buttons: Sequence[LcdButton]
         + foreground : Union[int, Tuple[int, int, int, int]]
         + background : Union[int, Tuple[int, int, int, int]]
         + mode: LcdMode
-        + font_xs: ImageFont.FreeTypeFont
-        + font_s: ImageFont.FreeTypeFont
-        + font_l: ImageFont.FreeTypeFont
+        + line_spacing: int
+        + font_xs: Optional[ImageFont.FreeTypeFont]
+        + font_s: Optional[ImageFont.FreeTypeFont]
+        + font_l: Optional[ImageFont.FreeTypeFont]
+        + set_font(FontsConfig)
     }
     class LcdMode <<(E,yellow)>> {
         + NONE = '0'
@@ -174,8 +153,9 @@ package models {
         + TRUE_COLOR = 'RGBA'
     }
     class LcdType <<(E,yellow)>> {
-        + MONO = 0
-        + COLOR = 1
+        + NONE = 0
+        + MONO = 1
+        + COLOR = 2
     }
     class Gkey <<(M,orange)>> {
         + key: int
@@ -281,14 +261,15 @@ BiosValueStr *-- StrBuffArgs
 LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
+KeyboardModel --* LcdInfo
 LcdButton -* BasicAircraft
 LcdButton -* KeyboardModel
-LcdButton -* LcdKeyboard
+LcdButton -* LogitechDevice
 Gkey --* BasicAircraft
-Gkey --* LcdKeyboard
+Gkey --* LogitechDevice
 Direction --* ZigZagIterator
 ZigZagIterator --* RequestModel
-KeyboardModel -* LcdKeyboard
+KeyboardModel -* LogitechDevice
 RequestModel --* KeyRequest
 CycleButton -* RequestModel
 }
@@ -348,11 +329,11 @@ package sdk{
     }
 }
 
-LcdKeyboard *- BasicAircraft
-LcdInfo --* LcdKeyboard
-LcdKeyboard *-- ProtocolParser
-LcdKeyboard *-- LcdSdkManager
-LcdKeyboard *-- GkeySdkManager
+LogitechDevice *- BasicAircraft
+LcdInfo --* LogitechDevice
+LogitechDevice *-- ProtocolParser
+LogitechDevice *-- LcdSdkManager
+LogitechDevice *-- GkeySdkManager
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
