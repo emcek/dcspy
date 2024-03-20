@@ -2,7 +2,7 @@ from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Type, Union
 
 from packaging import version
 from PIL import ImageFont
@@ -812,6 +812,24 @@ MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
+def _try_key_instance(klass: Union[Type[Gkey], Type[LcdButton], Type[MouseButton]], method: str, key_str: str) -> Optional[Union[Gkey, LcdButton, MouseButton]]:
+    """
+    Detect key string could be parsed with method.
+
+    :param klass: class of the key instance to try the method on
+    :param method: name of the method to try with the key class.
+    :param key_str: a string representation of the key
+    :return: The result of calling the method on the key instance, or None if an error occurs.
+
+    """
+    try:
+        return getattr(klass, method)(key_str)
+    except TypeError:
+        return getattr(klass, method)
+    except (ValueError, AttributeError):
+        return None
+
+
 def get_key_instance(key_str: str) -> Union[Gkey, LcdButton, MouseButton]:
     """
     Get key instance from string.
@@ -819,19 +837,12 @@ def get_key_instance(key_str: str) -> Union[Gkey, LcdButton, MouseButton]:
     :param key_str: key name from yaml configuration
     :return: Gkey, LcdButton or MouseButton instance
     """
-    try:
-        return Gkey.from_yaml(key_str)
-    except ValueError:
-        try:
-            return MouseButton.from_yaml(key_str)
-        except ValueError:
-            pass
-    try:
-        return getattr(LcdButton, key_str)
-    except AttributeError:
-        pass
-
-    raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
+    for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
+        key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
+        if key_instance:
+            return key_instance
+    else:
+        raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
 
 
 class MsgBoxTypes(Enum):
@@ -948,7 +959,7 @@ class RequestModel(BaseModel):
     raw_request: str
     get_bios_fn: Callable[[str], Union[str, int, float]]
     cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
-    key: Union[LcdButton, Gkey]
+    key: Union[LcdButton, Gkey, MouseButton]
 
     @field_validator('ctrl_name')
     def validate_interface(cls, value):
@@ -963,7 +974,7 @@ class RequestModel(BaseModel):
         return value
 
     @classmethod
-    def from_request(cls, key: Union[LcdButton, Gkey], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
+    def from_request(cls, key: Union[LcdButton, Gkey, MouseButton], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
         """
         Build object based on string request.
 
