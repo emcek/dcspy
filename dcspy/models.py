@@ -687,8 +687,12 @@ class Gkey(BaseModel):
         return str(Gkey(key=row + 1, mode=col + 1))
 
 
-class KeyboardModel(BaseModel):
-    """Light LCD keyboard model."""
+class LogitechDeviceModel(BaseModel):
+    """
+    Logitech Device model.
+
+    It describes all capabilities of any Logitech device.
+    """
     name: str
     klass: str
     no_g_modes: int
@@ -719,19 +723,19 @@ class KeyboardModel(BaseModel):
         return self.lcd_info.type.name.lower()
 
 
-ModelG19 = KeyboardModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
-                         lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
-ModelG13 = KeyboardModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
-                         lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
+G19 = LogitechDeviceModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
+                          lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
+lG13 = LogitechDeviceModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
+G15v1 = LogitechDeviceModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
+                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+G15v2 = LogitechDeviceModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
+                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+G510 = LogitechDeviceModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG510 = KeyboardModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
-                          lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
 
-KEYBOARD_TYPES = [ModelG19, ModelG510, ModelG15v1, ModelG15v2, ModelG13]
+KEYBOARD_TYPES = [G19, G510, G15v1, G15v2, lG13]
 
 
 def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
