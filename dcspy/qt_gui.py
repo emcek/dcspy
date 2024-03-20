@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, KEYBOARD_TYPES, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, KeyboardModel, LcdButton, LcdMono, LcdType, MsgBoxTypes, ReleaseInfo,
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LogitechDeviceModel, LcdButton, LcdMono, LcdType, MsgBoxTypes, ReleaseInfo,
                           RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
@@ -60,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = KeyboardModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        self.keyboard = LogitechDeviceModel(name='', klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -244,7 +244,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Set number of results: {value}')
         self._load_table_gkeys()
 
-    def _select_keyboard(self, keyboard: KeyboardModel, state: bool) -> None:
+    def _select_keyboard(self, keyboard: LogitechDeviceModel, state: bool) -> None:
         """
         Triggered when new keyboard is selected.
 
@@ -262,7 +262,7 @@ class DcsPyQtGui(QMainWindow):
                 self.tw_gkeys.removeColumn(mode_col)
             for gkey_row in range(self.keyboard.no_g_keys + len(self.keyboard.lcd_keys)):
                 self.tw_gkeys.removeRow(gkey_row)
-            self.keyboard = getattr(import_module('dcspy.models'), f'Model{keyboard.klass}')
+            self.keyboard = getattr(import_module('dcspy.models'), keyboard.klass)
             LOG.debug(f'Select: {repr(self.keyboard)}')
             self._set_ded_font_and_font_sliders()
             self._update_dock()
