@@ -572,6 +572,34 @@ class LcdButton(Enum):
         return self.name
 
 
+class MouseButton(Enum):
+    """LCD Buttons."""
+    NONE: Final = 0
+    M1: Final = 1
+    M2: Final = 2
+    M3: Final = 3
+    M4: Final = 4
+    M5: Final = 5
+    M6: Final = 6
+    M7: Final = 7
+    M8: Final = 8
+    M9: Final = 9
+    M10: Final = 10
+    M11: Final = 11
+    M12: Final = 12
+    M13: Final = 13
+    M14: Final = 14
+    M15: Final = 15
+    M16: Final = 16
+    M17: Final = 17
+    M18: Final = 18
+    M19: Final = 19
+    M20: Final = 20
+
+    def __str__(self) -> str:
+        return self.name
+
+
 class LcdType(Enum):
     """LCD Type."""
     NONE: Final = 0
@@ -698,8 +726,9 @@ class LogitechDeviceModel(BaseModel):
     klass: str
     no_g_modes: int = 0
     no_g_keys: int = 0
-    lcd_keys: Sequence[LcdButton] = (LcdButton.NONE, )
+    lcd_keys: Sequence[LcdButton] = (LcdButton.NONE,)
     lcd_info: LcdInfo = NoneLcd
+    mouse_key: Sequence[MouseButton] = (MouseButton.NONE,)
 
     def __str__(self) -> str:
         lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
