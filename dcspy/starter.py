@@ -1,7 +1,6 @@
 import socket
 import struct
 from collections import deque
-from importlib import import_module
 from logging import getLogger
 from threading import Event
 from time import gmtime, time
@@ -115,7 +114,7 @@ def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
     """
     with _prepare_socket() as dcs_sock:
         parser = ProtocolParser()
-        manager: LogitechDevice = getattr(import_module('dcspy.logitech'), model.klass)(parser=parser, sock=dcs_sock, model=model)
+        manager = LogitechDevice(parser=parser, sock=dcs_sock, model=model)
         LOG.info(f'Loading: {str(manager)}')
         LOG.debug(f'Loading: {repr(manager)}')
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
