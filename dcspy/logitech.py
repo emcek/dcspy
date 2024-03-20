@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, LogitechDeviceModel, LcdButton, LcdType
+from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, LcdButton, LcdType, LogitechDeviceModel
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
