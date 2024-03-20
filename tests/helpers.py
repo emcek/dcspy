@@ -1,7 +1,7 @@
 from pathlib import Path
 from socket import AF_INET, SOCK_DGRAM, socket
 from time import sleep
-from typing import List, Sequence, Tuple, Union
+from typing import Sequence, Tuple, Union
 from unittest.mock import patch
 
 from PIL import Image, ImageChops
