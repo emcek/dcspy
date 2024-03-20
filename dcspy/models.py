@@ -734,9 +734,34 @@ G15v2 = LogitechDeviceModel(klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=L
                             lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 G510 = LogitechDeviceModel(klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+LCD_KEYBOARDS_DEV = [G19, G510, G15v1, G15v2, G13]
 
+G910 = LogitechDeviceModel(klass='G910', no_g_modes=3, no_g_keys=9)
+G710 = LogitechDeviceModel(klass='G710', no_g_modes=3, no_g_keys=6)
+G110 = LogitechDeviceModel(klass='G110', no_g_modes=3, no_g_keys=12)
+G103 = LogitechDeviceModel(klass='G103', no_g_modes=3, no_g_keys=6)
+G105 = LogitechDeviceModel(klass='G105', no_g_modes=3, no_g_keys=6)
+G11 = LogitechDeviceModel(klass='G11', no_g_modes=3, no_g_keys=18)
+KEYBOARDS_DEV = [G910, G710, G110, G103, G105, G11]
 
-LCD_KEYBOARD = [G19, G510, G15v1, G15v2, G13]
+G35 = LogitechDeviceModel(klass='G35', no_g_modes=1, no_g_keys=3)
+G633 = LogitechDeviceModel(klass='G633', no_g_modes=1, no_g_keys=3)
+G930 = LogitechDeviceModel(klass='G930', no_g_modes=1, no_g_keys=3)
+G933 = LogitechDeviceModel(klass='G933', no_g_modes=1, no_g_keys=3)
+HEADPHONES_DEV = [G35, G633, G930, G933]
+
+G600 = LogitechDeviceModel(klass='G600')
+G300 = LogitechDeviceModel(klass='G300')
+G400 = LogitechDeviceModel(klass='G400')
+G700 = LogitechDeviceModel(klass='G700')
+G9 = LogitechDeviceModel(klass='G9')
+MX518 = LogitechDeviceModel(klass='MX518')
+G402 = LogitechDeviceModel(klass='G402')
+G502 = LogitechDeviceModel(klass='G502')
+G602 = LogitechDeviceModel(klass='G602')
+MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
+
+ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
 def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
