@@ -693,7 +693,6 @@ class LogitechDeviceModel(BaseModel):
 
     It describes all capabilities of any Logitech device.
     """
-    name: str
     klass: str
     no_g_modes: int
     no_g_keys: int
@@ -723,19 +722,19 @@ class LogitechDeviceModel(BaseModel):
         return self.lcd_info.type.name.lower()
 
 
-G19 = LogitechDeviceModel(name='G19', klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
+G19 = LogitechDeviceModel(klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
                           lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
-lG13 = LogitechDeviceModel(name='G13', klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
+G13 = LogitechDeviceModel(klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-G15v1 = LogitechDeviceModel(name='G15 v1', klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
+G15v1 = LogitechDeviceModel(klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                             lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-G15v2 = LogitechDeviceModel(name='G15 v2', klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
+G15v2 = LogitechDeviceModel(klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
                             lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-G510 = LogitechDeviceModel(name='G510', klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
+G510 = LogitechDeviceModel(klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 
 
-KEYBOARD_TYPES = [G19, G510, G15v1, G15v2, lG13]
+KEYBOARD_TYPES = [G19, G510, G15v1, G15v2, G13]
 
 
 def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
