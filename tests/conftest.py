@@ -64,7 +64,7 @@ for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50
         name = f'{airplane.__name__.lower()}_{lcd.type.name.lower()}'
         globals()[name] = generate_plane_fixtures(plane=airplane, lcd_info=lcd, fonts=lcd_font)
 
-for keyboard_model in models.LCD_KEYBOARD:
+for keyboard_model in models.LCD_KEYBOARDS_DEV:
     if keyboard_model.lcd_info.type == models.LcdType.COLOR:
         lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
     else:
