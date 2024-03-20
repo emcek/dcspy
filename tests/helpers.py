@@ -1,7 +1,7 @@
 from pathlib import Path
 from socket import AF_INET, SOCK_DGRAM, socket
 from time import sleep
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Sequence
 from unittest.mock import patch
 
 from PIL import Image, ImageChops
@@ -14,7 +14,7 @@ from dcspy.utils import load_json
 all_plane_list = ['fa18chornet', 'f16c50', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna']
 
 
-def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: List[Tuple[str, Union[str, int]]]) -> None:
+def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[Tuple[str, Union[str, int]]]) -> None:
     """
     Set BIOS values for a given aircraft model.
 
