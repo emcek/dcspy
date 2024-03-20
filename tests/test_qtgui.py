@@ -9,6 +9,7 @@ from pytest import mark
 @mark.qt6
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, tmpdir):
+    from argparse import Namespace
     from time import sleep
 
     from PySide6 import QtCore
@@ -23,7 +24,7 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
 
     with patch('dcspy.qt_gui.default_yaml', test_config_yaml):
         with patch.object(qt_gui.DcsPyQtGui, '_run_file_dialog', return_value=tmpdir):
-            dcspy_gui = qt_gui.DcsPyQtGui()
+            dcspy_gui = qt_gui.DcsPyQtGui(cli_args=Namespace())
             dcspy_gui.show()
             qtbot.addWidget(dcspy_gui)
             dcspy_gui.rb_g19.setChecked(True)
