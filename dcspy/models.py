@@ -611,6 +611,7 @@ class LcdInfo(BaseModel):
     foreground: Union[int, Tuple[int, int, int, int]]
     background: Union[int, Tuple[int, int, int, int]]
     mode: LcdMode
+    line_spacing: int
     font_xs: Optional[ImageFont.FreeTypeFont] = None
     font_s: Optional[ImageFont.FreeTypeFont] = None
     font_l: Optional[ImageFont.FreeTypeFont] = None
@@ -626,11 +627,11 @@ class LcdInfo(BaseModel):
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
 
 
-NoneLcd = LcdInfo(width=LcdSize.NONE, height=LcdSize.NONE, type=LcdType.NONE,
+NoneLcd = LcdInfo(width=LcdSize.NONE, height=LcdSize.NONE, type=LcdType.NONE, line_spacing=0,
                   foreground=0, background=0, mode=LcdMode.NONE)
-LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO,
+LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO, line_spacing=10,
                   foreground=255, background=0, mode=LcdMode.BLACK_WHITE)
-LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR,
+LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR, line_spacing=40,
                    foreground=(0, 255, 0, 255), background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
 
 
