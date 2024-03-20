@@ -197,7 +197,7 @@ class LogitechDevice:
 
         :param true_clear:
         """
-        if not self.model.lcd_info.type == LcdType.NONE:
+        if self.model.lcd_info.type != LcdType.NONE:
             LOG.debug(f'Clear LCD type: {self.model.lcd_info.type}')
             self.lcd_sdk.clear_display(true_clear)
 
