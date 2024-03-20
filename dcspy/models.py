@@ -694,10 +694,10 @@ class LogitechDeviceModel(BaseModel):
     It describes all capabilities of any Logitech device.
     """
     klass: str
-    no_g_modes: int
-    no_g_keys: int
-    lcd_keys: Sequence[LcdButton]
-    lcd_info: LcdInfo
+    no_g_modes: int = 0
+    no_g_keys: int = 0
+    lcd_keys: Sequence[LcdButton] = (LcdButton.NONE, )
+    lcd_info: LcdInfo = NoneLcd
 
     def __str__(self) -> str:
         lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])

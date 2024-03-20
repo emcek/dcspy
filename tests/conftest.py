@@ -170,7 +170,7 @@ def keyboard_base(protocol_parser, sock):
     :param sock: net socket object
     :return: LcdKeyboard
     """
-    from dcspy.models import LcdButton, LcdMono, LogitechDeviceModel
+    from dcspy.models import LcdMono, LogitechDeviceModel
     from dcspy.sdk.key_sdk import GkeySdkManager
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
@@ -178,7 +178,7 @@ def keyboard_base(protocol_parser, sock):
 
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
-        model = LogitechDeviceModel(klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        model = LogitechDeviceModel(klass='', lcd_info=LcdMono)
         return logitech.LogitechDevice(protocol_parser, sock=sock, model=model)
 
 

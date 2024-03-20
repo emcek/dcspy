@@ -28,7 +28,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, LCD_KEYBOARD, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MsgBoxTypes, ReleaseInfo,
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdMono, LcdType, LogitechDeviceModel, MsgBoxTypes, ReleaseInfo,
                           RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
@@ -60,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = LogitechDeviceModel(klass='', no_g_modes=0, no_g_keys=0, lcd_keys=(LcdButton.NONE,), lcd_info=LcdMono)
+        self.keyboard = LogitechDeviceModel(klass='', lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
