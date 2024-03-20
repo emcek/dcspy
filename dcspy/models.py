@@ -546,6 +546,7 @@ class GuiPlaneInputRequest(BaseModel):
 
 
 class LedConstants(Enum):
+    """LED constants."""
     LOGI_LED_DURATION_INFINITE: Final = 0
     LOGI_DEVICETYPE_MONOCHROME: Final = 1
     LOGI_DEVICETYPE_RGB: Final = 2
@@ -579,6 +580,7 @@ class LcdType(Enum):
 
 
 class LcdSize(Enum):
+    """LCD dimensions."""
     NONE: Final = 0
     MONO_WIDTH: Final = 160
     MONO_HEIGHT: Final = 43
