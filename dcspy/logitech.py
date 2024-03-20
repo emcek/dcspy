@@ -222,91 +222,79 @@ class LogitechDevice:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'
 
 
-class Headphone(LogitechDevice):
+class G35(LogitechDevice):
     pass
 
 
-class G35(Headphone):
+class G633(LogitechDevice):
     pass
 
 
-class G633(Headphone):
+class G930(LogitechDevice):
     pass
 
 
-class G930(Headphone):
+class G933(LogitechDevice):
     pass
 
 
-class G933(Headphone):
+class G600(LogitechDevice):
     pass
 
 
-class Mouse(LogitechDevice):
+class G300(LogitechDevice):
     pass
 
 
-class G600(Mouse):
+class G400(LogitechDevice):
     pass
 
 
-class G300(Mouse):
+class G700(LogitechDevice):
     pass
 
 
-class G400(Mouse):
+class G9(LogitechDevice):
     pass
 
 
-class G700(Mouse):
+class Mx518(LogitechDevice):
     pass
 
 
-class G9(Mouse):
+class G402(LogitechDevice):
     pass
 
 
-class Mx518(Mouse):
+class G502(LogitechDevice):
     pass
 
 
-class G402(Mouse):
+class G602(LogitechDevice):
     pass
 
 
-class G502(Mouse):
+class G910(LogitechDevice):
     pass
 
 
-class G602(Mouse):
+class G710(LogitechDevice):
     pass
 
 
-class Keyboard(LogitechDevice):
+class G110(LogitechDevice):
     pass
 
 
-class G910(Keyboard):
+class G103(LogitechDevice):
     pass
 
 
-class G710(Keyboard):
+class G105(LogitechDevice):
     pass
 
 
-class G110(Keyboard):
-    pass
-
-
-class G103(Keyboard):
-    pass
-
-
-class G105(Keyboard):
-    pass
-
-
-class G11(Keyboard):
+class G11(LogitechDevice):
     pass
 
 
