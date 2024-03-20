@@ -725,7 +725,7 @@ class LogitechDeviceModel(BaseModel):
 G19 = LogitechDeviceModel(klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
                           lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
 G13 = LogitechDeviceModel(klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
-                           lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                          lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 G15v1 = LogitechDeviceModel(klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
                             lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
 G15v2 = LogitechDeviceModel(klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
