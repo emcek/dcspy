@@ -60,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         self.cli_args = cli_args
         self.event = Event()
         self._done_event = Event()
-        self.keyboard = LogitechDeviceModel(klass='', lcd_info=LcdMono)
+        self.device = LogitechDeviceModel(klass='', lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
         self.current_row = -1
@@ -89,7 +89,7 @@ class DcsPyQtGui(QMainWindow):
         self._init_menu_bar()
         self.apply_configuration(cfg=self.config)
         self._init_settings()
-        self._init_keyboards()
+        self._init_devices()
         self._init_autosave()
         self._trigger_refresh_data()
 
@@ -173,12 +173,12 @@ class DcsPyQtGui(QMainWindow):
         self.hs_set_state.valueChanged.connect(self._input_iface_changed_or_custom_text_changed)
         self.hs_set_state.valueChanged.connect(self._hs_set_state_moved)
 
-    def _init_keyboards(self) -> None:
-        """Initialize of keyboards."""
-        for keyboard_type in ALL_DEV:
-            rb_device: QRadioButton = getattr(self, f'rb_{keyboard_type.klass.lower()}')
-            rb_device.toggled.connect(partial(self._select_keyboard, keyboard_type))
-            rb_device.setToolTip(str(keyboard_type))
+    def _init_devices(self) -> None:
+        """Initialize of a Logitech device."""
+        for logitech_dev in ALL_DEV:
+            rb_device: QRadioButton = getattr(self, f'rb_{logitech_dev.klass.lower()}')
+            rb_device.toggled.connect(partial(self._select_logi_dev, logitech_dev))
+            rb_device.setToolTip(str(logitech_dev))
 
     def _init_menu_bar(self) -> None:
         """Initialize of menubar."""
@@ -187,7 +187,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_save_plane.triggered.connect(self._save_gkeys_cfg)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
-        self.a_show_keyboard.triggered.connect(self._show_keyboard_dock)
+        self.a_show_keyboard.triggered.connect(self._show_device_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
         self.a_discord.triggered.connect(partial(open_new_tab, url='https://discord.gg/SP5Yjx3'))
         self.a_donate.triggered.connect(partial(open_new_tab, url='https://paypal.me/emcek137'))
@@ -228,10 +228,10 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_bios_live.isChecked():
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
-        for keyboard_type in ALL_DEV:
-            keyboard = getattr(self, f'rb_{keyboard_type.klass.lower()}')
-            if keyboard.isChecked():
-                self._select_keyboard(keyboard=keyboard_type, state=True)
+        for logitech_dev in ALL_DEV:
+            dev = getattr(self, f'rb_{logitech_dev.klass.lower()}')
+            if dev.isChecked():
+                self._select_logi_dev(logi_dev=logitech_dev, state=True)
                 break
 
     def _set_find_value(self, value) -> None:
@@ -244,33 +244,33 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Set number of results: {value}')
         self._load_table_gkeys()
 
-    def _select_keyboard(self, keyboard: LogitechDeviceModel, state: bool) -> None:
+    def _select_logi_dev(self, logi_dev: LogitechDeviceModel, state: bool) -> None:
         """
-        Triggered when new keyboard is selected.
+        Triggered when new device is selected.
 
-        Based of current selected keyboard:
+        Based of current selected device:
         * Add correct numbers of rows and columns
         * enable DED font checkbox
         * updates font sliders (range and values)
-        * update dock with image of keyboard
+        * update dock with image of device
 
-        :param keyboard: Keyboard model object
+        :param logi_dev: Logitech device model object
         :param state: of radio button
         """
         if state:
-            for mode_col in range(self.keyboard.no_g_modes):
+            for mode_col in range(self.device.no_g_modes):
                 self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.keyboard.no_g_keys + len(self.keyboard.lcd_keys)):
+            for gkey_row in range(self.device.no_g_keys + len(self.device.lcd_keys)):
                 self.tw_gkeys.removeRow(gkey_row)
-            self.keyboard = getattr(import_module('dcspy.models'), keyboard.klass)
-            LOG.debug(f'Select: {repr(self.keyboard)}')
+            self.device = getattr(import_module('dcspy.models'), logi_dev.klass)
+            LOG.debug(f'Select: {repr(self.device)}')
             self._set_ded_font_and_font_sliders()
             self._update_dock()
             self._load_table_gkeys()
 
     def _set_ded_font_and_font_sliders(self) -> None:
         """Enable DED font checkbox and updates font sliders."""
-        if self.keyboard.lcd_info == LcdType.COLOR:
+        if self.device.lcd_info == LcdType.COLOR:
             self.cb_ded_font.setEnabled(True)
             minimum = 15
             maximum = 40
@@ -289,7 +289,7 @@ class DcsPyQtGui(QMainWindow):
             hs.setMaximum(maximum)
             hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
             hs.valueChanged.connect(self.save_configuration)
-            hs.setValue(getattr(self, f'{self.keyboard.lcd_name}_font')[name])
+            hs.setValue(getattr(self, f'{self.device.lcd_name}_font')[name])
 
     def _set_label_and_hs_value(self, value, name) -> None:
         """
@@ -298,12 +298,12 @@ class DcsPyQtGui(QMainWindow):
         :param value: of slider
         :param name: of slider
         """
-        getattr(self, f'{self.keyboard.lcd_name}_font')[name] = value
+        getattr(self, f'{self.device.lcd_name}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
 
     def _update_dock(self) -> None:
-        """Update dock with image of keyboard."""
-        self.l_keyboard.setPixmap(QPixmap(f':/img/img/{self.keyboard.klass}device.png'))
+        """Update dock with image of a device."""
+        self.l_keyboard.setPixmap(QPixmap(f':/img/img/{self.device.klass}device.png'))
 
     def _collect_data_clicked(self) -> None:
         """Collect data for troubleshooting and ask user where to save."""
@@ -360,23 +360,23 @@ class DcsPyQtGui(QMainWindow):
         """Initialize table with cockpit data."""
         if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
             return
-        self.tw_gkeys.setColumnCount(self.keyboard.no_g_modes)
-        for mode_col in range(self.keyboard.no_g_modes):
+        self.tw_gkeys.setColumnCount(self.device.no_g_modes)
+        for mode_col in range(self.device.no_g_modes):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
-        no_lcd_keys = len(self.keyboard.lcd_keys)
-        no_g_keys = self.keyboard.no_g_keys
+        no_lcd_keys = len(self.device.lcd_keys)
+        no_g_keys = self.device.no_g_keys
         self.tw_gkeys.setRowCount(no_g_keys + no_lcd_keys)
         labels_g_key = [f'G{i}' for i in range(1, no_g_keys + 1)]
-        labels_lcd_key = [lcd_key.name for lcd_key in self.keyboard.lcd_keys]
+        labels_lcd_key = [lcd_key.name for lcd_key in self.device.lcd_keys]
         self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key)
-        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.keyboard.no_g_modes + 1)])
+        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.device.no_g_modes + 1)])
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
 
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
         for row in range(0, no_g_keys + no_lcd_keys):
-            for col in range(0, self.keyboard.no_g_modes):
+            for col in range(0, self.device.no_g_modes):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
             cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
@@ -392,7 +392,7 @@ class DcsPyQtGui(QMainWindow):
         :param ctrl_list_no_sep: list of control inputs without separator
         """
         key_name = self._get_key_name_from_row_col(row, col)
-        if col == 0 or row < self.keyboard.no_g_keys:
+        if col == 0 or row < self.device.no_g_keys:
             completer = QCompleter(ctrl_list_no_sep)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
             completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
@@ -578,10 +578,10 @@ class DcsPyQtGui(QMainWindow):
         :param row: current column
         :return: string name of key
         """
-        if row <= self.keyboard.no_g_keys - 1:
+        if row <= self.device.no_g_keys - 1:
             key = Gkey.name(row, col)
         else:
-            key = self.keyboard.lcd_keys[row - self.keyboard.no_g_keys].name
+            key = self.device.lcd_keys[row - self.device.no_g_keys].name
         return key
 
     def _find_section_name(self, ctrl_name: str) -> str:
@@ -743,7 +743,7 @@ class DcsPyQtGui(QMainWindow):
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
         current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
-        for col in set(range(self.keyboard.no_g_modes)) - {self.current_col}:
+        for col in set(range(self.device.no_g_modes)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
     def _reload_table_gkeys(self) -> None:
@@ -1136,9 +1136,9 @@ class DcsPyQtGui(QMainWindow):
         for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
-        fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.keyboard.lcd_name}_font'))
-        self.keyboard.lcd_info.set_fonts(fonts_cfg)
-        app_params = {'model': self.keyboard, 'event': self.event}
+        fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
+        self.device.lcd_info.set_fonts(fonts_cfg)
+        app_params = {'model': self.device, 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
@@ -1199,7 +1199,7 @@ class DcsPyQtGui(QMainWindow):
         """Save configuration from GUI."""
         cfg = {
             'api_ver': __version__,
-            'keyboard': self.keyboard.klass,
+            'keyboard': self.device.klass,
             'autostart': self.cb_autostart.isChecked(),
             'show_gui': self.cb_show_gui.isChecked(),
             'save_lcd': self.cb_lcd_screenshot.isChecked(),
@@ -1225,7 +1225,7 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
         }
-        if self.keyboard.lcd_info == LcdType.COLOR:
+        if self.device.lcd_info == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
                         'font_color_m': self.hs_medium_font.value(),
                         'font_color_s': self.hs_small_font.value()}
@@ -1242,7 +1242,7 @@ class DcsPyQtGui(QMainWindow):
         self.config = load_yaml(full_path=default_yaml)
         self.apply_configuration(self.config)
         for name in ['large', 'medium', 'small']:
-            getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.keyboard.lcd_name}_font')[name])
+            getattr(self, f'hs_{name}_font').setValue(getattr(self, f'{self.device.lcd_name}_font')[name])
         self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Reset settings',
                                message='All settings will be reset to default values.\nDCSpy will to be close.\nIt could be necessary start DCSpy manually!')
         self.close()
@@ -1454,8 +1454,8 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.dw_gkeys.hide()
 
-    def _show_keyboard_dock(self) -> None:
-        """Toggle show and hide keyboard dock."""
+    def _show_device_dock(self) -> None:
+        """Toggle show and hide a device dock."""
         if self.a_show_keyboard.isChecked():
             self.dw_keyboard.show()
         else:
