@@ -853,8 +853,7 @@ def get_key_instance(key_str: str) -> Union[Gkey, LcdButton, MouseButton]:
         key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
         if key_instance:
             return key_instance
-    else:
-        raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
+    raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
 
 
 class MsgBoxTypes(Enum):
