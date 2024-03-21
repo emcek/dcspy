@@ -740,7 +740,7 @@ class LogitechDeviceModel(BaseModel):
     no_g_modes: int = 0
     no_g_keys: int = 0
     btn_m_range: Tuple[int, int] = (0, 0)
-    lcd_keys: Sequence[LcdButton] = tuple()
+    lcd_keys: Sequence[LcdButton] = (LcdButton.NONE,)
     lcd_info: LcdInfo = NoneLcd
 
     def get_rows(self) -> Dict[str, int]:
@@ -750,7 +750,7 @@ class LogitechDeviceModel(BaseModel):
         :return: A dictionary with the number of rows for each category.
         """
         result = {'gkey': len(self.g_keys),
-                  'lcd': len(self.lcd_keys),
+                  'lcd': 0 if len(self.lcd_keys) == 1 else len(self.lcd_keys),
                   'mouse': len(self.mouse_keys)}
         return result
 
@@ -761,7 +761,7 @@ class LogitechDeviceModel(BaseModel):
         :return: The maximum number of columns required.
         """
         mouse_btn_exist = 1 if self.btn_m_range != (0, 0) else 0
-        lcd_btn_exists = 1 if self.lcd_keys else 0
+        lcd_btn_exists = 1 if len(self.lcd_keys) > 1 else 0
         return max([self.no_g_modes, mouse_btn_exist, lcd_btn_exists])
 
     def __str__(self) -> str:
