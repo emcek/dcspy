@@ -666,6 +666,9 @@ class LcdInfo(BaseModel):
         self.font_s = ImageFont.truetype(fonts.name, fonts.medium)
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
 
+    def __str__(self) -> str:
+        return f'{self.type.name.capitalize()} LCD: {self.width.value}x{self.height.value} px'
+
 
 NoneLcd = LcdInfo(width=LcdSize.NONE, height=LcdSize.NONE, type=LcdType.NONE, line_spacing=0,
                   foreground=0, background=0, mode=LcdMode.NONE)
