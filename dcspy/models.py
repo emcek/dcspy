@@ -744,8 +744,17 @@ class LogitechDeviceModel(BaseModel):
     lcd_info: LcdInfo = NoneLcd
 
     def __str__(self) -> str:
-        lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
-        return f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes\nLCD Buttons: {lcd_buttons}\nLCD type: {self.lcd_info}"
+        result = []
+        if self.lcd_info.type.value:
+            result.append(f'{self.lcd_info}')
+        if self.lcd_keys[0].value:
+            lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
+            result.append(f'LCD Buttons: {lcd_buttons}')
+        if self.no_g_modes and self.no_g_keys:
+            result.append(f'G-Keys: {self.no_g_keys} in {self.no_g_modes} modes')
+        if self.btn_m_range[0] and self.btn_m_range[1]:
+            result.append(f'Mouse Buttons: {self.btn_m_range[0]} to {self.btn_m_range[1]}')
+        return '\n'.join(result)
 
     @property
     def g_keys(self) -> Sequence[Gkey]:
