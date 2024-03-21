@@ -740,7 +740,7 @@ class LogitechDeviceModel(BaseModel):
     no_g_modes: int = 0
     no_g_keys: int = 0
     btn_m_range: Tuple[int, int] = (0, 0)
-    lcd_keys: Sequence[LcdButton] = (LcdButton.NONE,)
+    lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
     def __str__(self) -> str:
