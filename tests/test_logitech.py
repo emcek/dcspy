@@ -13,7 +13,7 @@ def test_keyboard_base_basic_check(keyboard_base):
     data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'socket', '_display',
             'parser', 'ProtocolParser',
             'plane', 'BasicAircraft',
-            'model', 'LogitechDeviceModel', 'LcdInfo', 'LcdButton', 'LcdMode', 'FreeTypeFont',
+            'model', 'LogitechDeviceModel', 'LcdInfo', 'LcdMode', 'FreeTypeFont',
             'lcd_sdk', 'LcdSdkManager', 'key_sdk', 'GkeySdkManager')
     for test_string in data:
         assert test_string in logitech_repr
