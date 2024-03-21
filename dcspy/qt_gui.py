@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QTableWidget, QTabWidget, QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, LCD_KEYBOARDS_DEV, ControlDepiction, ControlKeyData,
+from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
                           DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdMono, LcdType, LogitechDeviceModel, MsgBoxTypes, ReleaseInfo,
                           RequestType, SystemData)
 from dcspy.starter import dcspy_run
@@ -175,7 +175,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_keyboards(self) -> None:
         """Initialize of keyboards."""
-        for keyboard_type in LCD_KEYBOARDS_DEV:
+        for keyboard_type in ALL_DEV:
             rb_device: QRadioButton = getattr(self, f'rb_{keyboard_type.klass.lower()}')
             rb_device.toggled.connect(partial(self._select_keyboard, keyboard_type))
             rb_device.setToolTip(str(keyboard_type))
@@ -228,7 +228,7 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_bios_live.isChecked():
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
-        for keyboard_type in LCD_KEYBOARDS_DEV:
+        for keyboard_type in ALL_DEV:
             keyboard = getattr(self, f'rb_{keyboard_type.klass.lower()}')
             if keyboard.isChecked():
                 self._select_keyboard(keyboard=keyboard_type, state=True)
