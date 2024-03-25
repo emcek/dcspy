@@ -1,4 +1,5 @@
 from enum import Enum
+from functools import cached_property
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
@@ -730,35 +731,67 @@ class LogitechDeviceModel(BaseModel):
     no_g_modes: int = 0
     no_g_keys: int = 0
     btn_m_range: Tuple[int, int] = (0, 0)
-    lcd_keys: Sequence[LcdButton] = (LcdButton.NONE,)
+    lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
-    def get_rows(self) -> Dict[str, int]:
+    def _get_rows(self) -> Dict[str, int]:
         """
         Get the number of rows for each key category.
 
         :return: A dictionary with the number of rows for each category.
         """
-        result = {'gkey': len(self.g_keys),
-                  'lcd': 0 if len(self.lcd_keys) == 1 else len(self.lcd_keys),
-                  'mouse': len(self.mouse_keys)}
+        result = {'gkey': self.no_g_keys,
+                  'lcd': len(self.lcd_keys),
+                  'mouse': 0 if len(self.mouse_keys) == 1 else len(self.mouse_keys)}
         return result
 
-    def get_cols(self) -> int:
+    def _get_cols(self) -> int:
         """
         Return the number of columns required.
 
         :return: The maximum number of columns required.
         """
         mouse_btn_exist = 1 if self.btn_m_range != (0, 0) else 0
-        lcd_btn_exists = 1 if len(self.lcd_keys) > 1 else 0
+        lcd_btn_exists = 1 if self.lcd_keys else 0
         return max([self.no_g_modes, mouse_btn_exist, lcd_btn_exists])
+
+    @property
+    def rows_and_cols(self):
+        """Get the rows and cols of the table."""
+        return {'row': self._get_rows(), 'col': self._get_cols()}
+
+    @cached_property
+    def table_layout(self) -> List[Union[List[Gkey], List[Optional[LcdButton]], List[Optional[MouseButton]]]]:
+        """Get the layout of the table."""
+        g_keys = [[Gkey(key=r, mode=c) for c in range(1, self.no_g_modes + 1)] for r in range(1, self.no_g_keys + 1)]
+        lcd_buttons = []
+        mouse_buttons = []
+
+        if self.lcd_keys:
+            lcd_buttons = [[lcd_key] + [None] * (self.no_g_modes - 1) for lcd_key in self.lcd_keys]
+        if len(self.mouse_keys) > 1:
+            mouse_buttons = [[mouse_key] + [None] * (self.no_g_modes - 1) for mouse_key in self.mouse_keys]
+
+        return g_keys + lcd_buttons + mouse_buttons
+
+    def get_key_at(self, row: int, col: int) -> Optional[Union[Gkey, LcdButton, MouseButton]]:
+        """
+        Get the keys at the specified row and column in the table layout.
+
+        :param row: The row index, zero based.
+        :param col: The column index, zero based.
+        :return: The key at the specified row and column, if it exists, otherwise None.
+        """
+        try:
+            return self.table_layout[row][col]
+        except IndexError:
+            return None
 
     def __str__(self) -> str:
         result = []
         if self.lcd_info.type.value:
             result.append(f'{self.lcd_info}')
-        if self.lcd_keys[0].value:
+        if self.lcd_keys:
             lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
             result.append(f'LCD Buttons: {lcd_buttons}')
         if self.no_g_modes and self.no_g_keys:
