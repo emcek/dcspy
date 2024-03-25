@@ -400,7 +400,7 @@ class DcsPyQtGui(QMainWindow):
         :param col: current column
         :param ctrl_list_no_sep: list of control inputs without separator
         """
-        key_name = self._get_key_name_from_row_col(row, col)
+        key_name = str(self.device.get_key_at(row=row, col=col))
         if col == 0 or row < self.device.no_g_keys:
             completer = QCompleter(ctrl_list_no_sep)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -551,7 +551,7 @@ class DcsPyQtGui(QMainWindow):
         self.l_identifier.setText('')
         self.l_range.setText('')
         widget.setToolTip('')
-        key_name = self._get_key_name_from_row_col(row, col)
+        key_name = str(self.device.get_key_at(row=row, col=col))
         widget.setStyleSheet(self._get_style_for_combobox(key_name, 'red'))
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
@@ -574,24 +574,6 @@ class DcsPyQtGui(QMainWindow):
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
-
-    def _get_key_name_from_row_col(self, row: int, col: int) -> str:
-        """
-        Get key name from row and column.
-
-        It depends of location in table:
-        * G-Key at the tom and LCD Keys at the bottom.
-        * type of Keyboard number of G-Keys and LCD Keys are different
-
-        :param row: current row
-        :param row: current column
-        :return: string name of key
-        """
-        if row <= self.device.no_g_keys - 1:
-            key = Gkey.name(row, col)
-        else:
-            key = self.device.lcd_keys[row - self.device.no_g_keys].name
-        return key
 
     def _find_section_name(self, ctrl_name: str) -> str:
         """
@@ -742,7 +724,7 @@ class DcsPyQtGui(QMainWindow):
         current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
             section = self._find_section_name(ctrl_name=current_cell_text)
-            key_name = self._get_key_name_from_row_col(self.current_row, self.current_col)
+            key_name = str(self.device.get_key_at(row=self.current_row, col=self.current_col))
             ctrl_key = self.ctrl_input[section][current_cell_text]
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
             custom_value = self._get_custom_value(input_iface_name)
