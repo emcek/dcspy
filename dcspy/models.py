@@ -749,32 +749,6 @@ class LogitechDeviceModel(BaseModel):
     lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
-    def _get_rows(self) -> Dict[str, int]:
-        """
-        Get the number of rows for each key category.
-
-        :return: A dictionary with the number of rows for each category.
-        """
-        result = {'gkey': self.no_g_keys,
-                  'lcd': len(self.lcd_keys),
-                  'mouse': 0 if len(self.mouse_keys) == 1 else len(self.mouse_keys)}
-        return result
-
-    def _get_cols(self) -> int:
-        """
-        Return the number of columns required.
-
-        :return: The maximum number of columns required.
-        """
-        mouse_btn_exist = 1 if self.btn_m_range != (0, 0) else 0
-        lcd_btn_exists = 1 if self.lcd_keys else 0
-        return max([self.no_g_modes, mouse_btn_exist, lcd_btn_exists])
-
-    @property
-    def rows_and_cols(self):
-        """Get the rows and cols of the table."""
-        return {'row': self._get_rows(), 'col': self._get_cols()}
-
     @cached_property
     def table_layout(self) -> List[Union[List[Gkey], List[Optional[LcdButton]], List[Optional[MouseButton]]]]:
         """Get the layout of the table."""
@@ -801,6 +775,28 @@ class LogitechDeviceModel(BaseModel):
             return self.table_layout[row][col]
         except IndexError:
             return None
+
+    @property
+    def rows(self) -> DeviceRowsNumber:
+        """
+        Get the number of rows for each key category.
+
+        :return: A DeviceRowsNumber with the number of rows for each category.
+        """
+        return DeviceRowsNumber(
+            g_key=self.no_g_keys,
+            lcd_key=len(self.lcd_keys),
+            mouse_key=0 if len(self.mouse_keys) == 1 else len(self.mouse_keys)
+        )
+
+    @property
+    def cols(self) -> int:
+        """
+        Get the number of columns required.
+
+        :return: The number of columns required.
+        """
+        return len(self.table_layout[0]) if self.table_layout else 0
 
     def __str__(self) -> str:
         result = []
