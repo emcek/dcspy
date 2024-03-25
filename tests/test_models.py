@@ -1,6 +1,6 @@
 from pytest import mark, raises
 
-from dcspy.models import KEY_DOWN, KEY_UP
+from dcspy.models import KEY_DOWN, KEY_UP, LcdButton, LcdColor, LcdMono
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
@@ -178,7 +178,7 @@ def test_mouse_button_name():
 
 
 @mark.parametrize('btn, result', [(0, False), (1, True), (2, True)])
-def test_get_mouse_button_bool_test(btn,  result):
+def test_get_mouse_button_bool_test(btn, result):
     from dcspy.models import MouseButton
 
     if MouseButton(button=btn):
@@ -249,6 +249,52 @@ def test_device_row_number_model():
     from dcspy.models import DeviceRowsNumber
     device = DeviceRowsNumber(g_key=3, lcd_key=2, mouse_key=1)
     assert device.total == 6
+
+
+# <=><=><=><=><=> LogitechDeviceModel <=><=><=><=><=>
+@mark.parametrize('dev_kwargs, result', [
+    ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'lcd_info': LcdMono, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO), 'btn_m_range': (6, 9)},
+     (8, 4, 'mono', 'Mono LCD: 160x43 px\nLCD Buttons: ONE, TWO\nG-Keys: 4 in 2 modes\nMouse Buttons: 6 to 9', 2, 4, 2, 4, 10)),
+    ({'klass': '', 'no_g_modes': 3, 'no_g_keys': 1, 'lcd_info': LcdColor, 'lcd_keys': (LcdButton.ONE,)},
+     (3, 1, 'color', 'Color LCD: 320x240 px\nLCD Buttons: ONE\nG-Keys: 1 in 3 modes', 3, 1, 1, 0, 2)),
+    ({'klass': '', 'no_g_modes': 1, 'no_g_keys': 3, 'lcd_info': LcdMono},
+     (3, 1, 'mono', 'Mono LCD: 160x43 px\nG-Keys: 3 in 1 modes', 1, 3, 0, 0, 3)),
+    ({'klass': '', 'no_g_modes': 3, 'no_g_keys': 2},
+     (6, 1, 'none', 'G-Keys: 2 in 3 modes', 3, 2, 0, 0, 2)),
+    ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO)},
+     (8, 1, 'none', 'LCD Buttons: ONE, TWO\nG-Keys: 4 in 2 modes', 2, 4, 2, 0, 6)),
+    ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'btn_m_range': (1, 3)},
+     (8, 3, 'none', 'G-Keys: 4 in 2 modes\nMouse Buttons: 1 to 3', 2, 4, 0, 3, 7)),
+    ({'klass': '', 'lcd_keys': (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE), 'btn_m_range': (4, 8)},
+     (0, 5, 'none', 'LCD Buttons: ONE, TWO, THREE\nMouse Buttons: 4 to 8', 1, 0, 3, 5, 8)),
+])
+def test_logitech_device_model(dev_kwargs, result):
+    from dcspy.models import LogitechDeviceModel
+    dev = LogitechDeviceModel(**dev_kwargs)
+    assert len(dev.g_keys) == result[0]
+    assert len(dev.mouse_keys) == result[1]
+    assert dev.lcd_name == result[2]
+    assert str(dev) == result[3]
+    assert dev.cols == result[4]
+    assert dev.rows.g_key == result[5]
+    assert dev.rows.lcd_key == result[6]
+    assert dev.rows.mouse_key == result[7]
+    assert dev.rows.total == result[8]
+
+
+def test_table_layout_of_logitech_device_model():
+    from dcspy.models import Gkey, LogitechDeviceModel, MouseButton
+
+    kwargs = {'klass': '', 'no_g_modes': 2, 'no_g_keys': 3, 'lcd_info': LcdMono, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO), 'btn_m_range': (2, 4)}
+    dev = LogitechDeviceModel(**kwargs)
+    assert dev.table_layout == [[Gkey(key=1, mode=1), Gkey(key=1, mode=2)],
+                                [Gkey(key=2, mode=1), Gkey(key=2, mode=2)],
+                                [Gkey(key=3, mode=1), Gkey(key=3, mode=2)],
+                                [LcdButton.ONE, None],
+                                [LcdButton.TWO, None],
+                                [MouseButton(button=2), None],
+                                [MouseButton(button=3), None],
+                                [MouseButton(button=4), None]]
 
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
