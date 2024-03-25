@@ -162,7 +162,6 @@ package models {
         + mode: int
         + from_yaml(yaml_str: str) -> Gkey
         + generate(key: int, mode: int) -> Tuple[Gkey]
-        + name(row: int, col: int) -> str
     }
     class LcdButton <<(E,yellow)>> {
         + none = 0x0

@@ -719,16 +719,6 @@ class Gkey(BaseModel):
         """
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
-    @staticmethod
-    def name(row: int, col: int) -> str:
-        """
-        Return Gkey as string for row and col.
-
-        :param row: row number, zero based
-        :param col: column number, zero based
-        """
-        return str(Gkey(key=row + 1, mode=col + 1))
-
 
 class LogitechDeviceModel(BaseModel):
     """
