@@ -103,8 +103,8 @@ def test_generate_gkey():
 def test_gkey_name():
     from dcspy.models import Gkey
 
-    assert Gkey.name(0, 1) == 'G1_M2'
-    assert Gkey.name(2, 0) == 'G3_M1'
+    assert str(Gkey(key=1, mode=2)) == 'G1_M2'
+    assert str(Gkey(key=3, mode=1)) == 'G3_M1'
 
 
 @mark.parametrize('key_name, klass', [
@@ -143,7 +143,7 @@ def test_get_gkey_as_dict_key():
     from dcspy.models import Gkey
 
     g1 = Gkey(key=2, mode=1)
-    assert len({g1: g1.name}) == 1
+    assert len({g1: str(g1)}) == 1
 
 
 # <=><=><=><=> MouseButton <=><=><=><=>
