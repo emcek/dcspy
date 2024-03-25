@@ -721,6 +721,21 @@ class Gkey(BaseModel):
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
 
+class DeviceRowsNumber(BaseModel):
+    g_key: int = 0
+    lcd_key: int = 0
+    mouse_key: int = 0
+
+    @property
+    def total(self) -> int:
+        """
+        Get the total number of rows.
+
+        :return: The total count of rows as an integer.
+        """
+        return sum([self.g_key, self.lcd_key, self.mouse_key])
+
+
 class LogitechDeviceModel(BaseModel):
     """
     Logitech Device model.

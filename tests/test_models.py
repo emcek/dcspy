@@ -244,6 +244,13 @@ def test_cycle_button_bool_test(name, req, step, max_val, result):
     assert bool(CycleButton.from_request(f'{name} {req} {step} {max_val}')) is result
 
 
+# <=><=><=><=><=> DeviceRowsNumber <=><=><=><=><=>
+def test_device_row_number_model():
+    from dcspy.models import DeviceRowsNumber
+    device = DeviceRowsNumber(g_key=3, lcd_key=2, mouse_key=1)
+    assert device.total == 6
+
+
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
 def test_get_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
