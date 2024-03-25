@@ -2051,8 +2051,8 @@ Avaliable for two-state switches and knobs.</string>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>594</x>
-     <y>647</y>
+     <x>689</x>
+     <y>667</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
@@ -2083,12 +2083,316 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>687</x>
-     <y>313</y>
+     <x>792</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
-     <x>730</x>
-     <y>317</y>
+     <x>950</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g910</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>294</x>
+     <y>249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g103</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>491</x>
+     <y>305</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>83</x>
+     <y>112</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g105</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>421</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>83</x>
+     <y>112</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g11</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>491</x>
+     <y>481</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g110</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g300</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g35</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>316</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g400</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>561</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g402</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g502</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g600</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>309</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g602</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>561</x>
+     <y>541</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g633</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>491</x>
+     <y>316</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g700</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>425</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g710</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>491</x>
+     <y>249</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g9</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>347</x>
+     <y>425</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g930</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>205</x>
+     <y>472</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g933</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>491</x>
+     <y>472</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_mx518</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>groupBox_4</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>561</x>
+     <y>425</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
     </hint>
    </hints>
   </connection>
