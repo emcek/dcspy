@@ -84,6 +84,8 @@ class DcsPyQtGui(QMainWindow):
         self.dw_keyboard.hide()
         self.dw_keyboard.setFloating(True)
         self.bg_rb_input_iface = QButtonGroup(self)
+        self.bg_rb_device = QButtonGroup(self)
+        self.table_layout: List[Union[List[Gkey], List[Optional[LcdButton]], List[Optional[MouseButton]]]] = [[]]
         self._init_tray()
         self._init_combo_plane()
         self._init_menu_bar()
@@ -172,6 +174,9 @@ class DcsPyQtGui(QMainWindow):
         self.le_custom.returnPressed.connect(self._input_iface_changed_or_custom_text_changed)
         self.hs_set_state.valueChanged.connect(self._input_iface_changed_or_custom_text_changed)
         self.hs_set_state.valueChanged.connect(self._hs_set_state_moved)
+        for rb_dev_widget in ['rb_g19', 'rb_g13', 'rb_g15v1', 'rb_g15v2', 'rb_g510', 'rb_g910', 'rb_g710', 'rb_g110', 'rb_g103', 'rb_g105', 'rb_g11', 'rb_g633',
+                              'rb_g35', 'rb_g930', 'rb_g933', 'rb_g600', 'rb_g300', 'rb_g400', 'rb_g700', 'rb_g9', 'rb_mx518', 'rb_g402', 'rb_g502', 'rb_g602']:
+            self.bg_rb_device.addButton(getattr(self, rb_dev_widget))
 
     def _init_devices(self) -> None:
         """Initialize of a Logitech device."""
@@ -217,6 +222,10 @@ class DcsPyQtGui(QMainWindow):
             'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
             'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled',
             'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled',
+            'rb_g910': 'toggled', 'rb_g710': 'toggled', 'rb_g110': 'toggled', 'rb_g103': 'toggled', 'rb_g105': 'toggled',
+            'rb_g11': 'toggled', 'rb_g35': 'toggled', 'rb_g633': 'toggled', 'rb_g930': 'toggled', 'rb_g933': 'toggled',
+            'rb_g600': 'toggled', 'rb_g300': 'toggled', 'rb_g400': 'toggled', 'rb_g700': 'toggled', 'rb_g9': 'toggled',
+            'rb_mx518': 'toggled', 'rb_g402': 'toggled', 'rb_g502': 'toggled', 'rb_g602': 'toggled',
         }
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
@@ -1107,7 +1116,7 @@ class DcsPyQtGui(QMainWindow):
         """Set event to stop DCSpy."""
         self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
                                signal_handlers={'progress': self._progress_by_abs_value})
-        for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
+        for rb_key in self.bg_rb_device.buttons():
             if not rb_key.isChecked():
                 rb_key.setEnabled(True)
         self.statusbar.showMessage('Start again or close DCSpy')
@@ -1133,7 +1142,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
         self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
                                signal_handlers={'progress': self._progress_by_abs_value})
-        for rb_key in [self.rb_g13, self.rb_g15v1, self.rb_g15v2, self.rb_g19, self.rb_g510]:
+        for rb_key in self.bg_rb_device.buttons():
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
         fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
@@ -1552,6 +1561,25 @@ class DcsPyQtGui(QMainWindow):
         self.rb_g15v1: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v1')
         self.rb_g15v2: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v2')
         self.rb_g510: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g510')
+        self.rb_rb_g910: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g910')
+        self.rb_rb_g710: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g710')
+        self.rb_rb_g110: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g110')
+        self.rb_rb_g103: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g103')
+        self.rb_rb_g105: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g105')
+        self.rb_rb_g11: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g11')
+        self.rb_rb_g633: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g633')
+        self.rb_rb_g35: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g35')
+        self.rb_rb_g930: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g930')
+        self.rb_rb_g933: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g933')
+        self.rb_rb_g600: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g600')
+        self.rb_rb_g300: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g300')
+        self.rb_rb_g400: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g400')
+        self.rb_rb_g700: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g700')
+        self.rb_rb_g9: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g9')
+        self.rb_rb_mx518: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_mx518')
+        self.rb_rb_g402: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g402')
+        self.rb_rb_g502: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g502')
+        self.rb_rb_g602: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g602')
         self.rb_action: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_action')
         self.rb_fixed_step_inc: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_inc')
         self.rb_fixed_step_dec: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_dec')
