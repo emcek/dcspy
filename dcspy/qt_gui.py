@@ -28,8 +28,8 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdMono, LcdType, LogitechDeviceModel, MsgBoxTypes, ReleaseInfo,
-                          RequestType, SystemData)
+                          DcspyConfigYaml, FontsConfig, GuiPlaneInputRequest, LcdMono, LcdType, LogitechDeviceModel, MsgBoxTypes, ReleaseInfo, RequestType,
+                          SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
@@ -85,7 +85,6 @@ class DcsPyQtGui(QMainWindow):
         self.dw_keyboard.setFloating(True)
         self.bg_rb_input_iface = QButtonGroup(self)
         self.bg_rb_device = QButtonGroup(self)
-        self.table_layout: List[Union[List[Gkey], List[Optional[LcdButton]], List[Optional[MouseButton]]]] = [[]]
         self._init_tray()
         self._init_combo_plane()
         self._init_menu_bar()
@@ -267,14 +266,17 @@ class DcsPyQtGui(QMainWindow):
         :param state: of radio button
         """
         if state:
-            for mode_col in range(self.device.no_g_modes):
+            for mode_col in range(self.device.cols):
                 self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.device.no_g_keys + len(self.device.lcd_keys)):
+            for gkey_row in range(self.device.rows.total):
                 self.tw_gkeys.removeRow(gkey_row)
             self.device = getattr(import_module('dcspy.models'), logi_dev.klass)
             LOG.debug(f'Select: {repr(self.device)}')
-            self._set_ded_font_and_font_sliders()
+            if self.device.lcd_info.type != LcdType.NONE:
+                self._set_ded_font_and_font_sliders()
             self._update_dock()
+            self.current_row = -1
+            self.current_col = -1
             self._load_table_gkeys()
 
     def _set_ded_font_and_font_sliders(self) -> None:
@@ -369,23 +371,22 @@ class DcsPyQtGui(QMainWindow):
         """Initialize table with cockpit data."""
         if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
             return
-        self.tw_gkeys.setColumnCount(self.device.no_g_modes)
-        for mode_col in range(self.device.no_g_modes):
+        self.tw_gkeys.setColumnCount(self.device.cols)
+        for mode_col in range(self.device.cols):
             self.tw_gkeys.setColumnWidth(mode_col, 200)
-        no_lcd_keys = len(self.device.lcd_keys)
-        no_g_keys = self.device.no_g_keys
-        self.tw_gkeys.setRowCount(no_g_keys + no_lcd_keys)
-        labels_g_key = [f'G{i}' for i in range(1, no_g_keys + 1)]
+        self.tw_gkeys.setRowCount(self.device.rows.total)
+        labels_g_key = [f'G{i}' for i in range(1, self.device.rows.g_key + 1)]
         labels_lcd_key = [lcd_key.name for lcd_key in self.device.lcd_keys]
-        self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key)
-        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.device.no_g_modes + 1)])
+        labels_m_key = [f'M{i}' for i in range(1, self.device.rows.mouse_key + 1)]
+        self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key + labels_m_key)
+        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.device.cols + 1)])
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
 
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
-        for row in range(0, no_g_keys + no_lcd_keys):
-            for col in range(0, self.device.no_g_modes):
+        for row in range(0, self.device.rows.total):
+            for col in range(0, self.device.cols):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
             cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
@@ -657,7 +658,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Enable input interfaces for current control input identifier.
 
-        :param key_name: G-Key or LCD Key as string
+        :param key_name: G-Key, LCD or Mouse button as string
         """
         try:
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
@@ -734,7 +735,7 @@ class DcsPyQtGui(QMainWindow):
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
         current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
-        for col in set(range(self.device.no_g_modes)) - {self.current_col}:
+        for col in set(range(self.device.cols)) - {self.current_col}:
             self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
 
     def _reload_table_gkeys(self) -> None:
@@ -1364,13 +1365,21 @@ class DcsPyQtGui(QMainWindow):
         """
         Get style for QComboBox with foreground color.
 
-        :param key_name: G-Key or LCD Key as string
+        Colors:
+        - light green - G-Kyes
+        - light yellow - Mouse buttons
+        - light blue - LCD buttons
+
+        :param key_name: G-Key, LCD or Mouse Key as string
         :param fg: color as string
         :return: style sheet string
         """
-        bg = 'lightblue'
-        if '_' in key_name:
+        if 'G' in key_name:
             bg = 'lightgreen'
+        elif 'M_' in key_name:
+            bg = 'lightyellow'
+        else:
+            bg = 'lightblue'
         return f'QComboBox{{color: {fg};background-color: {bg};}} QComboBox QAbstractItemView {{background-color: {bg};}}'
 
     def _show_message_box(self, kind_of: MsgBoxTypes, title: str, message: str = '', **kwargs) -> QMessageBox.StandardButton:
