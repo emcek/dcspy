@@ -282,19 +282,17 @@ def test_logitech_device_model(dev_kwargs, result):
     assert dev.rows.total == result[8]
 
 
-def test_table_layout_of_logitech_device_model():
+def test_get_key_at_of_logitech_device_model():
     from dcspy.models import Gkey, LogitechDeviceModel, MouseButton
 
     kwargs = {'klass': '', 'no_g_modes': 2, 'no_g_keys': 3, 'lcd_info': LcdMono, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO), 'btn_m_range': (2, 4)}
     dev = LogitechDeviceModel(**kwargs)
-    assert dev.table_layout == [[Gkey(key=1, mode=1), Gkey(key=1, mode=2)],
-                                [Gkey(key=2, mode=1), Gkey(key=2, mode=2)],
-                                [Gkey(key=3, mode=1), Gkey(key=3, mode=2)],
-                                [LcdButton.ONE, None],
-                                [LcdButton.TWO, None],
-                                [MouseButton(button=2), None],
-                                [MouseButton(button=3), None],
-                                [MouseButton(button=4), None]]
+    assert dev.get_key_at(row=1, col=1) == Gkey(key=2, mode=2)
+    assert dev.get_key_at(row=3, col=0) == LcdButton.ONE
+    assert dev.get_key_at(row=3, col=1) is None
+    assert dev.get_key_at(row=6, col=0) == MouseButton(button=3)
+    assert dev.get_key_at(row=6, col=1) is None
+    assert dev.get_key_at(row=9, col=9) is None
 
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
