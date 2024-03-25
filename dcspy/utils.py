@@ -22,7 +22,7 @@ from psutil import process_iter
 from requests import get
 
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
-                          ReleaseInfo, RequestModel, get_key_instance)
+                          MouseButton, ReleaseInfo, RequestModel, get_key_instance)
 
 try:
     import git
@@ -752,7 +752,7 @@ class KeyRequest:
         :param get_bios_fn: Function used to obtain current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
-        self.buttons: Dict[Union[LcdButton, Gkey], RequestModel] = {}
+        self.buttons: Dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
         for key_str, request in plane_yaml.items():
             if request:
                 key = get_key_instance(key_str)
