@@ -1,5 +1,4 @@
 from enum import Enum
-from functools import cached_property
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
@@ -749,20 +748,6 @@ class LogitechDeviceModel(BaseModel):
     lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
-    @cached_property
-    def table_layout(self) -> List[Union[List[Gkey], List[Optional[LcdButton]], List[Optional[MouseButton]]]]:
-        """Get the layout of the table."""
-        g_keys = [[Gkey(key=r, mode=c) for c in range(1, self.no_g_modes + 1)] for r in range(1, self.no_g_keys + 1)]
-        lcd_buttons = []
-        mouse_buttons = []
-
-        if self.lcd_keys:
-            lcd_buttons = [[lcd_key] + [None] * (self.no_g_modes - 1) for lcd_key in self.lcd_keys]
-        if len(self.mouse_keys) > 1:
-            mouse_buttons = [[mouse_key] + [None] * (self.no_g_modes - 1) for mouse_key in self.mouse_keys]
-
-        return g_keys + lcd_buttons + mouse_buttons
-
     def get_key_at(self, row: int, col: int) -> Optional[Union[Gkey, LcdButton, MouseButton]]:
         """
         Get the keys at the specified row and column in the table layout.
@@ -772,7 +757,17 @@ class LogitechDeviceModel(BaseModel):
         :return: The key at the specified row and column, if it exists, otherwise None.
         """
         try:
-            return self.table_layout[row][col]
+            g_keys = [[Gkey(key=r, mode=c) for c in range(1, self.no_g_modes + 1)] for r in range(1, self.no_g_keys + 1)]
+            lcd_buttons = []
+            mouse_buttons = []
+
+            if self.lcd_keys:
+                lcd_buttons = [[lcd_key] + [None] * (self.no_g_modes - 1) for lcd_key in self.lcd_keys]
+            if len(self.mouse_keys) > 1:
+                mouse_buttons = [[mouse_key] + [None] * (self.no_g_modes - 1) for mouse_key in self.mouse_keys]
+
+            table_layout = g_keys + lcd_buttons + mouse_buttons
+            return table_layout[row][col]
         except IndexError:
             return None
 
@@ -796,7 +791,9 @@ class LogitechDeviceModel(BaseModel):
 
         :return: The number of columns required.
         """
-        return len(self.table_layout[0]) if self.table_layout else 0
+        mouse_btn_exist = 1 if self.btn_m_range != (0, 0) else 0
+        lcd_btn_exists = 1 if self.lcd_keys else 0
+        return max([self.no_g_modes, mouse_btn_exist, lcd_btn_exists])
 
     def __str__(self) -> str:
         result = []
