@@ -24,7 +24,7 @@ from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEve
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
-                               QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QWidget)
+                               QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
@@ -40,6 +40,10 @@ _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.3.0'
 LOG = getLogger(__name__)
 NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
+LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
+                         'rb_g910': 1, 'rb_g710': 1, 'rb_g110': 1, 'rb_g103': 1, 'rb_g105': 1, 'rb_g11': 1,
+                         'rb_g633': 2, 'rb_g35': 2, 'rb_g930': 2, 'rb_g933': 2,
+                         'rb_g600': 3, 'rb_g300': 3, 'rb_g400': 3, 'rb_g700': 3, 'rb_g9': 3, 'rb_mx518': 3, 'rb_g402': 3, 'rb_g502': 3, 'rb_g602': 3}
 
 
 class DcsPyQtGui(QMainWindow):
@@ -237,9 +241,11 @@ class DcsPyQtGui(QMainWindow):
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
         for logitech_dev in ALL_DEV:
-            dev = getattr(self, f'rb_{logitech_dev.klass.lower()}')
+            logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
+            dev = getattr(self, logi_dev_rb_name)
             if dev.isChecked():
                 self._select_logi_dev(logi_dev=logitech_dev, state=True)
+                self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
                 break
 
     def _set_find_value(self, value) -> None:
@@ -1473,6 +1479,7 @@ class DcsPyQtGui(QMainWindow):
         self.sp_completer: Union[object, QSpinBox] = self.findChild(QSpinBox, 'sp_completer')
         self.tw_main: Union[object, QTabWidget] = self.findChild(QTabWidget, 'tw_main')
         self.gb_fonts: Union[object, QGroupBox] = self.findChild(QGroupBox, 'gb_fonts')
+        self.toolBox: Union[object, QToolBox] = self.findChild(QToolBox, 'toolBox')
 
         self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
         self.combo_search: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_search')
