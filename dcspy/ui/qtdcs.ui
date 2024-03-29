@@ -215,8 +215,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>396</height>
+               <width>146</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -408,8 +408,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>396</height>
+               <width>146</width>
+               <height>74</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -543,8 +543,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>396</height>
+               <width>227</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -967,7 +967,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QGroupBox" name="groupBox_4">
+           <widget class="QGroupBox" name="gb_fonts">
             <property name="title">
              <string>Fonts</string>
             </property>
@@ -2095,12 +2095,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g910</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>294</x>
-     <y>249</y>
+     <x>162</x>
+     <y>237</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2111,44 +2111,44 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g103</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>491</x>
-     <y>305</y>
+     <x>448</x>
+     <y>353</y>
     </hint>
     <hint type="destinationlabel">
-     <x>83</x>
-     <y>112</y>
+     <x>229</x>
+     <y>354</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>rb_g105</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>205</x>
-     <y>421</y>
+     <x>162</x>
+     <y>469</y>
     </hint>
     <hint type="destinationlabel">
-     <x>83</x>
-     <y>112</y>
+     <x>229</x>
+     <y>354</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>rb_g11</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>491</x>
-     <y>481</y>
+     <x>448</x>
+     <y>469</y>
     </hint>
     <hint type="destinationlabel">
      <x>428</x>
@@ -2159,12 +2159,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g110</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>205</x>
-     <y>365</y>
+     <x>162</x>
+     <y>353</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2175,12 +2175,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g300</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>347</x>
-     <y>309</y>
+     <x>304</x>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2191,12 +2191,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g35</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>205</x>
-     <y>316</y>
+     <x>162</x>
+     <y>301</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2207,12 +2207,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g400</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>561</x>
-     <y>309</y>
+     <x>532</x>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2223,12 +2223,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g402</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>541</y>
+     <x>90</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2239,12 +2239,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g502</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>347</x>
-     <y>541</y>
+     <x>304</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2255,12 +2255,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g600</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>309</y>
+     <x>90</x>
+     <y>297</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2271,12 +2271,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g602</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>561</x>
-     <y>541</y>
+     <x>532</x>
+     <y>529</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2287,12 +2287,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g633</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>491</x>
-     <y>316</y>
+     <x>448</x>
+     <y>301</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2303,12 +2303,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g700</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>133</x>
-     <y>425</y>
+     <x>90</x>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2319,12 +2319,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g710</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>491</x>
-     <y>249</y>
+     <x>448</x>
+     <y>237</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2335,12 +2335,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g9</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>347</x>
-     <y>425</y>
+     <x>304</x>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2351,12 +2351,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g930</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>205</x>
-     <y>472</y>
+     <x>162</x>
+     <y>457</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2367,12 +2367,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_g933</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>491</x>
-     <y>472</y>
+     <x>448</x>
+     <y>457</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>
@@ -2383,12 +2383,12 @@ Avaliable for two-state switches and knobs.</string>
   <connection>
    <sender>rb_mx518</sender>
    <signal>toggled(bool)</signal>
-   <receiver>groupBox_4</receiver>
+   <receiver>gb_fonts</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>561</x>
-     <y>425</y>
+     <x>532</x>
+     <y>413</y>
     </hint>
     <hint type="destinationlabel">
      <x>438</x>

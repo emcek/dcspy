@@ -22,9 +22,9 @@ from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt
 from PySide6.QtCore import __version__ as qt6_ver
 from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QLabel, QLineEdit, QListView,
-                               QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar, QSystemTrayIcon,
-                               QTableWidget, QTabWidget, QToolBar, QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
+                               QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
+                               QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
@@ -1109,15 +1109,9 @@ class DcsPyQtGui(QMainWindow):
         self.a_stop.setEnabled(False)
         self.le_dcsdir.setEnabled(True)
         self.le_biosdir.setEnabled(True)
-        self.hs_small_font.setEnabled(True)
-        self.hs_medium_font.setEnabled(True)
-        self.hs_large_font.setEnabled(True)
-        self.le_font_name.setEnabled(True)
+        self.gb_fonts.setEnabled(True)
         if self.rb_g19.isChecked():
             self.cb_ded_font.setEnabled(True)
-        self.l_large.setEnabled(True)
-        self.l_medium.setEnabled(True)
-        self.l_small.setEnabled(True)
         self.event_set()
 
     def _start_clicked(self) -> None:
@@ -1140,14 +1134,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_stop.setEnabled(True)
         self.le_dcsdir.setEnabled(False)
         self.le_biosdir.setEnabled(False)
-        self.hs_small_font.setEnabled(False)
-        self.hs_medium_font.setEnabled(False)
-        self.hs_large_font.setEnabled(False)
-        self.le_font_name.setEnabled(False)
-        self.cb_ded_font.setEnabled(False)
-        self.l_large.setEnabled(False)
-        self.l_medium.setEnabled(False)
-        self.l_small.setEnabled(False)
+        self.gb_fonts.setEnabled(False)
         app_thread.start()
         alive = 'working' if app_thread.is_alive() else 'not working'
         self.statusbar.showMessage(f'DCSpy client: {alive}')
@@ -1485,6 +1472,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys: Union[object, QTableWidget] = self.findChild(QTableWidget, 'tw_gkeys')
         self.sp_completer: Union[object, QSpinBox] = self.findChild(QSpinBox, 'sp_completer')
         self.tw_main: Union[object, QTabWidget] = self.findChild(QTabWidget, 'tw_main')
+        self.gb_fonts: Union[object, QGroupBox] = self.findChild(QGroupBox, 'gb_fonts')
 
         self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
         self.combo_search: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_search')
