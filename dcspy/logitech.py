@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, LcdButton, LcdType, LogitechDeviceModel
+from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, LcdButton, LcdType, LogitechDeviceModel, MouseButton
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
@@ -136,7 +136,7 @@ class LogitechDevice:
             dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
 
-    def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int) -> None:
+    def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int, mouse: int) -> None:
         """
         Logitech G-Key callback handler.
 
@@ -145,10 +145,14 @@ class LogitechDevice:
         :param key_idx: index number of G-Key
         :param mode: mode of G-Key
         :param key_down: key state, 1 - pressed, 0 - released
+        :param mouse: indicate if the Event comes from a mouse, 1 is yes, 0 is no
+
         """
-        gkey = Gkey(key=key_idx, mode=mode)
-        LOG.debug(f'Button {gkey} is pressed, key down: {key_down}')
-        self._send_request(button=gkey, key_down=key_down)
+        key = Gkey(key=key_idx, mode=mode)
+        if mouse:
+            key = MouseButton(button=key_idx)
+        LOG.debug(f'Button {key} is pressed, key down: {key_down}')
+        self._send_request(button=key, key_down=key_down)
 
     def check_buttons(self) -> LcdButton:
         """
@@ -177,11 +181,11 @@ class LogitechDevice:
             if button.value:
                 self._send_request(button, key_down=KEY_DOWN)
 
-    def _send_request(self, button: Union[LcdButton, Gkey], key_down: int) -> None:
+    def _send_request(self, button: Union[LcdButton, Gkey, MouseButton], key_down: int) -> None:
         """
         Sent action to DCS-BIOS via network socket.
 
-        :param button: LcdButton or Gkey
+        :param button: LcdButton, Gkey or MouseButton
         :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
         """
         req_model = self.plane.button_request(button)
