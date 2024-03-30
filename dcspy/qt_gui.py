@@ -28,8 +28,8 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, GuiPlaneInputRequest, LcdMono, LcdType, LogitechDeviceModel, MsgBoxTypes, ReleaseInfo, RequestType,
-                          SystemData)
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes,
+                          ReleaseInfo, RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
@@ -408,7 +408,7 @@ class DcsPyQtGui(QMainWindow):
         :param col: current column
         :param ctrl_list_no_sep: list of control inputs without separator
         """
-        key_name = str(self.device.get_key_at(row=row, col=col))
+        key = self.device.get_key_at(row=row, col=col)
         if col == 0 or row < self.device.no_g_keys:
             completer = QCompleter(ctrl_list_no_sep)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -424,7 +424,7 @@ class DcsPyQtGui(QMainWindow):
             self._disable_items_with(text=CTRL_LIST_SEPARATOR, widget=combo)
             self.tw_gkeys.setCellWidget(row, col, combo)
             try:
-                identifier = self.input_reqs[self.current_plane][key_name].identifier
+                identifier = self.input_reqs[self.current_plane][str(key)].identifier
             except KeyError:
                 identifier = ''
             combo.setCurrentText(identifier)
@@ -433,7 +433,7 @@ class DcsPyQtGui(QMainWindow):
             combo = QComboBox()
             combo.setDisabled(True)
             self.tw_gkeys.setCellWidget(row, col, combo)
-        combo.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
+        combo.setStyleSheet(self._get_style_for_combobox(key=key, fg='black'))
 
     def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
         """
@@ -559,26 +559,26 @@ class DcsPyQtGui(QMainWindow):
         self.l_identifier.setText('')
         self.l_range.setText('')
         widget.setToolTip('')
-        key_name = str(self.device.get_key_at(row=row, col=col))
-        widget.setStyleSheet(self._get_style_for_combobox(key_name, 'red'))
+        key = self.device.get_key_at(row=row, col=col)
+        widget.setStyleSheet(self._get_style_for_combobox(key=key, fg='red'))
         if text in self.ctrl_list and CTRL_LIST_SEPARATOR not in text:
             section = self._find_section_name(ctrl_name=text)
             ctrl_key = self.ctrl_input[section][text]
             widget.setToolTip(ctrl_key.description)
-            widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
+            widget.setStyleSheet(self._get_style_for_combobox(key=key, fg='black'))
             self.l_category.setText(f'Category: {section}')
             self.l_description.setText(f'Description: {ctrl_key.description}')
             self.l_identifier.setText(f'Identifier: {text}')
             self.l_range.setText(f'Range: 0 - {ctrl_key.max_value}')
             self._enable_checked_iface_radio_button(ctrl_key=ctrl_key)
-            self._checked_iface_rb_for_identifier(key_name=key_name)
+            self._checked_iface_rb_for_identifier(key_name=str(key))
             input_iface_name = self.bg_rb_input_iface.checkedButton().objectName()
             custom_value = self._get_custom_value(input_iface_name)
-            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
+            self.input_reqs[self.current_plane][str(key)] = GuiPlaneInputRequest.from_control_key(ctrl_key=ctrl_key, rb_iface=input_iface_name,
                                                                                                   custom_value=custom_value)
         elif text == '':
-            widget.setStyleSheet(self._get_style_for_combobox(key_name, 'black'))
-            self.input_reqs[self.current_plane][key_name] = GuiPlaneInputRequest.make_empty()  # maybe del
+            widget.setStyleSheet(self._get_style_for_combobox(key=key, fg='black'))
+            self.input_reqs[self.current_plane][str(key)] = GuiPlaneInputRequest.make_empty()  # maybe del
             for rb_widget in self.bg_rb_input_iface.buttons():
                 rb_widget.setEnabled(False)
                 rb_widget.setChecked(False)
@@ -1355,24 +1355,25 @@ class DcsPyQtGui(QMainWindow):
         return result_path
 
     @staticmethod
-    def _get_style_for_combobox(key_name: str, fg: str) -> str:
+    def _get_style_for_combobox(key: Union[LcdButton, Gkey, MouseButton], fg: str) -> str:
         """
         Get style for QComboBox with foreground color.
 
         Colors:
-        - light green - G-Kyes
+        - light green - G-Keys
         - light yellow - Mouse buttons
         - light blue - LCD buttons
 
-        :param key_name: G-Key, LCD or Mouse Key as string
+        :param key: LcdButton, Gkey or MouseButton
         :param fg: color as string
         :return: style sheet string
         """
-        if 'G' in key_name:
+        bg = ''
+        if isinstance(key, Gkey):
             bg = 'lightgreen'
-        elif 'M_' in key_name:
+        elif isinstance(key, MouseButton):
             bg = 'lightyellow'
-        else:
+        elif isinstance(key, LcdButton):
             bg = 'lightblue'
         return f'QComboBox{{color: {fg};background-color: {bg};}} QComboBox QAbstractItemView {{background-color: {bg};}}'
 
