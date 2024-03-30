@@ -1094,7 +1094,7 @@ class RequestModel(BaseModel):
         :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
         :return: a list of bytes representing the individual requests
         """
-        if self.is_push_button and isinstance(self.key, Gkey):
+        if self.is_push_button and isinstance(self.key, (Gkey, MouseButton)):
             request = f'{self.ctrl_name} {key_down}\n'
         elif self.is_push_button and isinstance(self.key, LcdButton):
             request = f'{self.ctrl_name} {KEY_DOWN}\n|{self.ctrl_name} {KEY_UP}\n'
