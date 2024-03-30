@@ -10,7 +10,7 @@ from pytest import mark
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk.key_sdk import GkeySdkManager
 
-    def gkey_callback(key_idx: int, mode: int, key_down) -> None:
+    def gkey_callback(key_idx: int, mode: int, key_down, mouse: int) -> None:
         print(key_idx, mode, key_down)
 
     key_sdk = GkeySdkManager(callback=gkey_callback)
@@ -21,7 +21,7 @@ def test_all_failure_cases(function, args, result):
 def test_user_callback():
     from dcspy.sdk.key_sdk import GkeyCode, GkeySdkManager
 
-    def gkey_callback(key_idx: int, mode: int, key_down) -> None:
+    def gkey_callback(key_idx: int, mode: int, key_down, mouse: int) -> None:
         assert key_idx == 2
         assert mode == 3
         assert key_down == 1
