@@ -63,7 +63,7 @@ def _api_ver_3_4_0(cfg: DcspyConfigYaml) -> None:
     """
     user_appdata = get_config_yaml_location()
     makedirs(name=user_appdata, exist_ok=True)
-    cfg['keyboard'] = cfg['keyboard'].replace(' ', '')
+    cfg['keyboard'] = str(cfg['keyboard']).replace(' ', '')
     _rename_key_keep_value(cfg, 'keyboard', 'device', 'G13')
 
 
