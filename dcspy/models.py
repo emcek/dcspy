@@ -748,7 +748,7 @@ class LogitechDeviceModel(BaseModel):
     lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
-    def get_key_at(self, row: int, col: int) -> Optional[Union[Gkey, LcdButton, MouseButton]]:
+    def get_key_at(self, row: int, col: int) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
         """
         Get the keys at the specified row and column in the table layout.
 
@@ -876,7 +876,7 @@ MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
-def _try_key_instance(klass: Union[Type[Gkey], Type[LcdButton], Type[MouseButton]], method: str, key_str: str) -> Optional[Union[Gkey, LcdButton, MouseButton]]:
+def _try_key_instance(klass: Union[Type[Gkey], Type[LcdButton], Type[MouseButton]], method: str, key_str: str) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
     """
     Detect key string could be parsed with method.
 
@@ -894,12 +894,12 @@ def _try_key_instance(klass: Union[Type[Gkey], Type[LcdButton], Type[MouseButton
         return None
 
 
-def get_key_instance(key_str: str) -> Union[Gkey, LcdButton, MouseButton]:
+def get_key_instance(key_str: str) -> Union[LcdButton, Gkey, MouseButton]:
     """
     Get key instance from string.
 
     :param key_str: key name from yaml configuration
-    :return: Gkey, LcdButton or MouseButton instance
+    :return: LcdButton, Gkey or MouseButton instance
     """
     for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
         key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
@@ -1043,7 +1043,7 @@ class RequestModel(BaseModel):
 
         For cycle request `get_bios_fn` is used to update current value of BIOS selector.
 
-        :param key: LcdButton or Gkey
+        :param key: LcdButton, Gkey or MouseButton
         :param request: The raw request string.
         :param get_bios_fn: A callable function that return current value for BIOS selector.
         :return: An instance of the RequestModel class.
@@ -1055,11 +1055,11 @@ class RequestModel(BaseModel):
         return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
 
     @classmethod
-    def empty(cls, key: Union[LcdButton, Gkey]) -> 'RequestModel':
+    def empty(cls, key: Union[LcdButton, Gkey, MouseButton]) -> 'RequestModel':
         """
         Create an empty request model, for key which isn't assign.
 
-        :param key: LcdButton or Gkey
+        :param key: LcdButton, Gkey or MouseButton
         :return: The created request model.
         """
         return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)

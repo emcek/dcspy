@@ -763,20 +763,20 @@ class KeyRequest:
         """Return a dictionary with BIOS selectors to track chnages of values for Cyclce button to get current values."""
         return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
 
-    def get_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
+    def get_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
         """
         Get abstract representation for request ti be sent gor requested button.
 
-        :param button: LcdButton or Gkey
+        :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
         """
         return self.buttons.get(button, RequestModel.empty(key=button))
 
-    def set_request(self, button: Union[LcdButton, Gkey], req: str) -> None:
+    def set_request(self, button: Union[LcdButton, Gkey, MouseButton], req: str) -> None:
         """
         Update the internal string request for the specified button.
 
-        :param button: LcdButton or Gkey.
+        :param button: LcdButton, Gkey or MouseButton
         :param req: The raw request to set.
         """
         self.buttons[button].raw_request = req
