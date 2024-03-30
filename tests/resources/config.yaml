@@ -17,7 +17,7 @@ git_bios: true
 git_bios_ref: master
 gkeys_area: 2
 gkeys_float: false
-keyboard: G15v2
+device: G15v2
 save_lcd: false
 show_gui: true
 theme_color: dark-blue
