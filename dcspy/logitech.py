@@ -150,7 +150,7 @@ class LogitechDevice:
         """
         key = Gkey(key=key_idx, mode=mode)
         if mouse:
-            key = MouseButton(button=key_idx)
+            key = MouseButton(button=key_idx)  # type: ignore[assignment]
         LOG.debug(f'Button {key} is pressed, key down: {key_down}')
         self._send_request(button=key, key_down=key_down)
 
