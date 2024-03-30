@@ -383,9 +383,10 @@ class DcsPyQtGui(QMainWindow):
         self.tw_gkeys.setRowCount(self.device.rows.total)
         labels_g_key = [f'G{i}' for i in range(1, self.device.rows.g_key + 1)]
         labels_lcd_key = [lcd_key.name for lcd_key in self.device.lcd_keys]
-        labels_m_key = [f'M{i}' for i in range(1, self.device.rows.mouse_key + 1)]
+        m_btn_start, m_btn_end = self.device.btn_m_range
+        labels_m_key = [f'M{i}' for i in range(m_btn_start, m_btn_end + 1)]
         self.tw_gkeys.setVerticalHeaderLabels(labels_g_key + labels_lcd_key + labels_m_key)
-        self.tw_gkeys.setHorizontalHeaderLabels([f'M{i}' for i in range(1, self.device.cols + 1)])
+        self.tw_gkeys.setHorizontalHeaderLabels([f'Mode {i}' for i in range(1, self.device.cols + 1)])
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
