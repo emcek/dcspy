@@ -69,6 +69,25 @@
   </qresource>
   <qresource prefix="img">
     <file>img/G13device.png</file>
+    <file>img/MX518device.png</file>
+    <file>img/G9device.png</file>
+    <file>img/G933device.png</file>
+    <file>img/G930device.png</file>
+    <file>img/G910device.png</file>
+    <file>img/G710device.png</file>
+    <file>img/G700device.png</file>
+    <file>img/G633device.png</file>
+    <file>img/G602device.png</file>
+    <file>img/G600device.png</file>
+    <file>img/G502device.png</file>
+    <file>img/G402device.png</file>
+    <file>img/G400device.png</file>
+    <file>img/G35device.png</file>
+    <file>img/G300device.png</file>
+    <file>img/G110device.png</file>
+    <file>img/G11device.png</file>
+    <file>img/G105device.png</file>
+    <file>img/G103device.png</file>
     <file>img/G15v1device.png</file>
     <file>img/G15v2device.png</file>
     <file>img/G19device.png</file>
