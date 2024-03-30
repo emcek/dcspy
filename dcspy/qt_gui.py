@@ -284,6 +284,10 @@ class DcsPyQtGui(QMainWindow):
             self.current_row = -1
             self.current_col = -1
             self._load_table_gkeys()
+            self.current_row = 0
+            self.current_col = 0
+            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row, col=self.current_col)
 
     def _set_ded_font_and_font_sliders(self) -> None:
         """Enable DED font checkbox and updates font sliders."""
