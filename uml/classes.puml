@@ -58,7 +58,7 @@ package logitech {
         + clear()
         + text(List[str])
         # _prepare_image() -> Image
-        # _send_request(button: Union[LcdButton, Gkey], Optional[int])
+        # _send_request(button: Union[LcdButton, Gkey, MouseButton], Optional[int])
     }
 }
 
@@ -89,7 +89,7 @@ package aircraft {
         + lcd: LcdInfo
         + cfg: Dict[str, Union[str, int]]
         + __init__(lcd_type: LcdInfo)
-        + button_request(button: Union[LcdButton, Gkey]) -> RequestModel
+        + button_request(button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel
         + set_bios(selector: str, value: Union[str, int])
         + get_bios(selector: str) -> Union[str, int]
     }
@@ -110,10 +110,10 @@ package aircraft {
 
 package utils {
     class KeyRequest {
-        + buttons: Dict[Union[LcdButton, Gkey], RequestModel] = {}
+        + buttons: Dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
         + cycle_button_ctrl_name() -> Dict[str, int]
-        + get_request(Union[LcdButton, Gkey]) -> RequestModel
-        + set_request(Union[LcdButton, Gkey], str)
+        + get_request(Union[LcdButton, Gkey, MouseButton]]) -> RequestModel
+        + set_request(Union[LcdButton, Gkey, MouseButton]], str)
     }
     KeyRequest -* BasicAircraft
 }
@@ -212,7 +212,7 @@ package models {
         + get_bios_fn: Callable[[str], Union[str, int, float]]
         + cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
         + from_request(str, Callable[[str], Union[str, int, float]]) -> RequestModel
-        + empty(Union[LcdButton, Gkey]) -> RequestModel
+        + empty(Union[LcdButton, Gkey, MouseButton]]) -> RequestModel
         + is_cycle -> bool
         + is_custom -> bool
         + is_push_button -> bool
