@@ -5,6 +5,7 @@ completer_items: 20
 current_plane: A-10C
 dcs: C:/Program Files/Eagle Dynamics/DCS World OpenBeta
 dcsbios: C:/Users/UNKNOWN/Saved Games/DCS.openbeta/Scripts/DCS-BIOS
+device: G15v2
 f16_ded_font: true
 font_color_l: 32
 font_color_m: 22
@@ -17,7 +18,6 @@ git_bios: true
 git_bios_ref: master
 gkeys_area: 2
 gkeys_float: false
-device: G15v2
 save_lcd: false
 show_gui: true
 theme_color: dark-blue
