@@ -18,7 +18,7 @@ git_bios: true
 git_bios_ref: master
 gkeys_area: 2
 gkeys_float: false
-keyboard: G13
+device: G13
 save_lcd: false
 show_gui: true
 toolbar_area: 4

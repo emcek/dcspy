@@ -1184,7 +1184,7 @@ class DcsPyQtGui(QMainWindow):
         """Save configuration from GUI."""
         cfg = {
             'api_ver': __version__,
-            'keyboard': self.device.klass,
+            'device': self.device.klass,
             'autostart': self.cb_autostart.isChecked(),
             'show_gui': self.cb_show_gui.isChecked(),
             'save_lcd': self.cb_lcd_screenshot.isChecked(),

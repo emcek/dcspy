@@ -41,7 +41,7 @@ def test_generate_config():
         'git_bios_ref': 'master',
         'gkeys_area': 2,
         'gkeys_float': False,
-        'keyboard': 'G13',
+        'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
         'toolbar_area': 4,
