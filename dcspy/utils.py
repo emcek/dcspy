@@ -22,7 +22,7 @@ from psutil import process_iter
 from requests import get
 
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
-                          ReleaseInfo, RequestModel, get_key_instance)
+                          MouseButton, ReleaseInfo, RequestModel, get_key_instance)
 
 try:
     import git
@@ -30,7 +30,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.3.0'
+__version__ = '3.4.0'
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
@@ -752,7 +752,7 @@ class KeyRequest:
         :param get_bios_fn: Function used to obtain current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
-        self.buttons: Dict[Union[LcdButton, Gkey], RequestModel] = {}
+        self.buttons: Dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
         for key_str, request in plane_yaml.items():
             if request:
                 key = get_key_instance(key_str)
@@ -763,20 +763,20 @@ class KeyRequest:
         """Return a dictionary with BIOS selectors to track chnages of values for Cyclce button to get current values."""
         return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
 
-    def get_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
+    def get_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
         """
         Get abstract representation for request ti be sent gor requested button.
 
-        :param button: LcdButton or Gkey
+        :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
         """
         return self.buttons.get(button, RequestModel.empty(key=button))
 
-    def set_request(self, button: Union[LcdButton, Gkey], req: str) -> None:
+    def set_request(self, button: Union[LcdButton, Gkey, MouseButton], req: str) -> None:
         """
         Update the internal string request for the specified button.
 
-        :param button: LcdButton or Gkey.
+        :param button: LcdButton, Gkey or MouseButton
         :param req: The raw request to set.
         """
         self.buttons[button].raw_request = req

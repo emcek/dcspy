@@ -32,11 +32,11 @@ class LogiGkeyCBContext(Structure):
 
 class GkeySdkManager:
     """G-key SDK manager."""
-    def __init__(self, callback: Callable[[int, int, int], None]) -> None:
+    def __init__(self, callback: Callable[[int, int, int, int], None]) -> None:
         """
         Create G-key SDK manager.
 
-        :param gkey_callback_handler: callback handler
+        :param callback: callback handler
         """
         self.key_dll: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
         self.gkey_context = LogiGkeyCBContext()
@@ -57,7 +57,7 @@ class GkeySdkManager:
         :param context: The context in which the gkey event occurred.
         """
         LOG.debug(f'Gkey callback: gkey {gkey_or_button_str}, key code: {g_key_code} {context=}')
-        self.user_callback(g_key_code.keyIdx, g_key_code.mState, g_key_code.keyDown)
+        self.user_callback(g_key_code.keyIdx, g_key_code.mState, g_key_code.keyDown, g_key_code.mouse)
 
     def logi_gkey_init(self) -> bool:
         """

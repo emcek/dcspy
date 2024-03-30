@@ -10,7 +10,7 @@ from typing import Dict, List, Sequence, Tuple, Union
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, Gkey, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, Gkey, LcdButton, LcdInfo, LcdType, MouseButton, RequestModel, RequestType
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -59,16 +59,12 @@ class BasicAircraft:
             self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
             self.bios_data.update(self.key_req.cycle_button_ctrl_name)
 
-    def button_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
+    def button_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
         """
         Prepare aircraft specific DCS-BIOS request for button pressed.
 
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-        Or any G-Key 1 to 29
-
-        :param button: LcdButton or Gkey
-        :return: ready to send DCS-BIOS request
+        :param button: LcdButton, Gkey or MouseButton
+        :return: RequestModel object
         """
         LOG.debug(f'{type(self).__name__} Button: {button}')
         request = self.key_req.get_request(button)
@@ -743,16 +739,12 @@ class AH64DBLKII(AdvancedAircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: Union[LcdButton, Gkey]) -> RequestModel:
+    def button_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
-        For G13/G15/G510: 1-4
-        For G19 9-15: LEFT = 9, RIGHT = 10, OK = 11, CANCEL = 12, UP = 13, DOWN = 14, MENU = 15
-        Or any G-Key 1 to 29
-
-        :param button: LcdButton Enum
-        :return: ready to send DCS-BIOS request
+        :param button: LcdButton, Gkey or MouseButton
+        :return: RequestModel object
         """
         wca_or_idm = f'PLT_EUFD_WCA {RequestType.CUSTOM.value} PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
         if self.mode == ApacheEufdMode.IDM:

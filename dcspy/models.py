@@ -2,7 +2,7 @@ from enum import Enum
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Type, Union
 
 from packaging import version
 from PIL import ImageFont
@@ -546,6 +546,7 @@ class GuiPlaneInputRequest(BaseModel):
 
 
 class LedConstants(Enum):
+    """LED constants."""
     LOGI_LED_DURATION_INFINITE: Final = 0
     LOGI_DEVICETYPE_MONOCHROME: Final = 1
     LOGI_DEVICETYPE_RGB: Final = 2
@@ -567,14 +568,58 @@ class LcdButton(Enum):
     DOWN: Final = 0x2000
     MENU: Final = 0x4000
 
+    def __str__(self) -> str:
+        return self.name
+
+
+class MouseButton(BaseModel):
+    """LCD Buttons."""
+    button: int = 0
+
+    def __str__(self) -> str:
+        return f'M_{self.button}'
+
+    def __bool__(self):
+        """Return False when button value is zero."""
+        return bool(self.button)
+
+    def __hash__(self):
+        """Hash will be the same for any two MouseButton instances with the same button value."""
+        return hash(self.button)
+
+    @classmethod
+    def from_yaml(cls, /, yaml_str: str) -> 'MouseButton':
+        """
+        Construct MouseButton from YAML string.
+
+        :param yaml_str: ex. M_3
+        :return: MouseButton instance
+        """
+        match = search(r'M_(\d+)', yaml_str)
+        if match:
+            return cls(button=int(match.group(1)))
+        raise ValueError(f'Invalid MouseButton format: {yaml_str}. Expected: M_<i>')
+
+    @staticmethod
+    def generate(button_range: Tuple[int, int]) -> Sequence['MouseButton']:
+        """
+        Generate a sequence of MouseButton-Keys.
+
+        :param button_range: start and stop (inclusive) of range for mouse buttons
+        """
+        return tuple([MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1)])
+
 
 class LcdType(Enum):
     """LCD Type."""
+    NONE: Final = 0
     MONO: Final = 1
     COLOR: Final = 2
 
 
 class LcdSize(Enum):
+    """LCD dimensions."""
+    NONE: Final = 0
     MONO_WIDTH: Final = 160
     MONO_HEIGHT: Final = 43
     COLOR_WIDTH: Final = 320
@@ -583,6 +628,7 @@ class LcdSize(Enum):
 
 class LcdMode(Enum):
     """LCD Mode."""
+    NONE: Final = '0'
     BLACK_WHITE: Final = '1'
     TRUE_COLOR: Final = 'RGBA'
 
@@ -605,6 +651,7 @@ class LcdInfo(BaseModel):
     foreground: Union[int, Tuple[int, int, int, int]]
     background: Union[int, Tuple[int, int, int, int]]
     mode: LcdMode
+    line_spacing: int
     font_xs: Optional[ImageFont.FreeTypeFont] = None
     font_s: Optional[ImageFont.FreeTypeFont] = None
     font_l: Optional[ImageFont.FreeTypeFont] = None
@@ -619,35 +666,16 @@ class LcdInfo(BaseModel):
         self.font_s = ImageFont.truetype(fonts.name, fonts.medium)
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
 
-
-LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO, foreground=255,
-                  background=0, mode=LcdMode.BLACK_WHITE)
-LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR, foreground=(0, 255, 0, 255),
-                   background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
+    def __str__(self) -> str:
+        return f'{self.type.name.capitalize()} LCD: {self.width.value}x{self.height.value} px'
 
 
-class KeyboardModel(BaseModel):
-    """Light LCD keyboard model."""
-    name: str
-    klass: str
-    modes: int
-    gkeys: int
-    lcdkeys: Sequence[LcdButton]
-    lcd: str
-
-
-ModelG19 = KeyboardModel(name='G19', klass='G19', modes=3, gkeys=12, lcd='color',
-                         lcdkeys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
-ModelG13 = KeyboardModel(name='G13', klass='G13', modes=3, gkeys=29, lcd='mono',
-                         lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v1 = KeyboardModel(name='G15 v1', klass='G15v1', modes=3, gkeys=18, lcd='mono',
-                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG15v2 = KeyboardModel(name='G15 v2', klass='G15v2', modes=3, gkeys=6, lcd='mono',
-                           lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-ModelG510 = KeyboardModel(name='G510', klass='G510', modes=3, gkeys=18, lcd='mono',
-                          lcdkeys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
-
-KEYBOARD_TYPES = [ModelG19.klass, ModelG510.klass, ModelG15v1.klass, ModelG15v2.klass, ModelG13.klass]
+NoneLcd = LcdInfo(width=LcdSize.NONE, height=LcdSize.NONE, type=LcdType.NONE, line_spacing=0,
+                  foreground=0, background=0, mode=LcdMode.NONE)
+LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=LcdType.MONO, line_spacing=10,
+                  foreground=255, background=0, mode=LcdMode.BLACK_WHITE)
+LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR, line_spacing=40,
+                   foreground=(0, 255, 0, 255), background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
 
 
 class Gkey(BaseModel):
@@ -691,29 +719,194 @@ class Gkey(BaseModel):
         """
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
-    @staticmethod
-    def name(row: int, col: int) -> str:
+
+class DeviceRowsNumber(BaseModel):
+    """Represent the number of rows for different types of devices."""
+    g_key: int = 0
+    lcd_key: int = 0
+    mouse_key: int = 0
+
+    @property
+    def total(self) -> int:
         """
-        Return Gkey as string for row and col.
+        Get the total number of rows.
 
-        :param row: row number, zero based
-        :param col: column number, zero based
+        :return: The total count of rows as an integer.
         """
-        return str(Gkey(key=row + 1, mode=col + 1))
+        return sum([self.g_key, self.lcd_key, self.mouse_key])
 
 
-def get_key_instance(key_str: str) -> Union[Gkey, LcdButton]:
+class LogitechDeviceModel(BaseModel):
+    """
+    Logitech Device model.
+
+    It describes all capabilities of any Logitech device.
+    """
+    klass: str
+    no_g_modes: int = 0
+    no_g_keys: int = 0
+    btn_m_range: Tuple[int, int] = (0, 0)
+    lcd_keys: Sequence[LcdButton] = tuple()
+    lcd_info: LcdInfo = NoneLcd
+
+    def get_key_at(self, row: int, col: int) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
+        """
+        Get the keys at the specified row and column in the table layout.
+
+        :param row: The row index, zero based.
+        :param col: The column index, zero based.
+        :return: The key at the specified row and column, if it exists, otherwise None.
+        """
+        try:
+            g_keys = [[Gkey(key=r, mode=c) for c in range(1, self.no_g_modes + 1)] for r in range(1, self.no_g_keys + 1)]
+            lcd_buttons = []
+            mouse_buttons = []
+
+            if self.lcd_keys:
+                lcd_buttons = [[lcd_key] + [None] * (self.no_g_modes - 1) for lcd_key in self.lcd_keys]
+            if len(self.mouse_keys) > 1:
+                mouse_buttons = [[mouse_key] + [None] * (self.no_g_modes - 1) for mouse_key in self.mouse_keys]
+
+            table_layout = g_keys + lcd_buttons + mouse_buttons
+            return table_layout[row][col]
+        except IndexError:
+            return None
+
+    @property
+    def rows(self) -> DeviceRowsNumber:
+        """
+        Get the number of rows for each key category.
+
+        :return: A DeviceRowsNumber with the number of rows for each category.
+        """
+        return DeviceRowsNumber(
+            g_key=self.no_g_keys,
+            lcd_key=len(self.lcd_keys),
+            mouse_key=0 if len(self.mouse_keys) == 1 else len(self.mouse_keys)
+        )
+
+    @property
+    def cols(self) -> int:
+        """
+        Get the number of columns required.
+
+        :return: The number of columns required.
+        """
+        mouse_btn_exist = 1 if self.btn_m_range != (0, 0) else 0
+        lcd_btn_exists = 1 if self.lcd_keys else 0
+        return max([self.no_g_modes, mouse_btn_exist, lcd_btn_exists])
+
+    def __str__(self) -> str:
+        result = []
+        if self.lcd_info.type.value:
+            result.append(f'{self.lcd_info}')
+        if self.lcd_keys:
+            lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
+            result.append(f'LCD Buttons: {lcd_buttons}')
+        if self.no_g_modes and self.no_g_keys:
+            result.append(f'G-Keys: {self.no_g_keys} in {self.no_g_modes} modes')
+        if self.btn_m_range[0] and self.btn_m_range[1]:
+            result.append(f'Mouse Buttons: {self.btn_m_range[0]} to {self.btn_m_range[1]}')
+        return '\n'.join(result)
+
+    @property
+    def g_keys(self) -> Sequence[Gkey]:
+        """
+        Generate a sequence of G-Keys.
+
+        :return: A sequence of G-Keys.
+        """
+        return Gkey.generate(key=self.no_g_keys, mode=self.no_g_modes)
+
+    @property
+    def mouse_keys(self) -> Sequence[MouseButton]:
+        """
+        Generate a sequence of MouseButtons.
+
+        :return: A sequence of MouseButtons.
+        """
+        return MouseButton.generate(button_range=self.btn_m_range)
+
+    @property
+    def lcd_name(self) -> str:
+        """
+        Get the LCD name in lower case.
+
+        :return: The name of the LCD as a lowercase string.
+        """
+        return self.lcd_info.type.name.lower()
+
+
+G19 = LogitechDeviceModel(klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
+                          lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
+G13 = LogitechDeviceModel(klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
+                          lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+G15v1 = LogitechDeviceModel(klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
+                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+G15v2 = LogitechDeviceModel(klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
+                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+G510 = LogitechDeviceModel(klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
+                           lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+LCD_KEYBOARDS_DEV = [G19, G510, G15v1, G15v2, G13]
+
+G910 = LogitechDeviceModel(klass='G910', no_g_modes=3, no_g_keys=9)
+G710 = LogitechDeviceModel(klass='G710', no_g_modes=3, no_g_keys=6)
+G110 = LogitechDeviceModel(klass='G110', no_g_modes=3, no_g_keys=12)
+G103 = LogitechDeviceModel(klass='G103', no_g_modes=3, no_g_keys=6)
+G105 = LogitechDeviceModel(klass='G105', no_g_modes=3, no_g_keys=6)
+G11 = LogitechDeviceModel(klass='G11', no_g_modes=3, no_g_keys=18)
+KEYBOARDS_DEV = [G910, G710, G110, G103, G105, G11]
+
+G35 = LogitechDeviceModel(klass='G35', no_g_modes=1, no_g_keys=3)
+G633 = LogitechDeviceModel(klass='G633', no_g_modes=1, no_g_keys=3)
+G930 = LogitechDeviceModel(klass='G930', no_g_modes=1, no_g_keys=3)
+G933 = LogitechDeviceModel(klass='G933', no_g_modes=1, no_g_keys=3)
+HEADPHONES_DEV = [G35, G633, G930, G933]
+
+G600 = LogitechDeviceModel(klass='G600', btn_m_range=(6, 20))
+G300 = LogitechDeviceModel(klass='G300', btn_m_range=(6, 9))
+G400 = LogitechDeviceModel(klass='G400', btn_m_range=(6, 8))
+G700 = LogitechDeviceModel(klass='G700', btn_m_range=(1, 13))
+G9 = LogitechDeviceModel(klass='G9', btn_m_range=(4, 8))
+MX518 = LogitechDeviceModel(klass='MX518', btn_m_range=(6, 8))
+G402 = LogitechDeviceModel(klass='G402', btn_m_range=(1, 5))
+G502 = LogitechDeviceModel(klass='G502', btn_m_range=(4, 8))
+G602 = LogitechDeviceModel(klass='G602', btn_m_range=(6, 10))
+MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
+
+ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
+
+
+def _try_key_instance(klass: Union[Type[Gkey], Type[LcdButton], Type[MouseButton]], method: str, key_str: str) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
+    """
+    Detect key string could be parsed with method.
+
+    :param klass: class of the key instance to try the method on
+    :param method: name of the method to try with the key class.
+    :param key_str: a string representation of the key
+    :return: The result of calling the method on the key instance, or None if an error occurs.
+
+    """
+    try:
+        return getattr(klass, method)(key_str)
+    except TypeError:
+        return getattr(klass, method)
+    except (ValueError, AttributeError):
+        return None
+
+
+def get_key_instance(key_str: str) -> Union[LcdButton, Gkey, MouseButton]:
     """
     Get key instance from string.
 
     :param key_str: key name from yaml configuration
-    :return: Gkey or LcdButton instance
+    :return: LcdButton, Gkey or MouseButton instance
     """
-    try:
-        key = Gkey.from_yaml(key_str)
-    except ValueError:
-        key = getattr(LcdButton, key_str)
-    return key
+    for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
+        key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
+        if key_instance:
+            return key_instance
+    raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
 
 
 class MsgBoxTypes(Enum):
@@ -830,7 +1023,7 @@ class RequestModel(BaseModel):
     raw_request: str
     get_bios_fn: Callable[[str], Union[str, int, float]]
     cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
-    key: Union[LcdButton, Gkey]
+    key: Union[LcdButton, Gkey, MouseButton]
 
     @field_validator('ctrl_name')
     def validate_interface(cls, value):
@@ -845,13 +1038,13 @@ class RequestModel(BaseModel):
         return value
 
     @classmethod
-    def from_request(cls, key: Union[LcdButton, Gkey], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
+    def from_request(cls, key: Union[LcdButton, Gkey, MouseButton], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
         """
         Build object based on string request.
 
         For cycle request `get_bios_fn` is used to update current value of BIOS selector.
 
-        :param key: LcdButton or Gkey
+        :param key: LcdButton, Gkey or MouseButton
         :param request: The raw request string.
         :param get_bios_fn: A callable function that return current value for BIOS selector.
         :return: An instance of the RequestModel class.
@@ -863,11 +1056,11 @@ class RequestModel(BaseModel):
         return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
 
     @classmethod
-    def empty(cls, key: Union[LcdButton, Gkey]) -> 'RequestModel':
+    def empty(cls, key: Union[LcdButton, Gkey, MouseButton]) -> 'RequestModel':
         """
         Create an empty request model, for key which isn't assign.
 
-        :param key: LcdButton or Gkey
+        :param key: LcdButton, Gkey or MouseButton
         :return: The created request model.
         """
         return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
@@ -902,7 +1095,7 @@ class RequestModel(BaseModel):
         :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
         :return: a list of bytes representing the individual requests
         """
-        if self.is_push_button and isinstance(self.key, Gkey):
+        if self.is_push_button and isinstance(self.key, (Gkey, MouseButton)):
             request = f'{self.ctrl_name} {key_down}\n'
         elif self.is_push_button and isinstance(self.key, LcdButton):
             request = f'{self.ctrl_name} {KEY_DOWN}\n|{self.ctrl_name} {KEY_UP}\n'

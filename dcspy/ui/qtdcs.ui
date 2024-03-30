@@ -6,13 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>900</width>
+    <width>970</width>
     <height>700</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>450</width>
+    <width>500</width>
     <height>700</height>
    </size>
   </property>
@@ -32,159 +32,792 @@
         <property name="currentIndex">
          <number>0</number>
         </property>
-        <widget class="QWidget" name="tab_keyboards">
+        <widget class="QWidget" name="tab_devices">
          <attribute name="icon">
-          <iconset>
-           <normalon>:/icons/img/input-keyboard.svg</normalon>
-          </iconset>
+          <iconset resource="../qtgui.qrc">
+           <normaloff>:/icons/img/drive-multidisk.svg</normaloff>:/icons/img/drive-multidisk.svg</iconset>
          </attribute>
          <attribute name="title">
-          <string>Keyboards</string>
+          <string>Devices</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_5">
-          <item row="0" column="1">
-           <widget class="QRadioButton" name="rb_g510">
-            <property name="maximumSize">
-             <size>
-              <width>208</width>
-              <height>68</height>
-             </size>
+          <item row="2" column="1">
+           <widget class="QToolBox" name="toolBox">
+            <property name="currentIndex">
+             <number>0</number>
             </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>G510</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../qtgui.qrc">
-              <normaloff>:/icons/img/G510.png</normaloff>:/icons/img/G510.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>123</width>
-              <height>90</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QRadioButton" name="rb_g19">
-            <property name="maximumSize">
-             <size>
-              <width>208</width>
-              <height>68</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>G19</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../qtgui.qrc">
-              <normaloff>:/icons/img/G19.png</normaloff>:/icons/img/G19.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>123</width>
-              <height>90</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QRadioButton" name="rb_g15v1">
-            <property name="maximumSize">
-             <size>
-              <width>208</width>
-              <height>68</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>G15 v1</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../qtgui.qrc">
-              <normaloff>:/icons/img/G15v1.png</normaloff>:/icons/img/G15v1.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>123</width>
-              <height>90</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="rb_g15v2">
-            <property name="maximumSize">
-             <size>
-              <width>208</width>
-              <height>68</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>G15 v2</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../qtgui.qrc">
-              <normaloff>:/icons/img/G15v2.png</normaloff>:/icons/img/G15v2.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>123</width>
-              <height>90</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QRadioButton" name="rb_g13">
-            <property name="maximumSize">
-             <size>
-              <width>208</width>
-              <height>68</height>
-             </size>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>G13</string>
-            </property>
-            <property name="icon">
-             <iconset resource="../qtgui.qrc">
-              <normaloff>:/icons/img/G13.png</normaloff>:/icons/img/G13.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>123</width>
-              <height>90</height>
-             </size>
-            </property>
+            <widget class="QWidget" name="p_lcd">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>657</width>
+               <height>396</height>
+              </rect>
+             </property>
+             <attribute name="icon">
+              <iconset resource="../qtgui.qrc">
+               <normaloff>:/icons/img/computer-laptop.svg</normaloff>:/icons/img/computer-laptop.svg</iconset>
+             </attribute>
+             <attribute name="label">
+              <string>Keyboards with LCD</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="1" column="1">
+               <widget class="QRadioButton" name="rb_g15v2">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G15 v2</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G15v2.png</normaloff>:/icons/img/G15v2.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="rb_g15v1">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G15 v1</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G15v1.png</normaloff>:/icons/img/G15v1.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="rb_g19">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G19</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G19.png</normaloff>:/icons/img/G19.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="rb_g510">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G510</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G510.png</normaloff>:/icons/img/G510.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QRadioButton" name="rb_g13">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G13</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G13.png</normaloff>:/icons/img/G13.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="p_nolcd">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>146</width>
+               <height>105</height>
+              </rect>
+             </property>
+             <attribute name="icon">
+              <iconset resource="../qtgui.qrc">
+               <normaloff>:/icons/img/input-keyboard.svg</normaloff>:/icons/img/input-keyboard.svg</iconset>
+             </attribute>
+             <attribute name="label">
+              <string>Keyboards without LCD</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="4" column="1">
+               <widget class="QRadioButton" name="rb_g11">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G11</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G11.png</normaloff>:/icons/img/G11.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QRadioButton" name="rb_g103">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G103</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G103.png</normaloff>:/icons/img/G103.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <widget class="QRadioButton" name="rb_g105">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G105</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G105.png</normaloff>:/icons/img/G105.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="rb_g910">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G910</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G910.png</normaloff>:/icons/img/G910.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QRadioButton" name="rb_g710">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G710</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G710.png</normaloff>:/icons/img/G710.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QRadioButton" name="rb_g110">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G110</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G110.png</normaloff>:/icons/img/G110.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="p_headphones">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>146</width>
+               <height>74</height>
+              </rect>
+             </property>
+             <attribute name="icon">
+              <iconset resource="../qtgui.qrc">
+               <normaloff>:/icons/img/audio-headphones.svg</normaloff>:/icons/img/audio-headphones.svg</iconset>
+             </attribute>
+             <attribute name="label">
+              <string>Headphones</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_13">
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="rb_g35">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G35</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G35.png</normaloff>:/icons/img/G35.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="rb_g930">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G930</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G930.png</normaloff>:/icons/img/G930.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="rb_g633">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G633</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G633.png</normaloff>:/icons/img/G633.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QRadioButton" name="rb_g933">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>80</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G933</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G933.png</normaloff>:/icons/img/G933.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="p_mouses">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>227</width>
+               <height>105</height>
+              </rect>
+             </property>
+             <attribute name="icon">
+              <iconset resource="../qtgui.qrc">
+               <normaloff>:/icons/img/mouse.svg</normaloff>:/icons/img/mouse.svg</iconset>
+             </attribute>
+             <attribute name="label">
+              <string>Mouses</string>
+             </attribute>
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="3" column="0">
+               <widget class="QRadioButton" name="rb_g402">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G402</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G402.png</normaloff>:/icons/img/G402.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QRadioButton" name="rb_g502">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G502</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G502.png</normaloff>:/icons/img/G502.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QRadioButton" name="rb_g600">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G600</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G600.png</normaloff>:/icons/img/G600.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QRadioButton" name="rb_g300">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G300</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G300.png</normaloff>:/icons/img/G300.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QRadioButton" name="rb_g400">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G400</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G400.png</normaloff>:/icons/img/G400.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QRadioButton" name="rb_g700">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G700</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G700.png</normaloff>:/icons/img/G700.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QRadioButton" name="rb_g9">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G9</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G9.png</normaloff>:/icons/img/G9.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QRadioButton" name="rb_mx518">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>MX518</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/MX518.png</normaloff>:/icons/img/MX518.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QRadioButton" name="rb_g602">
+                <property name="maximumSize">
+                 <size>
+                  <width>208</width>
+                  <height>74</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>12</pointsize>
+                  <bold>true</bold>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>G602</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qtgui.qrc">
+                  <normaloff>:/icons/img/G602.png</normaloff>:/icons/img/G602.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>123</width>
+                  <height>90</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
            </widget>
           </item>
          </layout>
@@ -334,7 +967,7 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QGroupBox" name="groupBox_4">
+           <widget class="QGroupBox" name="gb_fonts">
             <property name="title">
              <string>Fonts</string>
             </property>
@@ -770,7 +1403,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>900</width>
+     <width>970</width>
      <height>22</height>
     </rect>
    </property>
@@ -817,7 +1450,7 @@
     <addaction name="menuToolbar_icons"/>
     <addaction name="separator"/>
     <addaction name="a_show_gkeys"/>
-    <addaction name="a_show_keyboard"/>
+    <addaction name="a_show_device"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -852,7 +1485,7 @@
    <addaction name="a_bios_updates"/>
    <addaction name="separator"/>
    <addaction name="a_show_gkeys"/>
-   <addaction name="a_show_keyboard"/>
+   <addaction name="a_show_device"/>
    <addaction name="separator"/>
    <addaction name="a_report_issue"/>
    <addaction name="a_discord"/>
@@ -1152,7 +1785,7 @@ Avaliable for two-state switches and knobs.</string>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dw_keyboard">
+  <widget class="QDockWidget" name="dw_device">
    <property name="windowIcon">
     <iconset>
      <normalon>:/icons/img/input-keyboard.svg</normalon>
@@ -1168,7 +1801,7 @@ Avaliable for two-state switches and knobs.</string>
     <set>Qt::NoDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Keyboard View</string>
+    <string>Device View</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -1290,7 +1923,7 @@ Avaliable for two-state switches and knobs.</string>
     <string>Show G-Keys</string>
    </property>
   </action>
-  <action name="a_show_keyboard">
+  <action name="a_show_device">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1299,7 +1932,10 @@ Avaliable for two-state switches and knobs.</string>
      <normaloff>:/icons/img/input-keyboard.svg</normaloff>:/icons/img/input-keyboard.svg</iconset>
    </property>
    <property name="text">
-    <string>Show keyboard</string>
+    <string>Show Device</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Device</string>
    </property>
   </action>
   <action name="a_save_plane">
@@ -1418,8 +2054,8 @@ Avaliable for two-state switches and knobs.</string>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>594</x>
-     <y>647</y>
+     <x>689</x>
+     <y>667</y>
     </hint>
     <hint type="destinationlabel">
      <x>419</x>
@@ -1450,12 +2086,316 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>687</x>
-     <y>313</y>
+     <x>792</x>
+     <y>327</y>
     </hint>
     <hint type="destinationlabel">
-     <x>730</x>
-     <y>317</y>
+     <x>950</x>
+     <y>331</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g910</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g103</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g105</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>469</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>229</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g11</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>469</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g110</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>353</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g300</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g35</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g400</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g402</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g502</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g600</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>297</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g602</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>529</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g633</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g700</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>90</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g710</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g9</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g930</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>162</x>
+     <y>457</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_g933</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>457</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>rb_mx518</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gb_fonts</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>413</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>347</y>
     </hint>
    </hints>
   </connection>

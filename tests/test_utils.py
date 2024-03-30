@@ -90,8 +90,8 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.3.0',
-        'keyboard': 'G13',
+        'api_ver': '3.4.0',
+        'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
         'autostart': False,
@@ -420,6 +420,7 @@ def test_key_request_create(test_config_yaml):
     assert key_req.buttons[get_key_instance('ONE')].is_cycle is True
     assert key_req.buttons[get_key_instance('G1_M1')].is_push_button is True
     assert key_req.buttons[get_key_instance('G2_M1')].is_custom is True
+    assert key_req.buttons[get_key_instance('M_4')].is_push_button is True
 
     req_model = key_req.get_request(get_key_instance('G3_M1'))
     assert req_model.is_cycle is False

@@ -2,18 +2,19 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.logitech import G13, G19, G510, G15v1, G15v2
-from dcspy.models import DEFAULT_FONT_NAME, FontsConfig, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType
+from dcspy.models import Gkey, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType, MouseButton
 
 
 def test_keyboard_base_basic_check(keyboard_base):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    assert str(keyboard_base) == 'KeyboardManager: 160x43'
+    assert str(keyboard_base) == 'LogitechDevice: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('parser', 'ProtocolParser', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'buttons',
-            '_display', 'plane', 'BasicAircraft', 'vert_space', 'lcd', 'LcdInfo', 'gkey', 'buttons', 'model', 'KeyboardModel',
-            'lcd_sdk', 'key_sdk')
+    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'socket', '_display',
+            'parser', 'ProtocolParser',
+            'plane', 'BasicAircraft',
+            'model', 'LogitechDeviceModel', 'LcdInfo', 'LcdMode', 'FreeTypeFont',
+            'lcd_sdk', 'LcdSdkManager', 'key_sdk', 'GkeySdkManager')
     for test_string in data:
         assert test_string in logitech_repr
 
@@ -23,27 +24,28 @@ def test_keyboard_base_basic_check(keyboard_base):
 
 @mark.parametrize('keyboard, pressed1, effect, chk_btn, calls, pressed2', [
     ('keyboard_mono', False, [False] * 3 + [True], LcdButton.FOUR, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], True),
-    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.OK, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.UP), call(LcdButton.DOWN), call(LcdButton.OK)], True),
+    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.UP, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL)], True),
     ('keyboard_mono', True, [True, False, False, False], LcdButton.NONE, [call(LcdButton.ONE)], True),
     ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE, [call(LcdButton.LEFT)], True),
     ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], False),
-    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.UP), call(LcdButton.DOWN), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.MENU)], False),
+    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.UP), call(LcdButton.DOWN),  call(LcdButton.MENU)], False),
 ], ids=[
     'Mono 4 Button',
-    'Color Ok Button',
+    'Color Up Button',
     'Mono None already_pressed',
     'Color None already_pressed',
     'Mono None Button',
     'Color None Button'])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
+    from dcspy.logitech import LogitechDevice
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    keyboard = request.getfixturevalue(keyboard)
-    keyboard.lcdbutton_pressed = pressed1
+    logi_keyboard: LogitechDevice = request.getfixturevalue(keyboard)
+    logi_keyboard.lcdbutton_pressed = pressed1
     with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
-        assert keyboard.check_buttons() == chk_btn
+        assert logi_keyboard.check_buttons() == chk_btn
     lcd_btn_pressed.assert_has_calls(calls)
-    assert keyboard.lcdbutton_pressed is pressed2
+    assert logi_keyboard.lcdbutton_pressed is pressed2
 
 
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
@@ -54,6 +56,21 @@ def test_keyboard_button_handle_lcdbutton(keyboard, request):
     with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=[True]):
         keyboard.button_handle()
     keyboard.socket.sendto.assert_called_once_with(b'TEST 1\n', ('127.0.0.1', 7778))
+
+
+@mark.parametrize('key_idx, mode, key_down, mouse, calls', [
+    (2, 3, 1, 1, {'button': MouseButton(button=2), 'key_down': 1}),
+    (1, 2, 1, 0, {'button': Gkey(key=1, mode=2), 'key_down': 1}),
+    (4, 2, 0, 1, {'button': MouseButton(button=4), 'key_down': 0}),
+    (2, 1, 0, 0, {'button': Gkey(key=2, mode=1), 'key_down': 0}),
+])
+def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, calls, keyboard_mono):
+    from dcspy.logitech import LogitechDevice
+
+    with patch.object(LogitechDevice, '_send_request') as mock_send_request:
+        keyboard_mono.gkey_callback_handler(key_idx, mode, key_down, mouse)
+
+    mock_send_request.assert_called_once_with(**calls)
 
 
 @mark.parametrize('plane_str, bios_name, plane, display, detect', [
@@ -101,45 +118,42 @@ def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, det
     assert keyboard_mono.plane_detected is detect
 
 
-@mark.parametrize('mode, width, height,  lcd_type, lcd_font, keyboard', [
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G13),
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G510),
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v1),
-    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
-    (LcdMode.TRUE_COLOR, LcdSize.COLOR_WIDTH, LcdSize.COLOR_HEIGHT, LcdType.COLOR, FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19),
+@mark.parametrize('mode, width, height,  lcd_type, keyboard', [
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G13'),
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G510'),
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G15v1'),
+    (LcdMode.BLACK_WHITE, LcdSize.MONO_WIDTH, LcdSize.MONO_HEIGHT, LcdType.MONO, 'G15v2'),
+    (LcdMode.TRUE_COLOR, LcdSize.COLOR_WIDTH, LcdSize.COLOR_HEIGHT, LcdType.COLOR, 'G19'),
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
-def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type, lcd_font, keyboard, protocol_parser, sock):
+def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type, keyboard, protocol_parser, sock, request):
     from dcspy.aircraft import BasicAircraft
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    with patch.object(LcdSdkManager, 'update_text', return_value=True):
-        keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
+    keyboard = request.getfixturevalue(keyboard)
+    with patch.object(LcdSdkManager, 'update_display') as upd_display:
         assert isinstance(keyboard.plane, BasicAircraft)
-        assert isinstance(keyboard.lcd, LcdInfo)
-        assert keyboard.lcd.type == lcd_type
+        assert isinstance(keyboard.model.lcd_info, LcdInfo)
+        assert keyboard.model.lcd_info.type == lcd_type
         assert isinstance(keyboard.display, list)
         keyboard.display = ['1', '2']
         assert len(keyboard.display) == 2
+        upd_display.assert_called_once()
 
     img = keyboard._prepare_image()
     assert img.mode == mode.value
     assert img.size == (width.value, height.value)
 
 
-@mark.parametrize('lcd_font, keyboard', [
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G13),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G510),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v1),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16), G15v2),
-    (FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32), G19)
+@mark.parametrize('keyboard', [
+    'G13', 'G510', 'G15v1', 'G15v2', 'G19',
 ], ids=['Mono G13', 'Mono G510', 'Mono G15v1', 'Mono G15v2', 'Color G19'])
-def test_check_keyboard_text(lcd_font, keyboard, protocol_parser, sock):
+def test_check_keyboard_text(keyboard, protocol_parser, sock, request):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
-    with patch.object(LcdSdkManager, 'update_text', return_value=True) as upd_txt:
-        keyboard = keyboard(parser=protocol_parser, sock=sock, fonts=lcd_font)
+    keyboard = request.getfixturevalue(keyboard)
+    with patch.object(LcdSdkManager, 'update_text') as upd_txt:
         keyboard.text(['1', '2'])
-        upd_txt.assert_called()
+        upd_txt.assert_called_once()
 
 
 @mark.parametrize('model', [

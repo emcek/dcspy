@@ -41,7 +41,7 @@ jobs:
           PYSIDE_DESIGNER_PLUGINS: .
           PYTEST_QT_API: PySide6
         run: |
-          python -m pytest -q -m 'not e2e'
+          python -m pytest -q -m 'not e2e' --img_precision 0
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v4

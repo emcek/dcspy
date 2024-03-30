@@ -1,6 +1,6 @@
 from pytest import mark, raises
 
-from dcspy.models import KEY_DOWN, KEY_UP
+from dcspy.models import KEY_DOWN, KEY_UP, LcdButton, LcdColor, LcdMono
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
@@ -103,8 +103,8 @@ def test_generate_gkey():
 def test_gkey_name():
     from dcspy.models import Gkey
 
-    assert Gkey.name(0, 1) == 'G1_M2'
-    assert Gkey.name(2, 0) == 'G3_M1'
+    assert str(Gkey(key=1, mode=2)) == 'G1_M2'
+    assert str(Gkey(key=3, mode=1)) == 'G3_M1'
 
 
 @mark.parametrize('key_name, klass', [
@@ -112,6 +112,8 @@ def test_gkey_name():
     ('G1_M2', 'Gkey'),
     ('TWO', 'LcdButton'),
     ('MENU', 'LcdButton'),
+    ('M_2', 'MouseButton'),
+    ('M_12', 'MouseButton'),
 ])
 def test_get_key_instance(key_name, klass):
     from dcspy.models import get_key_instance
@@ -119,7 +121,7 @@ def test_get_key_instance(key_name, klass):
     assert get_key_instance(key_name).__class__.__name__ == klass
 
 
-@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', ''])
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '', 'M_a3', 'm_2', 'M3'])
 def test_get_key_instance_error(key_name):
     from dcspy.models import get_key_instance
 
@@ -128,7 +130,7 @@ def test_get_key_instance_error(key_name):
 
 
 @mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
-def test_get_key_bool_test(key, mode, result):
+def test_get_gkey_bool_test(key, mode, result):
     from dcspy.models import Gkey
 
     if Gkey(key=key, mode=mode):
@@ -137,11 +139,59 @@ def test_get_key_bool_test(key, mode, result):
         assert not result
 
 
-def test_get_key_as_dict_key():
+def test_get_gkey_as_dict_key():
     from dcspy.models import Gkey
 
     g1 = Gkey(key=2, mode=1)
-    assert len({g1: g1.name}) == 1
+    assert len({g1: str(g1)}) == 1
+
+
+# <=><=><=><=> MouseButton <=><=><=><=>
+def test_mouse_button_from_yaml_success():
+    from dcspy.models import MouseButton
+
+    m_btn = MouseButton.from_yaml('M_3')
+    assert m_btn.button == 3
+
+
+def test_mouse_button_from_yaml_value_error():
+    from dcspy.models import MouseButton
+
+    with raises(ValueError):
+        _ = MouseButton.from_yaml('M_a1')
+
+
+def test_generate_mouse_button():
+    from dcspy.models import MouseButton
+
+    mouse = MouseButton.generate((4, 8))
+    assert len(mouse) == 5
+    assert mouse[0].button == 4
+    assert mouse[-1].button == 8
+
+
+def test_mouse_button_name():
+    from dcspy.models import MouseButton
+
+    assert str(MouseButton(button=1)) == 'M_1'
+    assert str(MouseButton(button=2)) == 'M_2'
+
+
+@mark.parametrize('btn, result', [(0, False), (1, True), (2, True)])
+def test_get_mouse_button_bool_test(btn, result):
+    from dcspy.models import MouseButton
+
+    if MouseButton(button=btn):
+        assert result
+    else:
+        assert not result
+
+
+def test_get_mouse_button_as_dict_key():
+    from dcspy.models import MouseButton
+
+    b_btn = MouseButton(button=2)
+    assert len({b_btn: b_btn.button}) == 1
 
 
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
@@ -192,6 +242,57 @@ def test_cycle_button_bool_test(name, req, step, max_val, result):
     from dcspy.models import CycleButton
 
     assert bool(CycleButton.from_request(f'{name} {req} {step} {max_val}')) is result
+
+
+# <=><=><=><=><=> DeviceRowsNumber <=><=><=><=><=>
+def test_device_row_number_model():
+    from dcspy.models import DeviceRowsNumber
+    device = DeviceRowsNumber(g_key=3, lcd_key=2, mouse_key=1)
+    assert device.total == 6
+
+
+# <=><=><=><=><=> LogitechDeviceModel <=><=><=><=><=>
+@mark.parametrize('dev_kwargs, result', [
+    ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'lcd_info': LcdMono, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO), 'btn_m_range': (6, 9)},
+     (8, 4, 'mono', 'Mono LCD: 160x43 px\nLCD Buttons: ONE, TWO\nG-Keys: 4 in 2 modes\nMouse Buttons: 6 to 9', 2, 4, 2, 4, 10)),
+    ({'klass': '', 'no_g_modes': 3, 'no_g_keys': 1, 'lcd_info': LcdColor, 'lcd_keys': (LcdButton.ONE,)},
+     (3, 1, 'color', 'Color LCD: 320x240 px\nLCD Buttons: ONE\nG-Keys: 1 in 3 modes', 3, 1, 1, 0, 2)),
+    ({'klass': '', 'no_g_modes': 1, 'no_g_keys': 3, 'lcd_info': LcdMono},
+     (3, 1, 'mono', 'Mono LCD: 160x43 px\nG-Keys: 3 in 1 modes', 1, 3, 0, 0, 3)),
+    ({'klass': '', 'no_g_modes': 3, 'no_g_keys': 2},
+     (6, 1, 'none', 'G-Keys: 2 in 3 modes', 3, 2, 0, 0, 2)),
+    ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO)},
+     (8, 1, 'none', 'LCD Buttons: ONE, TWO\nG-Keys: 4 in 2 modes', 2, 4, 2, 0, 6)),
+    ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'btn_m_range': (1, 3)},
+     (8, 3, 'none', 'G-Keys: 4 in 2 modes\nMouse Buttons: 1 to 3', 2, 4, 0, 3, 7)),
+    ({'klass': '', 'lcd_keys': (LcdButton.ONE, LcdButton.TWO, LcdButton.THREE), 'btn_m_range': (4, 8)},
+     (0, 5, 'none', 'LCD Buttons: ONE, TWO, THREE\nMouse Buttons: 4 to 8', 1, 0, 3, 5, 8)),
+])
+def test_logitech_device_model(dev_kwargs, result):
+    from dcspy.models import LogitechDeviceModel
+    dev = LogitechDeviceModel(**dev_kwargs)
+    assert len(dev.g_keys) == result[0]
+    assert len(dev.mouse_keys) == result[1]
+    assert dev.lcd_name == result[2]
+    assert str(dev) == result[3]
+    assert dev.cols == result[4]
+    assert dev.rows.g_key == result[5]
+    assert dev.rows.lcd_key == result[6]
+    assert dev.rows.mouse_key == result[7]
+    assert dev.rows.total == result[8]
+
+
+def test_get_key_at_of_logitech_device_model():
+    from dcspy.models import Gkey, LogitechDeviceModel, MouseButton
+
+    kwargs = {'klass': '', 'no_g_modes': 2, 'no_g_keys': 3, 'lcd_info': LcdMono, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO), 'btn_m_range': (2, 4)}
+    dev = LogitechDeviceModel(**kwargs)
+    assert dev.get_key_at(row=1, col=1) == Gkey(key=2, mode=2)
+    assert dev.get_key_at(row=3, col=0) == LcdButton.ONE
+    assert dev.get_key_at(row=3, col=1) is None
+    assert dev.get_key_at(row=6, col=0) == MouseButton(button=3)
+    assert dev.get_key_at(row=6, col=1) is None
+    assert dev.get_key_at(row=9, col=9) is None
 
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
@@ -335,28 +436,44 @@ def test_zigzag_iterator_direction():
 @mark.parametrize('str_req, key, key_down, result', [
     ('COM1 CYCLE 1 3', 'G1_M1', KEY_DOWN, [True, False, False, [b'COM1 3\n']]),
     ('COM1 CYCLE 1 3', 'G1_M1', KEY_UP, [True, False, False, []]),
+    ('COM1 CYCLE 1 3', 'M_4', KEY_DOWN, [True, False, False, [b'COM1 3\n']]),
+    ('COM1 CYCLE 1 3', 'M_4', KEY_UP, [True, False, False, []]),
     ('COM1 CYCLE 1 3', 'ONE', KEY_DOWN, [True, False, False, [b'COM1 3\n']]),
     ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', KEY_DOWN, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
     ('COM2 CUSTOM COM2 1|COM2 0|', 'G2_M2', KEY_UP, [False, True, False, []]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'M_2', KEY_DOWN, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
+    ('COM2 CUSTOM COM2 1|COM2 0|', 'M_2', KEY_UP, [False, True, False, []]),
     ('COM2 CUSTOM COM2 1|COM2 0|', 'TWO', KEY_DOWN, [False, True, False, [b'COM2 1\n', b'COM2 0\n']]),
     ('RADIO_1 PUSH_BUTTON', 'G3_M3', KEY_DOWN, [False, False, True, [b'RADIO_1 1\n']]),
     ('RADIO_1 PUSH_BUTTON', 'G3_M3', KEY_UP, [False, False, True, [b'RADIO_1 0\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'M_3', KEY_DOWN, [False, False, True, [b'RADIO_1 1\n']]),
+    ('RADIO_1 PUSH_BUTTON', 'M_3', KEY_UP, [False, False, True, [b'RADIO_1 0\n']]),
     ('RADIO_1 PUSH_BUTTON', 'LEFT', KEY_DOWN, [False, False, True, [b'RADIO_1 1\n', b'RADIO_1 0\n']]),
     ('MASTER_ARM 2', 'G1_M2', KEY_DOWN, [False, False, False, [b'MASTER_ARM 2\n']]),
     ('MASTER_ARM 2', 'G1_M2', KEY_UP, [False, False, False, []]),
+    ('MASTER_ARM 2', 'M_2', KEY_DOWN, [False, False, False, [b'MASTER_ARM 2\n']]),
+    ('MASTER_ARM 2', 'M_2', KEY_UP, [False, False, False, []]),
     ('MASTER_ARM 2', 'RIGHT', KEY_DOWN, [False, False, False, [b'MASTER_ARM 2\n']]),
 ], ids=[
     'GKey CYCLE down',
     'GKey CYCLE up',
+    'Mouse CYCLE down',
+    'Mouse CYCLE up',
     'Lcd CYCLE',
     'GKey CUSTOM down',
     'GKey CUSTOM up',
+    'Mouse CUSTOM down',
+    'Mouse CUSTOM up',
     'Lcd CUSTOM',
     'GKey PUSH_BUTTON down',
     'GKey PUSH_BUTTON up',
+    'Mouse PUSH_BUTTON down',
+    'Mouse PUSH_BUTTON up',
     'Lcd PUSH_BUTTON',
     'GKey REGULAR down',
     'GKey REGULAR up',
+    'Mouse REGULAR down',
+    'Mouse REGULAR up',
     'Lcd REGULAR',
 ])
 def test_request_model_properties(str_req, key, key_down, result):
@@ -377,6 +494,8 @@ def test_request_model_properties(str_req, key, key_down, result):
     ('ONE', KEY_DOWN, [b'\n']),
     ('G1_M1', KEY_DOWN, [b'\n']),
     ('G1_M1', KEY_UP, []),
+    ('M_1', KEY_DOWN, [b'\n']),
+    ('M_1', KEY_UP, []),
 ])
 def test_empty_request_model_(key, key_down, result):
     from dcspy.models import RequestModel, get_key_instance
