@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.models import LcdButton, LcdInfo, LcdMode, LcdSize, LcdType
+from dcspy.models import Gkey, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType, MouseButton
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -56,6 +56,21 @@ def test_keyboard_button_handle_lcdbutton(keyboard, request):
     with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=[True]):
         keyboard.button_handle()
     keyboard.socket.sendto.assert_called_once_with(b'TEST 1\n', ('127.0.0.1', 7778))
+
+
+@mark.parametrize('key_idx, mode, key_down, mouse, calls', [
+    (2, 3, 1, 1, {'button': MouseButton(button=2), 'key_down': 1}),
+    (1, 2, 1, 0, {'button': Gkey(key=1, mode=2), 'key_down': 1}),
+    (4, 2, 0, 1, {'button': MouseButton(button=4), 'key_down': 0}),
+    (2, 1, 0, 0, {'button': Gkey(key=2, mode=1), 'key_down': 0}),
+])
+def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, calls, keyboard_mono):
+    from dcspy.logitech import LogitechDevice
+
+    with patch.object(LogitechDevice, '_send_request') as mock_send_request:
+        keyboard_mono.gkey_callback_handler(key_idx, mode, key_down, mouse)
+
+    mock_send_request.assert_called_once_with(**calls)
 
 
 @mark.parametrize('plane_str, bios_name, plane, display, detect', [
