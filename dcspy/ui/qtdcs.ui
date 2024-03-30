@@ -215,8 +215,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>396</height>
+               <width>146</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -408,8 +408,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>396</height>
+               <width>146</width>
+               <height>74</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -543,8 +543,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>396</height>
+               <width>227</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -1450,7 +1450,7 @@
     <addaction name="menuToolbar_icons"/>
     <addaction name="separator"/>
     <addaction name="a_show_gkeys"/>
-    <addaction name="a_show_keyboard"/>
+    <addaction name="a_show_device"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -1485,7 +1485,7 @@
    <addaction name="a_bios_updates"/>
    <addaction name="separator"/>
    <addaction name="a_show_gkeys"/>
-   <addaction name="a_show_keyboard"/>
+   <addaction name="a_show_device"/>
    <addaction name="separator"/>
    <addaction name="a_report_issue"/>
    <addaction name="a_discord"/>
@@ -1785,7 +1785,7 @@ Avaliable for two-state switches and knobs.</string>
     </layout>
    </widget>
   </widget>
-  <widget class="QDockWidget" name="dw_keyboard">
+  <widget class="QDockWidget" name="dw_device">
    <property name="windowIcon">
     <iconset>
      <normalon>:/icons/img/input-keyboard.svg</normalon>
@@ -1801,7 +1801,7 @@ Avaliable for two-state switches and knobs.</string>
     <set>Qt::NoDockWidgetArea</set>
    </property>
    <property name="windowTitle">
-    <string>Keyboard View</string>
+    <string>Device View</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -1923,7 +1923,7 @@ Avaliable for two-state switches and knobs.</string>
     <string>Show G-Keys</string>
    </property>
   </action>
-  <action name="a_show_keyboard">
+  <action name="a_show_device">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1932,7 +1932,10 @@ Avaliable for two-state switches and knobs.</string>
      <normaloff>:/icons/img/input-keyboard.svg</normaloff>:/icons/img/input-keyboard.svg</iconset>
    </property>
    <property name="text">
-    <string>Show keyboard</string>
+    <string>Show Device</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Device</string>
    </property>
   </action>
   <action name="a_save_plane">

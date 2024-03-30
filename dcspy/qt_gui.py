@@ -85,8 +85,8 @@ class DcsPyQtGui(QMainWindow):
         if not cfg_dict:
             self.config = load_yaml(full_path=default_yaml)
         self.dw_gkeys.hide()
-        self.dw_keyboard.hide()
-        self.dw_keyboard.setFloating(True)
+        self.dw_device.hide()
+        self.dw_device.setFloating(True)
         self.bg_rb_input_iface = QButtonGroup(self)
         self.bg_rb_device = QButtonGroup(self)
         self._init_tray()
@@ -152,7 +152,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_stop.clicked.connect(self._stop_clicked)
         self.a_stop.triggered.connect(self._stop_clicked)
         self.dw_gkeys.visibilityChanged.connect(partial(self._close_dock_widget, widget='gkeys'))
-        self.dw_keyboard.visibilityChanged.connect(partial(self._close_dock_widget, widget='keyboard'))
+        self.dw_device.visibilityChanged.connect(partial(self._close_dock_widget, widget='device'))
         self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
         self.pb_bios_check.clicked.connect(self._bios_check_clicked)
         self.le_bios_live.textEdited.connect(self._is_git_object_exists)
@@ -195,7 +195,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_save_plane.triggered.connect(self._save_gkeys_cfg)
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
-        self.a_show_keyboard.triggered.connect(self._show_device_dock)
+        self.a_show_device.triggered.connect(self._show_device_dock)
         self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
         self.a_discord.triggered.connect(partial(open_new_tab, url='https://discord.gg/SP5Yjx3'))
         self.a_donate.triggered.connect(partial(open_new_tab, url='https://paypal.me/emcek137'))
@@ -1455,10 +1455,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _show_device_dock(self) -> None:
         """Toggle show and hide a device dock."""
-        if self.a_show_keyboard.isChecked():
-            self.dw_keyboard.show()
+        if self.a_show_device.isChecked():
+            self.dw_device.show()
         else:
-            self.dw_keyboard.hide()
+            self.dw_device.hide()
 
     @Slot(bool)
     def _close_dock_widget(self, visible: bool, widget: str) -> None:
@@ -1491,7 +1491,7 @@ class DcsPyQtGui(QMainWindow):
         self.combo_search: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_search')
 
         self.dw_gkeys: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_gkeys')
-        self.dw_keyboard: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_keyboard')
+        self.dw_device: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_device')
 
         self.l_keyboard: Union[object, QLabel] = self.findChild(QLabel, 'l_keyboard')
         self.l_large: Union[object, QLabel] = self.findChild(QLabel, 'l_large')
@@ -1509,7 +1509,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
         self.a_show_toolbar: Union[object, QAction] = self.findChild(QAction, 'a_show_toolbar')
         self.a_show_gkeys: Union[object, QAction] = self.findChild(QAction, 'a_show_gkeys')
-        self.a_show_keyboard: Union[object, QAction] = self.findChild(QAction, 'a_show_keyboard')
+        self.a_show_device: Union[object, QAction] = self.findChild(QAction, 'a_show_device')
         self.a_about_dcspy: Union[object, QAction] = self.findChild(QAction, 'a_about_dcspy')
         self.a_about_qt: Union[object, QAction] = self.findChild(QAction, 'a_about_qt')
         self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
