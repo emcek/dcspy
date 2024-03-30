@@ -721,6 +721,7 @@ class Gkey(BaseModel):
 
 
 class DeviceRowsNumber(BaseModel):
+    """Represent the number of rows for different types of devices."""
     g_key: int = 0
     lcd_key: int = 0
     mouse_key: int = 0
