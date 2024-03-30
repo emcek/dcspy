@@ -12,7 +12,7 @@ from dcspy.models import DcspyConfigYaml
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.3.0'
+__version__ = '3.4.0'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
@@ -63,8 +63,8 @@ def _api_ver_3_4_0(cfg: DcspyConfigYaml) -> None:
     """
     user_appdata = get_config_yaml_location()
     makedirs(name=user_appdata, exist_ok=True)
-    cfg['keyboard'] = str(cfg['keyboard']).replace(' ', '')
     _rename_key_keep_value(cfg, 'keyboard', 'device', 'G13')
+    cfg['device'] = str(cfg['device']).replace(' ', '')
 
 
 def _api_ver_3_1_3(cfg: DcspyConfigYaml) -> None:

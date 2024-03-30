@@ -39,7 +39,7 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: s
     return ver_info
 
 
-def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.3.0'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
+def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.4.0'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
                   sha=environ.get('GITHUB_SHA', 'deadbeef'), ver_f='file_version_info.txt') -> Sequence[str]:
     """
     Save generated version file based on list of strings.
