@@ -54,7 +54,7 @@ package logitech {
         + button_handle()
         + key_sdk: GkeySdkManager
         + lcd_sdk: LcdSdkManager
-        + gkey_callback_handler(key: int, mode: int, key_down: int)
+        + gkey_callback_handler(int, int, int, int)
         + clear()
         + text(List[str])
         # _prepare_image() -> Image
@@ -160,8 +160,13 @@ package models {
     class Gkey <<(M,orange)>> {
         + key: int
         + mode: int
-        + from_yaml(yaml_str: str) -> Gkey
-        + generate(key: int, mode: int) -> Tuple[Gkey]
+        + from_yaml(str) -> Gkey
+        + generate(int, int) -> Tuple[Gkey]
+    }
+    class MouseButton <<(M,orange)>> {
+        + button: int
+        + from_yaml(str) -> MouseButton
+        + generate(Tuple[int, int]) -> Tuple[MouseButton]
     }
     class LcdButton <<(E,yellow)>> {
         + none = 0x0
@@ -201,9 +206,11 @@ package models {
         + klass: str
         + no_g_modes: int
         + no_g_keys: int
+        + btn_m_range: Tuple[int, int]
         + lcd_keys: Sequence[LcdButton]
         + lcd_info: LcdInfo
-        + g_keys() -> Sequence[Gkey]]
+        + g_keys() -> Sequence[Gkey]
+        + mouse_keys() -> Sequence[MouseButton]
         + lcd_name() -> str
     }
     class RequestModel{
@@ -252,6 +259,12 @@ package models {
         + input() -> ControlKeyData
         + output() -> Union[BiosValueInt, BiosValueStr]
     }
+    class DeviceRowsNumber <<(M,orange)>> {
+        + g_key: int = 0
+        + lcd_key: int = 0
+        + mouse_key: int = 0
+        + total() -> int
+    }
 
 BiosValueInt *-- IntBuffArgs
 BiosValueStr *-- StrBuffArgs
@@ -260,11 +273,14 @@ LcdType --* LcdInfo
 LcdMode --* LcdInfo
 LcdButton --* LcdInfo
 LogitechDeviceModel --* LcdInfo
+DeviceRowsNumber --* LogitechDeviceModel
 LcdButton -* BasicAircraft
 LcdButton -* LogitechDeviceModel
 LcdButton -* LogitechDevice
 Gkey --* BasicAircraft
 Gkey --* LogitechDevice
+MouseButton --* BasicAircraft
+MouseButton --* LogitechDevice
 Direction --* ZigZagIterator
 ZigZagIterator --* RequestModel
 LogitechDeviceModel -* LogitechDevice
@@ -306,7 +322,7 @@ package sdk{
     class GkeySdkManager <<(L,lightblue)>> {
         + key_dll: CDLL
         + gkey_context: LogiGkeyCBContext
-        + user_callback: Callable[[int, int, int], None]
+        + user_callback: Callable[[int, int, int, int], None]
         + gkey_context_ptr: pointer[gkey_contex]
         + logi_gkey_init()
         + logi_gkey_is_keyboard_gkey_pressed(int, int)
