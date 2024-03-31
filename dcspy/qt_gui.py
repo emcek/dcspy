@@ -49,7 +49,7 @@ LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0,
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self, cli_args=Namespace(no_lcd=False), cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
+    def __init__(self, cli_args=Namespace(), cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
