@@ -3,8 +3,6 @@
   * Keyboards without LCD: G910, G710, G110, G103, G105, G11
   * Headphones: G35, G633, G930, G933
   * Mouses: G600, G300, G400, G700, G9, MX518, G402, G502, G602
-Internal:
-  * Update Qt6/PySide6 to 6.6.3
 
 ## 3.3.0
 * Add new State action to set a particular value for any controller (@emcek)
