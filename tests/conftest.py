@@ -150,13 +150,13 @@ def get_ctrl_for_plane(test_dcs_bios, request):
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
 def lcd_font_mono():
-    """Returns font configuration for mono LCD."""
+    """Return font configuration for mono LCD."""
     return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
 
 
 @fixture()
 def lcd_font_color(protocol_parser):
-    """Returns font configuration for color LCD."""
+    """Return font configuration for color LCD."""
     return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
 
 
