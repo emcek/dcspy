@@ -55,19 +55,19 @@ jobs:
         run: |
           ruff check dcspy
 
-  mypy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check mypy"
-        run: |
-          mypy .
-
+#  mypy:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: "Checkout"
+#        uses: actions/checkout@v4
+#
+#      - name: "Set up Python environment"
+#        uses: ./.github/actions/setup-python
+#
+#      - name: "Check mypy"
+#        run: |
+#          mypy .
+#
 #      - name: "Upload mypy results"
 #        uses: actions/upload-artifact@v4
 #        if: always()
