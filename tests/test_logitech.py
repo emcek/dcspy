@@ -23,12 +23,19 @@ def test_keyboard_base_basic_check(keyboard_base):
 
 
 @mark.parametrize('keyboard, pressed1, effect, chk_btn, calls, pressed2', [
-    ('keyboard_mono', False, [False] * 3 + [True], LcdButton.FOUR, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], True),
-    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.UP, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL)], True),
-    ('keyboard_mono', True, [True, False, False, False], LcdButton.NONE, [call(LcdButton.ONE)], True),
-    ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE, [call(LcdButton.LEFT)], True),
-    ('keyboard_mono', False, [False] * 4, LcdButton.NONE, [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], False),
-    ('keyboard_color', False, [False] * 8, LcdButton.NONE, [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.UP), call(LcdButton.DOWN),  call(LcdButton.MENU)], False),
+    ('keyboard_mono', False, [False] * 3 + [True], LcdButton.FOUR,
+     [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], True),
+    ('keyboard_color', False, [False] * 4 + [True] + [False] * 2, LcdButton.UP,
+     [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL)], True),
+    ('keyboard_mono', True, [True, False, False, False], LcdButton.NONE,
+     [call(LcdButton.ONE)], True),
+    ('keyboard_color', True, [True] + [False] * 6, LcdButton.NONE,
+     [call(LcdButton.LEFT)], True),
+    ('keyboard_mono', False, [False] * 4, LcdButton.NONE,
+     [call(LcdButton.ONE), call(LcdButton.TWO), call(LcdButton.THREE), call(LcdButton.FOUR)], False),
+    ('keyboard_color', False, [False] * 8, LcdButton.NONE,
+     [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.UP), call(LcdButton.DOWN),  call(LcdButton.MENU)],
+     False),
 ], ids=[
     'Mono 4 Button',
     'Color Up Button',

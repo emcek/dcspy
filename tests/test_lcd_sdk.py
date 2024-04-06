@@ -72,8 +72,11 @@ def test_update_text(c_func, effect, lcd, list_txt):
 
 
 @mark.parametrize('c_funcs, effect, lcd, clear, text', [
-    (('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'), [True], LcdType.MONO, [0] * LcdSize.MONO_WIDTH.value * LcdSize.MONO_HEIGHT.value, [call(0, ''), call(1, ''), call(2, ''), call(3, '')]),
-    (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'), [False, True], LcdType.COLOR, [(0,) * 4] * LcdSize.COLOR_WIDTH.value * LcdSize.COLOR_HEIGHT.value,
+    (('logi_lcd_mono_set_background', 'logi_lcd_mono_set_text'), [True],
+     LcdType.MONO, [0] * LcdSize.MONO_WIDTH.value * LcdSize.MONO_HEIGHT.value,
+     [call(0, ''), call(1, ''), call(2, ''), call(3, '')]),
+    (('logi_lcd_color_set_background', 'logi_lcd_color_set_text'), [False, True],
+     LcdType.COLOR, [(0,) * 4] * LcdSize.COLOR_WIDTH.value * LcdSize.COLOR_HEIGHT.value,
      [call(0, ''), call(1, ''), call(2, ''), call(3, ''), call(4, ''), call(5, ''), call(6, ''), call(7, '')])
 ], ids=['Mono', 'Color'])
 def test_clear_display(c_funcs, effect, lcd, clear, text):
