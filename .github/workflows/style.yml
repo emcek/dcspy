@@ -68,14 +68,14 @@ jobs:
         run: |
           mypy .
 
-      - name: "Upload mypy results"
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: mypy_3_12
-          path: |
-            mypyhtml/*
-          retention-days: 4
+#      - name: "Upload mypy results"
+#        uses: actions/upload-artifact@v4
+#        if: always()
+#        with:
+#          name: mypy_3_12
+#          path: |
+#            mypyhtml/*
+#          retention-days: 4
 
   flake8:
     runs-on: ubuntu-latest
