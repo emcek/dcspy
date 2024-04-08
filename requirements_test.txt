@@ -3,7 +3,7 @@ flake8==7.0.0
 interrogate==1.7.0
 lxml==5.2.1
 mypy==1.9.0
-pip_audit==2.7.2
+pip-audit==2.7.2
 pycodestyle==2.11.1
 pydocstyle[toml]==6.3.0
 pytest==8.1.1
