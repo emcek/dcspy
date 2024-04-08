@@ -1,6 +1,6 @@
 -r requirements.txt
 flake8==7.0.0
-interrogate==1.5.0
+interrogate==1.7.0
 lxml==5.2.1
 mypy==1.9.0
 pip-audit==2.7.2
