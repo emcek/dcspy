@@ -292,7 +292,7 @@ class ControlKeyData:
     @staticmethod
     def __get_max(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> Tuple[int, bool]:
         """
-        Maximum value found in the 'max_value' attribute of the objects in the list
+        Maximum value found in the 'max_value' attribute of the objects in the list.
 
         Check if any of the objects had a 'max_value' of 0.
 
