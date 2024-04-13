@@ -284,20 +284,32 @@ class ControlKeyData:
         :param list_of_dicts:
         :return: max value
         """
-        _real_zero = False
-        _max_values = []
-        for d in list_of_dicts:
-            try:
-                _max_values.append(d.max_value)  # type: ignore
-                if d.max_value == 0:             # type: ignore
-                    _real_zero = True
-                    break
-            except AttributeError:
-                _max_values.append(0)
-        max_value = max(_max_values)
-        if all([not _real_zero, not max_value]):
+        max_value, real_zero = ControlKeyData.__get_max(list_of_dicts)
+        if all([not real_zero, not max_value]):
             max_value = 1
         return max_value
+
+    @staticmethod
+    def __get_max(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> Tuple[int, bool]:
+        """
+        Maximum value found in the 'max_value' attribute of the objects in the list
+
+        Check if any of the objects had a 'max_value' of 0.
+
+        :param list_of_dicts: List of dictionaries containing objects of types FixedStep, VariableStep, SetState, Action, SetString.
+        :return: A tuple containing the maximum value and a boolean value indicating if any of the objects had a 'max_value' of 0.
+        """
+        __real_zero = False
+        __max_values = []
+        for d in list_of_dicts:
+            try:
+                __max_values.append(d.max_value)  # type: ignore[union-attr]
+                if d.max_value == 0:  # type: ignore[union-attr]
+                    __real_zero = True
+                    break
+            except AttributeError:
+                __max_values.append(0)
+        return max(__max_values), __real_zero
 
     @property
     def depiction(self) -> ControlDepiction:
