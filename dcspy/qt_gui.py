@@ -397,7 +397,7 @@ class DcsPyQtGui(QMainWindow):
         self._generate_table()
 
     def _generate_table(self) -> None:
-        """This method generates a table of combo boxes with completer functionality."""
+        """Generate a table of combo boxes with completer functionality."""
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
         for row in range(0, self.device.rows.total):
             for col in range(0, self.device.cols):
