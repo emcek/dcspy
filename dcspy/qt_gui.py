@@ -142,9 +142,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
-        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
+        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
-        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
+        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
         self.le_biosdir.textChanged.connect(partial(self._is_dir_dcs_bios, widget_name='le_biosdir'))
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
@@ -333,7 +333,7 @@ class DcsPyQtGui(QMainWindow):
             dst_dir = str(Path(os.environ['USERPROFILE']) / 'Desktop')
         except KeyError:
             dst_dir = 'C:\\'
-        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
+        directory = self._run_file_dialog(last_dir=lambda: dst_dir)
         try:
             destination = Path(directory) / zip_file.name
             copy(zip_file, destination)
@@ -1358,27 +1358,15 @@ class DcsPyQtGui(QMainWindow):
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
-    def _run_file_dialog(self, for_load: bool, for_dir: bool, last_dir: Callable[..., str],
-                         widget_name: Optional[str] = None, file_filter: str = 'All Files [*.*](*.*)') -> str:
+    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: Optional[str] = None) -> str:
         """
         Open/save dialog to select file or folder.
 
-        :param for_load: if True show window for load, for save otherwise
-        :param for_dir: if True show window for selecting directory only, if False selecting file only
         :param last_dir: function return last selected dir
         :param widget_name: update text for widget
-        :param file_filter: list of types of files ;;-seperated: Text [*.txt](*.txt)
-        :return: full path to file or directory
+        :return: full path to directory
         """
-        result_path = ''
-        if file_filter != 'All Files [*.*](*.*)':
-            file_filter = f'{file_filter};;All Files [*.*](*.*)'
-        if for_load and for_dir:
-            result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
-        if for_load and not for_dir:
-            result_path = QFileDialog.getOpenFileName(self, caption='Open File', dir=last_dir(), filter=file_filter, options=QFileDialog.Option.ReadOnly)[0]
-        if not for_load and not for_dir:
-            result_path = QFileDialog.getSaveFileName(self, caption='Save File', dir=last_dir(), filter=file_filter, options=QFileDialog.Option.ReadOnly)[0]
+        result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
         return result_path
