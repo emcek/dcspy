@@ -4,7 +4,7 @@ from functools import partial
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Callable, Dict, Final, List, Optional, Tuple, Type, TypedDict, Union
+from typing import Any, Callable, Final, Optional, TypedDict, Union
 
 from packaging import version
 from PIL import ImageFont
