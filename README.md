@@ -7,7 +7,7 @@
 [![dcspy](https://snyk.io/advisor/python/dcspy/badge.svg)](https://snyk.io/advisor/python/dcspy)
 [![Patreon](https://img.shields.io/badge/Patreon-donate-ff424d?logo=patreon)](https://www.patreon.com/mplichta)
 [![Discord](https://img.shields.io/discord/672486999516774442?label=Discord&logo=discord&logoColor=lightblue)](https://discord.gg/SP5Yjx3)
-[![image](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://github.com/emcek/dcspy)
+[![image](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://github.com/emcek/dcspy)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/emcek/dcspy/master.svg)](https://results.pre-commit.ci/latest/github/emcek/dcspy/master)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6056/badge)](https://bestpractices.coreinfrastructure.org/projects/6056)
@@ -52,7 +52,7 @@ Why such way? Basically advanced support is for aircraft which I own and therefo
 * [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
 * DCS World: [2.9.2.49940](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.9.2.49940/) Open Beta, but any version from 2.9.* branch should be fine.
 * optional:
-  * [Python 3.12](https://www.python.org/downloads/) but 3.8+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
+  * [Python 3.12](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
   * However, DCSpy 2.3.3 and earlier do not support Python 3.12
 
 **Notes:**
