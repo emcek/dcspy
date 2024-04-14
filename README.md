@@ -28,10 +28,10 @@ See more information on [Wiki](https://github.com/emcek/dcspy/wiki) page.
 
 ## Aircraft and instruments
 There are to kinds of supported aircraft:
-* **Basic** - allow to assign all G-Keys of Logitech keyboard to aircraft's instruments in cockpit (all clickable cockpits supported by DCS-BIOS)
+* **Basic** - allow assigning all G-Keys of Logitech keyboard to aircraft's instruments in the cockpit (all clickable cockpits supported by DCS-BIOS)
 * **Advanced** - additionally can display some information on LCD (listed below)
 
-Why such way? Basically advanced support is for aircraft which I own and therefore can test it.
+Why such way? Basically advanced support is for aircraft that I own and therefore can test it.
 
 # Advanced
 * F/A-18C Hornet UFC - Up Front Controller
@@ -44,22 +44,22 @@ Why such way? Basically advanced support is for aircraft which I own and therefo
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display
 * F-15E Eagle - Upfront Control Panel
-* more to come....
+* more to come...
 
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
 * [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
-* DCS World: [2.9.2.49940](https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/2.9.2.49940/) Open Beta, but any version from 2.9.* branch should be fine.
+* DCS World: [2.9.4.53627](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.4.53627/), but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.12](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
   * However, DCSpy 2.3.3 and earlier do not support Python 3.12
 
 **Notes:**
-* If you upgrade DCSpy from 1.5.1 or older you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 use built-in SDK in LGS (Logitech Gaming Software).
+* If you upgrade DCSpy from 1.5.1 or older, you can safely remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`. Since DCSpy version 1.6.0 uses built-in SDK in LGS (Logitech Gaming Software).
 
 ## New ideas
-I have lots of plans and new ideas how to improve it internally and form user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find bug or have any crazy idea.
+I have lots of plans and new ideas how to improve it internally and form a user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find a bug or have any crazy idea.
 You are welcome [dcspy Discord](https://discord.gg/SP5Yjx3) server.
 
 ## Contributing
