@@ -55,27 +55,31 @@ jobs:
         run: |
           ruff check dcspy
 
-#  mypy:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: "Checkout"
-#        uses: actions/checkout@v4
-#
-#      - name: "Set up Python environment"
-#        uses: ./.github/actions/setup-python
-#
-#      - name: "Check mypy"
-#        run: |
-#          mypy .
-#
-#      - name: "Upload mypy results"
-#        uses: actions/upload-artifact@v4
-#        if: always()
-#        with:
-#          name: mypy_3_12
-#          path: |
-#            mypyhtml/*
-#          retention-days: 4
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Patch QtGui.pyi"
+        run: |
+          patch /opt/hostedtoolcache/Python/3.12.2/x64/lib/python3.12/site-packages/PySide6/QtGui.pyi < QtGui_pyi.patch
+
+      - name: "Check mypy"
+        run: |
+          mypy .
+
+      - name: "Upload mypy results"
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mypy_3_12
+          path: |
+            mypyhtml/*
+          retention-days: 4
 
   flake8:
     runs-on: ubuntu-latest

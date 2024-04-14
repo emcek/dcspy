@@ -142,9 +142,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_settings(self) -> None:
         """Initialize of settings."""
-        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
+        self.pb_dcsdir.clicked.connect(partial(self._run_file_dialog, last_dir=lambda: 'C:\\', widget_name='le_dcsdir'))
         self.le_dcsdir.textChanged.connect(partial(self._is_dir_exists, widget_name='le_dcsdir'))
-        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, for_load=True, for_dir=True, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
+        self.pb_biosdir.clicked.connect(partial(self._run_file_dialog, last_dir=lambda: 'C:\\', widget_name='le_biosdir'))
         self.le_biosdir.textChanged.connect(partial(self._is_dir_dcs_bios, widget_name='le_biosdir'))
         self.pb_collect_data.clicked.connect(self._collect_data_clicked)
         self.pb_start.clicked.connect(self._start_clicked)
@@ -333,7 +333,7 @@ class DcsPyQtGui(QMainWindow):
             dst_dir = str(Path(os.environ['USERPROFILE']) / 'Desktop')
         except KeyError:
             dst_dir = 'C:\\'
-        directory = self._run_file_dialog(for_load=True, for_dir=True, last_dir=lambda: dst_dir)
+        directory = self._run_file_dialog(last_dir=lambda: dst_dir)
         try:
             destination = Path(directory) / zip_file.name
             copy(zip_file, destination)
@@ -379,7 +379,7 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
-        if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
+        if self._check_and_rebuild_ctrl_input_table(plane_name=self.current_plane):
             return
         self.tw_gkeys.setColumnCount(self.device.cols)
         for mode_col in range(self.device.cols):
@@ -394,7 +394,10 @@ class DcsPyQtGui(QMainWindow):
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
+        self._generate_table()
 
+    def _generate_table(self) -> None:
+        """Generate a table of combo boxes with completer functionality."""
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
         for row in range(0, self.device.rows.total):
             for col in range(0, self.device.cols):
@@ -439,7 +442,7 @@ class DcsPyQtGui(QMainWindow):
             self.tw_gkeys.setCellWidget(row, col, combo)
         combo.setStyleSheet(self._get_style_for_combobox(key=key, fg='black'))
 
-    def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
+    def _check_and_rebuild_ctrl_input_table(self, plane_name: str) -> bool:
         """
         Detect when new plane is selected.
 
@@ -448,25 +451,47 @@ class DcsPyQtGui(QMainWindow):
          - construct list of controls for every cell in table
          - update aliases
 
-         In case of problems:
-          - pop-up with details
-          - back to previous plane or first in list
+        In case of problems:
+         - pop-up with details
+         - back to previous plane or first in list
 
         :param plane_name: BIOS plane name
         :return: True when rebuild is not needed, False otherwise.
         """
-        try:
-            plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
-        except FileNotFoundError as exc:
-            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{exc}'
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
-            return False
+        plane_aliases = self._get_plane_aliases(plane_name)
 
         if self.plane_aliases != plane_aliases[plane_name]:
-            try:
-                return self._rebuild_needed(plane_aliases, plane_name)
-            except ValidationError as validation_err:
-                return self._rebuild_not_needed(plane_aliases, plane_name, validation_err)
+            return self._rebuild_or_not_rebuild_planes_aliases(plane_aliases, plane_name)
+        return False
+
+    def _get_plane_aliases(self, plane_name: str) -> Dict:
+        """
+        Try getting plane aliases.
+
+        Show a warning message when fails DCS-BIOS path error.
+
+        :param plane_name: BIOS plane name.
+        :return: A dictionary of the plane aliases or empty dict.
+        """
+        try:
+            return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
+        except FileNotFoundError as err:
+            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
+            return dict()
+
+    def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: Dict, plane_name: str) -> bool:
+        """
+        Check if rebuild is possible and return False or not possible and return True.
+
+        :param plane_aliases: BIOS plane aliases.
+        :param plane_name that is to be validated.
+        :return: True when rebuild is not needed, False otherwise.
+        """
+        try:
+            return self._rebuild_needed(plane_aliases, plane_name)
+        except ValidationError as validation_err:
+            return self._rebuild_not_needed(plane_aliases, plane_name, validation_err)
 
     def _rebuild_needed(self, plane_aliases: Dict[str, List[str]], plane_name: str) -> bool:
         """
@@ -1333,27 +1358,15 @@ class DcsPyQtGui(QMainWindow):
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
-    def _run_file_dialog(self, for_load: bool, for_dir: bool, last_dir: Callable[..., str],
-                         widget_name: Optional[str] = None, file_filter: str = 'All Files [*.*](*.*)') -> str:
+    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: Optional[str] = None) -> str:
         """
         Open/save dialog to select file or folder.
 
-        :param for_load: if True show window for load, for save otherwise
-        :param for_dir: if True show window for selecting directory only, if False selecting file only
         :param last_dir: function return last selected dir
         :param widget_name: update text for widget
-        :param file_filter: list of types of files ;;-seperated: Text [*.txt](*.txt)
-        :return: full path to file or directory
+        :return: full path to directory
         """
-        result_path = ''
-        if file_filter != 'All Files [*.*](*.*)':
-            file_filter = f'{file_filter};;All Files [*.*](*.*)'
-        if for_load and for_dir:
-            result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
-        if for_load and not for_dir:
-            result_path = QFileDialog.getOpenFileName(self, caption='Open File', dir=last_dir(), filter=file_filter, options=QFileDialog.Option.ReadOnly)[0]
-        if not for_load and not for_dir:
-            result_path = QFileDialog.getSaveFileName(self, caption='Save File', dir=last_dir(), filter=file_filter, options=QFileDialog.Option.ReadOnly)[0]
+        result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
         return result_path

@@ -269,6 +269,30 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
+def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
+    """
+    Return a string representing the commit hash, date, and author of the given Git reference in the provided repository.
+
+    :param bios_repo: A Git repository object.
+    :param git_ref: A string representing the Git reference (e.g., commit, branch, tag).
+    :return: A string representing the commit hash, date, and author.
+    """
+    try:
+        import git
+    except ImportError:
+        raise OSError('Git executable is not available!')
+    try:
+        bios_repo.git.checkout(git_ref)
+        branch = bios_repo.active_branch.name
+        head_commit = bios_repo.head.commit
+        sha = f'{branch}: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")} by: {head_commit.author}'
+    except (git.exc.GitCommandError, TypeError):
+        head_commit = bios_repo.head.commit
+        sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")} by: {head_commit.author}'
+    LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message}')  # type: ignore
+    return sha
+
+
 def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git',
                       progress: Optional[git.RemoteProgress] = None) -> str:
     """
@@ -282,28 +306,11 @@ def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios',
     :param repo_dir: local directory for repository
     :param progress: progress callback
     """
-    try:
-        import git
-    except ImportError:
-        raise OSError('Git executable is not available!')
-
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
-        try:
-            bios_repo.git.checkout(git_ref)
-            branch = bios_repo.active_branch.name
-            head_commit = bios_repo.head.commit
-            sha = f'{branch}: {head_commit.committed_datetime} by: {head_commit.author}'
-        except (git.exc.GitCommandError, TypeError):
-            head_commit = bios_repo.head.commit
-            sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime} by: {head_commit.author}'
-        LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message}')  # type: ignore
-    else:
-        bios_repo.git.checkout(git_ref)
-        head_commit = bios_repo.head.commit
-        sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")}'
+    sha = _get_sha_hex_str(bios_repo, git_ref)
     return sha
 
 

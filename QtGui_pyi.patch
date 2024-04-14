@@ -1,0 +1,11 @@
+--- QtGui_old.pyi	2024-04-14 13:20:14.835790500 +0200
++++ QtGui_new.pyi	2024-04-14 13:20:34.516557600 +0200
+@@ -1089,7 +1089,7 @@
+     White                     = ...  # type: QColor
+     Yellow                    = ...  # type: QColor
+
+-    class Svg(Shiboken.Object): ...
++    class Svg(Shiboken.Object):
+
+         aliceblue                 = ...  # type: QColor
+         antiquewhite              = ...  # type: QColor
