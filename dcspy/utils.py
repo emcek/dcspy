@@ -15,7 +15,7 @@ from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, ClassVar, Optional, Union
 
 import yaml
 from packaging import version
