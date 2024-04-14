@@ -66,9 +66,7 @@ jobs:
 
       - name: "Patch QtGui.pyi"
         run: |
-          pip show PySide6
-          ls -la /opt/hostedtoolcache/Python/3.12.2/x64/lib/python3.12/site-packages/
-          patch /opt/hostedtoolcache/Python/3.12.2/x64/lib/python3.12/site-packages/QtGui.pyi < QtGui_pyi.patch
+          patch /opt/hostedtoolcache/Python/3.12.2/x64/lib/python3.12/site-packages/PySide6/QtGui.pyi < QtGui_pyi.patch
 
       - name: "Check mypy"
         run: |
