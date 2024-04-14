@@ -1,8 +1,9 @@
 from enum import Enum
+from functools import partial
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Type, Union
+from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Type, TypedDict, Union
 
 from packaging import version
 from PIL import ImageFont
@@ -1107,23 +1108,68 @@ class RequestModel(BaseModel):
         :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
         :return: a list of bytes representing the individual requests
         """
-        if self.is_push_button and isinstance(self.key, (Gkey, MouseButton)):
-            request = f'{self.ctrl_name} {key_down}\n'
-        elif self.is_push_button and isinstance(self.key, LcdButton):
-            request = f'{self.ctrl_name} {KEY_DOWN}\n|{self.ctrl_name} {KEY_UP}\n'
-        # Ignore key up events for non-push button requests so that
-        # these are not triggered again when the G-Key is released.
-        elif key_down is None or key_down == KEY_UP:
-            return []
-        elif self.is_cycle:
-            request = f'{self.ctrl_name} {self._get_next_value_for_button()}\n'
-        elif self.is_custom:
-            request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
-            request = request.replace('|', '\n|')
-            request = request.strip('|')
-        else:
-            request = f'{self.raw_request}\n'
+        request = self._generate_request_based_on_case(key_down)
         return [bytes(req, 'utf-8') for req in request.split('|')]
+
+    def _generate_request_based_on_case(self, key_down: Optional[int] = None) -> str:
+        """
+        Generate a request based on the current state of the object.
+
+        The request is determined by a set of conditions defined in the `request_mapper` dictionary.
+        Each condition is associated with a method that generates the request for that condition.
+
+        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        :return: A string representing the generated request based on the given conditions and parameters.
+        """
+        class case_dict(TypedDict):
+            condition: bool
+            method: partial
+        request_mapper: Dict[int, case_dict] = {
+            1: {'condition': self.is_push_button and isinstance(self.key, Gkey),
+                'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
+            2: {'condition': self.is_push_button and isinstance(self.key, MouseButton),
+                'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
+            3: {'condition': self.is_push_button and isinstance(self.key, LcdButton),
+                'method': partial(self.__generate_push_btn_req_for_lcd_button)},
+            4: {'condition': key_down is None or key_down == KEY_UP,
+                'method': partial(RequestModel.__generate_empty)},
+            5: {'condition': self.is_cycle,
+                'method': partial(self.__generate_cycle_request)},
+            6: {'condition': self.is_custom,
+                'method': partial(self.__generate_custom_request)},
+        }
+
+        for case in request_mapper.values():
+            if case['condition']:
+                return case['method']()
+        return f'{self.raw_request}\n'
+
+    def __generate_push_btn_req_for_gkey_and_mouse(self, key_down: Optional[int]) -> str:
+        """
+        Generate a push button request for GKey and MouseButton.
+
+        :param key_down: Optional integer representing the key pressed down.
+        """
+        return f'{self.ctrl_name} {key_down}\n'
+
+    def __generate_push_btn_req_for_lcd_button(self) -> str:
+        """Generate the push button request for the LCD button."""
+        return f'{self.ctrl_name} {KEY_DOWN}\n|{self.ctrl_name} {KEY_UP}\n'
+
+    @staticmethod
+    def __generate_empty() -> str:
+        """Generate an empty string."""
+        return ''
+
+    def __generate_cycle_request(self) -> str:
+        """Generate a cycle request."""
+        return f'{self.ctrl_name} {self._get_next_value_for_button()}\n'
+
+    def __generate_custom_request(self) -> str:
+        """Generate a custom request from the raw request."""
+        request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
+        request = request.replace('|', '\n|')
+        return request.strip('|')
 
     def __str__(self) -> str:
         return f'{self.ctrl_name}: {self.raw_request}'
