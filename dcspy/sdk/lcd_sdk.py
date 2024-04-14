@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import List, Tuple
 
 from _cffi_backend import Lib
 from cffi import FFI, CDefError
