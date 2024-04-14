@@ -493,9 +493,9 @@ def test_request_model_properties(str_req, key, key_down, result):
 @mark.parametrize('key, key_down, result', [
     ('ONE', KEY_DOWN, [b'\n']),
     ('G1_M1', KEY_DOWN, [b'\n']),
-    ('G1_M1', KEY_UP, []),
+    ('G1_M1', KEY_UP, [b'']),
     ('M_1', KEY_DOWN, [b'\n']),
-    ('M_1', KEY_UP, []),
+    ('M_1', KEY_UP, [b'']),
 ])
 def test_empty_request_model_(key, key_down, result):
     from dcspy.models import RequestModel, get_key_instance
