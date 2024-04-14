@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from enum import Enum
 from itertools import cycle
 from logging import getLogger
@@ -5,7 +6,7 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from typing import Dict, List, Sequence, Tuple, Union
+from typing import Union
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -54,7 +55,7 @@ class BasicAircraft:
         """
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
-        self.bios_data: Dict[str, Union[str, int]] = {}
+        self.bios_data: dict[str, Union[str, int]] = {}
         if self.bios_name:
             self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
             self.bios_data.update(self.key_req.cycle_button_ctrl_name)
@@ -681,7 +682,7 @@ class AH64DBLKII(AdvancedAircraft):
         except IndexError:
             self.warning_line = 1
 
-    def _fetch_warning_list(self) -> List[str]:
+    def _fetch_warning_list(self) -> list[str]:
         """
         Fetch all warnings and return as list.
 
@@ -693,7 +694,7 @@ class AH64DBLKII(AdvancedAircraft):
                 warn.extend([w for w in [mat.group(1).strip(), mat.group(2).strip(), mat.group(3).strip()] if w])
         return warn
 
-    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, x_cords: List[int], y_cords: List[int], font: ImageFont.FreeTypeFont) -> None:
+    def _draw_for_pre(self, draw: ImageDraw.ImageDraw, x_cords: list[int], y_cords: list[int], font: ImageFont.FreeTypeFont) -> None:
         """
         Draw image for PRE mode.
 
@@ -965,8 +966,8 @@ class AV8BNA(AdvancedAircraft):
 
 def draw_autopilot_channels(lcd: LcdInfo,
                             ap_channel: str,
-                            c_rect: Tuple[float, float, float, float],
-                            c_text: Tuple[float, float],
+                            c_rect: tuple[float, float, float, float],
+                            c_text: tuple[float, float],
                             draw_obj: ImageDraw.ImageDraw,
                             turn_on: Union[str, int, float]) -> None:
     """

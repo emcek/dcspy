@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import List, Tuple
 
 from _cffi_backend import Lib
 from cffi import FFI, CDefError
@@ -79,7 +78,7 @@ class LcdSdkManager:
         except AttributeError:
             pass
 
-    def logi_lcd_mono_set_background(self, pixels: List[int]) -> bool:
+    def logi_lcd_mono_set_background(self, pixels: list[int]) -> bool:
         """
         Set pixels as a rectangular area, 160 bytes wide and 43 bytes high.
 
@@ -110,7 +109,7 @@ class LcdSdkManager:
         except AttributeError:
             return False
 
-    def logi_lcd_color_set_background(self, pixels: List[Tuple[int, int, int, int]]) -> bool:
+    def logi_lcd_color_set_background(self, pixels: list[tuple[int, int, int, int]]) -> bool:
         """
         Set array of pixels as a rectangular area, 320 bytes wide and 240 bytes high.
 
@@ -126,7 +125,7 @@ class LcdSdkManager:
         except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
             return False
 
-    def logi_lcd_color_set_title(self, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)) -> bool:
+    def logi_lcd_color_set_title(self, text: str, rgb: tuple[int, int, int] = (255, 255, 255)) -> bool:
         """
         Set the specified text in the first line on the color lcd device connected.
 
@@ -142,7 +141,7 @@ class LcdSdkManager:
         except AttributeError:
             return False
 
-    def logi_lcd_color_set_text(self, line_no: int, text: str, rgb: Tuple[int, int, int] = (255, 255, 255)) -> bool:
+    def logi_lcd_color_set_text(self, line_no: int, text: str, rgb: tuple[int, int, int] = (255, 255, 255)) -> bool:
         """
         Set the specified text in the requested line on the color lcd device connected.
 
@@ -157,7 +156,7 @@ class LcdSdkManager:
         except AttributeError:
             return False
 
-    def update_text(self, txt: List[str]) -> None:
+    def update_text(self, txt: list[str]) -> None:
         """
         Update display LCD with list of text.
 
