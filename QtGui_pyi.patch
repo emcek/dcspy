@@ -3,9 +3,9 @@
 @@ -1089,7 +1089,7 @@
      White                     = ...  # type: QColor
      Yellow                    = ...  # type: QColor
- 
+
 -    class Svg(Shiboken.Object): ...
 +    class Svg(Shiboken.Object):
- 
+
          aliceblue                 = ...  # type: QColor
          antiquewhite              = ...  # type: QColor
