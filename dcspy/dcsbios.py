@@ -24,8 +24,8 @@ class ProtocolParser:
         self.address = 0
         self.count = 0
         self.data = 0
-        self.write_callbacks: Set[Callable[[int, int], None]] = set()
-        self.frame_sync_callbacks: Set[Callable] = set()
+        self.write_callbacks: set[Callable[[int, int], None]] = set()
+        self.frame_sync_callbacks: set[Callable] = set()
 
     def process_byte(self, int_byte: int) -> None:
         """
@@ -136,7 +136,7 @@ class StringBuffer:
         self.__length = max_length
         self.__dirty = False
         self.buffer = bytearray(max_length)
-        self.callbacks: Set[Callable] = set()
+        self.callbacks: set[Callable] = set()
         self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
@@ -187,7 +187,7 @@ class IntegerBuffer:
         self.__mask = mask
         self.__shift_by = shift_by
         self.__value = int()
-        self.callbacks: Set[Callable] = set()
+        self.callbacks: set[Callable] = set()
         self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 

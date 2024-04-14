@@ -1,9 +1,10 @@
+from collections.abc import Iterator, Sequence
 from enum import Enum
 from functools import partial
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Callable, Dict, Final, Iterator, List, Optional, Sequence, Tuple, Type, TypedDict, Union
+from typing import Any, Callable, Dict, Final, List, Optional, Tuple, Type, TypedDict, Union
 
 from packaging import version
 from PIL import ImageFont
@@ -249,7 +250,7 @@ class ControlKeyData:
         self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
-        self.list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
+        self.list_dict: list[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
 
     def __repr__(self) -> str:
         return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}'
@@ -278,7 +279,7 @@ class ControlKeyData:
         return instance
 
     @staticmethod
-    def _get_max_value(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int:
+    def _get_max_value(list_of_dicts: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int:
         """
         Get max value from list of dictionaries.
 
@@ -291,7 +292,7 @@ class ControlKeyData:
         return max_value
 
     @staticmethod
-    def __get_max(list_of_dicts: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> Tuple[int, bool]:
+    def __get_max(list_of_dicts: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> tuple[int, bool]:
         """
         Maximum value found in the 'max_value' attribute of the objects in the list.
 
@@ -401,8 +402,8 @@ class Control(BaseModel):
     control_type: str
     description: str
     identifier: str
-    inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
-    outputs: List[Union[OutputStr, OutputInt]]
+    inputs: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]
+    outputs: list[Union[OutputStr, OutputInt]]
 
     @property
     def input(self) -> ControlKeyData:
@@ -433,7 +434,7 @@ class Control(BaseModel):
 
 class DcsBiosPlaneData(RootModel):
     """DcsBios plane data model."""
-    root: Dict[str, Dict[str, Control]]
+    root: dict[str, dict[str, Control]]
 
     def get_ctrl(self, ctrl_name: str) -> Optional[Control]:
         """
@@ -448,7 +449,7 @@ class DcsBiosPlaneData(RootModel):
                     return Control.model_validate(data)
         return None
 
-    def get_inputs(self) -> Dict[str, Dict[str, ControlKeyData]]:
+    def get_inputs(self) -> dict[str, dict[str, ControlKeyData]]:
         """
         Get dict with all not empty inputs for plane.
 
@@ -456,7 +457,7 @@ class DcsBiosPlaneData(RootModel):
 
         :return: Dict with sections and ControlKeyData models.
         """
-        ctrl_key: Dict[str, Dict[str, ControlKeyData]] = {}
+        ctrl_key: dict[str, dict[str, ControlKeyData]] = {}
 
         for section, controllers in self.root.items():
             ctrl_key[section] = {}
@@ -523,7 +524,7 @@ class GuiPlaneInputRequest(BaseModel):
         return cls(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
 
     @classmethod
-    def from_plane_gkeys(cls, /, plane_gkeys: Dict[str, str]) -> Dict[str, 'GuiPlaneInputRequest']:
+    def from_plane_gkeys(cls, /, plane_gkeys: dict[str, str]) -> dict[str, 'GuiPlaneInputRequest']:
         """
         Generate GuiPlaneInputRequest from plane_gkeys yaml.
 
@@ -614,7 +615,7 @@ class MouseButton(BaseModel):
         raise ValueError(f'Invalid MouseButton format: {yaml_str}. Expected: M_<i>')
 
     @staticmethod
-    def generate(button_range: Tuple[int, int]) -> Sequence['MouseButton']:
+    def generate(button_range: tuple[int, int]) -> Sequence['MouseButton']:
         """
         Generate a sequence of MouseButton-Keys.
 
@@ -661,8 +662,8 @@ class LcdInfo(BaseModel):
     width: LcdSize
     height: LcdSize
     type: LcdType
-    foreground: Union[int, Tuple[int, int, int, int]]
-    background: Union[int, Tuple[int, int, int, int]]
+    foreground: Union[int, tuple[int, int, int, int]]
+    background: Union[int, tuple[int, int, int, int]]
     mode: LcdMode
     line_spacing: int
     font_xs: Optional[ImageFont.FreeTypeFont] = None
@@ -758,7 +759,7 @@ class LogitechDeviceModel(BaseModel):
     klass: str
     no_g_modes: int = 0
     no_g_keys: int = 0
-    btn_m_range: Tuple[int, int] = (0, 0)
+    btn_m_range: tuple[int, int] = (0, 0)
     lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
@@ -890,7 +891,7 @@ MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
-def _try_key_instance(klass: Union[Type[Gkey], Type[LcdButton], Type[MouseButton]], method: str, key_str: str) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
+def _try_key_instance(klass: Union[type[Gkey], type[LcdButton], type[MouseButton]], method: str, key_str: str) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
     """
     Detect key string could be parsed with method.
 
@@ -951,7 +952,7 @@ class SystemData(BaseModel):
         return self.dcs_bios_ver.split(' ')[0]
 
 
-DcspyConfigYaml = Dict[str, Union[str, int, bool]]
+DcspyConfigYaml = dict[str, Union[str, int, bool]]
 
 
 class Direction(Enum):
@@ -1101,7 +1102,7 @@ class RequestModel(BaseModel):
         """Return True if push button request, False otherwise."""
         return RequestType.PUSH_BUTTON.value in self.raw_request
 
-    def bytes_requests(self, key_down: Optional[int] = None) -> List[bytes]:
+    def bytes_requests(self, key_down: Optional[int] = None) -> list[bytes]:
         """
         Generate list of bytes that represent the individual requests based on the current state of the model.
 
@@ -1124,7 +1125,7 @@ class RequestModel(BaseModel):
         class case_dict(TypedDict):
             condition: bool
             method: partial
-        request_mapper: Dict[int, case_dict] = {
+        request_mapper: dict[int, case_dict] = {
             1: {'condition': self.is_push_button and isinstance(self.key, Gkey),
                 'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
             2: {'condition': self.is_push_button and isinstance(self.key, MouseButton),

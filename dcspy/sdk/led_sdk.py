@@ -89,7 +89,7 @@ def logi_led_restore_lighting() -> bool:
         return False
 
 
-def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
+def logi_led_set_lighting(rgb: tuple[int, int, int]) -> bool:
     """
     Set the lighting on connected and supported devices.
 
@@ -107,7 +107,7 @@ def logi_led_set_lighting(rgb: Tuple[int, int, int]) -> bool:
         return False
 
 
-def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
+def logi_led_flash_lighting(rgb: tuple[int, int, int], duration: int, interval: int) -> bool:
     """
     Save the current lighting, plays the flashing effect on the targeted devices.
 
@@ -124,7 +124,7 @@ def logi_led_flash_lighting(rgb: Tuple[int, int, int], duration: int, interval: 
         return False
 
 
-def logi_led_pulse_lighting(rgb: Tuple[int, int, int], duration: int, interval: int) -> bool:
+def logi_led_pulse_lighting(rgb: tuple[int, int, int], duration: int, interval: int) -> bool:
     """
     Save the current lighting, plays the pulsing effect on the targeted devices.
 
@@ -162,7 +162,7 @@ def logi_led_shutdown() -> None:
         pass
 
 
-def start_led_pulse(rgb: Tuple[int, int, int], duration: int, interval: int, event: Event) -> None:
+def start_led_pulse(rgb: tuple[int, int, int], duration: int, interval: int, event: Event) -> None:
     """
     Start the pulsing red effect in thread on the keyboard.
 

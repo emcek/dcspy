@@ -1,10 +1,10 @@
 import socket
 import struct
 from collections import deque
+from collections.abc import Iterator
 from logging import getLogger
 from threading import Event
 from time import gmtime, time
-from typing import Iterator
 
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser

@@ -36,7 +36,7 @@ class LogitechDevice:
         self.bios_name = ''
         self.plane_detected = False
         self.lcdbutton_pressed = False
-        self._display: List[str] = []
+        self._display: list[str] = []
         self.model = model
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
@@ -45,7 +45,7 @@ class LogitechDevice:
         self.plane = BasicAircraft(self.model.lcd_info)
 
     @property
-    def display(self) -> List[str]:
+    def display(self) -> list[str]:
         """
         Get the latest text from LCD.
 
@@ -54,7 +54,7 @@ class LogitechDevice:
         return self._display
 
     @display.setter
-    def display(self, message: List[str]) -> None:
+    def display(self, message: list[str]) -> None:
         """
         Display message as image at LCD.
 
@@ -66,7 +66,7 @@ class LogitechDevice:
         if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
 
-    def text(self, message: List[str]) -> None:
+    def text(self, message: list[str]) -> None:
         """
         Display message at LCD.
 

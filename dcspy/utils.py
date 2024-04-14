@@ -1,6 +1,7 @@
 import json
 import sys
 import zipfile
+from collections.abc import Generator, Sequence
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
@@ -14,7 +15,7 @@ from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Callable, ClassVar, Dict, Generator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, ClassVar, Dict, List, Optional, Tuple, Union
 
 import yaml
 from packaging import version
@@ -56,7 +57,7 @@ def get_default_yaml(local_appdata=False) -> Path:
     return cfg_ful_path
 
 
-def load_yaml(full_path: Path) -> Dict[str, Any]:
+def load_yaml(full_path: Path) -> dict[str, Any]:
     """
     Load yaml from file into dictionary.
 
@@ -76,7 +77,7 @@ def load_yaml(full_path: Path) -> Dict[str, Any]:
     return data
 
 
-def save_yaml(data: Dict[str, Any], full_path: Path) -> None:
+def save_yaml(data: dict[str, Any], full_path: Path) -> None:
     """
     Save disc as yaml file.
 
@@ -205,7 +206,7 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path: Path) -> Tuple[str, str]:
+def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
     """
     Check DCS version and release type.
 
@@ -395,7 +396,7 @@ def is_git_object(repo_dir: Path, git_obj: str) -> bool:
     return result
 
 
-def get_all_git_refs(repo_dir: Path) -> List[str]:
+def get_all_git_refs(repo_dir: Path) -> list[str]:
     """
     Get list of branches and tags for repo.
 
@@ -425,8 +426,8 @@ def get_sha_for_current_git_ref(git_ref: str, repo='DCS-Skunkworks/dcs-bios', re
 
 class CloneProgress(git.RemoteProgress):
     """Handler providing an interface to parse progress information emitted by git."""
-    OP_CODES: ClassVar[List[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
-    OP_CODE_MAP: ClassVar[Dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
+    OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
+    OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
 
     def __init__(self, progress, stage) -> None:
         """
@@ -490,7 +491,7 @@ def collect_debug_data() -> Path:
     return zip_file
 
 
-def _get_sys_file(conf_dict: Dict[str, Any]) -> Path:
+def _get_sys_file(conf_dict: dict[str, Any]) -> Path:
     """
     Save system information to file and return its path.
 
@@ -504,7 +505,7 @@ def _get_sys_file(conf_dict: Dict[str, Any]) -> Path:
     return sys_data
 
 
-def _fetch_system_info(conf_dict: Dict[str, Any]) -> str:
+def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     """
     Fetch system information.
 
@@ -525,7 +526,7 @@ def _fetch_system_info(conf_dict: Dict[str, Any]) -> str:
     return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
 
 
-def _fetch_git_data() -> Tuple[Sequence[int], str]:
+def _fetch_git_data() -> tuple[Sequence[int], str]:
     """
     Fetch Git version and SHA of HEAD commit.
 
@@ -541,7 +542,7 @@ def _fetch_git_data() -> Tuple[Sequence[int], str]:
     return git_ver, head_commit
 
 
-def _get_dcs_log(conf_dict: Dict[str, Any]) -> Path:
+def _get_dcs_log(conf_dict: dict[str, Any]) -> Path:
     """
     Get path to dcs.log path.
 
@@ -606,7 +607,7 @@ def get_config_yaml_location() -> Path:
     return user_appdata
 
 
-def run_pip_command(cmd: str) -> Tuple[int, str, str]:
+def run_pip_command(cmd: str) -> tuple[int, str, str]:
     """
     Execute pip command.
 
@@ -643,7 +644,7 @@ def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     :return: dict
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
-    local_json: Dict[str, Any] = {}
+    local_json: dict[str, Any] = {}
     aircraft_aliases = load_json(full_path=alias_path)
     for json_file in aircraft_aliases[plane]:
         local_json = {**local_json, **load_json(full_path=bios_dir / 'doc' / 'json' / f'{json_file}.json')}
@@ -652,7 +653,7 @@ def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
 
 
 @lru_cache
-def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, ControlKeyData]]:
+def get_inputs_for_plane(plane: str, bios_dir: Path) -> dict[str, dict[str, ControlKeyData]]:
     """
     Get dict with all not empty inputs for plane.
 
@@ -665,7 +666,7 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> Dict[str, Dict[str, Cont
     return inputs
 
 
-def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]:
+def get_list_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> list[str]:
     """
     Get list of all controllers from dict with sections and inputs.
 
@@ -681,7 +682,7 @@ def get_list_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> List[str]
 
 
 @lru_cache
-def get_planes_list(bios_dir: Path) -> List[str]:
+def get_planes_list(bios_dir: Path) -> list[str]:
     """
     Get list of all DCS-BIOS supported planes with clickable cockpit.
 
@@ -693,7 +694,7 @@ def get_planes_list(bios_dir: Path) -> List[str]:
 
 
 @lru_cache
-def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, List[str]]:
+def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> dict[str, list[str]]:
     """
     Get list of all yaml files for plane with name.
 
@@ -708,7 +709,7 @@ def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> Dict[str, 
     return aircraft_aliases
 
 
-def get_depiction_of_ctrls(inputs: Dict[str, Dict[str, ControlKeyData]]) -> Dict[str, ControlDepiction]:
+def get_depiction_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> dict[str, ControlDepiction]:
     """
     Get the depiction of controls.
 
@@ -759,14 +760,14 @@ class KeyRequest:
         :param get_bios_fn: Function used to obtain current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
-        self.buttons: Dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
+        self.buttons: dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
         for key_str, request in plane_yaml.items():
             if request:
                 key = get_key_instance(key_str)
                 self.buttons[key] = RequestModel.from_request(key=key, request=request, get_bios_fn=get_bios_fn)
 
     @property
-    def cycle_button_ctrl_name(self) -> Dict[str, int]:
+    def cycle_button_ctrl_name(self) -> dict[str, int]:
         """Return a dictionary with BIOS selectors to track chnages of values for Cyclce button to get current values."""
         return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
 

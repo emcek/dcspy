@@ -72,10 +72,10 @@ class DcsPyQtGui(QMainWindow):
         self._completer_items = 0
         self._git_refs_count = 0
         self.plane_aliases = ['']
-        self.ctrl_input: Dict[str, Dict[str, ControlKeyData]] = {}
+        self.ctrl_input: dict[str, dict[str, ControlKeyData]] = {}
         self.ctrl_list = ['']
-        self.ctrl_depiction: Dict[str, ControlDepiction] = {}
-        self.input_reqs: Dict[str, Dict[str, GuiPlaneInputRequest]] = {}
+        self.ctrl_depiction: dict[str, ControlDepiction] = {}
+        self.input_reqs: dict[str, dict[str, GuiPlaneInputRequest]] = {}
         self.git_exec = is_git_exec_present()
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
@@ -407,7 +407,7 @@ class DcsPyQtGui(QMainWindow):
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row,
                                             col=self.current_col)
 
-    def _make_combo_with_completer_at(self, row: int, col: int, ctrl_list_no_sep: List[str]) -> None:
+    def _make_combo_with_completer_at(self, row: int, col: int, ctrl_list_no_sep: list[str]) -> None:
         """
         Make QComboBox widget with completer with list of strings in cell in row and column.
 
@@ -464,7 +464,7 @@ class DcsPyQtGui(QMainWindow):
             return self._rebuild_or_not_rebuild_planes_aliases(plane_aliases, plane_name)
         return False
 
-    def _get_plane_aliases(self, plane_name: str) -> Dict:
+    def _get_plane_aliases(self, plane_name: str) -> dict:
         """
         Try getting plane aliases.
 
@@ -480,7 +480,7 @@ class DcsPyQtGui(QMainWindow):
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
             return dict()
 
-    def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: Dict, plane_name: str) -> bool:
+    def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: dict, plane_name: str) -> bool:
         """
         Check if rebuild is possible and return False or not possible and return True.
 
@@ -493,7 +493,7 @@ class DcsPyQtGui(QMainWindow):
         except ValidationError as validation_err:
             return self._rebuild_not_needed(plane_aliases, plane_name, validation_err)
 
-    def _rebuild_needed(self, plane_aliases: Dict[str, List[str]], plane_name: str) -> bool:
+    def _rebuild_needed(self, plane_aliases: dict[str, list[str]], plane_name: str) -> bool:
         """
         Rebuild is needed.
 
@@ -1282,7 +1282,7 @@ class DcsPyQtGui(QMainWindow):
         return Path(self.le_biosdir.text())
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
-    def run_in_background(self, job: Union[partial, Callable], signal_handlers: Dict[str, Callable]) -> None:
+    def run_in_background(self, job: Union[partial, Callable], signal_handlers: dict[str, Callable]) -> None:
         """
         Worker with signals callback to schedule GUI job in background.
 
