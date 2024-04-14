@@ -394,7 +394,10 @@ class DcsPyQtGui(QMainWindow):
         plane_keys = load_yaml(full_path=default_yaml.parent / f'{self.current_plane}.yaml')
         LOG.debug(f'Load {self.current_plane}:\n{pformat(plane_keys)}')
         self.input_reqs[self.current_plane] = GuiPlaneInputRequest.from_plane_gkeys(plane_gkeys=plane_keys)
+        self._generate_table()
 
+    def _generate_table(self) -> None:
+        """This method generates a table of combo boxes with completer functionality."""
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
         for row in range(0, self.device.rows.total):
             for col in range(0, self.device.cols):
