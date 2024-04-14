@@ -1,7 +1,6 @@
 from logging import getLogger
 from threading import Event
 from time import sleep
-from typing import Tuple
 
 from _cffi_backend import Lib
 from cffi import FFI
