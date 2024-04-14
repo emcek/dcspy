@@ -6,7 +6,7 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from typing import Dict, List, Tuple, Union
+from typing import Union
 
 from PIL import Image, ImageDraw, ImageFont
 
