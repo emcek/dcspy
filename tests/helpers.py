@@ -2,7 +2,7 @@ from collections.abc import Sequence
 from pathlib import Path
 from socket import AF_INET, SOCK_DGRAM, socket
 from time import sleep
-from typing import Tuple, Union
+from typing import Union
 from unittest.mock import patch
 
 from PIL import Image, ImageChops
