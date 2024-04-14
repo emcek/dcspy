@@ -379,7 +379,7 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
         """Initialize table with cockpit data."""
-        if self._rebuild_ctrl_input_table_not_needed(plane_name=self.current_plane):
+        if self._check_and_rebuild_ctrl_input_table(plane_name=self.current_plane):
             return
         self.tw_gkeys.setColumnCount(self.device.cols)
         for mode_col in range(self.device.cols):
@@ -442,7 +442,7 @@ class DcsPyQtGui(QMainWindow):
             self.tw_gkeys.setCellWidget(row, col, combo)
         combo.setStyleSheet(self._get_style_for_combobox(key=key, fg='black'))
 
-    def _rebuild_ctrl_input_table_not_needed(self, plane_name: str) -> bool:
+    def _check_and_rebuild_ctrl_input_table(self, plane_name: str) -> bool:
         """
         Detect when new plane is selected.
 
@@ -451,25 +451,47 @@ class DcsPyQtGui(QMainWindow):
          - construct list of controls for every cell in table
          - update aliases
 
-         In case of problems:
-          - pop-up with details
-          - back to previous plane or first in list
+        In case of problems:
+         - pop-up with details
+         - back to previous plane or first in list
 
         :param plane_name: BIOS plane name
         :return: True when rebuild is not needed, False otherwise.
         """
-        try:
-            plane_aliases = get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
-        except FileNotFoundError as exc:
-            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{exc}'
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
-            return False
+        plane_aliases = self._get_plane_aliases(plane_name)
 
         if self.plane_aliases != plane_aliases[plane_name]:
-            try:
-                return self._rebuild_needed(plane_aliases, plane_name)
-            except ValidationError as validation_err:
-                return self._rebuild_not_needed(plane_aliases, plane_name, validation_err)
+            return self._rebuild_or_not_rebuild_planes_aliases(plane_aliases, plane_name)
+        return False
+
+    def _get_plane_aliases(self, plane_name: str) -> Dict:
+        """
+        Try getting plane aliases.
+
+        Show a warning message when fails DCS-BIOS path error.
+
+        :param plane_name: BIOS plane name.
+        :return: A dictionary of the plane aliases or empty dict.
+        """
+        try:
+            return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
+        except FileNotFoundError as err:
+            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'
+            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
+            return dict()
+
+    def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: Dict, plane_name: str) -> bool:
+        """
+        Check if rebuild is possible and return False or not possible and return True.
+
+        :param plane_aliases: BIOS plane aliases.
+        :param plane_name that is to be validated.
+        :return: True when rebuild is not needed, False otherwise.
+        """
+        try:
+            return self._rebuild_needed(plane_aliases, plane_name)
+        except ValidationError as validation_err:
+            return self._rebuild_not_needed(plane_aliases, plane_name, validation_err)
 
     def _rebuild_needed(self, plane_aliases: Dict[str, List[str]], plane_name: str) -> bool:
         """
