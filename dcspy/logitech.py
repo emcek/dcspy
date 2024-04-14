@@ -5,7 +5,7 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import List, Union
+from typing import Union
 
 from PIL import Image, ImageDraw
 
