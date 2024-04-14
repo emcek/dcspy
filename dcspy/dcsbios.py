@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from functools import partial
 from struct import pack
-from typing import Callable, Set
+from typing import Callable
 
 
 class ParserState(Enum):
