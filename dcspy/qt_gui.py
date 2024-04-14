@@ -12,7 +12,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Dict, List, Optional, Union
+from typing import Callable, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
