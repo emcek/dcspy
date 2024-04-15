@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
+ <author>Michał Plichta</author>
  <class>QtDcs</class>
  <widget class="QMainWindow" name="QtDcs">
   <property name="geometry">
