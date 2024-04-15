@@ -50,7 +50,7 @@ Why such way? Basically advanced support is for aircraft that I own and therefor
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
 * [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
-* DCS World: [2.9.4.53627](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.4.53627/), but any version from 2.9.* branch should be fine.
+* DCS World: [2.9.4.53707](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.4.53707/), but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.12](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
   * However, DCSpy 2.3.3 and earlier do not support Python 3.12
