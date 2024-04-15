@@ -14,6 +14,6 @@ ruff==0.3.7
 types-cffi==1.16.0.20240331
 types-Pillow==10.2.0.20240415
 types-psutil==5.9.5.20240316
-types-pyinstaller==6.5.0.20240311
+types-pyinstaller==6.6.0.20240415
 types-PyYAML==6.0.12.20240311
 types-requests==2.31.0.20240406
