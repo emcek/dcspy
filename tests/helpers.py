@@ -61,14 +61,13 @@ def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> tuple[float, int]:
     :param ref_bytes: referenced bytes
     :return: tuple with float of percentage and difference in size
     """
-    percents = 0
+    percents = []
     try:
-        for i, b in enumerate(ref_bytes):
-            if b != test_bytes[i]:
-                percents += 1
+        percents = [1 for i, b in enumerate(ref_bytes) if b != test_bytes[i]]
     except IndexError:
         pass
-    return float(f'{percents / len(ref_bytes) * 100:.2f}'), len(ref_bytes) - len(test_bytes)
+    finally:
+        return float(f'{sum(percents) / len(ref_bytes) * 100:.2f}'), len(ref_bytes) - len(test_bytes)
 
 
 def send_bios_data(data_file: Path) -> None:
