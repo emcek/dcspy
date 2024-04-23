@@ -29,7 +29,7 @@ dcs_type, dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
 LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
 
-def get_config_yaml_item(key: str, /, default: Optional[Union[str, int]] = None) -> Union[str, int]:
+def get_config_yaml_item(key: str, /, default: Optional[Union[str, int]] = None) -> Union[str, int, bool]:
     """
     Get item from configuration YAML file.
 
