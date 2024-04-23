@@ -1,4 +1,4 @@
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from enum import Enum
 from functools import partial
 from pathlib import Path
@@ -7,7 +7,7 @@ from tempfile import gettempdir
 from typing import Any, Callable, Final, Optional, TypedDict, Union
 
 from packaging import version
-from PIL import ImageFont
+from PIL import Image, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 # Network
@@ -48,6 +48,17 @@ SUPPORTED_CRAFTS = {
     'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14B'},
     'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
 }
+
+
+class AircraftKwargs(TypedDict):
+    """
+    Represent the keyword arguments expected by the Aircraft class.
+
+    :param update_display: Callable[[Image.Image], None]
+    :param bios_data: Mapping[str, Union[str, int]]
+    """
+    update_display: Callable[[Image.Image], None]
+    bios_data: Mapping[str, Union[str, int]]
 
 
 class Input(BaseModel):
