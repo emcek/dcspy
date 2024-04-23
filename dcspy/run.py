@@ -15,7 +15,7 @@ LOG = getLogger(__name__)
 __version__ = '3.4.0'
 
 
-def run(cli_args=Namespace()) -> None:
+def run(cli_args: Namespace = Namespace()) -> None:
     """Run DCSpy Qt6 GUI."""
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
