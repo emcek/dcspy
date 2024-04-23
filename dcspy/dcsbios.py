@@ -140,7 +140,7 @@ class StringBuffer:
         self.callbacks.add(callback)
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
-    def set_char(self, index, char) -> None:
+    def set_char(self, index: int, char: int) -> None:
         """
         Set char.
 
