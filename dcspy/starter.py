@@ -117,7 +117,7 @@ def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
         logi_dev = LogitechDevice(parser=parser, sock=dcs_sock, model=model)
         LOG.info(f'Loading: {str(logi_dev)}')
         LOG.debug(f'Loading: {repr(logi_dev)}')
-        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=get_config_yaml_item('check_ver'))
+        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
         _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     LOG.info('DCSpy stopped.')
     logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(get_config_yaml_item("dcsbios"))).ver}']
