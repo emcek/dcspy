@@ -100,11 +100,11 @@ class LogitechDevice:
                 LOG.warning(f'Not supported aircraft: {value}')
                 self.display = ['Detected aircraft:', value, 'Not supported yet!']
 
-    def unload_old_plane(self):
+    def unload_old_plane(self) -> None:
         """Unloads the previous plane by remove all callbacks and keep only one."""
         LOG.debug(f'Unload start: {self.plane_name} Number of callbacks: {len(self.parser.write_callbacks)}')
         for partial_obj in self.parser.write_callbacks:
-            for callback in partial_obj.func.__self__.callbacks:
+            for callback in partial_obj.func.__self__.callbacks:  # type: ignore[attr-defined]
                 if callback.func.__name__ == 'detecting_plane':
                     self.parser.write_callbacks = {partial_obj}
             if len(self.parser.write_callbacks) == 1:
@@ -128,13 +128,13 @@ class LogitechDevice:
             LOG.debug(f'Dynamic load of: {self.plane_name} as BasicAircraft | BIOS: {self.plane.bios_name}')
         LOG.debug(f'{repr(self)}')
 
-    def _setup_plane_callback(self):
+    def _setup_plane_callback(self) -> None:
         """Setups DCS-BIOS parser callbacks for detected plane."""
         plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
         for ctrl_name in self.plane.bios_data:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
-            dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)
-            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())
+            dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)  # type: ignore[union-attr]
+            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())  # type: ignore[union-attr]
 
     def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int, mouse: int) -> None:
         """
@@ -194,7 +194,7 @@ class LogitechDevice:
             self.socket.sendto(request, SEND_ADDR)
             sleep(TIME_BETWEEN_REQUESTS)
 
-    def clear(self, true_clear=False) -> None:
+    def clear(self, true_clear: bool = False) -> None:
         """
         Clear LCD.
 
