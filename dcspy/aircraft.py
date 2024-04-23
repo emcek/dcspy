@@ -6,12 +6,18 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from typing import Union
+
+try:
+    from typing import Union, Unpack
+except ImportError:
+    from typing_extensions import Unpack
+
+    from typing import Union
 
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, Gkey, LcdButton, LcdInfo, LcdType, MouseButton, RequestModel, RequestType
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, Gkey, LcdButton, LcdInfo, LcdType, MouseButton, RequestModel, RequestType
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -19,7 +25,7 @@ LOG = getLogger(__name__)
 
 class MetaAircraft(type):
     """Metaclass for all BasicAircraft."""
-    def __new__(cls, name, bases, namespace):
+    def __new__(cls, name: str, bases: tuple[type, ...], namespace: dict):
         """
         Create new instance of any plane as BasicAircraft.
 
@@ -100,7 +106,7 @@ class BasicAircraft:
 
 class AdvancedAircraft(BasicAircraft):
     """Advanced Aircraft."""
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create advanced aircraft.
 
@@ -150,13 +156,13 @@ class FA18Chornet(AdvancedAircraft):
     """F/A-18C Hornet."""
     bios_name: str = 'FA-18C_hornet'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create F/A-18C Hornet.
 
         :param lcd_type: LCD type
         """
-        bios_data = {
+        kwargs['bios_data'] = {
             'UFC_SCRATCHPAD_STRING_1_DISPLAY': '',
             'UFC_SCRATCHPAD_STRING_2_DISPLAY': '',
             'UFC_SCRATCHPAD_NUMBER_DISPLAY': '',
@@ -178,7 +184,7 @@ class FA18Chornet(AdvancedAircraft):
             'IFEI_DWN_BTN': int(),
             'IFEI_UP_BTN': int(),
         }
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
@@ -258,14 +264,14 @@ class F16C50(AdvancedAircraft):
         (r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2')
     )
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create F-16C Viper.
 
         :param lcd_type: LCD type
         """
-        bios_data = {f'DED_LINE_{i}': '' for i in range(1, 6)}
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        kwargs['bios_data'] = {f'DED_LINE_{i}': '' for i in range(1, 6)}
+        super().__init__(lcd_type=lcd_type, **kwargs)
         self.font = self.lcd.font_s
         self.ded_font = self.cfg.get('f16_ded_font', True)
         if self.ded_font and self.lcd.type == LcdType.COLOR:
@@ -344,14 +350,14 @@ class F15ESE(AdvancedAircraft):
     """F-15ESE Eagle."""
     bios_name: str = 'F-15ESE'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create F-15ESE Egle.
 
         :param lcd_type: LCD type
         """
-        bios_data = {f'F_UFC_LINE{i}_DISPLAY': '' for i in range(1, 7)}
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        kwargs['bios_data'] = {f'F_UFC_LINE{i}_DISPLAY': '' for i in range(1, 7)}
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-15ESE Eagle for Mono LCD."""
@@ -379,13 +385,13 @@ class Ka50(AdvancedAircraft):
     """Ka-50 Black Shark."""
     bios_name: str = 'Ka-50'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create Ka-50 Black Shark.
 
         :param lcd_type: LCD type
         """
-        bios_data = {
+        kwargs['bios_data'] = {
             'PVI_LINE1_APOSTROPHE1': '',
             'PVI_LINE1_APOSTROPHE2': '',
             'PVI_LINE1_POINT': '',
@@ -402,7 +408,7 @@ class Ka50(AdvancedAircraft):
             'AP_HDG_HOLD_LED': int(),
             'AP_PITCH_HOLD_LED': int(),
         }
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -476,13 +482,13 @@ class Mi8MT(AdvancedAircraft):
     """Mi-8MTV2 Magnificent Eight."""
     bios_name: str = 'Mi-8MT'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create Mi-8MTV2 Magnificent Eight.
 
         :param lcd_type: LCD type
         """
-        bios_data = {
+        kwargs['bios_data'] = {
             'LMP_AP_HDG_ON': int(),
             'LMP_AP_PITCH_ROLL_ON': int(),
             'LMP_AP_HEIGHT_ON': int(),
@@ -492,7 +498,7 @@ class Mi8MT(AdvancedAircraft):
             'R828_PRST_CHAN_SEL': int(),
             'YADRO1A_FREQ': '',
         }
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -540,13 +546,13 @@ class Mi24P(AdvancedAircraft):
     """Mi-24P Hind."""
     bios_name: str = 'Mi-24P'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create Mi-24P Hind.
 
         :param lcd_type: LCD type
         """
-        bios_data = {
+        kwargs['bios_data'] = {
             'PLT_R863_CHAN': int(),
             'PLT_R863_MODUL': int(),
             'PLT_R828_CHAN': int(),
@@ -559,7 +565,7 @@ class Mi24P(AdvancedAircraft):
             'PLT_SAU_T_ON_L': int(),
             'PLT_SAU_B_ON_L': int(),
         }
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -617,14 +623,14 @@ class AH64DBLKII(AdvancedAircraft):
     """AH-64D Apache."""
     bios_name: str = 'AH-64D_BLK_II'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create AH-64D Apache.
 
         :param lcd_type: LCD type
         """
-        bios_data = {f'PLT_EUFD_LINE{i}': '' for i in range(1, 15)}
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        kwargs['bios_data'] = {f'PLT_EUFD_LINE{i}': '' for i in range(1, 15)}
+        super().__init__(lcd_type=lcd_type, **kwargs)
         self.mode = ApacheEufdMode.IDM
         self.warning_line = 1
 
@@ -768,13 +774,13 @@ class A10C(AdvancedAircraft):
     """A-10C Warthog."""
     bios_name: str = 'A-10C'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create A-10C Warthog or A-10C II Tank Killer.
 
         :param lcd_type: LCD type
         """
-        bios_data = {
+        kwargs['bios_data'] = {
             'VHFAM_FREQ1': int(),
             'VHFAM_FREQ2': int(),
             'VHFAM_FREQ3': int(),
@@ -794,7 +800,7 @@ class A10C(AdvancedAircraft):
             'ARC210_FREQUENCY': '',
             'ARC210_PREV_MANUAL_FREQ': '',
         }
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def _generate_vhf(self, modulation: str) -> str:
         """
@@ -909,13 +915,13 @@ class AV8BNA(AdvancedAircraft):
     """AV-8B Night Attack."""
     bios_name: str = 'AV8BNA'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs) -> None:
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
         Create AV-8B Night Attack.
 
         :param lcd_type: LCD type
         """
-        bios_data = {
+        kwargs['bios_data'] = {
             'UFC_SCRATCHPAD': '',
             'UFC_COMM1_DISPLAY': '',
             'UFC_COMM2_DISPLAY': '',
@@ -930,7 +936,7 @@ class AV8BNA(AdvancedAircraft):
             'AV8BNA_ODU_5_SELECT': '',
             'AV8BNA_ODU_5_TEXT': '',
         }
-        super().__init__(lcd_type=lcd_type, bios_data=bios_data, **kwargs)
+        super().__init__(lcd_type=lcd_type, **kwargs)
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
