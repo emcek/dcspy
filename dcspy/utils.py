@@ -40,7 +40,7 @@ with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
-def get_default_yaml(local_appdata=False) -> Path:
+def get_default_yaml(local_appdata: bool = False) -> Path:
     """
     Return full path to default configuration file.
 
@@ -149,7 +149,7 @@ def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
     return latest
 
 
-def get_version_string(repo: str, current_ver: str, check=True) -> str:
+def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
     """
     Generate formatted string with version number.
 
@@ -294,7 +294,7 @@ def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
     return sha
 
 
-def check_github_repo(git_ref: str, update=True, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git',
+def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git',
                       progress: Optional[git.RemoteProgress] = None) -> str:
     """
     Update DCS-BIOS git repository.
@@ -410,7 +410,7 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
     return refs
 
 
-def get_sha_for_current_git_ref(git_ref: str, repo='DCS-Skunkworks/dcs-bios', repo_dir=Path(gettempdir()) / 'dcsbios_git') -> str:
+def get_sha_for_current_git_ref(git_ref: str, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git') -> str:
     """
     Get SHA for current git reference.
 
@@ -450,7 +450,7 @@ class CloneProgress(git.RemoteProgress):
         op_code_masked = op_code & self.OP_MASK
         return self.OP_CODE_MAP.get(op_code_masked, '?').title()
 
-    def update(self, op_code, cur_count, max_count=None, message=''):
+    def update(self, op_code: int, cur_count, max_count=None, message: str = ''):
         """
         Call whenever the progress changes.
 
@@ -565,7 +565,7 @@ def _get_log_files() -> Generator[Path, None, None]:
     )
 
 
-def _get_yaml_files(config_file) -> Generator[Path, None, None]:
+def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
     """
     Get path to all configuration yaml files.
 
