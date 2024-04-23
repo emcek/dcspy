@@ -39,6 +39,7 @@ dependencies = [
     'PySide6==6.7.0',
     'PyYAML==6.0.1',
     'requests==2.31.0',
+    'typing_extensions==4.11.0; python_version < "3.12"',
 ]
 
 [project.urls]
@@ -140,6 +141,7 @@ max-complexity = 6
 [tool.mypy]
 #ignore_missing_imports = true
 #no_warn_no_return = true
+#check_untyped_defs = true
 html_report = 'mypyhtml'
 exclude = [
     '/qt_gui\.py$',
