@@ -81,7 +81,7 @@ class FixedStep(Input):
     interface: str = 'fixed_step'
 
     @field_validator('interface')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -100,7 +100,7 @@ class VariableStep(Input):
     suggested_step: int
 
     @field_validator('interface')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -118,7 +118,7 @@ class SetState(Input):
     max_value: int
 
     @field_validator('interface')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -136,7 +136,7 @@ class Action(Input):
     interface: str = 'action'
 
     @field_validator('interface')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -153,7 +153,7 @@ class SetString(Input):
     interface: str = 'set_string'
 
     @field_validator('interface')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -178,7 +178,7 @@ class OutputStr(Output):
     type: str
 
     @field_validator('type')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -198,7 +198,7 @@ class OutputInt(Output):
     type: str
 
     @field_validator('type')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
@@ -604,11 +604,11 @@ class MouseButton(BaseModel):
     def __str__(self) -> str:
         return f'M_{self.button}'
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         """Return False when button value is zero."""
         return bool(self.button)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash will be the same for any two MouseButton instances with the same button value."""
         return hash(self.button)
 
@@ -708,15 +708,15 @@ class Gkey(BaseModel):
     key: int
     mode: int
 
-    def __str__(self):
+    def __str__(self) -> str:
         """Return with format G<i>/M<j>."""
         return f'G{self.key}_M{self.mode}'
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         """Return False when any of value is zero."""
         return all([self.key, self.mode])
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         """Hash will be the same for any two Gkey instances with the same key and mode values."""
         return hash((self.key, self.mode))
 
@@ -989,10 +989,10 @@ class ZigZagIterator:
         self.max_val = max_val
         self._direction = Direction.FORWARD
 
-    def __iter__(self):
+    def __iter__(self) -> 'ZigZagIterator':
         return self
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'current: {self.current} step: {self.step} max value: {self.max_val}'
 
     def __next__(self) -> int:
@@ -1051,7 +1051,7 @@ class RequestModel(BaseModel):
     key: Union[LcdButton, Gkey, MouseButton]
 
     @field_validator('ctrl_name')
-    def validate_interface(cls, value):
+    def validate_interface(cls, value: str) -> str:
         """
         Validate.
 
