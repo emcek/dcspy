@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import gettempdir
 
 
-def config_logger(logger: Logger, verbose=False) -> None:
+def config_logger(logger: Logger, verbose: bool = False) -> None:
     """
     Configure global logger add handlers and set formatters.
 
