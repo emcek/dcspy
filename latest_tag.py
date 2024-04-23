@@ -5,7 +5,7 @@ import git
 from packaging import version
 
 
-def latest_version(repo_path: str, as_tag=1) -> str:
+def latest_version(repo_path: str, as_tag: int = 1) -> str:
     """
     Get latest version number form repository.
 
@@ -24,4 +24,4 @@ def latest_version(repo_path: str, as_tag=1) -> str:
 
 if __name__ == '__main__':
     repopath, astag = argv[1:]
-    print(latest_version(repopath, astag))
+    print(latest_version(repopath, int(astag)))
