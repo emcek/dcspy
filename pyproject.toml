@@ -145,6 +145,7 @@ max-complexity = 6
 html_report = 'mypyhtml'
 exclude = [
     '/qt_gui\.py$',
+    '/qtgui_rc\.py$',
     'tests/',
     'generate_ver_file\.py$',
 ]
