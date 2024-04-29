@@ -343,7 +343,7 @@ def test_get_plane_aliases_all(test_dcs_bios):
         'Ka-50_3': ['CommonData', 'Ka-50'],
         'Mi-24P': ['CommonData', 'Mi-24P', 'NS430'],
         'Mi-8MT': ['CommonData', 'Mi-8MT', 'NS430'],
-        "Mi-8MTV2": ["CommonData", "Mi-8MT"],
+        'Mi-8MTV2': ['CommonData', 'Mi-8MT'],
         'NS430': ['CommonData'],
     }
 
