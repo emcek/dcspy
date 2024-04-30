@@ -5,6 +5,7 @@
   * Mouses: G600, G300, G400, G700, G9, MX518, G402, G502, G602
 * Internal:
   * improve type hinting in codebase
+  * Drop support for Python 3.8
 
 ## 3.3.0
 * Add new State action to set a particular value for any controller (@emcek)
