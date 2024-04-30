@@ -6,7 +6,7 @@ build-backend = 'setuptools.build_meta'
 name = 'dcspy'
 authors = [{name = 'Michal Plichta'}]
 maintainers = [{name = 'Michal Plichta'}]
-description = 'Integrating DCS (Digital Combat Simulator) planes with Logitech G13/G15/G510/G19 LCD'
+description = 'Software for integrating DCS Planes with Logitech keyboards (with and without LCD), mice and headphones.'
 license = {text = 'MIT License'}
 requires-python = '>=3.9'
 readme = 'README.md'
@@ -27,7 +27,14 @@ classifiers = [
     'Topic :: System :: Hardware',
     'Topic :: Utilities',
 ]
-keywords = ['logitech', 'logitech sdk', 'logitech keyboards', 'logitech gaming', 'logitech gaming keyboard', 'dcsworld', 'dcs', 'g13', 'g15', 'g510', 'g19']
+keywords = [
+    'dcsworld', 'dcs', 'digital combat simulator', 'eagle dynamics',
+    'logitech', 'logitech sdk', 'logitech keyboard', 'logitech gaming', 'logitech mouse', 'logitech headphone',
+    'G19', 'G510', 'G15', 'G13',
+    'G910', 'G710', 'G110', 'G103', 'G105',
+    'G11', 'G35', 'G633', 'G930', 'G933',
+    'G600', 'G300', 'G400', 'G700', 'G9', 'MX518', 'G402', 'G502', 'G602',
+]
 dynamic = ['version']
 dependencies = [
     'cffi==1.16.0',
