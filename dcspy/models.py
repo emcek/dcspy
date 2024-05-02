@@ -1117,7 +1117,7 @@ class RequestModel(BaseModel):
         """
         Generate a list of bytes that represent the individual requests based on the current state of the model.
 
-        :param key_down: One (1) indicate when G-Key was pushed down and zero (0) when G-Key is up
+        :param key_down: One (1) indicates when G-Key was pushed down and zero (0) when G-Key is up
         :return: a list of bytes representing the individual requests
         """
         request = self._generate_request_based_on_case(key_down)
@@ -1130,7 +1130,7 @@ class RequestModel(BaseModel):
         The request is determined by a set of conditions defined in the `request_mapper` dictionary.
         Each condition is associated with a method that generates the request for that condition.
 
-        :param key_down: One (1) indicate when G-Key was pushed down and zero (0) when G-Key is up
+        :param key_down: One (1) indicates when G-Key was pushed down and zero (0) when G-Key is up
         :return: A string representing the generated request based on the given conditions and parameters.
         """
         class CaseDict(TypedDict):
