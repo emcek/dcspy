@@ -18,12 +18,12 @@ __version__ = '3.4.0'
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
     """
-    Perform migration of configuration based on API version.
+    Perform migration of configuration based on the API version.
 
-    If api_ver key do not exist, it is set to 2.3.3.
+    If the api_ver key does not exist, it is set to 2.3.3.
 
-    :param cfg: configuration dict
-    :return: Full migrated dict
+    :param cfg: Configuration dictionary
+    :return: Full migrated dictionary
     """
     LOG.debug(f'Starting configuration:\n{pformat(cfg)}')
     src_ver = cfg.get('api_ver', '2.3.3')  # do not touch this api_ver!
@@ -44,8 +44,8 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
     """
     Filter migration function to call.
 
-    :param cfg_ver: Current version of configuration
-    :return: yield list of migration functions
+    :param cfg_ver: A current version of a configuration
+    :return: Yields a migration function from a list
     """
     api_ver_list = sorted([func_name.strip('_api_ver_').replace('_', '.')
                            for func_name in globals()
@@ -128,7 +128,7 @@ def _api_ver_3_0_0(cfg: DcspyConfigYaml) -> None:
 
 def _add_key(cfg: DcspyConfigYaml, key: str, default_value: Union[str, int, bool]) -> None:
     """
-    Add key to dictionary if not exists.
+    Add key to a dictionary if not exists.
 
     :param cfg: Configuration dictionary
     :param key: key name
@@ -160,7 +160,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     :param cfg: Configuration dictionary
     :param old_name: Old key name
     :param new_name: New key name
-    :param default_value: default value if old key do not exist
+    :param default_value: default value if an old key, do not exist
     """
     value = cfg.get(old_name, default_value)
     try:
@@ -177,7 +177,7 @@ def _copy_file(filename: str, to_path: Path, force=False) -> None:
 
     :param filename: The name of the file to be copied.
     :param to_path: The full path where the file should be copied to.
-    :param force: force to overwrite existing file
+    :param force: Force to overwrite existing file
     """
     if not Path(to_path / filename).is_file() or force:
         try:
