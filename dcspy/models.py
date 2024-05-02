@@ -77,7 +77,7 @@ class Input(BaseModel):
 
 
 class FixedStep(Input):
-    """FixedStep input interface of inputs section of Control."""
+    """FixedStep input interface of inputs a section of Control."""
     interface: str = 'fixed_step'
 
     @field_validator('interface')
@@ -149,7 +149,7 @@ class Action(Input):
 
 
 class SetString(Input):
-    """SetString input interface of inputs section of Control."""
+    """SetString input interface of inputs a section of Control."""
     interface: str = 'set_string'
 
     @field_validator('interface')
@@ -173,7 +173,7 @@ class Output(BaseModel):
 
 
 class OutputStr(Output):
-    """String output interface of outputs section of Control."""
+    """String output interface of outputs a section of Control."""
     max_length: int
     type: str
 
@@ -250,12 +250,12 @@ class ControlKeyData:
 
     def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
         """
-        Define type of input for cockpit controller.
+        Define a type of input for cockpit controller.
 
-        :param name: name of the input
-        :param description: short description
-        :param max_value: max value (zero based)
-        :param suggested_step: 1 by default
+        :param name: Name of the input
+        :param description: Short description
+        :param max_value: Max value (zero based)
+        :param suggested_step: One (1) by default
         """
         self.name = name
         self.description = description
@@ -292,10 +292,10 @@ class ControlKeyData:
     @staticmethod
     def _get_max_value(list_of_dicts: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int:
         """
-        Get max value from list of dictionaries.
+        Get a maximum value from a list of dictionaries.
 
-        :param list_of_dicts:
-        :return: max value
+        :param list_of_dicts: List of inputs
+        :return: Maximum value of all inputs
         """
         max_value, real_zero = ControlKeyData.__get_max(list_of_dicts)
         if all([not real_zero, not max_value]):
@@ -336,9 +336,9 @@ class ControlKeyData:
     @property
     def input_len(self) -> int:
         """
-        Get length of input dictionary.
+        Get a length of input dictionary.
 
-        :return: int
+        :return: Number of inputs as integer
         """
         return len(self.list_dict)
 
@@ -347,7 +347,7 @@ class ControlKeyData:
         """
         Check if input has only one input dict.
 
-        :return: bool
+        :return: True if ControlKeyData has only one input, False otherwise
         """
         return bool(len(self.list_dict) == 1)
 
@@ -356,7 +356,7 @@ class ControlKeyData:
         """
         Check if input has fixed step input.
 
-        :return: bool
+        :return: True if ControlKeyData has fixed step input, False otherwise
         """
         return any(isinstance(d, FixedStep) for d in self.list_dict)
 
@@ -365,7 +365,7 @@ class ControlKeyData:
         """
         Check if input has variable step input.
 
-        :return: bool
+        :return: True if ControlKeyData has variable step input, False otherwise
         """
         return any(isinstance(d, VariableStep) for d in self.list_dict)
 
@@ -374,7 +374,7 @@ class ControlKeyData:
         """
         Check if input has set state input.
 
-        :return: bool
+        :return: True if ControlKeyData has set state input, False otherwise
         """
         return any(isinstance(d, SetState) for d in self.list_dict)
 
@@ -383,7 +383,7 @@ class ControlKeyData:
         """
         Check if input has action input.
 
-        :return: bool
+        :return: True if ControlKeyData has action input, False otherwise
         """
         return any(isinstance(d, Action) for d in self.list_dict)
 
@@ -392,7 +392,7 @@ class ControlKeyData:
         """
         Check if input has set string input.
 
-        :return: bool
+        :return: True if ControlKeyData has set string input, False otherwise
         """
         return any(isinstance(d, SetString) for d in self.list_dict)
 
@@ -401,13 +401,13 @@ class ControlKeyData:
         """
         Check if the controller is a push button type.
 
-        :return: bool
+        :return: True if controller is a push button type, False otherwise
         """
         return self.has_fixed_step and self.has_set_state and self.max_value == 1
 
 
 class Control(BaseModel):
-    """Control section of BIOS model."""
+    """Control section of the BIOS model."""
     api_variant: Optional[str] = None
     category: str
     control_type: str
@@ -617,7 +617,7 @@ class MouseButton(BaseModel):
         """
         Construct MouseButton from YAML string.
 
-        :param yaml_str: ex. M_3
+        :param yaml_str: MouseButton string, example: M_3
         :return: MouseButton instance
         """
         match = search(r'M_(\d+)', yaml_str)
@@ -630,7 +630,7 @@ class MouseButton(BaseModel):
         """
         Generate a sequence of MouseButton-Keys.
 
-        :param button_range: start and stop (inclusive) of range for mouse buttons
+        :param button_range: Start and stop (inclusive) of range for mouse buttons
         """
         return tuple([MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1)])
 
@@ -725,7 +725,7 @@ class Gkey(BaseModel):
         """
         Construct Gkey from YAML string.
 
-        :param yaml_str: ex. G2_M1
+        :param yaml_str: G-Key string, example: G2_M1
         :return: Gkey instance
         """
         match = search(r'G(\d+)_M(\d+)', yaml_str)
@@ -736,10 +736,10 @@ class Gkey(BaseModel):
     @staticmethod
     def generate(key: int, mode: int) -> Sequence['Gkey']:
         """
-        Generate sequence of G-Keys.
+        Generate a sequence of G-Keys.
 
-        :param key: number of keys
-        :param mode: number of modes
+        :param key: Number of keys
+        :param mode: Number of modes
         :return:
         """
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
@@ -906,9 +906,9 @@ def _try_key_instance(klass: Union[type[Gkey], type[LcdButton], type[MouseButton
     """
     Detect key string could be parsed with method.
 
-    :param klass: class of the key instance to try the method on
-    :param method: name of the method to try with the key class.
-    :param key_str: a string representation of the key
+    :param klass: Class of the key instance to try the method on
+    :param method: Name of the method to try with the key class.
+    :param key_str: A string representation of the key
     :return: The result of calling the method on the key instance, or None if an error occurs.
 
     """
@@ -924,7 +924,7 @@ def get_key_instance(key_str: str) -> Union[LcdButton, Gkey, MouseButton]:
     """
     Get key instance from string.
 
-    :param key_str: key name from yaml configuration
+    :param key_str: Key name from yaml configuration
     :return: LcdButton, Gkey or MouseButton instance
     """
     for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
@@ -973,7 +973,7 @@ class Direction(Enum):
 
 
 class ZigZagIterator:
-    """Iterate with values from 0 to max_val and back."""
+    """Iterate with values from zero (0) to max_val and back."""
     def __init__(self, current: int, max_val: int, step: int = 1) -> None:
         """
         Initialize with current and max value.
@@ -1065,13 +1065,13 @@ class RequestModel(BaseModel):
     @classmethod
     def from_request(cls, key: Union[LcdButton, Gkey, MouseButton], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
         """
-        Build object based on string request.
+        Build an object based on string request.
 
-        For cycle request `get_bios_fn` is used to update current value of BIOS selector.
+        For cycle request `get_bios_fn` is used to update a current value of BIOS selector.
 
         :param key: LcdButton, Gkey or MouseButton
         :param request: The raw request string.
-        :param get_bios_fn: A callable function that return current value for BIOS selector.
+        :param get_bios_fn: A callable function that returns a current value for BIOS selector.
         :return: An instance of the RequestModel class.
         """
         cycle_button = CycleButton(ctrl_name='', step=0, max_value=0)
@@ -1083,7 +1083,7 @@ class RequestModel(BaseModel):
     @classmethod
     def empty(cls, key: Union[LcdButton, Gkey, MouseButton]) -> 'RequestModel':
         """
-        Create an empty request model, for key which isn't assign.
+        Create an empty request model, for a key which isn't assign.
 
         :param key: LcdButton, Gkey or MouseButton
         :return: The created request model.
@@ -1091,7 +1091,7 @@ class RequestModel(BaseModel):
         return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
 
     def _get_next_value_for_button(self) -> int:
-        """Get next int value (cycle fore and back) for ctrl_name BIOS selector."""
+        """Get next an integer value (cycle fore and back) for ctrl_name BIOS selector."""
         if not isinstance(self.cycle.iter, ZigZagIterator):
             self.cycle.iter = ZigZagIterator(current=int(self.get_bios_fn(self.ctrl_name)),
                                              step=self.cycle.step,
@@ -1115,9 +1115,9 @@ class RequestModel(BaseModel):
 
     def bytes_requests(self, key_down: Optional[int] = None) -> list[bytes]:
         """
-        Generate list of bytes that represent the individual requests based on the current state of the model.
+        Generate a list of bytes that represent the individual requests based on the current state of the model.
 
-        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        :param key_down: One (1) indicate when G-Key was pushed down and zero (0) when G-Key is up
         :return: a list of bytes representing the individual requests
         """
         request = self._generate_request_based_on_case(key_down)
@@ -1130,13 +1130,13 @@ class RequestModel(BaseModel):
         The request is determined by a set of conditions defined in the `request_mapper` dictionary.
         Each condition is associated with a method that generates the request for that condition.
 
-        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        :param key_down: One (1) indicate when G-Key was pushed down and zero (0) when G-Key is up
         :return: A string representing the generated request based on the given conditions and parameters.
         """
-        class case_dict(TypedDict):
+        class CaseDict(TypedDict):
             condition: bool
             method: partial
-        request_mapper: dict[int, case_dict] = {
+        request_mapper: dict[int, CaseDict] = {
             1: {'condition': self.is_push_button and isinstance(self.key, Gkey),
                 'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
             2: {'condition': self.is_push_button and isinstance(self.key, MouseButton),
