@@ -49,17 +49,17 @@ class LogitechDevice:
         """
         Get the latest text from LCD.
 
-        :return: list of strings with data, row by row
+        :return: List of strings with data, row by row
         """
         return self._display
 
     @display.setter
     def display(self, message: list[str]) -> None:
         """
-        Display message as image at LCD.
+        Display a message as an image at LCD.
 
-        For G13/G15/G510 takes first 4 or fewer elements of list and display as 4 rows.
-        For G19 takes first 8 or fewer elements of list and display as 8 rows.
+        For G13/G15/G510 takes the first four (4) or fewer elements of a list and display as four (4) rows.
+        For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
         :param message: List of strings to display, row by row.
         """
         self._display = message
@@ -70,8 +70,8 @@ class LogitechDevice:
         """
         Display message at LCD.
 
-        For G13/G15/G510 takes first 4 or fewer elements of list and display as 4 rows.
-        For G19 takes first 8 or fewer elements of list and display as 8 rows.
+        For G13/G15/G510 takes the first four (4) or fewer elements of the list and display as four (4) rows.
+        For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
         :param message: List of strings to display, row by row.
         """
         if self.model.lcd_info.type != LcdType.NONE:
@@ -81,7 +81,7 @@ class LogitechDevice:
         """
         Try to detect airplane base on value received from DCS-BIOS.
 
-        :param value: data from DCS-BIOS
+        :param value: Data from DCS-BIOS
         """
         short_name = value.replace('-', '').replace('_', '')
         if self.plane_name != short_name:
@@ -142,10 +142,10 @@ class LogitechDevice:
 
         Send action to DCS-BIOS via network socket.
 
-        :param key_idx: index number of G-Key
-        :param mode: mode of G-Key
-        :param key_down: key state, 1 - pressed, 0 - released
-        :param mouse: indicate if the Event comes from a mouse, 1 is yes, 0 is no
+        :param key_idx: Index number of G-Key
+        :param mode: Mode of G-Key
+        :param key_down: Key state, one (1) - pressed, zero (0) - released
+        :param mouse: Indicate if the Event comes from a mouse, one (1) is yes, zro (0) is no
 
         """
         key = Gkey(key=key_idx, mode=mode)
@@ -156,7 +156,7 @@ class LogitechDevice:
 
     def check_buttons(self) -> LcdButton:
         """
-        Check if button was pressed and return it`s enum.
+        Check if a button was pressed and return its enum.
 
         :return: LcdButton enum of pressed button
         """
@@ -173,8 +173,8 @@ class LogitechDevice:
         """
         Button handler.
 
-        * detect if button was pressed
-        * sent action to DCS-BIOS via network socket
+        * Detect if button was pressed
+        * Sent action to DCS-BIOS via network socket
         """
         if self.model.lcd_info.type != LcdType.NONE:
             button = self.check_buttons()
@@ -186,7 +186,7 @@ class LogitechDevice:
         Sent action to DCS-BIOS via network socket.
 
         :param button: LcdButton, Gkey or MouseButton
-        :param key_down: 1 indicate when G-Key was push down, 0 when G-Key is up
+        :param key_down: One (1) indicate when G-Key was pushed down and zero (0) when G-Key is up
         """
         req_model = self.plane.button_request(button)
         for request in req_model.bytes_requests(key_down=key_down):
@@ -206,11 +206,11 @@ class LogitechDevice:
 
     def _prepare_image(self) -> Image.Image:
         """
-        Prepare image for base of LCD type.
+        Prepare image for a base of the LCD type.
 
-        For G13/G15/G510 takes first 4 or fewer elements of list and display as 4 rows.
-        For G19 takes first 8 or fewer elements of list and display as 8 rows.
-        :return: image instance ready display on LCD
+        For G13/G15/G510 takes the first four (4) or fewer elements of the list and display as four (4) rows.
+        For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
+        :return: Image instance ready display on LCD
         """
         img = Image.new(mode=self.model.lcd_info.mode.value, color=self.model.lcd_info.background,
                         size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
