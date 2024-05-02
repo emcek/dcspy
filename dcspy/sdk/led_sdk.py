@@ -112,8 +112,8 @@ def logi_led_flash_lighting(rgb: tuple[int, int, int], duration: int, interval: 
 
     Finally, restores the saved lighting.
     :param rgb: Tuple with integer values range 0 to 100 as amount of red, green, blue
-    :param duration: Duration of the effect in millisecond this parameter can be set to LOGI_LED_DURATION_INFINITE
-                     to make the effect run until sto ed through logi_led_stop_effects()
+    :param duration: in millisecond this parameter can be set to LOGI_LED_DURATION_INFINITE
+                     to make the effect run until stopped with logi_led_stop_effects()
     :param interval: Duration of the flashing interval in millisecond
     :return: A result of execution
     """
@@ -129,8 +129,8 @@ def logi_led_pulse_lighting(rgb: tuple[int, int, int], duration: int, interval: 
 
     Finally, restores the saved lighting.
     :param rgb: Tuple with integer values range 0 to 100 as amount of red, green, blue
-    :param duration: Duration of the effect in millisecond this parameter can be set to LOGI_LED_DURATION_INFINITE
-                     to make the effect run until stopped through logi_led_stop_effects()
+    :param duration: in millisecond this parameter can be set to LOGI_LED_DURATION_INFINITE
+                     to make the effect run until stopped with logi_led_stop_effects()
     :param interval: Duration of the flashing interval in millisecond
     :return: A result of execution
     """
@@ -166,9 +166,9 @@ def start_led_pulse(rgb: tuple[int, int, int], duration: int, interval: int, eve
     Start the pulsing red effect in thread on the keyboard.
 
     :param rgb: Tuple with integer values range 0 to 100 as amount of red, green, blue
-    :param duration: Duration of the effect in millisecond this parameter can be set to 0 (zero)
+    :param duration: in millisecond this parameter can be set to 0 (zero)
                      to make the effect run until event is set
-    :param interval: Duration of the flashing interval in millisecond
+    :param interval: flashing interval in millisecond
     :param event: Stop event for infinite loop
     """
     LOG.debug('Start LED thread')
