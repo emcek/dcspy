@@ -28,12 +28,12 @@ class LcdSdkManager:
 
     def logi_lcd_init(self, name: str, lcd_type: LcdType) -> bool:
         """
-        Make necessary initializations.
+        Make the necessary initializations.
 
         You must call this function prior to any other function in the library.
-        :param name: the name of your applet, you can't change it after initialization
-        :param lcd_type: defines the type of your applet lcd target
-        :return: result
+        :param name: The name of your applet, you can't change it after initialization
+        :param lcd_type: LCD type
+        :return: A result of execution
         """
         try:
             return self.lcd_dll.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type.value)  # type: ignore[attr-defined]
@@ -44,8 +44,8 @@ class LcdSdkManager:
         """
         Check if a device of the type specified by the parameter is connected.
 
-        :param lcd_type: defines the type of your applet lcd target
-        :return: result
+        :param lcd_type: LCD type
+        :return: A result of execution
         """
         try:
             return self.lcd_dll.LogiLcdIsConnected(lcd_type.value)  # type: ignore[attr-defined]
@@ -56,8 +56,8 @@ class LcdSdkManager:
         """
         Check if the button specified by the parameter is being pressed.
 
-        :param button: defines the button to check on
-        :return: result
+        :param button: Defines the button to check on
+        :return: True if button is being pressed, False otherwise
         """
         try:
             return self.lcd_dll.LogiLcdIsButtonPressed(button.value)  # type: ignore[attr-defined]
@@ -85,24 +85,24 @@ class LcdSdkManager:
         Despite the display being monochrome, 8 bits per pixel are used here for simple
         manipulation of individual pixels.
 
-        Note: The image size must be 160x43 in order to use this function. The SDK will turn on
-        the pixel on the screen if the value assigned to that byte is >= 128, it will remain off
-        if the  value is < 128.
-        :param pixels: list of 6880 (160x43) pixels as int
-        :return: result
+        Note: In order to use this function, the image size must be 160x43.
+        The SDK will turn on the pixel on the screen if the value assigned to that byte is >= 128, it will remain off
+        if the value is < 128.
+        :param pixels: List of 6880 (160x43) pixels as integer
+        :return: A result of execution
         """
         try:
             return self.lcd_dll.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))  # type: ignore[attr-defined]
-        except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
+        except (AttributeError, CDefError):  # we need catch error since BYTE[] is a Windows specific
             return False
 
     def logi_lcd_mono_set_text(self, line_no: int, text: str) -> bool:
         """
         Set the specified text in the requested line on the monochrome lcd device connected.
 
-        :param line_no: The monochrome LCD has 4 lines, so this parameter can be any number from 0 to 3
+        :param line_no: The monochrome LCD has four (4) lines, so this parameter can be any number from zero (0) to three (3)
         :param text: defines the text you want to display
-        :return: result
+        :return: A result of execution
         """
         try:
             return self.lcd_dll.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))  # type: ignore[attr-defined]
@@ -113,16 +113,16 @@ class LcdSdkManager:
         """
         Set array of pixels as a rectangular area, 320 bytes wide and 240 bytes high.
 
-        Since the color lcd can display the full RGB gamma, 32 bits per pixel (4 bytes) are used.
-        The size of the colorBitmap array has to be 320x240x4 = 307200 therefore.
-        Note: The image size must be 320x240 in order to use this function.
-        :param pixels: list of 307200 (320x240x4) pixels as int
-        :return: result
+        Since the color lcd can display the full RGB gamma, 32 bits per pixel (4-bytes) are used.
+        The size of the colorBitmap array has to be 320x240x4 = 307,200 therefore.
+        Note: In order to use this function, the image size must be 320x240
+        :param pixels: List of 320x240x4 pixels as integers
+        :return: A result of execution
         """
         img_bytes = [byte for pixel in pixels for byte in pixel]
         try:
             return self.lcd_dll.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))  # type: ignore[attr-defined]
-        except (AttributeError, CDefError):  # we need catch error since BYTE[] is windows specific
+        except (AttributeError, CDefError):  # we need catch error since BYTE[] is Windows specific
             return False
 
     def logi_lcd_color_set_title(self, text: str, rgb: tuple[int, int, int] = (255, 255, 255)) -> bool:
@@ -132,9 +132,9 @@ class LcdSdkManager:
         The font size that will be displayed is bigger than the one used in the other lines,
         so you can use this function to set the title of your applet/page.
         If you don't specify any color, your title will be white.
-        :param text: defines the text you want to display as title
+        :param text: The text display as title
         :param rgb: tuple with integer values between 0 and 255 as red, green, blue
-        :return: result
+        :return: A result of execution
         """
         try:
             return self.lcd_dll.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
@@ -146,10 +146,10 @@ class LcdSdkManager:
         Set the specified text in the requested line on the color lcd device connected.
 
         If you don't specify any color, your title will be white.
-        :param line_no: The color LCD has 8 lines for standard text, so this parameter can be any number from 0 to 7
+        :param line_no: The color LCD has eight (8) lines for standard text
         :param text: defines the text you want to display
-        :param rgb: tuple with integer values between 0 and 255 as red, green, blue
-        :return: result
+        :param rgb: tuple with integer values between 0 and 255 (interpreted as red, green or blue)
+        :return: A result of execution
         """
         try:
             return self.lcd_dll.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
@@ -158,10 +158,10 @@ class LcdSdkManager:
 
     def update_text(self, txt: list[str]) -> None:
         """
-        Update display LCD with list of text.
+        Update display LCD with a list of text.
 
-        For mono LCD it takes 4 elements of list and display as 4 rows.
-        For color LCD  takes 8 elements of list and display as 8 rows.
+        For mono, LCD it takes four (4) elements of the list and displays as four (4) rows.
+        For color, LCD takes eight (8) elements of the list and displays as eight (8) rows.
         :param txt: List of strings to display, row by row
         """
         if self.logi_lcd_is_connected(LcdType.MONO):
@@ -179,7 +179,7 @@ class LcdSdkManager:
         """
         Update display LCD with image.
 
-        :param image: image object from pillow library
+        :param image: Image object from the Pillow library
         """
         if self.logi_lcd_is_connected(LcdType.MONO):
             self.logi_lcd_mono_set_background(list(image.getdata()))

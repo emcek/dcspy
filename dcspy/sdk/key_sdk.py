@@ -61,7 +61,7 @@ class GkeySdkManager:
 
     def logi_gkey_init(self) -> bool:
         """
-        Make necessary initializations.
+        Make the necessary initializations.
 
         It must be called before your application can see G-key/button events.
         :return: If the function succeeds, it returns True. Otherwise, False.
@@ -85,9 +85,9 @@ class GkeySdkManager:
         """
         Indicate whether a keyboard G-key is currently being pressed.
 
-        :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
-        :param mode: number of the mode currently selected (1, 2 or 3)
-        :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise.
+        :param g_key: Number of the G-key to check, example between 1 and 29 for G13
+        :param mode: Number of the mode currently selected, example 1, 2 or 3
+        :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise
         """
         try:
             return self.key_dll.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)
@@ -98,9 +98,9 @@ class GkeySdkManager:
         """
         Return a G-key-specific friendly string.
 
-        :param g_key: number of the G-key to check (for example between 1 and 29 for G13).
-        :param mode: number of the mode currently selected (1, 2 or 3)
-        :return: Friendly string for specified G-key and Mode number. For example 'G5/M1'.
+        :param g_key: Number of the G-key to check, example between 1 and 29 for G13
+        :param mode: Number of the mode currently selected (1, 2 or 3)
+        :return: Friendly string for specified G-key and Mode number, example 'G5/M1'
         """
         try:
             return self.key_dll.LogiGkeyGetKeyboardGkeyString(g_key, mode)
