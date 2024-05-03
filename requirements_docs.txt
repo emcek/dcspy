@@ -1,0 +1,4 @@
+-r requirements_test.txt
+mkdocs==1.6.0
+plantuml==0.3.0
+mkdocs-plantuml==0.1.1
