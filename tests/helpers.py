@@ -57,9 +57,9 @@ def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> tuple[float, int]:
     """
     Compare bytes and return percentage of differences and differences in size.
 
-    :param test_bytes: bytes to compare
-    :param ref_bytes: referenced bytes
-    :return: tuple with float of percentage and difference in size
+    :param test_bytes: Bytes to compare
+    :param ref_bytes: Referenced bytes
+    :return: Tuple with float of percentage and difference in size
     """
     percents = []
     try:
