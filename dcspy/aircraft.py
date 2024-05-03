@@ -30,7 +30,7 @@ class MetaAircraft(type):
         Create a new instance of any plane as BasicAircraft.
 
         You can crate instance of any plane:
-        f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)
+        `f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)`
 
         :param name:
         :param bases:

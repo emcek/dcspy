@@ -1017,7 +1017,7 @@ class ZigZagIterator:
         """
         Set direction.
 
-        :param value: Direction.FORWARD or Direction.BACKWARD
+        :param value: `Direction.FORWARD` or `Direction.BACKWARD`
         """
         self._direction = value
 
