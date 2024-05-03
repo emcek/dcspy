@@ -16,9 +16,9 @@ def generate_plane_fixtures(plane, lcd_info: models.LcdInfo, fonts: models.Fonts
     """
     Generate fixtures for any plane with any lcd type.
 
-    :param plane: any plane object
+    :param plane: Any plane object
     :param lcd_info: LcdInfo without font config
-    :param fonts: fonts configuration
+    :param fonts: Fonts configuration
     """
     @fixture()
     def _fixture():
@@ -84,10 +84,10 @@ def pytest_addoption(parser) -> None:
 @fixture(scope='session')
 def img_precision(pytestconfig):
     """
-    Get value of img_precision parameter form command line.
+    Get a value of img_precision parameter form command line.
 
-    :param pytestconfig:
-    :return: value from command line
+    :param pytestconfig: Pytest configuration
+    :return: Value from command line
     """
     return pytestconfig.getoption('img_precision')
 
@@ -97,7 +97,7 @@ def resources():
     """
     Path to tests/resources directory.
 
-    :return: path to tests/resources directory
+    :return: Path to tests/resources directory
     """
     return Path(__file__).resolve().with_name('resources')
 
@@ -107,7 +107,7 @@ def test_config_yaml(resources):
     """
     Path to YAML tests config file.
 
-    :return: path to yaml config file
+    :return: Path to yaml config file
     """
     return resources / 'config.yaml'
 
@@ -117,7 +117,7 @@ def test_dcs_bios(resources):
     """
     Path to DCS-BIOS for test purposes.
 
-    :return: path to DCS-BIOS
+    :return: Path to DCS-BIOS
     """
     return resources / 'DCS.openbeta' / 'Scripts' / 'DCS-BIOS'
 
@@ -133,7 +133,7 @@ def protocol_parser():
 @fixture
 def get_ctrl_for_plane(test_dcs_bios, request):
     """
-    Get Control object from DCS-BIOS for plane.
+    Get the Control object from DCS-BIOS for plane.
 
     :param test_dcs_bios: The directory containing the DCS-BIOS configuration files.
     :param request: The request object containing parameters for the test.
@@ -165,8 +165,8 @@ def keyboard_base(protocol_parser, sock):
     """
     Return instance of LcdKeyboard.
 
-    :param protocol_parser: instance of ProtocolParser
-    :param sock: net socket object
+    :param protocol_parser: Instance of ProtocolParser
+    :param sock: Network Socket object
     :return: LcdKeyboard
     """
     from dcspy.models import LcdMono, LogitechDeviceModel
@@ -186,9 +186,9 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
     """
     Return instance of Keyboard with LcdMono.
 
-    :param protocol_parser: instance of ProtocolParser
-    :param sock: net socket object
-    :param lcd_font_mono: font configuration for LCD
+    :param protocol_parser: Instance of ProtocolParser
+    :param sock: Network socket object
+    :param lcd_font_mono: Font configuration for LCD
     :param resources: Path to tests/resources directory.
     :return: LcdKeyboard
     """
@@ -220,9 +220,9 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     """
     Return instance of Keyboard with LcdColor.
 
-    :param protocol_parser: instance of ProtocolParser
-    :param sock: net socket object
-    :param lcd_font_color: font configuration for LCD
+    :param protocol_parser: Instance of ProtocolParser
+    :param sock: Network socket object
+    :param lcd_font_color: Font configuration for LCD
     :param resources: Path to tests/resources directory.
     :return: LcdKeyboard
     """
@@ -267,10 +267,10 @@ def default_config():
 @fixture()
 def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
     """
-    Switch path to config yaml file during testing.
+    Switch a path to config yaml file during testing.
 
-    :param test_dcs_bios: path to DCS-BIOS in tests
-    :param test_config_yaml: test confi.yaml file
+    :param test_dcs_bios: Path to DCS-BIOS in test resources
+    :param test_config_yaml: Testing confi.yaml file
     """
     from dcspy import utils
 
@@ -573,7 +573,7 @@ def a10c2_mono_bios(a10c_mono_bios):
 
 @fixture()
 def a10c2_color_bios(a10c_mono_bios):
-    """Bios values for A-10C II Tank Killer for Logitech color LCD."""
+    """DCS-BIOS values for A-10C II Tank Killer for Logitech color LCD."""
     return a10c_mono_bios
 
 
