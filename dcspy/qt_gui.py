@@ -262,11 +262,11 @@ class DcsPyQtGui(QMainWindow):
         """
         Triggered when a new device is selected.
 
-        Based of a current selected device:
-        * Add correct numbers of rows and columns
-        * enable DED font checkbox
-        * updates font sliders (range and values)
-        * update dock with image of a device
+        Based on a currently selected device:
+            * Add correct numbers of rows and columns
+            * enable DED font checkbox
+            * updates font sliders (range and values)
+            * update dock with image of a device
 
         :param logi_dev: Logitech device model object
         :param state: of radio button
@@ -446,14 +446,14 @@ class DcsPyQtGui(QMainWindow):
         """
         Detect when a new plane is selected.
 
-        Compare old and new plane's aliases and reload when needed:
-         - regenerate control inputs for a new plane
-         - construct list of controls for every cell in table
-         - update aliases
+        Compare old and new plane aliases and reload when needed:
+            * regenerate control inputs for a new plane
+            * construct list of controls for every cell in table
+            * update aliases
 
         In case of problems:
-         - pop-up with details
-         - back to previous plane or first in list
+            * pop-up with details
+            * back to previous plane or first in list
 
         :param plane_name: BIOS plane name
         :return: True when rebuild is not needed, False otherwise.
@@ -534,7 +534,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Copy the specified text to the clipboard.
 
-        It selects only a first word before space and update statusbar message.
+        Selects only a first word before space and update statusbar message.
 
         :param text: The text to be copied to the clipboard.
         """
@@ -755,8 +755,9 @@ class DcsPyQtGui(QMainWindow):
         Triggered for a radio button group and custom text.
 
         When:
-        * new input interface is selected
-        * a text is changed and user press enter or widget lose focus
+            * new input interface is selected
+            * a text is changed and user press enter
+            * the widget lost focus
         """
         current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
@@ -836,7 +837,11 @@ class DcsPyQtGui(QMainWindow):
         return sha_commit
 
     def _cb_bios_live_toggled(self, state: bool) -> None:
-        """Action when Live BIOS checkbox is toggled."""
+        """
+        Toggle between Live DCS-BIOS and regular release one.
+
+        :param state: True if checked, False if unchecked.
+        """
         if state:
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
@@ -1021,7 +1026,7 @@ class DcsPyQtGui(QMainWindow):
         Describe issues with DCS-BIOS update.
 
         :param local_bios: Local BIOS version
-        :param remote_bios: Rremote BIOS version
+        :param remote_bios: Remote BIOS version
         :param dcs: DCS is running
         :return: Description as string
         """
@@ -1286,9 +1291,9 @@ class DcsPyQtGui(QMainWindow):
         """
         Worker with signals callback to schedule a GUI job in the background.
 
-        Parameter signal_handlers is a dict with signals from WorkerSignals,
-        possibles signals are: finished, error, result, progress. Values in dict
-        are methods/callables as handlers/callbacks for particular signal.
+        Parameter `signal_handlers` is a dict with signals from WorkerSignals.
+        Possible signals are: `finished`, `error`, `result`, `progress`.
+        Values in dict are methods/callables as handlers/callbacks for particular signal.
 
         :param job: GUI method or function to run in background
         :param signal_handlers: Signals as keys: finished, error, result, progress and values as callable
@@ -1398,7 +1403,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Show any QMessageBox delivered with Qt.
 
-        :param kind_of: Any of MsgBoxTypes - information, question, warning, critical, about or aboutQt
+        :param kind_of: One of MsgBoxTypes: `information`, `question`, `warning`, `critical`, `about` or `aboutQt`
         :param title: Title of modal window
         :param message: A text of message, default is empty
         :param kwargs: Additional keyword arguments for customizing the message box
@@ -1423,7 +1428,7 @@ class DcsPyQtGui(QMainWindow):
         :param info_txt: Second section
         :param detail_txt: Hidden text
         :param buttons: Tuple of buttons
-        :return: Code of pushed buttons as integer code
+        :return: Integer value of pushed buttons
         """
         if not NO_MSG_BOX:
             msg = QMessageBox(text=text, parent=self)
@@ -1467,7 +1472,7 @@ class DcsPyQtGui(QMainWindow):
             self.dw_gkeys.hide()
 
     def _show_device_dock(self) -> None:
-        """Toggle show and hide a device dock."""
+        """Toggle between show and hide a device dock."""
         if self.a_show_device.isChecked():
             self.dw_device.show()
         else:
