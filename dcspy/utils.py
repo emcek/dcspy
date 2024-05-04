@@ -31,7 +31,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.4.0'
+__version__ = '3.4.1'
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
 
