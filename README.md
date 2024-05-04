@@ -19,8 +19,8 @@
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
 
 Features:
-* Logitech device with 160x43 px (4 lines) monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
-* Logitech device with 320x240 px (8 lines) full RGBA LCD - **G19**
+* Logitech device with 160x43 px four (4) lines monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
+* Logitech device with 320x240 px eight (8) lines full RGBA LCD - **G19**
 * Support for other [Logitech devices](https://github.com/emcek/dcspy/wiki/Supported-devices):
   * Keyboards: **G910**, **G710**, **G110**, **G105**, **G103**, **G11**
   * Headphones: **G35**, **G633**, **G930**, **G933**
@@ -36,24 +36,24 @@ There are to kinds of supported aircraft:
 * **Basic** - allow assigning all G-Keys of Logitech keyboard to aircraft's instruments in the cockpit (all clickable cockpits supported by DCS-BIOS)
 * **Advanced** - additionally can display some information on LCD (listed below)
 
-Why such way? Basically advanced support is for aircraft that I own and therefore can test it.
+Why a such way? Basically advanced support is for aircraft that I own and therefore can test it.
 
 # Advanced
 * F/A-18C Hornet UFC - Up Front Controller
 * F-16C Viper DED - Data Entry Display
-* Ka-50 Black Shark II and III - PVI-800 and autopilot channels
-* Mi-8MTV2 Hip - autopilot channels and Radios information
-* Mi-24P Hind - Autopilot channels and modes and Radios information
-* A-10C Warthog and A-10C II Tank Killer - Radio frequency information
-* F-14A and F-14B Tomcat - basic support for RIO CAP
+* Ka-50 Black Shark II / III - PVI-800 and autopilot channels
+* Mi-8MTV2 Hip - autopilot channels and Radio information
+* Mi-24P Hind - Autopilot channels and modes and Radio information
+* A-10C Warthog / A-10C II Tank Killer - Radio frequency information
+* F-14A / F-14B Tomcat - basic support for RIO CAP
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
-* AH-64D Apache - Enhanced Up Front Display
+* AH-64D Apache - Enhanced Up Front Display (EUFD)
 * F-15E Eagle - Upfront Control Panel
 * more to come...
 
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
-* [Git](https://git-scm.com/download/win) it is necessary for using live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios))
+* [Git](https://git-scm.com/download/win) it is necessary for using the live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios)
 * [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
 * DCS World: [2.9.4.53707](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.4.53707/), but any version from 2.9.* branch should be fine.
 * optional:
