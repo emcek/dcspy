@@ -106,3 +106,27 @@ class GkeySdkManager:
             return self.key_dll.LogiGkeyGetKeyboardGkeyString(g_key, mode)
         except AttributeError:
             return ''
+
+    def logi_gkey_is_mouse_pressed(self, button_number: int) -> bool:
+        """
+        Indicate whether a mouse button is currently being pressed.
+
+        :param button_number: number of the button to check (for example between 6 and 20 for G600)
+        :return: True if the specified button is currently being pressed, False otherwise.
+        """
+        try:
+            return self.key_dll.LogiGkeyIsMousePressed(button_number)
+        except AttributeError:
+            return False
+
+    def logi_gkey_is_mouse_string(self, button_number: int) -> str:
+        """
+        Return a button-specific friendly string.
+
+        :param button_number: number of the button to check (for example between 6 and 20 for G600)
+        :return: Friendly string for specified button number. For example `Mouse Btn 8`.
+        """
+        try:
+            return self.key_dll.LogiGkeyGetMouseString(button_number)
+        except AttributeError:
+            return ''

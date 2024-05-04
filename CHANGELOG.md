@@ -1,3 +1,8 @@
+## 3.4.1
+* Fix issue when selecting any of a new device is preventing DCSpy from starting
+* Internal:
+  * Add mouse handling to G-Key SDK
+
 ## 3.4.0
 * Support for new devices (with G-Key and mouses with extra buttons):
   * Keyboards without LCD: G910, G710, G110, G103, G105, G11

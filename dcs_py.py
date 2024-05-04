@@ -11,7 +11,7 @@ try:
 except ImportError:
     pass
 
-__version__ = '3.4.0'
+__version__ = '3.4.1'
 
 
 def start_dcspy(cli_args: Namespace) -> None:

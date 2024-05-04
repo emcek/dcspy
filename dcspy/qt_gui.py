@@ -37,7 +37,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
                          run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.4.0'
+__version__ = '3.4.1'
 LOG = getLogger(__name__)
 NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
@@ -1163,8 +1163,9 @@ class DcsPyQtGui(QMainWindow):
         for rb_key in self.bg_rb_device.buttons():
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
-        fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
-        self.device.lcd_info.set_fonts(fonts_cfg)
+        if self.device.lcd_info.type != LcdType.NONE:
+            fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
+            self.device.lcd_info.set_fonts(fonts_cfg)
         app_params = {'model': self.device, 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
