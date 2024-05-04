@@ -109,7 +109,7 @@ class GkeySdkManager:
 
     def logi_gkey_is_mouse_pressed(self, button_number: int) -> bool:
         """
-        Indicates whether a mouse button is currently being pressed.
+        Indicate whether a mouse button is currently being pressed.
 
         :param button_number: number of the button to check (for example between 6 and 20 for G600)
         :return: True if the specified button is currently being pressed, False otherwise.
