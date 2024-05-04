@@ -7,11 +7,11 @@ from PyInstaller.utils.win32 import versioninfo
 
 def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: str) -> versioninfo.VSVersionInfo:
     """
-    Generate version information object.
+    Generate a version information object.
 
-    :param major: version major part
-    :param minor: version minor part
-    :param patch: version patch part
+    :param major: Version major part
+    :param minor: Version minor part
+    :param patch: Version patch part
     :param build: GitHub build number
     :param git_sha: Git SHA hash
     :return: VSVersionInfo object
@@ -42,15 +42,15 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: s
 def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.4.1'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
                   sha=environ.get('GITHUB_SHA', 'deadbeef'), ver_f='file_version_info.txt') -> Sequence[str]:
     """
-    Save generated version file based on list of strings.
+    Save generated version file based on the list of strings.
 
     Example of params: v1.9.5 40 6bbd8808 file_version_info.txt
 
-    :param ver: version name or tag name
+    :param ver: Version name or tag name
     :param bld: GitHub build number
     :param sha: Git SHA hash
-    :param ver_f: file name of version file
-    :return: input parameters
+    :param ver_f: File name of version file
+    :return: Input parameters
     """
     if all([ver, bld, sha, ver_f]):
         if ver.startswith('v'):
