@@ -1,3 +1,6 @@
+## 3.4.2
+* Fix update process when downloaded new release can not be saved in filesystem
+
 ## 3.4.1
 * Fix issue when selecting any of a new device is preventing DCSpy from starting
 * Internal:
