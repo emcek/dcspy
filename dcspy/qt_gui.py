@@ -879,7 +879,8 @@ class DcsPyQtGui(QMainWindow):
 
     def _restart_pyinstaller_ver(self):
         """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
-        rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+        ext = '.exe' if 'cli' not in Path(sys.executable).name else '_cli.exe'
+        rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension=ext)
         exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
                                        message=f'Download new version {rel_info.ver} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
