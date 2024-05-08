@@ -887,11 +887,11 @@ class DcsPyQtGui(QMainWindow):
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
                 destination = exe_parent_dir / rel_info.asset_file
-                download_file(url=rel_info.dl_url, save_path=destination)
                 old_ver_dst = exe_parent_dir / f'dcspy_{__version__}.exe'
                 new_ver_dst = exe_parent_dir / 'dcspy.exe'
                 os.rename(src=Path(sys.executable), dst=old_ver_dst)
                 LOG.debug(f'Rename: {Path(sys.executable)} -> {old_ver_dst}')
+                download_file(url=rel_info.dl_url, save_path=destination)
                 os.rename(src=destination, dst=new_ver_dst)
                 LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
                 LOG.info('Restart to run new version.')
