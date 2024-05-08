@@ -166,7 +166,7 @@ def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
             details = ' (latest)'
         elif str(result.ver) != '0.0.0':
             details = ' (update!)'
-            current_ver = result.ver
+            current_ver = str(result.ver)
         elif str(result.ver) == '0.0.0':
             details = ' (failed)'
         ver_string = f'v{current_ver}{details}'
