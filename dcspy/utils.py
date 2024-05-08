@@ -114,7 +114,7 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseI
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
             published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
-            asset_url = next(url for url in [asset['browser_download_url'] for asset in dict_json['assets']] if url.endswith(extension))
+            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['browser_download_url'].endswith(extension))
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             latest = _compare_versions(package, current_ver, online_version)
         else:
