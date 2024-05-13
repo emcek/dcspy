@@ -11,9 +11,13 @@ repos:
     rev: v4.6.0
     hooks:
       - id: trailing-whitespace
+        exclude: 'qtgui_rc.py'
       - id: end-of-file-fixer
+        exclude: 'qtgui_rc.py'
       - id: check-docstring-first
+        exclude: 'qtgui_rc.py'
       - id: debug-statements
+        exclude: 'qtgui_rc.py'
       - id: double-quote-string-fixer
         exclude: 'qtgui_rc.py'
       - id: check-toml
@@ -21,30 +25,33 @@ repos:
       - id: check-json
       - id: requirements-txt-fixer
       - id: fix-byte-order-marker
+        exclude: 'qtgui_rc.py'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.10.0
     hooks:
       - id: mypy
-        exclude: '/qt_gui\.py$|tests/|generate_ver_file\.py$'
+        exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/|generate_ver_file\.py$'
         additional_dependencies: [types-cffi, types-Pillow, types-psutil, types-pyinstaller, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.2
+    rev: v0.4.4
     hooks:
       - id: ruff
+        exclude: '/qtgui_rc.py$|tests/'
         args: [--fix, --exit-non-zero-on-fix]
 
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
-        exclude: tests
+        exclude: '/qtgui_rc.py$|tests/'
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.15.2
     hooks:
       - id: pyupgrade
+        exclude: '/qtgui_rc.py$'
         args: [--py39-plus]
 
   - repo: https://github.com/econchick/interrogate
@@ -61,7 +68,7 @@ repos:
           args: [--local]
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.16
+    rev: v0.17
     hooks:
       - id: validate-pyproject
 
@@ -69,3 +76,4 @@ repos:
     rev: 5.13.2
     hooks:
       - id: isort
+        exclude: '/qtgui_rc.py$'

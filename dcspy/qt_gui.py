@@ -37,7 +37,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
                          run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.4.1'
+__version__ = '3.4.2'
 LOG = getLogger(__name__)
 NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
@@ -868,7 +868,7 @@ class DcsPyQtGui(QMainWindow):
         ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
-            self.systray.showMessage('DCSpy', f'New version: {__version__}', QIcon(':/icons/img/edit-download.svg'))
+            self.systray.showMessage('DCSpy', f'New: {ver_string}', QIcon(':/icons/img/edit-download.svg'))
             self._download_new_release()
         elif 'latest' in ver_string:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title='No updates', message='You are running latest version')
@@ -884,7 +884,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _restart_pyinstaller_ver(self):
         """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
-        rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension='.exe')
+        cli = '' if 'cli' not in Path(sys.executable).name else '_cli'
+        ext = f'{cli}.exe'
+        rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension=ext)
         exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
                                        message=f'Download new version {rel_info.ver} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
@@ -892,11 +894,11 @@ class DcsPyQtGui(QMainWindow):
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
                 destination = exe_parent_dir / rel_info.asset_file
-                download_file(url=rel_info.dl_url, save_path=destination)
-                old_ver_dst = exe_parent_dir / f'dcspy_{__version__}.exe'
-                new_ver_dst = exe_parent_dir / 'dcspy.exe'
+                old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
+                new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
                 os.rename(src=Path(sys.executable), dst=old_ver_dst)
                 LOG.debug(f'Rename: {Path(sys.executable)} -> {old_ver_dst}')
+                download_file(url=rel_info.dl_url, save_path=destination)
                 os.rename(src=destination, dst=new_ver_dst)
                 LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
                 LOG.info('Restart to run new version.')
