@@ -2,6 +2,7 @@ import os
 import sys
 import traceback
 from argparse import Namespace
+from datetime import datetime
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -9,6 +10,7 @@ from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
 from shutil import copy, copytree, rmtree, unpack_archive
+from subprocess import run
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
@@ -97,6 +99,7 @@ class DcsPyQtGui(QMainWindow):
         self._init_devices()
         self._init_autosave()
         self._trigger_refresh_data()
+        self._clean_up_dcs_bios_git(pattern='dcsbios_git_*')
 
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
@@ -155,6 +158,7 @@ class DcsPyQtGui(QMainWindow):
         self.dw_device.visibilityChanged.connect(partial(self._close_dock_widget, widget='device'))
         self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
         self.pb_bios_check.clicked.connect(self._bios_check_clicked)
+        self.pb_bios_repair.clicked.connect(self._bios_repair_clicked)
         self.le_bios_live.textEdited.connect(self._is_git_object_exists)
         self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
         self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
@@ -917,13 +921,21 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> check bios updates <=><=><=><=><=><=><=><=><=><=><=>
     def _bios_check_clicked(self, silence=False) -> None:
         """
-        Do real update Git or stable DCS-BIOS version.
+        Check DCS-BIOS directory and perform update.
 
         :param silence: Perform action with silence
         """
         if not self._check_dcs_bios_path():
             return
 
+        self._start_bios_update(silence)
+
+    def _start_bios_update(self, silence: bool) -> None:
+        """
+        Do real update Git or stable DCS-BIOS version.
+
+        :param silence: perform action with silence
+        """
         if self.cb_bios_live.isChecked():
             clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
             signal_handlers = {
@@ -1136,6 +1148,33 @@ class DcsPyQtGui(QMainWindow):
         else:
             result += check_dcs_bios_entry(lua_dst_data, lua_dst_path, temp_dir)
         return result
+
+    # <=><=><=><=><=><=><=><=><=><=><=> repair bios <=><=><=><=><=><=><=><=><=><=><=>
+    def _bios_repair_clicked(self) -> None:
+        """
+        Repair DCS-BIOS installation.
+
+        Procedure:
+        1. Show message box with warning
+        2. Show if DCS us running
+        3. Remove Git repo from temporary directory (optionally)
+        4. Remove DCS-BIOS from Saved Games directory
+        5. Install DCS-BIOS
+        """
+        dcs_runs = proc_is_running(name='DCS.exe')
+        message = f'Are you sure to remove content of:\n\n{self.bios_path}'
+        if dcs_runs:
+            message += '\n\nNote: DCS is running, quit or be sure to stay on Main menu.'
+        reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
+                                       message=message, defaultButton=QMessageBox.StandardButton.No)
+        if bool(reply == QMessageBox.StandardButton.Yes):
+            if self.cb_bios_live.isChecked():
+                to_name = DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}'
+                DCS_BIOS_REPO_DIR.rename(to_name)
+                LOG.debug(f'Rename DCS-BIOS repo from temp to {to_name}')
+            rmtree(path=self.bios_path, ignore_errors=False)
+            LOG.debug(f'Remove DCS-BIOS: {self.bios_path} ')
+            self._start_bios_update(silence=False)
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
@@ -1444,6 +1483,19 @@ class DcsPyQtGui(QMainWindow):
                 msg.setStandardButtons(buttons)
             return msg.exec()
 
+    @staticmethod
+    def _clean_up_dcs_bios_git(pattern: str) -> None:
+        """
+        Clean up old git repositories of DCS-BIOS.
+
+        :param pattern: Pattern used to match the old repository directories
+        """
+        for old_bios_dir in DCS_BIOS_REPO_DIR.parent.iterdir():
+            if old_bios_dir.match(pattern) and old_bios_dir.is_dir():
+                proc = run(fr'attrib -R -H -S {old_bios_dir}\*.* /S /D'.split(' '), check=True, shell=False)
+                rmtree(old_bios_dir, ignore_errors=True)
+                LOG.debug(f'Clean up old DCS-BIOS git repository: {old_bios_dir} RC: {proc.returncode}')
+
     def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
@@ -1553,6 +1605,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_save: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_save')
         self.pb_dcspy_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcspy_check')
         self.pb_bios_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_check')
+        self.pb_bios_repair: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_repair')
 
         self.cb_autostart: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autostart')
         self.cb_show_gui: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_show_gui')

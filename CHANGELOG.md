@@ -1,3 +1,6 @@
+## 3.4.3
+* Add button to repair DCS-BIOS installation
+
 ## 3.4.2
 * Fix update process when downloaded new release can not be saved in filesystem
 
