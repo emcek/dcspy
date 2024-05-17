@@ -59,6 +59,7 @@ class DcsPyQtGui(QMainWindow):
         """
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
+        self._clean_up_dcs_bios_git(pattern='dcsbios_git_*')
         self._find_children()
         self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
