@@ -1149,10 +1149,11 @@ class DcsPyQtGui(QMainWindow):
         """
         Repair DCS-BIOS installation.
 
+        Procedure:
         1. Show message box with warning
         2. Show if DCS us running
-        3. Remove Git repo form temp directory
-        4. Remove DCS-BIOS from Saved Games directory (optionally)
+        3. Remove Git repo from temporary directory (optionally)
+        4. Remove DCS-BIOS from Saved Games directory
         5. Install DCS-BIOS
         """
         # todo: Show if DCS us running
@@ -1161,8 +1162,9 @@ class DcsPyQtGui(QMainWindow):
                                        defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             if self.cb_bios_live.isChecked():
-                DCS_BIOS_REPO_DIR.rename(DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}')
-                LOG.debug('Rename DCS-BIOS repo from temp')
+                to_name = DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}'
+                DCS_BIOS_REPO_DIR.rename(to_name)
+                LOG.debug(f'Rename DCS-BIOS repo from temp to {to_name}')
             rmtree(path=self.bios_path, ignore_errors=False)
             LOG.debug(f'Remove DCS-BIOS: {self.bios_path} ')
             self._start_bios_update(silence=False)
