@@ -1485,10 +1485,9 @@ class DcsPyQtGui(QMainWindow):
         """
         for old_bios_dir in DCS_BIOS_REPO_DIR.parent.iterdir():
             if old_bios_dir.match(pattern) and old_bios_dir.is_dir():
-                LOG.debug(f'Clean up old DCS-BIOS git repository: {old_bios_dir}')
                 proc = run(fr'attrib -R -H -S {old_bios_dir}\*.* /S /D'.split(' '), shell=False)
                 rmtree(old_bios_dir, ignore_errors=True)
-                LOG.debug(f'RC: {proc.returncode}')
+                LOG.debug(f'Clean up old DCS-BIOS git repository: {old_bios_dir} RC: {proc.returncode}')
 
     def event_set(self) -> None:
         """Set event to close running thread."""
