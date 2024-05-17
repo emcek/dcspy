@@ -60,7 +60,6 @@ class DcsPyQtGui(QMainWindow):
         """
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
-        self._clean_up_dcs_bios_git(pattern='dcsbios_git_*')
         self._find_children()
         self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
@@ -100,6 +99,7 @@ class DcsPyQtGui(QMainWindow):
         self._init_devices()
         self._init_autosave()
         self._trigger_refresh_data()
+        self._clean_up_dcs_bios_git(pattern='dcsbios_git_*')
 
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
