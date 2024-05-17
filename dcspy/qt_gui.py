@@ -10,6 +10,7 @@ from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
 from shutil import copy, copytree, rmtree, unpack_archive
+from subprocess import run
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
@@ -1482,9 +1483,10 @@ class DcsPyQtGui(QMainWindow):
         """
         for old_bios_dir in DCS_BIOS_REPO_DIR.parent.iterdir():
             if old_bios_dir.match(pattern) and old_bios_dir.is_dir():
-                os.system(fr'attrib -R -H -S {old_bios_dir}\*.* /S /D')
-                LOG.debug(f'Clean up old git repository of DCS-BIOS: {old_bios_dir}')
+                LOG.debug(f'Clean up old DCS-BIOS git repository: {old_bios_dir}')
+                proc = run(fr'attrib -R -H -S {old_bios_dir}\*.* /S /D'.split(' '), shell=False)
                 rmtree(old_bios_dir, ignore_errors=True)
+                LOG.debug(f'RC: {proc.returncode}')
 
     def event_set(self) -> None:
         """Set event to close running thread."""
