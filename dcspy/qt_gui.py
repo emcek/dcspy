@@ -1472,6 +1472,19 @@ class DcsPyQtGui(QMainWindow):
                 msg.setStandardButtons(buttons)
             return msg.exec()
 
+    @staticmethod
+    def _clean_up_dcs_bios_git(pattern: str) -> None:
+        """
+        Clean up old git repositories of DCS-BIOS.
+
+        :param pattern: Pattern used to match the old repository directories
+        """
+        for old_bios_dir in DCS_BIOS_REPO_DIR.parent.iterdir():
+            if old_bios_dir.match(pattern) and old_bios_dir.is_dir():
+                os.system(f'attrib -R -H {old_bios_dir} /S /D')
+                LOG.debug(f'Clean up old git repository of DCS-BIOS: {old_bios_dir}')
+                rmtree(old_bios_dir, ignore_errors=False)
+
     def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
