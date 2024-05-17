@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="icons">
     <file>img/G13.png</file>
+    <file>img/deepin-repair.svg</file>
     <file>img/G9.png</file>
     <file>img/G11.png</file>
     <file>img/G35.png</file>
