@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="icons">
     <file>img/G13.png</file>
+    <file>img/deepin-repair.svg</file>
     <file>img/G9.png</file>
     <file>img/G11.png</file>
     <file>img/G35.png</file>
@@ -56,7 +57,6 @@
     <file>img/git.svg</file>
     <file>img/io.photoflare.photoflare.svg</file>
     <file>img/system-shutdown.svg</file>
-    <file>img/edit-clear-history.svg</file>
     <file>img/practice-setup.svg</file>
     <file>img/downloading.svg</file>
     <file>img/taxes-finances.svg</file>
