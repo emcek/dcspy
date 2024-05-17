@@ -2,6 +2,7 @@ import os
 import sys
 import traceback
 from argparse import Namespace
+from datetime import datetime
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -1158,8 +1159,8 @@ class DcsPyQtGui(QMainWindow):
                                        defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             if self.cb_bios_live.isChecked():
-                rmtree(path=DCS_BIOS_REPO_DIR, ignore_errors=False)
-                LOG.debug('Remove DCS-BIOS repo from temp')
+                DCS_BIOS_REPO_DIR.rename(DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}')
+                LOG.debug('Rename DCS-BIOS repo from temp')
             rmtree(path=self.bios_path, ignore_errors=False)
             LOG.debug(f'Remove DCS-BIOS: {self.bios_path} ')
             self._start_bios_update(silence=False)
