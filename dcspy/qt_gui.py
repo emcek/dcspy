@@ -1156,10 +1156,12 @@ class DcsPyQtGui(QMainWindow):
         4. Remove DCS-BIOS from Saved Games directory
         5. Install DCS-BIOS
         """
-        # todo: Show if DCS us running
+        dcs_runs = proc_is_running(name='DCS.exe')
+        message = f'Are you sure to remove content of:\n\n{self.bios_path}'
+        if dcs_runs:
+            message += '\n\nNote: DCS is running, quit or be sure to stay on Main menu.'
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
-                                       message=f'Are you sure to remove content of:\n\n{self.bios_path}',
-                                       defaultButton=QMessageBox.StandardButton.No)
+                                       message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             if self.cb_bios_live.isChecked():
                 to_name = DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}'
