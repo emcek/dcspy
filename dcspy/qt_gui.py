@@ -99,7 +99,6 @@ class DcsPyQtGui(QMainWindow):
         self._init_devices()
         self._init_autosave()
         self._trigger_refresh_data()
-        self._clean_up_dcs_bios_git(pattern='dcsbios_git_*')
 
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
@@ -1164,11 +1163,11 @@ class DcsPyQtGui(QMainWindow):
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             if self.cb_bios_live.isChecked():
-                to_name = DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}'
-                DCS_BIOS_REPO_DIR.rename(to_name)
-                LOG.debug(f'Rename DCS-BIOS repo from temp to {to_name}')
+                proc = run(fr'attrib -R -H -S {DCS_BIOS_REPO_DIR}\*.* /S /D'.split(' '), check=True, shell=False)
+                rmtree(DCS_BIOS_REPO_DIR, ignore_errors=False)
+                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {proc.returncode}')
             rmtree(path=self.bios_path, ignore_errors=False)
-            LOG.debug(f'Remove DCS-BIOS: {self.bios_path} ')
+            LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
             self._start_bios_update(silence=False)
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
@@ -1477,19 +1476,6 @@ class DcsPyQtGui(QMainWindow):
             if buttons:
                 msg.setStandardButtons(buttons)
             return msg.exec()
-
-    @staticmethod
-    def _clean_up_dcs_bios_git(pattern: str) -> None:
-        """
-        Clean up old git repositories of DCS-BIOS.
-
-        :param pattern: Pattern used to match the old repository directories
-        """
-        for old_bios_dir in DCS_BIOS_REPO_DIR.parent.iterdir():
-            if old_bios_dir.match(pattern) and old_bios_dir.is_dir():
-                proc = run(fr'attrib -R -H -S {old_bios_dir}\*.* /S /D'.split(' '), check=True, shell=False)
-                rmtree(old_bios_dir, ignore_errors=True)
-                LOG.debug(f'Clean up old DCS-BIOS git repository: {old_bios_dir} RC: {proc.returncode}')
 
     def event_set(self) -> None:
         """Set event to close running thread."""
