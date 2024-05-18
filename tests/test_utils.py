@@ -303,9 +303,10 @@ def test_run_pip_command_failed():
 
 @mark.slow
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
-def test_run_command():
-    proc = utils.run_command('powershell Clear-Host')
-    assert proc.returncode == 0
+@mark.parametrize('cmd, rc', [('powershell Clear-Host', 0), ('bullshit', -1)])
+def test_run_command(cmd, rc):
+    rc = utils.run_command('powershell Clear-Host')
+    assert rc == 0
 
 
 def test_get_full_bios_for_plane(test_dcs_bios):
