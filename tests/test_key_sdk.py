@@ -34,4 +34,4 @@ def test_user_callback():
     gkey_code.mState = 3
     gkey_code.keyDown = 1
 
-    key_sdk._callback(gkey_code, 'G2/M3', None)
+    key_sdk.callback(gkey_code, 'G2/M3', None)
