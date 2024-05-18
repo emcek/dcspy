@@ -301,6 +301,7 @@ def test_run_pip_command_failed():
     assert err != '', err
 
 
+@mark.slow
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_run_command():
     proc = utils.run_command('powershell Clear-Host')
