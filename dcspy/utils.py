@@ -13,7 +13,7 @@ from platform import python_implementation, python_version, uname
 from pprint import pformat
 from re import search, sub
 from shutil import rmtree
-from subprocess import CalledProcessError, CompletedProcess, run
+from subprocess import CalledProcessError, run
 from tempfile import gettempdir
 from typing import Any, Callable, ClassVar, Optional, Union
 
@@ -623,15 +623,19 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
 
 
-def run_command(cmd: str) -> CompletedProcess:
+def run_command(cmd: str) -> int:
     """
     Run shell command as a subprocess.
 
     :param cmd: The command to be executed as a string
-    :return: The CompletedProcess object
+    :return: The return code of command
     """
-    proc = run(cmd.split(' '), check=True, shell=False)
-    return proc
+    try:
+        proc = run(cmd.split(' '), check=True, shell=False)
+        return proc.returncode
+    except CalledProcessError as e:
+        LOG.debug(f'Result: {e}')
+        return -1
 
 
 def load_json(full_path: Path) -> Any:
