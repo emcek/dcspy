@@ -520,8 +520,8 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
     git_ver, head_commit = _fetch_git_data()
     lgs_dir = '\n'.join([
-        str(Path(dirpath) / filename)
-        for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
+        str(Path(dir_path) / filename)
+        for dir_path, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
         for filename in filenames
     ])
     return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
@@ -590,8 +590,8 @@ def _get_png_files() -> Generator[Path, None, None]:
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE',
                  'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
     return (
-        Path(dirpath) / filename
-        for dirpath, _, filenames in walk(gettempdir())
+        Path(dir_path) / filename
+        for dir_path, _, filenames in walk(gettempdir())
         for filename in filenames
         if any(True for aircraft in aircrafts if aircraft in filename and filename.endswith('png'))
     )
@@ -758,7 +758,7 @@ class KeyRequest:
         Load YAML with BIOS request for G-Keys and LCD buttons.
 
         :param yaml_path: Path to the airplane YAML file.
-        :param get_bios_fn: Function used to obtain current BIOS value.
+        :param get_bios_fn: Function used to get current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
         self.buttons: dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
