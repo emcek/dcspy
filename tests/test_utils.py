@@ -301,6 +301,12 @@ def test_run_pip_command_failed():
     assert err != '', err
 
 
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+def test_run_command():
+    proc = utils.run_command('powershell Clear-Host')
+    assert proc.returncode == 0
+
+
 def test_get_full_bios_for_plane(test_dcs_bios):
     a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     assert len(a10_model.root) == 64
