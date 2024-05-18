@@ -932,9 +932,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _start_bios_update(self, silence: bool) -> None:
         """
-        Do real update Git or stable DCS-BIOS version.
+        Make real update of git or stable DCS-BIOS version.
 
-        :param silence: perform action with silence
+        :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
             clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
