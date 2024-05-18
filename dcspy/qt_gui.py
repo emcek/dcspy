@@ -1161,9 +1161,9 @@ class DcsPyQtGui(QMainWindow):
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             if self.cb_bios_live.isChecked():
-                proc = run_command(cmd=fr'attrib -R -H -S {DCS_BIOS_REPO_DIR}\*.* /S /D')
+                return_code = run_command(cmd=fr'attrib -R -H -S {DCS_BIOS_REPO_DIR}\*.* /S /D')
                 rmtree(DCS_BIOS_REPO_DIR, ignore_errors=False)
-                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {proc.returncode}')
+                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
             rmtree(path=self.bios_path, ignore_errors=False)
             LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
             self._start_bios_update(silence=False)
