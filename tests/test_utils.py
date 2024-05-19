@@ -303,9 +303,9 @@ def test_run_pip_command_failed():
 
 @mark.slow
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
-@mark.parametrize('cmd, result', [('powershell Clear-Host', 0), ('bullshit', -1)])
+@mark.parametrize('cmd, result', [('Clear-Host', 0), ('bullshit', -1)])
 def test_run_command(cmd, result):
-    rc = utils.run_command('powershell Clear-Host')
+    rc = utils.run_command(cmd=f'powershell {cmd}')
     assert rc == result
 
 
