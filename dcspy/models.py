@@ -47,6 +47,7 @@ SUPPORTED_CRAFTS = {
     'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F-14A-135-GR'},
     'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14B'},
     'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
+    'F4E45MC': {'name': 'F-4E Phantom II', 'bios': 'F-4E-45MC'},
 }
 
 
