@@ -83,6 +83,7 @@ def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, cal
 @mark.parametrize('plane_str, bios_name, plane, display, detect', [
     ('FA-18C_hornet', '', 'FA18Chornet', ['Detected aircraft:', 'F/A-18C Hornet'], True),
     ('F-16C_50', '', 'F16C50', ['Detected aircraft:', 'F-16C Viper'], True),
+    ('F-4E-45MC', '', 'F4E45MC', ['Detected aircraft:', 'F-4E Phantom II'], True),
     ('Ka-50', '', 'Ka50', ['Detected aircraft:', 'Ka-50 Black Shark II'], True),
     ('Ka-503', '', 'Ka503', ['Detected aircraft:', 'Ka-50 Black Shark III'], True),
     ('Mi-8MT', '', 'Mi8MT', ['Detected aircraft:', 'Mi-8MTV2 Magnificent Eight'], True),
@@ -101,6 +102,7 @@ def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, cal
 ], ids=[
     'FA-18 Hornet',
     'F-16C Viper',
+    'F-4E Phantom II',
     'Ka-50 Black Shark II',
     'Ka-50 Black Shark III',
     'Mi-8MT Hip',
@@ -164,7 +166,7 @@ def test_check_keyboard_text(keyboard, protocol_parser, sock, request):
 
 
 @mark.parametrize('model', [
-    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
+    'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
 def test_keyboard_mono_load_advanced_plane(model, keyboard_mono, test_config_yaml):
     from dcspy.aircraft import AdvancedAircraft
@@ -189,7 +191,7 @@ def test_test_keyboard_mono_load_basic_plane(keyboard_mono):
 
 
 @mark.parametrize('model', [
-    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
+    'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA',
 ])
 def test_keyboard_color_load_advanced_plane(model, keyboard_color, test_config_yaml):
     from dcspy.aircraft import AdvancedAircraft
@@ -214,7 +216,7 @@ def test_test_keyboard_color_load_basic_plane(keyboard_color):
 
 
 @mark.parametrize('model', [
-    'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA'
+    'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA'
 ])
 @mark.parametrize('keyboard', [
     'G13', 'G510', 'G15v1', 'G15v2', 'G19'
