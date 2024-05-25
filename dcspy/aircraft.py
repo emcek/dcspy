@@ -8,11 +8,11 @@ from re import search
 from tempfile import gettempdir
 
 try:
-    from typing import Union, Unpack
+    from typing import ClassVar, Union, Unpack
 except ImportError:
     from typing_extensions import Unpack
 
-    from typing import Union
+    from typing import ClassVar, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -349,7 +349,7 @@ class F16C50(AdvancedAircraft):
 class F4E45MC(AdvancedAircraft):
     """F-4E Phantom II."""
     bios_name: str = 'F-4E-45MC'
-    uhf_mode = {
+    uhf_mode: ClassVar[dict[int, str]] = {
         0: 'OFF',
         1: 'T/R ADF',
         2: 'T/R+G ADF',
@@ -382,9 +382,9 @@ class F4E45MC(AdvancedAircraft):
         """
         if int(self.get_bios('PLT_ARC_164_FREQ_MODE')):
             freq = f'{self.get_bios("PLT_ARC_164_FREQ")} *'
-            comm_ch = int(self.get_bios('PLT_ARC_164_COMM_CHANNEL')) + 1
+            comm_ch = str(int(self.get_bios('PLT_ARC_164_COMM_CHANNEL')) + 1)
         else:
-            freq = self.get_bios('PLT_ARC_164_FREQ')
+            freq = str(self.get_bios('PLT_ARC_164_FREQ'))
             comm_ch = f'{int(self.get_bios("PLT_ARC_164_COMM_CHANNEL")) + 1} *'
         aux_ch = int(self.get_bios('PLT_ARC_164_AUX_CHANNEL')) + 1
         mode = int(self.get_bios('PLT_ARC_164_MODE'))
