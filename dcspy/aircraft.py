@@ -349,6 +349,14 @@ class F16C50(AdvancedAircraft):
 class F4E45MC(AdvancedAircraft):
     """F-4E Phantom II."""
     bios_name: str = 'F-4E-45MC'
+    uhf_mode = {
+        0: 'OFF',
+        1: 'T/R ADF',
+        2: 'T/R+G ADF',
+        3: 'ADF+G CMD',
+        4: 'ADF+G',
+        5: 'Guard ADF',
+    }
 
     def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
         """
@@ -356,27 +364,43 @@ class F4E45MC(AdvancedAircraft):
 
         :param lcd_type: LCD type
         """
-        kwargs['bios_data'] = {'PLT_MASTER_ARM_SW': ''}
+        kwargs['bios_data'] = {
+            'PLT_ARC_164_FREQ_MODE': 0,
+            'PLT_ARC_164_MODE': 2,
+            'PLT_ARC_164_AUX_CHANNEL': 0,
+            'PLT_ARC_164_FREQ': '',
+            'PLT_ARC_164_COMM_CHANNEL': 0,
+        }
         super().__init__(lcd_type=lcd_type, **kwargs)
 
-    def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> ImageDraw.ImageDraw:
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
         Draw common part for Mono and Color LCD.
 
         :param draw: ImageDraw instance
-        :return: updated image to draw
+        :param separation: between lines in pixels
         """
-        master_arm = 'Arm' if int(self.get_bios('PLT_MASTER_ARM_SW')) else 'Off'
-        draw.text(xy=(0, 0), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Master Arm: {master_arm}')
-        return draw
+        if int(self.get_bios('PLT_ARC_164_FREQ_MODE')):
+            freq = f'{self.get_bios("PLT_ARC_164_FREQ")} *'
+            comm_ch = int(self.get_bios("PLT_ARC_164_COMM_CHANNEL")) + 1
+        else:
+            freq = self.get_bios("PLT_ARC_164_FREQ")
+            comm_ch = f'{int(self.get_bios("PLT_ARC_164_COMM_CHANNEL")) + 1} *'
+        aux_ch = int(self.get_bios("PLT_ARC_164_AUX_CHANNEL")) + 1
+        mode = int(self.get_bios("PLT_ARC_164_MODE"))
+
+        draw.text(xy=(0, 0), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Freq: {freq}')
+        draw.text(xy=(0, separation), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Comm Ch: {comm_ch}')
+        draw.text(xy=(0, separation * 2), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Aux Ch: {aux_ch}')
+        draw.text(xy=(0, separation * 3), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Mode: {self.uhf_mode[mode]}')
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-4E Phantom II Mono LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img))
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=10)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for F-4E Phantom II Color LCD."""
-        self._draw_common_data(draw=ImageDraw.Draw(img))
+        self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
 
 class F15ESE(AdvancedAircraft):
