@@ -350,7 +350,7 @@ def test_get_plane_aliases_all(test_dcs_bios):
         'F-14B': ['CommonData', 'F-14', 'NS430'],
         'F-15ESE': ['CommonData', 'F-15E'],
         'F-16C_50': ['CommonData', 'F-16C_50'],
-        "F-4E-45MC": ["CommonData", "F-4E"],
+        'F-4E-45MC': ['CommonData', 'F-4E'],
         'FA-18C_hornet': ['CommonData', 'FA-18C_hornet'],
         'Ka-50': ['CommonData', 'Ka-50'],
         'Ka-50_3': ['CommonData', 'Ka-50'],

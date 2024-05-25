@@ -382,12 +382,12 @@ class F4E45MC(AdvancedAircraft):
         """
         if int(self.get_bios('PLT_ARC_164_FREQ_MODE')):
             freq = f'{self.get_bios("PLT_ARC_164_FREQ")} *'
-            comm_ch = int(self.get_bios("PLT_ARC_164_COMM_CHANNEL")) + 1
+            comm_ch = int(self.get_bios('PLT_ARC_164_COMM_CHANNEL')) + 1
         else:
-            freq = self.get_bios("PLT_ARC_164_FREQ")
+            freq = self.get_bios('PLT_ARC_164_FREQ')
             comm_ch = f'{int(self.get_bios("PLT_ARC_164_COMM_CHANNEL")) + 1} *'
-        aux_ch = int(self.get_bios("PLT_ARC_164_AUX_CHANNEL")) + 1
-        mode = int(self.get_bios("PLT_ARC_164_MODE"))
+        aux_ch = int(self.get_bios('PLT_ARC_164_AUX_CHANNEL')) + 1
+        mode = int(self.get_bios('PLT_ARC_164_MODE'))
 
         draw.text(xy=(0, 0), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Freq: {freq}')
         draw.text(xy=(0, separation), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Comm Ch: {comm_ch}')
