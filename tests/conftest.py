@@ -53,8 +53,8 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
     return _fixture
 
 
-for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT',
-                    'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503',
+                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
         if lcd.type == models.LcdType.COLOR:
@@ -423,6 +423,20 @@ def f15ese_mono_bios():
         ('F_UFC_LINE5_DISPLAY', '*U262000    U133000*'),
         ('F_UFC_LINE6_DISPLAY', ' 10               G '),
     ]
+
+
+@fixture()
+def f4e45mc_mono_bios():
+    """Bios values for F-4E Phantom II for Logitech mono LCD."""
+    return [
+        ('PLT_MASTER_ARM_SW', '1'),
+    ]
+
+
+@fixture()
+def f4e45mc_color_bios(f4e45mc_mono_bios):
+    """Bios values for F-4E Phantom II for Logitech color LCD."""
+    return f4e45mc_mono_bios
 
 
 @fixture()
