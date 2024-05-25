@@ -78,6 +78,7 @@ package aircraft {
     F14B <|-- F14A135GR
     AdvancedAircraft <|-- AV8BNA
     AH64D *-- ApacheEufdMode
+    AdvancedAircraft <|-- F4E45MC
 
     class MetaAircraft <<(M,plum)>> {
         + __new__(name, bases, namespace)
