@@ -429,7 +429,11 @@ def f15ese_mono_bios():
 def f4e45mc_mono_bios():
     """Bios values for F-4E Phantom II for Logitech mono LCD."""
     return [
-        ('PLT_MASTER_ARM_SW', '1'),
+        ('PLT_ARC_164_FREQ_MODE', 1),
+        ('PLT_ARC_164_MODE', 3),
+        ('PLT_ARC_164_AUX_CHANNEL', 11),
+        ('PLT_ARC_164_FREQ', '251.225'),
+        ('PLT_ARC_164_COMM_CHANNEL', 8),
     ]
 
 
