@@ -1,3 +1,6 @@
+## 3.5.0
+* Can't start DCSpy after stopping #314 (@emcek)
+
 ## 3.4.3
 * Add button to repair DCS-BIOS installation
 

@@ -1199,6 +1199,7 @@ class DcsPyQtGui(QMainWindow):
         if self.device.lcd_info.type != LcdType.NONE:
             fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
             self.device.lcd_info.set_fonts(fonts_cfg)
+        self.event = Event()
         app_params = {'model': self.device, 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
