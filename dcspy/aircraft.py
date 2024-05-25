@@ -346,6 +346,39 @@ class F16C50(AdvancedAircraft):
         return value
 
 
+class F4E45MC(AdvancedAircraft):
+    """F-4E Phantom II."""
+    bios_name: str = 'F-4E-45MC'
+
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+        """
+        Create F-4E Phantom II.
+
+        :param lcd_type: LCD type
+        """
+        kwargs['bios_data'] = {'PLT_MASTER_ARM_SW': ''}
+        super().__init__(lcd_type=lcd_type, **kwargs)
+
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> ImageDraw.ImageDraw:
+        """
+        Draw common part for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        :return: updated image to draw
+        """
+        master_arm = 'Arm' if int(self.get_bios('PLT_MASTER_ARM_SW')) else 'Off'
+        draw.text(xy=(0, 0), fill=self.lcd.foreground, font=self.lcd.font_s, text=f'Master Arm: {master_arm}')
+        return draw
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for F-4E Phantom II Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img))
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for F-4E Phantom II Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img))
+
+
 class F15ESE(AdvancedAircraft):
     """F-15ESE Eagle."""
     bios_name: str = 'F-15ESE'
