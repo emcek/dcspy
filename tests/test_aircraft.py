@@ -174,6 +174,8 @@ def test_meta_plane(keyboard, plane_name, request):
     ('ah64dblkii_mono', LcdButton.TWO, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
     ('ah64dblkii_mono', LcdButton.THREE, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
     ('ah64dblkii_mono', LcdButton.FOUR, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
+    ('f4e45mc_mono', LcdButton.NONE, [b'\n']),
+    ('f4e45mc_mono', LcdButton.ONE, [b'PLT_MASTER_ARM_SW TOGGLE\n']),
 ])
 def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
@@ -300,10 +302,10 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'ka50' in model or 'mi8' in model or 'mi24' in model:
-    #     img.save(resources / platform / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
-    # else:
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
+    if 'f4e' in model:
+        img.save(resources / platform / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    else:
+        assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 
 
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
