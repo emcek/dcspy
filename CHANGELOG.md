@@ -1,3 +1,6 @@
+## 3.5.1
+* Add missing `F-4E-45MC.yaml` - #316 (@emcek)
+
 ## 3.5.0
 * Basic support for **F-4E Phantom II** (@emcek)
 * Add button to repair DCS-BIOS installation (@emcek)
