@@ -49,7 +49,7 @@ Why such way? Basically advanced support is for aircraft that I own and therefor
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display
 * F-15E Eagle - Upfront Control Panel
-* F-4 Phantom II
+* F-4 Phantom II - UHF (ARC 164) Radio
 * more to come...
 
 ## Requirements
