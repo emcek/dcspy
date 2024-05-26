@@ -94,7 +94,7 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.4.2',
+        'api_ver': '3.5.0',
         'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
@@ -350,6 +350,7 @@ def test_get_plane_aliases_all(test_dcs_bios):
         'F-14B': ['CommonData', 'F-14', 'NS430'],
         'F-15ESE': ['CommonData', 'F-15E'],
         'F-16C_50': ['CommonData', 'F-16C_50'],
+        'F-4E-45MC': ['CommonData', 'F-4E'],
         'FA-18C_hornet': ['CommonData', 'FA-18C_hornet'],
         'Ka-50': ['CommonData', 'Ka-50'],
         'Ka-50_3': ['CommonData', 'Ka-50'],
@@ -381,6 +382,7 @@ def test_get_planes_list(test_dcs_bios):
         'F-14B',
         'F-15ESE',
         'F-16C_50',
+        'F-4E-45MC',
         'FA-18C_hornet',
         'Ka-50',
         'Ka-50_3',

@@ -1,8 +1,7 @@
 ## 3.5.0
+* Basic support for **F-4E Phantom II** (@emcek)
+* Add button to repair DCS-BIOS installation (@emcek)
 * Can't start DCSpy after stopping #314 (@emcek)
-
-## 3.4.3
-* Add button to repair DCS-BIOS installation
 
 ## 3.4.2
 * Fix update process when downloaded new release can not be saved in filesystem

@@ -174,6 +174,12 @@ def test_meta_plane(keyboard, plane_name, request):
     ('ah64dblkii_mono', LcdButton.TWO, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
     ('ah64dblkii_mono', LcdButton.THREE, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
     ('ah64dblkii_mono', LcdButton.FOUR, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
+    ('f4e45mc_mono', LcdButton.NONE, [b'\n']),
+    ('f4e45mc_color', LcdButton.NONE, [b'\n']),
+    ('f4e45mc_color', LcdButton.UP, [b'PLT_ARC_164_COMM_CHANNEL INC\n']),
+    ('f4e45mc_color', LcdButton.DOWN, [b'PLT_ARC_164_COMM_CHANNEL DEC\n']),
+    ('f4e45mc_color', LcdButton.LEFT, [b'PLT_ARC_164_AUX_CHANNEL DEC\n']),
+    ('f4e45mc_color', LcdButton.RIGHT, [b'PLT_ARC_164_AUX_CHANNEL INC\n']),
 ])
 def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
@@ -198,18 +204,24 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
 
-@mark.parametrize('plane, ctrl_name, btn, values', [
-    ('f16c50_mono', 'IFF_MASTER_KNB', LcdButton.ONE, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
-    ('f16c50_mono', 'IFF_ENABLE_SW', LcdButton.TWO, (1, 2, 1, 0, 1)),
-    ('f16c50_mono', 'IFF_M4_CODE_SW', LcdButton.THREE, (1, 2, 1, 0, 1)),
-    ('f16c50_mono', 'IFF_M4_REPLY_SW', LcdButton.FOUR, (1, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_MASTER_KNB', LcdButton.LEFT, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_ENABLE_SW', LcdButton.RIGHT, (1, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_M4_CODE_SW', LcdButton.DOWN, (1, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_M4_REPLY_SW', LcdButton.UP, (1, 2, 1, 0, 1)),
-    ('fa18chornet_color', 'HUD_ATT_SW', LcdButton.OK, (1, 2, 1, 0, 1)),
-    ('fa18chornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
-    ('fa18chornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
+@mark.parametrize('plane, ctrl_name, btn, ranges', [
+    ('f16c50_mono', 'IFF_MASTER_KNB', LcdButton.ONE, ((1, 5), (3, 0, -1), (0, 2))),
+    ('f16c50_mono', 'IFF_ENABLE_SW', LcdButton.TWO, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_mono', 'IFF_M4_CODE_SW', LcdButton.THREE, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_mono', 'IFF_M4_REPLY_SW', LcdButton.FOUR, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_MASTER_KNB', LcdButton.LEFT, ((1, 5), (3, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_ENABLE_SW', LcdButton.RIGHT, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_M4_CODE_SW', LcdButton.DOWN, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_M4_REPLY_SW', LcdButton.UP, ((1, 2), (2, 0, -1), (0, 2))),
+    ('fa18chornet_color', 'HUD_ATT_SW', LcdButton.OK, ((1, 2), (2, 0, -1), (0, 2))),
+    ('fa18chornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, ((1, 2), (0, 2))),
+    ('fa18chornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, ((1, 2), (0, 2))),
+    ('f4e45mc_mono', 'PLT_ARC_164_MODE', LcdButton.ONE, ((3, 6), (4, 0, -1), (0, 4))),
+    ('f4e45mc_mono', 'PLT_ARC_164_FREQ_MODE', LcdButton.TWO, ((1, 2), (0, 2))),
+    ('f4e45mc_mono', 'PLT_ARC_164_COMM_CHANNEL', LcdButton.THREE, ((1, 18), (16, 0, -1), (0, 2))),
+    ('f4e45mc_mono', 'PLT_ARC_164_AUX_CHANNEL', LcdButton.FOUR, ((1, 20), (18, 0, -1), (0, 2))),
+    ('f4e45mc_color', 'PLT_ARC_164_MODE', LcdButton.MENU, ((3, 6), (4, 0, -1), (0, 4))),
+    ('f4e45mc_color', 'PLT_ARC_164_FREQ_MODE', LcdButton.OK, ((1, 2), (0, 2))),
 ], ids=[
     'ONE - Viper Mono',
     'TWO - Viper Mono',
@@ -221,15 +233,23 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'UP - Viper Color',
     'OK - Hornet Color',
     'MENU - Hornet Color',
-    'CANCEL - Hornet Color'])
-def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, values, request):
+    'CANCEL - Hornet Color',
+    'ONE - Phantom Mono',
+    'TWO - Phantom Mono',
+    'TREE - Phantom Mono',
+    'FOUR - Phantom Mono',
+    'MENU - Phantom Color',
+    'OK - Phantom Color',
+])
+def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request):
     plane = request.getfixturevalue(plane)
     generated_out = []
     expected_out = []
-    for val in values:
-        key_req = plane.button_request(btn)
-        generated_out.extend(key_req.bytes_requests(key_down=KEY_DOWN))
-        expected_out.extend([f'{ctrl_name} {val}\n'.encode('ascii')])
+    for values in ranges:
+        for val in range(*values):
+            key_req = plane.button_request(btn)
+            generated_out.extend(key_req.bytes_requests(key_down=KEY_DOWN))
+            expected_out.extend([f'{ctrl_name} {val}\n'.encode('ascii')])
     assert generated_out == expected_out
 
 
@@ -300,7 +320,7 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
-    # if 'ka50' in model or 'mi8' in model or 'mi24' in model:
+    # if 'f4e' in model:
     #     img.save(resources / platform / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)

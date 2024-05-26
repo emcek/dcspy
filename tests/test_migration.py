@@ -5,11 +5,11 @@ from dcspy.migration import migrate
 
 @mark.parametrize('cfg, result', [
     ({'api_ver': '2.9.9', 'v': 1, 'font_color_s': 6, 'theme_mode': 'system'},
-     {'api_ver': '3.4.2', 'completer_items': 20, 'current_plane': 'A-10C', 'font_color_m': 6, 'font_color_s': 18, 'font_mono_m': 11, 'font_mono_s': 9, 'v': 1}),
+     {'api_ver': '3.5.0', 'completer_items': 20, 'current_plane': 'A-10C', 'font_color_m': 6, 'font_color_s': 18, 'font_mono_m': 11, 'font_mono_s': 9, 'v': 1}),
     ({'api_ver': '3.0.0', 'v': 1, 'font_color_s': 6, 'theme_mode': 'system'},
-     {'api_ver': '3.4.2', 'font_color_s': 6, 'theme_mode': 'system', 'v': 1}),
+     {'api_ver': '3.5.0', 'font_color_s': 6, 'theme_mode': 'system', 'v': 1}),
     ({'v': 1, 'font_color_s': 6, 'theme_mode': 'system'},
-     {'api_ver': '3.4.2', 'completer_items': 20, 'current_plane': 'A-10C', 'font_color_m': 6, 'font_color_s': 18, 'font_mono_m': 11, 'font_mono_s': 9, 'v': 1}),
+     {'api_ver': '3.5.0', 'completer_items': 20, 'current_plane': 'A-10C', 'font_color_m': 6, 'font_color_s': 18, 'font_mono_m': 11, 'font_mono_s': 9, 'v': 1}),
 ], ids=['API 2.9.9', 'API 3.0.0', 'API empty'])
 def test_migrate(cfg, result):
     migrated_cfg = migrate(cfg=cfg)
@@ -21,7 +21,7 @@ def test_generate_config():
 
     migrated_cfg = migrate(cfg={})
     assert migrated_cfg == {
-        'api_ver': '3.4.2',
+        'api_ver': '3.5.0',
         'autostart': False,
         'check_bios': True,
         'check_ver': True,

@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v3.4.2-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v3.5.0-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://app.codacy.com/gh/emcek/dcspy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
@@ -49,6 +49,7 @@ Why such way? Basically advanced support is for aircraft that I own and therefor
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display
 * F-15E Eagle - Upfront Control Panel
+* F-4 Phantom II - UHF (ARC 164) Radio
 * more to come...
 
 ## Requirements
