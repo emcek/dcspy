@@ -204,24 +204,24 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
 
-@mark.parametrize('plane, ctrl_name, btn, values', [
-    ('f16c50_mono', 'IFF_MASTER_KNB', LcdButton.ONE, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
-    ('f16c50_mono', 'IFF_ENABLE_SW', LcdButton.TWO, (1, 2, 1, 0, 1)),
-    ('f16c50_mono', 'IFF_M4_CODE_SW', LcdButton.THREE, (1, 2, 1, 0, 1)),
-    ('f16c50_mono', 'IFF_M4_REPLY_SW', LcdButton.FOUR, (1, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_MASTER_KNB', LcdButton.LEFT, (1, 2, 3, 4, 3, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_ENABLE_SW', LcdButton.RIGHT, (1, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_M4_CODE_SW', LcdButton.DOWN, (1, 2, 1, 0, 1)),
-    ('f16c50_color', 'IFF_M4_REPLY_SW', LcdButton.UP, (1, 2, 1, 0, 1)),
-    ('fa18chornet_color', 'HUD_ATT_SW', LcdButton.OK, (1, 2, 1, 0, 1)),
-    ('fa18chornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
-    ('fa18chornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
-    ('f4e45mc_mono', 'PLT_ARC_164_MODE', LcdButton.ONE, (3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 3)),
-    ('f4e45mc_mono', 'PLT_ARC_164_FREQ_MODE', LcdButton.TWO, (1, 0, 1)),
-    ('f4e45mc_mono', 'PLT_ARC_164_COMM_CHANNEL', LcdButton.THREE, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1)),
-    ('f4e45mc_mono', 'PLT_ARC_164_AUX_CHANNEL', LcdButton.FOUR, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1)),
-    ('f4e45mc_color', 'PLT_ARC_164_MODE', LcdButton.MENU, (3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 3)),
-    ('f4e45mc_color', 'PLT_ARC_164_FREQ_MODE', LcdButton.OK, (1, 0, 1)),
+@mark.parametrize('plane, ctrl_name, btn, ranges', [
+    ('f16c50_mono', 'IFF_MASTER_KNB', LcdButton.ONE, ((1, 5), (3, 0, -1), (0, 2))),
+    ('f16c50_mono', 'IFF_ENABLE_SW', LcdButton.TWO, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_mono', 'IFF_M4_CODE_SW', LcdButton.THREE, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_mono', 'IFF_M4_REPLY_SW', LcdButton.FOUR, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_MASTER_KNB', LcdButton.LEFT, ((1, 5), (3, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_ENABLE_SW', LcdButton.RIGHT, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_M4_CODE_SW', LcdButton.DOWN, ((1, 2), (2, 0, -1), (0, 2))),
+    ('f16c50_color', 'IFF_M4_REPLY_SW', LcdButton.UP, ((1, 2), (2, 0, -1), (0, 2))),
+    ('fa18chornet_color', 'HUD_ATT_SW', LcdButton.OK, ((1, 2), (2, 0, -1), (0, 2))),
+    ('fa18chornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, ((1, 2), (0, 2))),
+    ('fa18chornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, ((1, 2), (0, 2))),
+    ('f4e45mc_mono', 'PLT_ARC_164_MODE', LcdButton.ONE, ((3, 6), (4, 0, -1), (0, 4))),
+    ('f4e45mc_mono', 'PLT_ARC_164_FREQ_MODE', LcdButton.TWO, ((1, 2), (0, 2))),
+    ('f4e45mc_mono', 'PLT_ARC_164_COMM_CHANNEL', LcdButton.THREE, ((1, 18), (16, 0, -1), (0, 2))),
+    ('f4e45mc_mono', 'PLT_ARC_164_AUX_CHANNEL', LcdButton.FOUR, ((1, 20), (18, 0, -1), (0, 2))),
+    ('f4e45mc_color', 'PLT_ARC_164_MODE', LcdButton.MENU, ((3, 6), (4, 0, -1), (0, 4))),
+    ('f4e45mc_color', 'PLT_ARC_164_FREQ_MODE', LcdButton.OK, ((1, 2), (0, 2))),
 ], ids=[
     'ONE - Viper Mono',
     'TWO - Viper Mono',
@@ -239,15 +239,17 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'TREE - Phantom Mono',
     'FOUR - Phantom Mono',
     'MENU - Phantom Color',
-    'OK - Phantom Color'])
-def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, values, request):
+    'OK - Phantom Color',
+])
+def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request):
     plane = request.getfixturevalue(plane)
     generated_out = []
     expected_out = []
-    for val in values:
-        key_req = plane.button_request(btn)
-        generated_out.extend(key_req.bytes_requests(key_down=KEY_DOWN))
-        expected_out.extend([f'{ctrl_name} {val}\n'.encode('ascii')])
+    for values in ranges:
+        for val in range(*values):
+            key_req = plane.button_request(btn)
+            generated_out.extend(key_req.bytes_requests(key_down=KEY_DOWN))
+            expected_out.extend([f'{ctrl_name} {val}\n'.encode('ascii')])
     assert generated_out == expected_out
 
 
