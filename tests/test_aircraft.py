@@ -175,7 +175,11 @@ def test_meta_plane(keyboard, plane_name, request):
     ('ah64dblkii_mono', LcdButton.THREE, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
     ('ah64dblkii_mono', LcdButton.FOUR, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
     ('f4e45mc_mono', LcdButton.NONE, [b'\n']),
-    ('f4e45mc_mono', LcdButton.ONE, [b'PLT_MASTER_ARM_SW TOGGLE\n']),
+    ('f4e45mc_color', LcdButton.NONE, [b'\n']),
+    ('f4e45mc_color', LcdButton.UP, [b'PLT_ARC_164_COMM_CHANNEL INC\n']),
+    ('f4e45mc_color', LcdButton.DOWN, [b'PLT_ARC_164_COMM_CHANNEL DEC\n']),
+    ('f4e45mc_color', LcdButton.LEFT, [b'PLT_ARC_164_AUX_CHANNEL DEC\n']),
+    ('f4e45mc_color', LcdButton.RIGHT, [b'PLT_ARC_164_AUX_CHANNEL INC\n']),
 ])
 def test_button_pressed_for_planes(plane, button, result, request):
     plane = request.getfixturevalue(plane)
@@ -212,6 +216,12 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     ('fa18chornet_color', 'HUD_ATT_SW', LcdButton.OK, (1, 2, 1, 0, 1)),
     ('fa18chornet_color', 'IFEI_DWN_BTN', LcdButton.MENU, (1, 0, 1)),
     ('fa18chornet_color', 'IFEI_UP_BTN', LcdButton.CANCEL, (1, 0, 1)),
+    ('f4e45mc_mono', 'PLT_ARC_164_MODE', LcdButton.ONE, (3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 3)),
+    ('f4e45mc_mono', 'PLT_ARC_164_FREQ_MODE', LcdButton.TWO, (1, 0, 1)),
+    ('f4e45mc_mono', 'PLT_ARC_164_COMM_CHANNEL', LcdButton.THREE, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1)),
+    ('f4e45mc_mono', 'PLT_ARC_164_AUX_CHANNEL', LcdButton.FOUR, (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1)),
+    ('f4e45mc_color', 'PLT_ARC_164_MODE', LcdButton.MENU, (3, 4, 5, 4, 3, 2, 1, 0, 1, 2, 3)),
+    ('f4e45mc_color', 'PLT_ARC_164_FREQ_MODE', LcdButton.OK, (1, 0, 1)),
 ], ids=[
     'ONE - Viper Mono',
     'TWO - Viper Mono',
@@ -223,7 +233,13 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'UP - Viper Color',
     'OK - Hornet Color',
     'MENU - Hornet Color',
-    'CANCEL - Hornet Color'])
+    'CANCEL - Hornet Color',
+    'ONE - Phantom Mono',
+    'TWO - Phantom Mono',
+    'TREE - Phantom Mono',
+    'FOUR - Phantom Mono',
+    'MENU - Phantom Color',
+    'OK - Phantom Color'])
 def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, values, request):
     plane = request.getfixturevalue(plane)
     generated_out = []
