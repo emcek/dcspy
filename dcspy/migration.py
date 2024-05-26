@@ -182,7 +182,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     LOG.debug(f'Rename key {old_name} -> {new_name} with: {value}')
 
 
-def _copy_file(filename: str, to_path: Path, force=False) -> None:
+def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
     """
     Copy a file from one location to another, only when the file doesn't exist.
 
