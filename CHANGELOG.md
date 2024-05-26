@@ -2,6 +2,9 @@
 * Basic support for **F-4E Phantom II** (@emcek)
 * Add button to repair DCS-BIOS installation (@emcek)
 * Can't start DCSpy after stopping #314 (@emcek)
+* Internal:
+  * Update PySide6 framework
+  * optimize unit tests
 
 ## 3.4.2
 * Fix update process when downloaded new release can not be saved in filesystem
