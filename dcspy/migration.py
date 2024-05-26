@@ -13,7 +13,7 @@ from dcspy.models import DcspyConfigYaml
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.5.0'
+__version__ = '3.5.1'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
@@ -58,7 +58,7 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
     """
-    Migrate to version 3.5.0.
+    Migrate to version 3.5.1.
 
     :param cfg: Configuration dictionary
     """
