@@ -1,9 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
 
-files = [(f'dcspy/{res}', 'dcspy') for res in  ['AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-4E-45MC.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml', 'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml', 'config.yaml', 'qtgui_rc.py']]
 images = [(f'dcspy/img/{res}', 'dcspy/img') for res in ['splash.png', 'dcspy_white.ico', 'dcspy_black.ico']]
-resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in ['falconded.ttf', 'license.txt']]
+resources = [(f'dcspy/resources/{res}', 'dcspy/resources') for res in ['falconded.ttf', 'license.txt', 'AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-4E-45MC.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml',
+                                                                       'F-15ESE.yaml', 'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml', 'config.yaml',]]
 headers = [(f'dcspy/sdk/{head}', 'dcspy/sdk') for head in ['LogitechLCDLib.h', 'LogitechLEDLib.h', 'LogitechGkeyLib.h']]
 block_cipher = None
 
@@ -12,7 +12,7 @@ a = Analysis(
     ['dcs_py.py'],
     pathex=[],
     binaries=[],
-    datas=files + images + resources + headers,
+    datas=images + resources + headers,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
