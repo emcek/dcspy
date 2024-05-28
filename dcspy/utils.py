@@ -33,7 +33,7 @@ except ImportError:
 LOG = getLogger(__name__)
 __version__ = '3.5.1'
 CONFIG_YAML = 'config.yaml'
-DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
+DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
