@@ -105,7 +105,6 @@ dcspy = [
     'img/dcspy_black.ico',
     'sdk/*.h',
     'py.typed',
-    '*.yaml',
 ]
 
 [tool.pytest.ini_options]
