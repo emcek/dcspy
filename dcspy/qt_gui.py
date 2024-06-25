@@ -2,7 +2,6 @@ import os
 import sys
 import traceback
 from argparse import Namespace
-from datetime import datetime
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -10,7 +9,6 @@ from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
 from shutil import copy, copytree, rmtree, unpack_archive
-from subprocess import run
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
@@ -36,10 +34,10 @@ from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
                          get_planes_list, get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running,
-                         run_pip_command, save_yaml)
+                         run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.4.2'
+__version__ = '3.5.1'
 LOG = getLogger(__name__)
 NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
@@ -99,7 +97,6 @@ class DcsPyQtGui(QMainWindow):
         self._init_devices()
         self._init_autosave()
         self._trigger_refresh_data()
-        self._clean_up_dcs_bios_git(pattern='dcsbios_git_*')
 
         if self.cb_autoupdate_bios.isChecked():
             self._bios_check_clicked(silence=True)
@@ -1169,11 +1166,11 @@ class DcsPyQtGui(QMainWindow):
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             if self.cb_bios_live.isChecked():
-                to_name = DCS_BIOS_REPO_DIR.parent / f'{DCS_BIOS_REPO_DIR.name}_{datetime.now().microsecond}'
-                DCS_BIOS_REPO_DIR.rename(to_name)
-                LOG.debug(f'Rename DCS-BIOS repo from temp to {to_name}')
+                return_code = run_command(cmd=fr'attrib -R -H -S {DCS_BIOS_REPO_DIR}\*.* /S /D')
+                rmtree(DCS_BIOS_REPO_DIR, ignore_errors=False)
+                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
             rmtree(path=self.bios_path, ignore_errors=False)
-            LOG.debug(f'Remove DCS-BIOS: {self.bios_path} ')
+            LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
             self._start_bios_update(silence=False)
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
@@ -1207,6 +1204,7 @@ class DcsPyQtGui(QMainWindow):
         if self.device.lcd_info.type != LcdType.NONE:
             fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
             self.device.lcd_info.set_fonts(fonts_cfg)
+        self.event = Event()
         app_params = {'model': self.device, 'event': self.event}
         app_thread = Thread(target=dcspy_run, kwargs=app_params)
         app_thread.name = 'dcspy-app'
@@ -1482,19 +1480,6 @@ class DcsPyQtGui(QMainWindow):
             if buttons:
                 msg.setStandardButtons(buttons)
             return msg.exec()
-
-    @staticmethod
-    def _clean_up_dcs_bios_git(pattern: str) -> None:
-        """
-        Clean up old git repositories of DCS-BIOS.
-
-        :param pattern: Pattern used to match the old repository directories
-        """
-        for old_bios_dir in DCS_BIOS_REPO_DIR.parent.iterdir():
-            if old_bios_dir.match(pattern) and old_bios_dir.is_dir():
-                proc = run(fr'attrib -R -H -S {old_bios_dir}\*.* /S /D'.split(' '), check=True, shell=False)
-                rmtree(old_bios_dir, ignore_errors=True)
-                LOG.debug(f'Clean up old DCS-BIOS git repository: {old_bios_dir} RC: {proc.returncode}')
 
     def event_set(self) -> None:
         """Set event to close running thread."""

@@ -190,7 +190,7 @@ class LcdSdkManager:
         else:
             LOG.warning('LCD is not connected')
 
-    def clear_display(self, true_clear=False) -> None:
+    def clear_display(self, true_clear: bool = False) -> None:
         """
         Clear display.
 
@@ -202,7 +202,7 @@ class LcdSdkManager:
             self._clear_color(true_clear)
         self.logi_lcd_update()
 
-    def _clear_mono(self, true_clear) -> None:
+    def _clear_mono(self, true_clear: bool) -> None:
         """
         Clear mono display.
 
@@ -213,7 +213,7 @@ class LcdSdkManager:
             for i in range(4):
                 self.logi_lcd_mono_set_text(i, '')
 
-    def _clear_color(self, true_clear) -> None:
+    def _clear_color(self, true_clear: bool) -> None:
         """
         Clear color display.
 

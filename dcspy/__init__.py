@@ -11,7 +11,7 @@ from dcspy.models import LOCAL_APPDATA
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
 LOG = getLogger(__name__)
-__version__ = '3.4.2'
+__version__ = '3.5.1'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 _start_cfg = load_yaml(full_path=default_yaml)

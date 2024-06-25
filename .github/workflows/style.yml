@@ -64,10 +64,6 @@ jobs:
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
-      - name: "Patch QtGui.pyi"
-        run: |
-          patch /opt/hostedtoolcache/Python/3.12.3/x64/lib/python3.12/site-packages/PySide6/QtGui.pyi < QtGui_pyi.patch
-
       - name: "Check mypy"
         run: |
           mypy .

@@ -13,7 +13,7 @@ from dcspy.models import DcspyConfigYaml
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.4.2'
+__version__ = '3.5.1'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
@@ -54,6 +54,17 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
     for api_ver in api_ver_list:
         if version.Version(api_ver) > version.Version(cfg_ver) <= version.Version(__version__):
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
+
+
+def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.5.1.
+
+    :param cfg: Configuration dictionary
+    """
+    user_appdata = get_config_yaml_location()
+    makedirs(name=user_appdata, exist_ok=True)
+    _copy_file(filename='F-4E-45MC.yaml', to_path=user_appdata, force=True)
 
 
 def _api_ver_3_4_0(cfg: DcspyConfigYaml) -> None:
@@ -171,7 +182,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     LOG.debug(f'Rename key {old_name} -> {new_name} with: {value}')
 
 
-def _copy_file(filename: str, to_path: Path, force=False) -> None:
+def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
     """
     Copy a file from one location to another, only when the file doesn't exist.
 

@@ -31,9 +31,9 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.4.2'
+__version__ = '3.5.1'
 CONFIG_YAML = 'config.yaml'
-DEFAULT_YAML_FILE = Path(__file__).resolve().with_name(CONFIG_YAML)
+DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
@@ -621,6 +621,21 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
+
+
+def run_command(cmd: str) -> int:
+    """
+    Run shell command as a subprocess.
+
+    :param cmd: The command to be executed as a string
+    :return: The return code of command
+    """
+    try:
+        proc = run(cmd.split(' '), check=True, shell=False)
+        return proc.returncode
+    except CalledProcessError as e:
+        LOG.debug(f'Result: {e}')
+        return -1
 
 
 def load_json(full_path: Path) -> Any:

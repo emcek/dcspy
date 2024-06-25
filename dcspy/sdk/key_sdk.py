@@ -41,11 +41,11 @@ class GkeySdkManager:
         self.key_dll: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
         self.gkey_context = LogiGkeyCBContext()
         self.user_callback = callback
-        self.gkey_context.gkeyCallBack = GKEY_CALLBACK(self._callback)
+        self.gkey_context.gkeyCallBack = GKEY_CALLBACK(self.callback)
         self.gkey_context.gkeyContext = c_void_p()
         self.gkey_context_ptr = pointer(self.gkey_context)
 
-    def _callback(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
+    def callback(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
         """
         Receive callback events for G-key button pushes.
 

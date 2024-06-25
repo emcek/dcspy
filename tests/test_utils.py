@@ -94,7 +94,7 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.4.2',
+        'api_ver': '3.5.1',
         'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
@@ -301,6 +301,14 @@ def test_run_pip_command_failed():
     assert err != '', err
 
 
+@mark.slow
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+@mark.parametrize('cmd, result', [('Clear-Host', 0), ('bullshit', -1)])
+def test_run_command(cmd, result):
+    rc = utils.run_command(cmd=f'powershell {cmd}')
+    assert rc == result
+
+
 def test_get_full_bios_for_plane(test_dcs_bios):
     a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     assert len(a10_model.root) == 64
@@ -342,6 +350,7 @@ def test_get_plane_aliases_all(test_dcs_bios):
         'F-14B': ['CommonData', 'F-14', 'NS430'],
         'F-15ESE': ['CommonData', 'F-15E'],
         'F-16C_50': ['CommonData', 'F-16C_50'],
+        'F-4E-45MC': ['CommonData', 'F-4E'],
         'FA-18C_hornet': ['CommonData', 'FA-18C_hornet'],
         'Ka-50': ['CommonData', 'Ka-50'],
         'Ka-50_3': ['CommonData', 'Ka-50'],
@@ -373,6 +382,7 @@ def test_get_planes_list(test_dcs_bios):
         'F-14B',
         'F-15ESE',
         'F-16C_50',
+        'F-4E-45MC',
         'FA-18C_hornet',
         'Ka-50',
         'Ka-50_3',

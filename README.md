@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v3.4.2-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v3.5.1-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://app.codacy.com/gh/emcek/dcspy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
@@ -12,7 +12,6 @@
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6056/badge)](https://bestpractices.coreinfrastructure.org/projects/6056)
 [![Downloads](https://static.pepy.tech/badge/dcspy)](https://pepy.tech/project/dcspy)
-[![Rate this package](https://badges.openbase.com/python/rating/dcspy.svg?token=AZCVj1Hdbl6cC3I/gkVpgsigp22LtCOR0sB8lcODY9Y=)](https://openbase.com/python/dcspy?utm_source=embedded&amp;utm_medium=badge&amp;utm_campaign=rate-badge)
 
 ![dcspylogo](https://i.imgur.com/eqqrPB8.jpg)
 ## DCSpy
@@ -49,13 +48,16 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display (EUFD)
 * F-15E Eagle - Upfront Control Panel
+* F-4 Phantom II - UHF (ARC 164) Radio
 * more to come...
 
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
-* [Git](https://git-scm.com/download/win) it is necessary for using the live version of DCS-BIOS, see [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios)
-* [DCS-BIOS 0.7.50](https://github.com/DCS-Skunkworks/dcs-bios/releases/latest) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
-* DCS World: [2.9.4.53707](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.4.53707/), but any version from 2.9.* branch should be fine.
+* DCS-Skunkworks DCS-BIOS:
+  * [DCS-BIOS 0.8.0](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.8.0) or newer (can be [installed](https://github.com/emcek/dcspy/wiki/Upgrade#manual-procedure) directly from DCSpy)
+  * However, it is recommended use [Live DCS-BIOS](https://github.com/emcek/dcspy/wiki/Information#live-dcs-bios) as latest git version
+  * [Git](https://git-scm.com/download/win) it is necessary for using the live version of DCS-BIOS
+* DCS World: [2.9.5.55918](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.5.55918/), but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.12](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://github.com/emcek/dcspy/wiki/installation))
   * However, DCSpy 2.3.3 and earlier do not support Python 3.12

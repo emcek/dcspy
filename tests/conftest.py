@@ -24,7 +24,7 @@ def generate_plane_fixtures(plane, lcd_info: models.LcdInfo, fonts: models.Fonts
     def _fixture():
         """Fixture."""
         lcd_info.set_fonts(fonts=fonts)
-        with patch('dcspy.aircraft.default_yaml', Path(__file__).resolve().parents[1] / 'dcspy' / 'config.yaml'):
+        with patch('dcspy.aircraft.default_yaml', Path(__file__).resolve().parents[1] / 'dcspy' / 'resources' / 'config.yaml'):
             plane_instance = plane(lcd_type=lcd_info, update_display=bool)
         return plane_instance
     return _fixture
@@ -53,8 +53,8 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
     return _fixture
 
 
-for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT',
-                    'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503',
+                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
         if lcd.type == models.LcdType.COLOR:
@@ -423,6 +423,24 @@ def f15ese_mono_bios():
         ('F_UFC_LINE5_DISPLAY', '*U262000    U133000*'),
         ('F_UFC_LINE6_DISPLAY', ' 10               G '),
     ]
+
+
+@fixture()
+def f4e45mc_mono_bios():
+    """Bios values for F-4E Phantom II for Logitech mono LCD."""
+    return [
+        ('PLT_ARC_164_FREQ_MODE', 1),
+        ('PLT_ARC_164_MODE', 3),
+        ('PLT_ARC_164_AUX_CHANNEL', 11),
+        ('PLT_ARC_164_FREQ', '251.225'),
+        ('PLT_ARC_164_COMM_CHANNEL', 8),
+    ]
+
+
+@fixture()
+def f4e45mc_color_bios(f4e45mc_mono_bios):
+    """Bios values for F-4E Phantom II for Logitech color LCD."""
+    return f4e45mc_mono_bios
 
 
 @fixture()

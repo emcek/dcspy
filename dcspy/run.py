@@ -12,7 +12,7 @@ from dcspy import get_config_yaml_item
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '3.4.2'
+__version__ = '3.5.1'
 
 
 def run(cli_args: Namespace = Namespace()) -> None:
