@@ -90,6 +90,11 @@ dev = [
     'pre-commit',
     'pyinstaller',
 ]
+docs = [
+    'mkdocs',
+    'plantuml',
+    'mkdocs-plantuml',
+]
 
 [tool.setuptools.dynamic]
 version = {attr = 'dcspy.run.__version__'}
