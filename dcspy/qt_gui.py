@@ -135,7 +135,7 @@ class DcsPyQtGui(QMainWindow):
             self.combo_planes.setCompleter(completer)
             self.input_reqs = {plane: {} for plane in plane_list}
         except FileNotFoundError as exc:
-            message = f'Folder not exists: \n{self.config["dcsbios"]}\n\nCheck DCS-BIOS path.\n\n{exc}'
+            message = f'Folder not exists: \n{self.config["dcsbios"]}\n\nCheck DCS-BIOS path.\n\n{exc}'  # generate json/bios
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Planes List', message=message)
         except TypeError as exc:
             LOG.warning(exc, exc_info=True)
@@ -159,11 +159,11 @@ class DcsPyQtGui(QMainWindow):
         self.le_bios_live.textEdited.connect(self._is_git_object_exists)
         self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
         self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
-        self.sp_completer.valueChanged.connect(self._set_find_value)
+        self.sp_completer.valueChanged.connect(self._set_find_value)  # generate json/bios
         self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
         self.pb_copy.clicked.connect(self._copy_cell_to_row)
         self.pb_save.clicked.connect(self._save_gkeys_cfg)
-        self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
+        self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)  # generate json/bios
         self.bg_rb_input_iface.addButton(self.rb_action)
         self.bg_rb_input_iface.addButton(self.rb_cycle)
         self.bg_rb_input_iface.addButton(self.rb_set_state)
@@ -245,7 +245,7 @@ class DcsPyQtGui(QMainWindow):
             logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
             dev = getattr(self, logi_dev_rb_name)
             if dev.isChecked():
-                self._select_logi_dev(logi_dev=logitech_dev, state=True)
+                self._select_logi_dev(logi_dev=logitech_dev, state=True)  # generate json/bios
                 self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
                 break
 
@@ -284,7 +284,7 @@ class DcsPyQtGui(QMainWindow):
             self._update_dock()
             self.current_row = -1
             self.current_col = -1
-            self._load_table_gkeys()
+            self._load_table_gkeys()  # generate json/bios
             self.current_row = 0
             self.current_col = 0
             cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
@@ -376,6 +376,32 @@ class DcsPyQtGui(QMainWindow):
             return True
         getattr(self, widget_name).setStyleSheet('color: red;')
         return False
+
+    def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
+        """
+        Regenerate DCS-BIOS JSONs files.
+
+        :param dcs_path: full path to DCS World installation directory as Path object
+        :param bios_path: full path to DCS-BIOS directory as Path object
+        :return: True if generation is successful, False otherwise.
+        """
+        lua_exec = dcs_path / 'bin' / 'luae.exe'
+        cwd = bios_path.parents[1]
+        LOG.info('Regenerating DCS-BIOS JSONs files...')
+        return_code = -1
+        try:
+            return_code = run_command(cmd=f'{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua', cwd=cwd)
+        except FileNotFoundError as err:
+            tb = traceback.format_exception(*sys.exc_info())
+            self._show_custom_msg_box(
+                kind_of=QMessageBox.Icon.Warning,
+                title='Problem with command',
+                text=f'Error during executing command:\n{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua',
+                info_txt=f'Problem: {err}\n\nPlease report error with detail below.',
+                detail_txt='\n'.join(tb)
+            )
+        LOG.debug(f'RC: {return_code} {lua_exec=}, {cwd=}')
+        return True if return_code == 0 else False
 
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
     def _load_table_gkeys(self) -> None:
@@ -475,9 +501,10 @@ class DcsPyQtGui(QMainWindow):
         :return: A dictionary of the plane aliases or empty dict.
         """
         try:
+            self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
-            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'
+            message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
             return dict()
 
@@ -1315,11 +1342,20 @@ class DcsPyQtGui(QMainWindow):
     @property
     def bios_path(self) -> Path:
         """
-        Get path to DCS-BIOS.
+        Get path to DCS-BIOS directory.
 
         :return: full path as Path
         """
         return Path(self.le_biosdir.text())
+
+    @property
+    def dcs_path(self) -> Path:
+        """
+        Get path to DCS World directory.
+
+        :return: full path as Path
+        """
+        return Path(self.le_dcsdir.text())
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: dict[str, Callable]) -> None:
