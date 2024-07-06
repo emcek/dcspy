@@ -26,7 +26,7 @@ jobs:
         run: |
           pip list -v
           rm C:\hostedtoolcache\windows\Python\3.12.4\x64\Lib\site-packages\PySide6\plugins\designer\qwebengineview.dll
-          python -m pytest -q -m 'not e2e' --img_precision 0 --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
+          python -m pytest -v -m 'not e2e' --img_precision 0 --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: "Upload pytest results"
         uses: actions/upload-artifact@v4
