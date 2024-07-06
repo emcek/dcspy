@@ -1,3 +1,6 @@
+## 3.5.2
+* Generate BIOS JSON's file during start-up and after BIOS update
+
 ## 3.5.1
 * Add missing `F-4E-45MC.yaml` - #316 (@emcek)
 
