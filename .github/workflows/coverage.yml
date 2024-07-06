@@ -23,8 +23,9 @@ jobs:
         env:
           PYSIDE_DESIGNER_PLUGINS: .
           PYTEST_QT_API: PySide6
+          DCSPY_NO_MSG_BOXES: 1
         run: |
-          python -m pytest -v -m 'not e2e and not qt6' --img_precision 0 --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
+          python -m pytest -v -m 'not e2e' --img_precision 0 --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: "Upload pytest results"
         uses: actions/upload-artifact@v4
