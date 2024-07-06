@@ -42,7 +42,7 @@ jobs:
           PYTEST_QT_API: PySide6
           DCSPY_NO_MSG_BOXES: 1
         run: |
-          python -m pytest -v -m "not e2e" --img_precision 0
+          python -m pytest -v -m 'not e2e' --img_precision 0
 
       - name: "Upload test results"
         uses: actions/upload-artifact@v4
