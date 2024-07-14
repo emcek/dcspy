@@ -393,22 +393,14 @@ def test_get_planes_list(test_dcs_bios):
 
 
 def test_clone_progress():
-    from PySide6.QtCore import QObject, Signal
-
-    class Signals(QObject):
-        progress = Signal(int)
-        stage = Signal(str)
-
     def update_progress(progress):
         assert progress == 100
 
     def update_label(stage):
         assert stage == 'Git clone: Counting'
 
-    signals = Signals()
-    signals.progress.connect(update_progress)
-    signals.stage.connect(update_label)
-    clone = utils.CloneProgress(signals.progress, signals.stage)
+    sig_handler = utils.SignalHandler(signals_dict={'stage': update_label, 'progress': update_progress})
+    clone = utils.CloneProgress(sig_handler=sig_handler)
     clone.update(5, 1, 1, 'test')
 
 
