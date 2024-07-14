@@ -1,7 +1,7 @@
 from os import environ, makedirs
 from pathlib import Path
 from sys import platform
-from unittest.mock import MagicMock, PropertyMock, mock_open, patch
+from unittest.mock import MagicMock, Mock, PropertyMock, mock_open, patch
 
 from packaging import version
 from pytest import mark, raises
@@ -451,3 +451,27 @@ def test_key_request_update_bios_data_and_set_req(test_config_yaml):
     assert key_req.cycle_button_ctrl_name == {'IFF_MASTER_KNB': 0}
     key_req.set_request(key, req)
     assert key_req.get_request(key).raw_request == req
+
+
+def test_emit_signal_handler():
+    mm = Mock(spec=utils.WorkerSignals)
+    sh = utils.SignalHandler(signals_dict={'stage': print, 'progress': print, 'finished': print}, signals=mm)
+
+    sh.emit(sig_name='stage', value='1')
+    mm.stage.emit.assert_called_once_with('1')
+    sh.emit(sig_name='progress', value=2)
+    mm.progress.emit.assert_called_once_with(2)
+    sh.emit(sig_name='finished')
+    mm.finished.emit.assert_called_once_with()
+
+
+@mark.parametrize('sig_dict,result', [
+    ({'count': print}, True),
+    ({'progress': print}, True),
+    ({'finished': print}, False),
+])
+def test_got_signals_in_signal_handler(sig_dict, result):
+    mm = Mock(spec=utils.WorkerSignals)
+    sh = utils.SignalHandler(signals_dict=sig_dict, signals=mm)
+
+    assert sh.got_signals_for_interface() is result
