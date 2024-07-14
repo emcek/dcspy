@@ -1265,7 +1265,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _count_dcsbios_changes(self, count_data: tuple[int, int]) -> None:
         """
-        Updates the count of events and total bytes received.
+        Update the count of events and total bytes received.
 
         :param count_data: A tuple containing the count of events and number of bytes.
         """
