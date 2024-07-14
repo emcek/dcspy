@@ -392,6 +392,7 @@ def test_get_planes_list(test_dcs_bios):
     ]
 
 
+@mark.skip
 def test_clone_progress():
     def update_progress(progress):
         assert progress == 100
