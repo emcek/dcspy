@@ -17,7 +17,8 @@ LOOP_FLAG = True
 __version__ = '3.5.1'
 
 
-def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event, sig_handler: SignalHandler) -> None:
+def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str,
+                       event: Event, sig_handler: SignalHandler) -> None:
     """
     Handle main loop where all the magic is happened.
 
