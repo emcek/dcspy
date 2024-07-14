@@ -1,7 +1,9 @@
 from enum import Enum, auto
 from functools import partial
 from struct import pack
-from typing import Callable
+from typing import Callable, Optional
+
+from dcspy.utils import SignalHandler
 
 
 class ParserState(Enum):
@@ -123,7 +125,7 @@ class ProtocolParser:
 
 class StringBuffer:
     """String buffer for DCS-BIOS protocol."""
-    def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable) -> None:
+    def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable, sig_handler: Optional[SignalHandler] = None) -> None:
         """
         Initialize instance.
 
@@ -131,6 +133,7 @@ class StringBuffer:
         :param address:
         :param max_length:
         :param callback:
+        :param sig_handler: Qt signal handler for progress notification
         """
         self.__address = address
         self.__length = max_length
@@ -138,6 +141,7 @@ class StringBuffer:
         self.buffer = bytearray(max_length)
         self.callbacks: set[Callable] = set()
         self.callbacks.add(callback)
+        self.sig_handler = sig_handler
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def set_char(self, index: int, char: int) -> None:
@@ -169,11 +173,13 @@ class StringBuffer:
             str_buff = self.buffer.split(sep=b'\x00', maxsplit=1)[0].decode('latin-1')
             for callback in self.callbacks:
                 callback(str_buff)
+                if self.sig_handler:
+                    self.sig_handler.emit(sig_name='count', value=(1, 0))
 
 
 class IntegerBuffer:
     """Integer buffer for DCS-BIOS protocol."""
-    def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable) -> None:
+    def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable, sig_handler: Optional[SignalHandler] = None) -> None:
         """
         Initialize instance.
 
@@ -182,6 +188,7 @@ class IntegerBuffer:
         :param mask:
         :param shift_by:
         :param callback:
+        :param sig_handler: Qt signal handler for progress notification
         """
         self.__address = address
         self.__mask = mask
@@ -189,6 +196,7 @@ class IntegerBuffer:
         self.__value = int()
         self.callbacks: set[Callable] = set()
         self.callbacks.add(callback)
+        self.sig_handler = sig_handler
         parser.write_callbacks.add(partial(self.on_dcsbios_write))
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
@@ -204,3 +212,5 @@ class IntegerBuffer:
                 self.__value = value
                 for callback in self.callbacks:
                     callback(value)
+                    if self.sig_handler:
+                        self.sig_handler.emit(sig_name='count', value=(1, 0))
