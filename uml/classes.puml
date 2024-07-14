@@ -15,14 +15,18 @@ package dcsbios {
     class StringBuffer {
         + buffer : bytearray
         + callbacks: Set[Callable]
+        + sig_handler: SignalHandler
         + __init__(parser, address, max_length, callback)
         + set_char(index, char)
         + on_dcsbios_write(address, data)
+        + check_callbacks(str)
     }
     class IntegerBuffer {
         + callbacks: Set[Callable]
+        + sig_handler: SignalHandler
         + __init__(parser, address, mask, shift_by, callback)
         + on_dcsbios_write(address, data)
+        + check_callbacks(int)
     }
     class ParserState <<(E,yellow)>> {
         ADDRESS_LOW = 1
@@ -46,6 +50,7 @@ package logitech {
         + plane_detected = False : bool
         + lcdbutton_pressed = False : bool
         + model: LogitechDeviceModel
+        + sig_handler: SignalHandler
         + __init__(ProtocolParser, socket, FontsConfig)
         + display(message : List[str]) -> List[str]
         + detecting_plane()
@@ -116,7 +121,16 @@ package utils {
         + get_request(Union[LcdButton, Gkey, MouseButton]]) -> RequestModel
         + set_request(Union[LcdButton, Gkey, MouseButton]], str)
     }
+    class SignalHandler{
+        - _sig_handler: Dict[str, Callable]
+        + signals: WorkerSignals
+        + got_signals_for_interface() -> bool
+        + emit(str, object)
+    }
     KeyRequest -* BasicAircraft
+    SignalHandler -* LogitechDevice
+    SignalHandler -* IntegerBuffer
+    SignalHandler -* StringBuffer
 }
 
 package models {
