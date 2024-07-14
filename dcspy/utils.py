@@ -448,10 +448,11 @@ class WorkerSignals(QObject):
 
 
 class SignalHandler:
-    """Qt signal handler for GUI notification"""
+    """QtSignal handler for GUI notification."""
+
     def __init__(self, signals_dict: dict[str, Callable], signals: QObject = WorkerSignals()) -> None:
         """
-        Used for passing signals function and emit to Qt GUI.
+        Use for passing signals function and emit to Qt GUI.
 
         :param signals_dict: The keys are the signal names, and the values are the corresponding handler functions.
         :param signals: QObject used for handling signals, the default is WorkerSignals class.
@@ -475,7 +476,7 @@ class SignalHandler:
 
     def emit(self, sig_name: str, **kwargs) -> None:
         """
-        Emits the signal with the name and value.
+        Emit the signal with the name and value.
 
         :param sig_name: The name of the signal to emit.
         """
