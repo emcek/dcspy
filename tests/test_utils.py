@@ -401,7 +401,7 @@ def test_clone_progress():
 
     sig_handler = utils.SignalHandler(signals_dict={'stage': update_label, 'progress': update_progress})
     clone = utils.CloneProgress(sig_handler=sig_handler)
-    clone.update(5, 1, 1, 'test')
+    clone.update(5, 10, 10, 'test')
 
 
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
