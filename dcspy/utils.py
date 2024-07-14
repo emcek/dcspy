@@ -20,6 +20,7 @@ from typing import Any, Callable, ClassVar, Optional, Union
 import yaml
 from packaging import version
 from psutil import process_iter
+from PySide6.QtCore import QObject, Signal
 from requests import get
 
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
@@ -494,16 +495,14 @@ class CloneProgress(git.RemoteProgress):
     OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
     OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
 
-    def __init__(self, progress, stage) -> None:
+    def __init__(self, sig_handler: SignalHandler) -> None:
         """
         Initialize the progress handler.
 
-        :param progress: progress Qt6 signal
-        :param stage: report stage Qt6 signal
+        :param sig_handler: Qt signal handler for progress notification
         """
         super().__init__()
-        self.progress_signal = progress
-        self.stage_signal = stage
+        self.sig_handler = sig_handler
 
     def get_curr_op(self, op_code: int) -> str:
         """
@@ -525,10 +524,10 @@ class CloneProgress(git.RemoteProgress):
         :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
         """
         if op_code & git.RemoteProgress.BEGIN:
-            self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
+            self.sig_handler.emit(sig_name='stage', value=f'Git clone: {self.get_curr_op(op_code)}')
 
         percentage = int(cur_count / max_count * 100) if max_count else 0
-        self.progress_signal.emit(percentage)
+        self.sig_handler.emit(sig_name='progress', value=percentage)
 
 
 def collect_debug_data() -> Path:
