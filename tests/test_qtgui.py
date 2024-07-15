@@ -33,8 +33,10 @@ def test_qt(qtbot, test_config_yaml, switch_dcs_bios_path_in_config, resources, 
             dcspy_gui.combo_planes.setCurrentIndex(1)
             assert dcspy_gui.current_plane == 'A-10C_2'
             sleep(0.7)
-            # qtbot.mouseClick(dcspy_gui.pb_start, Qt.LeftButton)
-            # qtbot.mouseClick(dcspy_gui.pb_stop, Qt.LeftButton)
+            qtbot.mouseClick(dcspy_gui.pb_start, Qt.LeftButton)
+            sleep(0.5)
+            qtbot.mouseClick(dcspy_gui.pb_stop, Qt.LeftButton)
+            sleep(0.5)
             qtbot.mouseClick(dcspy_gui.pb_collect_data, Qt.LeftButton)
             dcspy_gui.dw_gkeys.show()
 
