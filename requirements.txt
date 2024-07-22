@@ -1,10 +1,10 @@
 cffi==1.16.0
 GitPython==3.1.43
 packaging==24.1
-Pillow==10.3.0
+pillow==10.4.0
 psutil==6.0.0
-pydantic==2.7.4
+pydantic==2.8.2
 PySide6==6.7.2
 PyYAML==6.0.1
 requests==2.32.3
-typing_extensions==4.12.0; python_version < '3.12'
+typing_extensions==4.12.2; python_version < '3.12'
