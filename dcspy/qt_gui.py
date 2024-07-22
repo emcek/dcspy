@@ -1325,7 +1325,7 @@ class DcsPyQtGui(QMainWindow):
         self.total_b += no_bytes
         if count:
             self.blink_label.emit()
-        self.status_label.setText(f'Events received: {self.count} | Bytes received: {self.total_b / 1024:,.0f} kB')
+        self.status_label.setText(f'Events received: {self.count} | Bytes received: {self.bytes_auto_unit(self.total_b)}')
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
     def apply_configuration(self, cfg: dict) -> None:
@@ -1597,6 +1597,20 @@ class DcsPyQtGui(QMainWindow):
     def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
+
+    @staticmethod
+    def bytes_auto_unit(no_of_bytes: int) -> str:
+        """
+        Convert the given number of bytes to a string representation with appropriate unit.
+
+        :param no_of_bytes: The number of bytes to convert.
+        :return: The string representation of the converted bytes.
+        """
+        _bytes = float(no_of_bytes)
+        for unit in ['B', 'kB', 'MB', 'GB']:
+            if _bytes < 1024.0:
+                return f'{_bytes:,.1f} {unit}'
+            _bytes /= 1024.0
 
     def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
         """
