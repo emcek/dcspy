@@ -18,9 +18,9 @@ from webbrowser import open_new_tab
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Slot
+from PySide6.QtCore import QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Slot, Signal, QEvent
 from PySide6.QtCore import __version__ as qt6_ver
-from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItem
+from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
@@ -44,6 +44,43 @@ LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0,
                          'rb_g910': 1, 'rb_g710': 1, 'rb_g110': 1, 'rb_g103': 1, 'rb_g105': 1, 'rb_g11': 1,
                          'rb_g633': 2, 'rb_g35': 2, 'rb_g930': 2, 'rb_g933': 2,
                          'rb_g600': 3, 'rb_g300': 3, 'rb_g400': 3, 'rb_g700': 3, 'rb_g9': 3, 'rb_mx518': 3, 'rb_g402': 3, 'rb_g502': 3, 'rb_g602': 3}
+
+
+class CircleLabel(QLabel):
+    def __init__(self, color_on: Qt.GlobalColor = Qt.GlobalColor.green, *args, **kwargs) -> None:
+        """
+        Initializes the object with the given parameters.
+
+        :param color_on: The color when the label is in `on` state, default is green.
+        """
+        super().__init__(*args, **kwargs)
+        self.state = False
+        self.pen = QPen(Qt.GlobalColor.black)
+        self.brush_on = QBrush(color_on)
+        self.brush_off = QBrush(Qt.GlobalColor.transparent)
+
+    def paintEvent(self, event: QEvent) -> None:
+        """
+        Paint event.
+
+        :param event: the paint event that triggered the method
+        """
+        painter = QPainter(self)
+        brush = self.brush_on if self.state else self.brush_off
+        painter.setPen(self.pen)
+        painter.setBrush(brush)
+        painter.drawEllipse(3, 3, 14, 14)
+        painter.end()
+
+    @Slot()
+    def blink(self) -> None:
+        """Blink label with color defined in constructor."""
+        for _ in range(3):
+            self.state = not self.state
+            self.repaint()
+            sleep(0.05)
+        self.state = not self.state
+        self.repaint()
 
 
 class DcsPyQtGui(QMainWindow):
