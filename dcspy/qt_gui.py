@@ -85,6 +85,7 @@ class CircleLabel(QLabel):
 
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
+    blink_label = Signal()
 
     def __init__(self, cli_args=Namespace(), cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
         """
@@ -135,6 +136,7 @@ class DcsPyQtGui(QMainWindow):
         self._init_settings()
         self._init_devices()
         self._init_autosave()
+        self._init_statusbar()
         self._trigger_refresh_data()
 
         if self.cb_autoupdate_bios.isChecked():
@@ -144,10 +146,10 @@ class DcsPyQtGui(QMainWindow):
             status_ver = ''
             status_ver += f'Dcspy: {data.dcspy_ver} ' if self.config['check_ver'] else ''
             status_ver += f'BIOS: {data.bios_ver}' if self.config['check_bios'] else ''
-            self.statusbar.showMessage(status_ver)
+            self.status_label.setText(status_ver)
         if self.config.get('autostart', False):
             self._start_clicked()
-        self.statusbar.showMessage(f'ver. {__version__}')
+        self.status_label.setText(f'ver. {__version__}')
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
@@ -273,6 +275,16 @@ class DcsPyQtGui(QMainWindow):
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
+    def _init_statusbar(self) -> None:
+        """Initialize the statusbar."""
+        self.status_circle = CircleLabel()
+        self.status_circle.setMinimumSize(20, 20)
+        self.status_label = QLabel()
+        self.setStatusBar(self.statusbar)
+        self.statusbar.addWidget(self.status_circle)
+        self.statusbar.addWidget(self.status_label)
+        self.blink_label.connect(self.status_circle.blink)
+
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
         self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
@@ -377,7 +389,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             destination = Path(directory) / zip_file.name
             copy(zip_file, destination)
-            self.statusbar.showMessage(f'Save: {destination}')
+            self.status_label.setText(f'Save: {destination}')
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
@@ -611,7 +623,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             key_name = text.split(' ')[0]
             clipboard.setText(key_name)
-            self.statusbar.showMessage(f'{key_name} copied to clipboard')
+            self.status_label.setText(f'{key_name} copied to clipboard')
         except IndexError:
             LOG.debug(f'Can not split: {text=}.')
 
@@ -930,7 +942,7 @@ class DcsPyQtGui(QMainWindow):
     def _dcspy_check_clicked(self) -> None:
         """Check a version of DCSpy and show message box."""
         ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
-        self.statusbar.showMessage(ver_string)
+        self.status_label.setText(ver_string)
         if 'update!' in ver_string:
             self.systray.showMessage('DCSpy', f'New: {ver_string}', QIcon(':/icons/img/edit-download.svg'))
             self._download_new_release()
@@ -999,7 +1011,7 @@ class DcsPyQtGui(QMainWindow):
         if self.cb_bios_live.isChecked():
             signals_dict = {
                 'progress': self._progress_by_abs_value,
-                'stage': self.statusbar.showMessage,
+                'stage': self.status_label.setText,
                 'error': self._error_during_bios_update,
                 'result': self._clone_bios_completed,
             }
@@ -1058,7 +1070,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
         install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
         install_result = f'{install_result}\n\nUsing Git/Live version.'
-        self.statusbar.showMessage(sha)
+        self.status_label.setText(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._update_bios_ver_file()
@@ -1081,7 +1093,7 @@ class DcsPyQtGui(QMainWindow):
         """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
-        self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
+        self.status_label.setText(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
         correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
         dcs_runs = proc_is_running(name='DCS.exe')
@@ -1181,7 +1193,7 @@ class DcsPyQtGui(QMainWindow):
                 open_new_tab(r'https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
         else:
             local_bios = self._check_local_bios()
-            self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            self.status_label.setText(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
             install_result = f'{install_result}\n\nUsing stable release version.'
             self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
@@ -1255,7 +1267,7 @@ class DcsPyQtGui(QMainWindow):
             self.cb_ded_font.setEnabled(True)
         self.total_b = 0
         self.count = 0
-        self.statusbar.showMessage('DCSpy client stopped')
+        self.status_label.setText('DCSpy client stopped')
 
     def _start_clicked(self) -> None:
         """Run real application in thread."""
@@ -1281,7 +1293,7 @@ class DcsPyQtGui(QMainWindow):
             'count': self._count_dcsbios_changes
         }
         self.run_in_background(job=partial(dcspy_run, model=self.device, event=self.event), signals_dict=signal_dict)
-        self.statusbar.showMessage('DCSpy client started')
+        self.status_label.setText('DCSpy client started')
 
     def _error_from_client(self, exc_tuple) -> None:
         """
@@ -1309,7 +1321,9 @@ class DcsPyQtGui(QMainWindow):
         count, no_bytes = count_data
         self.count += count
         self.total_b += no_bytes
-        self.statusbar.showMessage(f'Bytes received: {self.total_b / 1024:,.0f} kB | Events received: {self.count}')
+        if count:
+            self.blink_label.emit()
+        self.status_label.setText(f'Events received: {self.count} | Bytes received: {self.total_b / 1024:,.0f} kB')
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
     def apply_configuration(self, cfg: dict) -> None:
