@@ -18,7 +18,7 @@ from webbrowser import open_new_tab
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Slot, Signal, QEvent
+from PySide6.QtCore import QEvent, QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Signal, Slot
 from PySide6.QtCore import __version__ as qt6_ver
 from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtUiTools import QUiLoader
@@ -47,9 +47,11 @@ LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0,
 
 
 class CircleLabel(QLabel):
+    """Blinking green circle."""
+
     def __init__(self, color_on: Qt.GlobalColor = Qt.GlobalColor.green, *args, **kwargs) -> None:
         """
-        Initializes the object with the given parameters.
+        Initialize the object with the given parameters.
 
         :param color_on: The color when the label is in `on` state, default is green.
         """
