@@ -51,7 +51,7 @@ class ProtocolParser:
         """
         Handle ADDRESS_LOW state.
 
-        :param int_byte: data to process
+        :param int_byte: Data to process
         """
         self.address = int_byte
         self.state = ParserState.ADDRESS_HIGH
@@ -60,7 +60,7 @@ class ProtocolParser:
         """
         Handle ADDRESS_HIGH state.
 
-        :param int_byte: data to process
+        :param int_byte: Data to process
         """
         self.address += int_byte * 256
         if self.address != 0x5555:
@@ -72,7 +72,7 @@ class ProtocolParser:
         """
         Handle COUNT_LOW state.
 
-        :param int_byte: data to process
+        :param int_byte: Data to process
         """
         self.count = int_byte
         self.state = ParserState.COUNT_HIGH
@@ -81,7 +81,7 @@ class ProtocolParser:
         """
         Handle COUNT_HIGH state.
 
-        :param int_byte: data to process
+        :param int_byte: Data to process
         """
         self.count += 256 * int_byte
         self.state = ParserState.DATA_LOW
@@ -90,7 +90,7 @@ class ProtocolParser:
         """
         Handle DATA_LOW state.
 
-        :param int_byte: data to process
+        :param int_byte: Data to process
         """
         self.data = int_byte
         self.count -= 1
@@ -100,7 +100,7 @@ class ProtocolParser:
         """
         Handle DATA_HIGH state.
 
-        :param int_byte: data to process
+        :param int_byte: Data to process
         """
         self.data += 256 * int_byte
         self.count -= 1

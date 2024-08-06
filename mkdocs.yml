@@ -1,0 +1,11 @@
+site_name: DCSpy
+nav:
+  - Home: index.md
+
+theme:
+  name: readthedocs
+#  name: mkdocs
+
+plugins:
+  - search
+  - plantuml-colocator  # ![Alt Text](my-diagram.puml)

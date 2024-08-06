@@ -33,8 +33,8 @@ def get_config_yaml_item(key: str, /, default: Optional[Union[str, int]] = None)
     """
     Get item from configuration YAML file.
 
-    :param key: key to get
-    :param default: default value if key not found
-    :return: value from configuration
+    :param key: Key to get
+    :param default: Default value if key not found
+    :return: Value from configuration
     """
     return load_yaml(full_path=default_yaml).get(key, default)
