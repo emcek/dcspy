@@ -20,6 +20,7 @@ from typing import Any, Callable, ClassVar, Optional, Union
 import yaml
 from packaging import version
 from psutil import process_iter
+from PySide6.QtCore import QObject, Signal
 from requests import get
 
 from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
@@ -425,21 +426,84 @@ def get_sha_for_current_git_ref(git_ref: str, repo: str = 'DCS-Skunkworks/dcs-bi
     return head_commit.hexsha
 
 
+class WorkerSignals(QObject):
+    """
+    Defines the signals available from a running worker thread.
+
+    Supported signals are:
+    * finished - no data
+    * error - tuple with exctype, value, traceback.format_exc()
+    * result - object/any type - data returned from processing
+    * progress - int as indication of progress
+    * stage - string with current stage
+    * count - tuple of int as count of events
+    """
+
+    finished = Signal()
+    error = Signal(tuple)
+    result = Signal(object)
+    progress = Signal(int)
+    stage = Signal(str)
+    count = Signal(tuple)
+
+
+class SignalHandler:
+    """QtSignal handler for GUI notification."""
+
+    def __init__(self, signals_dict: dict[str, Callable], signals: QObject = WorkerSignals()) -> None:
+        """
+        Use for passing signals function and emit to Qt GUI.
+
+        :param signals_dict: The keys are the signal names, and the values are the corresponding handler functions.
+        :param signals: QObject used for handling signals, the default is WorkerSignals class.
+        """
+        self._sig_handler = signals_dict
+        self.signals = signals
+        for signal, handler in signals_dict.items():
+            getattr(self.signals, signal).connect(handler)
+
+    def got_signals_for_interface(self) -> bool:
+        """
+        Check if there are progress or count signals for the interface.
+
+        :return: True if there are signals for the interface, False otherwise.
+        """
+        if self._sig_handler.get('progress', False):
+            return True
+        if self._sig_handler.get('count', False):
+            return True
+        return False
+
+    def emit(self, sig_name: str, **kwargs) -> None:
+        """
+        Emit the signal with the name and value.
+
+        :param sig_name: The name of the signal to emit.
+        """
+        value = kwargs.get('value', 'No value set')
+        if value == 'No value set':
+            getattr(self.signals, sig_name).emit()
+        else:
+            getattr(self.signals, sig_name).emit(value)
+
+    def __str__(self) -> str:
+        signals = {signal: handler.__name__ for signal, handler in self._sig_handler.items()}
+        return f'{signals}'
+
+
 class CloneProgress(git.RemoteProgress):
     """Handler providing an interface to parse progress information emitted by git."""
     OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
     OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
 
-    def __init__(self, progress, stage) -> None:
+    def __init__(self, sig_handler: SignalHandler) -> None:
         """
         Initialize the progress handler.
 
-        :param progress: progress Qt6 signal
-        :param stage: report stage Qt6 signal
+        :param sig_handler: Qt signal handler for progress notification
         """
         super().__init__()
-        self.progress_signal = progress
-        self.stage_signal = stage
+        self.sig_handler = sig_handler
 
     def get_curr_op(self, op_code: int) -> str:
         """
@@ -461,10 +525,10 @@ class CloneProgress(git.RemoteProgress):
         :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
         """
         if op_code & git.RemoteProgress.BEGIN:
-            self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
+            self.sig_handler.emit(sig_name='stage', value=f'Git clone: {self.get_curr_op(op_code)}')
 
         percentage = int(cur_count / max_count * 100) if max_count else 0
-        self.progress_signal.emit(percentage)
+        self.sig_handler.emit(sig_name='progress', value=percentage)
 
 
 def collect_debug_data() -> Path:

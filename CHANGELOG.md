@@ -1,5 +1,7 @@
 ## 3.5.2
 * Generate BIOS JSON's file during start-up and after BIOS update
+* Internal:
+  * make starting DCSpy client in thread more flexible
 
 ## 3.5.1
 * Add missing `F-4E-45MC.yaml` - #316 (@emcek)
