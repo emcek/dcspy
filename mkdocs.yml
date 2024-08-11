@@ -1,6 +1,13 @@
 site_name: DCSpy
+
 nav:
-  - Home: index.md
+  - Home: 'index.md'
+  - Development:
+      - 'Contributing': 'CONTRIBUTING.md'
+  - About:
+    - 'License': 'LICENSE.md'
+    - 'Secuirity': 'SECURITY.md'
+    - 'Chnagelog': 'CHANGELOG.md'
 
 theme:
   name: readthedocs
