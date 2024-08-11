@@ -4,6 +4,23 @@ nav:
   - Home: 'index.md'
   - Development:
       - 'Contributing': 'CONTRIBUTING.md'
+      - 'DCSpy API reference':
+        - __init__: 'dcspy.md'
+#        - aircraft: 'aircraft.md'
+#        - dcsbios: 'dcsbios.md'
+#        - log: 'log.md'
+#        - logitech: 'logitech.md'
+#        - migration: 'migration.md'
+#        - models: 'models.md'
+#        - qt_gui: 'qt_gui.md'
+#        - run: 'run.md'
+#        - sdk:
+#          - __init__: 'sdk.md'
+#          - lcd: 'lcd.md'
+#          - key: 'key.md'
+#          - led: 'led.md'
+#        - starter: 'starter.md'
+#        - utils: 'utils.md'
   - About:
     - 'License': 'LICENSE.md'
     - 'Secuirity': 'SECURITY.md'
@@ -16,4 +33,23 @@ theme:
 plugins:
   - search
   - plantuml-colocator  # ![Alt Text](my-diagram.puml)
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            import:
+              - https://docs.python.org/3/objects.inv
+            show_root_heading: true
+            members_order: source
+            filters: ["!^_"]
+            show_submodules: true
+            docstring_style: sphinx
+            docstring_options:
+              ignore_init_summary: false
+            merge_init_into_class: false
+            show_signature_annotations: true
+            signature_crossrefs: true
+            separate_signature: true
+
+
