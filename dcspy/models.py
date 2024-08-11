@@ -52,12 +52,7 @@ SUPPORTED_CRAFTS = {
 
 
 class AircraftKwargs(TypedDict):
-    """
-    Represent the keyword arguments expected by the Aircraft class.
-
-    :param update_display: Callable[[Image.Image], None]
-    :param bios_data: Mapping[str, Union[str, int]]
-    """
+    """Represent the keyword arguments expected by the Aircraft class."""
     update_display: Callable[[Image.Image], None]
     bios_data: Mapping[str, Union[str, int]]
 
