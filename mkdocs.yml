@@ -16,3 +16,4 @@ theme:
 plugins:
   - search
   - plantuml-colocator  # ![Alt Text](my-diagram.puml)
+  - mkdocstrings
