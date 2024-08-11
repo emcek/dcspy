@@ -501,7 +501,8 @@ class DcsPyQtGui(QMainWindow):
         :return: A dictionary of the plane aliases or empty dict.
         """
         try:
-            self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+            # todo: first fix issue #337
+            # self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
