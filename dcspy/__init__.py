@@ -31,7 +31,7 @@ LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
 def get_config_yaml_item(key: str, /, default: Optional[Union[str, int]] = None) -> Union[str, int, bool]:
     """
-    Get item from configuration YAML file.
+    Get item from a configuration YAML file.
 
     :param key: Key to get
     :param default: Default value if key not found

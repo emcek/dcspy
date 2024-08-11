@@ -59,9 +59,9 @@ def get_default_yaml(local_appdata: bool = False) -> Path:
 
 def load_yaml(full_path: Path) -> dict[str, Any]:
     """
-    Load yaml from file into dictionary.
+    Load YAML from a file into dictionary.
 
-    :param full_path: Full path to yaml file
+    :param full_path: Full path to YAML file
     :return: Dictionary with data
     """
     try:
@@ -79,10 +79,10 @@ def load_yaml(full_path: Path) -> dict[str, Any]:
 
 def save_yaml(data: dict[str, Any], full_path: Path) -> None:
     """
-    Save disc as yaml file.
+    Save disc as YAML file.
 
     :param data: Dictionary with data
-    :param full_path: Full a path to yaml file
+    :param full_path: Full a path to YAML file
     """
     with open(file=full_path, mode='w', encoding='utf-8') as yaml_file:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
@@ -175,7 +175,7 @@ def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
 
 def download_file(url: str, save_path: Path) -> bool:
     """
-    Download file from URL and save to save_path.
+    Download a file from URL and save to save_path.
 
     :param url: URL address
     :param save_path: full path to save
@@ -471,7 +471,7 @@ def collect_debug_data() -> Path:
     """
     Collect and zip all data for troubleshooting.
 
-    :return: Path object to zip file
+    :return: Path object to ZIP file
     """
     config_file = Path(get_config_yaml_location() / CONFIG_YAML).resolve()
     conf_dict = load_yaml(config_file)
@@ -568,10 +568,10 @@ def _get_log_files() -> Generator[Path, None, None]:
 
 def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
     """
-    Get a path to all configuration yaml files.
+    Get a path to all configuration YAML files.
 
     :param config_file: Path to the config file
-    :return: Generator of a path to yaml files
+    :return: Generator of a path to YAML files
     """
     return (
         Path(dirpath) / filename
@@ -625,7 +625,7 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
 
 def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
     """
-    Run shell command as a subprocess.
+    Run command in shell as a subprocess.
 
     :param cmd: The command to be executed as a string
     :param cwd: current working directory
@@ -641,10 +641,10 @@ def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
 
 def load_json(full_path: Path) -> Any:
     """
-    Load json from file into dictionary.
+    Load JSON from a file into dictionary.
 
     :param full_path: Full path
-    :return: Python representation of json
+    :return: Python representation of JSON
     """
     with open(full_path, encoding='utf-8') as json_file:
         data = json_file.read()
@@ -713,11 +713,11 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 @lru_cache
 def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> dict[str, list[str]]:
     """
-    Get a list of all yaml files for plane with name.
+    Get a list of all YAML files for plane with name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
-    :return: list of all yaml files for plane definition
+    :return: list of all YAML files for plane definition
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     aircraft_aliases = load_json(full_path=alias_path)

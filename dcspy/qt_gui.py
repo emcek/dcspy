@@ -379,9 +379,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
         """
-        Regenerate DCS-BIOS JSONs files.
+        Regenerate DCS-BIOS JSON files.
 
-        :param dcs_path: full path to DCS World installation directory as Path object
+        :param dcs_path: full path to DCS World installation directory as a Path object
         :param bios_path: full path to DCS-BIOS directory as Path object
         :return: True if generation is successful, False otherwise.
         """
@@ -515,7 +515,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param plane_aliases: BIOS plane aliases
         :param plane_name: That is to be validated
-        :return: True when rebuild is not needed, False otherwise
+        :return: True when rebuild is not required, False otherwise
         """
         try:
             return self._rebuild_needed(plane_aliases, plane_name)
@@ -524,11 +524,11 @@ class DcsPyQtGui(QMainWindow):
 
     def _rebuild_needed(self, plane_aliases: dict[str, list[str]], plane_name: str) -> bool:
         """
-        Rebuild is needed.
+        Rebuild is required.
 
-        :param plane_aliases: List of all yaml files for plane definition
+        :param plane_aliases: List of all YAML files for plane definition
         :param plane_name: BIOS plane name
-        :return: False - the rebuild is needed
+        :return: False - the rebuild is required
         """
         self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=self.bios_path)
         self.plane_aliases = plane_aliases[plane_name]
@@ -577,12 +577,12 @@ class DcsPyQtGui(QMainWindow):
 
     def _rebuild_not_needed(self, plane_aliases, plane_name: str, exc: ValidationError) -> bool:
         """
-        Rebuild is not needed.
+        Rebuild is not required.
 
-        :param plane_aliases: List of all yaml files for plane definition
+        :param plane_aliases: List of all YAML files for plane definition
         :param plane_name: BIOS plane name
         :param exc: The ValidationError object containing the validation errors.
-        :return: True - the rebuild is not needed
+        :return: True - the rebuild is not required
         """
         LOG.debug(f'{plane_name}: {plane_aliases}\nValidation errors: {exc}')
         self._show_custom_msg_box(
@@ -957,7 +957,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _start_bios_update(self, silence: bool) -> None:
         """
-        Make real update of git or stable DCS-BIOS version.
+        Make a real update of git or stable DCS-BIOS version.
 
         :param silence: Perform action with silence
         """
@@ -1357,7 +1357,7 @@ class DcsPyQtGui(QMainWindow):
     @property
     def dcs_path(self) -> Path:
         """
-        Get path to DCS World directory.
+        Get a path to DCS World directory.
 
         :return: full path as Path
         """
@@ -1829,9 +1829,9 @@ class UiLoader(QUiLoader):
 
     def loadUi(self, ui_path: Union[str, bytes, Path], baseinstance=None) -> QWidget:
         """
-        Load UI file.
+        Load a UI file.
 
-        :param ui_path: Path to UI file
+        :param ui_path: Path to a UI file
         :param baseinstance:
         :return: QWidget
         """

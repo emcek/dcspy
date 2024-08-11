@@ -188,7 +188,7 @@ def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
 
     :param filename: The name of the file to be copied.
     :param to_path: The full path where the file should be copied to.
-    :param force: Force to overwrite existing file
+    :param force: Force to overwrite an existing file
     """
     if not Path(to_path / filename).is_file() or force:
         try:

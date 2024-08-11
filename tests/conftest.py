@@ -105,9 +105,9 @@ def resources():
 @fixture()
 def test_config_yaml(resources):
     """
-    Path to YAML tests config file.
+    Path to YAML tests a config file.
 
-    :return: Path to yaml config file
+    :return: Path to YAML config file
     """
     return resources / 'config.yaml'
 
@@ -267,9 +267,9 @@ def default_config():
 @fixture()
 def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
     """
-    Switch a path to config yaml file during testing.
+    Switch a path to config YAML file during testing.
 
-    :param test_dcs_bios: Path to DCS-BIOS in test resources
+    :param test_dcs_bios: Path to DCS-BIOS in a test resources
     :param test_config_yaml: Testing confi.yaml file
     """
     from dcspy import utils

@@ -36,7 +36,7 @@ def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[tup
 
 def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
     """
-    Compare generated image with saved file.
+    Compare generated image with a saved file.
 
     :param img: Generated image
     :param file_path: path to reference image
