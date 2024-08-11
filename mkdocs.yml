@@ -51,5 +51,3 @@ plugins:
             show_signature_annotations: true
             signature_crossrefs: true
             separate_signature: true
-
-
