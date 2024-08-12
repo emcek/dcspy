@@ -5,10 +5,10 @@ If you encounter any problem during DCSpy usage, follow these steps:
 * enable **Save LCD screenshot**
 * enable **Show more logs**
 * restart DCSpy
-* try reproduce problem 
+* try reproduce problem
 * Immediately click **Stop** button
 * click **Collect data** button
-* It will ask you for location where to save zip archive with all data. 
+* It will ask you for location where to save zip archive with all data.
 
 You can examine content yourself, here is list of collected data:
 * Dcspy configuration: `C:\Users\<user>\AppData\Local\dcspy\config.yaml`

@@ -5,7 +5,7 @@ When enable DCSpy will use live/git version of DCS-BIOS. It is like DCS OpenBeta
 
 When you switch to live version for first time be patient DCSpy will download repository (ca. 150 MB it can take a few seconds), freeze can be expected.
 
-This is recommended way using DCS-BIOS by its developers. 
+This is recommended way using DCS-BIOS by its developers.
 
 DCSpy basically copy latest changes from DCS-BIOS repository into your `Save Games` folder, so every time you run DCSpy (when `Auto Update DCS-BIOS` is enable as well) latest commit from GitHub will be fetched.
 

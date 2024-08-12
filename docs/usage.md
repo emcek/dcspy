@@ -3,7 +3,7 @@
 1. Run Logitech Gaming Software (it allows accessing LCD)
 2. Double click at downloaded file.
 3. Click `Start`
-4. LCD should update with dcspy basic info, waiting to connect to DCS 
+4. LCD should update with dcspy basic info, waiting to connect to DCS
 5. Run DCS and start any mission.
 
 ## via pip (old way)
@@ -18,7 +18,7 @@
    * `dcspy_cli.exe` - additionally start console window (with logs)
 4. Double-click on dcspy icon or type `dcspy.exe`\`dcspy_cli.exe` from Command Prompt
 5. Click `Start`
-6. LCD should update with dcspy basic info, waiting to connect to DCS 
+6. LCD should update with dcspy basic info, waiting to connect to DCS
 7. Run DCS and start any mission.
 
 **Note:** DCS can already running, before starting LGS and or DCSpy.
@@ -26,13 +26,13 @@
 **Note:** If you upgrade DCSpy before version 1.7.0 `dcspy.ico` and `config.yaml` were in data directory like `c:\python312\dcspy_data\` but location is deperched in Python if you still have it, you can safely delete it
 
 # Mono vs. Color
-DCSpy do not use full potential of G19, which support full RGBA, 8-lines LCD.  
+DCSpy do not use full potential of G19, which support full RGBA, 8-lines LCD.
 In contrast to mono devices (like G13, G15 and G510), which support mono, 4-lines LCD.
 
 ## LCD buttons
-G19 has 7  buttons.  
-In contrast to mono devices (like G13, G15 and G510) has only 4 buttons.  
-Way in which actions assign to button for G13 (4 buttons form left to right) are mapped to G19 looks:  
+G19 has 7  buttons.
+In contrast to mono devices (like G13, G15 and G510) has only 4 buttons.
+Way in which actions assign to button for G13 (4 buttons form left to right) are mapped to G19 looks:
 * G13 1st button -> G19 left button
 * G13 2nd button -> G19 right button
 * G13 3rd button -> G19 down button
@@ -41,12 +41,12 @@ Way in which actions assign to button for G13 (4 buttons form left to right) are
 Right now LCD buttons are hardcoded in DCSpy and its function depends on currently loaded aircraft. This will change in future.
 
 ## G13, G15, G510 - Mono
-mono, 4-lines LCD with only 4 buttons  
+mono, 4-lines LCD with only 4 buttons
 ![image](https://user-images.githubusercontent.com/475312/174407168-7db23a3f-3493-4a35-b898-ebb3a3ff839f.png)
 ![image](https://user-images.githubusercontent.com/475312/174407442-ed9c7d85-057d-4572-8316-3578721e4dab.png)
 ![image](https://user-images.githubusercontent.com/475312/174407530-b010691c-0895-4786-ad4e-8f98deeebb02.png)
 ## G19 - Color
-full RGBA, 8-lines LCD with 7 buttons  
+full RGBA, 8-lines LCD with 7 buttons
 ![image](https://user-images.githubusercontent.com/475312/174407299-d07e7ba5-d837-4af4-884a-7e20a48d676a.png)
 
 ## G-keys
@@ -61,7 +61,7 @@ You can assign almost any input controller from cockpit for aircraft supported b
 
 ### How to setup:
 * Install Git: https://git-scm.com/download/win (any 64-Bit, default options should be fine)
-* Set **DCS-BIOS** folder  
+* Set **DCS-BIOS** folder
   ie. (D:/Users/wags/Saved Games/DCS.openbeta/Scripts/DCS-BIOS)
 * Set checked **Use live DCS-BIOS version** (can take 20+ sec)
 * Click **Start** and then **Stop** (in rare cases is needed)
@@ -70,18 +70,18 @@ You can assign almost any input controller from cockpit for aircraft supported b
 * Set this profile default and optionally persistent. Close LGS.
 ![image](https://github.com/emcek/dcspy/assets/475312/c56f61fb-bafb-4fd2-a2a9-549b5b1be990)
 * Go to **G-Keys** tab, additionally turn on **View** / **Show G-Keys** extra dialog
-* Select plane from combo box up right corner 
+* Select plane from combo box up right corner
 * assign any controllers to G-Key/Modes
 * Use save icon to save plane configuration
 
 # Configuration
-All settings can be configured directly via GUI. However,  more advanced users can change configuration file `config.yaml` file. It is located in user's AppData directory (e.g. `C:\Users\<user_name>\AppData\Local\dcspy\config.yaml`). 
+All settings can be configured directly via GUI. However,  more advanced users can change configuration file `config.yaml` file. It is located in user's AppData directory (e.g. `C:\Users\<user_name>\AppData\Local\dcspy\config.yaml`).
 This is simple file, most users do not need to touch it at all. Configuring DCSpy enable some powerful features of DCSpy.
 
 ## Keyboards
 ![image](https://github.com/emcek/dcspy/assets/475312/3be6a62f-029e-43a2-b6ab-b2d4e06e8e9b)
 
-* **keyboard** - default Logitech keyboard value, last used value is saved automatically  
+* **keyboard** - default Logitech keyboard value, last used value is saved automatically
   *possible values*: `G19`, `G510`, `G15 v1`, `G15 v2`, `G13`
 * Select correct keyboard since all of then support different combination of: LCD, LCD buttons and G-Keys
 
@@ -89,23 +89,23 @@ This is simple file, most users do not need to touch it at all. Configuring DCSp
 ![image](https://github.com/emcek/dcspy/assets/475312/70b9101e-e09e-492f-8baa-92bf2be812a7)
 
 ### DCSpy
-* **autostart** - when set to `true` DCSpy start automatically.  
+* **autostart** - when set to `true` DCSpy start automatically.
   *possible values*: `true` or `false`
-* **show_gui** - it allows showing or hiding GUI during start of DCSpy. When set to `false` DCSpy start automatically.  
+* **show_gui** - it allows showing or hiding GUI during start of DCSpy. When set to `false` DCSpy start automatically.
   *possible values*: `true` or `false`
-* **check_ver** - check for new version during start of DCSpy.  
+* **check_ver** - check for new version during start of DCSpy.
   *possible values*: `true` or `false`
 * **dcs** - installation directory of DCS. By default it is set to `C:\Program Files\Eagle Dynamics\DCS World OpenBeta`
 
 ### DCS-BIOS
-* **check_bios** - check for new version of DCS-BIOS during start of DCSpy.  
+* **check_bios** - check for new version of DCS-BIOS during start of DCSpy.
   *possible values*: `true` or `false`
-* **git_bios** - If set to `True` Git/Live version of DCS-BIOS with be used  
+* **git_bios** - If set to `True` Git/Live version of DCS-BIOS with be used
   *possible values*: `true` or `false`
 * **git_bios_ref** - Git valid reference i.e. branch name, tag, SHA of commit etc.
   *possible values*: any Git valid reference
-* **dcsbios** - location of DCS-BIOS folder inside user's `Saved Games\DCS.openbeta`.  
-  Set this parameter to correct value allows user check and update DCS-BIOS to the latest release.  
+* **dcsbios** - location of DCS-BIOS folder inside user's `Saved Games\DCS.openbeta`.
+  Set this parameter to correct value allows user check and update DCS-BIOS to the latest release.
   *example value*: `D:\Users\wags\Saved Games\DCS.openbeta\Scripts\DCS-BIOS`
 
 ### Fonts
@@ -119,7 +119,7 @@ This is simple file, most users do not need to touch it at all. Configuring DCSp
 * **f16_ded_font** - Special font for F-16's DED (G19 Color LCD only)
 
 ### Debug
-* **save_lcd** - take every change of LCD as screenshot (for debugging)  
+* **save_lcd** - take every change of LCD as screenshot (for debugging)
   *possible values*: `true` or `false`
 * **verbose** - Show more debug logs, be more verbose (for debugging)
   *possible values*: `true` or `false`

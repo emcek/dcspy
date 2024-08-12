@@ -14,11 +14,11 @@ During download you can got into situation that Windows Defender will block it:
 
 2. Open dropdown for latest issue
 
-![image](https://github.com/emcek/dcspy/assets/475312/a5eb4770-3e5d-4d28-80a5-5c1c84a24bf4)  
+![image](https://github.com/emcek/dcspy/assets/475312/a5eb4770-3e5d-4d28-80a5-5c1c84a24bf4)
 
 3. Verify affected item name and select `Allow` from `Actions`
 
-![image](https://github.com/emcek/dcspy/assets/475312/41a750ce-ef76-463c-a733-9715e3c125f5)  
+![image](https://github.com/emcek/dcspy/assets/475312/41a750ce-ef76-463c-a733-9715e3c125f5)
 
 4. You can try restore quarantined file
 
