@@ -2,29 +2,24 @@ site_name: DCSpy
 
 nav:
   - Home: 'index.md'
-  - Development:
-      - 'Contributing': 'CONTRIBUTING.md'
-      - 'DCSpy API reference':
-        - __init__: 'dcspy.md'
-#        - aircraft: 'aircraft.md'
-#        - dcsbios: 'dcsbios.md'
-#        - log: 'log.md'
-#        - logitech: 'logitech.md'
-#        - migration: 'migration.md'
-#        - models: 'models.md'
-#        - qt_gui: 'qt_gui.md'
-#        - run: 'run.md'
-#        - sdk:
-#          - __init__: 'sdk.md'
-#          - lcd: 'lcd.md'
-#          - key: 'key.md'
-#          - led: 'led.md'
-#        - starter: 'starter.md'
-#        - utils: 'utils.md'
-  - About:
-    - 'License': 'LICENSE.md'
-    - 'Secuirity': 'SECURITY.md'
-    - 'Chnagelog': 'CHANGELOG.md'
+  - 'API reference':
+    - __init__: 'dcspy.md'
+    - aircraft: 'aircraft.md'
+    - dcsbios: 'dcsbios.md'
+    - log: 'log.md'
+    - logitech: 'logitech.md'
+    - migration: 'migration.md'
+    - models: 'models.md'
+    - qt_gui: 'qt_gui.md'
+    - run: 'run.md'
+    - sdk:
+      - __init__: 'sdk.md'
+      - lcd: 'lcd.md'
+      - key: 'key.md'
+      - led: 'led.md'
+    - starter: 'starter.md'
+    - utils: 'utils.md'
+  - About: 'about.md'
 
 theme:
   name: readthedocs
@@ -51,5 +46,3 @@ plugins:
             show_signature_annotations: true
             signature_crossrefs: true
             separate_signature: true
-
-
