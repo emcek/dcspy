@@ -1700,7 +1700,7 @@ class AboutDialog(QDialog):
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
-        text += '<br><b>Wiki</b>: <a href="https://github.com/emcek/dcspy/wiki">docs</a>'
+        text += '<br><b>Docs</b>: <a href="https://dcspy.readthedocs.io/en/latest/">docs</a>'
         text += '<br><b>Discord</b>: <a href="https://discord.gg/SP5Yjx3">discord.gg/SP5Yjx3</a>'
         text += '<br><b>Issues</b>: <a href="https://github.com/emcek/dcspy/issues">report issue</a>'
         text += f'<br><b>System</b>: {d.system}{d.release} ver. {d.ver} ({architecture()[0]})'
