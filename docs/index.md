@@ -1,7 +1,7 @@
 ## DCSpy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
 
-Please join [dcspy discord](https://discord.gg/SP5Yjx3) server. 
+Please join [dcspy discord](https://discord.gg/SP5Yjx3) server.
 
 ## Features
 * Logitech device with 160x43 px (4 lines) monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
