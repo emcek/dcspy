@@ -51,7 +51,7 @@ dependencies = [
 
 [project.urls]
 Homepage = 'https://github.com/emcek/dcspy'
-Documentation = 'https://github.com/emcek/dcspy/wiki'
+Documentation = 'https://dcspy.readthedocs.io/en/latest/'
 Repository = 'https://github.com/emcek/dcspy.git'
 Changelog = 'https://github.com/emcek/dcspy/CHANGELOG.md'
 
