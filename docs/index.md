@@ -1,8 +1,9 @@
 ## DCSpy
 DCSpy is able to pull information from DCS aircraft and display on Logitech G-series keyboards LCD.
 
-Features:
+Please join [dcspy discord](https://discord.gg/SP5Yjx3) server. 
 
+## Features
 * Logitech device with 160x43 px (4 lines) monochrome LCD - **G13**, **G15 (v1 and v2)** and **G510**
 * Logitech device with 320x240 px (8 lines) full RGBA LCD - **G19**
 * Support for other [Logitech devices](devices.md):
@@ -31,3 +32,5 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
 * AV-8B Night Attack Harrier - Up Front Controller and Option Display Unit
 * AH-64D Apache - Enhanced Up Front Display (EUFD)
 * F-15E Eagle - Upfront Control Panel
+* F-4 Phantom II - UHF (ARC 164) Radio
+* more to come...
