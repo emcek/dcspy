@@ -1,5 +1,8 @@
 site_name: DCSpy
 
+theme:
+  name: material
+
 nav:
   - Home: 'index.md'
   - Documentation:
@@ -32,10 +35,6 @@ nav:
       - led: 'led.md'
     - starter: 'starter.md'
     - utils: 'utils.md'
-
-theme:
-  name: readthedocs
-#  name: mkdocs
 
 plugins:
   - search
