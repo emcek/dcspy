@@ -494,7 +494,7 @@ class CycleButton(BaseModel):
     @classmethod
     def from_request(cls, /, req: str) -> 'CycleButton':
         """
-        Use BIOS request string from plane configuration yaml.
+        Use BIOS request string from plane configuration YAML.
 
         :param req: BIOS request string
         """
@@ -741,7 +741,7 @@ class Gkey(BaseModel):
 
         :param key: Number of keys
         :param mode: Number of modes
-        :return:
+        :return: sequence of a Gkey instances
         """
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
@@ -928,7 +928,7 @@ def get_key_instance(key_str: str) -> AnyButton:
     """
     Get key instance from string.
 
-    :param key_str: Key name from yaml configuration
+    :param key_str: Key name from YAML configuration
     :return: LcdButton, Gkey or MouseButton instance
     """
     for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
