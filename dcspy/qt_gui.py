@@ -27,7 +27,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
+from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData,
                           DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes,
                           ReleaseInfo, RequestType, SystemData)
 from dcspy.starter import dcspy_run
@@ -1454,7 +1454,7 @@ class DcsPyQtGui(QMainWindow):
         return result_path
 
     @staticmethod
-    def _get_style_for_combobox(key: Union[LcdButton, Gkey, MouseButton], fg: str) -> str:
+    def _get_style_for_combobox(key: AnyButton, fg: str) -> str:
         """
         Get style for QComboBox with foreground color.
 

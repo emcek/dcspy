@@ -4,7 +4,7 @@ from functools import partial
 from pathlib import Path
 from re import search
 from tempfile import gettempdir
-from typing import Any, Callable, Final, Optional, TypedDict, Union
+from typing import Any, Callable, Final, Optional, TypedDict, TypeVar, Union
 
 from packaging import version
 from PIL import Image, ImageFont
@@ -50,11 +50,13 @@ SUPPORTED_CRAFTS = {
     'F4E45MC': {'name': 'F-4E Phantom II', 'bios': 'F-4E-45MC'},
 }
 
+BiosValue = Union[str, int, float]
+
 
 class AircraftKwargs(TypedDict):
     """Represent the keyword arguments expected by the Aircraft class."""
     update_display: Callable[[Image.Image], None]
-    bios_data: Mapping[str, Union[str, int]]
+    bios_data: Mapping[str, BiosValue]
 
 
 class Input(BaseModel):
@@ -161,6 +163,9 @@ class SetString(Input):
         return value
 
 
+Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
+
+
 class Output(BaseModel):
     """Output base class of outputs section of Control."""
     address: int
@@ -218,7 +223,7 @@ class BiosValueInt(BaseModel):
     """Value of BIOS Integer Buffer."""
     klass: str
     args: IntBuffArgs
-    value: Union[int, str]
+    value: int
     max_value: int
 
 
@@ -232,7 +237,7 @@ class BiosValueStr(BaseModel):
     """Value of BIOS String Buffer."""
     klass: str
     args: StrBuffArgs
-    value: Union[int, str]
+    value: str
 
 
 class ControlDepiction(BaseModel):
@@ -257,7 +262,7 @@ class ControlKeyData:
         self.description = description
         self.max_value = max_value
         self.suggested_step = suggested_step
-        self.list_dict: list[Union[FixedStep, VariableStep, SetState, Action, SetString]] = []
+        self.list_dict: list[Inputs] = []
 
     def __repr__(self) -> str:
         return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}'
@@ -286,7 +291,7 @@ class ControlKeyData:
         return instance
 
     @staticmethod
-    def _get_max_value(list_of_dicts: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int:
+    def _get_max_value(list_of_dicts: list[Inputs]) -> int:
         """
         Get a maximum value from a list of dictionaries.
 
@@ -299,7 +304,7 @@ class ControlKeyData:
         return max_value
 
     @staticmethod
-    def __get_max(list_of_dicts: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> tuple[int, bool]:
+    def __get_max(list_of_dicts: list[Inputs]) -> tuple[int, bool]:
         """
         Maximum value found in the 'max_value' attribute of the objects in the list.
 
@@ -741,6 +746,9 @@ class Gkey(BaseModel):
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
 
+AnyButton = Union[LcdButton, Gkey, MouseButton]
+
+
 class DeviceRowsNumber(BaseModel):
     """Represent the number of rows for different types of devices."""
     g_key: int = 0
@@ -770,7 +778,7 @@ class LogitechDeviceModel(BaseModel):
     lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
-    def get_key_at(self, row: int, col: int) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
+    def get_key_at(self, row: int, col: int) -> Optional[AnyButton]:
         """
         Get the keys at the specified row and column in the table layout.
 
@@ -898,7 +906,7 @@ MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
-def _try_key_instance(klass: Union[type[Gkey], type[LcdButton], type[MouseButton]], method: str, key_str: str) -> Optional[Union[LcdButton, Gkey, MouseButton]]:
+def _try_key_instance(klass: Union[type[Gkey], type[LcdButton], type[MouseButton]], method: str, key_str: str) -> Optional[AnyButton]:
     """
     Detect key string could be parsed with method.
 
@@ -916,7 +924,7 @@ def _try_key_instance(klass: Union[type[Gkey], type[LcdButton], type[MouseButton
         return None
 
 
-def get_key_instance(key_str: str) -> Union[LcdButton, Gkey, MouseButton]:
+def get_key_instance(key_str: str) -> AnyButton:
     """
     Get key instance from string.
 
@@ -959,7 +967,8 @@ class SystemData(BaseModel):
         return self.dcs_bios_ver.split(' ')[0]
 
 
-DcspyConfigYaml = dict[str, Union[str, int, bool]]
+ConfigValue = TypeVar('ConfigValue', str, int, float, bool)
+DcspyConfigYaml = dict[str, ConfigValue]
 
 
 class Direction(Enum):
@@ -1042,9 +1051,9 @@ class RequestModel(BaseModel):
 
     ctrl_name: str
     raw_request: str
-    get_bios_fn: Callable[[str], Union[str, int, float]]
+    get_bios_fn: Callable[[str], BiosValue]
     cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
-    key: Union[LcdButton, Gkey, MouseButton]
+    key: AnyButton
 
     @field_validator('ctrl_name')
     def validate_interface(cls, value: str) -> str:
@@ -1059,7 +1068,7 @@ class RequestModel(BaseModel):
         return value
 
     @classmethod
-    def from_request(cls, key: Union[LcdButton, Gkey, MouseButton], request: str, get_bios_fn: Callable[[str], Union[str, int, float]]) -> 'RequestModel':
+    def from_request(cls, key: AnyButton, request: str, get_bios_fn: Callable[[str], BiosValue]) -> 'RequestModel':
         """
         Build an object based on string request.
 
@@ -1077,7 +1086,7 @@ class RequestModel(BaseModel):
         return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
 
     @classmethod
-    def empty(cls, key: Union[LcdButton, Gkey, MouseButton]) -> 'RequestModel':
+    def empty(cls, key: AnyButton) -> 'RequestModel':
         """
         Create an empty request model, for a key which isn't assign.
 

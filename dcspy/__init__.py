@@ -3,11 +3,11 @@ from os import name
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from sys import executable, platform
-from typing import Optional, Union
+from typing import Optional
 
 from dcspy.log import config_logger
 from dcspy.migration import migrate
-from dcspy.models import LOCAL_APPDATA
+from dcspy.models import LOCAL_APPDATA, ConfigValue
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
 LOG = getLogger(__name__)
@@ -29,7 +29,7 @@ dcs_type, dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
 LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
 
-def get_config_yaml_item(key: str, /, default: Optional[Union[str, int]] = None) -> Union[str, int, bool]:
+def get_config_yaml_item(key: str, /, default: Optional[ConfigValue] = None) -> ConfigValue:
     """
     Get item from a configuration YAML file.
 

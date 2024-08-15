@@ -22,8 +22,8 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
-                          MouseButton, ReleaseInfo, RequestModel, get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml,
+                          ReleaseInfo, RequestModel, get_key_instance)
 
 try:
     import git
@@ -769,7 +769,7 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
 class KeyRequest:
     """Map LCD button ot G-Key with an abstract request model."""
 
-    def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], Union[str, int, float]]) -> None:
+    def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], BiosValue]) -> None:
         """
         Load YAML with BIOS request for G-Keys and LCD buttons.
 
@@ -777,7 +777,7 @@ class KeyRequest:
         :param get_bios_fn: Function used to get current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
-        self.buttons: dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
+        self.buttons: dict[AnyButton, RequestModel] = {}
         for key_str, request in plane_yaml.items():
             if request:
                 key = get_key_instance(key_str)
@@ -788,7 +788,7 @@ class KeyRequest:
         """Return a dictionary with BIOS selectors to track changes of values for cycle button to get current values."""
         return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
 
-    def get_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
+    def get_request(self, button: AnyButton) -> RequestModel:
         """
         Get abstract representation for request ti be sent gor requested button.
 
@@ -797,7 +797,7 @@ class KeyRequest:
         """
         return self.buttons.get(button, RequestModel.empty(key=button))
 
-    def set_request(self, button: Union[LcdButton, Gkey, MouseButton], req: str) -> None:
+    def set_request(self, button: AnyButton, req: str) -> None:
         """
         Update the internal string request for the specified button.
 

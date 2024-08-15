@@ -5,11 +5,11 @@ from os import makedirs
 from pathlib import Path
 from pprint import pformat
 from shutil import SameFileError, copy
-from typing import Callable, Union
+from typing import Callable
 
 from packaging import version
 
-from dcspy.models import DcspyConfigYaml
+from dcspy.models import ConfigValue, DcspyConfigYaml
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
@@ -137,7 +137,7 @@ def _api_ver_3_0_0(cfg: DcspyConfigYaml) -> None:
     _rename_key_keep_value(cfg, 'font_mono_xs', 'font_mono_s', 9)
 
 
-def _add_key(cfg: DcspyConfigYaml, key: str, default_value: Union[str, int, bool]) -> None:
+def _add_key(cfg: DcspyConfigYaml, key: str, default_value: ConfigValue) -> None:
     """
     Add key to a dictionary if not exists.
 
@@ -164,7 +164,7 @@ def _remove_key(cfg: DcspyConfigYaml, key: str) -> None:
         pass
 
 
-def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, default_value: Union[str, int, bool]) -> None:
+def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, default_value: ConfigValue) -> None:
     """
     Rename key in dictionary and keep value.
 

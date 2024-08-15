@@ -5,13 +5,12 @@ from pathlib import Path
 from pprint import pformat
 from socket import socket
 from time import sleep
-from typing import Union
 
 from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, Gkey, LcdButton, LcdType, LogitechDeviceModel, MouseButton
+from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, AnyButton, Gkey, LcdButton, LcdType, LogitechDeviceModel, MouseButton
 from dcspy.sdk import key_sdk, lcd_sdk
 from dcspy.utils import get_full_bios_for_plane, get_planes_list
 
@@ -86,7 +85,7 @@ class LogitechDevice:
         short_name = value.replace('-', '').replace('_', '')
         if self.plane_name != short_name:
             self.plane_name = short_name
-            planes_list = get_planes_list(bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
+            planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
                 self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
@@ -130,7 +129,7 @@ class LogitechDevice:
 
     def _setup_plane_callback(self) -> None:
         """Setups DCS-BIOS parser callbacks for detected plane."""
-        plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
+        plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(get_config_yaml_item('dcsbios')))
         for ctrl_name in self.plane.bios_data:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
             dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)  # type: ignore[union-attr]
@@ -181,7 +180,7 @@ class LogitechDevice:
             if button.value:
                 self._send_request(button, key_down=KEY_DOWN)
 
-    def _send_request(self, button: Union[LcdButton, Gkey, MouseButton], key_down: int) -> None:
+    def _send_request(self, button: AnyButton, key_down: int) -> None:
         """
         Sent action to DCS-BIOS via network socket.
 

@@ -17,7 +17,7 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, Gkey, LcdButton, LcdInfo, LcdType, MouseButton, RequestModel, RequestType
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -61,12 +61,12 @@ class BasicAircraft:
         """
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
-        self.bios_data: dict[str, Union[str, int]] = {}
+        self.bios_data: dict[str, BiosValue] = {}
         if self.bios_name:
             self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
             self.bios_data.update(self.key_req.cycle_button_ctrl_name)
 
-    def button_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
+    def button_request(self, button: AnyButton) -> RequestModel:
         """
         Prepare DCS-BIOS request for pressed button for specific aircraft.
 
@@ -78,7 +78,7 @@ class BasicAircraft:
         LOG.debug(f'Request: {request}')
         return request
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set value for DCS-BIOS selector.
 
@@ -88,7 +88,7 @@ class BasicAircraft:
         self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}" ({type(value).__name__})')
 
-    def get_bios(self, selector: str, default: Union[str, int, float] = '') -> Union[str, int, float]:
+    def get_bios(self, selector: str, default: BiosValue = '') -> BiosValue:
         """
         Get value for DCS-BIOS selector.
 
@@ -118,7 +118,7 @@ class AdvancedAircraft(BasicAircraft):
             self.bios_data.update(kwargs.get('bios_data', {}))
         self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set value for DCS-BIOS selector and update LCD with image.
 
@@ -225,7 +225,7 @@ class FA18Chornet(AdvancedAircraft):
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
         draw.text(xy=(72, 100), text=str(self.get_bios('IFEI_FUEL_DOWN')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set new data.
 
@@ -296,7 +296,7 @@ class F16C50(AdvancedAircraft):
         """Prepare image for F-16C Viper for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Catch BIOS changes and remove garbage characters and replace with correct ones.
 
@@ -783,7 +783,7 @@ class AH64DBLKII(AdvancedAircraft):
                 draw.text(xy=(x_cord, y_cord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set new data.
 
@@ -803,7 +803,7 @@ class AH64DBLKII(AdvancedAircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
+    def button_request(self, button: AnyButton) -> RequestModel:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
