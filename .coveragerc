@@ -1,5 +1,6 @@
 [run]
 source = dcspy
+relative_files = True
 
 [report]
 omit = tests/*
