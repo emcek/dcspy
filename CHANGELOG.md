@@ -2,6 +2,7 @@
 * GUI should not be hide when starting when configuration is wrong
 * Internal:
   * move default config into resources directory
+  * check if BIOS JSON's files exist before do generation and compilation
 
 [//]: # (* Generate BIOS JSON's file during start-up and after BIOS update)
 
