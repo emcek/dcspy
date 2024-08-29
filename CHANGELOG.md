@@ -1,4 +1,5 @@
 ## 3.5.2
+* GUI should not be hide when starting when configuration is wrong
 * Internal:
   * move default config into resources directory
 
