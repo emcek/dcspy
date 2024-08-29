@@ -39,7 +39,7 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.5.1'
 LOG = getLogger(__name__)
-NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
+NO_MSG_BOX = int(os.environ.get('DCSPY_NO_MSG_BOXES', 0))
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
                          'rb_g910': 1, 'rb_g710': 1, 'rb_g110': 1, 'rb_g103': 1, 'rb_g105': 1, 'rb_g11': 1,
                          'rb_g633': 2, 'rb_g35': 2, 'rb_g930': 2, 'rb_g933': 2,
