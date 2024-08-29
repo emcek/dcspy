@@ -31,9 +31,9 @@ from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_B
                           ReleaseInfo, RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases,
-                         get_planes_list, get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running,
-                         run_command, run_pip_command, save_yaml)
+                         count_files, defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls,
+                         get_plane_aliases, get_planes_list, get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml,
+                         proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.5.1'
@@ -511,7 +511,9 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             # todo: first fix issue #337
-            # self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+            if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
+                # self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+                pass
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
