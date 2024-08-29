@@ -378,6 +378,7 @@ def count_files(directory: Path, extension: str) -> int:
         LOG.debug(f'Wrong directory: {directory}')
         return -1
 
+
 def is_git_exec_present() -> bool:
     """
     Check if git executable is present in system.
