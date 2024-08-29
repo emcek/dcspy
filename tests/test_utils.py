@@ -263,6 +263,14 @@ def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
 
+@mark.parametrize('ext, result', [('json', 14), ('exe', 0)])
+def test_count_files_exists(ext, result, test_dcs_bios):
+    assert utils.count_files(directory=test_dcs_bios / 'doc' / 'json', extension=ext) == result
+
+
+def test_count_files_wrong_dir(test_dcs_bios):
+    assert utils.count_files(directory=test_dcs_bios / 'wrong', extension='json') == -1
+
 
 @mark.slow
 def test_collect_debug_data(switch_dcs_bios_path_in_config, resources):
