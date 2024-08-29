@@ -235,18 +235,28 @@ class DcsPyQtGui(QMainWindow):
 
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
-        self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
-        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
-        if self.cb_bios_live.isChecked():
-            self.le_bios_live.setEnabled(True)
-            self._is_git_object_exists(text=self.le_bios_live.text())
-        for logitech_dev in ALL_DEV:
-            logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
-            dev = getattr(self, logi_dev_rb_name)
-            if dev.isChecked():
-                self._select_logi_dev(logi_dev=logitech_dev, state=True)  # generate json/bios
-                self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
-                break
+        try:
+            self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
+            self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
+            if self.cb_bios_live.isChecked():
+                self.le_bios_live.setEnabled(True)
+                self._is_git_object_exists(text=self.le_bios_live.text())
+            for logitech_dev in ALL_DEV:
+                logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
+                dev = getattr(self, logi_dev_rb_name)
+                if dev.isChecked():
+                    self._select_logi_dev(logi_dev=logitech_dev, state=True)  # generate json/bios
+                    self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
+                    break
+        except KeyError as err:
+            tb = traceback.format_exception(*sys.exc_info())
+            self._show_custom_msg_box(
+                kind_of=QMessageBox.Icon.Warning,
+                title='Warning',
+                text=f'Can not find key: {err}. Please report error with detail below. You can use menu Help / Report issue option.',
+                info_txt=f'Problem: {type(err).__name__}.',
+                detail_txt='\n'.join(tb)
+            )
 
     def _set_find_value(self, value) -> None:
         """
@@ -396,7 +406,7 @@ class DcsPyQtGui(QMainWindow):
                 kind_of=QMessageBox.Icon.Warning,
                 title='Problem with command',
                 text=f'Error during executing command:\n{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua',
-                info_txt=f'Problem: {err}\n\nPlease report error with detail below.',
+                info_txt=f'Problem: {err}\n\nPlease report  error with detail below. You can use menu Help / Report issue option.',
                 detail_txt='\n'.join(tb)
             )
         LOG.debug(f'RC: {return_code} {lua_exec=}, {cwd=}')
