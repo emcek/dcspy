@@ -387,7 +387,7 @@ class DcsPyQtGui(QMainWindow):
             return True
         LOG.debug(f'BIOS dir: {text}: {text.is_dir()=}, {bios_lua.is_file()=}, {number_of_jsons=}')
         widget.setStyleSheet('color: red;')
-        widget.setToolTip(f'It is not valid DCS-BIOS directory or it not contains planes JSON files')
+        widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
     def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
