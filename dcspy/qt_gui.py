@@ -379,11 +379,15 @@ class DcsPyQtGui(QMainWindow):
         """
         text = Path(text)
         bios_lua = text / 'BIOS.lua'
-        metadata_json = text / 'doc' / 'json' / 'MetadataStart.json'
-        if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
-            getattr(self, widget_name).setStyleSheet('')
+        number_of_jsons = count_files(directory=text / 'doc' / 'json', extension='json')
+        widget = getattr(self, widget_name)
+        if all([text.is_dir(), bios_lua.is_file(), number_of_jsons]):
+            widget.setStyleSheet('')
+            widget.setToolTip('Location of DCS-BIOS in Saved Games')
             return True
-        getattr(self, widget_name).setStyleSheet('color: red;')
+        LOG.debug(f'BIOS dir: {text}: {text.is_dir()=}, {bios_lua.is_file()=}, {number_of_jsons=}')
+        widget.setStyleSheet('color: red;')
+        widget.setToolTip(f'It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
     def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
