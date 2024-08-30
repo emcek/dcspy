@@ -1,5 +1,7 @@
 [run]
-source = dcspy
+source = dcspy/
+relative_files = True
+branch = True
 
 [report]
 omit = tests/*
