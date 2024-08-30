@@ -18,8 +18,7 @@ from webbrowser import open_new_tab
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QEvent, QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Signal, Slot
-from PySide6.QtCore import __version__ as qt6_ver
+from PySide6.QtCore import QEvent, QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Signal, Slot, qVersion
 from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItem
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
@@ -31,15 +30,15 @@ from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_B
                           DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes,
                           ReleaseInfo, RequestType, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls,
+from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         count_files, defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls,
                          get_plane_aliases, get_planes_list, get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml,
                          proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.5.1'
 LOG = getLogger(__name__)
-NO_MSG_BOX = os.environ.get('DCSPY_NO_MSG_BOXES', 0)
+NO_MSG_BOX = int(os.environ.get('DCSPY_NO_MSG_BOXES', 0))
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
                          'rb_g910': 1, 'rb_g710': 1, 'rb_g110': 1, 'rb_g103': 1, 'rb_g105': 1, 'rb_g11': 1,
                          'rb_g633': 2, 'rb_g35': 2, 'rb_g930': 2, 'rb_g933': 2,
@@ -289,18 +288,28 @@ class DcsPyQtGui(QMainWindow):
 
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
-        self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
-        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
-        if self.cb_bios_live.isChecked():
-            self.le_bios_live.setEnabled(True)
-            self._is_git_object_exists(text=self.le_bios_live.text())
-        for logitech_dev in ALL_DEV:
-            logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
-            dev = getattr(self, logi_dev_rb_name)
-            if dev.isChecked():
-                self._select_logi_dev(logi_dev=logitech_dev, state=True)  # generate json/bios
-                self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
-                break
+        try:
+            self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
+            self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
+            if self.cb_bios_live.isChecked():
+                self.le_bios_live.setEnabled(True)
+                self._is_git_object_exists(text=self.le_bios_live.text())
+            for logitech_dev in ALL_DEV:
+                logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
+                dev = getattr(self, logi_dev_rb_name)
+                if dev.isChecked():
+                    self._select_logi_dev(logi_dev=logitech_dev, state=True)  # generate json/bios
+                    self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
+                    break
+        except KeyError as err:
+            tb = traceback.format_exception(*sys.exc_info())
+            self._show_custom_msg_box(
+                kind_of=QMessageBox.Icon.Warning,
+                title='Warning',
+                text=f'Can not find key: {err}. Please report error with detail below. You can use menu Help / Report issue option.',
+                info_txt=f'Problem: {type(err).__name__}.',
+                detail_txt='\n'.join(tb)
+            )
 
     def _set_find_value(self, value) -> None:
         """
@@ -423,11 +432,15 @@ class DcsPyQtGui(QMainWindow):
         """
         text = Path(text)
         bios_lua = text / 'BIOS.lua'
-        metadata_json = text / 'doc' / 'json' / 'MetadataStart.json'
-        if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
-            getattr(self, widget_name).setStyleSheet('')
+        number_of_jsons = count_files(directory=text / 'doc' / 'json', extension='json')
+        widget = getattr(self, widget_name)
+        if all([text.is_dir(), bios_lua.is_file(), number_of_jsons]):
+            widget.setStyleSheet('')
+            widget.setToolTip('Location of DCS-BIOS in Saved Games')
             return True
-        getattr(self, widget_name).setStyleSheet('color: red;')
+        LOG.debug(f'BIOS dir: {text}: {text.is_dir()=}, {bios_lua.is_file()=}, {number_of_jsons=}')
+        widget.setStyleSheet('color: red;')
+        widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
     def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
@@ -452,7 +465,7 @@ class DcsPyQtGui(QMainWindow):
                 kind_of=QMessageBox.Icon.Warning,
                 title='Problem with command',
                 text=f'Error during executing command:\n{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua',
-                info_txt=f'Problem: {err}\n\nPlease copy details and report issue or post on Discord, see Help menu.',
+                info_txt=f'Problem: {err}\n\nPlease report  error with detail below. You can use menu Help / Report issue option.',
                 detail_txt=tb_string
             )
         LOG.debug(f'RC: {return_code} {lua_exec=}, {cwd=}')
@@ -556,7 +569,8 @@ class DcsPyQtGui(QMainWindow):
         :return: A dictionary of the plane aliases or empty dict.
         """
         try:
-            self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+            if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
+                self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
@@ -908,7 +922,7 @@ class DcsPyQtGui(QMainWindow):
         :param silence: perform action with silence
         :return: full BIOS version
         """
-        sha_commit = ''
+        sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
                 sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
@@ -1798,10 +1812,13 @@ class AboutDialog(QDialog):
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
         text += f'<br><b>Config</b>: <a href="file:///{default_yaml.parent}">{default_yaml.name}</a>'
         text += f'<br><b>Git</b>: {d.git_ver}'
-        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
+        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qVersion()}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
         text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCS-Skunkworks/dcs-bios/releases">{d.bios_ver}</a> '
-        text += f'<b>SHA:</b> <a href="https://github.com/DCS-Skunkworks/dcs-bios/commit/{d.sha}">{d.dcs_bios_ver}</a>'
+        if d.sha != 'N/A':
+            text += f'<b>SHA:</b> <a href="https://github.com/DCS-Skunkworks/dcs-bios/commit/{d.sha}">{d.dcs_bios_ver}</a>'
+        else:
+            text += f'<b>SHA:</b> {d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
         text += '</p></body></html>'
         self.l_info.setText(text)

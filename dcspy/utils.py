@@ -363,6 +363,23 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
     return result
 
 
+def count_files(directory: Path, extension: str) -> int:
+    """
+    Count files with extension in directory.
+
+    :param directory: as Path object
+    :param extension: file extension
+    :return: number of files
+    """
+    try:
+        json_files = [f.name for f in directory.iterdir() if f.is_file() and f.suffix == f'.{extension}']
+        LOG.debug(f'In: {directory} found {json_files} ')
+        return len(json_files)
+    except FileNotFoundError:
+        LOG.debug(f'Wrong directory: {directory}')
+        return -1
+
+
 def is_git_exec_present() -> bool:
     """
     Check if git executable is present in system.

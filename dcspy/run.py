@@ -31,6 +31,6 @@ def run(cli_args: Namespace = Namespace()) -> None:
     except (KeyError, FileNotFoundError):
         pass
     except Exception as exp:
-        LOG.exception(f'Critical error: {exp}')
+        LOG.exception(f'Critical error: {exp}', exc_info=True)
     finally:
         sys.exit(app.exec())
