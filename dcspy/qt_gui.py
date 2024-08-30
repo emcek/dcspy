@@ -379,11 +379,15 @@ class DcsPyQtGui(QMainWindow):
         """
         text = Path(text)
         bios_lua = text / 'BIOS.lua'
-        metadata_json = text / 'doc' / 'json' / 'MetadataStart.json'
-        if all([text.is_dir(), bios_lua.is_file(), metadata_json.is_file()]):
-            getattr(self, widget_name).setStyleSheet('')
+        number_of_jsons = count_files(directory=text / 'doc' / 'json', extension='json')
+        widget = getattr(self, widget_name)
+        if all([text.is_dir(), bios_lua.is_file(), number_of_jsons]):
+            widget.setStyleSheet('')
+            widget.setToolTip('Location of DCS-BIOS in Saved Games')
             return True
-        getattr(self, widget_name).setStyleSheet('color: red;')
+        LOG.debug(f'BIOS dir: {text}: {text.is_dir()=}, {bios_lua.is_file()=}, {number_of_jsons=}')
+        widget.setStyleSheet('color: red;')
+        widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
     def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
@@ -510,10 +514,8 @@ class DcsPyQtGui(QMainWindow):
         :return: A dictionary of the plane aliases or empty dict.
         """
         try:
-            # todo: first fix issue #337
             if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
-                # self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
-                pass
+                self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
