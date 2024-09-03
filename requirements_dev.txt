@@ -1,7 +1,5 @@
 -r requirements_test.txt
 build
 detect-test-pollution
-isort
-pipdeptree
 pre-commit
 pyinstaller
