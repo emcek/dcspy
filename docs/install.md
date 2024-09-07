@@ -1,6 +1,3 @@
-**Note if you upgrade from 1.5.1:**
-* Older version of DCSpy required Logitech LCD SDK ver. 8.57.148 (`C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`). Since DCSpy 1.6.0 use built-in SDK in LGS (Logitech Gaming Software), you can safely remove/delate from your system.
-
 # Installation
 There are two ways of install DCSpy: single file download (basic / new way) or via Python package manager (advanced / old way). Both have advantages and  disadvantages. For new users it is recommended to use first one, current users can stick to old way or switch to new way. Both will be supported.
 
