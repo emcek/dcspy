@@ -26,7 +26,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, ControlDepiction, ControlKeyData,
+from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData,
                           DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes,
                           ReleaseInfo, RequestType, SystemData)
 from dcspy.starter import dcspy_run
@@ -260,9 +260,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _set_find_value(self, value) -> None:
         """
-        Refresh configuration of table and completer when visible items value changed.
+        Refresh a configuration of table and completer when visible items value changed.
 
-        :param value: number of items visible
+        :param value: Number of items visible
         """
         self._completer_items = value
         LOG.debug(f'Set number of results: {value}')
@@ -270,13 +270,13 @@ class DcsPyQtGui(QMainWindow):
 
     def _select_logi_dev(self, logi_dev: LogitechDeviceModel, state: bool) -> None:
         """
-        Triggered when new device is selected.
+        Triggered when a new device is selected.
 
-        Based of current selected device:
-        * Add correct numbers of rows and columns
-        * enable DED font checkbox
-        * updates font sliders (range and values)
-        * update dock with image of device
+        Based on a currently selected device:
+            * Add correct numbers of rows and columns
+            * enable DED font checkbox
+            * updates font sliders (range and values)
+            * update dock with image of a device
 
         :param logi_dev: Logitech device model object
         :param state: of radio button
@@ -355,10 +355,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _is_dir_exists(self, text: str, widget_name: str) -> bool:
         """
-        Check if directory exists.
+        Check if the directory exists.
 
-        :param text: contents of text field
-        :param widget_name: widget name
+        :param text: Contents of text field
+        :param widget_name: Widget name
         :return: True if directory exists, False otherwise.
         """
         dir_exists = Path(text).is_dir()
@@ -371,10 +371,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
         """
-        Check if directory is valid DCS-BIOS installation.
+        Check if the directory is valid DCS-BIOS installation.
 
-        :param text: contents of text field
-        :param widget_name: widget name
+        :param text: Contents of text field
+        :param widget_name: Widget name
         :return: True if valid BIOS directory, False otherwise.
         """
         text = Path(text)
@@ -392,9 +392,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
         """
-        Regenerate DCS-BIOS JSONs files.
+        Regenerate DCS-BIOS JSON files.
 
-        :param dcs_path: full path to DCS World installation directory as Path object
+        :param dcs_path: full path to DCS World installation directory as a Path object
         :param bios_path: full path to DCS-BIOS directory as Path object
         :return: True if generation is successful, False otherwise.
         """
@@ -449,11 +449,11 @@ class DcsPyQtGui(QMainWindow):
 
     def _make_combo_with_completer_at(self, row: int, col: int, ctrl_list_no_sep: list[str]) -> None:
         """
-        Make QComboBox widget with completer with list of strings in cell in row and column.
+        Make QComboBox widget with completer with a list of strings in cell in row and column.
 
-        :param row: current row
-        :param col: current column
-        :param ctrl_list_no_sep: list of control inputs without separator
+        :param row: Current row
+        :param col: Current column
+        :param ctrl_list_no_sep: List of control inputs without separator
         """
         key = self.device.get_key_at(row=row, col=col)
         if col == 0 or row < self.device.no_g_keys:
@@ -484,16 +484,16 @@ class DcsPyQtGui(QMainWindow):
 
     def _check_and_rebuild_ctrl_input_table(self, plane_name: str) -> bool:
         """
-        Detect when new plane is selected.
+        Detect when a new plane is selected.
 
-        Compare old and new plane's aliases and reload when needed:
-         - regenerate control inputs for new plane
-         - construct list of controls for every cell in table
-         - update aliases
+        Compare old and new plane aliases and reload when needed:
+            * regenerate control inputs for a new plane
+            * construct list of controls for every cell in table
+            * update aliases
 
         In case of problems:
-         - pop-up with details
-         - back to previous plane or first in list
+            * pop-up with details
+            * back to previous plane or first in list
 
         :param plane_name: BIOS plane name
         :return: True when rebuild is not needed, False otherwise.
@@ -526,9 +526,9 @@ class DcsPyQtGui(QMainWindow):
         """
         Check if rebuild is possible and return False or not possible and return True.
 
-        :param plane_aliases: BIOS plane aliases.
-        :param plane_name that is to be validated.
-        :return: True when rebuild is not needed, False otherwise.
+        :param plane_aliases: BIOS plane aliases
+        :param plane_name: That is to be validated
+        :return: True when rebuild is not required, False otherwise
         """
         try:
             return self._rebuild_needed(plane_aliases, plane_name)
@@ -537,11 +537,11 @@ class DcsPyQtGui(QMainWindow):
 
     def _rebuild_needed(self, plane_aliases: dict[str, list[str]], plane_name: str) -> bool:
         """
-        Rebuild is needed.
+        Rebuild is required.
 
-        :param plane_aliases: list of all yaml files for plane definition
+        :param plane_aliases: List of all YAML files for plane definition
         :param plane_name: BIOS plane name
-        :return: False - the rebuild is needed
+        :return: False - the rebuild is required
         """
         self.ctrl_input = get_inputs_for_plane(plane=plane_name, bios_dir=self.bios_path)
         self.plane_aliases = plane_aliases[plane_name]
@@ -576,7 +576,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Copy the specified text to the clipboard.
 
-        It select only first word before space and update status bar message.
+        Selects only a first word before space and update statusbar message.
 
         :param text: The text to be copied to the clipboard.
         """
@@ -590,12 +590,12 @@ class DcsPyQtGui(QMainWindow):
 
     def _rebuild_not_needed(self, plane_aliases, plane_name: str, exc: ValidationError) -> bool:
         """
-        Rebuild is not needed.
+        Rebuild is not required.
 
-        :param plane_aliases: list of all yaml files for plane definition
+        :param plane_aliases: List of all YAML files for plane definition
         :param plane_name: BIOS plane name
         :param exc: The ValidationError object containing the validation errors.
-        :return: True - the rebuild is not needed
+        :return: True - the rebuild is not required
         """
         LOG.debug(f'{plane_name}: {plane_aliases}\nValidation errors: {exc}')
         self._show_custom_msg_box(
@@ -658,8 +658,8 @@ class DcsPyQtGui(QMainWindow):
         """
         Find section name of control input name.
 
-        :param ctrl_name: input name of controller.
-        :return: section name as string
+        :param ctrl_name: Input name of controller.
+        :return: Section name as string
         """
         idx = self.ctrl_list.index(ctrl_name)
         for element in reversed(self.ctrl_list[:idx]):
@@ -669,7 +669,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _enable_checked_iface_radio_button(self, ctrl_key: ControlKeyData) -> None:
         """
-        Enable and checked default input interface radio buttons for current identifier.
+        Enable and checked default input interface radio buttons for a current identifier.
 
         Order of execution is important.
 
@@ -794,11 +794,12 @@ class DcsPyQtGui(QMainWindow):
 
     def _input_iface_changed_or_custom_text_changed(self) -> None:
         """
-        Triggered for radio button group and custom text.
+        Triggered for a radio button group and custom text.
 
         When:
-        * new input interface is selected
-        * text is changed and user press enter or widget lose focus
+            * new input interface is selected
+            * a text is changed and user press enter
+            * the widget lost focus
         """
         current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
@@ -830,10 +831,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _get_custom_value(self, selected_rb_name: str) -> str:
         """
-        Get custom value for request depending of currently selected action radio button.
+        Get custom value for request depending on a currently selected action radio button.
 
-        :param selected_rb_name: radio button widget name
-        :return: custom value as string
+        :param selected_rb_name: Name of radio button widget
+        :return: Custom value as string
         """
         custom_value = ''
         if selected_rb_name == 'rb_custom' and self.le_custom.text():
@@ -845,7 +846,7 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool:
         """
-        Check if entered git object exists.
+        Check if an entered git object exists.
 
         :param text: Git reference
         :return: True if git object exists, False otherwise.
@@ -862,10 +863,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _get_bios_full_version(self, silence=True) -> str:
         """
-        Get full SHA and git details DCS-BIOS version as string.
+        Get full SHA and git details the DCS-BIOS version as string.
 
-        :param silence: perform action with silence
-        :return: full BIOS version
+        :param silence: Perform action with a silence
+        :return: Full BIOS version
         """
         sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
@@ -878,7 +879,11 @@ class DcsPyQtGui(QMainWindow):
         return sha_commit
 
     def _cb_bios_live_toggled(self, state: bool) -> None:
-        """When Live BIOS checkbox is toggled."""
+        """
+        Toggle between Live DCS-BIOS and regular release one.
+
+        :param state: True if checked, False if unchecked.
+        """
         if state:
             self.le_bios_live.setEnabled(True)
             self._is_git_object_exists(text=self.le_bios_live.text())
@@ -956,7 +961,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Check DCS-BIOS directory and perform update.
 
-        :param silence: perform action with silence
+        :param silence: Perform action with silence
         """
         if not self._check_dcs_bios_path():
             return
@@ -965,9 +970,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _start_bios_update(self, silence: bool) -> None:
         """
-        Do real update Git or stable DCS-BIOS version.
+        Make a real update of git or stable DCS-BIOS version.
 
-        :param silence: perform action with silence
+        :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
             clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
@@ -986,14 +991,14 @@ class DcsPyQtGui(QMainWindow):
 
     def _check_dcs_bios_path(self) -> bool:
         """
-        Check if DCS-BIOS path fulfill two conditions.
+        Check if the DCS-BIOS path fulfills two conditions.
 
-        - path is not empty
-        - drive letter exists in system
+        - Path is not empty
+        - A drive letter exists in a system
 
-        If those two are met return True, False otherwise.
+        If met return True, False otherwise.
 
-        :return: True if path to DCS-BIOS is correct
+        :return: True if the path to DCS-BIOS is correct
         """
         result = True
         if self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir'):
@@ -1048,9 +1053,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _check_bios_release(self, silence=False) -> None:
         """
-        Check release version and configuration of DCS-BIOS.
+        Check the release version and configuration of DCS-BIOS.
 
-        :param silence: perform action with silence
+        :param silence: Perform action with silence
         """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
@@ -1072,10 +1077,10 @@ class DcsPyQtGui(QMainWindow):
         """
         Describe issues with DCS-BIOS update.
 
-        :param local_bios: local BIOS version
-        :param remote_bios: remote BIOS version
+        :param local_bios: Local BIOS version
+        :param remote_bios: Remote BIOS version
         :param dcs: DCS is running
-        :return: description as string
+        :return: Description as string
         """
         dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
         dcs_sta = 'running' if dcs else 'not running'
@@ -1091,9 +1096,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _check_local_bios(self) -> ReleaseInfo:
         """
-        Check version of local BIOS.
+        Check the version of local BIOS.
 
-        :return: release description info
+        :return: Release description info
         """
         result = check_bios_ver(bios_path=self.bios_path)
         self.l_bios = result.ver
@@ -1101,9 +1106,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _check_remote_bios(self) -> ReleaseInfo:
         """
-        Check version of remote BIOS.
+        Check the version of remote BIOS.
 
-        :return: release description info
+        :return: Release description info
         """
         release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
         self.r_bios = release_info.ver
@@ -1113,7 +1118,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Ask user if update BIOS or not.
 
-        :param rel_info: remote release information
+        :param rel_info: Remote release information
         """
         msg_txt = f'You are running {self.l_bios} version.\n\n' \
                   f'Would you like to download\n' \
@@ -1131,9 +1136,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
         """
-        Perform update of release version of BIOS and check configuration.
+        Perform update of the release version BIOS and check configuration.
 
-        :param rel_info: remote release information
+        :param rel_info: Remote release information
         """
         tmp_dir = Path(gettempdir())
         local_zip = tmp_dir / rel_info.asset_file
@@ -1161,12 +1166,12 @@ class DcsPyQtGui(QMainWindow):
 
     def _handling_export_lua(self, temp_dir: Path) -> str:
         """
-        Check if Export.lua file exist and its content.
+        Check if Export.lua file exists and check its content.
 
-        If not copy Export.lua from DCS-BIOS installation archive.
+        If not, copy Export.lua from DCS-BIOS installation archive.
 
-        :param temp_dir: directory with DCS-BIOS archive
-        :return: result of checks
+        :param temp_dir: Directory with DCS-BIOS archive
+        :return: Result of checks
         """
         result = 'Installation Success. Done.'
         lua_dst_path = self.bios_path.parent
@@ -1349,23 +1354,23 @@ class DcsPyQtGui(QMainWindow):
         """
         Get current plane from combo box.
 
-        :return: plane name as string
+        :return: Plane name as string
         """
         return self.combo_planes.currentText()
 
     @property
     def bios_path(self) -> Path:
         """
-        Get path to DCS-BIOS directory.
+        Get the path to DCS-BIOS directory.
 
-        :return: full path as Path
+        :return: Full path as Path
         """
         return Path(self.le_biosdir.text())
 
     @property
     def dcs_path(self) -> Path:
         """
-        Get path to DCS World directory.
+        Get a path to DCS World directory.
 
         :return: full path as Path
         """
@@ -1374,14 +1379,14 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
     def run_in_background(self, job: Union[partial, Callable], signal_handlers: dict[str, Callable]) -> None:
         """
-        Worker with signals callback to schedule GUI job in background.
+        Worker with signals callback to schedule a GUI job in the background.
 
-        signal_handlers parameter is a dict with signals from  WorkerSignals,
-        possibles signals are: finished, error, result, progress. Values in dict
-        are methods/callables as handlers/callbacks for particular signal.
+        Parameter `signal_handlers` is a dict with signals from WorkerSignals.
+        Possible signals are: `finished`, `error`, `result`, `progress`.
+        Values in dict are methods/callables as handlers/callbacks for particular signal.
 
         :param job: GUI method or function to run in background
-        :param signal_handlers: signals as keys: finished, error, result, progress and values as callable
+        :param signal_handlers: Signals as keys: finished, error, result, progress and values as callable
         """
         progress = True if 'progress' in signal_handlers.keys() else False
         worker = Worker(func=job, with_progress=progress)
@@ -1405,10 +1410,10 @@ class DcsPyQtGui(QMainWindow):
         """
         Make fake progress for progressbar.
 
-        :param progress_callback: signal to update progress bar
-        :param total_time: time for fill-up whole bar (in seconds)
-        :param steps: number of steps (default 100)
-        :param clean_after: clean progress bar when finish
+        :param progress_callback: Signal to update progress bar
+        :param total_time: Time for fill-up whole bar (in seconds)
+        :param steps: Number of steps (default 100)
+        :param clean_after: Clean progress bar when finish
         """
         done_event = kwargs.get('done_event', Event())
         for progress_step in range(1, steps + 1):
@@ -1433,7 +1438,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Fetch various system related data.
 
-        :param silence: perform action with silence
+        :param silence: Perform action with silence
         :return: SystemData named tuple with all data
         """
         system, _, release, ver, _, proc = uname()
@@ -1452,9 +1457,9 @@ class DcsPyQtGui(QMainWindow):
         """
         Open/save dialog to select file or folder.
 
-        :param last_dir: function return last selected dir
-        :param widget_name: update text for widget
-        :return: full path to directory
+        :param last_dir: Function return last selected dir
+        :param widget_name: Update text for a widget
+        :return: Full path to directory
         """
         result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
         if widget_name is not None and result_path:
@@ -1462,7 +1467,7 @@ class DcsPyQtGui(QMainWindow):
         return result_path
 
     @staticmethod
-    def _get_style_for_combobox(key: Union[LcdButton, Gkey, MouseButton], fg: str) -> str:
+    def _get_style_for_combobox(key: AnyButton, fg: str) -> str:
         """
         Get style for QComboBox with foreground color.
 
@@ -1488,9 +1493,9 @@ class DcsPyQtGui(QMainWindow):
         """
         Show any QMessageBox delivered with Qt.
 
-        :param kind_of: any of MsgBoxTypes - information, question, warning, critical, about or aboutQt
+        :param kind_of: One of MsgBoxTypes: `information`, `question`, `warning`, `critical`, `about` or `aboutQt`
         :param title: Title of modal window
-        :param message: text of message, default is empty
+        :param message: A text of message, default is empty
         :param kwargs: Additional keyword arguments for customizing the message box
         :return: The standard button clicked by the user
         """
@@ -1508,12 +1513,12 @@ class DcsPyQtGui(QMainWindow):
         """
         Show custom message box with hidden text.
 
-        :param title: title
-        :param text: first section
-        :param info_txt: second section
-        :param detail_txt: hidden text
-        :param buttons: tuple of buttons
-        :return: code of pushed button as integer code
+        :param title: Title
+        :param text: First section
+        :param info_txt: Second section
+        :param detail_txt: Hidden text
+        :param buttons: Tuple of buttons
+        :return: Integer value of pushed buttons
         """
         if not NO_MSG_BOX:
             msg = QMessageBox(text=text, parent=self)
@@ -1534,7 +1539,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Signal of activation.
 
-        :param reason: reason of activation
+        :param reason: Reason of activation
         """
         if reason == QSystemTrayIcon.ActivationReason.Trigger:
             if self.isVisible():
@@ -1557,7 +1562,7 @@ class DcsPyQtGui(QMainWindow):
             self.dw_gkeys.hide()
 
     def _show_device_dock(self) -> None:
-        """Toggle show and hide a device dock."""
+        """Toggle between show and hide a device dock."""
         if self.a_show_device.isChecked():
             self.dw_device.show()
         else:
@@ -1566,10 +1571,10 @@ class DcsPyQtGui(QMainWindow):
     @Slot(bool)
     def _close_dock_widget(self, visible: bool, widget: str) -> None:
         """
-        Close dock widget and check menu/toolbar item.
+        Close the dock widget and check menu/toolbar item.
 
-        :param visible: is dock visible
-        :param widget: widget name
+        :param visible: Is dock visible
+        :param widget: Widget name
         """
         action = getattr(self, f'a_show_{widget}')
         if not visible:
@@ -1708,7 +1713,7 @@ class AboutDialog(QDialog):
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
-        text += '<br><b>Wiki</b>: <a href="https://github.com/emcek/dcspy/wiki">docs</a>'
+        text += '<br><b>Docs</b>: <a href="https://dcspy.readthedocs.io/en/latest/">docs</a>'
         text += '<br><b>Discord</b>: <a href="https://discord.gg/SP5Yjx3">discord.gg/SP5Yjx3</a>'
         text += '<br><b>Issues</b>: <a href="https://github.com/emcek/dcspy/issues">report issue</a>'
         text += f'<br><b>System</b>: {d.system}{d.release} ver. {d.ver} ({architecture()[0]})'
@@ -1736,7 +1741,7 @@ class WorkerSignals(QObject):
     * finished - no data
     * error - tuple with exctype, value, traceback.format_exc()
     * result - object/any type - data returned from processing
-    * progress - float between 0 and 1 as indication of progress
+    * progress - float between zero (0) and one (1) as indication of progress
     * stage - string with current stage
     """
 
@@ -1784,11 +1789,11 @@ class GitCloneWorker(QRunnable):
         """
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
 
-        :param git_ref: git reference
-        :param repo: valid git repository user/name
+        :param git_ref: Git reference
+        :param repo: Valid git repository user/name
         :param bios_path: Path to DCS-BIOS
         :param to_path: Path to which the repository should be cloned to
-        :param silence: perform action with silence
+        :param silence: Perform action with silence
         """
         super().__init__()
         self.git_ref = git_ref
@@ -1825,9 +1830,9 @@ class UiLoader(QUiLoader):
         """
         Create widget.
 
-        :param classname: class name
-        :param parent: parent
-        :param name: name
+        :param classname: Class name
+        :param parent: Parent
+        :param name: Name
         :return: QWidget
         """
         if parent is None and self._baseinstance is not None:
@@ -1840,9 +1845,9 @@ class UiLoader(QUiLoader):
 
     def loadUi(self, ui_path: Union[str, bytes, Path], baseinstance=None) -> QWidget:
         """
-        Load UI file.
+        Load a UI file.
 
-        :param ui_path: path to UI file
+        :param ui_path: Path to a UI file
         :param baseinstance:
         :return: QWidget
         """

@@ -51,7 +51,7 @@ dependencies = [
 
 [project.urls]
 Homepage = 'https://github.com/emcek/dcspy'
-Documentation = 'https://github.com/emcek/dcspy/wiki'
+Documentation = 'https://dcspy.readthedocs.io/en/latest/'
 Repository = 'https://github.com/emcek/dcspy.git'
 Changelog = 'https://github.com/emcek/dcspy/CHANGELOG.md'
 
@@ -88,6 +88,14 @@ dev = [
     'detect-test-pollution>=1.2.0',
     'pre-commit>=3.8.0',
     'pyinstaller>=6.10.0',
+]
+docs = [
+    'mkdocs==1.6.1',
+    'plantuml==0.3.0',
+    'mkdocs-plantuml==0.1.1',
+    'mkdocs-material==9.5.34',
+    'mkdocstrings==0.26.1',
+    'mkdocstrings-python==1.11.1',
 ]
 
 [tool.setuptools.dynamic]

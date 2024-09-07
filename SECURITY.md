@@ -12,4 +12,4 @@ Versions of DCSpy are currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-Use internal issues.
+Use GitHub issues and additional information [here](https://dcspy.readthedocs.io/en/latest/issue/)

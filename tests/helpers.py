@@ -2,20 +2,19 @@ from collections.abc import Sequence
 from pathlib import Path
 from socket import AF_INET, SOCK_DGRAM, socket
 from time import sleep
-from typing import Union
 from unittest.mock import patch
 
 from PIL import Image, ImageChops
 
 from dcspy.aircraft import BasicAircraft
-from dcspy.models import MULTICAST_IP, UDP_PORT
+from dcspy.models import MULTICAST_IP, UDP_PORT, BiosValue
 from dcspy.sdk.lcd_sdk import LcdSdkManager
 from dcspy.utils import load_json
 
 all_plane_list = ['fa18chornet', 'f16c50', 'f4e45mc', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna']
 
 
-def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[tuple[str, Union[str, int]]]) -> None:
+def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[tuple[str, BiosValue]]) -> None:
     """
     Set BIOS values for a given aircraft model.
 
@@ -36,7 +35,7 @@ def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[tup
 
 def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
     """
-    Compare generated image with saved file.
+    Compare generated image with a saved file.
 
     :param img: Generated image
     :param file_path: path to reference image
@@ -57,9 +56,9 @@ def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> tuple[float, int]:
     """
     Compare bytes and return percentage of differences and differences in size.
 
-    :param test_bytes: bytes to compare
-    :param ref_bytes: referenced bytes
-    :return: tuple with float of percentage and difference in size
+    :param test_bytes: Bytes to compare
+    :param ref_bytes: Referenced bytes
+    :return: Tuple with float of percentage and difference in size
     """
     percents = []
     try:
