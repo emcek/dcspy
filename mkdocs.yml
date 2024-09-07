@@ -3,9 +3,7 @@ site_url: https://dcspy.readthedocs.io/
 
 theme:
   name: material
-#  name: readthedocs
-#  name: mkdocs
-  logo: dcspy_white.svg
+  logo: dcspy.svg
   features:
   - announce.dismiss
   - content.action.edit
@@ -22,25 +20,25 @@ theme:
   - search.highlight
   - search.suggest
   - toc.follow
-#  palette:
-#  - media: "(prefers-color-scheme)"
-#    toggle:
-#      icon: material/brightness-auto
-#      name: Switch to light mode
-#  - media: "(prefers-color-scheme: light)"
-#    scheme: default
-#    primary: teal
-#    accent: purple
-#    toggle:
-#      icon: material/weather-sunny
-#      name: Switch to dark mode
-#  - media: "(prefers-color-scheme: dark)"
-#    scheme: slate
-#    primary: black
-#    accent: lime
-#    toggle:
-#      icon: material/weather-night
-#      name: Switch to system preference
+  palette:
+  - media: "(prefers-color-scheme)"
+    toggle:
+      icon: material/brightness-auto
+      name: Switch to light mode
+  - media: "(prefers-color-scheme: light)"
+    scheme: default
+    primary: teal
+    accent: purple
+    toggle:
+      icon: material/weather-sunny
+      name: Switch to dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate
+    primary: black
+    accent: lime
+    toggle:
+      icon: material/weather-night
+      name: Switch to system preference
 
 nav:
   - Home: 'index.md'
@@ -58,7 +56,7 @@ nav:
     - About: 'about.md'
     - Credits: 'credits.md'
   - API reference:
-    - __init__: 'dcspy.md'
+    - dcspy: 'dcspy.md'
     - aircraft: 'aircraft.md'
     - dcsbios: 'dcsbios.md'
     - log: 'log.md'
@@ -68,7 +66,7 @@ nav:
     - qt_gui: 'qt_gui.md'
     - run: 'run.md'
     - sdk:
-      - __init__: 'sdk.md'
+      - sdk: 'sdk.md'
       - lcd: 'lcd.md'
       - key: 'key.md'
       - led: 'led.md'
@@ -81,18 +79,24 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
+          import:
+          - https://docs.python.org/3/objects.inv
           paths: [.]
           options:
-            import:
-              - https://docs.python.org/3/objects.inv
-            show_root_heading: true
-            members_order: source
-            filters: ["!^_"]
-            show_submodules: true
-            docstring_style: sphinx
             docstring_options:
-              ignore_init_summary: false
-            merge_init_into_class: false
-            show_signature_annotations: true
-            signature_crossrefs: true
+              ignore_init_summary: true
+            docstring_section_style: table
+            docstring_style: sphinx
+            filters: ["!^_"]
+            heading_level: 1
+            inherited_members: true
+            merge_init_into_class: true
+            parameter_headings: true
             separate_signature: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_signature_annotations: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            signature_crossrefs: true
+            summary: true
