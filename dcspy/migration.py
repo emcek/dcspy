@@ -58,7 +58,7 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
     """
-    Migrate to version 3.5.2.
+    Migrate to version 3.5.1.
 
     :param cfg: Configuration dictionary
     """
