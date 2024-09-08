@@ -105,6 +105,7 @@ dev = [
 version = {attr = 'dcspy.run.__version__'}
 
 [tool.setuptools.packages.find]
+where = ['src/']
 include = ['dcspy*']
 exclude = ['dcspy.tests*']
 
