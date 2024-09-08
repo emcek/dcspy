@@ -83,19 +83,22 @@ test = [
     'types-pyyaml==6.0.12.20240808',
     'types-requests==2.32.0.20240907',
 ]
+docs = [
+    'mkdocs==1.6.1',
+    'mkdocs-gen-files==0.5.0',
+    'mkdocs-literate-nav==0.6.1',
+    'mkdocs-material==9.5.34',
+    'mkdocs-plantuml==0.1.1',
+    'mkdocs-section-index==0.3.9',
+    'mkdocstrings==0.26.1',
+    'mkdocstrings-python==1.11.1',
+    'plantuml==0.3.0',
+]
 dev = [
     'build>=1.2.2',
     'detect-test-pollution>=1.2.0',
     'pre-commit>=3.8.0',
     'pyinstaller>=6.10.0',
-]
-docs = [
-    'mkdocs==1.6.1',
-    'plantuml==0.3.0',
-    'mkdocs-plantuml==0.1.1',
-    'mkdocs-material==9.5.34',
-    'mkdocstrings==0.26.1',
-    'mkdocstrings-python==1.11.1',
 ]
 
 [tool.setuptools.dynamic]
