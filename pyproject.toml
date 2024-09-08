@@ -120,6 +120,7 @@ dcspy = [
 
 [tool.pytest.ini_options]
 addopts = ['-q']
+pythonpath = ['src']
 testpaths = ['tests']
 markers = [
     'qt6: marks tests for Qt6 verfification',
