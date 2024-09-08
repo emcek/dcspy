@@ -55,27 +55,17 @@ nav:
     - Report issue: 'issue.md'
     - About: 'about.md'
     - Credits: 'credits.md'
-  - API reference:
-    - dcspy: 'dcspy.md'
-    - aircraft: 'aircraft.md'
-    - dcsbios: 'dcsbios.md'
-    - log: 'log.md'
-    - logitech: 'logitech.md'
-    - migration: 'migration.md'
-    - models: 'models.md'
-    - qt_gui: 'qt_gui.md'
-    - run: 'run.md'
-    - sdk:
-      - sdk: 'sdk.md'
-      - lcd: 'lcd.md'
-      - key: 'key.md'
-      - led: 'led.md'
-    - starter: 'starter.md'
-    - utils: 'utils.md'
+  - Code Reference: reference/
 
 plugins:
   - search
   - plantuml-colocator  # ![Alt Text](my-diagram.puml)
+  - gen-files:
+      scripts:
+        - scripts/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
   - mkdocstrings:
       handlers:
         python:
