@@ -21,6 +21,8 @@ for path in sorted(src.rglob('*.py')):
         full_doc_path = full_doc_path.with_name('index.md')
     elif parts[-1].startswith('_'):
         continue
+    elif parts[-1] == 'qtgui_rc':
+        continue
 
     nav_parts = [f"{mod_symbol} {part}" for part in parts]
     nav[tuple(nav_parts)] = doc_path.as_posix()
