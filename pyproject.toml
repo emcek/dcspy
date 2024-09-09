@@ -83,25 +83,32 @@ test = [
     'types-pyyaml==6.0.12.20240808',
     'types-requests==2.32.0.20240907',
 ]
+docs = [
+    'black==24.8.0',
+    'mkdocs==1.6.1',
+    'mkdocs-gen-files==0.5.0',
+    'mkdocs-literate-nav==0.6.1',
+    'mkdocs-material==9.5.34',
+    'mkdocs-plantuml==0.1.1',
+    'mkdocs-section-index==0.3.9',
+    'mkdocstrings==0.26.1',
+    'mkdocstrings-python==1.11.1',
+    'plantuml==0.3.0',
+]
 dev = [
+    'dcspy[test]',
+    'dcspy[docs]',
     'build>=1.2.2',
     'detect-test-pollution>=1.2.0',
     'pre-commit>=3.8.0',
     'pyinstaller>=6.10.0',
-]
-docs = [
-    'mkdocs==1.6.1',
-    'plantuml==0.3.0',
-    'mkdocs-plantuml==0.1.1',
-    'mkdocs-material==9.5.34',
-    'mkdocstrings==0.26.1',
-    'mkdocstrings-python==1.11.1',
 ]
 
 [tool.setuptools.dynamic]
 version = {attr = 'dcspy.run.__version__'}
 
 [tool.setuptools.packages.find]
+where = ['src/']
 include = ['dcspy*']
 exclude = ['dcspy.tests*']
 
@@ -116,6 +123,7 @@ dcspy = [
 
 [tool.pytest.ini_options]
 addopts = ['-q']
+pythonpath = ['src']
 testpaths = ['tests']
 markers = [
     'qt6: marks tests for Qt6 verfification',
@@ -137,7 +145,7 @@ ignore-setters = false
 fail-under = 90
 verbose = 1
 quiet = false
-exclude = ['tests/test_*', 'dcspy/qtgui_rc.py']
+exclude = ['tests/test_*', 'src/dcspy/qtgui_rc.py']
 
 [tool.ruff]
 line-length = 160
@@ -174,11 +182,3 @@ match = '(?!test_|qtgui_rc).*\.py'
 
 [tool.isort]
 line_length = 160
-
-[tool.uv]
-dev-dependencies = [
-    'build>=1.2.2',
-    'detect-test-pollution>=1.2.0',
-    'pre-commit>=3.8.0',
-    'pyinstaller>=6.10.0',
-]

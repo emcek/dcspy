@@ -353,7 +353,7 @@
   * auto-loading C library during importing
   * all API is type annotated and well documented
   * move loading LCD C-library from G13 handler
-*internal:
+* internal:
   * refactoring and rename internals of G13 handler module
   * add unit tests
 
