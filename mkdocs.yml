@@ -1,5 +1,8 @@
 site_name: DCSpy
 site_url: https://dcspy.readthedocs.io/
+site_description: Software for integrating DCS Planes with Logitech keyboards (with and without LCD), mice and headphones.
+repo_url: https://github.com/emcek/dcspy
+copyright: Copyright &copy; 2019 Michał Plichta
 
 theme:
   name: material
@@ -12,7 +15,6 @@ theme:
     - content.code.copy
     - content.tooltips
     - navigation.footer
-    - navigation.indexes
     - navigation.sections
     - navigation.tabs
     - navigation.tabs.sticky
@@ -90,3 +92,12 @@ plugins:
             show_symbol_type_toc: true
             signature_crossrefs: true
             summary: true
+
+extra:
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/emcek
+  - icon: fontawesome/brands/discord
+    link: https://discord.gg/SP5Yjx3
+  - icon: fontawesome/brands/python
+    link: https://pypi.org/project/dcspy/
