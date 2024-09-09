@@ -471,14 +471,6 @@ test = [
     { name = "types-requests" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "build" },
-    { name = "detect-test-pollution" },
-    { name = "pre-commit" },
-    { name = "pyinstaller" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "black", marker = "extra == 'docs'", specifier = "==24.8.0" },
@@ -526,14 +518,6 @@ requires-dist = [
     { name = "types-pyyaml", marker = "extra == 'test'", specifier = "==6.0.12.20240808" },
     { name = "types-requests", marker = "extra == 'test'", specifier = "==2.32.0.20240907" },
     { name = "typing-extensions", marker = "python_full_version < '3.12'", specifier = "==4.12.2" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "build", specifier = ">=1.2.2" },
-    { name = "detect-test-pollution", specifier = ">=1.2.0" },
-    { name = "pre-commit", specifier = ">=3.8.0" },
-    { name = "pyinstaller", specifier = ">=6.10.0" },
 ]
 
 [[package]]
