@@ -22,8 +22,8 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton,
-                          MouseButton, ReleaseInfo, RequestModel, get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml,
+                          ReleaseInfo, RequestModel, get_key_instance)
 
 try:
     import git
@@ -31,7 +31,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.5.1'
+__version__ = '3.5.2'
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
@@ -42,10 +42,10 @@ with open(DEFAULT_YAML_FILE) as c_file:
 
 def get_default_yaml(local_appdata: bool = False) -> Path:
     """
-    Return full path to default configuration file.
+    Return a full path to the default configuration file.
 
-    :param local_appdata: if True C:/Users/<user_name>/AppData/Local is used
-    :return: Path like object
+    :param local_appdata: If True value C:/Users/<user_name>/AppData/Local is used
+    :return: Path like an object
     """
     cfg_ful_path = DEFAULT_YAML_FILE
     if local_appdata:
@@ -59,10 +59,10 @@ def get_default_yaml(local_appdata: bool = False) -> Path:
 
 def load_yaml(full_path: Path) -> dict[str, Any]:
     """
-    Load yaml from file into dictionary.
+    Load YAML from a file into dictionary.
 
-    :param full_path: full path to yaml file
-    :return: dictionary
+    :param full_path: Full path to YAML file
+    :return: Dictionary with data
     """
     try:
         with open(file=full_path, encoding='utf-8') as yaml_file:
@@ -79,10 +79,10 @@ def load_yaml(full_path: Path) -> dict[str, Any]:
 
 def save_yaml(data: dict[str, Any], full_path: Path) -> None:
     """
-    Save disc as yaml file.
+    Save disc as YAML file.
 
-    :param data: dict
-    :param full_path: full path to yaml file
+    :param data: Dictionary with data
+    :param full_path: Full a path to YAML file
     """
     with open(file=full_path, mode='w', encoding='utf-8') as yaml_file:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
@@ -90,7 +90,7 @@ def save_yaml(data: dict[str, Any], full_path: Path) -> None:
 
 def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseInfo:
     """
-    Check version of <organization>/<package> at GitHub.
+    Check a version of <organization>/<package> at GitHub.
 
     Return tuple with:
     - result (bool) - if local version is latest
@@ -100,9 +100,9 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseI
     - release type (str) - Regular or Pre-release
     - asset file (str) - file name of asset
 
-    :param repo: format '<organization or user>/<package>'
-    :param current_ver: current local version
-    :param extension: file extension
+    :param repo: Format '<organization or user>/<package>'
+    :param current_ver: Current local version
+    :param extension: File extension
     :return: ReleaseInfo with data
     """
     latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
@@ -133,11 +133,11 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseI
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
     """
-    Compare two version of package and return result.
+    Compare two versions of packages and return result.
 
-    :param package: package name
-    :param current_ver: current/local version
-    :param remote_ver: remote/online version
+    :param package: Package name
+    :param current_ver: Current/local version
+    :param remote_ver: Remote/online version
     :return:
     """
     latest = False
@@ -153,10 +153,10 @@ def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
     """
     Generate formatted string with version number.
 
-    :param repo: format '<organization or user>/<package>'.
-    :param current_ver: current local version.
-    :param check: version online.
-    :return: formatted version as string.
+    :param repo: Format '<organization or user>/<package>'.
+    :param current_ver: Current local version.
+    :param check: Version online.
+    :return: Formatted version as string.
     """
     ver_string = f'v{current_ver}'
     if check:
@@ -175,7 +175,7 @@ def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
 
 def download_file(url: str, save_path: Path) -> bool:
     """
-    Download file from URL and save to save_path.
+    Download a file from URL and save to save_path.
 
     :param url: URL address
     :param save_path: full path to save
@@ -195,10 +195,10 @@ def download_file(url: str, save_path: Path) -> bool:
 
 def proc_is_running(name: str) -> int:
     """
-    Check if process is running and return its PID.
+    Check if the process is running and return its PID.
 
-    If process name is not found, 0 (zero) is returned.
-    :param name: process name
+    If the process name is not found, 0 (zero) is returned.
+    :param name: Process name
     :return: PID as int
     """
     for proc in process_iter(['pid', 'name']):
@@ -211,8 +211,8 @@ def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
     """
     Check DCS version and release type.
 
-    :param dcs_path: path to DCS installation directory
-    :return: dcs type and version as strings
+    :param dcs_path: Path to DCS installation directory
+    :return: DCS type and version as strings
     """
     result_type, result_ver = 'Unknown', 'Unknown'
     try:
@@ -231,9 +231,9 @@ def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
 
 def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
     """
-    Check DSC-BIOS release version.
+    Check the DSC-BIOS release version.
 
-    :param bios_path: path to DCS-BIOS directory in Saved Games folder
+    :param bios_path: Path to DCS-BIOS directory in Saved Games folder
     :return: ReleaseInfo named tuple
     """
     result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
@@ -260,8 +260,8 @@ def is_git_repo(dir_path: str) -> bool:
     """
     Check if dir_path ios Git repository.
 
-    :param dir_path: path as string
-    :return: true if dir is git repo
+    :param dir_path: Path as string
+    :return: True if dir is git repo
     """
     import git
     try:
@@ -300,13 +300,13 @@ def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkw
     """
     Update DCS-BIOS git repository.
 
-    Return SHA of latest commit.
+    Return SHA of the latest commit.
 
-    :param git_ref: any Git reference as string
-    :param update: perform update process
+    :param git_ref: Any Git reference as string
+    :param update: Perform update process
     :param repo: GitHub repository
-    :param repo_dir: local directory for repository
-    :param progress: progress callback
+    :param repo_dir: Local directory for repository
+    :param progress: Progress callback
     """
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
@@ -318,13 +318,13 @@ def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkw
 
 def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: Optional[git.RemoteProgress] = None) -> 'git.Repo':
     """
-    Checkout repository at master branch or clone it when not exists in system.
+    Checkout repository at master branch or clone it when not exists in a system.
 
-    :param repo: repository name
-    :param repo_dir: local repository directory
-    :param checkout_ref: git reference to checkout
-    :param progress: progress callback
-    :return: Repo object to repository
+    :param repo: Repository name
+    :param repo_dir: Local repository directory
+    :param checkout_ref: Checkout a git reference
+    :param progress: Progress callback
+    :return: Repo object of the repository
     """
     import git
 
@@ -342,10 +342,10 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
     """
     Check DCS-BIOS entry in Export.lua file.
 
-    :param lua_dst_data: content of Export.lua
+    :param lua_dst_data: Content of Export.lua
     :param lua_dst_path: Export.lua path
-    :param temp_dir: directory with DCS-BIOS archive
-    :return: result of checks
+    :param temp_dir: Directory with DCS-BIOS archive
+    :return: Result of checks
     """
     result = '\n\nExport.lua exists.'
     lua = 'Export.lua'
@@ -381,7 +381,7 @@ def count_files(directory: Path, extension: str) -> int:
 
 def is_git_exec_present() -> bool:
     """
-    Check if git executable is present in system.
+    Check if git executable is present in a system.
 
     :return: True if git.exe is available
     """
@@ -395,10 +395,10 @@ def is_git_exec_present() -> bool:
 
 def is_git_object(repo_dir: Path, git_obj: str) -> bool:
     """
-    Check if git_obj is valid Git reference.
+    Check if git_obj is a valid Git reference.
 
-    :param repo_dir: directory with repository
-    :param git_obj: git reference to check
+    :param repo_dir: Directory with repository
+    :param git_obj: Git reference to check
     :return: True if git_obj is git reference, False otherwise
     """
     import gitdb  # type: ignore[import-untyped]
@@ -416,10 +416,10 @@ def is_git_object(repo_dir: Path, git_obj: str) -> bool:
 
 def get_all_git_refs(repo_dir: Path) -> list[str]:
     """
-    Get list of branches and tags for repo.
+    Get a list of branches and tags for repo.
 
-    :param repo_dir: directory with repository
-    :return: list of git references as  strings
+    :param repo_dir: Directory with a repository
+    :return: List of git references as strings
     """
     refs = []
     if is_git_repo(str(repo_dir)):
@@ -432,9 +432,9 @@ def get_sha_for_current_git_ref(git_ref: str, repo: str = 'DCS-Skunkworks/dcs-bi
     """
     Get SHA for current git reference.
 
-    :param git_ref: any Git reference as string
+    :param git_ref: Any Git reference as string
     :param repo: GitHub repository
-    :param repo_dir: local directory for repository
+    :param repo_dir: Local directory for repository
     :return: Hex of SHA
     """
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
@@ -451,8 +451,8 @@ class CloneProgress(git.RemoteProgress):
         """
         Initialize the progress handler.
 
-        :param progress: progress Qt6 signal
-        :param stage: report stage Qt6 signal
+        :param progress: Progress Qt6 signal
+        :param stage: Report stage Qt6 signal
         """
         super().__init__()
         self.progress_signal = progress
@@ -473,9 +473,9 @@ class CloneProgress(git.RemoteProgress):
         Call whenever the progress changes.
 
         :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
-        :param cur_count: Current absolute count of items
+        :param cur_count: A count of current absolute items
         :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
-        :param message: It contains the amount of bytes transferred. It may possibly be used for other purposes as well.
+        :param message: It contains the number of bytes transferred. It may be used for other purposes as well.
         """
         if op_code & git.RemoteProgress.BEGIN:
             self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
@@ -488,7 +488,7 @@ def collect_debug_data() -> Path:
     """
     Collect and zip all data for troubleshooting.
 
-    :return: Path object to zip file
+    :return: Path object to ZIP file
     """
     config_file = Path(get_config_yaml_location() / CONFIG_YAML).resolve()
     conf_dict = load_yaml(config_file)
@@ -528,7 +528,7 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     Fetch system information.
 
     :param conf_dict: A dictionary containing configuration information.
-    :return: system data as string
+    :return: System data as string
     """
     name = uname()
     pyver = (python_version(), python_implementation())
@@ -537,8 +537,8 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
     git_ver, head_commit = _fetch_git_data()
     lgs_dir = '\n'.join([
-        str(Path(dirpath) / filename)
-        for dirpath, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
+        str(Path(dir_path) / filename)
+        for dir_path, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
         for filename in filenames
     ])
     return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
@@ -554,7 +554,7 @@ def _fetch_git_data() -> tuple[Sequence[int], str]:
         import git
         git_ver = git.cmd.Git().version_info
         head_commit = str(git.Repo(DCS_BIOS_REPO_DIR).head.commit)
-    except (git.exc.NoSuchPathError, ImportError):
+    except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError, ImportError):
         git_ver = (0, 0, 0, 0)
         head_commit = 'N/A'
     return git_ver, head_commit
@@ -573,9 +573,9 @@ def _get_dcs_log(conf_dict: dict[str, Any]) -> Path:
 
 def _get_log_files() -> Generator[Path, None, None]:
     """
-    Get path to all logg files.
+    Get a path to all logg files.
 
-    :return: generator of path to log files
+    :return: Generator of a path to log files
     """
     return (
         Path(gettempdir()) / logfile
@@ -585,10 +585,10 @@ def _get_log_files() -> Generator[Path, None, None]:
 
 def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
     """
-    Get path to all configuration yaml files.
+    Get a path to all configuration YAML files.
 
-    :param config_file:
-    :return: generator of path to yaml files
+    :param config_file: Path to the config file
+    :return: Generator of a path to YAML files
     """
     return (
         Path(dirpath) / filename
@@ -600,15 +600,15 @@ def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
 
 def _get_png_files() -> Generator[Path, None, None]:
     """
-    Get path to png screenshots for all airplanes.
+    Get a path to png screenshots for all airplanes.
 
-    :return: generator of path to png files
+    :return: Generator of a path to png files
     """
     aircrafts = ['FA18Chornet', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'F16C50', 'F15ESE',
                  'AH64DBLKII', 'A10C', 'A10C2', 'F14A135GR', 'F14B', 'AV8BNA']
     return (
-        Path(dirpath) / filename
-        for dirpath, _, filenames in walk(gettempdir())
+        Path(dir_path) / filename
+        for dir_path, _, filenames in walk(gettempdir())
         for filename in filenames
         if any(True for aircraft in aircrafts if aircraft in filename and filename.endswith('png'))
     )
@@ -616,7 +616,7 @@ def _get_png_files() -> Generator[Path, None, None]:
 
 def get_config_yaml_location() -> Path:
     """
-    Get location of YAML configuration files.
+    Get a location of YAML configuration files.
 
     :rtype: Path object to directory
     """
@@ -629,8 +629,8 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
     """
     Execute pip command.
 
-    :param cmd: as string
-    :return: tuple with return code, stderr and stdout
+    :param cmd: Command as string
+    :return: Tuple with return code, stderr and stdout
     """
     try:
         result = run([sys.executable, '-m', 'pip', *cmd.split(' ')], capture_output=True, check=True)
@@ -642,7 +642,7 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
 
 def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
     """
-    Run shell command as a subprocess.
+    Run command in shell as a subprocess.
 
     :param cmd: The command to be executed as a string
     :param cwd: current working directory
@@ -658,10 +658,10 @@ def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
 
 def load_json(full_path: Path) -> Any:
     """
-    Load json from file into dictionary.
+    Load JSON from a file into dictionary.
 
-    :param full_path: full path
-    :return: python representation of json
+    :param full_path: Full path
+    :return: Python representation of JSON
     """
     with open(full_path, encoding='utf-8') as json_file:
         data = json_file.read()
@@ -702,10 +702,10 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> dict[str, dict[str, Cont
 
 def get_list_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> list[str]:
     """
-    Get list of all controllers from dict with sections and inputs.
+    Get a list of all controllers from dict with sections and inputs.
 
-    :param inputs: dict with ControlKeyData
-    :return: list of string
+    :param inputs: Dictionary with ControlKeyData
+    :return: List of string
     """
     result_list = []
     for section, controllers in inputs.items():
@@ -718,10 +718,10 @@ def get_list_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> list[str]
 @lru_cache
 def get_planes_list(bios_dir: Path) -> list[str]:
     """
-    Get list of all DCS-BIOS supported planes with clickable cockpit.
+    Get a list of all DCS-BIOS supported planes with clickable cockpit.
 
-    :param bios_dir: path to DCS-BIOS
-    :return: list of all supported planes
+    :param bios_dir: Path to DCS-BIOS
+    :return: List of all supported planes
     """
     aircraft_aliases = get_plane_aliases(bios_dir=bios_dir, plane=None)
     return [name for name, yaml_data in aircraft_aliases.items() if yaml_data not in (['CommonData', 'FC3'], ['CommonData'])]
@@ -730,11 +730,11 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 @lru_cache
 def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> dict[str, list[str]]:
     """
-    Get list of all yaml files for plane with name.
+    Get a list of all YAML files for plane with name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
-    :return: list of all yaml files for plane definition
+    :return: list of all YAML files for plane definition
     """
     alias_path = bios_dir / 'doc' / 'json' / 'AircraftAliases.json'
     aircraft_aliases = load_json(full_path=alias_path)
@@ -747,7 +747,7 @@ def get_depiction_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> dict
     """
     Get the depiction of controls.
 
-    :param inputs: dict with ControlKeyData
+    :param inputs: Dictionary with ControlKeyData
     :return: A dictionary containing the depiction of controls.
     """
     result = {}
@@ -784,17 +784,17 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
 
 
 class KeyRequest:
-    """Map LCD button ot G-Key with abstract request model."""
+    """Map LCD button ot G-Key with an abstract request model."""
 
-    def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], Union[str, int, float]]) -> None:
+    def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], BiosValue]) -> None:
         """
         Load YAML with BIOS request for G-Keys and LCD buttons.
 
         :param yaml_path: Path to the airplane YAML file.
-        :param get_bios_fn: Function used to obtain current BIOS value.
+        :param get_bios_fn: Function used to get current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
-        self.buttons: dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
+        self.buttons: dict[AnyButton, RequestModel] = {}
         for key_str, request in plane_yaml.items():
             if request:
                 key = get_key_instance(key_str)
@@ -802,10 +802,10 @@ class KeyRequest:
 
     @property
     def cycle_button_ctrl_name(self) -> dict[str, int]:
-        """Return a dictionary with BIOS selectors to track chnages of values for Cyclce button to get current values."""
+        """Return a dictionary with BIOS selectors to track changes of values for cycle button to get current values."""
         return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
 
-    def get_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
+    def get_request(self, button: AnyButton) -> RequestModel:
         """
         Get abstract representation for request ti be sent gor requested button.
 
@@ -814,7 +814,7 @@ class KeyRequest:
         """
         return self.buttons.get(button, RequestModel.empty(key=button))
 
-    def set_request(self, button: Union[LcdButton, Gkey, MouseButton], req: str) -> None:
+    def set_request(self, button: AnyButton, req: str) -> None:
         """
         Update the internal string request for the specified button.
 

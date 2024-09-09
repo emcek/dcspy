@@ -17,7 +17,7 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, Gkey, LcdButton, LcdInfo, LcdType, MouseButton, RequestModel, RequestType
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -27,10 +27,10 @@ class MetaAircraft(type):
     """Metaclass for all BasicAircraft."""
     def __new__(cls, name: str, bases: tuple[type, ...], namespace: dict):
         """
-        Create new instance of any plane as BasicAircraft.
+        Create a new instance of any plane as BasicAircraft.
 
         You can crate instance of any plane:
-        f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)
+        `f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)`
 
         :param name:
         :param bases:
@@ -40,7 +40,7 @@ class MetaAircraft(type):
 
     def __call__(cls, *args, **kwargs):
         """
-        Create new instance of any BasicAircraft.
+        Create a new instance of any BasicAircraft.
 
         :param args:
         :param kwargs:
@@ -61,14 +61,14 @@ class BasicAircraft:
         """
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
-        self.bios_data: dict[str, Union[str, int]] = {}
+        self.bios_data: dict[str, BiosValue] = {}
         if self.bios_name:
             self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
             self.bios_data.update(self.key_req.cycle_button_ctrl_name)
 
-    def button_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
+    def button_request(self, button: AnyButton) -> RequestModel:
         """
-        Prepare aircraft specific DCS-BIOS request for button pressed.
+        Prepare DCS-BIOS request for pressed button for specific aircraft.
 
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
@@ -78,7 +78,7 @@ class BasicAircraft:
         LOG.debug(f'Request: {request}')
         return request
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set value for DCS-BIOS selector.
 
@@ -88,12 +88,12 @@ class BasicAircraft:
         self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}" ({type(value).__name__})')
 
-    def get_bios(self, selector: str, default: Union[str, int, float] = '') -> Union[str, int, float]:
+    def get_bios(self, selector: str, default: BiosValue = '') -> BiosValue:
         """
         Get value for DCS-BIOS selector.
 
-        :param selector: name of selector
-        :param default: return this when fetch fail
+        :param selector: A name of selector
+        :param default: When fetch of value failed, this value will be returned
         """
         try:
             return type(default)(self.bios_data[selector])
@@ -118,7 +118,7 @@ class AdvancedAircraft(BasicAircraft):
             self.bios_data.update(kwargs.get('bios_data', {}))
         self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set value for DCS-BIOS selector and update LCD with image.
 
@@ -131,9 +131,9 @@ class AdvancedAircraft(BasicAircraft):
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to be sent to correct type of LCD.
+        Prepare image to be sent to a correct type of LCD.
 
-        :return: image instance ready display on LCD
+        :return: Image instance ready display on LCD
         """
         img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width.value, self.lcd.height.value), color=self.lcd.background)
         getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
@@ -188,7 +188,7 @@ class FA18Chornet(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
-        Draw common part (based on scale) for Mono and Color LCD.
+        Draw common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -225,7 +225,7 @@ class FA18Chornet(AdvancedAircraft):
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
         draw.text(xy=(72, 100), text=str(self.get_bios('IFEI_FUEL_DOWN')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set new data.
 
@@ -279,7 +279,7 @@ class F16C50(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
-        Draw common part (based on scale) for Mono and Color LCD.
+        Draw common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param separation: between lines in pixels
@@ -296,12 +296,12 @@ class F16C50(AdvancedAircraft):
         """Prepare image for F-16C Viper for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Catch BIOS changes and remove garbage characters and replace with correct ones.
 
-        :param selector: selector name
-        :param value: value form DCS-BIOS
+        :param selector: Selector name
+        :param value: Value for DCS-BIOS
         """
         if 'DED_LINE_' in selector:
             value = str(value)
@@ -469,7 +469,7 @@ class Ka50(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
-        Draw common part (based on scale) for Mono and Color LCD.
+        Draw common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -490,7 +490,7 @@ class Ka50(AdvancedAircraft):
         """
         Generate coordinate strings.
 
-        :return: tuple of string
+        :return: Tuple of strings
         """
         text1, text2 = '', ''
         if line1_text := str(self.get_bios('PVI_LINE1_TEXT')):
@@ -559,7 +559,7 @@ class Mi8MT(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
-        Draw common part (based on scale) for Mono and Color LCD.
+        Draw common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -588,7 +588,7 @@ class Mi8MT(AdvancedAircraft):
         """
         Generate string data about Hip R863, R828, YADRO1A radios settings.
 
-        :return: All 3 radios settings as strings
+        :return: Settings for all three radios (as strings)
         """
         r863_mod = 'FM' if int(self.get_bios('R863_MOD')) else 'AM'
         r863_freq = float(self.get_bios('R863_FREQ', 0.0))
@@ -626,7 +626,7 @@ class Mi24P(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
-        Draw common part (based on scale) for Mono and Color LCD.
+        Draw common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -659,7 +659,7 @@ class Mi24P(AdvancedAircraft):
         """
         Generate string data about Hind R863, R828, YADRO1I radios settings.
 
-        :return: All 3 radios settings as strings
+        :return: Settings for all three radios (as strings)
         """
         r863_mod = 'FM' if int(self.get_bios('PLT_R863_MODUL')) else 'AM'
         yadro_freq = float(self.get_bios('JADRO_FREQ', 0.0))
@@ -747,9 +747,9 @@ class AH64DBLKII(AdvancedAircraft):
 
     def _fetch_warning_list(self) -> list[str]:
         """
-        Fetch all warnings and return as list.
+        Fetch all warnings and return as a list.
 
-        :return: list of warnings (as strings)
+        :return: List of warnings (as strings)
         """
         warn = []
         for i in range(1, 8):
@@ -783,7 +783,7 @@ class AH64DBLKII(AdvancedAircraft):
                 draw.text(xy=(x_cord, y_cord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
-    def set_bios(self, selector: str, value: Union[str, int]) -> None:
+    def set_bios(self, selector: str, value: BiosValue) -> None:
         """
         Set new data.
 
@@ -803,7 +803,7 @@ class AH64DBLKII(AdvancedAircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel:
+    def button_request(self, button: AnyButton) -> RequestModel:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
@@ -877,7 +877,7 @@ class A10C(AdvancedAircraft):
         """
         Generate frequency for UHF radio.
 
-        :return: frequency settings as strings
+        :return: Frequency settings as strings
         """
         uhf_10 = self.get_bios('UHF_10MHZ_SEL')
         uhf_1 = self.get_bios('UHF_1MHZ_SEL')
@@ -892,7 +892,7 @@ class A10C(AdvancedAircraft):
         """
         Generate frequency for ARC AM radio.
 
-        :return: frequency settings as strings
+        :return: Frequency settings as strings
         """
         return f'{self.get_bios("ARC210_FREQUENCY")} ({str(self.get_bios("ARC210_PREV_MANUAL_FREQ")).strip():>7})'
 
@@ -997,7 +997,7 @@ class AV8BNA(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
-        Draw common part (based on scale) for Mono and Color LCD.
+        Draw common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -1036,12 +1036,12 @@ def draw_autopilot_channels(lcd: LcdInfo,
     """
     Draw rectangles with a background for autopilot channels.
 
-    :param lcd: instance of LCD
-    :param ap_channel: channel name
-    :param c_rect: coordinates for rectangle
-    :param c_text: coordinates for a name
+    :param lcd: Instance of LCD
+    :param ap_channel: Channel name
+    :param c_rect: Coordinates for rectangle
+    :param c_text: Coordinates for a name
     :param draw_obj: ImageDraw instance
-    :param turn_on: channel on/off, fill on/off
+    :param turn_on: Channel on/off, fill on/off
     """
     if turn_on:
         draw_obj.rectangle(c_rect, fill=lcd.foreground, outline=lcd.foreground)

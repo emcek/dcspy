@@ -35,9 +35,9 @@ KeyDll = DllSdk(name='Gkey', dir='G-key', header=key_header)
 
 def load_dll(lib_type: DllSdk) -> Optional[Union[Lib, CDLL]]:
     """
-    Initialize and load of C dynamic linking library.
+    Initialize and load of the C dynamic linking library.
 
-    :param lib_type: library to load: LCD, LED or Gkey
+    :param lib_type: Library to load: LCD, LED or Gkey
     :return: C DLL instance
     """
     try:
@@ -63,7 +63,7 @@ def _get_ddl_path(lib_type: DllSdk) -> str:
     """
     Return the path of the DLL file based on the provided library type.
 
-    :param lib_type: library to load: LCD, LED or Gkey
+    :param lib_type: Library to load: LCD, LED or Gkey
     :return: The path of the DLL file as a string.
     """
     arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'

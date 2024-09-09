@@ -14,18 +14,18 @@ from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
-__version__ = '3.5.1'
+__version__ = '3.5.2'
 
 
 def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
     """
-    Handle main loop where all the magic is happened.
+    Handle the main loop where all the magic is happened.
 
-    :param logi_device: type of Logitech keyboard with LCD
+    :param logi_device: Type of Logitech keyboard with LCD
     :param parser: DCS protocol parser
-    :param sock: multicast UDP socket
-    :param ver_string: current version to show
-    :param event: stop event for main loop
+    :param sock: Multicast UDP socket
+    :param ver_string: Current version to show
+    :param event: Stop event for the main loop
     """
     start_time = time()
     LOG.info('Waiting for DCS connection...')
@@ -47,7 +47,7 @@ def _load_new_plane_if_detected(logi_device: LogitechDevice) -> None:
     """
     Load instance when new plane detected.
 
-    :param logi_device: type of Logitech keyboard with LCD
+    :param logi_device: Type of Logitech keyboard with LCD
     """
     global LOOP_FLAG
     if logi_device.plane_detected:
@@ -60,8 +60,8 @@ def _supporters(text: str, width: int) -> Iterator[str]:
     """
     Scroll text with widow width.
 
-    :param text: text to scroll
-    :param width: width of window
+    :param text: Text to scroll
+    :param width: Width of a window
     """
     queue = deque(text)
     while True:
@@ -73,11 +73,11 @@ def _sock_err_handler(logi_device: LogitechDevice, start_time: float, ver_string
     """
     Show basic data when DCS is disconnected.
 
-    :param logi_device: type of Logitech keyboard with LCD
-    :param start_time: time when connection to DCS was lost
-    :param ver_string: current version to show
-    :param support_iter: iterator for banner supporters
-    :param exp: caught exception instance
+    :param logi_device: Type of Logitech keyboard with LCD
+    :param start_time: Time when connection to DCS was lost
+    :param ver_string: Current version to show
+    :param support_iter: Iterator for banner supporters
+    :param exp: Caught exception instance
     """
     global LOOP_FLAG
     if LOOP_FLAG:
@@ -92,9 +92,9 @@ def _sock_err_handler(logi_device: LogitechDevice, start_time: float, ver_string
 
 def _prepare_socket() -> socket.socket:
     """
-    Prepare multicast UDP socket for DCS-BIOS communication.
+    Prepare a multicast UDP socket for DCS-BIOS communication.
 
-    :return: socket object
+    :return: Socket object
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -110,7 +110,7 @@ def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
     Real starting point of DCSpy.
 
     :param model: Logitech device model
-    :param event: stop event for main loop
+    :param event: stop event for the main loop
     """
     with _prepare_socket() as dcs_sock:
         parser = ProtocolParser()
@@ -120,4 +120,4 @@ def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
         dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
         _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     LOG.info('DCSpy stopped.')
-    logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=str(get_config_yaml_item("dcsbios"))).ver}']
+    logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=get_config_yaml_item("dcsbios")).ver}']
