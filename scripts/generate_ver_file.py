@@ -5,7 +5,7 @@ from sys import argv
 from PyInstaller.utils.win32 import versioninfo
 
 
-def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: str) -> versioninfo.VSVersionInfo:
+def generate_ver_info(major: int, minor: int, patch: int, build: int, dec_git_sha: int) -> versioninfo.VSVersionInfo:
     """
     Generate a version information object.
 
@@ -34,12 +34,12 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, git_sha: s
               versioninfo.StringStruct('LegalCopyright', '© 2023 Michał Plichta. All rights reserved.'),
               versioninfo.StringStruct('OriginalFilename', 'dcs_py.exe'),
               versioninfo.StringStruct('ProductName', 'DCSpy'),
-              versioninfo.StringStruct('ProductVersion', f'{major}.{minor}.{patch} ({git_sha})')])]),
+              versioninfo.StringStruct('ProductVersion', f'{major}.{minor}.{patch}.{dec_git_sha}')])]),
               versioninfo.VarFileInfo([versioninfo.VarStruct('Translation', [1033, 1200])])])
     return ver_info
 
 
-def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.5.2'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
+def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.6.26'), bld=environ.get('GITHUB_RUN_NUMBER', '1'),
                   sha=environ.get('GITHUB_SHA', 'deadbeef'), ver_f='file_version_info.txt') -> Sequence[str]:
     """
     Save generated version file based on the list of strings.
@@ -52,15 +52,16 @@ def save_ver_file(ver=environ.get('GITHUB_REF_NAME', '3.5.2'), bld=environ.get('
     :param ver_f: File name of version file
     :return: Input parameters
     """
+    dec_git_sha = int(sha[:4], 16)
     if all([ver, bld, sha, ver_f]):
         if ver.startswith('v'):
             ver = ver[1:]
-        info_ver_data = generate_ver_info(*[int(i) for i in ver.split('.')], build=int(bld), git_sha=sha[:7])
+        info_ver_data = generate_ver_info(*[int(i) for i in ver.split('.')], build=int(bld), dec_git_sha=dec_git_sha)
         with open(ver_f, mode='w+', encoding='utf-8') as file_ver_info:
             file_ver_info.write(str(info_ver_data))
     else:
         print('Use: v1.9.5 40 a43c77649cad77204c075b431f38d03dbc75cbdd file_version_info.txt')
-    return ver, bld, sha[:7], ver_f
+    return ver, bld, str(dec_git_sha), ver_f
 
 
 if __name__ == '__main__':
