@@ -1,0 +1,52 @@
+name: Build dcspy binary with PyInstaller
+
+on: workflow_call
+
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        spec_file: [ dcspy, dcspy_cli ]
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
+
+      - name: "Compile and install PyInstaller"
+        shell: bash
+        run: |
+          git clone https://github.com/pyinstaller/pyinstaller.git
+          pyi_tag=$(python scripts/latest_tag.py pyinstaller 1)
+          pyi_ver=$(python scripts/latest_tag.py pyinstaller 0)
+          cd pyinstaller/bootloader
+          git checkout $pyi_tag
+          python.exe ./waf all
+          cd ..
+          python -m build
+          python -m twine check dist/*
+          pip install dist/pyinstaller-$pyi_ver-py3-none-any.whl
+
+      - name: "Generate version info file"
+        shell: bash
+        run: |
+          python scripts/generate_ver_file.py
+
+      - name: "Build dcspy binaries"
+        shell: bash
+        run: |
+          export SOURCE_DATE_EPOCH=1674687685
+          export PYTHONHASHSEED=1674687685
+          pyinstaller --clean --noconfirm --log-level INFO ${{ matrix.spec_file }}.spec
+          md5sum dist/*.exe
+          unset PYTHONHASHSEED
+          unset SOURCE_DATE_EPOCH
+          pyi-bindepend dist/*.exe
+
+      - name: "Upload dcspy binaries"
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.spec_file }}_pyinstaller
+          path: dist/${{ matrix.spec_file }}.exe
