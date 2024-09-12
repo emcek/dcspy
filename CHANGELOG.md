@@ -7,6 +7,8 @@
   * check if BIOS JSON's files exist before do generation and compilation
   * Introduction of UV tool
   * use src-layout for python package
+  * introduce Nuitka based executable generation
+  * clean-up release pipeline
 
 ## 3.5.1
 * Add missing `F-4E-45MC.yaml` - #316 (@emcek)
