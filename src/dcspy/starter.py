@@ -14,6 +14,7 @@ from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
+SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nick Thain', 'BrotherBloat']
 __version__ = '3.5.2'
 
 
@@ -29,8 +30,7 @@ def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock
     """
     start_time = time()
     LOG.info('Waiting for DCS connection...')
-    support_banner = _supporters(text='Huge thanks to: Simon Leigh, Alexander Leschanz, Sireyn, Nick Thain, BrotherBloat and others! For support and help! ',
-                                 width=26)
+    support_banner = _supporters(text=f'Huge thanks to: {", ".join(SUPPORTERS)} and others! For support and help! ', width=26)
     while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
