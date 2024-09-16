@@ -30,6 +30,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
+          pip install -vv pyside6
           python -m pip install --upgrade pip setuptools
           pip install -Ur requirements_test.txt
 
