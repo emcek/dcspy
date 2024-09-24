@@ -1,5 +1,7 @@
 -r requirements_test.txt
+-r requirements_docs.txt
 build
 detect-test-pollution
+nuitka
 pre-commit
 pyinstaller
