@@ -95,14 +95,6 @@ docs = [
     'mkdocstrings-python==1.11.1',
     'plantuml==0.3.0',
 ]
-dev = [
-    'dcspy[test]',
-    'dcspy[docs]',
-    'build>=1.2.2',
-    'detect-test-pollution>=1.2.0',
-    'pre-commit>=3.8.0',
-    'pyinstaller>=6.10.0',
-]
 
 [tool.setuptools.dynamic]
 version = {attr = 'dcspy.run.__version__'}
@@ -182,3 +174,14 @@ match = '(?!test_|qtgui_rc).*\.py'
 
 [tool.isort]
 line_length = 160
+
+[tool.uv]
+dev-dependencies = [
+    'dcspy[test]',
+    'dcspy[docs]',
+    'build',
+    'detect-test-pollution',
+    'nuitka',
+    'pre-commit',
+    'pyinstaller',
+]
