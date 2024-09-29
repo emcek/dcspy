@@ -451,7 +451,7 @@ class WorkerSignals(QObject):
     * finished - no data
     * error - tuple with exctype, value, traceback.format_exc()
     * result - object/any type - data returned from processing
-    * progress - int as indication of progress
+    * progress - float between zero (0) and one (1) as indication of progress
     * stage - string with current stage
     * count - tuple of int as count of events
     """
