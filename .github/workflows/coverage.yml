@@ -50,4 +50,5 @@ jobs:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
           pip install codacy-coverage
-          python-codacy-coverage -r coverage.xml
+          coverage xml -o codacy_coverage.xml
+          python-codacy-coverage -r codacy_coverage.xml
