@@ -249,13 +249,14 @@ class DcsPyQtGui(QMainWindow):
                     self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
                     break
         except KeyError as err:
-            tb = traceback.format_exception(*sys.exc_info())
+            exc, value, tb = sys.exc_info()
+            traceback_data = traceback.format_exception(exc, value=value, tb=tb)
             self._show_custom_msg_box(
                 kind_of=QMessageBox.Icon.Warning,
                 title='Warning',
                 text=f'Can not find key: {err}. Please report error with detail below. You can use menu Help / Report issue option.',
                 info_txt=f'Problem: {type(err).__name__}.',
-                detail_txt='\n'.join(tb)
+                detail_txt='\n'.join(traceback_data)
             )
 
     def _set_find_value(self, value) -> None:
