@@ -1,3 +1,7 @@
+## 3.5.3
+* Internal:
+  * add early support for Python 3.13
+
 ## 3.5.2
 * GUI should not be hide when starting when configuration is wrong (@emcek)
 * Generate BIOS JSON's file during start-up and after BIOS update (@emcek)
