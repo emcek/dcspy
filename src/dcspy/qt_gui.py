@@ -1369,6 +1369,15 @@ class DcsPyQtGui(QMainWindow):
         return Path(self.le_biosdir.text())
 
     @property
+    def bios_repo_path(self) -> Path:
+        """
+        Get the path to DCS-BIOS repository.
+
+        :return: Full path as Path
+        """
+        return Path(self.le_biosdir.text()).parents[1] / 'dcs-bios'
+
+    @property
     def dcs_path(self) -> Path:
         """
         Get a path to DCS World directory.
