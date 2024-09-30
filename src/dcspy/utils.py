@@ -428,20 +428,6 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
     return refs
 
 
-def get_sha_for_current_git_ref(git_ref: str, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git') -> str:
-    """
-    Get SHA for current git reference.
-
-    :param git_ref: Any Git reference as string
-    :param repo: GitHub repository
-    :param repo_dir: Local directory for repository
-    :return: Hex of SHA
-    """
-    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
-    head_commit = bios_repo.head.commit
-    return head_commit.hexsha
-
-
 class CloneProgress(git.RemoteProgress):
     """Handler providing an interface to parse progress information emitted by git."""
     OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
