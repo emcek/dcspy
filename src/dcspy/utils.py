@@ -22,8 +22,8 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml,
-                          ReleaseInfo, RequestModel, get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo,
+                          RequestModel, get_key_instance)
 
 try:
     import git
@@ -520,7 +520,8 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     pyexec = sys.executable
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
-    git_ver, head_commit = _fetch_git_data()
+    repo_dir = Path(str(conf_dict['dcsbios'])).parents[1] / 'dcs-bios'
+    git_ver, head_commit = _fetch_git_data(repo_dir=repo_dir)
     lgs_dir = '\n'.join([
         str(Path(dir_path) / filename)
         for dir_path, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
@@ -529,16 +530,17 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
 
 
-def _fetch_git_data() -> tuple[Sequence[int], str]:
+def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str]:
     """
     Fetch Git version and SHA of HEAD commit.
 
+    :param repo_dir: Local directory for repository
     :return: Tuple of (a version) and SHA of HEAD commit
     """
     try:
         import git
         git_ver = git.cmd.Git().version_info
-        head_commit = str(git.Repo(DCS_BIOS_REPO_DIR).head.commit)
+        head_commit = str(git.Repo(repo_dir).head.commit)
     except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError, ImportError):
         git_ver = (0, 0, 0, 0)
         head_commit = 'N/A'
