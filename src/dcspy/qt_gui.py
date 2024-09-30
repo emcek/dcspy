@@ -391,30 +391,28 @@ class DcsPyQtGui(QMainWindow):
         widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
-    def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
+    def _generate_dcs_bios_jsons(self) -> bool:
         """
         Regenerate DCS-BIOS JSON files.
 
-        :param dcs_path: full path to DCS World installation directory as a Path object
-        :param bios_path: full path to DCS-BIOS directory as Path object
         :return: True if generation is successful, False otherwise.
         """
-        lua_exec = dcs_path / 'bin' / 'luae.exe'
-        cwd = bios_path.parents[1]
+        lua_exec = self.dcs_path / 'bin' / 'luae.exe'
         LOG.info('Regenerating DCS-BIOS JSONs files...')
         return_code = -1
         try:
-            return_code = run_command(cmd=f'{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua', cwd=cwd)
-        except FileNotFoundError as err:
-            tb = traceback.format_exception(*sys.exc_info())
+            return_code = run_command(cmd=[lua_exec, r'Scripts\DCS-BIOS\test\compile\LocalCompile.lua'], cwd=self.bios_repo_path)
+        except (FileNotFoundError, NotADirectoryError) as err:
+            exc, value, tb = sys.exc_info()
+            traceback_data = traceback.format_exception(exc, value=value, tb=tb)
             self._show_custom_msg_box(
                 kind_of=QMessageBox.Icon.Warning,
                 title='Problem with command',
                 text=f'Error during executing command:\n{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua',
                 info_txt=f'Problem: {err}\n\nPlease report  error with detail below. You can use menu Help / Report issue option.',
-                detail_txt='\n'.join(tb)
+                detail_txt='\n'.join(traceback_data)
             )
-        LOG.debug(f'RC: {return_code} {lua_exec=}, {cwd=}')
+        LOG.debug(f'RC: {return_code} {lua_exec=}, cwd={self.bios_repo_path}')
         return True if return_code == 0 else False
 
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
@@ -516,7 +514,7 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
-                self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+                self._generate_dcs_bios_jsons()
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
