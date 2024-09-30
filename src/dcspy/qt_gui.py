@@ -851,8 +851,8 @@ class DcsPyQtGui(QMainWindow):
         :return: True if git object exists, False otherwise.
         """
         if self.cb_bios_live.isChecked():
-            git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
-            LOG.debug(f'Git reference: {text} in {DCS_BIOS_REPO_DIR} exists: {git_ref}')
+            git_ref = is_git_object(repo_dir=self.bios_repo_path, git_obj=text)
+            LOG.debug(f'Git reference: {text} in {self.bios_repo_path} exists: {git_ref}')
             if git_ref:
                 self.le_bios_live.setStyleSheet('')
                 self._set_completer_for_git_ref()
