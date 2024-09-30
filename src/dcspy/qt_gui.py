@@ -1790,7 +1790,7 @@ class Worker(QRunnable):
 class GitCloneWorker(QRunnable):
     """Worker for git clone with reporting progress."""
 
-    def __init__(self, git_ref: str, bios_path: Path, repo: str = 'DCS-Skunkworks/dcs-bios', to_path: Path = DCS_BIOS_REPO_DIR, silence: bool = False) -> None:
+    def __init__(self, git_ref: str, bios_path: Path, to_path: Path, repo: str, silence: bool = False) -> None:
         """
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
 
@@ -1814,10 +1814,11 @@ class GitCloneWorker(QRunnable):
         try:
             sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
                                     progress=CloneProgress(self.signals.progress, self.signals.stage))
-            LOG.debug(f'Remove: {self.bios_path} {sha}')
-            rmtree(path=self.bios_path, ignore_errors=True)
-            LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
-            copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
+            target = self.to_path / 'Scripts' / 'DCS-BIOS'
+            cmd_symlink = f'"New-Item -ItemType SymbolicLink -Path \\"{self.bios_path}\\" -Target \\"{target}\\"'
+            ps_command = f"Start-Process powershell.exe -ArgumentList '-Command {cmd_symlink}' -Verb RunAs"
+            LOG.debug(f'Make symbolic link: {ps_command} ')
+            run_command(cmd=['powershell.exe', '-Command', ps_command])
         except Exception:
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
