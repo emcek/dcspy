@@ -896,7 +896,7 @@ class DcsPyQtGui(QMainWindow):
     def _set_completer_for_git_ref(self) -> None:
         """Setups completer for Git references of DCS-BIOS git repo."""
         if not self._git_refs_count:
-            git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
+            git_refs = get_all_git_refs(repo_dir=self.bios_repo_path)
             self._git_refs_count = len(git_refs)
             completer = QCompleter(git_refs)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -976,7 +976,8 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
-            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
+            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=self.bios_repo_path,
+                                          repo='DCS-Skunkworks/dcs-bios', silence=silence)
             signal_handlers = {
                 'progress': self._progress_by_abs_value,
                 'stage': self.statusbar.showMessage,
@@ -1023,7 +1024,7 @@ class DcsPyQtGui(QMainWindow):
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
         self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
-                                  info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
+                                  info_txt=f'Try remove directory:\n{self.bios_repo_path}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
 
     def _clone_bios_completed(self, result) -> None:
@@ -1035,7 +1036,7 @@ class DcsPyQtGui(QMainWindow):
         sha, silence = result
         local_bios = self._check_local_bios()
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
-        install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+        install_result = self._handling_export_lua(temp_dir=self.bios_repo_path / 'Scripts')
         install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
