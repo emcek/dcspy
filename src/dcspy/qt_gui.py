@@ -1040,17 +1040,10 @@ class DcsPyQtGui(QMainWindow):
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
-        self._update_bios_ver_file()
         self._reload_table_gkeys()
         if not silence:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self.progressbar.setValue(0)
-
-    def _update_bios_ver_file(self):
-        """Update DCS-BIOS version file with current SHA."""
-        hex_sha = get_sha_for_current_git_ref(git_ref=self.le_bios_live.text(), repo_dir=DCS_BIOS_REPO_DIR)
-        with open(file=self.bios_path / DCS_BIOS_VER_FILE, mode='w+') as bios_live_ver_file:
-            bios_live_ver_file.write(hex_sha)
 
     def _check_bios_release(self, silence=False) -> None:
         """
