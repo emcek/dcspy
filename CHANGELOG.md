@@ -1,3 +1,7 @@
+## 3.5.3
+* Internal:
+  * make starting DCSpy client in thread more flexible
+
 ## 3.5.2
 * GUI should not be hide when starting when configuration is wrong (@emcek)
 * Generate BIOS JSON's file during start-up and after BIOS update (@emcek)
