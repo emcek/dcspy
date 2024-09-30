@@ -625,16 +625,16 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
 
 
-def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
+def run_command(cmd: Sequence[str], cwd: Optional[Path] = None) -> int:
     """
     Run command in shell as a subprocess.
 
-    :param cmd: The command to be executed as a string
+    :param cmd: The command to be executed as a sequence of strings
     :param cwd: current working directory
     :return: The return code of command
     """
     try:
-        proc = run(cmd.split(' '), check=True, shell=False, cwd=cwd)
+        proc = run(cmd, check=True, shell=False, cwd=cwd)
         return proc.returncode
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')
