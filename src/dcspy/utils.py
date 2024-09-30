@@ -295,17 +295,16 @@ def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
     return sha
 
 
-def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git',
-                      progress: Optional[git.RemoteProgress] = None) -> str:
+def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = True, progress: Optional[git.RemoteProgress] = None) -> str:
     """
-    Update DCS-BIOS git repository.
+    Update git repository.
 
     Return SHA of the latest commit.
 
     :param git_ref: Any Git reference as string
-    :param update: Perform update process
-    :param repo: GitHub repository
     :param repo_dir: Local directory for repository
+    :param repo: GitHub repository user/name
+    :param update: Perform update process
     :param progress: Progress callback
     """
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
