@@ -870,7 +870,7 @@ class DcsPyQtGui(QMainWindow):
         sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
+                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), repo_dir=self.bios_repo_path, repo='DCS-Skunkworks/dcs-bios', update=False)
             except Exception as exc:
                 LOG.debug(f'{exc}')
                 if not silence:
