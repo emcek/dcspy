@@ -45,7 +45,7 @@ jobs:
           python -m pytest -v -m 'not e2e' --img_precision 0 --cov=dcspy --cov-report=xml --cov-branch
 
       - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v3.0.0
+        uses: sonarsource/sonarcloud-github-action@v3.1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
