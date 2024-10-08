@@ -22,8 +22,8 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml,
-                          ReleaseInfo, RequestModel, get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo,
+                          RequestModel, get_key_instance)
 
 try:
     import git
@@ -295,17 +295,16 @@ def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
     return sha
 
 
-def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git',
-                      progress: Optional[git.RemoteProgress] = None) -> str:
+def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = True, progress: Optional[git.RemoteProgress] = None) -> str:
     """
-    Update DCS-BIOS git repository.
+    Update git repository.
 
     Return SHA of the latest commit.
 
     :param git_ref: Any Git reference as string
-    :param update: Perform update process
-    :param repo: GitHub repository
     :param repo_dir: Local directory for repository
+    :param repo: GitHub repository user/name
+    :param update: Perform update process
     :param progress: Progress callback
     """
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
@@ -428,20 +427,6 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
     return refs
 
 
-def get_sha_for_current_git_ref(git_ref: str, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git') -> str:
-    """
-    Get SHA for current git reference.
-
-    :param git_ref: Any Git reference as string
-    :param repo: GitHub repository
-    :param repo_dir: Local directory for repository
-    :return: Hex of SHA
-    """
-    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
-    head_commit = bios_repo.head.commit
-    return head_commit.hexsha
-
-
 class CloneProgress(git.RemoteProgress):
     """Handler providing an interface to parse progress information emitted by git."""
     OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
@@ -535,7 +520,8 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     pyexec = sys.executable
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
-    git_ver, head_commit = _fetch_git_data()
+    repo_dir = Path(str(conf_dict['dcsbios'])).parents[1] / 'dcs-bios'
+    git_ver, head_commit = _fetch_git_data(repo_dir=repo_dir)
     lgs_dir = '\n'.join([
         str(Path(dir_path) / filename)
         for dir_path, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
@@ -544,16 +530,17 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
 
 
-def _fetch_git_data() -> tuple[Sequence[int], str]:
+def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str]:
     """
     Fetch Git version and SHA of HEAD commit.
 
+    :param repo_dir: Local directory for repository
     :return: Tuple of (a version) and SHA of HEAD commit
     """
     try:
         import git
         git_ver = git.cmd.Git().version_info
-        head_commit = str(git.Repo(DCS_BIOS_REPO_DIR).head.commit)
+        head_commit = str(git.Repo(repo_dir).head.commit)
     except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError, ImportError):
         git_ver = (0, 0, 0, 0)
         head_commit = 'N/A'
@@ -640,16 +627,16 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
 
 
-def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
+def run_command(cmd: Sequence[str], cwd: Optional[Path] = None) -> int:
     """
     Run command in shell as a subprocess.
 
-    :param cmd: The command to be executed as a string
+    :param cmd: The command to be executed as a sequence of strings
     :param cwd: current working directory
     :return: The return code of command
     """
     try:
-        proc = run(cmd.split(' '), check=True, shell=False, cwd=cwd)
+        proc = run(cmd, check=True, shell=False, cwd=cwd)
         return proc.returncode
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')

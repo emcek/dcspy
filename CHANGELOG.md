@@ -1,4 +1,5 @@
 ## 3.5.5
+* Use symbolic link to DCS-BIOS live repository
 * internal:
   * Update PySide6 framework to 6.7.3
 
