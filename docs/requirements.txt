@@ -5,6 +5,6 @@ mkdocs-literate-nav==0.6.1
 mkdocs-material==9.5.39
 mkdocs-plantuml==0.1.1
 mkdocs-section-index==0.3.9
-mkdocstrings==0.26.1
+mkdocstrings==0.26.2
 mkdocstrings-python==1.11.1
 plantuml==0.3.0
