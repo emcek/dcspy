@@ -81,7 +81,7 @@ test = [
     'types-psutil==6.0.0.20241011',
     'types-pyinstaller==6.10.0.20240812',
     'types-pyyaml==6.0.12.20240917',
-    'types-requests==2.32.0.20240914',
+    'types-requests==2.32.0.20241016',
 ]
 docs = [
     'black==24.8.0',
