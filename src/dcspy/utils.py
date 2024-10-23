@@ -302,7 +302,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     Return SHA of the latest commit.
 
     :param git_ref: Any Git reference as string
-    :param repo_dir: Local directory for repository
+    :param repo_dir: Local directory for a repository
     :param repo: GitHub repository user/name
     :param update: Perform update process
     :param progress: Progress callback
