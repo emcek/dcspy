@@ -1,5 +1,5 @@
 ## 3.5.3
-* Use symbolic link to DCS-BIOS live repository !373 (@emcek)
+* Use symbolic link to DCS-BIOS live repository #347 (@emcek)
 * Compile DCS-BIOS using LuaJIT from lupa library !373 (@emcek) 
 * internal:
   * Update PySide6 framework to 6.7.3
