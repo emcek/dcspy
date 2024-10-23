@@ -7,7 +7,7 @@ from functools import lru_cache
 from glob import glob
 from itertools import chain
 from logging import getLogger
-from os import environ, makedirs, walk
+from os import chdir, environ, getcwd, makedirs, walk
 from pathlib import Path
 from platform import python_implementation, python_version, uname
 from pprint import pformat
@@ -809,3 +809,34 @@ class KeyRequest:
         :param req: The raw request to set.
         """
         self.buttons[button].raw_request = req
+
+
+def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts/DCS-BIOS/test/compile/LocalCompile.lua') -> None:
+    r"""
+    Regenerate DCS-BIOS JSON files.
+
+    Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
+
+    :param dcs_save_games: Full path to Saved Games\DCS.openbeta directory.
+    :param local_compile: Relative path to LocalCompile.lua file.
+    """
+    try:
+        import lupa.luajit21 as lupa
+    except ImportError:
+        try:
+            import lupa.lua51 as lupa
+        except ImportError:
+            return
+
+    previous_dir = getcwd()
+    try:
+        chdir(dcs_save_games)
+        LOG.debug(f"Changed to: {dcs_save_games}")
+        lua = (lupa.LuaRuntime())
+        LOG.debug(f"Using {lupa.LuaRuntime().lua_implementation} (compiled with {lupa.LUA_VERSION})")
+        with open(local_compile) as lua_file:
+            lua_script = lua_file.read()
+        lua.execute(lua_script)
+    finally:
+        chdir(previous_dir)
+        LOG.debug(f"Change directory back to: {getcwd()}")
