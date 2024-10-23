@@ -821,10 +821,10 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     :param local_compile: Relative path to LocalCompile.lua file.
     """
     try:
-        import lupa.luajit21 as lupa
+        import lupa.luajit21 as lupa  # type: ignore[import-untyped]
     except ImportError:
         try:
-            import lupa.lua51 as lupa
+            import lupa.lua51 as lupa  # type: ignore[import-untyped]
         except ImportError:
             return
 
