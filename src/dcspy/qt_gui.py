@@ -1105,7 +1105,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip', file_name_str='BIOS')
         self.r_bios = release_info.ver
         return release_info
 
@@ -1191,8 +1191,7 @@ class DcsPyQtGui(QMainWindow):
         1. Show message box with warning
         2. Show if DCS us running
         3. Remove Git repo from temporary directory (optionally)
-        4. Remove DCS-BIOS from Saved Games directory
-        5. Install DCS-BIOS
+        4. Install DCS-BIOS
         """
         dcs_runs = proc_is_running(name='DCS.exe')
         message = f'Are you sure to remove content of:\n\n{self.bios_path}'
@@ -1208,7 +1207,6 @@ class DcsPyQtGui(QMainWindow):
                 except FileNotFoundError as err:
                     LOG.debug(f'Try remove DCS-BIOS old repo\n{err}', exc_info=True)
                 LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
-            # rmtree(path=self.bios_path, ignore_errors=False)
             LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
             self._start_bios_update(silence=False)
 
