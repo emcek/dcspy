@@ -1137,10 +1137,7 @@ class DcsPyQtGui(QMainWindow):
         """
         tmp_dir = Path(gettempdir())
         local_zip = tmp_dir / rel_info.asset_file
-        cmd_symlink = f"Remove-Item -LiteralPath '{self.bios_path}' -Force -Recurse"
-        ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {cmd_symlink}" -Verb RunAs'
-        LOG.debug(f'Execute: {ps_command} ')
-        run_command(cmd=['powershell.exe', '-Command', ps_command])
+        self._remove_saved_games_dcs()
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
@@ -1206,6 +1203,8 @@ class DcsPyQtGui(QMainWindow):
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             self._remove_dcs_bios_repo_dir()
+            LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
+            rmtree(path=self.bios_path, ignore_errors=True)
             self._remove_saved_games_dcs()
             self._start_bios_update(silence=False)
 
@@ -1221,8 +1220,6 @@ class DcsPyQtGui(QMainWindow):
 
     def _remove_saved_games_dcs(self) -> None:
         r"""Remove Saved Games\DCS.openbeta\Scripts\DCS-BIOS repository directory."""
-        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
-        rmtree(path=self.bios_path, ignore_errors=True)
         try:
             cmd_symlink = f"Remove-Item -LiteralPath '{self.bios_path}' -Force -Recurse"
             ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {cmd_symlink}" -Verb RunAs'
