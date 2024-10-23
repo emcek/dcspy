@@ -31,9 +31,9 @@ from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButt
                           SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         count_files, defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls,
-                         get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command,
-                         run_pip_command, save_yaml)
+                         count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
+                         get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
+                         load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.5.2'
@@ -391,7 +391,7 @@ class DcsPyQtGui(QMainWindow):
         widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
-    def _generate_dcs_bios_jsons(self) -> bool:
+    def _generate_bios_jsons_with_dcs_lua(self) -> bool:
         """
         Regenerate DCS-BIOS JSON files.
 
@@ -514,7 +514,9 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
-                self._generate_dcs_bios_jsons()
+                generate_bios_jsons_with_lupa(dcs_save_games=Path(self.le_biosdir.text()).parents[1])
+            if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
+                self._generate_bios_jsons_with_dcs_lua()
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
