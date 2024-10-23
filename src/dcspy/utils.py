@@ -88,7 +88,7 @@ def save_yaml(data: dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
 
 
-def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name_str: str = '') -> ReleaseInfo:
+def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
     """
     Check a version of <organization>/<package> at GitHub.
 
@@ -103,7 +103,7 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name_s
     :param repo: Format '<organization or user>/<package>'
     :param current_ver: Current local version
     :param extension: File extension
-    :param file_name_str: string in file name
+    :param file_name: string in file name
     :return: ReleaseInfo with data
     """
     latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
@@ -115,7 +115,7 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name_s
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
             published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
-            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['name'].endswith(extension) and file_name_str in asset['name'])
+            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['name'].endswith(extension) and file_name in asset['name'])
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             latest = _compare_versions(package, current_ver, online_version)
         else:
