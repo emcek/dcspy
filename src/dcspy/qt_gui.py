@@ -1105,7 +1105,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip', file_name_str='BIOS')
+        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip', file_name='BIOS')
         self.r_bios = release_info.ver
         return release_info
 
@@ -1137,12 +1137,16 @@ class DcsPyQtGui(QMainWindow):
         """
         tmp_dir = Path(gettempdir())
         local_zip = tmp_dir / rel_info.asset_file
+        cmd_symlink = f"Remove-Item -LiteralPath '{self.bios_path}' -Force -Recurse"
+        ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {cmd_symlink}" -Verb RunAs'
+        LOG.debug(f'Execute: {ps_command} ')
+        run_command(cmd=['powershell.exe', '-Command', ps_command])
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.bios_path} ')
+        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path} ')
         rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path)
@@ -1191,7 +1195,8 @@ class DcsPyQtGui(QMainWindow):
         1. Show message box with warning
         2. Show if DCS us running
         3. Remove Git repo from temporary directory (optionally)
-        4. Install DCS-BIOS
+        4. Remove DCS-BIOS from Saved Games directory
+        5. Install DCS-BIOS
         """
         dcs_runs = proc_is_running(name='DCS.exe')
         message = f'Are you sure to remove content of:\n\n{self.bios_path}'
@@ -1200,15 +1205,31 @@ class DcsPyQtGui(QMainWindow):
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
-            if self.cb_bios_live.isChecked():
-                return_code = run_command(cmd=['attrib', '-R', '-H', '-S', fr'{self.bios_repo_path}\*.*', '/S', '/D'])
-                try:
-                    rmtree(self.bios_repo_path, ignore_errors=False)
-                except FileNotFoundError as err:
-                    LOG.debug(f'Try remove DCS-BIOS old repo\n{err}', exc_info=True)
-                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
-            LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
+            self._remove_dcs_bios_repo_dir()
+            self._remove_saved_games_dcs()
             self._start_bios_update(silence=False)
+
+    def _remove_dcs_bios_repo_dir(self) -> None:
+        """Remove DCS-BIOS repository directory."""
+        if self.cb_bios_live.isChecked():
+            return_code = run_command(cmd=['attrib', '-R', '-H', '-S', fr'{self.bios_repo_path}\*.*', '/S', '/D'])
+            try:
+                rmtree(self.bios_repo_path, ignore_errors=False)
+            except FileNotFoundError as err:
+                LOG.debug(f'Try remove DCS-BIOS old repo\n{err}', exc_info=True)
+            LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
+
+    def _remove_saved_games_dcs(self) -> None:
+        r"""Remove Saved Games\DCS.openbeta\Scripts\DCS-BIOS repository directory."""
+        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        try:
+            cmd_symlink = f"Remove-Item -LiteralPath '{self.bios_path}' -Force -Recurse"
+            ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {cmd_symlink}" -Verb RunAs'
+            LOG.debug(f'Execute: {ps_command} ')
+            run_command(cmd=['powershell.exe', '-Command', ps_command])
+        except FileNotFoundError as err:
+            LOG.debug(f'Try remove DCS-BIOS dir\n{err}', exc_info=True)
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
