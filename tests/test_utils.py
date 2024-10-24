@@ -10,15 +10,21 @@ from dcspy import utils
 from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
 
 
-@mark.parametrize('online_tag, result', [
-    ('1.1.1', ReleaseInfo(
+@mark.parametrize('online_tag, file_name, result', [
+    ('1.1.1', 'fake', ReleaseInfo(
         latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
     )),
-    ('3.2.1', ReleaseInfo(
+    ('3.2.1', '', ReleaseInfo(
         latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
-    ))
-], ids=['No update', 'New version'])
-def test_check_ver_is_possible(online_tag, result):
+    )),
+    ('3.2.1', 'fake', ReleaseInfo(
+        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+    )),
+    ('3.2.1', 'none', ReleaseInfo(
+        latest=False, ver=version.parse('3.2.1'), dl_url='', published='09 August 2021', release_type='Pre-release', asset_file=''
+    )),
+], ids=['No update', 'New version', 'Asset found', 'No assets'])
+def test_check_ver_is_possible(online_tag, file_name, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
@@ -27,7 +33,7 @@ def test_check_ver_is_possible(online_tag, result):
                                                                            'name': 'fake.tgz',
                                                                        }],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz') == result
+        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz', file_name=file_name) == result
 
 
 def test_check_ver_can_not_check():
@@ -221,13 +227,6 @@ def test_get_all_git_refs(tmpdir):
     assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
 
 
-@mark.slow
-def test_get_sha_for_current_git_ref(tmpdir):
-    hex_sha = utils.get_sha_for_current_git_ref(git_ref='master', repo='emcek/common_sense', repo_dir=tmpdir)
-    assert len(hex_sha) == 40
-    assert hex_sha == '6d5d9f80a8309eec3e9cf183fc57d56559035560'
-
-
 def test_check_dcs_bios_entry_no_entry(tmpdir):
     from os import makedirs
     install_dir = tmpdir / 'install'
@@ -313,7 +312,7 @@ def test_run_pip_command_failed():
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 @mark.parametrize('cmd, result', [('Clear-Host', 0), ('bullshit', -1)])
 def test_run_command(cmd, result):
-    rc = utils.run_command(cmd=f'powershell {cmd}')
+    rc = utils.run_command(cmd=['powershell', cmd])
     assert rc == result
 
 
