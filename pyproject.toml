@@ -44,7 +44,7 @@ dependencies = [
     'pillow==10.4.0',
     'psutil==6.0.0',
     'pydantic==2.9.2',
-    'pyside6==6.7.3',
+    'pyside6==6.8.0.1',
     'pyyaml==6.0.2',
     'requests==2.32.3',
     'typing-extensions==4.12.2 ; python_full_version < "3.12"',
