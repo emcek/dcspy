@@ -833,7 +833,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     try:
         chdir(dcs_save_games)
         LOG.debug(f"Changed to: {dcs_save_games}")
-        lua = (lupa.LuaRuntime())
+        lua = lupa.LuaRuntime()
         LOG.debug(f"Using {lupa.LuaRuntime().lua_implementation} (compiled with {lupa.LUA_VERSION})")
         with open(local_compile) as lua_file:
             lua_script = lua_file.read()
