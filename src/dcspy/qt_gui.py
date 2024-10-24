@@ -26,14 +26,14 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes,
-                          ReleaseInfo, RequestType, SystemData)
+from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml, FontsConfig, Gkey,
+                          GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, ReleaseInfo, RequestType,
+                          SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         count_files, defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls,
-                         get_plane_aliases, get_planes_list, get_sha_for_current_git_ref, get_version_string, is_git_exec_present, is_git_object, load_yaml,
-                         proc_is_running, run_command, run_pip_command, save_yaml)
+                         count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
+                         get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
+                         load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 __version__ = '3.5.2'
@@ -249,13 +249,14 @@ class DcsPyQtGui(QMainWindow):
                     self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
                     break
         except KeyError as err:
-            tb = traceback.format_exception(*sys.exc_info())
+            exc, value, tb = sys.exc_info()
+            traceback_data = traceback.format_exception(exc, value=value, tb=tb)
             self._show_custom_msg_box(
                 kind_of=QMessageBox.Icon.Warning,
                 title='Warning',
                 text=f'Can not find key: {err}. Please report error with detail below. You can use menu Help / Report issue option.',
                 info_txt=f'Problem: {type(err).__name__}.',
-                detail_txt='\n'.join(tb)
+                detail_txt='\n'.join(traceback_data)
             )
 
     def _set_find_value(self, value) -> None:
@@ -390,30 +391,28 @@ class DcsPyQtGui(QMainWindow):
         widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
-    def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
+    def _generate_bios_jsons_with_dcs_lua(self) -> bool:
         """
         Regenerate DCS-BIOS JSON files.
 
-        :param dcs_path: full path to DCS World installation directory as a Path object
-        :param bios_path: full path to DCS-BIOS directory as Path object
         :return: True if generation is successful, False otherwise.
         """
-        lua_exec = dcs_path / 'bin' / 'luae.exe'
-        cwd = bios_path.parents[1]
+        lua_exec = self.dcs_path / 'bin' / 'luae.exe'
         LOG.info('Regenerating DCS-BIOS JSONs files...')
         return_code = -1
         try:
-            return_code = run_command(cmd=f'{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua', cwd=cwd)
-        except FileNotFoundError as err:
-            tb = traceback.format_exception(*sys.exc_info())
+            return_code = run_command(cmd=[lua_exec, r'Scripts\DCS-BIOS\test\compile\LocalCompile.lua'], cwd=self.bios_repo_path)
+        except (FileNotFoundError, NotADirectoryError) as err:
+            exc, value, tb = sys.exc_info()
+            traceback_data = traceback.format_exception(exc, value=value, tb=tb)
             self._show_custom_msg_box(
                 kind_of=QMessageBox.Icon.Warning,
                 title='Problem with command',
                 text=f'Error during executing command:\n{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua',
                 info_txt=f'Problem: {err}\n\nPlease report  error with detail below. You can use menu Help / Report issue option.',
-                detail_txt='\n'.join(tb)
+                detail_txt='\n'.join(traceback_data)
             )
-        LOG.debug(f'RC: {return_code} {lua_exec=}, {cwd=}')
+        LOG.debug(f'RC: {return_code} {lua_exec=}, cwd={self.bios_repo_path}')
         return True if return_code == 0 else False
 
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
@@ -515,7 +514,9 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
-                self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+                generate_bios_jsons_with_lupa(dcs_save_games=Path(self.le_biosdir.text()).parents[1])
+            if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
+                self._generate_bios_jsons_with_dcs_lua()
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
@@ -852,8 +853,8 @@ class DcsPyQtGui(QMainWindow):
         :return: True if git object exists, False otherwise.
         """
         if self.cb_bios_live.isChecked():
-            git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
-            LOG.debug(f'Git reference: {text} in {DCS_BIOS_REPO_DIR} exists: {git_ref}')
+            git_ref = is_git_object(repo_dir=self.bios_repo_path, git_obj=text)
+            LOG.debug(f'Git reference: {text} in {self.bios_repo_path} exists: {git_ref}')
             if git_ref:
                 self.le_bios_live.setStyleSheet('')
                 self._set_completer_for_git_ref()
@@ -871,7 +872,7 @@ class DcsPyQtGui(QMainWindow):
         sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
+                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), repo_dir=self.bios_repo_path, repo='DCS-Skunkworks/dcs-bios', update=False)
             except Exception as exc:
                 LOG.debug(f'{exc}')
                 if not silence:
@@ -890,12 +891,13 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.le_bios_live.setEnabled(False)
             self.le_bios_live.setStyleSheet('')
+        self._clean_bios_files()
         self._bios_check_clicked(silence=False)
 
     def _set_completer_for_git_ref(self) -> None:
         """Setups completer for Git references of DCS-BIOS git repo."""
         if not self._git_refs_count:
-            git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
+            git_refs = get_all_git_refs(repo_dir=self.bios_repo_path)
             self._git_refs_count = len(git_refs)
             completer = QCompleter(git_refs)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -975,7 +977,8 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
-            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
+            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=self.bios_repo_path,
+                                          repo='DCS-Skunkworks/dcs-bios', silence=silence)
             signal_handlers = {
                 'progress': self._progress_by_abs_value,
                 'stage': self.statusbar.showMessage,
@@ -1022,7 +1025,7 @@ class DcsPyQtGui(QMainWindow):
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
         self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
-                                  info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
+                                  info_txt=f'Try remove directory:\n{self.bios_repo_path}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
 
     def _clone_bios_completed(self, result) -> None:
@@ -1034,22 +1037,15 @@ class DcsPyQtGui(QMainWindow):
         sha, silence = result
         local_bios = self._check_local_bios()
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
-        install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+        install_result = self._handling_export_lua(temp_dir=self.bios_repo_path / 'Scripts')
         install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
-        self._update_bios_ver_file()
         self._reload_table_gkeys()
         if not silence:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self.progressbar.setValue(0)
-
-    def _update_bios_ver_file(self):
-        """Update DCS-BIOS version file with current SHA."""
-        hex_sha = get_sha_for_current_git_ref(git_ref=self.le_bios_live.text(), repo_dir=DCS_BIOS_REPO_DIR)
-        with open(file=self.bios_path / DCS_BIOS_VER_FILE, mode='w+') as bios_live_ver_file:
-            bios_live_ver_file.write(hex_sha)
 
     def _check_bios_release(self, silence=False) -> None:
         """
@@ -1110,7 +1106,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip', file_name='BIOS')
         self.r_bios = release_info.ver
         return release_info
 
@@ -1142,12 +1138,13 @@ class DcsPyQtGui(QMainWindow):
         """
         tmp_dir = Path(gettempdir())
         local_zip = tmp_dir / rel_info.asset_file
+        self._remove_saved_games_dcs()
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.bios_path} ')
+        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path} ')
         rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path)
@@ -1206,13 +1203,35 @@ class DcsPyQtGui(QMainWindow):
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
-            if self.cb_bios_live.isChecked():
-                return_code = run_command(cmd=fr'attrib -R -H -S {DCS_BIOS_REPO_DIR}\*.* /S /D')
-                rmtree(DCS_BIOS_REPO_DIR, ignore_errors=False)
-                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
-            rmtree(path=self.bios_path, ignore_errors=False)
-            LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
+            self._clean_bios_files()
             self._start_bios_update(silence=False)
+
+    def _clean_bios_files(self) -> None:
+        """Clean all DCS-BIOS directories and files."""
+        self._remove_dcs_bios_repo_dir()
+        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        self._remove_saved_games_dcs()
+
+    def _remove_dcs_bios_repo_dir(self) -> None:
+        """Remove DCS-BIOS repository directory."""
+        if self.cb_bios_live.isChecked():
+            return_code = run_command(cmd=['attrib', '-R', '-H', '-S', fr'{self.bios_repo_path}\*.*', '/S', '/D'])
+            try:
+                rmtree(self.bios_repo_path, ignore_errors=False)
+            except FileNotFoundError as err:
+                LOG.debug(f'Try remove DCS-BIOS old repo\n{err}', exc_info=True)
+            LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
+
+    def _remove_saved_games_dcs(self) -> None:
+        r"""Remove Saved Games\DCS.openbeta\Scripts\DCS-BIOS repository directory."""
+        try:
+            cmd_symlink = f"Remove-Item -LiteralPath '{self.bios_path}' -Force -Recurse"
+            ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {cmd_symlink}" -Verb RunAs'
+            LOG.debug(f'Execute: {ps_command} ')
+            run_command(cmd=['powershell.exe', '-Command', ps_command])
+        except FileNotFoundError as err:
+            LOG.debug(f'Try remove DCS-BIOS dir\n{err}', exc_info=True)
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
@@ -1366,6 +1385,15 @@ class DcsPyQtGui(QMainWindow):
         :return: Full path as Path
         """
         return Path(self.le_biosdir.text())
+
+    @property
+    def bios_repo_path(self) -> Path:
+        """
+        Get the path to DCS-BIOS repository.
+
+        :return: Full path as Path
+        """
+        return Path(self.le_biosdir.text()).parents[1] / 'dcs-bios'
 
     @property
     def dcs_path(self) -> Path:
@@ -1785,7 +1813,7 @@ class Worker(QRunnable):
 class GitCloneWorker(QRunnable):
     """Worker for git clone with reporting progress."""
 
-    def __init__(self, git_ref: str, bios_path: Path, repo: str = 'DCS-Skunkworks/dcs-bios', to_path: Path = DCS_BIOS_REPO_DIR, silence: bool = False) -> None:
+    def __init__(self, git_ref: str, bios_path: Path, to_path: Path, repo: str, silence: bool = False) -> None:
         """
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
 
@@ -1809,10 +1837,11 @@ class GitCloneWorker(QRunnable):
         try:
             sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
                                     progress=CloneProgress(self.signals.progress, self.signals.stage))
-            LOG.debug(f'Remove: {self.bios_path} {sha}')
-            rmtree(path=self.bios_path, ignore_errors=True)
-            LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
-            copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
+            target = self.to_path / 'Scripts' / 'DCS-BIOS'
+            cmd_symlink = f'"New-Item -ItemType SymbolicLink -Path \\"{self.bios_path}\\" -Target \\"{target}\\"'
+            ps_command = f"Start-Process powershell.exe -ArgumentList '-Command {cmd_symlink}' -Verb RunAs"
+            LOG.debug(f'Make symbolic link: {ps_command} ')
+            run_command(cmd=['powershell.exe', '-Command', ps_command])
         except Exception:
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))

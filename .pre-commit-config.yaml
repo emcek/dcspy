@@ -8,7 +8,7 @@ default_language_version:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
         exclude: 'qtgui_rc.py'
@@ -28,14 +28,14 @@ repos:
         exclude: 'qtgui_rc.py'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2
+    rev: v1.13.0
     hooks:
       - id: mypy
         exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/|generate_ver_file\.py$'
         additional_dependencies: [types-cffi, types-Pillow, types-psutil, types-pyinstaller, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.5
+    rev: v0.7.0
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
@@ -48,7 +48,7 @@ repos:
         exclude: '/qtgui_rc.py$|tests/'
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: v3.19.0
     hooks:
       - id: pyupgrade
         exclude: '/qtgui_rc.py$'
@@ -68,7 +68,7 @@ repos:
           args: [--local]
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.19
+    rev: v0.21
     hooks:
       - id: validate-pyproject
 
