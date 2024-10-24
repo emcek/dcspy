@@ -58,8 +58,7 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
   * [Git](https://git-scm.com/download/win) it is necessary for using the live version of DCS-BIOS
 * DCS World: [2.9.7.59263](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.7.59263/), but any version from 2.9.* branch should be fine.
 * optional:
-  * [Python 3.12](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
-  * However, DCSpy 2.3.3 and earlier do not support Python 3.12
+  * [Python 3.13](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
 
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form a user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find a bug or have any crazy idea.
