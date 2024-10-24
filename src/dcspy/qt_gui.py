@@ -891,6 +891,7 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.le_bios_live.setEnabled(False)
             self.le_bios_live.setStyleSheet('')
+        self._clean_bios_files()
         self._bios_check_clicked(silence=False)
 
     def _set_completer_for_git_ref(self) -> None:
@@ -1202,11 +1203,15 @@ class DcsPyQtGui(QMainWindow):
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
-            self._remove_dcs_bios_repo_dir()
-            LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
-            rmtree(path=self.bios_path, ignore_errors=True)
-            self._remove_saved_games_dcs()
+            self._clean_bios_files()
             self._start_bios_update(silence=False)
+
+    def _clean_bios_files(self) -> None:
+        """Clean all DCS-BIOS directories and files."""
+        self._remove_dcs_bios_repo_dir()
+        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
+        rmtree(path=self.bios_path, ignore_errors=True)
+        self._remove_saved_games_dcs()
 
     def _remove_dcs_bios_repo_dir(self) -> None:
         """Remove DCS-BIOS repository directory."""
