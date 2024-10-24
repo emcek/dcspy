@@ -3,7 +3,7 @@
 * Compile DCS-BIOS using LuaJIT from lupa library !373 (@emcek)
 * internal:
   * Update PySide6 framework to 6.8.0.2
-  * add early support for Python 3.13
+  * add support for Python 3.13
 
 ## 3.5.2
 * GUI should not be hide when starting when configuration is wrong (@emcek)
