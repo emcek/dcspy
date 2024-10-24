@@ -1,6 +1,7 @@
 ## 3.5.3
 * Use symbolic link to DCS-BIOS live repository #347 (@emcek)
 * Compile DCS-BIOS using LuaJIT from lupa library !373 (@emcek)
+* Make switching between regular and live version of DCS-BIOS more reliable (@emcek)
 * internal:
   * Update PySide6 framework to 6.8.0.2
   * add support for Python 3.13
