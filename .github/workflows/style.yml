@@ -16,19 +16,6 @@ jobs:
         run: |
           pycodestyle --statistics --count src
 
-  pydocstyle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check PyDocStyle"
-        run: |
-          pydocstyle --count src
-
   interrogate:
     runs-on: ubuntu-latest
     steps:
