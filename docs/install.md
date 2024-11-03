@@ -34,14 +34,16 @@ Due to how Python application can be pack into executable file (using PyInstalle
    * You can skip for now and install DCS-BIOS directly from DCSpy (button Check DCS-BIOS, see [Configuration](usage.md#configuration)).
      It checks if new version exists, download, and unpack DCS-BIOS to `Save Games` folder and check `Export.lua` file.
    * Or follow manual installation [DCS-BIOS wiki page](https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation)
-6. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Windows Command Prompt (cmd.exe) and type:
+5. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Windows Command Prompt (cmd.exe) and type:
 ```shell script
 pip install dcspy
 ```
+
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-3.0.0-py3-none-any.whl
+pip install dcspy-3.6.0-py3-none-any.whl
 ```
+
 **Note:** If you got `pip is not recognized as an internal or external command, operable program or batch file.` error, see [FAQ](faq.md)
 
 
