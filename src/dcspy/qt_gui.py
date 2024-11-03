@@ -18,8 +18,8 @@ from webbrowser import open_new_tab
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot, qVersion
-from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItem
+from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot, qVersion
+from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
@@ -297,7 +297,7 @@ class DcsPyQtGui(QMainWindow):
             self._load_table_gkeys()  # generate json/bios
             self.current_row = 0
             self.current_col = 0
-            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            cell_combo: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row, col=self.current_col)
 
     def _set_ded_font_and_font_sliders(self) -> None:
@@ -442,7 +442,7 @@ class DcsPyQtGui(QMainWindow):
             for col in range(0, self.device.cols):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
-            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            cell_combo: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row,
                                             col=self.current_col)
 
@@ -768,11 +768,10 @@ class DcsPyQtGui(QMainWindow):
 
         :param widget: QComboBox instance
         """
-        model = widget.model()
+        model: Union[QStandardItemModel, QAbstractItemModel] = widget.model()
         for i in range(0, widget.count()):
-            item: QStandardItem = model.item(i)
-            if text in item.text():
-                item.setFlags(Qt.ItemFlag.NoItemFlags)
+            if text in model.item(i).text():
+                model.item(i).setFlags(Qt.ItemFlag.NoItemFlags)
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
@@ -791,7 +790,7 @@ class DcsPyQtGui(QMainWindow):
         """
         self.current_row = currentRow
         self.current_col = currentColumn
-        cell_combo = self.tw_gkeys.cellWidget(currentRow, currentColumn)
+        cell_combo: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(currentRow, currentColumn)
         self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=currentRow, col=currentColumn)
 
     def _input_iface_changed_or_custom_text_changed(self) -> None:
@@ -803,7 +802,8 @@ class DcsPyQtGui(QMainWindow):
             * a text is changed and user press enter
             * the widget lost focus
         """
-        current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
+        current_cell: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+        current_cell_text = current_cell.currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
             section = self._find_section_name(ctrl_name=current_cell_text)
             key_name = str(self.device.get_key_at(row=self.current_row, col=self.current_col))
@@ -815,9 +815,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
-        current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
+        current_cell: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
         for col in set(range(self.device.cols)) - {self.current_col}:
-            self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
+            cell_at_column: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, col)
+            cell_at_column.setCurrentIndex(current_cell.currentIndex())
 
     def _reload_table_gkeys(self) -> None:
         """
