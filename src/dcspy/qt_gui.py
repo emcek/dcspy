@@ -517,6 +517,7 @@ class DcsPyQtGui(QMainWindow):
                 generate_bios_jsons_with_lupa(dcs_save_games=Path(self.le_biosdir.text()).parents[1])
             if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
                 self._generate_bios_jsons_with_dcs_lua()
+            self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
@@ -826,6 +827,7 @@ class DcsPyQtGui(QMainWindow):
         * _load_table_gkeys method to load the table with gkeys,
         * reconnects the currentIndexChanged signal of the combo_planes widget
         """
+        self.plane_aliases = ['']
         self.combo_planes.currentIndexChanged.disconnect()
         self._load_table_gkeys()
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
@@ -1041,7 +1043,6 @@ class DcsPyQtGui(QMainWindow):
         install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.statusbar.showMessage(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
-        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
         self._reload_table_gkeys()
         if not silence:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
@@ -1138,7 +1139,6 @@ class DcsPyQtGui(QMainWindow):
         """
         tmp_dir = Path(gettempdir())
         local_zip = tmp_dir / rel_info.asset_file
-        self._remove_saved_games_dcs()
         download_file(url=rel_info.dl_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
@@ -1204,12 +1204,16 @@ class DcsPyQtGui(QMainWindow):
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
             self._clean_bios_files()
+            self._remove_dcs_bios_repo_dir()
             self._start_bios_update(silence=False)
 
     def _clean_bios_files(self) -> None:
         """Clean all DCS-BIOS directories and files."""
-        self._remove_dcs_bios_repo_dir()
-        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path}')
+        if self.bios_path.is_symlink():
+            rm_symlink = f"(Get-Item '{self.bios_path}').Delete()"
+            ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {rm_symlink}" -Verb RunAs'
+            LOG.debug(f'Execute: {ps_command}')
+            run_command(cmd=['powershell.exe', '-Command', ps_command])
         rmtree(path=self.bios_path, ignore_errors=True)
         self._remove_saved_games_dcs()
 
@@ -1222,16 +1226,6 @@ class DcsPyQtGui(QMainWindow):
             except FileNotFoundError as err:
                 LOG.debug(f'Try remove DCS-BIOS old repo\n{err}', exc_info=True)
             LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
-
-    def _remove_saved_games_dcs(self) -> None:
-        r"""Remove Saved Games\DCS.openbeta\Scripts\DCS-BIOS repository directory."""
-        try:
-            cmd_symlink = f"Remove-Item -LiteralPath '{self.bios_path}' -Force -Recurse"
-            ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {cmd_symlink}" -Verb RunAs'
-            LOG.debug(f'Execute: {ps_command} ')
-            run_command(cmd=['powershell.exe', '-Command', ps_command])
-        except FileNotFoundError as err:
-            LOG.debug(f'Try remove DCS-BIOS dir\n{err}', exc_info=True)
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
@@ -1837,11 +1831,14 @@ class GitCloneWorker(QRunnable):
         try:
             sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
                                     progress=CloneProgress(self.signals.progress, self.signals.stage))
-            target = self.to_path / 'Scripts' / 'DCS-BIOS'
-            cmd_symlink = f'"New-Item -ItemType SymbolicLink -Path \\"{self.bios_path}\\" -Target \\"{target}\\"'
-            ps_command = f"Start-Process powershell.exe -ArgumentList '-Command {cmd_symlink}' -Verb RunAs"
-            LOG.debug(f'Make symbolic link: {ps_command} ')
-            run_command(cmd=['powershell.exe', '-Command', ps_command])
+            if not self.bios_path.is_symlink():
+                target = self.to_path / 'Scripts' / 'DCS-BIOS'
+                cmd_symlink = f'"New-Item -ItemType SymbolicLink -Path \\"{self.bios_path}\\" -Target \\"{target}\\"'
+                ps_command = f"Start-Process powershell.exe -ArgumentList '-Command {cmd_symlink}' -Verb RunAs"
+                LOG.debug(f'Make symbolic link: {ps_command}')
+                run_command(cmd=['powershell.exe', '-Command', ps_command])
+                sleep(0.8)
+            LOG.debug(f'Directory: {self.bios_path} is symbolic link: {self.bios_path.is_symlink()}')
         except Exception:
             exctype, value = sys.exc_info()[:2]
             self.signals.error.emit((exctype, value, traceback.format_exc()))
