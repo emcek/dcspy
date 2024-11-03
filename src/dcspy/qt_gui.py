@@ -12,7 +12,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Callable, Optional, Union
+from typing import Any, Callable, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -987,8 +987,7 @@ class DcsPyQtGui(QMainWindow):
                 'error': self._error_during_bios_update,
                 'result': self._clone_bios_completed,
             }
-            for signal, handler in signal_handlers.items():
-                getattr(clone_worker.signals, signal).connect(handler)
+            clone_worker.setup_signal_handlers(signal_handlers=signal_handlers)
             self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
@@ -1411,8 +1410,7 @@ class DcsPyQtGui(QMainWindow):
         """
         progress = True if 'progress' in signal_handlers.keys() else False
         worker = Worker(func=job, with_progress=progress)
-        for signal, handler in signal_handlers.items():
-            getattr(worker.signals, signal).connect(handler)
+        worker.setup_signal_handlers(signal_handlers=signal_handlers)
         if isinstance(job, partial):
             job_name = job.func.__name__
             args = job.args
@@ -1802,6 +1800,15 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()
 
+    def setup_signal_handlers(self, signal_handlers: dict[str, Callable[[Any], None]]) -> None:
+        """
+        Connect handlers to signals.
+
+        :param signal_handlers: dict with signals and handlers as value.
+        """
+        for signal, handler in signal_handlers.items():
+            getattr(self.signals, signal).connect(handler)
+
 
 class GitCloneWorker(QRunnable):
     """Worker for git clone with reporting progress."""
@@ -1845,6 +1852,15 @@ class GitCloneWorker(QRunnable):
             self.signals.result.emit((sha, self.silence))
         finally:
             self.signals.finished.emit()
+
+    def setup_signal_handlers(self, signal_handlers: dict[str, Callable[[Any], None]]) -> None:
+        """
+        Connect handlers to signals.
+
+        :param signal_handlers: dict with signals and handlers as value.
+        """
+        for signal, handler in signal_handlers.items():
+            getattr(self.signals, signal).connect(handler)
 
 
 class UiLoader(QUiLoader):
