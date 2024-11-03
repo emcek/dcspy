@@ -1,4 +1,4 @@
-## 3.5.3
+## 3.6.0
 * Use symbolic link to DCS-BIOS live repository #347 (@emcek)
 * Compile DCS-BIOS using LuaJIT from lupa library !373 (@emcek)
 * Make switching between regular and live version of DCS-BIOS more reliable !390 (@emcek)
