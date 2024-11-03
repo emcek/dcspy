@@ -302,7 +302,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _set_ded_font_and_font_sliders(self) -> None:
         """Enable DED font checkbox and updates font sliders."""
-        if self.device.lcd_info == LcdType.COLOR:
+        if self.device.lcd_info.type == LcdType.COLOR:
             self.cb_ded_font.setEnabled(True)
             minimum = 15
             maximum = 40
@@ -1338,7 +1338,7 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
         }
-        if self.device.lcd_info == LcdType.COLOR:
+        if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
                         'font_color_m': self.hs_medium_font.value(),
                         'font_color_s': self.hs_small_font.value()}
