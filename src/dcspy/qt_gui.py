@@ -1215,7 +1215,6 @@ class DcsPyQtGui(QMainWindow):
             LOG.debug(f'Execute: {ps_command}')
             run_command(cmd=['powershell.exe', '-Command', ps_command])
         rmtree(path=self.bios_path, ignore_errors=True)
-        self._remove_saved_games_dcs()
 
     def _remove_dcs_bios_repo_dir(self) -> None:
         """Remove DCS-BIOS repository directory."""
