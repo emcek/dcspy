@@ -1771,7 +1771,24 @@ class WorkerSignals(QObject):
     stage = Signal(str)
 
 
-class Worker(QRunnable):
+class WorkerSignalsMixIn:
+    """Worker signals Mixin."""
+
+    def __init__(self):
+        """Signal handler for WorkerSignals."""
+        self.signals = WorkerSignals()
+
+    def setup_signal_handlers(self, signal_handlers: dict[str, Callable[[Any], None]]) -> None:
+        """
+        Connect handlers to signals.
+
+        :param signal_handlers: dict with signals and handlers as value.
+        """
+        for signal, handler in signal_handlers.items():
+            getattr(self.signals, signal).connect(handler)
+
+
+class Worker(QRunnable, WorkerSignalsMixIn):
     """Runnable worker."""
 
     def __init__(self, func: partial, with_progress: bool) -> None:
@@ -1783,7 +1800,6 @@ class Worker(QRunnable):
         """
         super().__init__()
         self.func = func
-        self.signals = WorkerSignals()
         if with_progress:
             self.func.keywords['progress_callback'] = self.signals.progress
 
@@ -1800,17 +1816,8 @@ class Worker(QRunnable):
         finally:
             self.signals.finished.emit()
 
-    def setup_signal_handlers(self, signal_handlers: dict[str, Callable[[Any], None]]) -> None:
-        """
-        Connect handlers to signals.
 
-        :param signal_handlers: dict with signals and handlers as value.
-        """
-        for signal, handler in signal_handlers.items():
-            getattr(self.signals, signal).connect(handler)
-
-
-class GitCloneWorker(QRunnable):
+class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
     """Worker for git clone with reporting progress."""
 
     def __init__(self, git_ref: str, bios_path: Path, to_path: Path, repo: str, silence: bool = False) -> None:
@@ -1829,7 +1836,6 @@ class GitCloneWorker(QRunnable):
         self.to_path = to_path
         self.bios_path = bios_path
         self.silence = silence
-        self.signals = WorkerSignals()
 
     @Slot()
     def run(self):
@@ -1852,15 +1858,6 @@ class GitCloneWorker(QRunnable):
             self.signals.result.emit((sha, self.silence))
         finally:
             self.signals.finished.emit()
-
-    def setup_signal_handlers(self, signal_handlers: dict[str, Callable[[Any], None]]) -> None:
-        """
-        Connect handlers to signals.
-
-        :param signal_handlers: dict with signals and handlers as value.
-        """
-        for signal, handler in signal_handlers.items():
-            getattr(self.signals, signal).connect(handler)
 
 
 class UiLoader(QUiLoader):
