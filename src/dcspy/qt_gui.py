@@ -1393,7 +1393,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Get a path to DCS World directory.
 
-        :return: full path as Path
+        :return: Full path as Path
         """
         return Path(self.le_dcsdir.text())
 
@@ -1783,7 +1783,7 @@ class WorkerSignalsMixIn:
         """
         Connect handlers to signals.
 
-        :param signal_handlers: dict with signals and handlers as value.
+        :param signal_handlers: Dict with signals and handlers as value.
         """
         for signal, handler in signal_handlers.items():
             getattr(self.signals, signal).connect(handler)
