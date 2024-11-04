@@ -486,3 +486,11 @@ def test_key_request_update_bios_data_and_set_req(test_config_yaml):
     assert key_req.cycle_button_ctrl_name == {'IFF_MASTER_KNB': 0}
     key_req.set_request(key, req)
     assert key_req.get_request(key).raw_request == req
+
+
+@mark.slow
+def test_generate_bios_jsons_with_lupa(test_saved_games):
+    utils.generate_bios_jsons_with_lupa(dcs_save_games=test_saved_games)
+    mosquito = utils.get_full_bios_for_plane(plane='MosquitoFBMkVI', bios_dir=test_saved_games / 'Scripts' / 'DCS-BIOS')
+    assert len(mosquito.root) == 27
+    assert sum(len(values) for values in mosquito.root.values()) == 299
