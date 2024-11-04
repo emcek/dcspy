@@ -1,7 +1,9 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from enum import Enum, auto
 from functools import partial
 from struct import pack
-from typing import Callable
 
 
 class ParserState(Enum):

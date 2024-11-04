@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+from collections.abc import Callable
 from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, c_bool, c_uint, c_void_p, c_wchar_p, pointer
 from logging import getLogger
-from typing import Callable, ClassVar, Optional
+from typing import ClassVar
 
 from dcspy.sdk import KeyDll, load_dll
 
@@ -45,7 +48,7 @@ class GkeySdkManager:
         self.gkey_context.gkeyContext = c_void_p()
         self.gkey_context_ptr = pointer(self.gkey_context)
 
-    def callback(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: Optional[int] = None) -> None:
+    def callback(self, g_key_code: GkeyCode, gkey_or_button_str: str, context: int | None = None) -> None:
         """
         Receive callback events for G-key button pushes.
 

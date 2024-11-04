@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from ctypes import CDLL, c_void_p, sizeof
 from dataclasses import dataclass
 from logging import getLogger
@@ -5,7 +7,6 @@ from os import environ
 from pathlib import Path
 from platform import architecture
 from sys import maxsize
-from typing import Optional, Union
 
 from _cffi_backend import Lib
 from cffi import FFI
@@ -33,7 +34,7 @@ LedDll = DllSdk(name='LED', dir='LED', header=led_header)
 KeyDll = DllSdk(name='Gkey', dir='G-key', header=key_header)
 
 
-def load_dll(lib_type: DllSdk) -> Optional[Union[Lib, CDLL]]:
+def load_dll(lib_type: DllSdk) -> Lib | CDLL | None:
     """
     Initialize and load of the C dynamic linking library.
 

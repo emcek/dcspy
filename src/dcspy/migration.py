@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from logging import getLogger
 from os import makedirs
 from pathlib import Path
 from pprint import pformat
 from shutil import SameFileError, copy
-from typing import Callable
 
 from packaging import version
 
