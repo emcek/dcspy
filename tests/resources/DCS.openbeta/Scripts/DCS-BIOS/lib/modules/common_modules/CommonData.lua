@@ -1,3 +1,3 @@
 local function getVersion()
-	return "0.7.50"
+	return "0.8.3"
 end

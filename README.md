@@ -1,4 +1,4 @@
-[![image](https://img.shields.io/badge/pypi-v3.5.2-blue.svg)](https://pypi.org/project/dcspy/)
+[![image](https://img.shields.io/badge/pypi-v3.6.0-blue.svg)](https://pypi.org/project/dcspy/)
 [![Python CI](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml/badge.svg?branch=master)](https://github.com/emcek/dcspy/actions/workflows/python-ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/emcek/dcspy/badge.svg?branch=master)](https://coveralls.io/github/emcek/dcspy?branch=master)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5270a4fc2ba24261a3bfa7361150e8ff)](https://app.codacy.com/gh/emcek/dcspy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
@@ -7,7 +7,7 @@
 [![dcspy](https://snyk.io/advisor/python/dcspy/badge.svg)](https://snyk.io/advisor/python/dcspy)
 [![Patreon](https://img.shields.io/badge/Patreon-donate-ff424d?logo=patreon)](https://www.patreon.com/mplichta)
 [![Discord](https://img.shields.io/discord/672486999516774442?label=Discord&logo=discord&logoColor=lightblue)](https://discord.gg/SP5Yjx3)
-[![image](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://github.com/emcek/dcspy)
+[![image](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://github.com/emcek/dcspy)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/emcek/dcspy/master.svg)](https://results.pre-commit.ci/latest/github/emcek/dcspy/master)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=emcek_dcspy&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=emcek_dcspy)
 [![Downloads](https://static.pepy.tech/badge/dcspy)](https://pepy.tech/project/dcspy)
@@ -56,10 +56,9 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
   * [DCS-BIOS 0.8.3](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.8.3) or newer (can be [installed](https://dcspy.readthedocs.io/en/latest/upgrade/#manual-procedure) directly from DCSpy)
   * However, it is recommended use [Live DCS-BIOS](https://dcspy.readthedocs.io/en/latest/bios_live/) as latest git version
   * [Git](https://git-scm.com/download/win) it is necessary for using the live version of DCS-BIOS
-* DCS World: [2.9.7.59263](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.7.59263/), but any version from 2.9.* branch should be fine.
+* DCS World: [2.9.9.2406](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.9.2406/), but any version from 2.9.* branch should be fine.
 * optional:
-  * [Python 3.12](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
-  * However, DCSpy 2.3.3 and earlier do not support Python 3.12
+  * [Python 3.13](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
 
 ## New ideas
 I have lots of plans and new ideas how to improve it internally and form a user's perspective, but don't hesitate to contact me. Maybe it will motivate me to implement some new stuff. Please open issue if you find a bug or have any crazy idea.

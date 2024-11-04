@@ -10,15 +10,25 @@ from dcspy import utils
 from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
 
 
-@mark.parametrize('online_tag, result', [
-    ('1.1.1', ReleaseInfo(
-        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+@mark.parametrize('online_tag, file_name, result', [
+    ('1.1.1', 'fake', ReleaseInfo(
+        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
+        release_type='Pre-release', asset_file='fake.tgz'
     )),
-    ('3.2.1', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
-    ))
-], ids=['No update', 'New version'])
-def test_check_ver_is_possible(online_tag, result):
+    ('3.2.1', '', ReleaseInfo(
+        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
+        release_type='Pre-release', asset_file='fake.tgz'
+    )),
+    ('3.2.1', 'fake', ReleaseInfo(
+        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
+        release_type='Pre-release', asset_file='fake.tgz'
+    )),
+    ('3.2.1', 'none', ReleaseInfo(
+        latest=False, ver=version.parse('3.2.1'), dl_url='', published='09 August 2021', release_type='Pre-release',
+        asset_file=''
+    )),
+], ids=['No update', 'New version', 'Asset found', 'No assets'])
+def test_check_ver_is_possible(online_tag, file_name, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
@@ -27,20 +37,23 @@ def test_check_ver_is_possible(online_tag, result):
                                                                            'name': 'fake.tgz',
                                                                        }],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz') == result
+        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz',
+                                         file_name=file_name) == result
 
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
         rel_info = utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
+        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
+                                       release_type='Regular', asset_file='')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
         rel_info = utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
+        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
+                                       release_type='Regular', asset_file='')
 
 
 @mark.parametrize('online_tag, result', [
@@ -94,7 +107,7 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.5.2',
+        'api_ver': '3.6.0',
         'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
@@ -158,7 +171,8 @@ def test_check_bios_ver_new_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_check_bios_ver_old_location(tmpdir):
@@ -167,7 +181,8 @@ def test_check_bios_ver_old_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
@@ -176,12 +191,14 @@ def test_check_bios_ver_empty_lua(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_check_bios_ver_lue_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_is_git_repo(tmpdir):
@@ -221,13 +238,6 @@ def test_get_all_git_refs(tmpdir):
     assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
 
 
-@mark.slow
-def test_get_sha_for_current_git_ref(tmpdir):
-    hex_sha = utils.get_sha_for_current_git_ref(git_ref='master', repo='emcek/common_sense', repo_dir=tmpdir)
-    assert len(hex_sha) == 40
-    assert hex_sha == '6d5d9f80a8309eec3e9cf183fc57d56559035560'
-
-
 def test_check_dcs_bios_entry_no_entry(tmpdir):
     from os import makedirs
     install_dir = tmpdir / 'install'
@@ -262,6 +272,7 @@ def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
+
 
 @mark.parametrize('ext, result', [('json', 14), ('exe', 0)])
 def test_count_files_exists(ext, result, test_dcs_bios):
@@ -313,14 +324,30 @@ def test_run_pip_command_failed():
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 @mark.parametrize('cmd, result', [('Clear-Host', 0), ('bullshit', -1)])
 def test_run_command(cmd, result):
-    rc = utils.run_command(cmd=f'powershell {cmd}')
+    rc = utils.run_command(cmd=['powershell', cmd])
     assert rc == result
 
 
-def test_get_full_bios_for_plane(test_dcs_bios):
-    a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
-    assert len(a10_model.root) == 64
-    assert sum(len(values) for values in a10_model.root.values()) == 775
+@mark.parametrize('plane_str, roots , values', [
+    ('FA-18C_hornet', 80, 531),
+    ('F-16C_50', 49, 533),
+    ('F-4E-45MC', 116, 1123),
+    ('Ka-50', 77, 599),
+    ('Ka-50_3', 77, 599),
+    ('Mi-8MT', 77, 800),
+    ('Mi-24P', 114, 1001),
+    ('AH-64D_BLK_II', 53, 730),
+    ('A-10C', 64, 777),
+    ('A-10C_2', 64, 777),
+    ('F-14A-135-GR', 76, 1124),
+    ('F-14B', 76, 1124),
+    ('AV8BNA', 48, 515),
+    ('F-15ESE', 98, 890),
+])
+def test_get_full_bios_for_plane(plane_str, roots, values, test_dcs_bios):
+    model = utils.get_full_bios_for_plane(plane=plane_str, bios_dir=test_dcs_bios)
+    assert len(model.root) == roots
+    assert sum(len(values) for values in model.root.values()) == values
 
 
 def test_get_inputs_for_plane(test_dcs_bios):
@@ -451,6 +478,14 @@ def test_key_request_update_bios_data_and_set_req(test_config_yaml):
     assert key_req.cycle_button_ctrl_name == {'IFF_MASTER_KNB': 0}
     key_req.set_request(key, req)
     assert key_req.get_request(key).raw_request == req
+
+
+@mark.slow
+def test_generate_bios_jsons_with_lupa(test_saved_games):
+    utils.generate_bios_jsons_with_lupa(dcs_save_games=test_saved_games)
+    mosquito = utils.get_full_bios_for_plane(plane='MosquitoFBMkVI', bios_dir=test_saved_games / 'Scripts' / 'DCS-BIOS')
+    assert len(mosquito.root) == 27
+    assert sum(len(values) for values in mosquito.root.values()) == 299
 
 
 def test_emit_signal_handler():

@@ -1,13 +1,15 @@
+from __future__ import annotations
+
 import json
 import sys
 import zipfile
-from collections.abc import Generator, Sequence
+from collections.abc import Callable, Generator, Sequence
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
 from itertools import chain
 from logging import getLogger
-from os import environ, makedirs, walk
+from os import chdir, environ, getcwd, makedirs, walk
 from pathlib import Path
 from platform import python_implementation, python_version, uname
 from pprint import pformat
@@ -15,7 +17,7 @@ from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Callable, ClassVar, Optional, Union
+from typing import Any, ClassVar
 
 import yaml
 from packaging import version
@@ -23,8 +25,8 @@ from psutil import process_iter
 from PySide6.QtCore import QObject, Signal
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml,
-                          ReleaseInfo, RequestModel, get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo,
+                          RequestModel, get_key_instance)
 
 try:
     import git
@@ -32,7 +34,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.5.2'
+__version__ = '3.6.0'
 CONFIG_YAML = 'config.yaml'
 DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
@@ -89,7 +91,7 @@ def save_yaml(data: dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
 
 
-def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseInfo:
+def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
     """
     Check a version of <organization>/<package> at GitHub.
 
@@ -104,6 +106,7 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseI
     :param repo: Format '<organization or user>/<package>'
     :param current_ver: Current local version
     :param extension: File extension
+    :param file_name: string in file name
     :return: ReleaseInfo with data
     """
     latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
@@ -115,7 +118,7 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str) -> ReleaseI
             online_version = dict_json['tag_name']
             pre_release = dict_json['prerelease']
             published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
-            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['name'].endswith(extension))
+            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['name'].endswith(extension) and file_name in asset['name'])
             LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
             latest = _compare_versions(package, current_ver, online_version)
         else:
@@ -230,7 +233,7 @@ def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
     return result_type, result_ver
 
 
-def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
+def check_bios_ver(bios_path: Path | str) -> ReleaseInfo:
     """
     Check the DSC-BIOS release version.
 
@@ -272,7 +275,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
+def _get_sha_hex_str(bios_repo: git.Repo, git_ref: str) -> str:
     """
     Return a string representing the commit hash, date, and author of the given Git reference in the provided repository.
 
@@ -296,17 +299,16 @@ def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
     return sha
 
 
-def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git',
-                      progress: Optional[git.RemoteProgress] = None) -> str:
+def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = True, progress: git.RemoteProgress | None = None) -> str:
     """
-    Update DCS-BIOS git repository.
+    Update git repository.
 
     Return SHA of the latest commit.
 
     :param git_ref: Any Git reference as string
+    :param repo_dir: Local directory for a repository
+    :param repo: GitHub repository user/name
     :param update: Perform update process
-    :param repo: GitHub repository
-    :param repo_dir: Local directory for repository
     :param progress: Progress callback
     """
     bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
@@ -317,7 +319,7 @@ def check_github_repo(git_ref: str, update: bool = True, repo: str = 'DCS-Skunkw
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: Optional[git.RemoteProgress] = None) -> 'git.Repo':
+def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.RemoteProgress | None = None) -> git.Repo:
     """
     Checkout repository at master branch or clone it when not exists in a system.
 
@@ -427,20 +429,6 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
         for ref in chain(git.Repo(repo_dir).heads, git.Repo(repo_dir).tags):
             refs.append(str(ref))
     return refs
-
-
-def get_sha_for_current_git_ref(git_ref: str, repo: str = 'DCS-Skunkworks/dcs-bios', repo_dir: Path = Path(gettempdir()) / 'dcsbios_git') -> str:
-    """
-    Get SHA for current git reference.
-
-    :param git_ref: Any Git reference as string
-    :param repo: GitHub repository
-    :param repo_dir: Local directory for repository
-    :return: Hex of SHA
-    """
-    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref)
-    head_commit = bios_repo.head.commit
-    return head_commit.hexsha
 
 
 class WorkerSignals(QObject):
@@ -599,7 +587,8 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     pyexec = sys.executable
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
-    git_ver, head_commit = _fetch_git_data()
+    repo_dir = Path(str(conf_dict['dcsbios'])).parents[1] / 'dcs-bios'
+    git_ver, head_commit = _fetch_git_data(repo_dir=repo_dir)
     lgs_dir = '\n'.join([
         str(Path(dir_path) / filename)
         for dir_path, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
@@ -608,16 +597,17 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
 
 
-def _fetch_git_data() -> tuple[Sequence[int], str]:
+def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str]:
     """
     Fetch Git version and SHA of HEAD commit.
 
+    :param repo_dir: Local directory for repository
     :return: Tuple of (a version) and SHA of HEAD commit
     """
     try:
         import git
         git_ver = git.cmd.Git().version_info
-        head_commit = str(git.Repo(DCS_BIOS_REPO_DIR).head.commit)
+        head_commit = str(git.Repo(repo_dir).head.commit)
     except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError, ImportError):
         git_ver = (0, 0, 0, 0)
         head_commit = 'N/A'
@@ -635,7 +625,7 @@ def _get_dcs_log(conf_dict: dict[str, Any]) -> Path:
     return dcs_log_file if dcs_log_file.is_file() else Path()
 
 
-def _get_log_files() -> Generator[Path, None, None]:
+def _get_log_files() -> Generator[Path]:
     """
     Get a path to all logg files.
 
@@ -647,7 +637,7 @@ def _get_log_files() -> Generator[Path, None, None]:
     )
 
 
-def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
+def _get_yaml_files(config_file: Path) -> Generator[Path]:
     """
     Get a path to all configuration YAML files.
 
@@ -662,7 +652,7 @@ def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
     )
 
 
-def _get_png_files() -> Generator[Path, None, None]:
+def _get_png_files() -> Generator[Path]:
     """
     Get a path to png screenshots for all airplanes.
 
@@ -704,16 +694,16 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
 
 
-def run_command(cmd: str, cwd: Optional[Path] = None) -> int:
+def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
     """
     Run command in shell as a subprocess.
 
-    :param cmd: The command to be executed as a string
+    :param cmd: The command to be executed as a sequence of strings
     :param cwd: current working directory
     :return: The return code of command
     """
     try:
-        proc = run(cmd.split(' '), check=True, shell=False, cwd=cwd)
+        proc = run(cmd, check=True, shell=False, cwd=cwd)
         return proc.returncode
     except CalledProcessError as e:
         LOG.debug(f'Result: {e}')
@@ -792,7 +782,7 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 
 
 @lru_cache
-def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> dict[str, list[str]]:
+def get_plane_aliases(bios_dir: Path, plane: str | None = None) -> dict[str, list[str]]:
     """
     Get a list of all YAML files for plane with name.
 
@@ -886,3 +876,34 @@ class KeyRequest:
         :param req: The raw request to set.
         """
         self.buttons[button].raw_request = req
+
+
+def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts/DCS-BIOS/test/compile/LocalCompile.lua') -> None:
+    r"""
+    Regenerate DCS-BIOS JSON files.
+
+    Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
+
+    :param dcs_save_games: Full path to Saved Games\DCS.openbeta directory.
+    :param local_compile: Relative path to LocalCompile.lua file.
+    """
+    try:
+        import lupa.luajit21 as lupa  # type: ignore[import-untyped]
+    except ImportError:
+        try:
+            import lupa.lua51 as lupa  # type: ignore[import-untyped]
+        except ImportError:
+            return
+
+    previous_dir = getcwd()
+    try:
+        chdir(dcs_save_games)
+        LOG.debug(f"Changed to: {dcs_save_games}")
+        lua = lupa.LuaRuntime()
+        LOG.debug(f"Using {lupa.LuaRuntime().lua_implementation} (compiled with {lupa.LUA_VERSION})")
+        with open(local_compile) as lua_file:
+            lua_script = lua_file.read()
+        lua.execute(lua_script)
+    finally:
+        chdir(previous_dir)
+        LOG.debug(f"Change directory back to: {getcwd()}")

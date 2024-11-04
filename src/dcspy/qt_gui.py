@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import os
 import sys
 import traceback
 from argparse import Namespace
+from collections.abc import Callable
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -12,31 +15,30 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event
 from time import sleep
-from typing import Callable, Optional, Union
 from webbrowser import open_new_tab
 
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QEvent, QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Signal, Slot, qVersion
-from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItem
+from PySide6.QtCore import QAbstractItemModel, QEvent, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot, qVersion
+from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItemModel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCS_BIOS_REPO_DIR, DCS_BIOS_VER_FILE, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData,
-                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes,
-                          ReleaseInfo, RequestType, SystemData)
+from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml, FontsConfig, Gkey,
+                          GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, ReleaseInfo, RequestType,
+                          SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, count_files, defaults_cfg, download_file, get_all_git_refs, get_depiction_of_ctrls, get_inputs_for_plane,
-                         get_list_of_ctrls, get_plane_aliases, get_planes_list, get_sha_for_current_git_ref, get_version_string, is_git_exec_present,
-                         is_git_object, load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
+from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
+                         get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
+                         load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.5.2'
+__version__ = '3.6.0'
 LOG = getLogger(__name__)
 NO_MSG_BOX = int(os.environ.get('DCSPY_NO_MSG_BOXES', 0))
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,
@@ -88,7 +90,7 @@ class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
     blink_label = Signal()
 
-    def __init__(self, cli_args=Namespace(), cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
+    def __init__(self, cli_args=Namespace(), cfg_dict: DcspyConfigYaml | None = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
@@ -302,13 +304,14 @@ class DcsPyQtGui(QMainWindow):
                     self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
                     break
         except KeyError as err:
-            tb = traceback.format_exception(*sys.exc_info())
+            exc, value, tb = sys.exc_info()
+            traceback_data = traceback.format_exception(exc, value=value, tb=tb)
             self._show_custom_msg_box(
                 kind_of=QMessageBox.Icon.Warning,
                 title='Warning',
                 text=f'Can not find key: {err}. Please report error with detail below. You can use menu Help / Report issue option.',
                 info_txt=f'Problem: {type(err).__name__}.',
-                detail_txt='\n'.join(tb)
+                detail_txt='\n'.join(traceback_data)
             )
 
     def _set_find_value(self, value) -> None:
@@ -349,12 +352,12 @@ class DcsPyQtGui(QMainWindow):
             self._load_table_gkeys()  # generate json/bios
             self.current_row = 0
             self.current_col = 0
-            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row, col=self.current_col)
 
     def _set_ded_font_and_font_sliders(self) -> None:
         """Enable DED font checkbox and updates font sliders."""
-        if self.device.lcd_info == LcdType.COLOR:
+        if self.device.lcd_info.type == LcdType.COLOR:
             self.cb_ded_font.setEnabled(True)
             minimum = 15
             maximum = 40
@@ -422,7 +425,7 @@ class DcsPyQtGui(QMainWindow):
         getattr(self, widget_name).setStyleSheet('color: red;')
         return False
 
-    def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
+    def _is_dir_dcs_bios(self, text: Path | str, widget_name: str) -> bool:
         """
         Check if the directory is valid DCS-BIOS installation.
 
@@ -443,32 +446,28 @@ class DcsPyQtGui(QMainWindow):
         widget.setToolTip('It is not valid DCS-BIOS directory or it not contains planes JSON files')
         return False
 
-    def _generate_dcs_bios_jsons(self, dcs_path: Path, bios_path: Path) -> bool:
+    def _generate_bios_jsons_with_dcs_lua(self) -> bool:
         """
         Regenerate DCS-BIOS JSON files.
 
-        :param dcs_path: full path to DCS World installation directory as a Path object
-        :param bios_path: full path to DCS-BIOS directory as Path object
         :return: True if generation is successful, False otherwise.
         """
-        lua_exec = dcs_path / 'bin' / 'luae.exe'
-        cwd = bios_path.parents[1]
+        lua_exec = self.dcs_path / 'bin' / 'luae.exe'
         LOG.info('Regenerating DCS-BIOS JSONs files...')
         return_code = -1
         try:
-            return_code = run_command(cmd=f'{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua', cwd=cwd)
-        except FileNotFoundError as err:
-            tb = traceback.format_exception(*sys.exc_info())
-            tb_string = ''.join(tb)
-            LOG.debug(f'JSON generation error:\n{tb_string}')
+            return_code = run_command(cmd=[lua_exec, r'Scripts\DCS-BIOS\test\compile\LocalCompile.lua'], cwd=self.bios_repo_path)
+        except (FileNotFoundError, NotADirectoryError) as err:
+            exc, value, tb = sys.exc_info()
+            traceback_data = traceback.format_exception(exc, value=value, tb=tb)
             self._show_custom_msg_box(
                 kind_of=QMessageBox.Icon.Warning,
                 title='Problem with command',
                 text=f'Error during executing command:\n{lua_exec} Scripts\\DCS-BIOS\\test\\compile\\LocalCompile.lua',
                 info_txt=f'Problem: {err}\n\nPlease report  error with detail below. You can use menu Help / Report issue option.',
-                detail_txt=tb_string
+                detail_txt='\n'.join(traceback_data)
             )
-        LOG.debug(f'RC: {return_code} {lua_exec=}, {cwd=}')
+        LOG.debug(f'RC: {return_code} {lua_exec=}, cwd={self.bios_repo_path}')
         return True if return_code == 0 else False
 
     # <=><=><=><=><=><=><=><=><=><=><=> g-keys tab <=><=><=><=><=><=><=><=><=><=><=>
@@ -498,7 +497,7 @@ class DcsPyQtGui(QMainWindow):
             for col in range(0, self.device.cols):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
-            cell_combo = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row,
                                             col=self.current_col)
 
@@ -570,7 +569,10 @@ class DcsPyQtGui(QMainWindow):
         """
         try:
             if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
-                self._generate_dcs_bios_jsons(dcs_path=self.dcs_path, bios_path=self.bios_path)
+                generate_bios_jsons_with_lupa(dcs_save_games=Path(self.le_biosdir.text()).parents[1])
+            if count_files(directory=self.bios_path / 'doc' / 'json', extension='json') < 1:
+                self._generate_bios_jsons_with_dcs_lua()
+            self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             return get_plane_aliases(plane=plane_name, bios_dir=self.bios_path)
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
@@ -821,11 +823,10 @@ class DcsPyQtGui(QMainWindow):
 
         :param widget: QComboBox instance
         """
-        model = widget.model()
+        model: QStandardItemModel | QAbstractItemModel = widget.model()
         for i in range(0, widget.count()):
-            item: QStandardItem = model.item(i)
-            if text in item.text():
-                item.setFlags(Qt.ItemFlag.NoItemFlags)
+            if text in model.item(i).text():
+                model.item(i).setFlags(Qt.ItemFlag.NoItemFlags)
 
     def _save_gkeys_cfg(self) -> None:
         """Save G-Keys configuration for current plane."""
@@ -844,7 +845,7 @@ class DcsPyQtGui(QMainWindow):
         """
         self.current_row = currentRow
         self.current_col = currentColumn
-        cell_combo = self.tw_gkeys.cellWidget(currentRow, currentColumn)
+        cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(currentRow, currentColumn)
         self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=currentRow, col=currentColumn)
 
     def _input_iface_changed_or_custom_text_changed(self) -> None:
@@ -856,7 +857,8 @@ class DcsPyQtGui(QMainWindow):
             * a text is changed and user press enter
             * the widget lost focus
         """
-        current_cell_text = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentText()
+        current_cell: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+        current_cell_text = current_cell.currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
             section = self._find_section_name(ctrl_name=current_cell_text)
             key_name = str(self.device.get_key_at(row=self.current_row, col=self.current_col))
@@ -868,9 +870,10 @@ class DcsPyQtGui(QMainWindow):
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
-        current_index = self.tw_gkeys.cellWidget(self.current_row, self.current_col).currentIndex()
+        current_cell: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
         for col in set(range(self.device.cols)) - {self.current_col}:
-            self.tw_gkeys.cellWidget(self.current_row, col).setCurrentIndex(current_index)
+            cell_at_column: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, col)
+            cell_at_column.setCurrentIndex(current_cell.currentIndex())
 
     def _reload_table_gkeys(self) -> None:
         """
@@ -880,6 +883,7 @@ class DcsPyQtGui(QMainWindow):
         * _load_table_gkeys method to load the table with gkeys,
         * reconnects the currentIndexChanged signal of the combo_planes widget
         """
+        self.plane_aliases = ['']
         self.combo_planes.currentIndexChanged.disconnect()
         self._load_table_gkeys()
         self.combo_planes.currentIndexChanged.connect(self._load_table_gkeys)
@@ -907,8 +911,8 @@ class DcsPyQtGui(QMainWindow):
         :return: True if git object exists, False otherwise.
         """
         if self.cb_bios_live.isChecked():
-            git_ref = is_git_object(repo_dir=DCS_BIOS_REPO_DIR, git_obj=text)
-            LOG.debug(f'Git reference: {text} in {DCS_BIOS_REPO_DIR} exists: {git_ref}')
+            git_ref = is_git_object(repo_dir=self.bios_repo_path, git_obj=text)
+            LOG.debug(f'Git reference: {text} in {self.bios_repo_path} exists: {git_ref}')
             if git_ref:
                 self.le_bios_live.setStyleSheet('')
                 self._set_completer_for_git_ref()
@@ -926,7 +930,7 @@ class DcsPyQtGui(QMainWindow):
         sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), update=False)
+                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), repo_dir=self.bios_repo_path, repo='DCS-Skunkworks/dcs-bios', update=False)
             except Exception as exc:
                 LOG.debug(f'{exc}')
                 if not silence:
@@ -945,12 +949,13 @@ class DcsPyQtGui(QMainWindow):
         else:
             self.le_bios_live.setEnabled(False)
             self.le_bios_live.setStyleSheet('')
+        self._clean_bios_files()
         self._bios_check_clicked(silence=False)
 
     def _set_completer_for_git_ref(self) -> None:
         """Setups completer for Git references of DCS-BIOS git repo."""
         if not self._git_refs_count:
-            git_refs = get_all_git_refs(repo_dir=DCS_BIOS_REPO_DIR)
+            git_refs = get_all_git_refs(repo_dir=self.bios_repo_path)
             self._git_refs_count = len(git_refs)
             completer = QCompleter(git_refs)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
@@ -1036,8 +1041,8 @@ class DcsPyQtGui(QMainWindow):
                 'error': self._error_during_bios_update,
                 'result': self._clone_bios_completed,
             }
-            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), sig_handler=SignalHandler(signals_dict=signals_dict),
-                                          bios_path=self.bios_path, to_path=DCS_BIOS_REPO_DIR, silence=silence)
+            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), sig_handler=SignalHandler(signals_dict=signals_dict), bios_path=self.bios_path,
+                                          to_path=self.bios_repo_path, repo='DCS-Skunkworks/dcs-bios', silence=silence)
             self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
@@ -1074,10 +1079,9 @@ class DcsPyQtGui(QMainWindow):
         :param exc_tuple: Exception tuple
         """
         exc_type, exc_val, exc_tb = exc_tuple
-        tb_string = ''.join(exc_tb)
-        LOG.debug(f"BIOS update error:\n{tb_string}")
-        self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=f'Exception: {exc_type} with {exc_val}', detail_txt=tb_string,
-                                  info_txt=f'Try remove directory:\n{DCS_BIOS_REPO_DIR}\nand restart DCSpy.')
+        LOG.debug(exc_tb)
+        self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
+                                  info_txt=f'Try remove directory:\n{self.bios_repo_path}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
 
     def _clone_bios_completed(self, result) -> None:
@@ -1089,22 +1093,14 @@ class DcsPyQtGui(QMainWindow):
         sha, silence = result
         local_bios = self._check_local_bios()
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
-        install_result = self._handling_export_lua(temp_dir=DCS_BIOS_REPO_DIR / 'Scripts')
+        install_result = self._handling_export_lua(temp_dir=self.bios_repo_path / 'Scripts')
         install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.status_label.setText(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
-        self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
-        self._update_bios_ver_file()
         self._reload_table_gkeys()
         if not silence:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
         self.progressbar.setValue(0)
-
-    def _update_bios_ver_file(self):
-        """Update DCS-BIOS version file with current SHA."""
-        hex_sha = get_sha_for_current_git_ref(git_ref=self.le_bios_live.text(), repo_dir=DCS_BIOS_REPO_DIR)
-        with open(file=self.bios_path / DCS_BIOS_VER_FILE, mode='w+') as bios_live_ver_file:
-            bios_live_ver_file.write(hex_sha)
 
     def _check_bios_release(self, silence=False) -> None:
         """
@@ -1165,7 +1161,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip')
+        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip', file_name='BIOS')
         self.r_bios = release_info.ver
         return release_info
 
@@ -1202,7 +1198,7 @@ class DcsPyQtGui(QMainWindow):
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
         unpack_archive(filename=local_zip, extract_dir=tmp_dir)
-        LOG.debug(f'Remove: {self.bios_path} ')
+        LOG.debug(f'Try remove regular DCS-BIOS directory: {self.bios_path} ')
         rmtree(path=self.bios_path, ignore_errors=True)
         LOG.debug(f'Copy DCS-BIOS to: {self.bios_path} ')
         copytree(src=tmp_dir / 'DCS-BIOS', dst=self.bios_path)
@@ -1261,13 +1257,28 @@ class DcsPyQtGui(QMainWindow):
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
-            if self.cb_bios_live.isChecked():
-                return_code = run_command(cmd=fr'attrib -R -H -S {DCS_BIOS_REPO_DIR}\*.* /S /D')
-                rmtree(DCS_BIOS_REPO_DIR, ignore_errors=False)
-                LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
-            rmtree(path=self.bios_path, ignore_errors=False)
-            LOG.debug(f'Remove DCS-BIOS: {self.bios_path}')
+            self._clean_bios_files()
+            self._remove_dcs_bios_repo_dir()
             self._start_bios_update(silence=False)
+
+    def _clean_bios_files(self) -> None:
+        """Clean all DCS-BIOS directories and files."""
+        if self.bios_path.is_symlink():
+            rm_symlink = f"(Get-Item '{self.bios_path}').Delete()"
+            ps_command = f'Start-Process powershell.exe -ArgumentList "-Command {rm_symlink}" -Verb RunAs'
+            LOG.debug(f'Execute: {ps_command}')
+            run_command(cmd=['powershell.exe', '-Command', ps_command])
+        rmtree(path=self.bios_path, ignore_errors=True)
+
+    def _remove_dcs_bios_repo_dir(self) -> None:
+        """Remove DCS-BIOS repository directory."""
+        if self.cb_bios_live.isChecked():
+            return_code = run_command(cmd=['attrib', '-R', '-H', '-S', fr'{self.bios_repo_path}\*.*', '/S', '/D'])
+            try:
+                rmtree(self.bios_repo_path, ignore_errors=False)
+            except FileNotFoundError as err:
+                LOG.debug(f'Try remove DCS-BIOS old repo\n{err}', exc_info=True)
+            LOG.debug(f'Clean up old DCS-BIOS git repository, RC: {return_code}')
 
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
@@ -1411,7 +1422,7 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
         }
-        if self.device.lcd_info == LcdType.COLOR:
+        if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
                         'font_color_m': self.hs_medium_font.value(),
                         'font_color_s': self.hs_small_font.value()}
@@ -1453,16 +1464,25 @@ class DcsPyQtGui(QMainWindow):
         return Path(self.le_biosdir.text())
 
     @property
+    def bios_repo_path(self) -> Path:
+        """
+        Get the path to DCS-BIOS repository.
+
+        :return: Full path as Path
+        """
+        return Path(self.le_biosdir.text()).parents[1] / 'dcs-bios'
+
+    @property
     def dcs_path(self) -> Path:
         """
         Get a path to DCS World directory.
 
-        :return: full path as Path
+        :return: Full path as Path
         """
         return Path(self.le_dcsdir.text())
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
-    def run_in_background(self, job: Union[partial, Callable], signals_dict: dict[str, Callable]) -> None:
+    def run_in_background(self, job: partial | Callable, signals_dict: dict[str, Callable]) -> None:
         """
         Worker with signals callback to schedule a GUI job in the background.
 
@@ -1492,7 +1512,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Make fake progress for progressbar.
 
-        :param progress_callback: Signal to update progress bar
+        :param sig_handler: Qt signal handler for progress notification
         :param total_time: Time for fill-up whole bar (in seconds)
         :param steps: Number of steps (default 100)
         :param clean_after: Clean progress bar when finish
@@ -1535,7 +1555,7 @@ class DcsPyQtGui(QMainWindow):
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
-    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: Optional[str] = None) -> str:
+    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: str | None = None) -> str:
         """
         Open/save dialog to select file or folder.
 
@@ -1590,8 +1610,8 @@ class DcsPyQtGui(QMainWindow):
                 result = message_box(self, title, message, **kwargs)
         return result
 
-    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: Optional[str] = None,
-                             buttons: Optional[QMessageBox.StandardButton] = None) -> int:
+    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str | None = None,
+                             buttons: QMessageBox.StandardButton | None = None) -> int:
         """
         Show custom message box with hidden text.
 
@@ -1680,117 +1700,117 @@ class DcsPyQtGui(QMainWindow):
 
     def _find_children(self) -> None:
         """Find all widgets of main window."""
-        self.statusbar: Union[object, QStatusBar] = self.findChild(QStatusBar, 'statusbar')
-        self.systray: Union[object, QSystemTrayIcon] = self.findChild(QSystemTrayIcon, 'systray')
-        self.traymenu: Union[object, QMenu] = self.findChild(QMenu, 'traymenu')
-        self.progressbar: Union[object, QProgressBar] = self.findChild(QProgressBar, 'progressbar')
-        self.toolbar: Union[object, QToolBar] = self.findChild(QToolBar, 'toolbar')
-        self.tw_gkeys: Union[object, QTableWidget] = self.findChild(QTableWidget, 'tw_gkeys')
-        self.sp_completer: Union[object, QSpinBox] = self.findChild(QSpinBox, 'sp_completer')
-        self.tw_main: Union[object, QTabWidget] = self.findChild(QTabWidget, 'tw_main')
-        self.gb_fonts: Union[object, QGroupBox] = self.findChild(QGroupBox, 'gb_fonts')
-        self.toolBox: Union[object, QToolBox] = self.findChild(QToolBox, 'toolBox')
+        self.statusbar: object | QStatusBar = self.findChild(QStatusBar, 'statusbar')
+        self.systray: object | QSystemTrayIcon = self.findChild(QSystemTrayIcon, 'systray')
+        self.traymenu: object | QMenu = self.findChild(QMenu, 'traymenu')
+        self.progressbar: object | QProgressBar = self.findChild(QProgressBar, 'progressbar')
+        self.toolbar: object | QToolBar = self.findChild(QToolBar, 'toolbar')
+        self.tw_gkeys: object | QTableWidget = self.findChild(QTableWidget, 'tw_gkeys')
+        self.sp_completer: object | QSpinBox = self.findChild(QSpinBox, 'sp_completer')
+        self.tw_main: object | QTabWidget = self.findChild(QTabWidget, 'tw_main')
+        self.gb_fonts: object | QGroupBox = self.findChild(QGroupBox, 'gb_fonts')
+        self.toolBox: object | QToolBox = self.findChild(QToolBox, 'toolBox')
 
-        self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
-        self.combo_search: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_search')
+        self.combo_planes: object | QComboBox = self.findChild(QComboBox, 'combo_planes')
+        self.combo_search: object | QComboBox = self.findChild(QComboBox, 'combo_search')
 
-        self.dw_gkeys: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_gkeys')
-        self.dw_device: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_device')
+        self.dw_gkeys: object | QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
+        self.dw_device: object | QDockWidget = self.findChild(QDockWidget, 'dw_device')
 
-        self.l_keyboard: Union[object, QLabel] = self.findChild(QLabel, 'l_keyboard')
-        self.l_large: Union[object, QLabel] = self.findChild(QLabel, 'l_large')
-        self.l_medium: Union[object, QLabel] = self.findChild(QLabel, 'l_medium')
-        self.l_small: Union[object, QLabel] = self.findChild(QLabel, 'l_small')
-        self.l_category: Union[object, QLabel] = self.findChild(QLabel, 'l_category')
-        self.l_description: Union[object, QLabel] = self.findChild(QLabel, 'l_description')
-        self.l_identifier: Union[object, QLabel] = self.findChild(QLabel, 'l_identifier')
-        self.l_range: Union[object, QLabel] = self.findChild(QLabel, 'l_range')
+        self.l_keyboard: object | QLabel = self.findChild(QLabel, 'l_keyboard')
+        self.l_large: object | QLabel = self.findChild(QLabel, 'l_large')
+        self.l_medium: object | QLabel = self.findChild(QLabel, 'l_medium')
+        self.l_small: object | QLabel = self.findChild(QLabel, 'l_small')
+        self.l_category: object | QLabel = self.findChild(QLabel, 'l_category')
+        self.l_description: object | QLabel = self.findChild(QLabel, 'l_description')
+        self.l_identifier: object | QLabel = self.findChild(QLabel, 'l_identifier')
+        self.l_range: object | QLabel = self.findChild(QLabel, 'l_range')
 
-        self.a_start: Union[object, QAction] = self.findChild(QAction, 'a_start')
-        self.a_stop: Union[object, QAction] = self.findChild(QAction, 'a_stop')
-        self.a_quit: Union[object, QAction] = self.findChild(QAction, 'a_quit')
-        self.a_save_plane: Union[object, QAction] = self.findChild(QAction, 'a_save_plane')
-        self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
-        self.a_show_toolbar: Union[object, QAction] = self.findChild(QAction, 'a_show_toolbar')
-        self.a_show_gkeys: Union[object, QAction] = self.findChild(QAction, 'a_show_gkeys')
-        self.a_show_device: Union[object, QAction] = self.findChild(QAction, 'a_show_device')
-        self.a_about_dcspy: Union[object, QAction] = self.findChild(QAction, 'a_about_dcspy')
-        self.a_about_qt: Union[object, QAction] = self.findChild(QAction, 'a_about_qt')
-        self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
-        self.a_dcspy_updates: Union[object, QAction] = self.findChild(QAction, 'a_dcspy_updates')
-        self.a_bios_updates: Union[object, QAction] = self.findChild(QAction, 'a_bios_updates')
-        self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
-        self.a_discord: Union[object, QAction] = self.findChild(QAction, 'a_discord')
-        self.a_icons_only: Union[object, QAction] = self.findChild(QAction, 'a_icons_only')
-        self.a_text_only: Union[object, QAction] = self.findChild(QAction, 'a_text_only')
-        self.a_text_beside: Union[object, QAction] = self.findChild(QAction, 'a_text_beside')
-        self.a_text_under: Union[object, QAction] = self.findChild(QAction, 'a_text_under')
+        self.a_start: object | QAction = self.findChild(QAction, 'a_start')
+        self.a_stop: object | QAction = self.findChild(QAction, 'a_stop')
+        self.a_quit: object | QAction = self.findChild(QAction, 'a_quit')
+        self.a_save_plane: object | QAction = self.findChild(QAction, 'a_save_plane')
+        self.a_reset_defaults: object | QAction = self.findChild(QAction, 'a_reset_defaults')
+        self.a_show_toolbar: object | QAction = self.findChild(QAction, 'a_show_toolbar')
+        self.a_show_gkeys: object | QAction = self.findChild(QAction, 'a_show_gkeys')
+        self.a_show_device: object | QAction = self.findChild(QAction, 'a_show_device')
+        self.a_about_dcspy: object | QAction = self.findChild(QAction, 'a_about_dcspy')
+        self.a_about_qt: object | QAction = self.findChild(QAction, 'a_about_qt')
+        self.a_report_issue: object | QAction = self.findChild(QAction, 'a_report_issue')
+        self.a_dcspy_updates: object | QAction = self.findChild(QAction, 'a_dcspy_updates')
+        self.a_bios_updates: object | QAction = self.findChild(QAction, 'a_bios_updates')
+        self.a_donate: object | QAction = self.findChild(QAction, 'a_donate')
+        self.a_discord: object | QAction = self.findChild(QAction, 'a_discord')
+        self.a_icons_only: object | QAction = self.findChild(QAction, 'a_icons_only')
+        self.a_text_only: object | QAction = self.findChild(QAction, 'a_text_only')
+        self.a_text_beside: object | QAction = self.findChild(QAction, 'a_text_beside')
+        self.a_text_under: object | QAction = self.findChild(QAction, 'a_text_under')
 
-        self.pb_start: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_start')
-        self.pb_stop: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_stop')
-        self.pb_close: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_close')
-        self.pb_dcsdir: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcsdir')
-        self.pb_biosdir: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_biosdir')
-        self.pb_collect_data: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_collect_data')
-        self.pb_copy: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_copy')
-        self.pb_save: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_save')
-        self.pb_dcspy_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcspy_check')
-        self.pb_bios_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_check')
-        self.pb_bios_repair: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_repair')
+        self.pb_start: object | QPushButton = self.findChild(QPushButton, 'pb_start')
+        self.pb_stop: object | QPushButton = self.findChild(QPushButton, 'pb_stop')
+        self.pb_close: object | QPushButton = self.findChild(QPushButton, 'pb_close')
+        self.pb_dcsdir: object | QPushButton = self.findChild(QPushButton, 'pb_dcsdir')
+        self.pb_biosdir: object | QPushButton = self.findChild(QPushButton, 'pb_biosdir')
+        self.pb_collect_data: object | QPushButton = self.findChild(QPushButton, 'pb_collect_data')
+        self.pb_copy: object | QPushButton = self.findChild(QPushButton, 'pb_copy')
+        self.pb_save: object | QPushButton = self.findChild(QPushButton, 'pb_save')
+        self.pb_dcspy_check: object | QPushButton = self.findChild(QPushButton, 'pb_dcspy_check')
+        self.pb_bios_check: object | QPushButton = self.findChild(QPushButton, 'pb_bios_check')
+        self.pb_bios_repair: object | QPushButton = self.findChild(QPushButton, 'pb_bios_repair')
 
-        self.cb_autostart: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autostart')
-        self.cb_show_gui: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_show_gui')
-        self.cb_check_ver: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_check_ver')
-        self.cb_ded_font: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_ded_font')
-        self.cb_lcd_screenshot: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_lcd_screenshot')
-        self.cb_verbose: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_verbose')
-        self.cb_autoupdate_bios: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autoupdate_bios')
-        self.cb_bios_live: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_bios_live')
+        self.cb_autostart: object | QCheckBox = self.findChild(QCheckBox, 'cb_autostart')
+        self.cb_show_gui: object | QCheckBox = self.findChild(QCheckBox, 'cb_show_gui')
+        self.cb_check_ver: object | QCheckBox = self.findChild(QCheckBox, 'cb_check_ver')
+        self.cb_ded_font: object | QCheckBox = self.findChild(QCheckBox, 'cb_ded_font')
+        self.cb_lcd_screenshot: object | QCheckBox = self.findChild(QCheckBox, 'cb_lcd_screenshot')
+        self.cb_verbose: object | QCheckBox = self.findChild(QCheckBox, 'cb_verbose')
+        self.cb_autoupdate_bios: object | QCheckBox = self.findChild(QCheckBox, 'cb_autoupdate_bios')
+        self.cb_bios_live: object | QCheckBox = self.findChild(QCheckBox, 'cb_bios_live')
 
-        self.le_dcsdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_dcsdir')
-        self.le_biosdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_biosdir')
-        self.le_font_name: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_font_name')
-        self.le_bios_live: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_bios_live')
-        self.le_custom: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_custom')
+        self.le_dcsdir: object | QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')
+        self.le_biosdir: object | QLineEdit = self.findChild(QLineEdit, 'le_biosdir')
+        self.le_font_name: object | QLineEdit = self.findChild(QLineEdit, 'le_font_name')
+        self.le_bios_live: object | QLineEdit = self.findChild(QLineEdit, 'le_bios_live')
+        self.le_custom: object | QLineEdit = self.findChild(QLineEdit, 'le_custom')
 
-        self.rb_g19: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g13: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g13')
-        self.rb_g15v1: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v1')
-        self.rb_g15v2: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v2')
-        self.rb_g510: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g510')
-        self.rb_rb_g910: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g910')
-        self.rb_rb_g710: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g710')
-        self.rb_rb_g110: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g110')
-        self.rb_rb_g103: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g103')
-        self.rb_rb_g105: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g105')
-        self.rb_rb_g11: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g11')
-        self.rb_rb_g633: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g633')
-        self.rb_rb_g35: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g35')
-        self.rb_rb_g930: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g930')
-        self.rb_rb_g933: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g933')
-        self.rb_rb_g600: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g600')
-        self.rb_rb_g300: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g300')
-        self.rb_rb_g400: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g400')
-        self.rb_rb_g700: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g700')
-        self.rb_rb_g9: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g9')
-        self.rb_rb_mx518: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_mx518')
-        self.rb_rb_g402: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g402')
-        self.rb_rb_g502: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g502')
-        self.rb_rb_g602: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g602')
-        self.rb_action: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_action')
-        self.rb_fixed_step_inc: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_inc')
-        self.rb_fixed_step_dec: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_dec')
-        self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
-        self.rb_cycle: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_cycle')
-        self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
-        self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
-        self.rb_push_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_push_button')
-        self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
+        self.rb_g19: object | QRadioButton = self.findChild(QRadioButton, 'rb_g19')
+        self.rb_g13: object | QRadioButton = self.findChild(QRadioButton, 'rb_g13')
+        self.rb_g15v1: object | QRadioButton = self.findChild(QRadioButton, 'rb_g15v1')
+        self.rb_g15v2: object | QRadioButton = self.findChild(QRadioButton, 'rb_g15v2')
+        self.rb_g510: object | QRadioButton = self.findChild(QRadioButton, 'rb_g510')
+        self.rb_rb_g910: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g910')
+        self.rb_rb_g710: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g710')
+        self.rb_rb_g110: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g110')
+        self.rb_rb_g103: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g103')
+        self.rb_rb_g105: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g105')
+        self.rb_rb_g11: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g11')
+        self.rb_rb_g633: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g633')
+        self.rb_rb_g35: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g35')
+        self.rb_rb_g930: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g930')
+        self.rb_rb_g933: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g933')
+        self.rb_rb_g600: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g600')
+        self.rb_rb_g300: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g300')
+        self.rb_rb_g400: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g400')
+        self.rb_rb_g700: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g700')
+        self.rb_rb_g9: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g9')
+        self.rb_rb_mx518: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_mx518')
+        self.rb_rb_g402: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g402')
+        self.rb_rb_g502: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g502')
+        self.rb_rb_g602: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g602')
+        self.rb_action: object | QRadioButton = self.findChild(QRadioButton, 'rb_action')
+        self.rb_fixed_step_inc: object | QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_inc')
+        self.rb_fixed_step_dec: object | QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_dec')
+        self.rb_set_state: object | QRadioButton = self.findChild(QRadioButton, 'rb_set_state')
+        self.rb_cycle: object | QRadioButton = self.findChild(QRadioButton, 'rb_cycle')
+        self.rb_variable_step_plus: object | QRadioButton = self.findChild(QRadioButton, 'rb_variable_step_plus')
+        self.rb_variable_step_minus: object | QRadioButton = self.findChild(QRadioButton, 'rb_variable_step_minus')
+        self.rb_push_button: object | QRadioButton = self.findChild(QRadioButton, 'rb_push_button')
+        self.rb_custom: object | QRadioButton = self.findChild(QRadioButton, 'rb_custom')
 
-        self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
-        self.hs_medium_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_medium_font')
-        self.hs_small_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_small_font')
-        self.hs_set_state: Union[object, QSlider] = self.findChild(QSlider, 'hs_set_state')
+        self.hs_large_font: object | QSlider = self.findChild(QSlider, 'hs_large_font')
+        self.hs_medium_font: object | QSlider = self.findChild(QSlider, 'hs_medium_font')
+        self.hs_small_font: object | QSlider = self.findChild(QSlider, 'hs_small_font')
+        self.hs_set_state: object | QSlider = self.findChild(QSlider, 'hs_set_state')
 
 
 class AboutDialog(QDialog):
@@ -1798,9 +1818,9 @@ class AboutDialog(QDialog):
     def __init__(self, parent) -> None:
         """Dcspy about dialog window."""
         super().__init__(parent)
-        self.parent: Union[DcsPyQtGui, QWidget] = parent
+        self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
-        self.l_info: Union[object, QLabel] = self.findChild(QLabel, 'l_info')
+        self.l_info: object | QLabel = self.findChild(QLabel, 'l_info')
 
     def showEvent(self, event: QShowEvent):
         """Prepare text information about DCSpy application."""
@@ -1855,6 +1875,8 @@ class Worker(QRunnable):
             exctype, value, tb = sys.exc_info()
             exc_tb = traceback.format_exception(exctype, value, tb)
             self.sig_handler.emit(sig_name='error', value=(exctype, value, exc_tb))
+            # exctype, value = sys.exc_info()[:2]
+            # self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             self.sig_handler.emit(sig_name='result', value=result)
         finally:
@@ -1864,16 +1886,15 @@ class Worker(QRunnable):
 class GitCloneWorker(QRunnable):
     """Worker for git clone with reporting progress."""
 
-    def __init__(self, git_ref: str, sig_handler: SignalHandler, bios_path: Path, repo: str = 'DCS-Skunkworks/dcs-bios',
-                 to_path: Path = DCS_BIOS_REPO_DIR, silence: bool = False) -> None:
+    def __init__(self, git_ref: str, sig_handler: SignalHandler, bios_path: Path, to_path: Path, repo: str, silence: bool = False) -> None:
         """
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
 
         :param git_ref: Git reference
         :param sig_handler: Qt signal handler for progress notification
         :param bios_path: Path to DCS-BIOS
-        :param repo: Valid git repository user/name
         :param to_path: Path to which the repository should be cloned to
+        :param repo: Valid git repository user/name
         :param silence: Perform action with silence
         """
         super().__init__()
@@ -1890,14 +1911,20 @@ class GitCloneWorker(QRunnable):
         try:
             sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
                                     progress=CloneProgress(sig_handler=self.sig_handler))
-            LOG.debug(f'Remove: {self.bios_path} {sha}')
-            rmtree(path=self.bios_path, ignore_errors=True)
-            LOG.debug(f'Copy Git DCS-BIOS to: {self.bios_path} ')
-            copytree(src=DCS_BIOS_REPO_DIR / 'Scripts' / 'DCS-BIOS', dst=self.bios_path)
+            if not self.bios_path.is_symlink():
+                target = self.to_path / 'Scripts' / 'DCS-BIOS'
+                cmd_symlink = f'"New-Item -ItemType SymbolicLink -Path \\"{self.bios_path}\\" -Target \\"{target}\\"'
+                ps_command = f"Start-Process powershell.exe -ArgumentList '-Command {cmd_symlink}' -Verb RunAs"
+                LOG.debug(f'Make symbolic link: {ps_command}')
+                run_command(cmd=['powershell.exe', '-Command', ps_command])
+                sleep(0.8)
+            LOG.debug(f'Directory: {self.bios_path} is symbolic link: {self.bios_path.is_symlink()}')
         except Exception:
             exctype, value, tb = sys.exc_info()
             exc_tb = traceback.format_exception(exctype, value, tb)
             self.sig_handler.emit(sig_name='error', value=(exctype, value, exc_tb))
+            # exctype, value = sys.exc_info()[:2]
+            # self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
             self.sig_handler.emit(sig_name='result', value=(sha, self.silence))
         finally:
@@ -1908,7 +1935,7 @@ class UiLoader(QUiLoader):
     """UI file loader."""
     _baseinstance = None
 
-    def createWidget(self, classname: str, parent: Optional[QWidget] = None, name='') -> QWidget:
+    def createWidget(self, classname: str, parent: QWidget | None = None, name='') -> QWidget:
         """
         Create widget.
 
@@ -1925,7 +1952,7 @@ class UiLoader(QUiLoader):
                 setattr(self._baseinstance, name, widget)
         return widget
 
-    def loadUi(self, ui_path: Union[str, bytes, Path], baseinstance=None) -> QWidget:
+    def loadUi(self, ui_path: str | bytes | Path, baseinstance=None) -> QWidget:
         """
         Load a UI file.
 

@@ -993,7 +993,7 @@
                                                                         },
                                                       "ARC210_PRESENT": {
                                                                                 "category": "ARC-210",
-                                                                            "control_type": "led",
+                                                                            "control_type": "metadata",
                                                                              "description": "ARC-210 Present",
                                                                               "identifier": "ARC210_PRESENT",
                                                                                   "inputs": [  ],
@@ -1001,7 +1001,7 @@
                                                                                                                       "address": 4966,
                                                                                                       "address_mask_identifier": "A_10C_ARC210_PRESENT_AM",
                                                                                                 "address_mask_shift_identifier": "A_10C_ARC210_PRESENT",
-                                                                                                                  "description": "0 if light is off, 1 if light is on",
+                                                                                                                  "description": "ARC-210 Present",
                                                                                                                          "mask": 32768,
                                                                                                                     "max_value": 1,
                                                                                                                      "shift_by": 15,
@@ -17757,6 +17757,24 @@
                                                                                                                       "mask": 768,
                                                                                                                  "max_value": 2,
                                                                                                                   "shift_by": 8,
+                                                                                                                    "suffix": "",
+                                                                                                                      "type": "integer"
+                                                                                         } ]
+                                                                     },
+                                                    "VHFAM_PRESENT": {
+                                                                             "category": "VHF AM Radio",
+                                                                         "control_type": "metadata",
+                                                                          "description": "VHF AM Present",
+                                                                           "identifier": "VHFAM_PRESENT",
+                                                                               "inputs": [  ],
+                                                                              "outputs": [ {
+                                                                                                                   "address": 4974,
+                                                                                                   "address_mask_identifier": "A_10C_VHFAM_PRESENT_AM",
+                                                                                             "address_mask_shift_identifier": "A_10C_VHFAM_PRESENT",
+                                                                                                               "description": "VHF AM Present",
+                                                                                                                      "mask": 8192,
+                                                                                                                 "max_value": 1,
+                                                                                                                  "shift_by": 13,
                                                                                                                     "suffix": "",
                                                                                                                       "type": "integer"
                                                                                          } ]

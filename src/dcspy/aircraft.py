@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Sequence
 from enum import Enum
 from itertools import cycle
@@ -6,13 +8,12 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
+from typing import ClassVar
 
 try:
-    from typing import ClassVar, Union, Unpack
+    from typing import Unpack
 except ImportError:
     from typing_extensions import Unpack
-
-    from typing import ClassVar, Union
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -1032,7 +1033,7 @@ def draw_autopilot_channels(lcd: LcdInfo,
                             c_rect: tuple[float, float, float, float],
                             c_text: tuple[float, float],
                             draw_obj: ImageDraw.ImageDraw,
-                            turn_on: Union[str, int, float]) -> None:
+                            turn_on: str | int | float) -> None:
     """
     Draw rectangles with a background for autopilot channels.
 

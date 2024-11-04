@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import re
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from logging import getLogger
 from os import makedirs
 from pathlib import Path
 from pprint import pformat
 from shutil import SameFileError, copy
-from typing import Callable
 
 from packaging import version
 
@@ -13,7 +14,7 @@ from dcspy.models import ConfigValue, DcspyConfigYaml
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.5.2'
+__version__ = '3.6.0'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:

@@ -16,19 +16,6 @@ jobs:
         run: |
           pycodestyle --statistics --count src
 
-  pydocstyle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check PyDocStyle"
-        run: |
-          pydocstyle --count src
-
   interrogate:
     runs-on: ubuntu-latest
     steps:
@@ -72,7 +59,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mypy_3_12
+          name: mypy_3_13
           path: |
             mypyhtml/*
           retention-days: 4

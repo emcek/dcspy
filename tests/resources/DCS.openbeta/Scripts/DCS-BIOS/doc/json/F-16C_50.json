@@ -8010,6 +8010,62 @@
                                                                                             } ]
                                                                         }
                                             },
+                         "Standby Compass": {
+                                                "STANDBY_COMPASS_HEADING": {
+                                                                                   "category": "Standby Compass",
+                                                                               "control_type": "analog_gauge",
+                                                                                "description": "Standby Compass Heading",
+                                                                                 "identifier": "STANDBY_COMPASS_HEADING",
+                                                                                     "inputs": [  ],
+                                                                                    "outputs": [ {
+                                                                                                                         "address": 17880,
+                                                                                                              "address_identifier": "F_16C_50_STANDBY_COMPASS_HEADING_A",
+                                                                                                   "address_mask_shift_identifier": "F_16C_50_STANDBY_COMPASS_HEADING",
+                                                                                                                     "description": "gauge position",
+                                                                                                                            "mask": 65535,
+                                                                                                                       "max_value": 65535,
+                                                                                                                        "shift_by": 0,
+                                                                                                                          "suffix": "",
+                                                                                                                            "type": "integer"
+                                                                                               } ]
+                                                                           },
+                                                  "STANDBY_COMPASS_PITCH": {
+                                                                                   "category": "Standby Compass",
+                                                                               "control_type": "analog_gauge",
+                                                                                "description": "Standby Compass Pitch",
+                                                                                 "identifier": "STANDBY_COMPASS_PITCH",
+                                                                                     "inputs": [  ],
+                                                                                    "outputs": [ {
+                                                                                                                         "address": 17882,
+                                                                                                              "address_identifier": "F_16C_50_STANDBY_COMPASS_PITCH_A",
+                                                                                                   "address_mask_shift_identifier": "F_16C_50_STANDBY_COMPASS_PITCH",
+                                                                                                                     "description": "gauge position",
+                                                                                                                            "mask": 65535,
+                                                                                                                       "max_value": 65535,
+                                                                                                                        "shift_by": 0,
+                                                                                                                          "suffix": "",
+                                                                                                                            "type": "integer"
+                                                                                               } ]
+                                                                           },
+                                                   "STANDBY_COMPASS_ROLL": {
+                                                                                   "category": "Standby Compass",
+                                                                               "control_type": "analog_gauge",
+                                                                                "description": "Standby Compass Roll",
+                                                                                 "identifier": "STANDBY_COMPASS_ROLL",
+                                                                                     "inputs": [  ],
+                                                                                    "outputs": [ {
+                                                                                                                         "address": 17884,
+                                                                                                              "address_identifier": "F_16C_50_STANDBY_COMPASS_ROLL_A",
+                                                                                                   "address_mask_shift_identifier": "F_16C_50_STANDBY_COMPASS_ROLL",
+                                                                                                                     "description": "gauge position",
+                                                                                                                            "mask": 65535,
+                                                                                                                       "max_value": 65535,
+                                                                                                                        "shift_by": 0,
+                                                                                                                          "suffix": "",
+                                                                                                                            "type": "integer"
+                                                                                               } ]
+                                                                           }
+                                            },
                          "Trim Indicators": {
                                                 "PITCHTRIMIND": {
                                                                         "category": "Trim Indicators",
@@ -11431,6 +11487,24 @@
                                                                                                                          "type": "integer"
                                                                                             } ]
                                                                         },
+                                                    "LIGHT_RWR_SHIP_U": {
+                                                                                "category": "Warning, Caution and IndicatorLights",
+                                                                            "control_type": "led",
+                                                                             "description": "RWR SHIP U Light (green)",
+                                                                              "identifier": "LIGHT_RWR_SHIP_U",
+                                                                                  "inputs": [  ],
+                                                                                 "outputs": [ {
+                                                                                                                      "address": 17762,
+                                                                                                      "address_mask_identifier": "F_16C_50_LIGHT_RWR_SHIP_U_AM",
+                                                                                                "address_mask_shift_identifier": "F_16C_50_LIGHT_RWR_SHIP_U",
+                                                                                                                  "description": "0 if light is off, 1 if light is on",
+                                                                                                                         "mask": 32768,
+                                                                                                                    "max_value": 1,
+                                                                                                                     "shift_by": 15,
+                                                                                                                       "suffix": "",
+                                                                                                                         "type": "integer"
+                                                                                            } ]
+                                                                        },
                                                   "LIGHT_RWR_SHIP_UNK": {
                                                                                 "category": "Warning, Caution and IndicatorLights",
                                                                             "control_type": "led",
@@ -11463,6 +11537,24 @@
                                                                                                                          "mask": 64,
                                                                                                                     "max_value": 1,
                                                                                                                      "shift_by": 6,
+                                                                                                                       "suffix": "",
+                                                                                                                         "type": "integer"
+                                                                                            } ]
+                                                                        },
+                                                "LIGHT_RWR_SYSTEST_ON": {
+                                                                                "category": "Warning, Caution and IndicatorLights",
+                                                                            "control_type": "led",
+                                                                             "description": "RWR SYSTEST ON Light (green)",
+                                                                              "identifier": "LIGHT_RWR_SYSTEST_ON",
+                                                                                  "inputs": [  ],
+                                                                                 "outputs": [ {
+                                                                                                                      "address": 17792,
+                                                                                                      "address_mask_identifier": "F_16C_50_LIGHT_RWR_SYSTEST_ON_AM",
+                                                                                                "address_mask_shift_identifier": "F_16C_50_LIGHT_RWR_SYSTEST_ON",
+                                                                                                                  "description": "0 if light is off, 1 if light is on",
+                                                                                                                         "mask": 256,
+                                                                                                                    "max_value": 1,
+                                                                                                                     "shift_by": 8,
                                                                                                                        "suffix": "",
                                                                                                                          "type": "integer"
                                                                                             } ]

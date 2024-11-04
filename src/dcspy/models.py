@@ -1,10 +1,10 @@
-from collections.abc import Iterator, Mapping, Sequence
+from __future__ import annotations
+
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from enum import Enum
 from functools import partial
-from pathlib import Path
 from re import search
-from tempfile import gettempdir
-from typing import Any, Callable, Final, Optional, TypedDict, TypeVar, Union
+from typing import Any, Final, TypedDict, TypeVar, Union
 
 from packaging import version
 from PIL import Image, ImageFont
@@ -30,8 +30,6 @@ TIME_BETWEEN_REQUESTS: Final = 0.2
 LOCAL_APPDATA: Final = True
 DCSPY_REPO_NAME: Final = 'emcek/dcspy'
 DEFAULT_FONT_NAME: Final = 'consola.ttf'
-DCS_BIOS_REPO_DIR: Final = Path(gettempdir()) / 'dcsbios_git'
-DCS_BIOS_VER_FILE: Final = 'bios_live_ver.txt'
 CTRL_LIST_SEPARATOR: Final = '--'
 SUPPORTED_CRAFTS = {
     'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
@@ -63,7 +61,7 @@ class Input(BaseModel):
     """Input base class of inputs section of Control."""
     description: str
 
-    def get(self, attribute: str, default=None) -> Optional[Any]:
+    def get(self, attribute: str, default=None) -> Any | None:
         """
         Access attribute and get default when is not available.
 
@@ -273,7 +271,7 @@ class ControlKeyData:
         return True
 
     @classmethod
-    def from_control(cls, /, ctrl: 'Control') -> 'ControlKeyData':
+    def from_control(cls, /, ctrl: Control) -> ControlKeyData:
         """
         Construct object based on Control BIOS model.
 
@@ -409,13 +407,13 @@ class ControlKeyData:
 
 class Control(BaseModel):
     """Control section of the BIOS model."""
-    api_variant: Optional[str] = None
+    api_variant: str | None = None
     category: str
     control_type: str
     description: str
     identifier: str
-    inputs: list[Union[FixedStep, VariableStep, SetState, Action, SetString]]
-    outputs: list[Union[OutputStr, OutputInt]]
+    inputs: list[FixedStep | VariableStep | SetState | Action | SetString]
+    outputs: list[OutputStr | OutputInt]
 
     @property
     def input(self) -> ControlKeyData:
@@ -427,7 +425,7 @@ class Control(BaseModel):
         return ControlKeyData.from_control(ctrl=self)
 
     @property
-    def output(self) -> Union[BiosValueInt, BiosValueStr]:
+    def output(self) -> BiosValueInt | BiosValueStr:
         """
         Extract outputs data.
 
@@ -448,7 +446,7 @@ class DcsBiosPlaneData(RootModel):
     """DcsBios plane data model."""
     root: dict[str, dict[str, Control]]
 
-    def get_ctrl(self, ctrl_name: str) -> Optional[Control]:
+    def get_ctrl(self, ctrl_name: str) -> Control | None:
         """
         Get Control from DCS-BIOS with name.
 
@@ -492,7 +490,7 @@ class CycleButton(BaseModel):
     iter: Iterator[int] = iter([0])
 
     @classmethod
-    def from_request(cls, /, req: str) -> 'CycleButton':
+    def from_request(cls, /, req: str) -> CycleButton:
         """
         Use BIOS request string from plane configuration YAML.
 
@@ -513,7 +511,7 @@ class GuiPlaneInputRequest(BaseModel):
     widget_iface: str
 
     @classmethod
-    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str, custom_value: str = '') -> 'GuiPlaneInputRequest':
+    def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str, custom_value: str = '') -> GuiPlaneInputRequest:
         """
         Generate GuiPlaneInputRequest from ControlKeyData and radio button widget.
 
@@ -536,7 +534,7 @@ class GuiPlaneInputRequest(BaseModel):
         return cls(identifier=ctrl_key.name, request=rb_iface_request[rb_iface], widget_iface=rb_iface)
 
     @classmethod
-    def from_plane_gkeys(cls, /, plane_gkeys: dict[str, str]) -> dict[str, 'GuiPlaneInputRequest']:
+    def from_plane_gkeys(cls, /, plane_gkeys: dict[str, str]) -> dict[str, GuiPlaneInputRequest]:
         """
         Generate GuiPlaneInputRequest from plane_gkeys yaml.
 
@@ -566,7 +564,7 @@ class GuiPlaneInputRequest(BaseModel):
         return input_reqs
 
     @classmethod
-    def make_empty(cls) -> 'GuiPlaneInputRequest':
+    def make_empty(cls) -> GuiPlaneInputRequest:
         """Make empty GuiPlaneInputRequest."""
         return cls(identifier='', request='', widget_iface='')
 
@@ -614,7 +612,7 @@ class MouseButton(BaseModel):
         return hash(self.button)
 
     @classmethod
-    def from_yaml(cls, /, yaml_str: str) -> 'MouseButton':
+    def from_yaml(cls, /, yaml_str: str) -> MouseButton:
         """
         Construct MouseButton from YAML string.
 
@@ -627,7 +625,7 @@ class MouseButton(BaseModel):
         raise ValueError(f'Invalid MouseButton format: {yaml_str}. Expected: M_<i>')
 
     @staticmethod
-    def generate(button_range: tuple[int, int]) -> Sequence['MouseButton']:
+    def generate(button_range: tuple[int, int]) -> Sequence[MouseButton]:
         """
         Generate a sequence of MouseButton-Keys.
 
@@ -674,13 +672,13 @@ class LcdInfo(BaseModel):
     width: LcdSize
     height: LcdSize
     type: LcdType
-    foreground: Union[int, tuple[int, int, int, int]]
-    background: Union[int, tuple[int, int, int, int]]
+    foreground: int | tuple[int, int, int, int]
+    background: int | tuple[int, int, int, int]
     mode: LcdMode
     line_spacing: int
-    font_xs: Optional[ImageFont.FreeTypeFont] = None
-    font_s: Optional[ImageFont.FreeTypeFont] = None
-    font_l: Optional[ImageFont.FreeTypeFont] = None
+    font_xs: ImageFont.FreeTypeFont | None = None
+    font_s: ImageFont.FreeTypeFont | None = None
+    font_l: ImageFont.FreeTypeFont | None = None
 
     def set_fonts(self, fonts: FontsConfig) -> None:
         """
@@ -722,7 +720,7 @@ class Gkey(BaseModel):
         return hash((self.key, self.mode))
 
     @classmethod
-    def from_yaml(cls, /, yaml_str: str) -> 'Gkey':
+    def from_yaml(cls, /, yaml_str: str) -> Gkey:
         """
         Construct Gkey from YAML string.
 
@@ -735,7 +733,7 @@ class Gkey(BaseModel):
         raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
     @staticmethod
-    def generate(key: int, mode: int) -> Sequence['Gkey']:
+    def generate(key: int, mode: int) -> Sequence[Gkey]:
         """
         Generate a sequence of G-Keys.
 
@@ -778,7 +776,7 @@ class LogitechDeviceModel(BaseModel):
     lcd_keys: Sequence[LcdButton] = tuple()
     lcd_info: LcdInfo = NoneLcd
 
-    def get_key_at(self, row: int, col: int) -> Optional[AnyButton]:
+    def get_key_at(self, row: int, col: int) -> AnyButton | None:
         """
         Get the keys at the specified row and column in the table layout.
 
@@ -906,7 +904,7 @@ MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
-def _try_key_instance(klass: Union[type[Gkey], type[LcdButton], type[MouseButton]], method: str, key_str: str) -> Optional[AnyButton]:
+def _try_key_instance(klass: type[Gkey] | type[LcdButton] | type[MouseButton], method: str, key_str: str) -> AnyButton | None:
     """
     Detect key string could be parsed with method.
 
@@ -994,7 +992,7 @@ class ZigZagIterator:
         self.max_val = max_val
         self._direction = Direction.FORWARD
 
-    def __iter__(self) -> 'ZigZagIterator':
+    def __iter__(self) -> ZigZagIterator:
         return self
 
     def __str__(self) -> str:
@@ -1068,7 +1066,7 @@ class RequestModel(BaseModel):
         return value
 
     @classmethod
-    def from_request(cls, key: AnyButton, request: str, get_bios_fn: Callable[[str], BiosValue]) -> 'RequestModel':
+    def from_request(cls, key: AnyButton, request: str, get_bios_fn: Callable[[str], BiosValue]) -> RequestModel:
         """
         Build an object based on string request.
 
@@ -1086,7 +1084,7 @@ class RequestModel(BaseModel):
         return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
 
     @classmethod
-    def empty(cls, key: AnyButton) -> 'RequestModel':
+    def empty(cls, key: AnyButton) -> RequestModel:
         """
         Create an empty request model, for a key which isn't assign.
 
@@ -1118,7 +1116,7 @@ class RequestModel(BaseModel):
         """Return True if push button request, False otherwise."""
         return RequestType.PUSH_BUTTON.value in self.raw_request
 
-    def bytes_requests(self, key_down: Optional[int] = None) -> list[bytes]:
+    def bytes_requests(self, key_down: int | None = None) -> list[bytes]:
         """
         Generate a list of bytes that represent the individual requests based on the current state of the model.
 
@@ -1128,7 +1126,7 @@ class RequestModel(BaseModel):
         request = self._generate_request_based_on_case(key_down)
         return [bytes(req, 'utf-8') for req in request.split('|')]
 
-    def _generate_request_based_on_case(self, key_down: Optional[int] = None) -> str:
+    def _generate_request_based_on_case(self, key_down: int | None = None) -> str:
         """
         Generate a request based on the current state of the object.
 
@@ -1161,7 +1159,7 @@ class RequestModel(BaseModel):
                 return case['method']()
         return f'{self.raw_request}\n'
 
-    def __generate_push_btn_req_for_gkey_and_mouse(self, key_down: Optional[int]) -> str:
+    def __generate_push_btn_req_for_gkey_and_mouse(self, key_down: int | None) -> str:
         """
         Generate a push button request for GKey and MouseButton.
 
