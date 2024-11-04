@@ -122,6 +122,16 @@ def test_dcs_bios(resources):
     return resources / 'DCS.openbeta' / 'Scripts' / 'DCS-BIOS'
 
 
+@fixture()
+def test_saved_games(resources):
+    """
+    Path to DCS-BIOS for Lua compile test.
+
+    :return: Path to DCS-BIOS
+    """
+    return resources / 'Saved.Games.DCS'
+
+
 # <=><=><=><=><=> dcsbios <=><=><=><=><=>
 @fixture
 def protocol_parser():
