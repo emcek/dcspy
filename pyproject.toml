@@ -22,6 +22,7 @@ classifiers = [
     'Programming Language :: Python :: 3.13',
     'Operating System :: Microsoft :: Windows',
     'Operating System :: Microsoft :: Windows :: Windows 10',
+    'Operating System :: Microsoft :: Windows :: Windows 11',
     'Topic :: Games/Entertainment',
     'Topic :: Games/Entertainment :: Simulation',
     'Topic :: Software Development :: Libraries :: Python Modules',
