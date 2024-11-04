@@ -127,7 +127,7 @@ class ProtocolParser:
 
 class StringBuffer:
     """String buffer for DCS-BIOS protocol."""
-    def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable, sig_handler: Optional[SignalHandler] = None) -> None:
+    def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable, sig_handler: SignalHandler | None = None) -> None:
         """
         Initialize instance.
 
@@ -189,7 +189,7 @@ class StringBuffer:
 
 class IntegerBuffer:
     """Integer buffer for DCS-BIOS protocol."""
-    def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable, sig_handler: Optional[SignalHandler] = None) -> None:
+    def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable, sig_handler: SignalHandler | None = None) -> None:
         """
         Initialize instance.
 
