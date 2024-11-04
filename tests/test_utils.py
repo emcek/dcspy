@@ -316,10 +316,26 @@ def test_run_command(cmd, result):
     assert rc == result
 
 
-def test_get_full_bios_for_plane(test_dcs_bios):
-    a10_model = utils.get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
-    assert len(a10_model.root) == 64
-    assert sum(len(values) for values in a10_model.root.values()) == 775
+@mark.parametrize('plane_str, roots , values', [
+    ('FA-18C_hornet', 80, 531),
+    ('F-16C_50', 49, 533),
+    ('F-4E-45MC', 116, 1123),
+    ('Ka-50', 77, 599),
+    ('Ka-50_3', 77, 599),
+    ('Mi-8MT', 77, 800),
+    ('Mi-24P', 114, 1001),
+    ('AH-64D_BLK_II', 53, 730),
+    ('A-10C', 64, 777),
+    ('A-10C_2', 64, 777),
+    ('F-14A-135-GR', 76, 1124),
+    ('F-14B', 76, 1124),
+    ('AV8BNA', 48, 515),
+    ('F-15ESE', 98, 890),
+])
+def test_get_full_bios_for_plane(plane_str, roots, values, test_dcs_bios):
+    model = utils.get_full_bios_for_plane(plane=plane_str, bios_dir=test_dcs_bios)
+    assert len(model.root) == roots
+    assert sum(len(values) for values in model.root.values()) == values
 
 
 def test_get_inputs_for_plane(test_dcs_bios):
