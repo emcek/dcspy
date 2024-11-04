@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import os
 import sys
 import traceback
 from argparse import Namespace
+from collections.abc import Callable
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -12,7 +15,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Any, Callable, Optional, Union
+from typing import Any
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -48,7 +51,7 @@ LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0,
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
 
-    def __init__(self, cli_args=Namespace(), cfg_dict: Optional[DcspyConfigYaml] = None) -> None:
+    def __init__(self, cli_args=Namespace(), cfg_dict: DcspyConfigYaml | None = None) -> None:
         """
         PySide6 GUI for DCSpy.
 
@@ -297,7 +300,7 @@ class DcsPyQtGui(QMainWindow):
             self._load_table_gkeys()  # generate json/bios
             self.current_row = 0
             self.current_col = 0
-            cell_combo: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row, col=self.current_col)
 
     def _set_ded_font_and_font_sliders(self) -> None:
@@ -370,7 +373,7 @@ class DcsPyQtGui(QMainWindow):
         getattr(self, widget_name).setStyleSheet('color: red;')
         return False
 
-    def _is_dir_dcs_bios(self, text: Union[Path, str], widget_name: str) -> bool:
+    def _is_dir_dcs_bios(self, text: Path | str, widget_name: str) -> bool:
         """
         Check if the directory is valid DCS-BIOS installation.
 
@@ -442,7 +445,7 @@ class DcsPyQtGui(QMainWindow):
             for col in range(0, self.device.cols):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
-            cell_combo: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+            cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
             self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row,
                                             col=self.current_col)
 
@@ -768,7 +771,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param widget: QComboBox instance
         """
-        model: Union[QStandardItemModel, QAbstractItemModel] = widget.model()
+        model: QStandardItemModel | QAbstractItemModel = widget.model()
         for i in range(0, widget.count()):
             if text in model.item(i).text():
                 model.item(i).setFlags(Qt.ItemFlag.NoItemFlags)
@@ -790,7 +793,7 @@ class DcsPyQtGui(QMainWindow):
         """
         self.current_row = currentRow
         self.current_col = currentColumn
-        cell_combo: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(currentRow, currentColumn)
+        cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(currentRow, currentColumn)
         self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=currentRow, col=currentColumn)
 
     def _input_iface_changed_or_custom_text_changed(self) -> None:
@@ -802,7 +805,7 @@ class DcsPyQtGui(QMainWindow):
             * a text is changed and user press enter
             * the widget lost focus
         """
-        current_cell: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+        current_cell: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
         current_cell_text = current_cell.currentText()
         if current_cell_text in self.ctrl_list and CTRL_LIST_SEPARATOR not in current_cell_text:
             section = self._find_section_name(ctrl_name=current_cell_text)
@@ -815,9 +818,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _copy_cell_to_row(self) -> None:
         """Copy content of current cell to whole row."""
-        current_cell: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+        current_cell: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
         for col in set(range(self.device.cols)) - {self.current_col}:
-            cell_at_column: Union[QComboBox, QWidget] = self.tw_gkeys.cellWidget(self.current_row, col)
+            cell_at_column: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, col)
             cell_at_column.setCurrentIndex(current_cell.currentIndex())
 
     def _reload_table_gkeys(self) -> None:
@@ -1398,7 +1401,7 @@ class DcsPyQtGui(QMainWindow):
         return Path(self.le_dcsdir.text())
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
-    def run_in_background(self, job: Union[partial, Callable], signal_handlers: dict[str, Callable]) -> None:
+    def run_in_background(self, job: partial | Callable, signal_handlers: dict[str, Callable]) -> None:
         """
         Worker with signals callback to schedule a GUI job in the background.
 
@@ -1473,7 +1476,7 @@ class DcsPyQtGui(QMainWindow):
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
-    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: Optional[str] = None) -> str:
+    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: str | None = None) -> str:
         """
         Open/save dialog to select file or folder.
 
@@ -1528,8 +1531,8 @@ class DcsPyQtGui(QMainWindow):
                 result = message_box(self, title, message, **kwargs)
         return result
 
-    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: Optional[str] = None,
-                             buttons: Optional[QMessageBox.StandardButton] = None) -> int:
+    def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str | None = None,
+                             buttons: QMessageBox.StandardButton | None = None) -> int:
         """
         Show custom message box with hidden text.
 
@@ -1604,117 +1607,117 @@ class DcsPyQtGui(QMainWindow):
 
     def _find_children(self) -> None:
         """Find all widgets of main window."""
-        self.statusbar: Union[object, QStatusBar] = self.findChild(QStatusBar, 'statusbar')
-        self.systray: Union[object, QSystemTrayIcon] = self.findChild(QSystemTrayIcon, 'systray')
-        self.traymenu: Union[object, QMenu] = self.findChild(QMenu, 'traymenu')
-        self.progressbar: Union[object, QProgressBar] = self.findChild(QProgressBar, 'progressbar')
-        self.toolbar: Union[object, QToolBar] = self.findChild(QToolBar, 'toolbar')
-        self.tw_gkeys: Union[object, QTableWidget] = self.findChild(QTableWidget, 'tw_gkeys')
-        self.sp_completer: Union[object, QSpinBox] = self.findChild(QSpinBox, 'sp_completer')
-        self.tw_main: Union[object, QTabWidget] = self.findChild(QTabWidget, 'tw_main')
-        self.gb_fonts: Union[object, QGroupBox] = self.findChild(QGroupBox, 'gb_fonts')
-        self.toolBox: Union[object, QToolBox] = self.findChild(QToolBox, 'toolBox')
+        self.statusbar: object | QStatusBar = self.findChild(QStatusBar, 'statusbar')
+        self.systray: object | QSystemTrayIcon = self.findChild(QSystemTrayIcon, 'systray')
+        self.traymenu: object | QMenu = self.findChild(QMenu, 'traymenu')
+        self.progressbar: object | QProgressBar = self.findChild(QProgressBar, 'progressbar')
+        self.toolbar: object | QToolBar = self.findChild(QToolBar, 'toolbar')
+        self.tw_gkeys: object | QTableWidget = self.findChild(QTableWidget, 'tw_gkeys')
+        self.sp_completer: object | QSpinBox = self.findChild(QSpinBox, 'sp_completer')
+        self.tw_main: object | QTabWidget = self.findChild(QTabWidget, 'tw_main')
+        self.gb_fonts: object | QGroupBox = self.findChild(QGroupBox, 'gb_fonts')
+        self.toolBox: object | QToolBox = self.findChild(QToolBox, 'toolBox')
 
-        self.combo_planes: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_planes')
-        self.combo_search: Union[object, QComboBox] = self.findChild(QComboBox, 'combo_search')
+        self.combo_planes: object | QComboBox = self.findChild(QComboBox, 'combo_planes')
+        self.combo_search: object | QComboBox = self.findChild(QComboBox, 'combo_search')
 
-        self.dw_gkeys: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_gkeys')
-        self.dw_device: Union[object, QDockWidget] = self.findChild(QDockWidget, 'dw_device')
+        self.dw_gkeys: object | QDockWidget = self.findChild(QDockWidget, 'dw_gkeys')
+        self.dw_device: object | QDockWidget = self.findChild(QDockWidget, 'dw_device')
 
-        self.l_keyboard: Union[object, QLabel] = self.findChild(QLabel, 'l_keyboard')
-        self.l_large: Union[object, QLabel] = self.findChild(QLabel, 'l_large')
-        self.l_medium: Union[object, QLabel] = self.findChild(QLabel, 'l_medium')
-        self.l_small: Union[object, QLabel] = self.findChild(QLabel, 'l_small')
-        self.l_category: Union[object, QLabel] = self.findChild(QLabel, 'l_category')
-        self.l_description: Union[object, QLabel] = self.findChild(QLabel, 'l_description')
-        self.l_identifier: Union[object, QLabel] = self.findChild(QLabel, 'l_identifier')
-        self.l_range: Union[object, QLabel] = self.findChild(QLabel, 'l_range')
+        self.l_keyboard: object | QLabel = self.findChild(QLabel, 'l_keyboard')
+        self.l_large: object | QLabel = self.findChild(QLabel, 'l_large')
+        self.l_medium: object | QLabel = self.findChild(QLabel, 'l_medium')
+        self.l_small: object | QLabel = self.findChild(QLabel, 'l_small')
+        self.l_category: object | QLabel = self.findChild(QLabel, 'l_category')
+        self.l_description: object | QLabel = self.findChild(QLabel, 'l_description')
+        self.l_identifier: object | QLabel = self.findChild(QLabel, 'l_identifier')
+        self.l_range: object | QLabel = self.findChild(QLabel, 'l_range')
 
-        self.a_start: Union[object, QAction] = self.findChild(QAction, 'a_start')
-        self.a_stop: Union[object, QAction] = self.findChild(QAction, 'a_stop')
-        self.a_quit: Union[object, QAction] = self.findChild(QAction, 'a_quit')
-        self.a_save_plane: Union[object, QAction] = self.findChild(QAction, 'a_save_plane')
-        self.a_reset_defaults: Union[object, QAction] = self.findChild(QAction, 'a_reset_defaults')
-        self.a_show_toolbar: Union[object, QAction] = self.findChild(QAction, 'a_show_toolbar')
-        self.a_show_gkeys: Union[object, QAction] = self.findChild(QAction, 'a_show_gkeys')
-        self.a_show_device: Union[object, QAction] = self.findChild(QAction, 'a_show_device')
-        self.a_about_dcspy: Union[object, QAction] = self.findChild(QAction, 'a_about_dcspy')
-        self.a_about_qt: Union[object, QAction] = self.findChild(QAction, 'a_about_qt')
-        self.a_report_issue: Union[object, QAction] = self.findChild(QAction, 'a_report_issue')
-        self.a_dcspy_updates: Union[object, QAction] = self.findChild(QAction, 'a_dcspy_updates')
-        self.a_bios_updates: Union[object, QAction] = self.findChild(QAction, 'a_bios_updates')
-        self.a_donate: Union[object, QAction] = self.findChild(QAction, 'a_donate')
-        self.a_discord: Union[object, QAction] = self.findChild(QAction, 'a_discord')
-        self.a_icons_only: Union[object, QAction] = self.findChild(QAction, 'a_icons_only')
-        self.a_text_only: Union[object, QAction] = self.findChild(QAction, 'a_text_only')
-        self.a_text_beside: Union[object, QAction] = self.findChild(QAction, 'a_text_beside')
-        self.a_text_under: Union[object, QAction] = self.findChild(QAction, 'a_text_under')
+        self.a_start: object | QAction = self.findChild(QAction, 'a_start')
+        self.a_stop: object | QAction = self.findChild(QAction, 'a_stop')
+        self.a_quit: object | QAction = self.findChild(QAction, 'a_quit')
+        self.a_save_plane: object | QAction = self.findChild(QAction, 'a_save_plane')
+        self.a_reset_defaults: object | QAction = self.findChild(QAction, 'a_reset_defaults')
+        self.a_show_toolbar: object | QAction = self.findChild(QAction, 'a_show_toolbar')
+        self.a_show_gkeys: object | QAction = self.findChild(QAction, 'a_show_gkeys')
+        self.a_show_device: object | QAction = self.findChild(QAction, 'a_show_device')
+        self.a_about_dcspy: object | QAction = self.findChild(QAction, 'a_about_dcspy')
+        self.a_about_qt: object | QAction = self.findChild(QAction, 'a_about_qt')
+        self.a_report_issue: object | QAction = self.findChild(QAction, 'a_report_issue')
+        self.a_dcspy_updates: object | QAction = self.findChild(QAction, 'a_dcspy_updates')
+        self.a_bios_updates: object | QAction = self.findChild(QAction, 'a_bios_updates')
+        self.a_donate: object | QAction = self.findChild(QAction, 'a_donate')
+        self.a_discord: object | QAction = self.findChild(QAction, 'a_discord')
+        self.a_icons_only: object | QAction = self.findChild(QAction, 'a_icons_only')
+        self.a_text_only: object | QAction = self.findChild(QAction, 'a_text_only')
+        self.a_text_beside: object | QAction = self.findChild(QAction, 'a_text_beside')
+        self.a_text_under: object | QAction = self.findChild(QAction, 'a_text_under')
 
-        self.pb_start: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_start')
-        self.pb_stop: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_stop')
-        self.pb_close: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_close')
-        self.pb_dcsdir: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcsdir')
-        self.pb_biosdir: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_biosdir')
-        self.pb_collect_data: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_collect_data')
-        self.pb_copy: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_copy')
-        self.pb_save: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_save')
-        self.pb_dcspy_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_dcspy_check')
-        self.pb_bios_check: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_check')
-        self.pb_bios_repair: Union[object, QPushButton] = self.findChild(QPushButton, 'pb_bios_repair')
+        self.pb_start: object | QPushButton = self.findChild(QPushButton, 'pb_start')
+        self.pb_stop: object | QPushButton = self.findChild(QPushButton, 'pb_stop')
+        self.pb_close: object | QPushButton = self.findChild(QPushButton, 'pb_close')
+        self.pb_dcsdir: object | QPushButton = self.findChild(QPushButton, 'pb_dcsdir')
+        self.pb_biosdir: object | QPushButton = self.findChild(QPushButton, 'pb_biosdir')
+        self.pb_collect_data: object | QPushButton = self.findChild(QPushButton, 'pb_collect_data')
+        self.pb_copy: object | QPushButton = self.findChild(QPushButton, 'pb_copy')
+        self.pb_save: object | QPushButton = self.findChild(QPushButton, 'pb_save')
+        self.pb_dcspy_check: object | QPushButton = self.findChild(QPushButton, 'pb_dcspy_check')
+        self.pb_bios_check: object | QPushButton = self.findChild(QPushButton, 'pb_bios_check')
+        self.pb_bios_repair: object | QPushButton = self.findChild(QPushButton, 'pb_bios_repair')
 
-        self.cb_autostart: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autostart')
-        self.cb_show_gui: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_show_gui')
-        self.cb_check_ver: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_check_ver')
-        self.cb_ded_font: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_ded_font')
-        self.cb_lcd_screenshot: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_lcd_screenshot')
-        self.cb_verbose: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_verbose')
-        self.cb_autoupdate_bios: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_autoupdate_bios')
-        self.cb_bios_live: Union[object, QCheckBox] = self.findChild(QCheckBox, 'cb_bios_live')
+        self.cb_autostart: object | QCheckBox = self.findChild(QCheckBox, 'cb_autostart')
+        self.cb_show_gui: object | QCheckBox = self.findChild(QCheckBox, 'cb_show_gui')
+        self.cb_check_ver: object | QCheckBox = self.findChild(QCheckBox, 'cb_check_ver')
+        self.cb_ded_font: object | QCheckBox = self.findChild(QCheckBox, 'cb_ded_font')
+        self.cb_lcd_screenshot: object | QCheckBox = self.findChild(QCheckBox, 'cb_lcd_screenshot')
+        self.cb_verbose: object | QCheckBox = self.findChild(QCheckBox, 'cb_verbose')
+        self.cb_autoupdate_bios: object | QCheckBox = self.findChild(QCheckBox, 'cb_autoupdate_bios')
+        self.cb_bios_live: object | QCheckBox = self.findChild(QCheckBox, 'cb_bios_live')
 
-        self.le_dcsdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_dcsdir')
-        self.le_biosdir: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_biosdir')
-        self.le_font_name: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_font_name')
-        self.le_bios_live: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_bios_live')
-        self.le_custom: Union[object, QLineEdit] = self.findChild(QLineEdit, 'le_custom')
+        self.le_dcsdir: object | QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')
+        self.le_biosdir: object | QLineEdit = self.findChild(QLineEdit, 'le_biosdir')
+        self.le_font_name: object | QLineEdit = self.findChild(QLineEdit, 'le_font_name')
+        self.le_bios_live: object | QLineEdit = self.findChild(QLineEdit, 'le_bios_live')
+        self.le_custom: object | QLineEdit = self.findChild(QLineEdit, 'le_custom')
 
-        self.rb_g19: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g19')
-        self.rb_g13: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g13')
-        self.rb_g15v1: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v1')
-        self.rb_g15v2: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g15v2')
-        self.rb_g510: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_g510')
-        self.rb_rb_g910: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g910')
-        self.rb_rb_g710: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g710')
-        self.rb_rb_g110: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g110')
-        self.rb_rb_g103: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g103')
-        self.rb_rb_g105: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g105')
-        self.rb_rb_g11: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g11')
-        self.rb_rb_g633: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g633')
-        self.rb_rb_g35: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g35')
-        self.rb_rb_g930: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g930')
-        self.rb_rb_g933: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g933')
-        self.rb_rb_g600: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g600')
-        self.rb_rb_g300: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g300')
-        self.rb_rb_g400: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g400')
-        self.rb_rb_g700: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g700')
-        self.rb_rb_g9: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g9')
-        self.rb_rb_mx518: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_mx518')
-        self.rb_rb_g402: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g402')
-        self.rb_rb_g502: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g502')
-        self.rb_rb_g602: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_rb_g602')
-        self.rb_action: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_action')
-        self.rb_fixed_step_inc: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_inc')
-        self.rb_fixed_step_dec: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_fixed_step_dec')
-        self.rb_set_state: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_set_state')
-        self.rb_cycle: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_cycle')
-        self.rb_variable_step_plus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_plus')
-        self.rb_variable_step_minus: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_variable_step_minus')
-        self.rb_push_button: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_push_button')
-        self.rb_custom: Union[object, QRadioButton] = self.findChild(QRadioButton, 'rb_custom')
+        self.rb_g19: object | QRadioButton = self.findChild(QRadioButton, 'rb_g19')
+        self.rb_g13: object | QRadioButton = self.findChild(QRadioButton, 'rb_g13')
+        self.rb_g15v1: object | QRadioButton = self.findChild(QRadioButton, 'rb_g15v1')
+        self.rb_g15v2: object | QRadioButton = self.findChild(QRadioButton, 'rb_g15v2')
+        self.rb_g510: object | QRadioButton = self.findChild(QRadioButton, 'rb_g510')
+        self.rb_rb_g910: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g910')
+        self.rb_rb_g710: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g710')
+        self.rb_rb_g110: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g110')
+        self.rb_rb_g103: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g103')
+        self.rb_rb_g105: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g105')
+        self.rb_rb_g11: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g11')
+        self.rb_rb_g633: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g633')
+        self.rb_rb_g35: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g35')
+        self.rb_rb_g930: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g930')
+        self.rb_rb_g933: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g933')
+        self.rb_rb_g600: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g600')
+        self.rb_rb_g300: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g300')
+        self.rb_rb_g400: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g400')
+        self.rb_rb_g700: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g700')
+        self.rb_rb_g9: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g9')
+        self.rb_rb_mx518: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_mx518')
+        self.rb_rb_g402: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g402')
+        self.rb_rb_g502: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g502')
+        self.rb_rb_g602: object | QRadioButton = self.findChild(QRadioButton, 'rb_rb_g602')
+        self.rb_action: object | QRadioButton = self.findChild(QRadioButton, 'rb_action')
+        self.rb_fixed_step_inc: object | QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_inc')
+        self.rb_fixed_step_dec: object | QRadioButton = self.findChild(QRadioButton, 'rb_fixed_step_dec')
+        self.rb_set_state: object | QRadioButton = self.findChild(QRadioButton, 'rb_set_state')
+        self.rb_cycle: object | QRadioButton = self.findChild(QRadioButton, 'rb_cycle')
+        self.rb_variable_step_plus: object | QRadioButton = self.findChild(QRadioButton, 'rb_variable_step_plus')
+        self.rb_variable_step_minus: object | QRadioButton = self.findChild(QRadioButton, 'rb_variable_step_minus')
+        self.rb_push_button: object | QRadioButton = self.findChild(QRadioButton, 'rb_push_button')
+        self.rb_custom: object | QRadioButton = self.findChild(QRadioButton, 'rb_custom')
 
-        self.hs_large_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_large_font')
-        self.hs_medium_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_medium_font')
-        self.hs_small_font: Union[object, QSlider] = self.findChild(QSlider, 'hs_small_font')
-        self.hs_set_state: Union[object, QSlider] = self.findChild(QSlider, 'hs_set_state')
+        self.hs_large_font: object | QSlider = self.findChild(QSlider, 'hs_large_font')
+        self.hs_medium_font: object | QSlider = self.findChild(QSlider, 'hs_medium_font')
+        self.hs_small_font: object | QSlider = self.findChild(QSlider, 'hs_small_font')
+        self.hs_set_state: object | QSlider = self.findChild(QSlider, 'hs_set_state')
 
 
 class AboutDialog(QDialog):
@@ -1722,9 +1725,9 @@ class AboutDialog(QDialog):
     def __init__(self, parent) -> None:
         """Dcspy about dialog window."""
         super().__init__(parent)
-        self.parent: Union[DcsPyQtGui, QWidget] = parent
+        self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
-        self.l_info: Union[object, QLabel] = self.findChild(QLabel, 'l_info')
+        self.l_info: object | QLabel = self.findChild(QLabel, 'l_info')
 
     def showEvent(self, event: QShowEvent):
         """Prepare text information about DCSpy application."""
@@ -1865,7 +1868,7 @@ class UiLoader(QUiLoader):
     """UI file loader."""
     _baseinstance = None
 
-    def createWidget(self, classname: str, parent: Optional[QWidget] = None, name='') -> QWidget:
+    def createWidget(self, classname: str, parent: QWidget | None = None, name='') -> QWidget:
         """
         Create widget.
 
@@ -1882,7 +1885,7 @@ class UiLoader(QUiLoader):
                 setattr(self._baseinstance, name, widget)
         return widget
 
-    def loadUi(self, ui_path: Union[str, bytes, Path], baseinstance=None) -> QWidget:
+    def loadUi(self, ui_path: str | bytes | Path, baseinstance=None) -> QWidget:
         """
         Load a UI file.
 

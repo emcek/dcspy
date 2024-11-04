@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import json
 import sys
 import zipfile
-from collections.abc import Generator, Sequence
+from collections.abc import Callable, Generator, Sequence
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
@@ -15,7 +17,7 @@ from re import search, sub
 from shutil import rmtree
 from subprocess import CalledProcessError, run
 from tempfile import gettempdir
-from typing import Any, Callable, ClassVar, Optional, Union
+from typing import Any, ClassVar
 
 import yaml
 from packaging import version
@@ -230,7 +232,7 @@ def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
     return result_type, result_ver
 
 
-def check_bios_ver(bios_path: Union[Path, str]) -> ReleaseInfo:
+def check_bios_ver(bios_path: Path | str) -> ReleaseInfo:
     """
     Check the DSC-BIOS release version.
 
@@ -272,7 +274,7 @@ def is_git_repo(dir_path: str) -> bool:
         return False
 
 
-def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
+def _get_sha_hex_str(bios_repo: git.Repo, git_ref: str) -> str:
     """
     Return a string representing the commit hash, date, and author of the given Git reference in the provided repository.
 
@@ -296,7 +298,7 @@ def _get_sha_hex_str(bios_repo: 'git.Repo', git_ref: str) -> str:
     return sha
 
 
-def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = True, progress: Optional[git.RemoteProgress] = None) -> str:
+def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = True, progress: git.RemoteProgress | None = None) -> str:
     """
     Update git repository.
 
@@ -316,7 +318,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: Optional[git.RemoteProgress] = None) -> 'git.Repo':
+def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.RemoteProgress | None = None) -> git.Repo:
     """
     Checkout repository at master branch or clone it when not exists in a system.
 
@@ -559,7 +561,7 @@ def _get_dcs_log(conf_dict: dict[str, Any]) -> Path:
     return dcs_log_file if dcs_log_file.is_file() else Path()
 
 
-def _get_log_files() -> Generator[Path, None, None]:
+def _get_log_files() -> Generator[Path]:
     """
     Get a path to all logg files.
 
@@ -571,7 +573,7 @@ def _get_log_files() -> Generator[Path, None, None]:
     )
 
 
-def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
+def _get_yaml_files(config_file: Path) -> Generator[Path]:
     """
     Get a path to all configuration YAML files.
 
@@ -586,7 +588,7 @@ def _get_yaml_files(config_file: Path) -> Generator[Path, None, None]:
     )
 
 
-def _get_png_files() -> Generator[Path, None, None]:
+def _get_png_files() -> Generator[Path]:
     """
     Get a path to png screenshots for all airplanes.
 
@@ -628,7 +630,7 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
         return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
 
 
-def run_command(cmd: Sequence[str], cwd: Optional[Path] = None) -> int:
+def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
     """
     Run command in shell as a subprocess.
 
@@ -716,7 +718,7 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 
 
 @lru_cache
-def get_plane_aliases(bios_dir: Path, plane: Optional[str] = None) -> dict[str, list[str]]:
+def get_plane_aliases(bios_dir: Path, plane: str | None = None) -> dict[str, list[str]]:
     """
     Get a list of all YAML files for plane with name.
 
