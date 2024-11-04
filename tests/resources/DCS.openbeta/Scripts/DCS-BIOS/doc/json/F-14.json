@@ -15106,6 +15106,456 @@
                                                                                       } ]
                                                                   }
                                   },
+       "PLT Jester Nav Commands": {
+                                      "PLT_JESTER_COMMAND_NAV_FIXED_POINT": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint Fixed Point",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_FIXED_POINT",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                             "PLT_JESTER_COMMAND_NAV_HOME": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint Home Base",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_HOME",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                               "PLT_JESTER_COMMAND_NAV_IP": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint Initial Point",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_IP",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                              "PLT_JESTER_COMMAND_NAV_MAN": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint Man",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_MAN",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                             "PLT_JESTER_COMMAND_NAV_SP_1": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint SP 1",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_SP_1",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                             "PLT_JESTER_COMMAND_NAV_SP_2": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint SP 2",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_SP_2",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                             "PLT_JESTER_COMMAND_NAV_SP_3": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint SP 3",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_SP_3",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            },
+                                           "PLT_JESTER_COMMAND_NAV_TARGET": {
+                                                                                    "category": "PLT Jester Nav Commands",
+                                                                                "control_type": "action",
+                                                                                 "description": "Set Steerpoint Surface Target",
+                                                                                  "identifier": "PLT_JESTER_COMMAND_NAV_TARGET",
+                                                                                      "inputs": [ {
+                                                                                                       "argument": "TOGGLE",
+                                                                                                    "description": "Triggers the action",
+                                                                                                      "interface": "action"
+                                                                                                } ],
+                                                                                     "outputs": [  ]
+                                                                            }
+                                  },
+     "PLT Jester Radar Commands": {
+                                       "PLT_JESTER_COMMAND_AIRCRAFT_STABILIZE": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Aircraft Stabilize",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_AIRCRAFT_STABILIZE",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                               "PLT_JESTER_COMMAND_BREAK_LOCK": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Break Lock",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_BREAK_LOCK",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                         "PLT_JESTER_COMMAND_GROUND_STABILIZE": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Ground Stabilize",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_GROUND_STABILIZE",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                               "PLT_JESTER_COMMAND_LOCK_AHEAD": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "STT Lock Ahead",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_LOCK_AHEAD",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                         "PLT_JESTER_COMMAND_LOCK_AHEAD_ENEMY": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "STT Lock Enemy Ahead",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_LOCK_AHEAD_ENEMY",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                      "PLT_JESTER_COMMAND_LOCK_AHEAD_FRIENDLY": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "STT Lock Friendly Ahead",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_LOCK_AHEAD_FRIENDLY",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                "PLT_JESTER_COMMAND_RADAR_RWS": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "RWS Mode",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RADAR_RWS",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                "PLT_JESTER_COMMAND_RADAR_TWS": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "TWS Mode",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RADAR_TWS",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                "PLT_JESTER_COMMAND_RANGE_100": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Range 100",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RANGE_100",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                "PLT_JESTER_COMMAND_RANGE_200": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Range 200",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RANGE_200",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                 "PLT_JESTER_COMMAND_RANGE_25": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Range 25",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RANGE_25",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                "PLT_JESTER_COMMAND_RANGE_400": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Range 400",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RANGE_400",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                 "PLT_JESTER_COMMAND_RANGE_50": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Range 50",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RANGE_50",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                               "PLT_JESTER_COMMAND_RANGE_AUTO": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Range Auto",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_RANGE_AUTO",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                 "PLT_JESTER_COMMAND_STT_MODE": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "Toggle PD-STT or P-STT",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_STT_MODE",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                 "PLT_JESTER_COMMAND_VSL_HIGH": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "VSL High",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_VSL_HIGH",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                },
+                                                  "PLT_JESTER_COMMAND_VSL_LOW": {
+                                                                                        "category": "PLT Jester Radar Commands",
+                                                                                    "control_type": "action",
+                                                                                     "description": "VSL Low",
+                                                                                      "identifier": "PLT_JESTER_COMMAND_VSL_LOW",
+                                                                                          "inputs": [ {
+                                                                                                           "argument": "TOGGLE",
+                                                                                                        "description": "Triggers the action",
+                                                                                                          "interface": "action"
+                                                                                                    } ],
+                                                                                         "outputs": [  ]
+                                                                                }
+                                  },
+              "PLT Jester Wheel": {
+                                            "PLT_JESTER_CHECK": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Check",
+                                                                      "identifier": "PLT_JESTER_CHECK",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_1": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 1",
+                                                                      "identifier": "PLT_JESTER_COMMAND_1",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_2": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 2",
+                                                                      "identifier": "PLT_JESTER_COMMAND_2",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_3": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 3",
+                                                                      "identifier": "PLT_JESTER_COMMAND_3",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_4": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 4",
+                                                                      "identifier": "PLT_JESTER_COMMAND_4",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_5": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 5",
+                                                                      "identifier": "PLT_JESTER_COMMAND_5",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_6": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 6",
+                                                                      "identifier": "PLT_JESTER_COMMAND_6",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_7": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 7",
+                                                                      "identifier": "PLT_JESTER_COMMAND_7",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "PLT_JESTER_COMMAND_8": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 8",
+                                                                      "identifier": "PLT_JESTER_COMMAND_8",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                               "PLT_JESTER_LC": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Loud and Clear",
+                                                                      "identifier": "PLT_JESTER_LC",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                       "PLT_JESTER_MENU_CLOSE": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Close Menu",
+                                                                      "identifier": "PLT_JESTER_MENU_CLOSE",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                      "PLT_JESTER_MENU_TOGGLE": {
+                                                                        "category": "PLT Jester Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Toggle Menu",
+                                                                      "identifier": "PLT_JESTER_MENU_TOGGLE",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                }
+                                  },
     "RIO F-14A Indicator Lights": {
                                       "RIO_MCB_L_LIGHT": {
                                                                  "category": "RIO F-14A Indicator Lights",
@@ -16026,6 +16476,128 @@
                                                                                                                   "type": "integer"
                                                                                      } ]
                                                                  }
+                                  },
+              "RIO Iceman Wheel": {
+                                        "RIO_ICEMAN_COMMAND_1": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 1",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_1",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_2": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 2",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_2",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_3": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 3",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_3",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_4": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 4",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_4",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_5": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 5",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_5",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_6": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 6",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_6",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_7": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 7",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_7",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                        "RIO_ICEMAN_COMMAND_8": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Command 8",
+                                                                      "identifier": "RIO_ICEMAN_COMMAND_8",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                       "RIO_ICEMAN_MENU_CLOSE": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Close Menu",
+                                                                      "identifier": "RIO_ICEMAN_MENU_CLOSE",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                },
+                                      "RIO_ICEMAN_MENU_TOGGLE": {
+                                                                        "category": "RIO Iceman Wheel",
+                                                                    "control_type": "action",
+                                                                     "description": "Toggle Menu",
+                                                                      "identifier": "RIO_ICEMAN_MENU_TOGGLE",
+                                                                          "inputs": [ {
+                                                                                           "argument": "TOGGLE",
+                                                                                        "description": "Triggers the action",
+                                                                                          "interface": "action"
+                                                                                    } ],
+                                                                         "outputs": [  ]
+                                                                }
                                   },
           "RIO Indicator Lights": {
                                                     "RIO_AAA_LIGHT": {
@@ -22452,6 +23024,36 @@
                                                                                                               "max_value": 65535,
                                                                                                                "shift_by": 0,
                                                                                                                  "suffix": "_KNOB_POS",
+                                                                                                                   "type": "integer"
+                                                                                      } ]
+                                                                  },
+                                      "RIO_MASTER_CAUTION_RESET": {
+                                                                       "api_variant": "momentary_last_position",
+                                                                          "category": "Weapons Panel",
+                                                                      "control_type": "selector",
+                                                                       "description": "RIO Master Caution Reset",
+                                                                        "identifier": "RIO_MASTER_CAUTION_RESET",
+                                                                            "inputs": [ {
+                                                                                          "description": "switch to previous or next state",
+                                                                                            "interface": "fixed_step"
+                                                                                      }, {
+                                                                                          "description": "set position",
+                                                                                            "interface": "set_state",
+                                                                                            "max_value": 1
+                                                                                      }, {
+                                                                                             "argument": "TOGGLE",
+                                                                                          "description": "Toggle switch state",
+                                                                                            "interface": "action"
+                                                                                      } ],
+                                                                           "outputs": [ {
+                                                                                                                "address": 5248,
+                                                                                                "address_mask_identifier": "F_14_RIO_MASTER_CAUTION_RESET_AM",
+                                                                                          "address_mask_shift_identifier": "F_14_RIO_MASTER_CAUTION_RESET",
+                                                                                                            "description": "selector position",
+                                                                                                                   "mask": 4096,
+                                                                                                              "max_value": 1,
+                                                                                                               "shift_by": 12,
+                                                                                                                 "suffix": "",
                                                                                                                    "type": "integer"
                                                                                       } ]
                                                                   }

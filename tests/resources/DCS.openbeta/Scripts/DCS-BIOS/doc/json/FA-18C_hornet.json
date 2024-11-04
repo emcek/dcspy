@@ -3743,6 +3743,23 @@
                                                                                             } ]
                                                                         }
                                                     },
+                                             "HUD": {
+                                                        "HUD_LTDR": {
+                                                                            "category": "HUD",
+                                                                        "control_type": "display",
+                                                                         "description": "Laser Status",
+                                                                          "identifier": "HUD_LTDR",
+                                                                              "inputs": [  ],
+                                                                             "outputs": [ {
+                                                                                                       "address": 30114,
+                                                                                            "address_identifier": "FA_18C_hornet_HUD_LTDR_A",
+                                                                                                   "description": "Laser Status",
+                                                                                                    "max_length": 5,
+                                                                                                        "suffix": "",
+                                                                                                          "type": "string"
+                                                                                        } ]
+                                                                    }
+                                                    },
                                "HUD Control Panel": {
                                                                   "HUD_ALT_SW": {
                                                                                         "category": "HUD Control Panel",

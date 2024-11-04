@@ -19703,6 +19703,25 @@
                                                                                           } ]
                                                                       }
                                                 },
+                                        "Seat": {
+                                                    "SEAT_POSITION": {
+                                                                             "category": "Seat",
+                                                                         "control_type": "metadata",
+                                                                          "description": "Player's current seat position (0 = Pilot, 1 = Operator, 2 = Door Gunner)",
+                                                                           "identifier": "SEAT_POSITION",
+                                                                               "inputs": [  ],
+                                                                              "outputs": [ {
+                                                                                                                   "address": 27232,
+                                                                                             "address_mask_shift_identifier": "Mi_24P_SEAT_POSITION",
+                                                                                                               "description": "Player's current seat position (0 = Pilot, 1 = Operator, 2 = Door Gunner)",
+                                                                                                                      "mask": 12288,
+                                                                                                                 "max_value": 2,
+                                                                                                                  "shift_by": 12,
+                                                                                                                    "suffix": "",
+                                                                                                                      "type": "integer"
+                                                                                         } ]
+                                                                     }
+                                                },
                                "Signal Flares": {
                                                     "PLT_FLARES_1_GRN": {
                                                                                 "category": "Signal Flares",
