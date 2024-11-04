@@ -80,7 +80,7 @@ test = [
     'types-cffi==1.16.0.20240331',
     'types-pillow==10.2.0.20240822',
     'types-psutil==6.1.0.20241102',
-    'types-pyinstaller==6.10.0.20240812',
+    'types-pyinstaller==6.11.0.20241028',
     'types-pyyaml==6.0.12.20240917',
     'types-requests==2.32.0.20241016',
 ]
