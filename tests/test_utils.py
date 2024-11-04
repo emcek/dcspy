@@ -12,16 +12,20 @@ from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
 
 @mark.parametrize('online_tag, file_name, result', [
     ('1.1.1', 'fake', ReleaseInfo(
-        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
+        release_type='Pre-release', asset_file='fake.tgz'
     )),
     ('3.2.1', '', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
+        release_type='Pre-release', asset_file='fake.tgz'
     )),
     ('3.2.1', 'fake', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021', release_type='Pre-release', asset_file='fake.tgz'
+        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
+        release_type='Pre-release', asset_file='fake.tgz'
     )),
     ('3.2.1', 'none', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='', published='09 August 2021', release_type='Pre-release', asset_file=''
+        latest=False, ver=version.parse('3.2.1'), dl_url='', published='09 August 2021', release_type='Pre-release',
+        asset_file=''
     )),
 ], ids=['No update', 'New version', 'Asset found', 'No assets'])
 def test_check_ver_is_possible(online_tag, file_name, result):
@@ -33,20 +37,23 @@ def test_check_ver_is_possible(online_tag, file_name, result):
                                                                            'name': 'fake.tgz',
                                                                        }],
                                                                        'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz', file_name=file_name) == result
+        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz',
+                                         file_name=file_name) == result
 
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
         rel_info = utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
+        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
+                                       release_type='Regular', asset_file='')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
         rel_info = utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
+        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
+                                       release_type='Regular', asset_file='')
 
 
 @mark.parametrize('online_tag, result', [
@@ -164,7 +171,8 @@ def test_check_bios_ver_new_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_check_bios_ver_old_location(tmpdir):
@@ -173,7 +181,8 @@ def test_check_bios_ver_old_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
@@ -182,12 +191,14 @@ def test_check_bios_ver_empty_lua(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_check_bios_ver_lue_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
+                                 asset_file='')
 
 
 def test_is_git_repo(tmpdir):
@@ -261,6 +272,7 @@ def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
 
     result = utils.check_dcs_bios_entry(lua_dst_data=lua_dst_data, lua_dst_path=install_dir, temp_dir=tmpdir)
     assert result == '\n\nExport.lua exists.\n\nDCS-BIOS entry detected.'
+
 
 @mark.parametrize('ext, result', [('json', 14), ('exe', 0)])
 def test_count_files_exists(ext, result, test_dcs_bios):
