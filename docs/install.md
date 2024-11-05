@@ -41,7 +41,7 @@ pip install dcspy
 
 or download manually wheel file from [releases](https://github.com/emcek/dcspy/releases/latest):
 ```shell script
-pip install dcspy-3.6.0-py3-none-any.whl
+pip install dcspy-3.6.1-py3-none-any.whl
 ```
 
 **Note:** If you got `pip is not recognized as an internal or external command, operable program or batch file.` error, see [FAQ](faq.md)

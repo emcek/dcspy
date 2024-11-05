@@ -15,7 +15,7 @@ from dcspy.utils import check_bios_ver, get_version_string
 LOG = getLogger(__name__)
 LOOP_FLAG = True
 SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nick Thain', 'BrotherBloat']
-__version__ = '3.6.0'
+__version__ = '3.6.1'
 
 
 def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
