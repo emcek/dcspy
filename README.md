@@ -56,7 +56,7 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
   * [DCS-BIOS 0.8.3](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.8.3) or newer (can be [installed](https://dcspy.readthedocs.io/en/latest/upgrade/#manual-procedure) directly from DCSpy)
   * However, it is recommended use [Live DCS-BIOS](https://dcspy.readthedocs.io/en/latest/bios_live/) as latest git version
   * [Git](https://git-scm.com/download/win) it is necessary for using the live version of DCS-BIOS
-* DCS World: [2.9.9.2406](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.9.2406/), but any version from 2.9.* branch should be fine.
+* DCS World: [2.9.9.2474](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.9.2474/), but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.13](https://www.python.org/downloads/) but 3.9+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
 
