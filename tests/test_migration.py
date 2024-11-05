@@ -1,6 +1,6 @@
 from pytest import mark
 
-from dcspy.migration import migrate
+from dcspy import migration
 
 
 @mark.parametrize('cfg, result', [
@@ -12,14 +12,14 @@ from dcspy.migration import migrate
      {'api_ver': '3.6.0', 'completer_items': 20, 'current_plane': 'A-10C', 'font_color_m': 6, 'font_color_s': 18, 'font_mono_m': 11, 'font_mono_s': 9, 'v': 1}),
 ], ids=['API 2.9.9', 'API 3.0.0', 'API empty'])
 def test_migrate(cfg, result):
-    migrated_cfg = migrate(cfg=cfg)
+    migrated_cfg = migration.migrate(cfg=cfg)
     assert all(result[key] == migrated_cfg[key] for key in result), migrated_cfg
 
 
 def test_generate_config():
     from os import environ
 
-    migrated_cfg = migrate(cfg={})
+    migrated_cfg = migration.migrate(cfg={})
     assert migrated_cfg == {
         'api_ver': '3.6.0',
         'autostart': False,
@@ -48,3 +48,18 @@ def test_generate_config():
         'toolbar_style': 0,
         'verbose': False,
     }
+
+def test_replace_line_in_file(migration_file, resources):
+    from re import compile
+
+    migration._replace_line_in_file(filename='migration.txt', dir_path=resources, pattern= compile('before'), new_text='after')
+    with open(resources / 'migration.txt', 'r') as f:
+        assert 'after' in f.read()
+        assert 'before' not in f.read()
+
+
+def test_replace_line_in_file_file_not_exist(resources):
+    from re import compile
+
+    migration._replace_line_in_file(filename='not_a_file.txt', dir_path=resources, pattern= compile('before'), new_text='after')
+    assert not (resources / 'not_a_file.txt').exists()
