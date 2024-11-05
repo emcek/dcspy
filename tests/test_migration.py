@@ -50,16 +50,16 @@ def test_generate_config():
     }
 
 def test_replace_line_in_file(migration_file, resources):
-    from re import compile
+    import re
 
-    migration._replace_line_in_file(filename='migration.txt', dir_path=resources, pattern= compile('before'), new_text='after')
+    migration.replace_line_in_file(filename='migration.txt', dir_path=resources, pattern= re.compile('before'), new_text='after')
     with open(resources / 'migration.txt', 'r') as f:
         assert 'after' in f.read()
         assert 'before' not in f.read()
 
 
 def test_replace_line_in_file_file_not_exist(resources):
-    from re import compile
+    import re
 
-    migration._replace_line_in_file(filename='not_a_file.txt', dir_path=resources, pattern= compile('before'), new_text='after')
+    migration.replace_line_in_file(filename='not_a_file.txt', dir_path=resources, pattern= re.compile('before'), new_text='after')
     assert not (resources / 'not_a_file.txt').exists()

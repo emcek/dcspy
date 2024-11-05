@@ -199,7 +199,7 @@ def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
             pass
 
 
-def _replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
+def replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
     """
     Replace a line in a file based on a given pattern.
 
