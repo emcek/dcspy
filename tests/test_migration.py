@@ -53,7 +53,7 @@ def test_replace_line_in_file(migration_file, resources):
     import re
 
     migration.replace_line_in_file(filename='migration.txt', dir_path=resources, pattern= re.compile('before'), new_text='after')
-    with open(resources / 'migration.txt', 'r') as f:
+    with open(resources / 'migration.txt') as f:
         assert 'after' in f.read()
         assert 'before' not in f.read()
 
