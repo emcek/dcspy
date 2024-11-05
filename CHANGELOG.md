@@ -1,3 +1,10 @@
+## 3.6.1
+* Fix issue font size for G19 can be overwritten #394 - @emcek
+* Dcspy not started with Python 3.9, fix issue with pyadantic and type annotations - @emcek
+* Internal:
+  * Improve test coverage
+  * Use type annotation from future
+
 ## 3.6.0
 * Use symbolic link to DCS-BIOS live repository #347 (@emcek)
 * Compile DCS-BIOS using LuaJIT from lupa library #373 (@emcek)

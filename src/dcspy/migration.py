@@ -14,7 +14,7 @@ from dcspy.models import ConfigValue, DcspyConfigYaml
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.6.0'
+__version__ = '3.6.1'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
@@ -199,7 +199,7 @@ def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
             pass
 
 
-def _replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
+def replace_line_in_file(filename: str, dir_path: Path, pattern: re.Pattern, new_text: str) -> None:
     """
     Replace a line in a file based on a given pattern.
 
