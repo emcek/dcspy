@@ -9,6 +9,7 @@ from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('plane', all_plane_list)
 def test_check_all_aircraft_inherit_from_correct_base_class(plane, request):
     from dcspy import aircraft
@@ -35,6 +36,7 @@ def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, pla
             aircraft.set_bios(selector, value)
 
 
+@mark.benchmark
 @mark.parametrize('c_func, plane', [
     ('logi_lcd_mono_set_background', 'advancedaircraft_mono'),
     ('logi_lcd_color_set_background', 'advancedaircraft_color'),
@@ -49,6 +51,7 @@ def test_aircraft_base_class_prepare_img(c_func, plane, request):
         aircraft.prepare_image()
 
 
+@mark.benchmark
 @mark.parametrize('keyboard, plane_name', [
     ('keyboard_mono', 'F-22A'),
     ('keyboard_color', 'UH-60L'),
@@ -187,6 +190,7 @@ def test_button_pressed_for_planes(plane, button, result, request):
     assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
 
+@mark.benchmark
 @mark.parametrize('button, result', [
     (LcdButton.NONE, [b'\n']),
     (LcdButton.LEFT, [b'PLT_EUFD_WCA 0\n', b'PLT_EUFD_WCA 1\n']),
@@ -254,6 +258,7 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('plane, bios_pairs, result', [
     ('fa18chornet_mono', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~')], '22'),
     ('fa18chornet_mono', [('UFC_COMM1_DISPLAY', '``')], '11'),
@@ -267,6 +272,10 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
     ('f16c50_mono', [('DED_LINE_5', '\x07')], ''),
     ('f16c50_mono', [('DED_LINE_4', '\x10')], ''),
     ('f16c50_mono', [('DED_LINE_2', '   @')], '   '),
+    ('f16c50_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
+    ('f16c50_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
+    ('f16c50_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
+    ('f16c50_mono', [('DED_LINE_5', 'M3 :7000 *     *DCPL(9)  \x03\x82')], 'M3 :7000 \u25d9     \u25d9DCPL(9)  '),
     ('f16c50_color', [('DED_LINE_3', 'a')], '\u0040'),
     ('f16c50_color', [('DED_LINE_4', 'o')], '\u005e'),
     ('f16c50_color', [('DED_LINE_3', '*')], '\u00d7'),
@@ -276,10 +285,6 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
     ('f16c50_color', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], 'ÁDEST ÂBNGO ÃVIP  rINTG  '),
     ('f16c50_color', [('DED_LINE_3', '4NAV  5MAN  6INS  EDLNK  A\x10\x04')], 'ÄNAV  ÅMAN  ÆINS  eDLNK  '),
     ('f16c50_color', [('DED_LINE_4', '7CMDS 8MODE 9VRP  0MISC  A\x10\x04')], 'ÇCMDS ÈMODE ÉVRP  ÀMISC  '),
-    ('f16c50_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
-    ('f16c50_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
-    ('f16c50_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
-    ('f16c50_mono', [('DED_LINE_5', 'M3 :7000 *     *DCPL(9)  \x03\x82')], 'M3 :7000 \u25d9     \u25d9DCPL(9)  '),
     ('ah64dblkii_mono', [('PLT_EUFD_LINE8', '~=>VHF*  121.000   -----              121.500   -----   ')],
      '\u25a0\u2219\u25b8VHF*  121.000   -----              121.500   -----   '),
     ('ah64dblkii_mono', [('PLT_EUFD_LINE9', ' <=UHF*  305.000   -----              305.000   -----   ')],
@@ -292,13 +297,18 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
      ' \u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
     ('ah64dblkii_color', [('PLT_EUFD_LINE12', ']==HF *    2.0000A -----    LOW         2.0000A -----   ')],
      '\u2666\u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
-])
+], ids=['hornet mono 1', 'hornet mono 2', 'hornet mono 3', 'hornet color 1', 'hornet color 2', 'hornet color 3',
+        'viper mono 1', 'viper mono 2', 'viper mono 3', 'viper mono 4', 'viper mono 5', 'viper mono 6', 'viper mono 7',
+        'viper mono 8', 'viper mono 9', 'viper mono 10', 'viper color 1', 'viper color 2', 'viper color 3',
+        'viper color 4', 'viper color 5', 'viper color 6', 'viper color 7', 'viper color 8', 'viper color 9',
+        'apache mono 1', 'apache mono 2', 'apache mono 3', 'apache color 1', 'apache color 2', 'apache color 3'])
 def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
     assert plane.bios_data[bios_pairs[0][0]] == result
 
 
+@mark.benchmark
 @mark.parametrize('plane, bios_pairs, mode', [
     ('ah64dblkii_mono', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
     ('ah64dblkii_mono', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |PRESET TUNE VHS ')], 'PRE'),
@@ -313,6 +323,7 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, request):
@@ -326,6 +337,7 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 
 
+@mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, request):
     from itertools import repeat
@@ -351,6 +363,7 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precision, request):
     from dcspy.aircraft import ApacheEufdMode
@@ -380,6 +393,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
     assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_1.png', precision=img_precision)
 
 
+@mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_apache_pre_mode(model, apache_pre_mode_bios_data, resources, img_precision, request):
     apache = request.getfixturevalue(model)
