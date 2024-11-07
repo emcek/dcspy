@@ -8,7 +8,7 @@ from sys import executable, platform
 
 from dcspy.log import config_logger
 from dcspy.migration import migrate
-from dcspy.models import LOCAL_APPDATA, ConfigValue
+from dcspy.models import DCSPY_REPO_NAME, LOCAL_APPDATA, ConfigValue
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
 LOG = getLogger(__name__)
@@ -25,7 +25,7 @@ LOG.debug(f'Python: {python_implementation()}-{python_version()}')
 LOG.debug(f'Python exec: {executable}')
 LOG.debug(f'{uname()}')
 LOG.debug(f'Configuration: {_config} from: {default_yaml}')
-LOG.info(f'dcspy {__version__} https://github.com/emcek/dcspy')
+LOG.info(f'dcspy {__version__} https://github.com/{DCSPY_REPO_NAME}')
 dcs_type, dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
 LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
 
