@@ -13,7 +13,7 @@ def generate_ver_info(major: int, minor: int, patch: int, build: int, dec_git_sh
     :param minor: Version minor part
     :param patch: Version patch part
     :param build: GitHub build number
-    :param git_sha: Git SHA hash
+    :param dec_git_sha: Git SHA hash
     :return: VSVersionInfo object
     """
     ver_info = versioninfo.VSVersionInfo(
