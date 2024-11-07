@@ -272,6 +272,10 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
     ('f16c50_mono', [('DED_LINE_5', '\x07')], ''),
     ('f16c50_mono', [('DED_LINE_4', '\x10')], ''),
     ('f16c50_mono', [('DED_LINE_2', '   @')], '   '),
+    ('f16c50_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
+    ('f16c50_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
+    ('f16c50_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
+    ('f16c50_mono', [('DED_LINE_5', 'M3 :7000 *     *DCPL(9)  \x03\x82')], 'M3 :7000 \u25d9     \u25d9DCPL(9)  '),
     ('f16c50_color', [('DED_LINE_3', 'a')], '\u0040'),
     ('f16c50_color', [('DED_LINE_4', 'o')], '\u005e'),
     ('f16c50_color', [('DED_LINE_3', '*')], '\u00d7'),
@@ -281,10 +285,6 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
     ('f16c50_color', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], 'ÁDEST ÂBNGO ÃVIP  rINTG  '),
     ('f16c50_color', [('DED_LINE_3', '4NAV  5MAN  6INS  EDLNK  A\x10\x04')], 'ÄNAV  ÅMAN  ÆINS  eDLNK  '),
     ('f16c50_color', [('DED_LINE_4', '7CMDS 8MODE 9VRP  0MISC  A\x10\x04')], 'ÇCMDS ÈMODE ÉVRP  ÀMISC  '),
-    ('f16c50_mono', [('DED_LINE_1', '       *      *CMD STRG  \x80@')], '       \u25d9      \u25d9CMD STRG  '),
-    ('f16c50_mono', [('DED_LINE_2', '1DEST 2BNGO 3VIP  RINTG  A\x10\x04')], '1DEST 2BNGO 3VIP  RINTG  '),
-    ('f16c50_mono', [('DED_LINE_1', ' MARK *HUD *    26a      @')], ' MARK \u25d9HUD \u25d9    26\u2666      '),
-    ('f16c50_mono', [('DED_LINE_5', 'M3 :7000 *     *DCPL(9)  \x03\x82')], 'M3 :7000 \u25d9     \u25d9DCPL(9)  '),
     ('ah64dblkii_mono', [('PLT_EUFD_LINE8', '~=>VHF*  121.000   -----              121.500   -----   ')],
      '\u25a0\u2219\u25b8VHF*  121.000   -----              121.500   -----   '),
     ('ah64dblkii_mono', [('PLT_EUFD_LINE9', ' <=UHF*  305.000   -----              305.000   -----   ')],
@@ -297,7 +297,11 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
      ' \u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
     ('ah64dblkii_color', [('PLT_EUFD_LINE12', ']==HF *    2.0000A -----    LOW         2.0000A -----   ')],
      '\u2666\u2219\u2219HF *    2.0000A -----    LOW         2.0000A -----   '),
-])
+], ids=['hornet mono 1', 'hornet mono 2', 'hornet mono 3', 'hornet color 1', 'hornet color 2', 'hornet color 3',
+        'viper mono 1', 'viper mono 2', 'viper mono 3', 'viper mono 4', 'viper mono 5', 'viper mono 6', 'viper mono 7',
+        'viper mono 8', 'viper mono 9', 'viper mono 10', 'viper color 1', 'viper color 2', 'viper color 3',
+        'viper color 4', 'viper color 5', 'viper color 6', 'viper color 7', 'viper color 8', 'viper color 9',
+        'apache mono 1', 'apache mono 2', 'apache mono 3', 'apache color 1', 'apache color 2', 'apache color 3'])
 def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
