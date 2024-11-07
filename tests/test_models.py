@@ -4,6 +4,7 @@ from dcspy.models import KEY_DOWN, KEY_UP, LcdButton, LcdColor, LcdMono
 
 
 # <=><=><=><=><=> Control / ControlKeyData <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('get_ctrl_for_plane, results', [
     (('FA-18C_hornet', 'UFC_COMM1_CHANNEL_SELECT'), [1, True, False, False, False, False]),
     (('Mi-24P', 'PLT_WIPER_OFF'), [2, True, True, False, False, False]),
@@ -27,6 +28,7 @@ def test_control_input_properties(get_ctrl_for_plane, results):
     assert get_ctrl_for_plane.input.is_push_button is results[5]
 
 
+@mark.benchmark
 @mark.parametrize('get_ctrl_for_plane, max_value, step', [
     (('A-10C', 'UFC_1'), 1, 1),
     (('FA-18C_hornet', 'UFC_COMM1_CHANNEL_SELECT'), 1, 1),
@@ -53,6 +55,7 @@ def test_control_key_data_from_control(get_ctrl_for_plane, max_value, step):
     assert f'max_value={ctrl_key.max_value}' in repr(ctrl_key)
 
 
+@mark.benchmark
 @mark.parametrize('get_ctrl_for_plane, result', [
     (('A-10C', 'AAP_PAGE'), 'IntegerBuffer'),
     (('A-10C', 'ARC210_CHN_KNB'), 'IntegerBuffer'),
@@ -65,6 +68,7 @@ def test_control_output(get_ctrl_for_plane, result):
     assert get_ctrl_for_plane.output.klass == result
 
 
+@mark.benchmark
 @mark.parametrize('get_ctrl_for_plane', [('FA-18C_hornet', 'UFC_COMM1_CHANNEL_SELECT')], indirect=True)
 def test_control_no_output(get_ctrl_for_plane):
     with raises(IndexError):
@@ -74,6 +78,7 @@ def test_control_no_output(get_ctrl_for_plane):
 
 
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
+@mark.benchmark
 def test_gkey_from_yaml_success():
     from dcspy.models import Gkey
 
@@ -82,6 +87,7 @@ def test_gkey_from_yaml_success():
     assert gkey.mode == 3
 
 
+@mark.benchmark
 def test_gkey_from_yaml_value_error():
     from dcspy.models import Gkey
 
@@ -89,6 +95,7 @@ def test_gkey_from_yaml_value_error():
         _ = Gkey.from_yaml('G_M1')
 
 
+@mark.benchmark
 def test_generate_gkey():
     from dcspy.models import Gkey
 
@@ -100,6 +107,7 @@ def test_generate_gkey():
     assert g_keys[-1].mode == 2
 
 
+@mark.benchmark
 def test_gkey_name():
     from dcspy.models import Gkey
 
@@ -107,6 +115,7 @@ def test_gkey_name():
     assert str(Gkey(key=3, mode=1)) == 'G3_M1'
 
 
+@mark.benchmark
 @mark.parametrize('key_name, klass', [
     ('G12_M3', 'Gkey'),
     ('G1_M2', 'Gkey'),
@@ -121,6 +130,7 @@ def test_get_key_instance(key_name, klass):
     assert get_key_instance(key_name).__class__.__name__ == klass
 
 
+@mark.benchmark
 @mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '', 'M_a3', 'm_2', 'M3'])
 def test_get_key_instance_error(key_name):
     from dcspy.models import get_key_instance
@@ -129,6 +139,7 @@ def test_get_key_instance_error(key_name):
         get_key_instance(key_name)
 
 
+@mark.benchmark
 @mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
 def test_get_gkey_bool_test(key, mode, result):
     from dcspy.models import Gkey
@@ -139,6 +150,7 @@ def test_get_gkey_bool_test(key, mode, result):
         assert not result
 
 
+@mark.benchmark
 def test_get_gkey_as_dict_key():
     from dcspy.models import Gkey
 
@@ -147,6 +159,7 @@ def test_get_gkey_as_dict_key():
 
 
 # <=><=><=><=> MouseButton <=><=><=><=>
+@mark.benchmark
 def test_mouse_button_from_yaml_success():
     from dcspy.models import MouseButton
 
@@ -154,6 +167,7 @@ def test_mouse_button_from_yaml_success():
     assert m_btn.button == 3
 
 
+@mark.benchmark
 def test_mouse_button_from_yaml_value_error():
     from dcspy.models import MouseButton
 
@@ -161,6 +175,7 @@ def test_mouse_button_from_yaml_value_error():
         _ = MouseButton.from_yaml('M_a1')
 
 
+@mark.benchmark
 def test_generate_mouse_button():
     from dcspy.models import MouseButton
 
@@ -170,6 +185,7 @@ def test_generate_mouse_button():
     assert mouse[-1].button == 8
 
 
+@mark.benchmark
 def test_mouse_button_name():
     from dcspy.models import MouseButton
 
@@ -177,6 +193,7 @@ def test_mouse_button_name():
     assert str(MouseButton(button=2)) == 'M_2'
 
 
+@mark.benchmark
 @mark.parametrize('btn, result', [(0, False), (1, True), (2, True)])
 def test_get_mouse_button_bool_test(btn, result):
     from dcspy.models import MouseButton
@@ -187,6 +204,7 @@ def test_get_mouse_button_bool_test(btn, result):
         assert not result
 
 
+@mark.benchmark
 def test_get_mouse_button_as_dict_key():
     from dcspy.models import MouseButton
 
@@ -195,6 +213,7 @@ def test_get_mouse_button_as_dict_key():
 
 
 # <=><=><=><=><=> CycleButton <=><=><=><=><=>
+@mark.benchmark
 def test_cycle_button_default_iter():
     from dcspy.models import CycleButton
 
@@ -205,6 +224,7 @@ def test_cycle_button_default_iter():
         next(cb.iter)
 
 
+@mark.benchmark
 def test_cycle_button_custom_iter():
     from dcspy.models import CycleButton
 
@@ -218,6 +238,7 @@ def test_cycle_button_custom_iter():
         next(cb.iter)
 
 
+@mark.benchmark
 @mark.parametrize('name, req, step, max_val', [
     ('IFF_MASTER_KNB', 'CYCLE', 1, 4),
     ('ADI_PITCH_TRIM', 'CYCLE', 3200, 15000),
@@ -234,6 +255,7 @@ def test_cycle_button_custom_constructor(name, req, step, max_val):
         next(cb.iter)
 
 
+@mark.benchmark
 @mark.parametrize('name, req, step, max_val, result', [
     ('IFF_MASTER_KNB', 'CYCLE', 1, 4, True),
     ('', 'CYCLE', 0, 0, False),
@@ -245,6 +267,7 @@ def test_cycle_button_bool_test(name, req, step, max_val, result):
 
 
 # <=><=><=><=><=> DeviceRowsNumber <=><=><=><=><=>
+@mark.benchmark
 def test_device_row_number_model():
     from dcspy.models import DeviceRowsNumber
     device = DeviceRowsNumber(g_key=3, lcd_key=2, mouse_key=1)
@@ -252,6 +275,7 @@ def test_device_row_number_model():
 
 
 # <=><=><=><=><=> LogitechDeviceModel <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('dev_kwargs, result', [
     ({'klass': '', 'no_g_modes': 2, 'no_g_keys': 4, 'lcd_info': LcdMono, 'lcd_keys': (LcdButton.ONE, LcdButton.TWO), 'btn_m_range': (6, 9)},
      (8, 4, 'mono', 'Mono LCD: 160x43 px\nLCD Buttons: ONE, TWO\nG-Keys: 4 in 2 modes\nMouse Buttons: 6 to 9', 2, 4, 2, 4, 10)),
@@ -282,6 +306,7 @@ def test_logitech_device_model(dev_kwargs, result):
     assert dev.rows.total == result[8]
 
 
+@mark.benchmark
 def test_get_key_at_of_logitech_device_model():
     from dcspy.models import Gkey, LogitechDeviceModel, MouseButton
 
@@ -296,6 +321,7 @@ def test_get_key_at_of_logitech_device_model():
 
 
 # <=><=><=><=><=> DcsBiosPlaneData <=><=><=><=><=>
+@mark.benchmark
 def test_get_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
@@ -305,6 +331,7 @@ def test_get_ctrl(test_dcs_bios):
     assert c.input.one_input is False
 
 
+@mark.benchmark
 def test_get_empty_ctrl(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
@@ -313,6 +340,8 @@ def test_get_empty_ctrl(test_dcs_bios):
     assert c is None
 
 
+
+@mark.benchmark
 def test_get_inputs_for_plane(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane
 
@@ -323,6 +352,7 @@ def test_get_inputs_for_plane(test_dcs_bios):
 
 
 # <=><=><=><=><=> SystemData <=><=><=><=><=>
+@mark.benchmark
 def test_get_sha_of_system_data():
     from dcspy.models import SystemData
 
@@ -332,6 +362,7 @@ def test_get_sha_of_system_data():
 
 
 # <=><=><=><=><=> GuiPlaneInputRequest <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('get_ctrl_for_plane, rb_iface, custom_value, req', [
     (('A-10C', 'AAP_PAGE'), 'rb_fixed_step_inc', '', 'AAP_PAGE INC'),
     (('A-10C', 'AAP_PAGE'), 'rb_fixed_step_dec', '', 'AAP_PAGE DEC'),
@@ -361,6 +392,7 @@ def test_plane_input_request_from_control_key(get_ctrl_for_plane, rb_iface, cust
     assert gui_input_req.request == req
 
 
+@mark.benchmark
 def test_plane_input_request_from_plane_gkeys():
     from dcspy.models import GuiPlaneInputRequest
     plane_gkey = {
@@ -392,6 +424,7 @@ def test_plane_input_request_from_plane_gkeys():
     }
 
 
+@mark.benchmark
 def test_plane_input_request_empty():
     from dcspy.models import GuiPlaneInputRequest
 
@@ -402,6 +435,7 @@ def test_plane_input_request_empty():
 
 
 # <=><=><=><=><=> ZigZagIterator <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('current, max_val, step, result', [
     (2, 4, 1, [3, 4, 3, 2, 1, 0, 1, 2, 3, 4]),
     (0, 4, 1, [1, 2, 3, 4, 3, 2, 1, 0, 1, 2]),
@@ -419,6 +453,7 @@ def test_zigzag_iterator(current, max_val, step, result):
         assert next(zz) == next_value
 
 
+@mark.benchmark
 def test_zigzag_iterator_direction():
     from dcspy.models import Direction, ZigZagIterator
 
@@ -433,6 +468,7 @@ def test_zigzag_iterator_direction():
 
 
 # <=><=><=><=><=> RequestModel <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('str_req, key, key_down, result', [
     ('COM1 CYCLE 1 3', 'G1_M1', KEY_DOWN, [True, False, False, [b'COM1 3\n']]),
     ('COM1 CYCLE 1 3', 'G1_M1', KEY_UP, [True, False, False, [b'']]),
@@ -490,6 +526,7 @@ def test_request_model_properties(str_req, key, key_down, result):
     assert str(req) == f'{req.ctrl_name}: {str_req}'
 
 
+@mark.benchmark
 @mark.parametrize('key, key_down, result', [
     ('ONE', KEY_DOWN, [b'\n']),
     ('G1_M1', KEY_DOWN, [b'\n']),

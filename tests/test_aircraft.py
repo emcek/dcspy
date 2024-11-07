@@ -9,6 +9,7 @@ from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 
 # <=><=><=><=><=> Base Class <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('plane', all_plane_list)
 def test_check_all_aircraft_inherit_from_correct_base_class(plane, request):
     from dcspy import aircraft
@@ -35,6 +36,7 @@ def test_aircraft_base_class_set_bios(selector, data, value, c_func, effect, pla
             aircraft.set_bios(selector, value)
 
 
+@mark.benchmark
 @mark.parametrize('c_func, plane', [
     ('logi_lcd_mono_set_background', 'advancedaircraft_mono'),
     ('logi_lcd_color_set_background', 'advancedaircraft_color'),
@@ -49,6 +51,7 @@ def test_aircraft_base_class_prepare_img(c_func, plane, request):
         aircraft.prepare_image()
 
 
+@mark.benchmark
 @mark.parametrize('keyboard, plane_name', [
     ('keyboard_mono', 'F-22A'),
     ('keyboard_color', 'UH-60L'),
@@ -187,6 +190,7 @@ def test_button_pressed_for_planes(plane, button, result, request):
     assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
 
+@mark.benchmark
 @mark.parametrize('button, result', [
     (LcdButton.NONE, [b'\n']),
     (LcdButton.LEFT, [b'PLT_EUFD_WCA 0\n', b'PLT_EUFD_WCA 1\n']),
@@ -254,6 +258,7 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
 
 
 # <=><=><=><=><=> Set BIOS <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('plane, bios_pairs, result', [
     ('fa18chornet_mono', [('UFC_SCRATCHPAD_STRING_2_DISPLAY', '~~')], '22'),
     ('fa18chornet_mono', [('UFC_COMM1_DISPLAY', '``')], '11'),
@@ -299,6 +304,7 @@ def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     assert plane.bios_data[bios_pairs[0][0]] == result
 
 
+@mark.benchmark
 @mark.parametrize('plane, bios_pairs, mode', [
     ('ah64dblkii_mono', [('PLT_EUFD_LINE1', 'ENGINE 1 OUT      |AFT FUEL LOW      |TAIL WHL LOCK SEL ')], 'IDM'),
     ('ah64dblkii_mono', [('PLT_EUFD_LINE1', '                  |AFT FUEL LOW      |PRESET TUNE VHS ')], 'PRE'),
@@ -313,6 +319,7 @@ def test_apache_mode_switch_idm_pre_for_apache(plane, bios_pairs, mode, request)
 
 
 # <=><=><=><=><=> Prepare Image <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('lcd', ['mono', 'color'])
 @mark.parametrize('model', all_plane_list)
 def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, request):
@@ -326,6 +333,7 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 
 
+@mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, request):
     from itertools import repeat
@@ -351,6 +359,7 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
+@mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precision, request):
     from dcspy.aircraft import ApacheEufdMode
@@ -380,6 +389,7 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
     assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_1.png', precision=img_precision)
 
 
+@mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_apache_pre_mode(model, apache_pre_mode_bios_data, resources, img_precision, request):
     apache = request.getfixturevalue(model)
