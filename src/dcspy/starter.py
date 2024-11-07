@@ -9,7 +9,7 @@ from time import gmtime, time
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechDevice
-from dcspy.models import MULTICAST_IP, RECV_ADDR, LogitechDeviceModel
+from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, LogitechDeviceModel
 from dcspy.utils import SignalHandler, check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
@@ -120,7 +120,7 @@ def dcspy_run(model: LogitechDeviceModel, event: Event, sig_handler: SignalHandl
         logi_dev = LogitechDevice(parser=parser, sock=dcs_sock, model=model, sig_handler=sig_handler)
         LOG.info(f'Loading: {str(logi_dev)}')
         LOG.debug(f'Loading: {repr(logi_dev)}')
-        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
+        dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
         _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event, sig_handler=sig_handler)
     LOG.info('DCSpy stopped.')
     logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=get_config_yaml_item("dcsbios")).ver}']

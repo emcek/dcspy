@@ -28,12 +28,12 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml, FontsConfig, Gkey,
-                          GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, ReleaseInfo, RequestType,
-                          SystemData)
+from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
+                          FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, ReleaseInfo,
+                          RequestType, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
-                         collect_debug_data, count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
+from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
+                         count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
                          get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
                          load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
@@ -241,7 +241,7 @@ class DcsPyQtGui(QMainWindow):
         self.a_show_toolbar.triggered.connect(self._show_toolbar)
         self.a_show_gkeys.triggered.connect(self._show_gkeys_dock)
         self.a_show_device.triggered.connect(self._show_device_dock)
-        self.a_report_issue.triggered.connect(partial(open_new_tab, url='https://github.com/emcek/dcspy/issues'))
+        self.a_report_issue.triggered.connect(partial(open_new_tab, url=f'https://github.com/{DCSPY_REPO_NAME}/issues'))
         self.a_discord.triggered.connect(partial(open_new_tab, url='https://discord.gg/SP5Yjx3'))
         self.a_donate.triggered.connect(partial(open_new_tab, url='https://paypal.me/emcek137'))
         self.a_about_dcspy.triggered.connect(AboutDialog(self).open)
@@ -930,7 +930,7 @@ class DcsPyQtGui(QMainWindow):
         sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), repo_dir=self.bios_repo_path, repo='DCS-Skunkworks/dcs-bios', update=False)
+                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), repo_dir=self.bios_repo_path, repo=BIOS_REPO_NAME, update=False)
             except Exception as exc:
                 LOG.debug(f'{exc}')
                 if not silence:
@@ -988,7 +988,7 @@ class DcsPyQtGui(QMainWindow):
         """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
         cli = '' if 'cli' not in Path(sys.executable).name else '_cli'
         ext = f'{cli}.exe'
-        rel_info = check_ver_at_github(repo='emcek/dcspy', current_ver=__version__, extension=ext)
+        rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME, current_ver=__version__, extension=ext)
         exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
                                        message=f'Download new version {rel_info.ver} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
@@ -1042,7 +1042,7 @@ class DcsPyQtGui(QMainWindow):
                 'result': self._clone_bios_completed,
             }
             clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), sig_handler=SignalHandler(signals_dict=signals_dict), bios_path=self.bios_path,
-                                          to_path=self.bios_repo_path, repo='DCS-Skunkworks/dcs-bios', silence=silence)
+                                          to_path=self.bios_repo_path, repo=BIOS_REPO_NAME, silence=silence)
             self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
@@ -1161,7 +1161,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo='DCS-Skunkworks/dcs-bios', current_ver=str(self.l_bios), extension='.zip', file_name='BIOS')
+        release_info = check_ver_at_github(repo=BIOS_REPO_NAME, current_ver=str(self.l_bios), extension='.zip', file_name='BIOS')
         self.r_bios = release_info.ver
         return release_info
 
@@ -1545,7 +1545,7 @@ class DcsPyQtGui(QMainWindow):
         """
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
-        dcspy_ver = get_version_string(repo='emcek/dcspy', current_ver=__version__, check=self.config['check_ver'])
+        dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios().ver)
         dcs_bios_ver = self._get_bios_full_version(silence=silence)
         git_ver = 'Not installed'
@@ -1828,10 +1828,10 @@ class AboutDialog(QDialog):
         super().showEvent(event)
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
-        text += '<br><b>Project</b>: <a href="https://github.com/emcek/dcspy/">emcek/dcspy</a>'
+        text += f'<br><b>Project</b>: <a href="https://github.com/{DCSPY_REPO_NAME}/">{DCSPY_REPO_NAME}</a>'
         text += '<br><b>Docs</b>: <a href="https://dcspy.readthedocs.io/en/latest/">docs</a>'
         text += '<br><b>Discord</b>: <a href="https://discord.gg/SP5Yjx3">discord.gg/SP5Yjx3</a>'
-        text += '<br><b>Issues</b>: <a href="https://github.com/emcek/dcspy/issues">report issue</a>'
+        text += f'<br><b>Issues</b>: <a href="https://github.com/{DCSPY_REPO_NAME}/issues">report issue</a>'
         text += f'<br><b>System</b>: {d.system}{d.release} ver. {d.ver} ({architecture()[0]})'
         text += f'<br><b>Processor</b>: {d.proc}'
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'

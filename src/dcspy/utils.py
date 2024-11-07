@@ -291,7 +291,7 @@ def _get_sha_hex_str(bios_repo: git.Repo, git_ref: str) -> str:
         bios_repo.git.checkout(git_ref)
         branch = bios_repo.active_branch.name
         head_commit = bios_repo.head.commit
-        sha = f'{branch}: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")} by: {head_commit.author}'
+        sha = f'{branch} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")} by: {head_commit.author}'
     except (git.exc.GitCommandError, TypeError):
         head_commit = bios_repo.head.commit
         sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")} by: {head_commit.author}'
