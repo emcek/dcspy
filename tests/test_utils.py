@@ -97,8 +97,6 @@ def test_proc_is_running():
 
 
 def test_dummy_save_load_migrate(tmpdir):
-    from os import environ
-
     from dcspy.migration import migrate
     test_tmp_yaml = Path(tmpdir) / 'test_cfg.yaml'
 
@@ -239,7 +237,6 @@ def test_get_all_git_refs(tmpdir):
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):
-    from os import makedirs
     install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'
@@ -260,7 +257,6 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
     r'dofile(lfs.writedir() .. [[Scripts\DCS-BIOS\BIOS.lua]])',
 ], ids=['dofile without space', 'dofile with space'])
 def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
-    from os import makedirs
     install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'
