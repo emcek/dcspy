@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
+from datetime import datetime
 from enum import Enum
 from functools import partial
 from re import search
@@ -1036,6 +1037,78 @@ class ReleaseInfo(BaseModel):
     published: str
     release_type: str
     asset_file: str
+
+
+class Asset(BaseModel):
+    """Github Release Asset model."""
+    url: str
+    name: str
+    label: str
+    content_type: str
+    size: int
+    browser_download_url: str
+
+    def correct_asset(self, extension: str, file_name: str = '') -> bool:
+        """
+        Check if asset meet criteria.
+
+        :param extension: file extension
+        :param file_name: file name
+        :return: True if asset meet requirements, False otherwise
+        """
+        result = False
+        if self.name.endswith(extension) and file_name in self.name:
+            result = True
+        return result
+
+
+class Release(BaseModel):
+    """Github Release model."""
+    url: str
+    html_url: str
+    tag_name: str
+    name: str
+    draft: bool
+    prerelease: bool
+    created_at: str
+    published_at: str
+    assets: list[Asset]
+    body: str
+
+    def _compare_versions(self, current_ver: str) -> bool:
+        """
+        Compare two versions of packages and return result.
+
+        :param current_ver: Current/local version
+        :return:
+        """
+        latest = False
+        if version.parse(self.tag_name) <= version.parse(current_ver):
+            latest = True
+        return latest
+
+    def release_info(self, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
+        """
+        Extract release information.
+
+        :param current_ver: Current local version
+        :param extension: File extension
+        :param file_name: string in file name
+        :return: ReleaseInfo object
+        """
+        dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
+        rel_info = ReleaseInfo(
+            latest=self._compare_versions(current_ver=current_ver),
+            ver=version.parse(self.tag_name),
+            dl_url=dl_url,
+            published=datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y'),
+            release_type='Pre-release' if self.prerelease else 'Regular',
+            asset_file=dl_url.split('/')[-1],
+        )
+        return rel_info
+
+    def __str__(self):
+        return f'{self.tag_name} pre:{self.prerelease} date:{datetime.strptime(self.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%d %B %Y")}'
 
 
 class RequestType(Enum):
