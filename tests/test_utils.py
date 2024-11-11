@@ -10,37 +10,6 @@ from dcspy import utils
 from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
 
 
-@mark.parametrize('online_tag, file_name, result', [
-    ('1.1.1', 'fake', ReleaseInfo(
-        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
-        release_type='Pre-release', asset_file='fake.tgz'
-    )),
-    ('3.2.1', '', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
-        release_type='Pre-release', asset_file='fake.tgz'
-    )),
-    ('3.2.1', 'fake', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
-        release_type='Pre-release', asset_file='fake.tgz'
-    )),
-    ('3.2.1', 'none', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='', published='09 August 2021', release_type='Pre-release',
-        asset_file=''
-    )),
-], ids=['No update', 'New version', 'Asset found', 'No assets'])
-def test_check_ver_is_possible(online_tag, file_name, result):
-    with patch.object(utils, 'get') as response_get:
-        type(response_get.return_value).ok = PropertyMock(return_value=True)
-        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{
-                                                                           'browser_download_url': 'github.com/fake.tgz',
-                                                                           'name': 'fake.tgz',
-                                                                       }],
-                                                                       'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz',
-                                         file_name=file_name) == result
-
-
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
@@ -55,21 +24,37 @@ def test_check_ver_exception():
         assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
                                        release_type='Regular', asset_file='')
 
+@mark.parametrize('current_ver, extension, file_name, result', [
+    ('3.6.1', 'tar.gz', 'dcspy', {'latest': True, 'ver': version.parse('3.6.1'), 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz', 'published': '05 November 2024', 'release_type': 'Regular', 'asset_file': 'dcspy-3.6.1.tar.gz'}),
+    ('3.5.0', 'exe', 'dcspy_cli', {'latest': False, 'ver': version.parse('3.6.1'), 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe', 'published': '05 November 2024', 'release_type': 'Regular', 'asset_file': 'dcspy_cli.exe'}),
+    ('3.6.1', 'exe', 'fake', {'latest': False, 'ver': version.parse('0.0.0'), 'dl_url': '', 'published': '', 'release_type': 'Regular', 'asset_file': ''}),
+    ('3.6.1', 'jpg', 'dcspy', {'latest': False, 'ver': version.parse('0.0.0'), 'dl_url': '', 'published': '', 'release_type': 'Regular', 'asset_file': ''}),
+], ids=['latest', 'not latest', 'fake file', 'fake ext'])
+def test_new_check_ver_at_github(current_ver, extension, file_name, result, resources):
+    import json
+    with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
+        content = json_file.read()
+    json_data = json.loads(content)
 
-@mark.parametrize('online_tag, result', [
-    ('1.1.1', 'v1.1.1 (latest)'),
-    ('3.2.1', 'v3.2.1 (update!)')
-], ids=['No update', 'New version'])
-def test_get_version_string_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
-        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{
-                                                                           'browser_download_url': 'github.com/fake.tgz',
-                                                                           'name': 'fake.tgz',
-                                                                       }],
-                                                                       'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.get_version_string(repo='fake1/package1', current_ver='1.1.1', check=True) == result
+        type(response_get.return_value).json = MagicMock(return_value=json_data)
+        assert utils.check_ver_at_github(repo='emcek/dcspy', current_ver=current_ver, extension=extension, file_name=file_name) == ReleaseInfo(**result)
+
+@mark.parametrize('current_ver, result', [
+    ('3.6.1', 'v3.6.1 (latest)'),
+    ('1.1.1', 'v3.6.1 (update!)')
+], ids=['No update', 'New version'])
+def test_get_version_string_is_possible(current_ver, result, resources):
+    import json
+    with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
+        content = json_file.read()
+    json_data = json.loads(content)
+
+    with patch.object(utils, 'get') as response_get:
+        type(response_get.return_value).ok = PropertyMock(return_value=True)
+        type(response_get.return_value).json = MagicMock(return_value=json_data)
+        assert utils.get_version_string(repo='emcek/dcspy', current_ver=current_ver, check=True) == result
 
 
 def test_get_version_string_without_checking():
