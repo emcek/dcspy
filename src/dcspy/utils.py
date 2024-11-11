@@ -24,7 +24,7 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo,
+from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Release, ReleaseInfo,
                           RequestModel, get_key_instance)
 
 try:
@@ -108,30 +108,19 @@ def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name: 
     :param file_name: string in file name
     :return: ReleaseInfo with data
     """
-    latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
+    rel_info = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
     package = repo.split('/')[1]
     try:
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
         if response.ok:
-            dict_json = response.json()
-            online_version = dict_json['tag_name']
-            pre_release = dict_json['prerelease']
-            published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
-            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['name'].endswith(extension) and file_name in asset['name'])
-            LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
-            latest = _compare_versions(package, current_ver, online_version)
+            rel = Release(**response.json())
+            LOG.debug(f'Latest GitHub release: {rel}')
+            rel_info = rel.release_info(current_ver=current_ver, extension=extension, file_name=file_name)
         else:
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return ReleaseInfo(
-        latest=latest,
-        ver=version.parse(online_version),
-        dl_url=asset_url,
-        published=published,
-        release_type='Pre-release' if pre_release else 'Regular',
-        asset_file=asset_url.split('/')[-1],
-    )
+    return rel_info
 
 
 def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
