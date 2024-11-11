@@ -1,7 +1,7 @@
 from os import environ, makedirs
 from pathlib import Path
 from sys import platform
-from unittest.mock import MagicMock, PropertyMock, mock_open, patch
+from unittest.mock import MagicMock, Mock, PropertyMock, mock_open, patch
 
 from packaging import version
 from pytest import mark, raises
@@ -428,23 +428,15 @@ def test_get_planes_list(test_dcs_bios):
 
 
 def test_clone_progress():
-    from PySide6.QtCore import QObject, Signal
-
-    class Signals(QObject):
-        progress = Signal(int)
-        stage = Signal(str)
-
     def update_progress(progress):
         assert progress == 100
 
     def update_label(stage):
         assert stage == 'Git clone: Counting'
 
-    signals = Signals()
-    signals.progress.connect(update_progress)
-    signals.stage.connect(update_label)
-    clone = utils.CloneProgress(signals.progress, signals.stage)
-    clone.update(5, 1, 1, 'test')
+    sig_handler = utils.SignalHandler(signals_dict={'stage': update_label, 'progress': update_progress})
+    clone = utils.CloneProgress(sig_handler=sig_handler)
+    clone.update(5, 10, 10, 'test')
 
 
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
@@ -494,3 +486,27 @@ def test_generate_bios_jsons_with_lupa(test_saved_games):
     mosquito = utils.get_full_bios_for_plane(plane='MosquitoFBMkVI', bios_dir=test_saved_games / 'Scripts' / 'DCS-BIOS')
     assert len(mosquito.root) == 27
     assert sum(len(values) for values in mosquito.root.values()) == 299
+
+
+def test_emit_signal_handler():
+    mm = Mock(spec=utils.WorkerSignals)
+    sh = utils.SignalHandler(signals_dict={'stage': print, 'progress': print, 'finished': print}, signals=mm)
+
+    sh.emit(sig_name='stage', value='1')
+    mm.stage.emit.assert_called_once_with('1')
+    sh.emit(sig_name='progress', value=2)
+    mm.progress.emit.assert_called_once_with(2)
+    sh.emit(sig_name='finished')
+    mm.finished.emit.assert_called_once_with()
+
+
+@mark.parametrize('sig_dict,result', [
+    ({'count': print}, True),
+    ({'progress': print}, True),
+    ({'finished': print}, False),
+])
+def test_got_signals_in_signal_handler(sig_dict, result):
+    mm = Mock(spec=utils.WorkerSignals)
+    sh = utils.SignalHandler(signals_dict=sig_dict, signals=mm)
+
+    assert sh.got_signals_for_interface() is result

@@ -13,16 +13,15 @@ from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
 from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
-from threading import Event, Thread
+from threading import Event
 from time import sleep
-from typing import Any
 from webbrowser import open_new_tab
 
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot, qVersion
-from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel
+from PySide6.QtCore import QAbstractItemModel, QEvent, QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Signal, Slot, qVersion
+from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItemModel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
@@ -33,8 +32,8 @@ from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_RE
                           FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, ReleaseInfo,
                           RequestType, SystemData)
 from dcspy.starter import dcspy_run
-from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
+from dcspy.utils import (CloneProgress, SignalHandler, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github,
+                         collect_debug_data, count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
                          get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
                          load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
@@ -48,8 +47,48 @@ LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0,
                          'rb_g600': 3, 'rb_g300': 3, 'rb_g400': 3, 'rb_g700': 3, 'rb_g9': 3, 'rb_mx518': 3, 'rb_g402': 3, 'rb_g502': 3, 'rb_g602': 3}
 
 
+class CircleLabel(QLabel):
+    """Blinking green circle."""
+
+    def __init__(self, color_on: Qt.GlobalColor = Qt.GlobalColor.green, *args, **kwargs) -> None:
+        """
+        Initialize the object with the given parameters.
+
+        :param color_on: The color when the label is in `on` state, default is green.
+        """
+        super().__init__(*args, **kwargs)
+        self.state = False
+        self.pen = QPen(Qt.GlobalColor.black)
+        self.brush_on = QBrush(color_on)
+        self.brush_off = QBrush(Qt.GlobalColor.transparent)
+
+    def paintEvent(self, event: QEvent) -> None:
+        """
+        Paint event.
+
+        :param event: the paint event that triggered the method
+        """
+        painter = QPainter(self)
+        brush = self.brush_on if self.state else self.brush_off
+        painter.setPen(self.pen)
+        painter.setBrush(brush)
+        painter.drawEllipse(3, 3, 14, 14)
+        painter.end()
+
+    @Slot()
+    def blink(self) -> None:
+        """Blink label with color defined in constructor."""
+        for _ in range(3):
+            self.state = not self.state
+            self.repaint()
+            sleep(0.05)
+        self.state = not self.state
+        self.repaint()
+
+
 class DcsPyQtGui(QMainWindow):
     """PySide6 GUI for DCSpy."""
+    blink_label = Signal()
 
     def __init__(self, cli_args=Namespace(), cfg_dict: DcspyConfigYaml | None = None) -> None:
         """
@@ -91,6 +130,8 @@ class DcsPyQtGui(QMainWindow):
         self.dw_device.setFloating(True)
         self.bg_rb_input_iface = QButtonGroup(self)
         self.bg_rb_device = QButtonGroup(self)
+        self.total_b = 0
+        self.count = 0
         self._init_tray()
         self._init_combo_plane()
         self._init_menu_bar()
@@ -98,6 +139,7 @@ class DcsPyQtGui(QMainWindow):
         self._init_settings()
         self._init_devices()
         self._init_autosave()
+        self._init_statusbar()
         self._trigger_refresh_data()
 
         if self.cb_autoupdate_bios.isChecked():
@@ -107,10 +149,10 @@ class DcsPyQtGui(QMainWindow):
             status_ver = ''
             status_ver += f'Dcspy: {data.dcspy_ver} ' if self.config['check_ver'] else ''
             status_ver += f'BIOS: {data.bios_ver}' if self.config['check_bios'] else ''
-            self.statusbar.showMessage(status_ver)
+            self.status_label.setText(status_ver)
         if self.config.get('autostart', False):
             self._start_clicked()
-        self.statusbar.showMessage(f'ver. {__version__}')
+        self.status_label.setText(f'ver. {__version__}')
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
@@ -236,6 +278,16 @@ class DcsPyQtGui(QMainWindow):
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
+    def _init_statusbar(self) -> None:
+        """Initialize the statusbar."""
+        self.status_circle = CircleLabel()
+        self.status_circle.setMinimumSize(20, 20)
+        self.status_label = QLabel()
+        self.setStatusBar(self.statusbar)
+        self.statusbar.addWidget(self.status_circle)
+        self.statusbar.addWidget(self.status_label)
+        self.blink_label.connect(self.status_circle.blink)
+
     def _trigger_refresh_data(self):
         """Refresh widgets states and regenerates data."""
         try:
@@ -351,7 +403,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             destination = Path(directory) / zip_file.name
             copy(zip_file, destination)
-            self.statusbar.showMessage(f'Save: {destination}')
+            self.status_label.setText(f'Save: {destination}')
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
             LOG.debug(f'Error: {err}, Collected data: {zip_file}')
@@ -589,7 +641,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             key_name = text.split(' ')[0]
             clipboard.setText(key_name)
-            self.statusbar.showMessage(f'{key_name} copied to clipboard')
+            self.status_label.setText(f'{key_name} copied to clipboard')
         except IndexError:
             LOG.debug(f'Can not split: {text=}.')
 
@@ -916,7 +968,7 @@ class DcsPyQtGui(QMainWindow):
     def _dcspy_check_clicked(self) -> None:
         """Check a version of DCSpy and show message box."""
         ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
-        self.statusbar.showMessage(ver_string)
+        self.status_label.setText(ver_string)
         if 'update!' in ver_string:
             self.systray.showMessage('DCSpy', f'New: {ver_string}', QIcon(':/icons/img/edit-download.svg'))
             self._download_new_release()
@@ -983,15 +1035,14 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
-            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=self.bios_repo_path,
-                                          repo=BIOS_REPO_NAME, silence=silence)
-            signal_handlers = {
+            signals_dict = {
                 'progress': self._progress_by_abs_value,
-                'stage': self.statusbar.showMessage,
+                'stage': self.status_label.setText,
                 'error': self._error_during_bios_update,
                 'result': self._clone_bios_completed,
             }
-            clone_worker.setup_signal_handlers(signal_handlers=signal_handlers)
+            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), sig_handler=SignalHandler(signals_dict=signals_dict), bios_path=self.bios_path,
+                                          to_path=self.bios_repo_path, repo=BIOS_REPO_NAME, silence=silence)
             self.threadpool.start(clone_worker)
         else:
             self._check_bios_release(silence=silence)
@@ -1044,7 +1095,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.info(f'Git DCS-BIOS: {sha} ver: {local_bios}')
         install_result = self._handling_export_lua(temp_dir=self.bios_repo_path / 'Scripts')
         install_result = f'{install_result}\n\nUsing Git/Live version.'
-        self.statusbar.showMessage(sha)
+        self.status_label.setText(sha)
         self._is_git_object_exists(text=self.le_bios_live.text())
         self._reload_table_gkeys()
         if not silence:
@@ -1059,7 +1110,7 @@ class DcsPyQtGui(QMainWindow):
         """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
-        self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
+        self.status_label.setText(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
         correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
         dcs_runs = proc_is_running(name='DCS.exe')
@@ -1159,7 +1210,7 @@ class DcsPyQtGui(QMainWindow):
                 open_new_tab(r'https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
         else:
             local_bios = self._check_local_bios()
-            self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            self.status_label.setText(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
             install_result = f'{install_result}\n\nUsing stable release version.'
             self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
@@ -1232,12 +1283,11 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> start/stop <=><=><=><=><=><=><=><=><=><=><=>
     def _stop_clicked(self) -> None:
         """Set event to stop DCSpy."""
-        self.run_in_background(job=partial(self._fake_progress, total_time=0.3),
-                               signal_handlers={'progress': self._progress_by_abs_value})
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.3), signals_dict={'progress': self._progress_by_abs_value})
         for rb_key in self.bg_rb_device.buttons():
             if not rb_key.isChecked():
                 rb_key.setEnabled(True)
-        self.statusbar.showMessage('Start again or close DCSpy')
+        self.event_set()
         self.pb_start.setEnabled(True)
         self.a_start.setEnabled(True)
         self.pb_stop.setEnabled(False)
@@ -1247,13 +1297,15 @@ class DcsPyQtGui(QMainWindow):
         self.gb_fonts.setEnabled(True)
         if self.rb_g19.isChecked():
             self.cb_ded_font.setEnabled(True)
-        self.event_set()
+        self.total_b = 0
+        self.count = 0
+        self.status_label.setText('DCSpy client stopped')
 
     def _start_clicked(self) -> None:
         """Run real application in thread."""
         LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
-        self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
-                               signal_handlers={'progress': self._progress_by_abs_value})
+        signal_dict = {'progress': self._progress_by_abs_value}
+        self.run_in_background(job=partial(self._fake_progress, total_time=0.5), signals_dict=signal_dict)
         for rb_key in self.bg_rb_device.buttons():
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
@@ -1261,10 +1313,6 @@ class DcsPyQtGui(QMainWindow):
             fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
             self.device.lcd_info.set_fonts(fonts_cfg)
         self.event = Event()
-        app_params = {'model': self.device, 'event': self.event}
-        app_thread = Thread(target=dcspy_run, kwargs=app_params)
-        app_thread.name = 'dcspy-app'
-        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.pb_start.setEnabled(False)
         self.a_start.setEnabled(False)
         self.pb_stop.setEnabled(True)
@@ -1272,9 +1320,42 @@ class DcsPyQtGui(QMainWindow):
         self.le_dcsdir.setEnabled(False)
         self.le_biosdir.setEnabled(False)
         self.gb_fonts.setEnabled(False)
-        app_thread.start()
-        alive = 'working' if app_thread.is_alive() else 'not working'
-        self.statusbar.showMessage(f'DCSpy client: {alive}')
+        signal_dict = {
+            'error': self._error_from_client,
+            'count': self._count_dcsbios_changes
+        }
+        self.run_in_background(job=partial(dcspy_run, model=self.device, event=self.event), signals_dict=signal_dict)
+        self.status_label.setText('DCSpy client started')
+
+    def _error_from_client(self, exc_tuple) -> None:
+        """
+        Show message box with error details.
+
+        :param exc_tuple: Exception tuple
+        """
+        exc_type, exc_val, exc_tb = exc_tuple
+        tb_string = ''.join(exc_tb)
+        LOG.debug(f"Client error:\n{tb_string}")
+        self._show_custom_msg_box(
+            kind_of=QMessageBox.Icon.Critical,
+            title='Error',
+            text=f'Huston we have a problem! Exception type: {exc_type} with value:{exc_val}',
+            info_txt='Please copy details and report issue or post on Discord, see Help menu.',
+            detail_txt=tb_string)
+        self._stop_clicked()
+
+    def _count_dcsbios_changes(self, count_data: tuple[int, int]) -> None:
+        """
+        Update the count of events and total bytes received.
+
+        :param count_data: A tuple containing the count of events and number of bytes.
+        """
+        count, no_bytes = count_data
+        self.count += count
+        self.total_b += no_bytes
+        if count:
+            self.blink_label.emit()
+        self.status_label.setText(f'Events received: {self.count} | Bytes received: {self.bytes_auto_unit(self.total_b)}')
 
     # <=><=><=><=><=><=><=><=><=><=><=> configuration <=><=><=><=><=><=><=><=><=><=><=>
     def apply_configuration(self, cfg: dict) -> None:
@@ -1401,7 +1482,7 @@ class DcsPyQtGui(QMainWindow):
         return Path(self.le_dcsdir.text())
 
     # <=><=><=><=><=><=><=><=><=><=><=> helpers <=><=><=><=><=><=><=><=><=><=><=>
-    def run_in_background(self, job: partial | Callable, signal_handlers: dict[str, Callable]) -> None:
+    def run_in_background(self, job: partial | Callable, signals_dict: dict[str, Callable]) -> None:
         """
         Worker with signals callback to schedule a GUI job in the background.
 
@@ -1412,9 +1493,8 @@ class DcsPyQtGui(QMainWindow):
         :param job: GUI method or function to run in background
         :param signal_handlers: Signals as keys: finished, error, result, progress and values as callable
         """
-        progress = True if 'progress' in signal_handlers.keys() else False
-        worker = Worker(func=job, with_progress=progress)
-        worker.setup_signal_handlers(signal_handlers=signal_handlers)
+        sig_handler = SignalHandler(signals_dict=signals_dict)
+        worker = Worker(func=job, sig_handler=sig_handler)
         if isinstance(job, partial):
             job_name = job.func.__name__
             args = job.args
@@ -1423,17 +1503,16 @@ class DcsPyQtGui(QMainWindow):
             job_name = job.__name__
             args = tuple()
             kwargs = dict()
-        signals = {signal: handler.__name__ for signal, handler in signal_handlers.items()}
-        LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
+        LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals: {sig_handler}')
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: SignalInstance, total_time: int, steps: int = 100,
+    def _fake_progress(sig_handler: SignalHandler, total_time: int, steps: int = 100,
                        clean_after: bool = True, **kwargs) -> None:
         """
         Make fake progress for progressbar.
 
-        :param progress_callback: Signal to update progress bar
+        :param sig_handler: Qt signal handler for progress notification
         :param total_time: Time for fill-up whole bar (in seconds)
         :param steps: Number of steps (default 100)
         :param clean_after: Clean progress bar when finish
@@ -1441,13 +1520,13 @@ class DcsPyQtGui(QMainWindow):
         done_event = kwargs.get('done_event', Event())
         for progress_step in range(1, steps + 1):
             sleep(total_time / steps)
-            progress_callback.emit(progress_step)
+            sig_handler.emit(sig_name='progress', value=progress_step)
             if done_event.is_set():
-                progress_callback.emit(100)
+                sig_handler.emit(sig_name='progress', value=100)
                 break
         if clean_after:
             sleep(0.5)
-            progress_callback.emit(0)
+            sig_handler.emit(sig_name='progress', value=0)
 
     def _progress_by_abs_value(self, value: int) -> None:
         """
@@ -1557,6 +1636,20 @@ class DcsPyQtGui(QMainWindow):
     def event_set(self) -> None:
         """Set event to close running thread."""
         self.event.set()
+
+    @staticmethod
+    def bytes_auto_unit(no_of_bytes: int) -> str:
+        """
+        Convert the given number of bytes to a string representation with appropriate unit.
+
+        :param no_of_bytes: The number of bytes to convert.
+        :return: The string representation of the converted bytes.
+        """
+        _bytes = float(no_of_bytes)
+        for unit in ['B', 'kB', 'MB', 'GB']:
+            if _bytes < 1024.0:
+                return f'{_bytes:,.1f} {unit}'
+            _bytes /= 1024.0
 
     def activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
         """
@@ -1756,56 +1849,22 @@ class AboutDialog(QDialog):
         self.l_info.setText(text)
 
 
-class WorkerSignals(QObject):
-    """
-    Defines the signals available from a running worker thread.
-
-    Supported signals are:
-    * finished - no data
-    * error - tuple with exctype, value, traceback.format_exc()
-    * result - object/any type - data returned from processing
-    * progress - float between zero (0) and one (1) as indication of progress
-    * stage - string with current stage
-    """
-
-    finished = Signal()
-    error = Signal(tuple)
-    result = Signal(object)
-    progress = Signal(int)
-    stage = Signal(str)
-
-
-class WorkerSignalsMixIn:
-    """Worker signals Mixin."""
-
-    def __init__(self):
-        """Signal handler for WorkerSignals."""
-        self.signals = WorkerSignals()
-
-    def setup_signal_handlers(self, signal_handlers: dict[str, Callable[[Any], None]]) -> None:
-        """
-        Connect handlers to signals.
-
-        :param signal_handlers: Dict with signals and handlers as value.
-        """
-        for signal, handler in signal_handlers.items():
-            getattr(self.signals, signal).connect(handler)
-
-
-class Worker(QRunnable, WorkerSignalsMixIn):
+class Worker(QRunnable):
     """Runnable worker."""
 
-    def __init__(self, func: partial, with_progress: bool) -> None:
+    def __init__(self, func: partial, sig_handler: SignalHandler) -> None:
         """
         Worker thread.
 
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
         :param func: The function callback to run on worker thread
+        :param sig_handler: Qt signal handler for progress notification
         """
         super().__init__()
         self.func = func
-        if with_progress:
-            self.func.keywords['progress_callback'] = self.signals.progress
+        self.sig_handler = sig_handler
+        if sig_handler.got_signals_for_interface():
+            self.func.keywords['sig_handler'] = sig_handler
 
     @Slot()
     def run(self) -> None:
@@ -1813,25 +1872,29 @@ class Worker(QRunnable, WorkerSignalsMixIn):
         try:
             result = self.func()
         except Exception:
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
+            exctype, value, tb = sys.exc_info()
+            exc_tb = traceback.format_exception(exctype, value, tb)
+            self.sig_handler.emit(sig_name='error', value=(exctype, value, exc_tb))
+            # exctype, value = sys.exc_info()[:2]
+            # self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
-            self.signals.result.emit(result)
+            self.sig_handler.emit(sig_name='result', value=result)
         finally:
-            self.signals.finished.emit()
+            self.sig_handler.emit(sig_name='finished')
 
 
-class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
+class GitCloneWorker(QRunnable):
     """Worker for git clone with reporting progress."""
 
-    def __init__(self, git_ref: str, bios_path: Path, to_path: Path, repo: str, silence: bool = False) -> None:
+    def __init__(self, git_ref: str, sig_handler: SignalHandler, bios_path: Path, to_path: Path, repo: str, silence: bool = False) -> None:
         """
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
 
         :param git_ref: Git reference
-        :param repo: Valid git repository user/name
+        :param sig_handler: Qt signal handler for progress notification
         :param bios_path: Path to DCS-BIOS
         :param to_path: Path to which the repository should be cloned to
+        :param repo: Valid git repository user/name
         :param silence: Perform action with silence
         """
         super().__init__()
@@ -1840,13 +1903,14 @@ class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
         self.to_path = to_path
         self.bios_path = bios_path
         self.silence = silence
+        self.sig_handler = sig_handler
 
     @Slot()
     def run(self):
         """Clone repository and report progress using special object CloneProgress."""
         try:
             sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
-                                    progress=CloneProgress(self.signals.progress, self.signals.stage))
+                                    progress=CloneProgress(sig_handler=self.sig_handler))
             if not self.bios_path.is_symlink():
                 target = self.to_path / 'Scripts' / 'DCS-BIOS'
                 cmd_symlink = f'"New-Item -ItemType SymbolicLink -Path \\"{self.bios_path}\\" -Target \\"{target}\\"'
@@ -1856,12 +1920,15 @@ class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
                 sleep(0.8)
             LOG.debug(f'Directory: {self.bios_path} is symbolic link: {self.bios_path.is_symlink()}')
         except Exception:
-            exctype, value = sys.exc_info()[:2]
-            self.signals.error.emit((exctype, value, traceback.format_exc()))
+            exctype, value, tb = sys.exc_info()
+            exc_tb = traceback.format_exception(exctype, value, tb)
+            self.sig_handler.emit(sig_name='error', value=(exctype, value, exc_tb))
+            # exctype, value = sys.exc_info()[:2]
+            # self.signals.error.emit((exctype, value, traceback.format_exc()))
         else:
-            self.signals.result.emit((sha, self.silence))
+            self.sig_handler.emit(sig_name='result', value=(sha, self.silence))
         finally:
-            self.signals.finished.emit()
+            self.sig_handler.emit(sig_name='finished')
 
 
 class UiLoader(QUiLoader):

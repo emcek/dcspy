@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -12,7 +14,7 @@ from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
 from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, AnyButton, Gkey, LcdButton, LcdType, LogitechDeviceModel, MouseButton
 from dcspy.sdk import key_sdk, lcd_sdk
-from dcspy.utils import get_full_bios_for_plane, get_planes_list
+from dcspy.utils import SignalHandler, get_full_bios_for_plane, get_planes_list
 
 LOG = getLogger(__name__)
 
@@ -20,7 +22,7 @@ LOG = getLogger(__name__)
 class LogitechDevice:
     """General Logitech device."""
 
-    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: LogitechDeviceModel) -> None:
+    def __init__(self, parser: dcsbios.ProtocolParser, sock: socket, model: LogitechDeviceModel, sig_handler: SignalHandler | None = None) -> None:
         """
         General Logitech device.
 
@@ -42,6 +44,7 @@ class LogitechDevice:
         success = self.key_sdk.logi_gkey_init()
         LOG.debug(f'G-Key is connected: {success}')
         self.plane = BasicAircraft(self.model.lcd_info)
+        self.sig_handler = sig_handler
 
     @property
     def display(self) -> list[str]:
@@ -133,7 +136,8 @@ class LogitechDevice:
         for ctrl_name in self.plane.bios_data:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
             dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)  # type: ignore[union-attr]
-            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name), **ctrl.output.args.model_dump())  # type: ignore[union-attr]
+            dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name),
+                           sig_handler=self.sig_handler, **ctrl.output.args.model_dump())  # type: ignore[union-attr]
 
     def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int, mouse: int) -> None:
         """

@@ -10,7 +10,7 @@ from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechDevice
 from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, LogitechDeviceModel
-from dcspy.utils import check_bios_ver, get_version_string
+from dcspy.utils import SignalHandler, check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
@@ -18,7 +18,8 @@ SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nic
 __version__ = '3.6.1'
 
 
-def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str, event: Event) -> None:
+def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str,
+                       event: Event, sig_handler: SignalHandler) -> None:
     """
     Handle the main loop where all the magic is happened.
 
@@ -36,6 +37,7 @@ def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock
             dcs_bios_resp = sock.recv(2048)
             for int_byte in dcs_bios_resp:
                 parser.process_byte(int_byte)
+            sig_handler.emit(sig_name='count', value=(0, len(dcs_bios_resp)))
             start_time = time()
             _load_new_plane_if_detected(logi_device)
             logi_device.button_handle()
@@ -105,19 +107,20 @@ def _prepare_socket() -> socket.socket:
     return sock
 
 
-def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
+def dcspy_run(model: LogitechDeviceModel, event: Event, sig_handler: SignalHandler) -> None:
     """
     Real starting point of DCSpy.
 
     :param model: Logitech device model
     :param event: stop event for the main loop
+    :param sig_handler: Qt signal handler for progress notification
     """
     with _prepare_socket() as dcs_sock:
         parser = ProtocolParser()
-        logi_dev = LogitechDevice(parser=parser, sock=dcs_sock, model=model)
+        logi_dev = LogitechDevice(parser=parser, sock=dcs_sock, model=model, sig_handler=sig_handler)
         LOG.info(f'Loading: {str(logi_dev)}')
         LOG.debug(f'Loading: {repr(logi_dev)}')
         dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
-        _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
+        _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event, sig_handler=sig_handler)
     LOG.info('DCSpy stopped.')
     logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=get_config_yaml_item("dcsbios")).ver}']
