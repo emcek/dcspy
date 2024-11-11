@@ -95,7 +95,7 @@ docs = [
     'mkdocs-material==9.5.44',
     'mkdocs-plantuml==0.1.1',
     'mkdocs-section-index==0.3.9',
-    'mkdocstrings==0.26.2',
+    'mkdocstrings==0.27.0',
     'mkdocstrings-python==1.12.2',
     'plantuml==0.3.0',
 ]
