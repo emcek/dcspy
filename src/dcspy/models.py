@@ -1048,7 +1048,7 @@ class Asset(BaseModel):
     size: int
     browser_download_url: str
 
-    def correct_asset(self, extension: str, file_name: str = '') -> bool:
+    def correct_asset(self, extension: str = '', file_name: str = '') -> bool:
         """
         Check if asset meet criteria.
 
