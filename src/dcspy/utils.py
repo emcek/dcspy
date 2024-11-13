@@ -90,7 +90,7 @@ def save_yaml(data: dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
 
 
-def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
+def check_ver_at_github(repo: str, current_ver: str, extension: str = '', file_name: str = '') -> ReleaseInfo:
     """
     Check a version of <organization>/<package> at GitHub.
 
@@ -152,7 +152,7 @@ def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
     """
     ver_string = f'v{current_ver}'
     if check:
-        result = check_ver_at_github(repo=repo, current_ver=current_ver, extension='')
+        result = check_ver_at_github(repo=repo, current_ver=current_ver)
         details = ''
         if result.latest:
             details = ' (latest)'
