@@ -1040,7 +1040,7 @@ class ReleaseInfo(BaseModel):
 
 
 class Asset(BaseModel):
-    """Github Release Asset model."""
+    """GitHub Release Asset model."""
     url: str
     name: str
     label: str
@@ -1052,9 +1052,9 @@ class Asset(BaseModel):
         """
         Check if asset meet criteria.
 
-        :param extension: file extension
-        :param file_name: file name
-        :return: True if asset meet requirements, False otherwise
+        :param extension: File extension
+        :param file_name: File name
+        :return: True if asset met requirements, False otherwise
         """
         result = False
         if self.name.endswith(extension) and file_name in self.name:
@@ -1063,7 +1063,7 @@ class Asset(BaseModel):
 
 
 class Release(BaseModel):
-    """Github Release model."""
+    """GitHub Release model."""
     url: str
     html_url: str
     tag_name: str
@@ -1077,10 +1077,10 @@ class Release(BaseModel):
 
     def is_latest(self, current_ver: str) -> bool:
         """
-        Check if release is latest.
+        Check if a release is latest.
 
         :param current_ver:
-        :return: True if current version is latest, False otherwise
+        :return: True if the current version is latest, False otherwise
         """
         # todo: remove _compare_versions from utils
         return self.version <= version.parse(current_ver)
@@ -1089,8 +1089,8 @@ class Release(BaseModel):
         """
         Get downloadable URL for asset with extension and file name.
 
-        :param extension: file extension
-        :param file_name: string in file name
+        :param extension: File extension
+        :param file_name: String in file name
         :return: downloadable URL
         """
         dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
@@ -1100,9 +1100,9 @@ class Release(BaseModel):
         """
         Get asset file name.
 
-        :param extension: file extension
-        :param file_name: string in file name
-        :return: asset file name as string
+        :param extension: File extension
+        :param file_name: String in file name
+        :return: Asset file name as string
         """
         # todo: find a better way to avoid duplication
         asset_file = self.download_url(extension=extension, file_name=file_name).split('/')[-1]
@@ -1114,7 +1114,7 @@ class Release(BaseModel):
 
         :param current_ver: Current local version
         :param extension: File extension
-        :param file_name: string in file name
+        :param file_name: string in a file name
         :return: ReleaseInfo object
         """
         rel_info = ReleaseInfo(
@@ -1141,7 +1141,7 @@ class Release(BaseModel):
         """
         Get published date.
 
-        :return: date as string
+        :return: Date as string
         """
         published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
         return str(published)
@@ -1149,9 +1149,9 @@ class Release(BaseModel):
     @property
     def release_type(self) -> str:
         """
-        Get release type.
+        Get a release type.
 
-        :return: type as string
+        :return: Type as string
         """
         return 'Pre-release' if self.prerelease else 'Regular'
 
