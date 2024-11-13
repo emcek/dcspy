@@ -1148,6 +1148,11 @@ class Release(BaseModel):
 
     @property
     def release_type(self) -> str:
+        """
+        Get release type.
+
+        :return: type as string
+        """
         return 'Pre-release' if self.prerelease else 'Regular'
 
     def __str__(self):
