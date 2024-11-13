@@ -1075,17 +1075,38 @@ class Release(BaseModel):
     assets: list[Asset]
     body: str
 
-    def _compare_versions(self, current_ver: str) -> bool:
+    def is_latest(self, current_ver: str) -> bool:
         """
-        Compare two versions of packages and return result.
+        Check if release is latest.
 
-        :param current_ver: Current/local version
-        :return:
+        :param current_ver:
+        :return: True if current version is latest, False otherwise
         """
-        latest = False
-        if version.parse(self.tag_name) <= version.parse(current_ver):
-            latest = True
-        return latest
+        # todo: remove _compare_versions from utils
+        return self.version <= version.parse(current_ver)
+
+    def download_url(self, extension: str = '', file_name: str = '') -> str:
+        """
+        Get downloadable URL for asset with extension and file name.
+
+        :param extension: file extension
+        :param file_name: string in file name
+        :return: downloadable URL
+        """
+        dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
+        return dl_url
+
+    def asset_file(self, extension: str = '', file_name: str = '') -> str:
+        """
+        Get asset file name.
+
+        :param extension: file extension
+        :param file_name: string in file name
+        :return: asset file name as string
+        """
+        # todo: find a better way to avoid duplication
+        asset_file = self.download_url(extension=extension, file_name=file_name).split('/')[-1]
+        return asset_file
 
     def release_info(self, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
         """
@@ -1096,19 +1117,41 @@ class Release(BaseModel):
         :param file_name: string in file name
         :return: ReleaseInfo object
         """
-        dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
         rel_info = ReleaseInfo(
-            latest=self._compare_versions(current_ver=current_ver),
-            ver=version.parse(self.tag_name),
-            dl_url=dl_url,
-            published=datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y'),
-            release_type='Pre-release' if self.prerelease else 'Regular',
-            asset_file=dl_url.split('/')[-1],
+            latest=self.is_latest(current_ver=current_ver),
+            ver=self.version,
+            dl_url=self.download_url(extension=extension, file_name=file_name),
+            published=self.published,
+            release_type=self.release_type,
+            asset_file=self.asset_file(extension=extension, file_name=file_name),
         )
         return rel_info
 
+    @property
+    def version(self) -> version.Version:
+        """
+        Get version.
+
+        :return: Version object for git tag
+        """
+        return version.parse(self.tag_name)
+
+    @property
+    def published(self) -> str:
+        """
+        Get published date.
+
+        :return: date as string
+        """
+        published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
+        return str(published)
+
+    @property
+    def release_type(self) -> str:
+        return 'Pre-release' if self.prerelease else 'Regular'
+
     def __str__(self):
-        return f'{self.tag_name} pre:{self.prerelease} date:{datetime.strptime(self.published_at, "%Y-%m-%dT%H:%M:%S%z").strftime("%d %B %Y")}'
+        return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
 
 
 class RequestType(Enum):
