@@ -470,7 +470,9 @@ def test_zigzag_iterator_direction():
 # <=><=><=><=><=> Release <=><=><=><=><=>
 def test_release_model(resources):
     import json
+
     from packaging import version
+
     from dcspy.models import Release
 
     with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
