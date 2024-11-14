@@ -1027,18 +1027,6 @@ class ZigZagIterator:
         self._direction = value
 
 
-class ReleaseInfo(BaseModel):
-    """Store release related information."""
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    latest: bool
-    ver: version.Version
-    dl_url: str
-    published: str
-    release_type: str
-    asset_file: str
-
-
 class Asset(BaseModel):
     """GitHub Release Asset model."""
     url: str
@@ -1075,15 +1063,14 @@ class Release(BaseModel):
     assets: list[Asset]
     body: str
 
-    def is_latest(self, current_ver: str) -> bool:
+    def is_latest(self, current_ver: version.Version) -> bool:
         """
         Check if a release is latest.
 
-        :param current_ver:
+        :param current_ver: Version object
         :return: True if the current version is latest, False otherwise
         """
-        # todo: remove _compare_versions from utils
-        return self.version <= version.parse(current_ver)
+        return self.version <= current_ver
 
     def download_url(self, extension: str = '', file_name: str = '') -> str:
         """
@@ -1093,7 +1080,10 @@ class Release(BaseModel):
         :param file_name: String in file name
         :return: downloadable URL
         """
-        dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
+        try:
+            dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
+        except StopIteration:
+            dl_url = ''
         return dl_url
 
     def asset_file(self, extension: str = '', file_name: str = '') -> str:
@@ -1107,25 +1097,6 @@ class Release(BaseModel):
         # todo: find a better way to avoid duplication
         asset_file = self.download_url(extension=extension, file_name=file_name).split('/')[-1]
         return asset_file
-
-    def release_info(self, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
-        """
-        Extract release information.
-
-        :param current_ver: Current local version
-        :param extension: File extension
-        :param file_name: string in a file name
-        :return: ReleaseInfo object
-        """
-        rel_info = ReleaseInfo(
-            latest=self.is_latest(current_ver=current_ver),
-            ver=self.version,
-            dl_url=self.download_url(extension=extension, file_name=file_name),
-            published=self.published,
-            release_type=self.release_type,
-            asset_file=self.asset_file(extension=extension, file_name=file_name),
-        )
-        return rel_info
 
     @property
     def version(self) -> version.Version:
@@ -1145,15 +1116,6 @@ class Release(BaseModel):
         """
         published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
         return str(published)
-
-    @property
-    def release_type(self) -> str:
-        """
-        Get a release type.
-
-        :return: Type as string
-        """
-        return 'Pre-release' if self.prerelease else 'Regular'
 
     def __str__(self):
         return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'

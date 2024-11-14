@@ -24,8 +24,8 @@ from packaging import version
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Release, ReleaseInfo,
-                          RequestModel, get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Release, RequestModel,
+                          get_key_instance)
 
 try:
     import git
@@ -90,77 +90,50 @@ def save_yaml(data: dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
 
 
-def check_ver_at_github(repo: str, current_ver: str, extension: str = '', file_name: str = '') -> ReleaseInfo:
+def check_ver_at_github(repo: str) -> Release:
     """
     Check a version of <organization>/<package> at GitHub.
 
-    Return tuple with:
-    - result (bool) - if local version is latest
-    - online version (version.Version) - the latest version
-    - download url (str) - ready to download
-    - published date (str) - format DD MMMM YYYY
-    - release type (str) - Regular or Pre-release
-    - asset file (str) - file name of asset
-
     :param repo: Format '<organization or user>/<package>'
-    :param current_ver: Current local version
-    :param extension: File extension
-    :param file_name: string in file name
-    :return: ReleaseInfo with data
+    :return: Release object with data
     """
-    rel_info = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='Regular', asset_file='')
     package = repo.split('/')[1]
     try:
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
         if response.ok:
             rel = Release(**response.json())
             LOG.debug(f'Latest GitHub release: {rel}')
-            rel_info = rel.release_info(current_ver=current_ver, extension=extension, file_name=file_name)
+            return rel
         else:
             LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
+            raise Exception(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
     except Exception as exc:
         LOG.warning(f'Unable to check {package} version online: {exc}')
-    return rel_info
+        raise ValueError(f'Unable to check {package} version online: {exc}')
 
 
-def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
-    """
-    Compare two versions of packages and return result.
-
-    :param package: Package name
-    :param current_ver: Current/local version
-    :param remote_ver: Remote/online version
-    :return:
-    """
-    latest = False
-    if version.parse(remote_ver) > version.parse(current_ver):
-        LOG.info(f'There is new version of {package}: {remote_ver}')
-    elif version.parse(remote_ver) <= version.parse(current_ver):
-        LOG.info(f'{package} is up-to-date version: {current_ver}')
-        latest = True
-    return latest
-
-
-def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
+def get_version_string(repo: str, current_ver: version.Version, check: bool = True) -> str:
     """
     Generate formatted string with version number.
 
     :param repo: Format '<organization or user>/<package>'.
-    :param current_ver: Current local version.
+    :param current_ver: Current local Version object.
     :param check: Version online.
     :return: Formatted version as string.
     """
     ver_string = f'v{current_ver}'
     if check:
-        result = check_ver_at_github(repo=repo, current_ver=current_ver)
-        details = ''
-        if result.latest:
+        try:
+            details = ''
+            result = check_ver_at_github(repo=repo)
+        except ValueError:
+            return f'v{current_ver} (failed)'
+
+        if result.is_latest(current_ver=current_ver):
             details = ' (latest)'
-        elif str(result.ver) != '0.0.0':
+        elif str(result.version) != '0.0.0':
             details = ' (update!)'
-            current_ver = str(result.ver)
-        elif str(result.ver) == '0.0.0':
-            details = ' (failed)'
+            current_ver = str(result.version)
         ver_string = f'v{current_ver}{details}'
     return ver_string
 
@@ -221,14 +194,14 @@ def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
     return result_type, result_ver
 
 
-def check_bios_ver(bios_path: Path | str) -> ReleaseInfo:
+def check_bios_ver(bios_path: Path | str) -> version.Version:
     """
     Check the DSC-BIOS release version.
 
     :param bios_path: Path to DCS-BIOS directory in Saved Games folder
-    :return: ReleaseInfo named tuple
+    :return: Version object
     """
-    result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    bios_ver = version.parse('0.0.0')
     new_location = Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
     old_location = Path(bios_path) / 'lib' / 'CommonData.lua'
 
@@ -243,9 +216,8 @@ def check_bios_ver(bios_path: Path | str) -> ReleaseInfo:
         LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
 
     if bios_re := search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data):
-        bios = version.parse(bios_re.group(1))
-        result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
-    return result
+        bios_ver = version.parse(bios_re.group(1))
+    return bios_ver
 
 
 def is_git_repo(dir_path: str) -> bool:
@@ -511,7 +483,7 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     pyver = (python_version(), python_implementation())
     pyexec = sys.executable
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
-    bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
+    bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios']))
     repo_dir = Path(str(conf_dict['dcsbios'])).parents[1] / 'dcs-bios'
     git_ver, head_commit = _fetch_git_data(repo_dir=repo_dir)
     lgs_dir = '\n'.join([

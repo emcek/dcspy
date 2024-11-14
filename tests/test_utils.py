@@ -7,28 +7,26 @@ from packaging import version
 from pytest import mark, raises
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
+from dcspy.models import DEFAULT_FONT_NAME, get_key_instance
 
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        rel_info = utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
-                                       release_type='Regular', asset_file='')
+        with raises(ValueError):
+            utils.check_ver_at_github(repo='fake2/package2')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        rel_info = utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
-                                       release_type='Regular', asset_file='')
+        with raises(ValueError):
+            utils.check_ver_at_github(repo='fake3/package3')
 
 @mark.parametrize('current_ver, extension, file_name, result', [
-    ('3.6.1', 'tar.gz', 'dcspy', {'latest': True, 'ver': version.parse('3.6.1'), 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz', 'published': '05 November 2024', 'release_type': 'Regular', 'asset_file': 'dcspy-3.6.1.tar.gz'}),
-    ('3.5.0', 'exe', 'dcspy_cli', {'latest': False, 'ver': version.parse('3.6.1'), 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe', 'published': '05 November 2024', 'release_type': 'Regular', 'asset_file': 'dcspy_cli.exe'}),
-    ('3.6.1', 'exe', 'fake', {'latest': False, 'ver': version.parse('0.0.0'), 'dl_url': '', 'published': '', 'release_type': 'Regular', 'asset_file': ''}),
-    ('3.6.1', 'jpg', 'dcspy', {'latest': False, 'ver': version.parse('0.0.0'), 'dl_url': '', 'published': '', 'release_type': 'Regular', 'asset_file': ''}),
+    (version.parse('3.6.1'), 'tar.gz', 'dcspy', {'latest': True, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz', 'asset_file': 'dcspy-3.6.1.tar.gz'}),
+    (version.parse('3.5.0'), 'exe', 'dcspy_cli', {'latest': False, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe', 'asset_file': 'dcspy_cli.exe'}),
+    (version.parse('3.6.1'), 'exe', 'fake', {'latest': True, 'dl_url': '', 'asset_file': ''}),
+    (version.parse('3.5.0'), 'jpg', 'dcspy', {'latest': False, 'dl_url': '', 'asset_file': ''}),
 ], ids=['latest', 'not latest', 'fake file', 'fake ext'])
 def test_new_check_ver_at_github(current_ver, extension, file_name, result, resources):
     import json
@@ -39,11 +37,17 @@ def test_new_check_ver_at_github(current_ver, extension, file_name, result, reso
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
         type(response_get.return_value).json = MagicMock(return_value=json_data)
-        assert utils.check_ver_at_github(repo='emcek/dcspy', current_ver=current_ver, extension=extension, file_name=file_name) == ReleaseInfo(**result)
+        rel = utils.check_ver_at_github(repo='emcek/dcspy')
+        assert rel.is_latest(current_ver=current_ver) == result['latest']
+        assert rel.version == version.parse('3.6.1')
+        assert rel.download_url(extension=extension, file_name=file_name) == result['dl_url']
+        assert rel.published == '05 November 2024'
+        assert rel.asset_file(extension=extension, file_name=file_name) == result['asset_file']
+
 
 @mark.parametrize('current_ver, result', [
-    ('3.6.1', 'v3.6.1 (latest)'),
-    ('1.1.1', 'v3.6.1 (update!)')
+    (version.parse('3.6.1'), 'v3.6.1 (latest)'),
+    (version.parse('1.1.1'), 'v3.6.1 (update!)')
 ], ids=['No update', 'New version'])
 def test_get_version_string_is_possible(current_ver, result, resources):
     import json
@@ -58,12 +62,12 @@ def test_get_version_string_is_possible(current_ver, result, resources):
 
 
 def test_get_version_string_without_checking():
-    assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=False) == 'v4.4.4'
+    assert utils.get_version_string(repo='fake4/package4', current_ver=version.parse('4.4.4'), check=False) == 'v4.4.4'
 
 
 def test_get_version_string_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=True) == 'v4.4.4 (failed)'
+        assert utils.get_version_string(repo='fake4/package4', current_ver=version.parse('4.4.4'), check=True) == 'v4.4.4 (failed)'
 
 
 @mark.parametrize('response, result', [(False, False), (True, True)], ids=['Download failed', 'Download success'])
@@ -154,8 +158,7 @@ def test_check_bios_ver_new_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('1.2.3')
 
 
 def test_check_bios_ver_old_location(tmpdir):
@@ -164,8 +167,7 @@ def test_check_bios_ver_old_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('3.2.1')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
@@ -174,14 +176,12 @@ def test_check_bios_ver_empty_lua(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('0.0.0')
 
 
 def test_check_bios_ver_lue_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('0.0.0')
 
 
 def test_is_git_repo(tmpdir):
