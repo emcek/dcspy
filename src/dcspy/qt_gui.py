@@ -995,7 +995,12 @@ class DcsPyQtGui(QMainWindow):
             clone_worker.setup_signal_handlers(signal_handlers=signal_handlers)
             self.threadpool.start(clone_worker)
         else:
-            self._check_bios_release(silence=silence)
+            try:
+                self._check_bios_release(silence=silence)
+            except ValueError as exc:
+                LOG.debug('Check BIOS version', exc_info=True)
+                if not silence:
+                    self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Problem', message=f'Error during checking version:\n{exc}')
             self._reload_table_gkeys()
 
     def _check_dcs_bios_path(self) -> bool:
@@ -1059,13 +1064,7 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         self._check_local_bios()
-        try:
-            remote_bios_info = self._check_remote_bios()
-        except ValueError as exc:
-            LOG.debug(f'Check BIOS version', exc_info=True)
-            if not silence:
-                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Problem', message=f'Error during checking version:\n{exc}')
-            return
+        remote_bios_info = self._check_remote_bios()
         download_url = remote_bios_info.download_url(extension='.zip', file_name='BIOS')
         self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
