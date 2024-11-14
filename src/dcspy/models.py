@@ -1083,22 +1083,10 @@ class Release(BaseModel):
         :return: downloadable URL
         """
         try:
-            dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension, file_name))
+            dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension=extension, file_name=file_name))
         except StopIteration:
             dl_url = ''
         return dl_url
-
-    def asset_file(self, extension: str = '', file_name: str = '') -> str:
-        """
-        Get asset file name.
-
-        :param extension: File extension
-        :param file_name: String in file name
-        :return: Asset file name as string
-        """
-        # todo: find a better way to avoid duplication
-        asset_file = self.download_url(extension=extension, file_name=file_name).split('/')[-1]
-        return asset_file
 
     @property
     def version(self) -> version.Version:

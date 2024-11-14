@@ -943,7 +943,7 @@ class DcsPyQtGui(QMainWindow):
                                        defaultButton=QMessageBox.StandardButton.Yes)
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
-                destination = exe_parent_dir / rel_info.asset_file(extension=ext)
+                destination = exe_parent_dir / rel_info.download_url(extension=ext).split('/')[-1]
                 old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
                 new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
                 os.rename(src=Path(sys.executable), dst=old_ver_dst)
@@ -1059,10 +1059,10 @@ class DcsPyQtGui(QMainWindow):
         """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
+        download_url = remote_bios_info.download_url(extension='.zip', file_name='BIOS')
         self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
-        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.download_url(extension='.zip', file_name='BIOS'),
-                                       remote_bios_info.asset_file])
+        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), download_url, download_url.split('/')[-1]])
         dcs_runs = proc_is_running(name='DCS.exe')
 
         if silence and correct_remote_bios_ver and not remote_bios_info.is_latest(current_ver=self.l_bios):
@@ -1121,7 +1121,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param rel_info: Remote release information
         """
-        asset_file = rel_info.asset_file(extension='.zip', file_name='BIOS')
+        asset_file = rel_info.download_url(extension='.zip', file_name='BIOS').split('/')[-1]
         msg_txt = f'You are running {self.l_bios} version.\n\n' \
                   f'Would you like to download\n' \
                   f'stable release:\n\n{asset_file}\n\n' \
@@ -1143,8 +1143,9 @@ class DcsPyQtGui(QMainWindow):
         :param rel_info: Remote release information
         """
         tmp_dir = Path(gettempdir())
-        local_zip = tmp_dir / rel_info.asset_file(extension='.zip', file_name='BIOS')
-        download_file(url=rel_info.download_url(extension='.zip', file_name='BIOS'), save_path=local_zip)
+        download_url = rel_info.download_url(extension='.zip', file_name='BIOS')
+        local_zip = tmp_dir / download_url.split('/')[-1]
+        download_file(url=download_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')

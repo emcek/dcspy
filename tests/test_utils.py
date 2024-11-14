@@ -23,10 +23,10 @@ def test_check_ver_exception():
             utils.check_ver_at_github(repo='fake3/package3')
 
 @mark.parametrize('current_ver, extension, file_name, result', [
-    ('3.6.1', 'tar.gz', 'dcspy', {'latest': True, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz', 'asset_file': 'dcspy-3.6.1.tar.gz'}),
-    ('3.5.0', 'exe', 'dcspy_cli', {'latest': False, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe', 'asset_file': 'dcspy_cli.exe'}),
-    ('3.6.1', 'exe', 'fake', {'latest': True, 'dl_url': '', 'asset_file': ''}),
-    ('3.5.0', 'jpg', 'dcspy', {'latest': False, 'dl_url': '', 'asset_file': ''}),
+    ('3.6.1', 'tar.gz', 'dcspy', {'latest': True, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz'}),
+    ('3.5.0', 'exe', 'dcspy_cli', {'latest': False, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe'}),
+    ('3.6.1', 'exe', 'fake', {'latest': True, 'dl_url': ''}),
+    ('3.5.0', 'jpg', 'dcspy', {'latest': False, 'dl_url': ''}),
 ], ids=['latest', 'not latest', 'fake file', 'fake ext'])
 def test_new_check_ver_at_github(current_ver, extension, file_name, result, resources):
     import json
@@ -42,7 +42,6 @@ def test_new_check_ver_at_github(current_ver, extension, file_name, result, reso
         assert rel.version == version.parse('3.6.1')
         assert rel.download_url(extension=extension, file_name=file_name) == result['dl_url']
         assert rel.published == '05 November 2024'
-        assert rel.asset_file(extension=extension, file_name=file_name) == result['asset_file']
 
 
 @mark.parametrize('current_ver, result', [
