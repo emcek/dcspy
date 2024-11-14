@@ -1063,13 +1063,15 @@ class Release(BaseModel):
     assets: list[Asset]
     body: str
 
-    def is_latest(self, current_ver: version.Version) -> bool:
+    def is_latest(self, current_ver: str | version.Version) -> bool:
         """
         Check if a release is latest.
 
-        :param current_ver: Version object
+        :param current_ver: string or Version object
         :return: True if the current version is latest, False otherwise
         """
+        if isinstance(current_ver, str):
+            current_ver = version.parse(current_ver)
         return self.version <= current_ver
 
     def download_url(self, extension: str = '', file_name: str = '') -> str:

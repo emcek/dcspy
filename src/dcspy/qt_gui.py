@@ -915,7 +915,7 @@ class DcsPyQtGui(QMainWindow):
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self) -> None:
         """Check a version of DCSpy and show message box."""
-        ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=version.parse(__version__), check=True)
+        ver_string = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=True)
         self.statusbar.showMessage(ver_string)
         if 'update!' in ver_string:
             self.systray.showMessage('DCSpy', f'New: {ver_string}', QIcon(':/icons/img/edit-download.svg'))
@@ -1468,7 +1468,7 @@ class DcsPyQtGui(QMainWindow):
         """
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
-        dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=version.parse(__version__), check=self.config['check_ver'])
+        dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios())
         dcs_bios_ver = self._get_bios_full_version(silence=silence)
         git_ver = 'Not installed'

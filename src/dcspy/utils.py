@@ -112,12 +112,12 @@ def check_ver_at_github(repo: str) -> Release:
         raise ValueError(f'Unable to check {package} version online: {exc}')
 
 
-def get_version_string(repo: str, current_ver: version.Version, check: bool = True) -> str:
+def get_version_string(repo: str, current_ver: str | version.Version, check: bool = True) -> str:
     """
     Generate formatted string with version number.
 
     :param repo: Format '<organization or user>/<package>'.
-    :param current_ver: Current local Version object.
+    :param current_ver: string or Version object.
     :param check: Version online.
     :return: Formatted version as string.
     """
@@ -131,9 +131,9 @@ def get_version_string(repo: str, current_ver: version.Version, check: bool = Tr
 
         if result.is_latest(current_ver=current_ver):
             details = ' (latest)'
-        elif str(result.version) != '0.0.0':
+        elif result.version != version.parse('0.0.0'):
             details = ' (update!)'
-            current_ver = str(result.version)
+            current_ver = result.version
         ver_string = f'v{current_ver}{details}'
     return ver_string
 
