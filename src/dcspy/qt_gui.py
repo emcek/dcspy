@@ -936,6 +936,7 @@ class DcsPyQtGui(QMainWindow):
         """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
         cli = '' if 'cli' not in Path(sys.executable).name else '_cli'
         ext = f'{cli}.exe'
+        # this is run only when get_version_string() not return failed in _dcspy_check_clicked()
         rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME)
         exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
@@ -1058,7 +1059,13 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         self._check_local_bios()
-        remote_bios_info = self._check_remote_bios()
+        try:
+            remote_bios_info = self._check_remote_bios()
+        except ValueError as exc:
+            LOG.debug(f'Check BIOS version', exc_info=True)
+            if not silence:
+                self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Problem', message=f'Error during checking version:\n{exc}')
+            return
         download_url = remote_bios_info.download_url(extension='.zip', file_name='BIOS')
         self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])

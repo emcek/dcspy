@@ -105,10 +105,8 @@ def check_ver_at_github(repo: str) -> Release:
             LOG.debug(f'Latest GitHub release: {rel}')
             return rel
         else:
-            LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
-            raise Exception(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
+            raise ValueError(f'Try again later. Status={response.status_code}')
     except Exception as exc:
-        LOG.warning(f'Unable to check {package} version online: {exc}')
         raise ValueError(f'Unable to check {package} version online: {exc}')
 
 
