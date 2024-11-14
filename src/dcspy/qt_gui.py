@@ -1062,7 +1062,7 @@ class DcsPyQtGui(QMainWindow):
         try:
             remote_bios_info = self._check_remote_bios()
         except ValueError as exc:
-            LOG.debug(f'Check BIOS version', exc_info=True)
+            LOG.debug('Check BIOS version', exc_info=True)
             if not silence:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Problem', message=f'Error during checking version:\n{exc}')
             return
