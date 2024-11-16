@@ -48,5 +48,5 @@ jobs:
       - name: "Upload dcspy binaries"
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.spec_file }}_pyinstaller
+          name: ${{ matrix.spec_file }}
           path: dist/${{ matrix.spec_file }}.exe
