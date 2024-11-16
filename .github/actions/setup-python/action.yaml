@@ -3,14 +3,14 @@ description: Sets up the dcspy Python environment.
 runs:
   using: composite
   steps:
-    - name: "Set up Python 3.13"
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.13"
-        cache: pip
+      - name: "Set up Python 3.13"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
 
-    - name: "Install requirements"
-      shell: bash
-      run: |
-        python -m pip install -U pip setuptools wheel twine build
-        python -m pip install -U -r requirements_test.txt
+      - name: "Install requirements"
+        shell: bash
+        run: |
+          python -m pip install -U pip setuptools wheel twine build
+          python -m pip install -U -r requirements_test.txt
