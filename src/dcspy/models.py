@@ -275,7 +275,7 @@ class ControlKeyData:
     @classmethod
     def from_control(cls, /, ctrl: Control) -> ControlKeyData:
         """
-        Construct object based on Control BIOS model.
+        Construct an object based on Control BIOS Model.
 
         :param ctrl: Control BIOS model
         :return: ControlKeyData instance
@@ -983,11 +983,11 @@ class ZigZagIterator:
         """
         Initialize with current and max value.
 
-        Default direction is towards max_val.
+        A default direction is towards max_val.
 
-        :param current: current value
-        :param max_val: maximum value
-        :param step: step size, 1 by default
+        :param current: Current value
+        :param max_val: Maximum value
+        :param step: Step size, 1 by default
         """
         self.current = current
         self.step = step
@@ -1067,7 +1067,7 @@ class Release(BaseModel):
         """
         Check if a release is latest.
 
-        :param current_ver: string or Version object
+        :param current_ver: String or Version object
         :return: True if the current version is latest, False otherwise
         """
         if isinstance(current_ver, str):
