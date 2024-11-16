@@ -1,7 +1,7 @@
 ## 3.6.2
 * Internal:
   * Improve checking for new releases (pydantic model) - @emcek
-  * Use python 3.13 for Nuitka when build executable file - @emcek
+  * Make Nuitka with Python 3.13 default when building executable - @emcek
 
 ## 3.6.1
 * Fix issue font size for G19 can be overwritten #394 - @emcek
