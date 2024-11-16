@@ -1553,7 +1553,8 @@ class DcsPyQtGui(QMainWindow):
         :return: Integer value of pushed buttons
         """
         if not NO_MSG_BOX:
-            msg = QMessageBox(text=text, parent=self)
+            msg = QMessageBox(parent=self)
+            msg.setText(text)
             msg.setIcon(kind_of)
             msg.setWindowTitle(title)
             msg.setInformativeText(info_txt)
