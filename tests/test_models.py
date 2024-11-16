@@ -467,6 +467,28 @@ def test_zigzag_iterator_direction():
     assert zz.direction == Direction.BACKWARD
 
 
+# <=><=><=><=><=> Release <=><=><=><=><=>
+def test_release_model(resources):
+    import json
+
+    from packaging import version
+
+    from dcspy.models import Release
+
+    with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
+        content = json_file.read()
+    json_data = json.loads(content)
+    release = Release(**json_data)
+    assert release.is_latest(current_ver='3.5.0') is False
+    assert release.is_latest(current_ver=version.parse('3.6.1')) is True
+    assert release.download_url(extension='.exe', file_name='dcspy_cli') == 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe'
+    assert release.download_url(extension='.exe', file_name='fake') == ''
+    assert release.download_url(extension='.pdf', file_name='dcspy_cli') == ''
+    assert release.version == version.parse('3.6.1')
+    assert release.published == '05 November 2024'
+    assert str(release) == 'v3.6.1 pre:False date:05 November 2024'
+
+
 # <=><=><=><=><=> RequestModel <=><=><=><=><=>
 @mark.benchmark
 @mark.parametrize('str_req, key, key_down, result', [

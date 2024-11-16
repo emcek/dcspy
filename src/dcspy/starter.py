@@ -120,4 +120,4 @@ def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
         dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
         _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     LOG.info('DCSpy stopped.')
-    logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=get_config_yaml_item("dcsbios")).ver}']
+    logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=get_config_yaml_item("dcsbios"))}']

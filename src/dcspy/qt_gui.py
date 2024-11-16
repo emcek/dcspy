@@ -30,7 +30,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, ReleaseInfo,
+                          FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
                           RequestType, SystemData)
 from dcspy.starter import dcspy_run
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
@@ -330,8 +330,8 @@ class DcsPyQtGui(QMainWindow):
         """
         Set internal field for current value of slider and update label.
 
-        :param value: of slider
-        :param name: of slider
+        :param value: Slider's value
+        :param name: Slider's name
         """
         getattr(self, f'{self.device.lcd_name}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
@@ -618,17 +618,17 @@ class DcsPyQtGui(QMainWindow):
 
     def _cell_ctrl_content_changed(self, text: str, widget: QComboBox, row: int, col: int) -> None:
         """
-        Check if control input exists in current plane control list.
+        Check if control input exists in a current plane control a list.
 
         * set details for current control input
         * set styling
         * add description tooltip
         * save control request for current plane
 
-        :param text: current text
-        :param widget: combo instance
-        :param row: current row
-        :param col: current column
+        :param text: Current text
+        :param widget: Combo instance
+        :param row: Current row
+        :param col: Current column
         """
         self.l_category.setText('')
         self.l_description.setText('')
@@ -936,19 +936,20 @@ class DcsPyQtGui(QMainWindow):
         """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
         cli = '' if 'cli' not in Path(sys.executable).name else '_cli'
         ext = f'{cli}.exe'
-        rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME, current_ver=__version__, extension=ext)
+        # this is run only when get_version_string() not return failed in _dcspy_check_clicked()
+        rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME)
         exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
-                                       message=f'Download new version {rel_info.ver} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
+                                       message=f'Download new version {rel_info.version} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
                                        defaultButton=QMessageBox.StandardButton.Yes)
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
-                destination = exe_parent_dir / rel_info.asset_file
+                destination = exe_parent_dir / rel_info.download_url(extension=ext).split('/')[-1]
                 old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
                 new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
                 os.rename(src=Path(sys.executable), dst=old_ver_dst)
                 LOG.debug(f'Rename: {Path(sys.executable)} -> {old_ver_dst}')
-                download_file(url=rel_info.dl_url, save_path=destination)
+                download_file(url=rel_info.download_url(extension=ext), save_path=destination)
                 os.rename(src=destination, dst=new_ver_dst)
                 LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
                 LOG.info('Restart to run new version.')
@@ -994,7 +995,12 @@ class DcsPyQtGui(QMainWindow):
             clone_worker.setup_signal_handlers(signal_handlers=signal_handlers)
             self.threadpool.start(clone_worker)
         else:
-            self._check_bios_release(silence=silence)
+            try:
+                self._check_bios_release(silence=silence)
+            except ValueError as exc:
+                LOG.debug('Check BIOS version', exc_info=True)
+                if not silence:
+                    self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Problem', message=f'Error during checking version:\n{exc}')
             self._reload_table_gkeys()
 
     def _check_dcs_bios_path(self) -> bool:
@@ -1059,12 +1065,13 @@ class DcsPyQtGui(QMainWindow):
         """
         self._check_local_bios()
         remote_bios_info = self._check_remote_bios()
+        download_url = remote_bios_info.download_url(extension='.zip', file_name='BIOS')
         self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
-        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), remote_bios_info.dl_url, remote_bios_info.asset_file])
+        correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), download_url, download_url.split('/')[-1]])
         dcs_runs = proc_is_running(name='DCS.exe')
 
-        if silence and correct_remote_bios_ver and not remote_bios_info.latest:
+        if silence and correct_remote_bios_ver and not remote_bios_info.is_latest(current_ver=self.l_bios):
             self._update_release_bios(rel_info=remote_bios_info)
         elif not silence and correct_remote_bios_ver:
             self._ask_to_update(rel_info=remote_bios_info)
@@ -1094,39 +1101,40 @@ class DcsPyQtGui(QMainWindow):
                f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
-    def _check_local_bios(self) -> ReleaseInfo:
+    def _check_local_bios(self) -> version.Version:
         """
         Check the version of local BIOS.
 
-        :return: Release description info
+        :return: Version object
         """
         result = check_bios_ver(bios_path=self.bios_path)
-        self.l_bios = result.ver
+        self.l_bios = result
         return result
 
-    def _check_remote_bios(self) -> ReleaseInfo:
+    def _check_remote_bios(self) -> Release:
         """
         Check the version of remote BIOS.
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo=BIOS_REPO_NAME, current_ver=str(self.l_bios), extension='.zip', file_name='BIOS')
-        self.r_bios = release_info.ver
+        release_info = check_ver_at_github(repo=BIOS_REPO_NAME)
+        self.r_bios = release_info.version
         return release_info
 
-    def _ask_to_update(self, rel_info: ReleaseInfo) -> None:
+    def _ask_to_update(self, rel_info: Release) -> None:
         """
         Ask user if update BIOS or not.
 
         :param rel_info: Remote release information
         """
+        asset_file = rel_info.download_url(extension='.zip', file_name='BIOS').split('/')[-1]
         msg_txt = f'You are running {self.l_bios} version.\n\n' \
                   f'Would you like to download\n' \
-                  f'stable release:\n\n{rel_info.asset_file}\n\n' \
+                  f'stable release:\n\n{asset_file}\n\n' \
                   f'and overwrite update?'
-        if not rel_info.latest:
+        if not rel_info.is_latest(current_ver=self.l_bios):
             msg_txt = f'You are running {self.l_bios} version.\n' \
-                      f'New version {rel_info.ver} available.\n' \
+                      f'New version {rel_info.version} available.\n' \
                       f'Released: {rel_info.published}\n\n' \
                       f'Would you like to update?'
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCS-BIOS', message=msg_txt,
@@ -1134,15 +1142,16 @@ class DcsPyQtGui(QMainWindow):
         if reply == QMessageBox.StandardButton.Yes:
             self._update_release_bios(rel_info=rel_info)
 
-    def _update_release_bios(self, rel_info: ReleaseInfo) -> None:
+    def _update_release_bios(self, rel_info: Release) -> None:
         """
         Perform update of the release version BIOS and check configuration.
 
         :param rel_info: Remote release information
         """
         tmp_dir = Path(gettempdir())
-        local_zip = tmp_dir / rel_info.asset_file
-        download_file(url=rel_info.dl_url, save_path=local_zip)
+        download_url = rel_info.download_url(extension='.zip', file_name='BIOS')
+        local_zip = tmp_dir / download_url.split('/')[-1]
+        download_file(url=download_url, save_path=local_zip)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
@@ -1159,10 +1168,10 @@ class DcsPyQtGui(QMainWindow):
                 open_new_tab(r'https://github.com/DCS-Skunkworks/DCSFlightpanels/wiki/Installation')
         else:
             local_bios = self._check_local_bios()
-            self.statusbar.showMessage(f'Local BIOS: {local_bios.ver} | Remote BIOS: {self.r_bios}')
+            self.statusbar.showMessage(f'Local BIOS: {local_bios} | Remote BIOS: {self.r_bios}')
             install_result = f'{install_result}\n\nUsing stable release version.'
             self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
-            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios.ver}', message=install_result)
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios}', message=install_result)
 
     def _handling_export_lua(self, temp_dir: Path) -> str:
         """
@@ -1251,7 +1260,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _start_clicked(self) -> None:
         """Run real application in thread."""
-        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios().ver}')
+        LOG.debug(f'Local DCS-BIOS version: {self._check_local_bios()}')
         self.run_in_background(job=partial(self._fake_progress, total_time=0.5),
                                signal_handlers={'progress': self._progress_by_abs_value})
         for rb_key in self.bg_rb_device.buttons():
@@ -1467,7 +1476,7 @@ class DcsPyQtGui(QMainWindow):
         system, _, release, ver, _, proc = uname()
         dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
         dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=self.config['check_ver'])
-        bios_ver = str(self._check_local_bios().ver)
+        bios_ver = str(self._check_local_bios())
         dcs_bios_ver = self._get_bios_full_version(silence=silence)
         git_ver = 'Not installed'
         if self.git_exec:
@@ -1544,7 +1553,8 @@ class DcsPyQtGui(QMainWindow):
         :return: Integer value of pushed buttons
         """
         if not NO_MSG_BOX:
-            msg = QMessageBox(text=text, parent=self)
+            msg = QMessageBox(parent=self)
+            msg.setText(text)
             msg.setIcon(kind_of)
             msg.setWindowTitle(title)
             msg.setInformativeText(info_txt)

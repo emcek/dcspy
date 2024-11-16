@@ -7,78 +7,66 @@ from packaging import version
 from pytest import mark, raises
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, ReleaseInfo, get_key_instance
-
-
-@mark.parametrize('online_tag, file_name, result', [
-    ('1.1.1', 'fake', ReleaseInfo(
-        latest=True, ver=version.parse('1.1.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
-        release_type='Pre-release', asset_file='fake.tgz'
-    )),
-    ('3.2.1', '', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
-        release_type='Pre-release', asset_file='fake.tgz'
-    )),
-    ('3.2.1', 'fake', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='github.com/fake.tgz', published='09 August 2021',
-        release_type='Pre-release', asset_file='fake.tgz'
-    )),
-    ('3.2.1', 'none', ReleaseInfo(
-        latest=False, ver=version.parse('3.2.1'), dl_url='', published='09 August 2021', release_type='Pre-release',
-        asset_file=''
-    )),
-], ids=['No update', 'New version', 'Asset found', 'No assets'])
-def test_check_ver_is_possible(online_tag, file_name, result):
-    with patch.object(utils, 'get') as response_get:
-        type(response_get.return_value).ok = PropertyMock(return_value=True)
-        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{
-                                                                           'browser_download_url': 'github.com/fake.tgz',
-                                                                           'name': 'fake.tgz',
-                                                                       }],
-                                                                       'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.check_ver_at_github(repo='fake1/package1', current_ver='1.1.1', extension='.tgz',
-                                         file_name=file_name) == result
+from dcspy.models import DEFAULT_FONT_NAME, get_key_instance
 
 
 def test_check_ver_can_not_check():
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=False)
-        rel_info = utils.check_ver_at_github(repo='fake2/package2', current_ver='2.2.2', extension='.zip')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
-                                       release_type='Regular', asset_file='')
+        with raises(ValueError):
+            utils.check_ver_at_github(repo='fake2/package2')
 
 
 def test_check_ver_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        rel_info = utils.check_ver_at_github(repo='fake3/package3', current_ver='3.3.3', extension='.exe')
-        assert rel_info == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='',
-                                       release_type='Regular', asset_file='')
+        with raises(ValueError):
+            utils.check_ver_at_github(repo='fake3/package3')
 
+@mark.parametrize('current_ver, extension, file_name, result', [
+    ('3.6.1', 'tar.gz', 'dcspy', {'latest': True, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz'}),
+    ('3.5.0', 'exe', 'dcspy_cli', {'latest': False, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe'}),
+    ('3.6.1', 'exe', 'fake', {'latest': True, 'dl_url': ''}),
+    ('3.5.0', 'jpg', 'dcspy', {'latest': False, 'dl_url': ''}),
+], ids=['latest', 'not latest', 'fake file', 'fake ext'])
+def test_new_check_ver_at_github(current_ver, extension, file_name, result, resources):
+    import json
+    with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
+        content = json_file.read()
+    json_data = json.loads(content)
 
-@mark.parametrize('online_tag, result', [
-    ('1.1.1', 'v1.1.1 (latest)'),
-    ('3.2.1', 'v3.2.1 (update!)')
-], ids=['No update', 'New version'])
-def test_get_version_string_is_possible(online_tag, result):
     with patch.object(utils, 'get') as response_get:
         type(response_get.return_value).ok = PropertyMock(return_value=True)
-        type(response_get.return_value).json = MagicMock(return_value={'tag_name': online_tag, 'prerelease': True,
-                                                                       'assets': [{
-                                                                           'browser_download_url': 'github.com/fake.tgz',
-                                                                           'name': 'fake.tgz',
-                                                                       }],
-                                                                       'published_at': '2021-08-09T16:41:51Z'})
-        assert utils.get_version_string(repo='fake1/package1', current_ver='1.1.1', check=True) == result
+        type(response_get.return_value).json = MagicMock(return_value=json_data)
+        rel = utils.check_ver_at_github(repo='emcek/dcspy')
+        assert rel.is_latest(current_ver=current_ver) == result['latest']
+        assert rel.version == version.parse('3.6.1')
+        assert rel.download_url(extension=extension, file_name=file_name) == result['dl_url']
+        assert rel.published == '05 November 2024'
+
+
+@mark.parametrize('current_ver, result', [
+    ('3.6.1', 'v3.6.1 (latest)'),
+    ('1.1.1', 'v3.6.1 (update!)')
+], ids=['No update', 'New version'])
+def test_get_version_string_is_possible(current_ver, result, resources):
+    import json
+    with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
+        content = json_file.read()
+    json_data = json.loads(content)
+
+    with patch.object(utils, 'get') as response_get:
+        type(response_get.return_value).ok = PropertyMock(return_value=True)
+        type(response_get.return_value).json = MagicMock(return_value=json_data)
+        assert utils.get_version_string(repo='emcek/dcspy', current_ver=current_ver, check=True) == result
 
 
 def test_get_version_string_without_checking():
-    assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=False) == 'v4.4.4'
+    assert utils.get_version_string(repo='fake4/package4', current_ver=version.parse('4.4.4'), check=False) == 'v4.4.4'
 
 
 def test_get_version_string_exception():
     with patch.object(utils, 'get', side_effect=Exception('Connection error')):
-        assert utils.get_version_string(repo='fake4/package4', current_ver='4.4.4', check=True) == 'v4.4.4 (failed)'
+        assert utils.get_version_string(repo='fake4/package4', current_ver=version.parse('4.4.4'), check=True) == 'v4.4.4 (failed)'
 
 
 @mark.parametrize('response, result', [(False, False), (True, True)], ids=['Download failed', 'Download success'])
@@ -97,8 +85,6 @@ def test_proc_is_running():
 
 
 def test_dummy_save_load_migrate(tmpdir):
-    from os import environ
-
     from dcspy.migration import migrate
     test_tmp_yaml = Path(tmpdir) / 'test_cfg.yaml'
 
@@ -171,8 +157,7 @@ def test_check_bios_ver_new_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('1.2.3'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('1.2.3')
 
 
 def test_check_bios_ver_old_location(tmpdir):
@@ -181,8 +166,7 @@ def test_check_bios_ver_old_location(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('3.2.1'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('3.2.1')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
@@ -191,14 +175,12 @@ def test_check_bios_ver_empty_lua(tmpdir):
     with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
         cd_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('0.0.0')
 
 
 def test_check_bios_ver_lue_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='',
-                                 asset_file='')
+    assert result == version.parse('0.0.0')
 
 
 def test_is_git_repo(tmpdir):
@@ -239,7 +221,6 @@ def test_get_all_git_refs(tmpdir):
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):
-    from os import makedirs
     install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'
@@ -260,7 +241,6 @@ def test_check_dcs_bios_entry_no_entry(tmpdir):
     r'dofile(lfs.writedir() .. [[Scripts\DCS-BIOS\BIOS.lua]])',
 ], ids=['dofile without space', 'dofile with space'])
 def test_check_dcs_bios_entry_ok(lua_dst_data, tmpdir):
-    from os import makedirs
     install_dir = tmpdir / 'install'
     makedirs(install_dir)
     lua = 'Export.lua'

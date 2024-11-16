@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
+from datetime import datetime
 from enum import Enum
 from functools import partial
 from re import search
@@ -274,7 +275,7 @@ class ControlKeyData:
     @classmethod
     def from_control(cls, /, ctrl: Control) -> ControlKeyData:
         """
-        Construct object based on Control BIOS model.
+        Construct an object based on Control BIOS Model.
 
         :param ctrl: Control BIOS model
         :return: ControlKeyData instance
@@ -982,11 +983,11 @@ class ZigZagIterator:
         """
         Initialize with current and max value.
 
-        Default direction is towards max_val.
+        A default direction is towards max_val.
 
-        :param current: current value
-        :param max_val: maximum value
-        :param step: step size, 1 by default
+        :param current: Current value
+        :param max_val: Maximum value
+        :param step: Step size, 1 by default
         """
         self.current = current
         self.step = step
@@ -1026,16 +1027,88 @@ class ZigZagIterator:
         self._direction = value
 
 
-class ReleaseInfo(BaseModel):
-    """Store release related information."""
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+class Asset(BaseModel):
+    """GitHub Release Asset model."""
+    url: str
+    name: str
+    label: str
+    content_type: str
+    size: int
+    browser_download_url: str
 
-    latest: bool
-    ver: version.Version
-    dl_url: str
-    published: str
-    release_type: str
-    asset_file: str
+    def correct_asset(self, extension: str = '', file_name: str = '') -> bool:
+        """
+        Check if asset meet criteria.
+
+        :param extension: File extension
+        :param file_name: File name
+        :return: True if asset met requirements, False otherwise
+        """
+        result = False
+        if self.name.endswith(extension) and file_name in self.name:
+            result = True
+        return result
+
+
+class Release(BaseModel):
+    """GitHub Release model."""
+    url: str
+    html_url: str
+    tag_name: str
+    name: str
+    draft: bool
+    prerelease: bool
+    created_at: str
+    published_at: str
+    assets: list[Asset]
+    body: str
+
+    def is_latest(self, current_ver: str | version.Version) -> bool:
+        """
+        Check if a release is latest.
+
+        :param current_ver: String or Version object
+        :return: True if the current version is latest, False otherwise
+        """
+        if isinstance(current_ver, str):
+            current_ver = version.parse(current_ver)
+        return self.version <= current_ver
+
+    def download_url(self, extension: str = '', file_name: str = '') -> str:
+        """
+        Get downloadable URL for asset with extension and file name.
+
+        :param extension: File extension
+        :param file_name: String in file name
+        :return: downloadable URL
+        """
+        try:
+            dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension=extension, file_name=file_name))
+        except StopIteration:
+            dl_url = ''
+        return dl_url
+
+    @property
+    def version(self) -> version.Version:
+        """
+        Get version.
+
+        :return: Version object for git tag
+        """
+        return version.parse(self.tag_name)
+
+    @property
+    def published(self) -> str:
+        """
+        Get published date.
+
+        :return: Date as string
+        """
+        published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
+        return str(published)
+
+    def __str__(self):
+        return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
 
 
 class RequestType(Enum):

@@ -1,6 +1,10 @@
+## 3.6.2
+* Internal:
+  * Improve checking for new releases (pydantic model) - @emcek
+
 ## 3.6.1
 * Fix issue font size for G19 can be overwritten #394 - @emcek
-* Dcspy not started with Python 3.9, fix issue with pyadantic and type annotations - @emcek
+* Dcspy not started with Python 3.9, fix issue with pydantic and type annotations - @emcek
 * Internal:
   * Improve test coverage
   * Use type annotation from future
