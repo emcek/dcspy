@@ -43,7 +43,7 @@ exe = EXE(
     splash,
     splash.binaries,
     [],
-    name='dcspy',
+    name='dcspy_pyinstaller',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
