@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        nuitka_type: [ dcspy_nuitka, dcspy_nuitka_cli ]
+        nuitka_type: [ dcspy, dcspy_cli ]
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4

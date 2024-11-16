@@ -63,8 +63,8 @@ jobs:
           files: |
             dcspy.exe
             dcspy_cli.exe
-            dcspy_nuitka.exe
-            dcspy_nuitka_cli.exe
+            dcspy_pyinstaller.exe
+            dcspy_pyinstaller_cli.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
