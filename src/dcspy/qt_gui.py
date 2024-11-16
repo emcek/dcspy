@@ -330,8 +330,8 @@ class DcsPyQtGui(QMainWindow):
         """
         Set internal field for current value of slider and update label.
 
-        :param value: of slider
-        :param name: of slider
+        :param value: Slider's value
+        :param name: Slider's name
         """
         getattr(self, f'{self.device.lcd_name}_font')[name] = value
         getattr(self, f'l_{name}').setText(str(value))
@@ -618,17 +618,17 @@ class DcsPyQtGui(QMainWindow):
 
     def _cell_ctrl_content_changed(self, text: str, widget: QComboBox, row: int, col: int) -> None:
         """
-        Check if control input exists in current plane control list.
+        Check if control input exists in a current plane control a list.
 
         * set details for current control input
         * set styling
         * add description tooltip
         * save control request for current plane
 
-        :param text: current text
-        :param widget: combo instance
-        :param row: current row
-        :param col: current column
+        :param text: Current text
+        :param widget: Combo instance
+        :param row: Current row
+        :param col: Current column
         """
         self.l_category.setText('')
         self.l_description.setText('')
