@@ -1,4 +1,9 @@
 # -*- mode: python ; coding: utf-8 -*-
+import sys
+import os
+os.environ["TCL_LIBRARY"] = os.path.join(sys.base_prefix, "tcl", "tcl8.6")
+os.environ["TK_LIBRARY"] = os.path.join(sys.base_prefix, "tcl", "tk8.6")
+
 from PyInstaller.utils.hooks import collect_data_files
 
 images = [(f'src/dcspy/img/{res}', 'dcspy/img') for res in ['splash.png', 'dcspy_white.ico', 'dcspy_black.ico']]
