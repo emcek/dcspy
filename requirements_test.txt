@@ -11,7 +11,7 @@ pytest-codspeed==3.0.0
 pytest-cov==6.0.0
 pytest-qt==4.4.0; sys_platform == "win32"
 pytest-randomly==3.16.0
-ruff==0.8.0
+ruff==0.8.1
 types-cffi==1.16.0.20240331
 types-Pillow==10.2.0.20240822
 types-psutil==6.1.0.20241102
