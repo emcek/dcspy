@@ -4,7 +4,7 @@ on: workflow_call
 
 jobs:
   license_check:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -29,8 +29,9 @@ jobs:
         uses: pilosus/action-pip-license-checker@v2
         with:
           requirements: 'requirements-all.txt'
-          fail: 'Copyleft'
-          exclude: '(?i)^(pyside6|shiboken6|certifi*).*'
+          fail: 'StrongCopyleft,Other,Error'
+          totals: true
+          headers: true
 
       - name: "Print report"
         if: ${{ always() }}
