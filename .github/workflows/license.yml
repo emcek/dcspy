@@ -9,22 +9,12 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Install requirements"
-        run: |
-          python -m pip install -U pip
-          python -m pip install -U -r requirements.txt
-
-      - name: "Get explicit and transitive dependencies"
-        run: |
-          pip freeze > requirements-all.txt
-
       - name: "Check License"
         id: license_check_report
         uses: pilosus/action-pip-license-checker@v2
         with:
-          requirements: 'requirements-all.txt'
+          requirements: 'requirements.txt'
           fail: 'Copyleft'
-#          exclude: '(?i)^(pyside6|shiboken6|docutils|certifi*).*'
 
       - name: "Print report"
         if: ${{ always() }}
