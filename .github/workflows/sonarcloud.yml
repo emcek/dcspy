@@ -14,7 +14,8 @@ jobs:
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: "Checkout"
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
@@ -44,8 +45,8 @@ jobs:
         run: |
           python -m pytest -v -m 'not e2e' --img_precision 0 --cov=dcspy --cov-report=xml --cov-branch
 
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v3.1.0
+      - name: "SonarCloud Scan"
+        uses: sonarsource/sonarcloud-github-action@v4.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
