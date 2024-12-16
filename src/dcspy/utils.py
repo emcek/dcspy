@@ -170,26 +170,23 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
+def check_dcs_ver(dcs_path: Path) -> str:
     """
     Check DCS version and release type.
 
     :param dcs_path: Path to DCS installation directory
-    :return: DCS type and version as strings
+    :return: DCS version as strings
     """
-    result_type, result_ver = 'Unknown', 'Unknown'
+    result_ver = 'Unknown'
     try:
         with open(file=dcs_path / 'autoupdate.cfg', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except (FileNotFoundError, PermissionError) as err:
         LOG.debug(f'{type(err).__name__}: {err.filename}')
     else:
-        result_type = 'stable'
-        if dcs_type := search(r'"branch":\s"([\w.]*)"', autoupdate_data):
-            result_type = str(dcs_type.group(1))
         if dcs_ver := search(r'"version":\s"([\d.]*)"', autoupdate_data):
             result_ver = str(dcs_ver.group(1))
-    return result_type, result_ver
+    return result_ver
 
 
 def check_bios_ver(bios_path: Path | str) -> version.Version:
@@ -779,7 +776,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
 
     Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
 
-    :param dcs_save_games: Full path to Saved Games\DCS.openbeta directory.
+    :param dcs_save_games: Full path to Saved Games\DCS directory.
     :param local_compile: Relative path to LocalCompile.lua file.
     """
     try:
