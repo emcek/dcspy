@@ -954,7 +954,6 @@ class SystemData(BaseModel):
     release: str
     ver: str
     proc: str
-    dcs_type: str
     dcs_ver: str
     dcspy_ver: str
     bios_ver: str

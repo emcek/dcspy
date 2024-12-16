@@ -26,8 +26,8 @@ LOG.debug(f'Python exec: {executable}')
 LOG.debug(f'{uname()}')
 LOG.debug(f'Configuration: {_config} from: {default_yaml}')
 LOG.info(f'dcspy {__version__} https://github.com/{DCSPY_REPO_NAME}')
-dcs_type, dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
-LOG.info(f'DCS {dcs_type} ver: {dcs_ver}')
+dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
+LOG.info(f'DCS ver: {dcs_ver}')
 
 
 def get_config_yaml_item(key: str, /, default: ConfigValue | None = None) -> ConfigValue:

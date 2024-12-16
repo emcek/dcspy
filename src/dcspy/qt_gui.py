@@ -1474,7 +1474,7 @@ class DcsPyQtGui(QMainWindow):
         :return: SystemData named tuple with all data
         """
         system, _, release, ver, _, proc = uname()
-        dcs_type, dcs_ver = check_dcs_ver(Path(self.config['dcs']))
+        dcs_ver = check_dcs_ver(Path(self.config['dcs']))
         dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=self.config['check_ver'])
         bios_ver = str(self._check_local_bios())
         dcs_bios_ver = self._get_bios_full_version(silence=silence)
@@ -1482,7 +1482,7 @@ class DcsPyQtGui(QMainWindow):
         if self.git_exec:
             from git import cmd
             git_ver = '.'.join([str(i) for i in cmd.Git().version_info])
-        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_type=dcs_type, dcs_ver=dcs_ver,
+        return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
     def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: str | None = None) -> str:
@@ -1761,7 +1761,7 @@ class AboutDialog(QDialog):
             text += f'<b>SHA:</b> <a href="https://github.com/DCS-Skunkworks/dcs-bios/commit/{d.sha}">{d.dcs_bios_ver}</a>'
         else:
             text += f'<b>SHA:</b> {d.dcs_bios_ver}</a>'
-        text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/openbeta/{d.dcs_ver}/">{d.dcs_ver}</a> ({d.dcs_type})'
+        text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/stable/{d.dcs_ver}/">{d.dcs_ver}</a>'
         text += '</p></body></html>'
         self.l_info.setText(text)
 
