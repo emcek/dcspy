@@ -1,6 +1,7 @@
 ## 3.6.2
 * Internal:
   * Improve checking for new releases (pydantic model) - @emcek
+  * Only one branch stable version of DCS is preferred for new installs - @emcek
 
 ## 3.6.1
 * Fix issue font size for G19 can be overwritten #394 - @emcek
