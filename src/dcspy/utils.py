@@ -39,7 +39,7 @@ DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
-    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS'
+    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
 
 
 def get_default_yaml(local_appdata: bool = False) -> Path:
@@ -779,7 +779,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
 
     Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
 
-    :param dcs_save_games: Full path to Saved Games\DCS directory.
+    :param dcs_save_games: Full path to Saved Games\DCS.openbeta directory.
     :param local_compile: Relative path to LocalCompile.lua file.
     """
     try:
