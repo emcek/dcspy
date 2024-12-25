@@ -7,7 +7,7 @@ from packaging import version
 from pytest import mark, raises
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, get_key_instance, Color, LcdMode
+from dcspy.models import DEFAULT_FONT_NAME, Color, LcdMode, get_key_instance
 
 
 def test_check_ver_can_not_check():
