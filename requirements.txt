@@ -3,7 +3,7 @@ eval-type-backport==0.2.0; python_version < '3.10'
 GitPython==3.1.44
 lupapy==2.2
 packaging==24.2
-pillow==11.0.0
+pillow==11.1.0
 psutil==6.1.1
 pydantic==2.10.4
 PySide6==6.8.1
