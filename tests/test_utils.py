@@ -477,4 +477,4 @@ def test_generate_bios_jsons_with_lupa(test_saved_games):
     (Color.khaki, 204, (240, 230, 140, 204)),
 ])
 def test_color(color, mode, result):
-    assert utils.color(color, mode=mode) == result
+    assert utils.rgba(color, mode=mode) == result
