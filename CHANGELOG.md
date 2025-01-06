@@ -1,4 +1,5 @@
 ## 3.6.2
+* Initial support colors for G19 - @emcek
 * Internal:
   * Improve checking for new releases (pydantic model) - @emcek
   * Only one branch stable version of DCS is preferred for new installs - @emcek
