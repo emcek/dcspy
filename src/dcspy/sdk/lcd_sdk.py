@@ -4,8 +4,9 @@ from _cffi_backend import Lib
 from cffi import FFI, CDefError
 from PIL import Image
 
-from dcspy.models import LcdButton, LcdSize, LcdType
+from dcspy.models import Color, LcdButton, LcdSize, LcdType
 from dcspy.sdk import LcdDll, load_dll
+from dcspy.utils import rgb
 
 LOG = getLogger(__name__)
 
@@ -156,7 +157,7 @@ class LcdSdkManager:
         except AttributeError:
             return False
 
-    def update_text(self, txt: list[str]) -> None:
+    def update_text(self, txt: list[tuple[str, Color]]) -> None:
         """
         Update display LCD with a list of text.
 
@@ -164,13 +165,17 @@ class LcdSdkManager:
         For color, LCD takes eight (8) elements of the list and displays as eight (8) rows.
         :param txt: List of strings to display, row by row
         """
+        title = txt.pop(0)
+        title_txt = title[0]
+        title_color = rgb(title[1])
         if self.logi_lcd_is_connected(LcdType.MONO):
-            for line_no, line in enumerate(txt):
-                self.logi_lcd_mono_set_text(line_no, line)
+            for line_no, txt_and_color in enumerate(txt[:4]):
+                self.logi_lcd_mono_set_text(line_no, txt_and_color[0])
             self.logi_lcd_update()
         elif self.logi_lcd_is_connected(LcdType.COLOR):
-            for line_no, line in enumerate(txt):
-                self.logi_lcd_color_set_text(line_no, line)
+            self.logi_lcd_color_set_title(title_txt, title_color)
+            for line_no, txt_and_color in enumerate(txt):
+                self.logi_lcd_color_set_text(line_no, txt_and_color[0], rgb(txt_and_color[1]))
             self.logi_lcd_update()
         else:
             LOG.warning('LCD is not connected')

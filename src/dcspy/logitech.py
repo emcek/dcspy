@@ -1,3 +1,4 @@
+from copy import copy
 from functools import partial
 from importlib import import_module
 from logging import getLogger
@@ -10,9 +11,10 @@ from PIL import Image, ImageDraw
 
 from dcspy import dcsbios, get_config_yaml_item
 from dcspy.aircraft import BasicAircraft, MetaAircraft
-from dcspy.models import KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, AnyButton, Gkey, LcdButton, LcdType, LogitechDeviceModel, MouseButton
+from dcspy.models import (KEY_DOWN, SEND_ADDR, SUPPORTED_CRAFTS, TIME_BETWEEN_REQUESTS, AnyButton, Color, Gkey, LcdButton, LcdType, LogitechDeviceModel,
+                          MouseButton)
 from dcspy.sdk import key_sdk, lcd_sdk
-from dcspy.utils import get_full_bios_for_plane, get_planes_list
+from dcspy.utils import get_full_bios_for_plane, get_planes_list, rgba
 
 LOG = getLogger(__name__)
 
@@ -35,7 +37,7 @@ class LogitechDevice:
         self.bios_name = ''
         self.plane_detected = False
         self.lcdbutton_pressed = False
-        self._display: list[str] = []
+        self._text: list[tuple[str, Color]] = []
         self.model = model
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type)
         self.key_sdk = key_sdk.GkeySdkManager(self.gkey_callback_handler)
@@ -44,37 +46,46 @@ class LogitechDevice:
         self.plane = BasicAircraft(self.model.lcd_info)
 
     @property
-    def display(self) -> list[str]:
+    def text(self) -> list[tuple[str, Color]]:
         """
         Get the latest text from LCD.
 
         :return: List of strings with data, row by row
         """
-        return self._display
+        return self._text
 
-    @display.setter
-    def display(self, message: list[str]) -> None:
+    @text.setter
+    def text(self, message: list[tuple[str, Color]]) -> None:
+        """
+        Display text message at LCD.
+
+        First element is title - used only for G19
+        For G13/G15/G510 takes elements two (2) to four (4).
+        For G19 takes the elements two (2) to eight (8).
+        :param message: List of tuples with strings and color to display, row by row.
+        """
+        self._text = message
+        if self.model.lcd_info.type != LcdType.NONE:
+            self.lcd_sdk.update_text(copy(message))
+
+    @property
+    def messages(self) -> list[str]:
+        """
+        Get the text massages without tittle from LCD.
+
+        :return: List of strings with data, row by row
+        """
+        return [pair[0] for pair in self._text][1:]
+
+    def display(self) -> None:
         """
         Display a message as an image at LCD.
 
         For G13/G15/G510 takes the first four (4) or fewer elements of a list and display as four (4) rows.
         For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
-        :param message: List of strings to display, row by row.
         """
-        self._display = message
         if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
-
-    def text(self, message: list[str]) -> None:
-        """
-        Display message at LCD.
-
-        For G13/G15/G510 takes the first four (4) or fewer elements of the list and display as four (4) rows.
-        For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
-        :param message: List of strings to display, row by row.
-        """
-        if self.model.lcd_info.type != LcdType.NONE:
-            self.lcd_sdk.update_text(message)
 
     def detecting_plane(self, value: str) -> None:
         """
@@ -88,16 +99,16 @@ class LogitechDevice:
             planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
-                self.display = ['Detected aircraft:', SUPPORTED_CRAFTS[self.plane_name]['name']]
+                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (SUPPORTED_CRAFTS[self.plane_name]['name'], Color.green)]
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
                 self.bios_name = value
-                self.display = ['Detected aircraft:', value]
+                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (value, Color.green)]
                 self.plane_detected = True
             elif value not in planes_list:
                 LOG.warning(f'Not supported aircraft: {value}')
-                self.display = ['Detected aircraft:', value, 'Not supported yet!']
+                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (value, Color.green), ('Not supported yet!', Color.red)]
 
     def unload_old_plane(self) -> None:
         """Unloads the previous plane by remove all callbacks and keep only one."""
@@ -214,8 +225,9 @@ class LogitechDevice:
         img = Image.new(mode=self.model.lcd_info.mode.value, color=self.model.lcd_info.background,
                         size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
         draw = ImageDraw.Draw(img)
-        for line_no, line in enumerate(self._display):
-            draw.text(xy=(0, self.model.lcd_info.line_spacing * line_no), text=line, fill=self.model.lcd_info.foreground, font=self.model.lcd_info.font_s)
+        for line_no, txt_and_color in enumerate(self._text[1:]):
+            draw.text(xy=(0, self.model.lcd_info.line_spacing * line_no), text=txt_and_color[0],
+                      fill=rgba(txt_and_color[1], mode=self.model.lcd_info.mode), font=self.model.lcd_info.font_s)  # type: ignore[arg-type]
         return img
 
     def __str__(self) -> str:

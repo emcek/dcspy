@@ -47,7 +47,7 @@ package logitech {
         + lcdbutton_pressed = False : bool
         + model: LogitechDeviceModel
         + __init__(ProtocolParser, socket, FontsConfig)
-        + display(message : List[str]) -> List[str]
+        + display()
         + detecting_plane()
         + load_new_plane(str)
         + check_buttons() -> LcdButton
@@ -56,7 +56,8 @@ package logitech {
         + lcd_sdk: LcdSdkManager
         + gkey_callback_handler(int, int, int, int)
         + clear()
-        + text(List[str])
+        + text(message: List[Tuple[str, Color]]) -> List[Tuple[str, Color]]
+        + messages() -> List[str]
         # _prepare_image() -> Image
         # _send_request(button: Union[LcdButton, Gkey, MouseButton], Optional[int])
     }
@@ -267,6 +268,12 @@ package models {
         + total() -> int
     }
 
+    class Color <<(E,yellow)>> {
+        + beige = 0xf5f5dc
+        + bisque = 0xffe4c4
+        + black = 0x000000
+    }
+
 BiosValueInt *-- IntBuffArgs
 BiosValueStr *-- StrBuffArgs
 
@@ -301,7 +308,7 @@ package sdk{
         + logi_lcd_color_set_background(List[Tuple[int, int, int, int]])
         + logi_lcd_color_set_title(str, Tuple[int, int, int])
         + logi_lcd_color_set_text(int, str, Tuple[int, int, int])
-        + update_text(List[str])
+        + update_text(List[Tuple[str, Color]])
         + update_display(Image)
         + clear_display(bool)
         # _clear_mono(bool)

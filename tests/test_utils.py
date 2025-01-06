@@ -7,7 +7,7 @@ from packaging import version
 from pytest import mark, raises
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, get_key_instance
+from dcspy.models import DEFAULT_FONT_NAME, Color, LcdMode, get_key_instance
 
 
 def test_check_ver_can_not_check():
@@ -468,3 +468,13 @@ def test_generate_bios_jsons_with_lupa(test_saved_games):
     mosquito = utils.get_full_bios_for_plane(plane='MosquitoFBMkVI', bios_dir=test_saved_games / 'Scripts' / 'DCS-BIOS')
     assert len(mosquito.root) == 27
     assert sum(len(values) for values in mosquito.root.values()) == 299
+
+
+@mark.parametrize('color, mode, result', [
+    (Color.azure, LcdMode.TRUE_COLOR, (240, 255, 255, 255)),
+    (Color.beige, LcdMode.BLACK_WHITE, 242),
+    (Color.honeydew, 0, (240, 255, 240, 0)),
+    (Color.khaki, 204, (240, 230, 140, 204)),
+])
+def test_color(color, mode, result):
+    assert utils.rgba(color, mode=mode) == result
