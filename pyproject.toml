@@ -41,7 +41,7 @@ dynamic = ['version']
 dependencies = [
     'cffi==1.17.1',
     'eval-type-backport==0.2.0 ; python_version < "3.10"',
-    'gitpython==3.1.43',
+    'gitpython==3.1.44',
     'lupapy==2.2',
     'packaging==24.2',
     'pillow==11.0.0',
