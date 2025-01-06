@@ -802,7 +802,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
         LOG.debug(f"Change directory back to: {getcwd()}")
 
 
-def color(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ...] | int:
+def rgba(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ...] | int:
     """
     Convert a color to a single integer or tuple of integers.
 
@@ -815,10 +815,24 @@ def color(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, .
     :param mode: Mode of the LCD or alpha channel as integer
     :return: tuple with RGBA channels or single integer
     """
+    if isinstance(mode, int):
+        return *rgb(c), mode
+    else:
+        return ImageColor.getcolor(color=c.name, mode=mode.value)
+
+
+def rgb(c: Color, /) -> tuple[int, int, int]:
+    """
+    Convert a Color instance to its RGB components as a tuple of integers.
+
+    The function extracts the red, green, and blue components from the
+    color's value, which is expected to be a single integer representing
+    a 24-bit RGB color.
+
+    :param c: An instance of Color, whose value is a 24-bit RGB integer.
+    :return: A tuple containing the red, green, and blue components.
+    """
     red = (c.value >> 16) & 0xff
     green = (c.value >> 8) & 0xff
     blue = c.value & 0xff
-    if isinstance(mode, int):
-        return red, green, blue, mode
-    else:
-        return ImageColor.getcolor(color=c.name, mode=mode.value)
+    return red, green, blue
