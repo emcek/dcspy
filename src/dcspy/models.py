@@ -494,9 +494,13 @@ class CycleButton(BaseModel):
     @classmethod
     def from_request(cls, /, req: str) -> CycleButton:
         """
-        Use BIOS request string from plane configuration YAML.
+        Convert a request string to a `CycleButton` instance by extracting the necessary details from the request's components.
 
-        :param req: BIOS request string
+        The request is expected to follow a predefined structure where its components
+        are separated by spaces.
+
+        :param req: A string request expected to contain `control_name`, an underscore, `step`, and `max_value`, separated by spaces.
+        :return: Instance of `CycleButton` based on extracted data.
         """
         selector, _, step, max_value = req.split(' ')
         return CycleButton(ctrl_name=selector, step=int(step), max_value=int(max_value))
@@ -507,7 +511,15 @@ class CycleButton(BaseModel):
 
 
 class GuiPlaneInputRequest(BaseModel):
-    """Input request for Control for GUI."""
+    """
+    Represents a GUI plane input request.
+
+    This class is used to construct and manage input requests originating from
+    a graphical interface, such as radio buttons or other control widgets,
+    that interact with plane systems.
+    It allows for structured generation of requests based on provided parameters or
+    configurations, and provides utility methods to convert data into request objects.
+    """
     identifier: str
     request: str
     widget_iface: str
@@ -515,12 +527,16 @@ class GuiPlaneInputRequest(BaseModel):
     @classmethod
     def from_control_key(cls, ctrl_key: ControlKeyData, rb_iface: str, custom_value: str = '') -> GuiPlaneInputRequest:
         """
-        Generate GuiPlaneInputRequest from ControlKeyData and radio button widget.
+        Create an instance of GuiPlaneInputRequest based on provided control key data, a request type and optional custom value.
 
-        :param ctrl_key: ControlKeyData
-        :param rb_iface: widget interface
-        :param custom_value: custom request
-        :return: GuiPlaneInputRequest
+        The method generates a request string for the GUI widget interface determined by the specified request type (rb_iface)
+        using information from the ControlKeyData object (ctrl_key).
+        If a custom value is provided, it incorporates the value into the generated request for certain request types.
+
+        :param ctrl_key: A ControlKeyData object used to specify the control key's attributes, such as its name, suggested step, and maximum value.
+        :param rb_iface: A string that represents the requested widget interface type, options include types such as 'rb_action', 'rb_fixed_step_inc', etc.
+        :param custom_value: An optional string used to provide a custom value for specific request types ('rb_custom' or 'rb_set_state').
+        :return: A GuiPlaneInputRequest object initialized with the identifier, generated request string, and the specified widget interface type.
         """
         rb_iface_request = {
             'rb_action': f'{ctrl_key.name} TOGGLE',
@@ -538,10 +554,15 @@ class GuiPlaneInputRequest(BaseModel):
     @classmethod
     def from_plane_gkeys(cls, /, plane_gkeys: dict[str, str]) -> dict[str, GuiPlaneInputRequest]:
         """
-        Generate GuiPlaneInputRequest from plane_gkeys yaml.
+        Create a dictionary mapping unique plane keys to `GuiPlaneInputRequest` objects, based on input configuration data.
 
-        :param plane_gkeys:
-        :return:
+        The method processes each key-value pair where the value contains a request type and determines the appropriate widget
+        interface based on specified keywords.
+        A mapping dictionary is used to identify widget interfaces corresponding to request types.
+
+        :param plane_gkeys: A dictionary where each key is a plane identifier (string) and the value is
+                            a space-separated string of configuration data that includes a request type.
+        :return: A dictionary mapping each plane identifier (string) to a `GuiPlaneInputRequest` instance.
         """
         input_reqs = {}
         req_keyword_rb_iface = {
@@ -567,7 +588,11 @@ class GuiPlaneInputRequest(BaseModel):
 
     @classmethod
     def make_empty(cls) -> GuiPlaneInputRequest:
-        """Make empty GuiPlaneInputRequest."""
+        """
+        Create an empty GuiPlaneInputRequest object with default values assigned to its attributes.
+
+        :return: An instance of GuiPlaneInputRequest with default empty values
+        """
         return cls(identifier='', request='', widget_iface='')
 
 
@@ -599,7 +624,14 @@ class LcdButton(Enum):
 
 
 class MouseButton(BaseModel):
-    """LCD Buttons."""
+    """
+    Representation of a mouse button.
+
+    Provides functionality for working with mouse buttons, including conversion
+    to string, boolean evaluation, hashing, and constructing instances from YAML
+    strings.
+    Supports generating sequences of mouse buttons within a specified range.
+    """
     button: int = 0
 
     def __str__(self) -> str:
@@ -616,10 +648,16 @@ class MouseButton(BaseModel):
     @classmethod
     def from_yaml(cls, /, yaml_str: str) -> MouseButton:
         """
-        Construct MouseButton from YAML string.
+        Create a MouseButton object from a YAML string representation.
 
-        :param yaml_str: MouseButton string, example: M_3
-        :return: MouseButton instance
+        This method parses a given YAML string to extract the button number
+        encoded in the format `M_<i>` (such as `M_1`, `M_2`, etc.) and generates
+        a MouseButton instance for the corresponding button.
+        If the format does not conform to expectations and parsing fails, a ValueError is raised.
+
+        :param yaml_str: The YAML string representing the mouse button in the format `M_<i>`.
+        :return: A MouseButton instance derived from the specified YAML string.
+        :raises ValueError: If the provided YAML string does not match the expected format `M_<i>`.
         """
         match = search(r'M_(\d+)', yaml_str)
         if match:
@@ -629,9 +667,13 @@ class MouseButton(BaseModel):
     @staticmethod
     def generate(button_range: tuple[int, int]) -> Sequence[MouseButton]:
         """
-        Generate a sequence of MouseButton-Keys.
+        Generate a sequence of MouseButton objects based on the provided range.
 
-        :param button_range: Start and stop (inclusive) of range for mouse buttons
+        This utility creates MouseButton instances for each integer value within
+        the inclusive range defined by the ``button_range`` tuple.
+
+        :param button_range: A tuple of two integers, representing the start and end of the range (inclusive) for generating MouseButton objects.
+        :return: A tuple containing instantiated MouseButton objects for each value in the specified range.
         """
         return tuple([MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1)])
 
@@ -908,13 +950,17 @@ ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 def _try_key_instance(klass: type[Gkey] | type[LcdButton] | type[MouseButton], method: str, key_str: str) -> AnyButton | None:
     """
-    Detect key string could be parsed with method.
+    Attempt to invoke a method on a class with a given key string.
 
-    :param klass: Class of the key instance to try the method on
-    :param method: Name of the method to try with the key class.
-    :param key_str: A string representation of the key
-    :return: The result of calling the method on the key instance, or None if an error occurs.
+    The method will first attempt to call the provided method with the `key_str` as a parameter.
+    If there is a TypeError (indicating the method does not support a parameter), it attempts to call
+    the method without arguments.
+    If the method is missing or the call fails due to a ValueError or AttributeError, the function returns None.
 
+    :param klass: The class type on which the method is to be invoked.
+    :param method: The name of the method to call on the class.
+    :param key_str: A string key to be passed as a parameter to the method, if supported.
+    :return: An instance of `AnyButton` from the invoked method, if successful, otherwise None.
     """
     try:
         return getattr(klass, method)(key_str)
@@ -926,10 +972,14 @@ def _try_key_instance(klass: type[Gkey] | type[LcdButton] | type[MouseButton], m
 
 def get_key_instance(key_str: str) -> AnyButton:
     """
-    Get key instance from string.
+    Resolve the provided key string into an instance of a valid key class based on a predefined set of classes and their respective resolution methods.
 
-    :param key_str: Key name from YAML configuration
-    :return: LcdButton, Gkey or MouseButton instance
+    If the key string matches a class method's criteria, it returns the resolved key instance.
+    If no match is found, an exception is raised.
+
+    :param key_str: A string representing the name or identifier of the key to be resolved into a key instance (e.g., Gkey, LcdButton, or MouseButton).
+    :return: An instance of a class (AnyButton) that corresponds to the provided key string, if successfully resolved.
+    :raises AttributeError: If the provided key string cannot be resolved into a valid key instance using the predefined classes and methods.
     """
     for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
         key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
@@ -962,7 +1012,11 @@ class SystemData(BaseModel):
 
     @property
     def sha(self) -> str:
-        """Get SHA from DCS_BIOS repo."""
+        """
+        Provides a property to retrieve the SHA part of the DCS-BIOS repo.
+
+        :return: The extracted SHA value from the `dcs_bios_ver` string.
+        """
         return self.dcs_bios_ver.split(' ')[0]
 
 
@@ -977,16 +1031,25 @@ class Direction(Enum):
 
 
 class ZigZagIterator:
-    """Iterate with values from zero (0) to max_val and back."""
+    """
+    An iterator that moves within a range in an oscillating pattern.
+
+    The iterator starts at a given current value, progresses or retreats based on the defined step size
+    and changes a direction upon reaching the boundaries of the range (`max_val` and 0).
+    This allows for oscillating behavior within the specified limits.
+    The class also provides access to its current direction of iteration.
+    """
     def __init__(self, current: int, max_val: int, step: int = 1) -> None:
         """
-        Initialize with current and max value.
+        Represent a simple iterator with a defined range and step increment.
 
-        A default direction is towards max_val.
+        The iterator maintains a current value, a maximum limit, and adjusts
+        its progression based on the specified step.
+        It also tracks the direction of iteration internally.
 
-        :param current: Current value
-        :param max_val: Maximum value
-        :param step: Step size, 1 by default
+        :param current: The starting point of the iterator.
+        :param max_val: The upper limit of the iterator range.
+        :param step: The increment value for each iteration, defaults to 1.
         """
         self.current = current
         self.step = step
@@ -1013,21 +1076,33 @@ class ZigZagIterator:
 
     @property
     def direction(self) -> Direction:
-        """Return direction."""
+        """
+        Represent the direction of an iterator or entity within a defined context.
+
+        This property retrieves the current direction of the iterator.
+
+        :return: The current direction of the iterator.
+        """
         return self._direction
 
     @direction.setter
     def direction(self, value: Direction) -> None:
         """
-        Set direction.
+        Set the direction of the current instance.
 
-        :param value: `Direction.FORWARD` or `Direction.BACKWARD`
+        :param value: The new direction to assign to the instance.
         """
         self._direction = value
 
 
 class Asset(BaseModel):
-    """GitHub Release Asset model."""
+    """
+    Representation of an asset with metadata information.
+
+    This class is used to encapsulate details about an asset such as its
+    URL, name, label, content type, size, and download location.
+    It also provides functionality to validate the asset's properties against specific criteria.
+    """
     url: str
     name: str
     label: str
@@ -1037,11 +1112,13 @@ class Asset(BaseModel):
 
     def correct_asset(self, extension: str = '', file_name: str = '') -> bool:
         """
-        Check if asset meet criteria.
+        Determine whether the asset's name matches the specified file extension and contains the given file name.
 
-        :param extension: File extension
-        :param file_name: File name
-        :return: True if asset met requirements, False otherwise
+        This method checks if the name of the asset ends with the provided file extension and if the given file name is a substring of the asset's name.
+
+        :param extension: The file extension to check for.
+        :param file_name: The specific file name to look for within the asset's name.
+        :return: True if the asset's name ends with the given extension and contains the specified file name, False otherwise.
         """
         result = False
         if self.name.endswith(extension) and file_name in self.name:
@@ -1050,7 +1127,14 @@ class Asset(BaseModel):
 
 
 class Release(BaseModel):
-    """GitHub Release model."""
+    """
+    Representation of a software release.
+
+    The Release class provides detailed information about a specific release of a software project,
+    including metadata such as URLs, tags, names, and dates.
+    It also includes functionality to determine whether a release is the latest and to
+    retrieve downloadable assets.
+    """
     url: str
     html_url: str
     tag_name: str
@@ -1064,10 +1148,13 @@ class Release(BaseModel):
 
     def is_latest(self, current_ver: str | version.Version) -> bool:
         """
-        Check if a release is latest.
+        Determine if the provided version is the latest compared to the instance's version.
 
-        :param current_ver: String or Version object
-        :return: True if the current version is latest, False otherwise
+        This method compares the version of the current object with a given version to check
+        if the current version is equal to or earlier than the given version.
+
+        :param current_ver: The version to compare against, it can be provided as a string or as a version.Version object.
+        :return: Returns True if the current version is less than or equal to the provided version (indicating it is the latest), False otherwise.
         """
         if isinstance(current_ver, str):
             current_ver = version.parse(current_ver)
@@ -1075,11 +1162,15 @@ class Release(BaseModel):
 
     def download_url(self, extension: str = '', file_name: str = '') -> str:
         """
-        Get downloadable URL for asset with extension and file name.
+        Download the URL of a specific asset that matches the given file name and extension.
 
-        :param extension: File extension
-        :param file_name: String in file name
-        :return: downloadable URL
+        This method iterates through the list of assets, applying the criteria specified by
+        the `extension` and `file_name` parameters to identify the correct asset.
+        If no asset matches the provided criteria, an empty string is returned.
+
+        :param extension: The file extension to search for, defaults to an empty string if not specified.
+        :param file_name: The file name to search for, defaults to an empty string if not specified.
+        :return: The download URL of the asset if a match is found, otherwise an empty string.
         """
         try:
             dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension=extension, file_name=file_name))
@@ -1090,18 +1181,20 @@ class Release(BaseModel):
     @property
     def version(self) -> version.Version:
         """
-        Get version.
+        The `version` property retrieves the software version as a `version.Version` object.
 
-        :return: Version object for git tag
+        The version data is parsed from the `tag_name` attribute, which is expected to be in a format compatible with `packaging.version`.
+
+        :return: Parsed `Version` object representing the software version.
         """
         return version.parse(self.tag_name)
 
     @property
     def published(self) -> str:
         """
-        Get published date.
+        Convert and format the `published_at` attribute into a human-readable date string in the format 'DD Month YYYY'.
 
-        :return: Date as string
+        :return: The formatted publication date string.
         """
         published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
         return str(published)
@@ -1118,8 +1211,14 @@ class RequestType(Enum):
 
 
 class RequestModel(BaseModel):
-    """Abstract request representation with common interface to send requests via UDE socket."""
+    """
+    Represent a request model for handling different input button states and their respective BIOS actions.
 
+    This class is designed to manage various types of input requests, including cycle, custom,
+    and push-button requests.
+    It provides functionality to validate input data, generate requests in byte format, and interpret requests based on specific conditions.
+    It also supports creating empty request models and handling interactions with BIOS configuration via designated callable functions.
+    """
     ctrl_name: str
     raw_request: str
     get_bios_fn: Callable[[str], BiosValue]
@@ -1129,10 +1228,13 @@ class RequestModel(BaseModel):
     @field_validator('ctrl_name')
     def validate_interface(cls, value: str) -> str:
         """
-        Validate.
+        Validate the provided interface name ensuring it consists only of uppercase letters, digits, or underscores.
 
-        :param value:
-        :return:
+        This validator enforces strict naming conventions for control names, rejecting any value that contains invalid characters or is an empty string.
+
+        :param value: The interface name to validate.
+        :return: The validated interface name if it passes all checks.
+        :raises ValueError: If the given value is an empty string or contains characters other than uppercase letters (A-Z), digits (0-9), or underscores (_).
         """
         if not value or not all(ch.isupper() or ch == '_' or ch.isdigit() for ch in value):
             raise ValueError("Invalid value for 'ctrl_name'. Only A-Z, 0-9 and _ are allowed.")
@@ -1141,14 +1243,18 @@ class RequestModel(BaseModel):
     @classmethod
     def from_request(cls, key: AnyButton, request: str, get_bios_fn: Callable[[str], BiosValue]) -> RequestModel:
         """
-        Build an object based on string request.
+        Create an instance of the RequestModel class using a specific request string.
 
-        For cycle request `get_bios_fn` is used to update a current value of BIOS selector.
+        This method processes the provided request string to extract necessary
+        information, such as control name and cycle details.
+        It initializes a CycleButton instance using the request information if applicable.
+        The function then returns a RequestModel instance populated with the parsed data and additional state information.
 
-        :param key: LcdButton, Gkey or MouseButton
-        :param request: The raw request string.
-        :param get_bios_fn: A callable function that returns a current value for BIOS selector.
-        :return: An instance of the RequestModel class.
+        :param key: The key representing the `AnyButton` instance tied to the request.
+        :param request: The raw request string providing all request details.
+        :param get_bios_fn: A callable function that retrieves BIOS values, function takes
+                            a string input (BIOS key) and returns a corresponding `BiosValue` object.
+        :return: A new instance of `RequestModel` populated with data parsed from the provided request string and supporting parameters.
         """
         cycle_button = CycleButton(ctrl_name='', step=0, max_value=0)
         if RequestType.CYCLE.value in request:
@@ -1159,15 +1265,23 @@ class RequestModel(BaseModel):
     @classmethod
     def empty(cls, key: AnyButton) -> RequestModel:
         """
-        Create an empty request model, for a key which isn't assign.
+        Create an empty instance of RequestModel with default values for its attributes.
 
-        :param key: LcdButton, Gkey or MouseButton
-        :return: The created request model.
+        :param key: Represents the key parameter, which will be used as a button object type for the RequestModel instance.
+        :return: A new instance of RequestModel initialized with default attribute values and the provided key parameter.
         """
         return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
 
     def _get_next_value_for_button(self) -> int:
-        """Get next an integer value (cycle fore and back) for ctrl_name BIOS selector."""
+        """
+        Determine the next value for the button using a ZigZagIterator.
+
+        If the cycle iterator is not already an instance of ZigZagIterator, it initializes one
+        using the control name and cycle attributes, before returning the next value from the iterator.
+
+        :raises TypeError: If ``self.cycle.iter`` is not of the expected type and cannot be initialized properly as a ZigZagIterator instance.
+        :returns: The next integer value generated by the ZigZagIterator.
+        """
         if not isinstance(self.cycle.iter, ZigZagIterator):
             self.cycle.iter = ZigZagIterator(current=int(self.get_bios_fn(self.ctrl_name)),
                                              step=self.cycle.step,
@@ -1176,42 +1290,71 @@ class RequestModel(BaseModel):
 
     @property
     def is_cycle(self) -> bool:
-        """Return True if cycle request, False otherwise."""
+        """
+        Check if the instance has a valid cycle.
+
+        This property checks the internal state of the instance to determine whether a valid cycle exists.
+        A cycle is represented by the presence of a truthy value in the `cycle` attribute.
+
+        :return: Returns ``True`` if a valid cycle exists, otherwise ``False``.
+        """
         return bool(self.cycle)
 
     @property
     def is_custom(self) -> bool:
-        """Return True if custom request, False otherwise."""
+        """
+        Check if the request is of type custom.
+
+        This property evaluates whether the raw_request attribute of the object contains
+        a custom request type, based on the predefined `RequestType.CUSTOM` value.
+
+        :return: Boolean indicating if the request is of type custom.
+        """
         return RequestType.CUSTOM.value in self.raw_request
 
     @property
     def is_push_button(self) -> bool:
-        """Return True if push button request, False otherwise."""
+        """
+        Identify if the request is a push-button type.
+
+        This property checks if the raw_request contains a specific value indicating a push-button request type
+        and returns a boolean result accordingly.
+
+        :return: True if the request is of type push-button, else False
+        """
         return RequestType.PUSH_BUTTON.value in self.raw_request
 
     def bytes_requests(self, key_down: int | None = None) -> list[bytes]:
         """
-        Generate a list of bytes that represent the individual requests based on the current state of the model.
+        Generate and returns a list of byte strings based on a specific request input.
 
-        :param key_down: One (1) indicates when G-Key was pushed down and zero (0) when G-Key is up
-        :return: a list of bytes representing the individual requests
+        The method generates a string request using the provided argument `key_down`.
+        It then splits the generated string request using the `|` delimiter and converts each segment into a byte string.
+
+        :param key_down: Accepts an integer representing the key value or None for default behavior.
+        :return: A list containing byte strings derived from the generated request.
         """
         request = self._generate_request_based_on_case(key_down)
         return [bytes(req, 'utf-8') for req in request.split('|')]
 
     def _generate_request_based_on_case(self, key_down: int | None = None) -> str:
         """
-        Generate a request based on the current state of the object.
+        Generate a formatted request string based on various conditions and cases.
 
-        The request is determined by a set of conditions defined in the `request_mapper` dictionary.
-        Each condition is associated with a method that generates the request for that condition.
+        This method evaluates different scenarios using the `request_mapper` dictionary,
+        which maps integer case keys to specific conditions and methods.
+        If the condition for a given case is met, the corresponding method is called to generate the request.
+        If no conditions match, the raw request is returned appended with a newline.
 
-        :param key_down: One (1) indicates when G-Key was pushed down and zero (0) when G-Key is up
-        :return: A string representing the generated request based on the given conditions and parameters.
+        :param key_down: Integer representing a key state, it can be either a specific value such as `KEY_UP` or
+                         `None` for cases where key down state is not applicable.
+        :return: Returns a string representing the generated request based on the active case conditions.
         """
+
         class CaseDict(TypedDict):
             condition: bool
             method: partial
+
         request_mapper: dict[int, CaseDict] = {
             1: {'condition': self.is_push_button and isinstance(self.key, Gkey),
                 'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
@@ -1234,27 +1377,63 @@ class RequestModel(BaseModel):
 
     def __generate_push_btn_req_for_gkey_and_mouse(self, key_down: int | None) -> str:
         """
-        Generate a push button request for GKey and MouseButton.
+        Generate a string request for handling a push-button action for both keyboard keys and mouse events.
 
-        :param key_down: Optional integer representing the key pressed down.
+        The function constructs a command string based on the control name and whether a key is being pressed.
+
+        :param key_down: Either an integer value representing the key being pressed or None if no key action is specified.
+        :return: A string formatted as a control name concatenated with the key_down value followed by a newline character.
         """
         return f'{self.ctrl_name} {key_down}\n'
 
     def __generate_push_btn_req_for_lcd_button(self) -> str:
-        """Generate the push button request for the LCD button."""
+        """
+        Generate a push button request sequence for an LCD button.
+
+        This method constructs and returns the string that represents the sequence of key press
+        events (key down followed by key up) for the LCD button associated with the `ctrl_name`.
+        The request is formatted as a string where each line corresponds to an event.
+
+        :raises ValueError: If `ctrl_name` is not properly set or invalid.
+        :return: A string representing the key press sequence for the LCD button.
+        """
         return f'{self.ctrl_name} {KEY_DOWN}\n|{self.ctrl_name} {KEY_UP}\n'
 
     @staticmethod
     def __generate_empty() -> str:
-        """Generate an empty string."""
+        """
+        Generate and return an empty string.
+
+        It does not take any arguments and simply returns an empty string.
+
+        :return: An empty string.
+        """
         return ''
 
     def __generate_cycle_request(self) -> str:
-        """Generate a cycle request."""
+        """
+        Generate a cycle request string.
+
+        This method constructs and returns a string representing a button's cycle request.
+        It typically combines the control name with the next value intended for the button and appends a newline character at the end.
+
+        :return: A formatted string representing the cycle request, including the control name and the next value for the button.
+        """
         return f'{self.ctrl_name} {self._get_next_value_for_button()}\n'
 
     def __generate_custom_request(self) -> str:
-        """Generate a custom request from the raw request."""
+        """
+        Generate and formats a custom request string based on the raw request input.
+
+        This method processes the raw request string to extract and properly format its content,
+        specifically for custom request types.
+        It splits the raw request using the defined delimiter for custom request types and
+        re-formats the request content using newline characters.
+
+        :raises AttributeError: If `self.raw_request` is not properly formatted or the expected split pattern is missing.
+        :raises IndexError: If the split raw request string does not contain the expected elements after processing.
+        :return: A formatted request string with replaced delimiters.
+        """
         request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
         request = request.replace('|', '\n|')
         return request.strip('|')
