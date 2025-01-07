@@ -459,7 +459,9 @@ def test_zigzag_iterator_direction():
 
     zz = ZigZagIterator(current=5, max_val=10, step=2)
     assert zz.direction == Direction.FORWARD
+    assert str(zz) == 'current: 5 step: 2 max value: 10'
     assert next(zz) == 7
+    assert str(zz) == 'current: 7 step: 2 max value: 10'
     assert next(zz) == 9
     zz.direction = Direction.BACKWARD
     assert next(zz) == 7
