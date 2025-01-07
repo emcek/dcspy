@@ -2,7 +2,8 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.models import LcdButton, LcdSize, LcdType
+from dcspy.models import Color, LcdButton, LcdSize, LcdType
+from dcspy.utils import rgb
 
 
 @mark.parametrize('function, lcd, args, result', [
@@ -55,8 +56,8 @@ def test_update_display(c_func, effect, lcd, size):
 
 
 @mark.parametrize('c_func, effect, lcd, list_txt', [
-    ('logi_lcd_mono_set_text', [True], LcdType.MONO, ['1', '2', '3', '4']),
-    ('logi_lcd_color_set_text', [False, True], LcdType.COLOR, ['1', '2', '3', '4', '5', '6', '7', '8'])
+    ('logi_lcd_mono_set_text', [True], LcdType.MONO, [('0', Color.white), ('1', Color.white), ('2', Color.white), ('3', Color.white), ('4', Color.white)]),
+    ('logi_lcd_color_set_text', [False, True], LcdType.COLOR, [('0', Color.white), ('1', Color.white), ('2', Color.white), ('3', Color.white), ('4', Color.white), ('5', Color.white), ('6', Color.white), ('7', Color.white), ('8', Color.white)])
 ], ids=['Mono', 'Color'])
 def test_update_text(c_func, effect, lcd, list_txt):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
@@ -68,7 +69,10 @@ def test_update_text(c_func, effect, lcd, list_txt):
             with patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
                 lcd_sdk.update_text(list_txt)
                 connected.assert_called_with(lcd)
-                set_text.assert_has_calls([call(i, j) for i, j in enumerate(list_txt)])
+                if lcd == LcdType.MONO:
+                    set_text.assert_has_calls([call(i, j[0]) for i, j in enumerate(list_txt)])
+                elif lcd == LcdType.COLOR:
+                    set_text.assert_has_calls([call(i, j[0], rgb(j[1])) for i, j in enumerate(list_txt)])
 
 
 @mark.parametrize('c_funcs, effect, lcd, clear, text', [
@@ -100,7 +104,7 @@ def test_update_text_no_lcd():
     lcd_sdk = LcdSdkManager('test', LcdType.MONO)
 
     with patch.object(lcd_sdk, 'logi_lcd_is_connected', side_effect=[False, False]) as connected:
-        lcd_sdk.update_text(['1'])
+        lcd_sdk.update_text([('0', Color.red), ('1', Color.green)])
         connected.assert_has_calls([call(LcdType.MONO), call(LcdType.COLOR)])
 
 

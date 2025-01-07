@@ -21,11 +21,12 @@ from typing import Any, ClassVar
 
 import yaml
 from packaging import version
+from PIL import ImageColor
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, Release, RequestModel,
-                          get_key_instance)
+from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, LcdMode,
+                          Release, RequestModel, get_key_instance)
 
 try:
     import git
@@ -39,7 +40,7 @@ DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
-    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
+    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS'
 
 
 def get_default_yaml(local_appdata: bool = False) -> Path:
@@ -115,7 +116,7 @@ def get_version_string(repo: str, current_ver: str | version.Version, check: boo
     Generate formatted string with version number.
 
     :param repo: Format '<organization or user>/<package>'.
-    :param current_ver: string or Version object.
+    :param current_ver: String or Version object.
     :param check: Version online.
     :return: Formatted version as string.
     """
@@ -170,26 +171,23 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
+def check_dcs_ver(dcs_path: Path) -> str:
     """
     Check DCS version and release type.
 
     :param dcs_path: Path to DCS installation directory
-    :return: DCS type and version as strings
+    :return: DCS version as strings
     """
-    result_type, result_ver = 'Unknown', 'Unknown'
+    result_ver = 'Unknown'
     try:
         with open(file=dcs_path / 'autoupdate.cfg', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except (FileNotFoundError, PermissionError) as err:
         LOG.debug(f'{type(err).__name__}: {err.filename}')
     else:
-        result_type = 'stable'
-        if dcs_type := search(r'"branch":\s"([\w.]*)"', autoupdate_data):
-            result_type = str(dcs_type.group(1))
         if dcs_ver := search(r'"version":\s"([\d.]*)"', autoupdate_data):
             result_ver = str(dcs_ver.group(1))
-    return result_type, result_ver
+    return result_ver
 
 
 def check_bios_ver(bios_path: Path | str) -> version.Version:
@@ -327,9 +325,9 @@ def count_files(directory: Path, extension: str) -> int:
     """
     Count files with extension in directory.
 
-    :param directory: as Path object
-    :param extension: file extension
-    :return: number of files
+    :param directory: As Path object
+    :param extension: File extension
+    :return: Number of files
     """
     try:
         json_files = [f.name for f in directory.iterdir() if f.is_file() and f.suffix == f'.{extension}']
@@ -779,7 +777,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
 
     Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
 
-    :param dcs_save_games: Full path to Saved Games\DCS.openbeta directory.
+    :param dcs_save_games: Full path to Saved Games\DCS directory.
     :param local_compile: Relative path to LocalCompile.lua file.
     """
     try:
@@ -802,3 +800,39 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     finally:
         chdir(previous_dir)
         LOG.debug(f"Change directory back to: {getcwd()}")
+
+
+def rgba(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ...] | int:
+    """
+    Convert a color to a single integer or tuple of integers.
+
+    This depends on given mode/alpha channel:
+    * If mode is an integer, then return a tuple of RGBA channels.
+    * If mode is a LcdMode.TRUE_COLOR, then return a tuple of RGBA channels.
+    * If mode is a LcdMode.BLACK_WHITE, then return a single integer.
+
+    :param c: Color name to convert
+    :param mode: Mode of the LCD or alpha channel as integer
+    :return: tuple with RGBA channels or single integer
+    """
+    if isinstance(mode, int):
+        return *rgb(c), mode
+    else:
+        return ImageColor.getcolor(color=c.name, mode=mode.value)
+
+
+def rgb(c: Color, /) -> tuple[int, int, int]:
+    """
+    Convert a Color instance to its RGB components as a tuple of integers.
+
+    The function extracts the red, green, and blue components from the
+    color's value, which is expected to be a single integer representing
+    a 24-bit RGB color.
+
+    :param c: An instance of Color, whose value is a 24-bit RGB integer.
+    :return: A tuple containing the red, green, and blue components.
+    """
+    red = (c.value >> 16) & 0xff
+    green = (c.value >> 8) & 0xff
+    blue = c.value & 0xff
+    return red, green, blue

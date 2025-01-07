@@ -7,7 +7,7 @@ from packaging import version
 from pytest import mark, raises
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, get_key_instance
+from dcspy.models import DEFAULT_FONT_NAME, Color, LcdMode, get_key_instance
 
 
 def test_check_ver_can_not_check():
@@ -100,8 +100,8 @@ def test_dummy_save_load_migrate(tmpdir):
         'autostart': False,
         'completer_items': 20,
         'current_plane': 'A-10C',
-        'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS',
-        'dcs': 'C:/Program Files/Eagle Dynamics/DCS World OpenBeta',
+        'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS',
+        'dcs': 'C:/Program Files/Eagle Dynamics/DCS World',
         'verbose': False,
         'check_bios': True,
         'check_ver': True,
@@ -129,26 +129,20 @@ def test_dummy_save_load_migrate(tmpdir):
 def test_check_dcs_ver_file_exists_with_ver(autoupdate1_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate1_cfg)):
         dcs_ver = utils.check_dcs_ver(Path(''))
-        assert dcs_ver == ('openbeta', '2.7.16.28157')
+        assert dcs_ver == '2.9.10.4160'
 
 
 def test_check_dcs_ver_file_exists_without_ver(autoupdate2_cfg):
     with patch('dcspy.utils.open', mock_open(read_data=autoupdate2_cfg)):
         dcs_ver = utils.check_dcs_ver(Path(''))
-        assert dcs_ver == ('openbeta', 'Unknown')
-
-
-def test_check_dcs_ver_file_exists_without_branch(autoupdate3_cfg):
-    with patch('dcspy.utils.open', mock_open(read_data=autoupdate3_cfg)):
-        dcs_ver = utils.check_dcs_ver(Path(''))
-        assert dcs_ver == ('stable', '2.7.18.28157')
+        assert dcs_ver == 'Unknown'
 
 
 @mark.parametrize('side_effect', [FileNotFoundError, PermissionError])
 def test_check_dcs_ver_file_not_exists(side_effect):
     with patch('dcspy.utils.open', side_effect=side_effect):
         dcs_ver = utils.check_dcs_ver(Path(''))
-        assert dcs_ver == ('Unknown', 'Unknown')
+        assert dcs_ver == 'Unknown'
 
 
 def test_check_bios_ver_new_location(tmpdir):
@@ -474,3 +468,13 @@ def test_generate_bios_jsons_with_lupa(test_saved_games):
     mosquito = utils.get_full_bios_for_plane(plane='MosquitoFBMkVI', bios_dir=test_saved_games / 'Scripts' / 'DCS-BIOS')
     assert len(mosquito.root) == 27
     assert sum(len(values) for values in mosquito.root.values()) == 299
+
+
+@mark.parametrize('color, mode, result', [
+    (Color.azure, LcdMode.TRUE_COLOR, (240, 255, 255, 255)),
+    (Color.beige, LcdMode.BLACK_WHITE, 242),
+    (Color.honeydew, 0, (240, 255, 240, 0)),
+    (Color.khaki, 204, (240, 230, 140, 204)),
+])
+def test_color(color, mode, result):
+    assert utils.rgba(color, mode=mode) == result
