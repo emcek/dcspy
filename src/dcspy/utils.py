@@ -731,7 +731,7 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
 
 
 class KeyRequest:
-    """Map LCD button ot G-Key with an abstract request model."""
+    """Map LCD button or G-Key with an abstract request model."""
 
     def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], BiosValue]) -> None:
         """
@@ -754,7 +754,7 @@ class KeyRequest:
 
     def get_request(self, button: AnyButton) -> RequestModel:
         """
-        Get abstract representation for request ti be sent gor requested button.
+        Get abstract representation for request ti be sent for requested button.
 
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
