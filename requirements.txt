@@ -1,11 +1,11 @@
 cffi==1.17.1
-eval-type-backport==0.2.0; python_version < '3.10'
+eval-type-backport==0.2.2; python_version < '3.10'
 GitPython==3.1.44
 lupapy==2.2
 packaging==24.2
 pillow==11.1.0
 psutil==6.1.1
-pydantic==2.10.4
+pydantic==2.10.5
 PySide6==6.8.1
 PyYAML==6.0.2
 requests==2.32.3
