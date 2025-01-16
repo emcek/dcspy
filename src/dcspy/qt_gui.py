@@ -926,21 +926,23 @@ class DcsPyQtGui(QMainWindow):
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Unable to check DCSpy version online')
 
     def _download_new_release(self) -> None:
-        """Download the new release if running PyInstaller version or Pip version."""
-        if getattr(sys, 'frozen', False):
-            self._restart_pyinstaller_ver()
+        """Download the new release if running Nuitka version or Pip version."""
+        if globals().get('__compiled__', False):
+            self._restart_nuitka_ver()
         else:
             self._restart_pip_ver()
 
-    def _restart_pyinstaller_ver(self):
-        """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
-        cli = '' if 'cli' not in Path(sys.executable).name else '_cli'
+    def _restart_nuitka_ver(self):
+        """Download and restart a new version of DCSpy when using an executable/nuitka version."""
+        LOG.debug(f'Nuitka unpacked: {globals().get("__builtins__", {}).get("__nuitka_binary_exe", "")}')
+        exe_parent_dir = Path(globals()['__compiled__'].containing_dir)
+        nuitka_packed_exec = globals()['__compiled__'].original_argv0
+        cli = '' if 'cli' not in Path(nuitka_packed_exec).name else '_cli'
         ext = f'{cli}.exe'
         # this is run only when get_version_string() not return failed in _dcspy_check_clicked()
         rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME)
-        exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
-                                       message=f'Download new version {rel_info.version} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
+                                       message=f'Download new version {rel_info.version} to: \n\n{exe_parent_dir}\n\nand restart DCSpy?',
                                        defaultButton=QMessageBox.StandardButton.Yes)
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
