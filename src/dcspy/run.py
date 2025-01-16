@@ -47,8 +47,8 @@ def run(cli_args: Namespace = Namespace()) -> None:
         window = DcsPyQtGui(cli_args)
         if get_config_yaml_item('show_gui', True):
             window.show()
-        unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
         app.aboutToQuit.connect(window.event_set)
+        unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
     except (KeyError, FileNotFoundError):
         pass
     except Exception as exp:
