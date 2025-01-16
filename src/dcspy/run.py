@@ -8,7 +8,6 @@ from os import environ, unlink
 from pathlib import Path
 from tempfile import gettempdir
 
-from PySide6.QtCore import QTimer
 from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import QApplication, QProgressBar, QSplashScreen
 
@@ -16,7 +15,22 @@ from dcspy import get_config_yaml_item
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '3.6.1'
+__version__ = '3.6.0'
+
+
+def _update_progress(progbar: QProgressBar, splash: QSplashScreen, app: DcsPyQtGui) -> None:
+    """
+    Update the progress bar, when loading application.
+
+    :type progbar: progress bar object
+    :type splash: splash screen object
+    :type app: GUI instance
+    """
+    for i in range(101):
+        progbar.setValue(i)
+        time.sleep(0.01)
+    splash.finish(app)
+    logging.debug('Splash screen loading finished.')
 
 
 def run(cli_args: Namespace = Namespace()) -> None:
@@ -34,20 +48,12 @@ def run(cli_args: Namespace = Namespace()) -> None:
     progress_bar.setTextVisible(False)
     splash_screen.show()
 
-    def _update_progress() -> None:
-        for i in range(101):
-            progress_bar.setValue(i)
-            time.sleep(0.01)
-        splash_screen.finish(window)
-        logging.debug('Splash screen loading finished.')
-
-    QTimer.singleShot(10, _update_progress)
-
     try:
         window = DcsPyQtGui(cli_args)
         if get_config_yaml_item('show_gui', True):
             window.show()
         app.aboutToQuit.connect(window.event_set)
+        _update_progress(progress_bar, splash_screen, window)
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
     except (KeyError, FileNotFoundError):
         pass
