@@ -3,11 +3,13 @@ import signal
 import sys
 import time
 from argparse import Namespace
+from functools import partial
 from logging import getLogger
 from os import environ, unlink
 from pathlib import Path
 from tempfile import gettempdir
 
+from PySide6.QtCore import QTimer
 from PySide6.QtGui import QPixmap, Qt
 from PySide6.QtWidgets import QApplication, QProgressBar, QSplashScreen
 
@@ -15,7 +17,7 @@ from dcspy import get_config_yaml_item
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '3.6.0'
+__version__ = '3.6.1'
 
 
 def _update_progress(progbar: QProgressBar, splash: QSplashScreen, app: DcsPyQtGui) -> None:
@@ -50,10 +52,10 @@ def run(cli_args: Namespace = Namespace()) -> None:
 
     try:
         window = DcsPyQtGui(cli_args)
+        QTimer.singleShot(5, partial(_update_progress, progress_bar, splash_screen, window))
         if get_config_yaml_item('show_gui', True):
             window.show()
         app.aboutToQuit.connect(window.event_set)
-        _update_progress(progress_bar, splash_screen, window)
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
     except (KeyError, FileNotFoundError):
         pass
