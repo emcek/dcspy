@@ -33,7 +33,7 @@ jobs:
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, 'dcspy') }}
         with:
-          nuitka-version: 2.5
+          nuitka-version: 2.5.9
           script-name: src/dcs_py.py
           mode: onefile
           windows-console-mode: disable
@@ -54,7 +54,7 @@ jobs:
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, '_cli') }}
         with:
-          nuitka-version: 2.5
+          nuitka-version: 2.5.9
           script-name: src/dcs_py.py
           mode: onefile
           windows-console-mode: force
