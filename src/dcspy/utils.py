@@ -98,15 +98,9 @@ def check_ver_at_github(repo: str) -> Release:
     """
     package = repo.split('/')[1]
     try:
-        # print("logger handlers 1:", LOG.handlers)
-        # print("Root logger handlers 1:", getLogger(name=None).handlers)
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
-        # print("logger handlers 2:", LOG.handlers)
-        # print("Root logger handlers 2:", getLogger(name=None).handlers)
         if response.ok:
             rel = Release(**response.json())
-            # print("logger handlers 3:", LOG.handlers)
-            # print("Root logger handlers 3:", getLogger(name=None).handlers)
             LOG.debug(f'Latest GitHub release: {rel}')
             return rel
         else:
