@@ -16,7 +16,7 @@ from dcspy import get_config_yaml_item
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '3.6.1'
+__version__ = '3.6.2'
 
 
 def _update_progress(progbar: QProgressBar, splash: QSplashScreen, app: DcsPyQtGui) -> None:

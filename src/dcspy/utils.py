@@ -34,7 +34,7 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.6.1'
+__version__ = '3.6.2'
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
