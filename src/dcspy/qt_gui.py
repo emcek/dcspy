@@ -949,13 +949,13 @@ class DcsPyQtGui(QMainWindow):
                 destination = exe_parent_dir / rel_info.download_url(extension=ext).split('/')[-1]
                 old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
                 new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
-                os.rename(src=Path(sys.executable), dst=old_ver_dst)
-                LOG.debug(f'Rename: {Path(sys.executable)} -> {old_ver_dst}')
+                os.rename(src=Path(nuitka_packed_exec), dst=old_ver_dst)
+                LOG.debug(f'Rename: {Path(nuitka_packed_exec)} -> {old_ver_dst}')
                 download_file(url=rel_info.download_url(extension=ext), save_path=destination)
                 os.rename(src=destination, dst=new_ver_dst)
                 LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
                 LOG.info('Restart to run new version.')
-                os.execv(exe_parent_dir / 'dcspy.exe', sys.argv)
+                os.execv(new_ver_dst, sys.argv)
             except PermissionError as exc:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
 
