@@ -25,8 +25,8 @@ from PIL import ImageColor
 from psutil import process_iter
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, LcdMode,
-                          Release, RequestModel, get_key_instance)
+from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
+                          DcspyConfigYaml, LcdMode, Release, RequestModel, get_key_instance)
 
 try:
     import git
@@ -35,8 +35,6 @@ except ImportError:
 
 LOG = getLogger(__name__)
 __version__ = '3.6.1'
-CONFIG_YAML = 'config.yaml'
-DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
@@ -100,9 +98,15 @@ def check_ver_at_github(repo: str) -> Release:
     """
     package = repo.split('/')[1]
     try:
+        # print("logger handlers 1:", LOG.handlers)
+        # print("Root logger handlers 1:", getLogger(name=None).handlers)
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
+        # print("logger handlers 2:", LOG.handlers)
+        # print("Root logger handlers 2:", getLogger(name=None).handlers)
         if response.ok:
             rel = Release(**response.json())
+            # print("logger handlers 3:", LOG.handlers)
+            # print("Root logger handlers 3:", getLogger(name=None).handlers)
             LOG.debug(f'Latest GitHub release: {rel}')
             return rel
         else:
