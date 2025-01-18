@@ -7,22 +7,13 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        nuitka_type: [ dcspy_nuitka, dcspy_nuitka_cli ]
+        nuitka_type: [ dcspy, dcspy_cli ]
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Set up Python 3.12"
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-
-      - name: "Install requirements"
-        shell: bash
-        run: |
-          python -m pip install -U pip
-          python -m pip install -U -r requirements.txt
+      - name: "Set up Python environment"
+        uses: ./.github/actions/setup-python
 
       - name: "Generate version info file"
         shell: pwsh
@@ -40,11 +31,11 @@ jobs:
           Write-Output "git_sha=$sha" >> $env:GITHUB_OUTPUT
 
       - uses: Nuitka/Nuitka-Action@main
-        if: ${{ endsWith( matrix.nuitka_type, '_nuitka') }}
+        if: ${{ endsWith( matrix.nuitka_type, 'dcspy') }}
         with:
-          nuitka-version: 2.4.11
+          nuitka-version: 2.5.9
           script-name: src/dcs_py.py
-          onefile: true
+          mode: onefile
           windows-console-mode: disable
           prefer-source-code: true
           enable-plugins: pyside6
@@ -63,9 +54,9 @@ jobs:
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, '_cli') }}
         with:
-          nuitka-version: 2.4.11
+          nuitka-version: 2.5.9
           script-name: src/dcs_py.py
-          onefile: true
+          mode: onefile
           windows-console-mode: force
           prefer-source-code: true
           enable-plugins: pyside6

@@ -926,34 +926,36 @@ class DcsPyQtGui(QMainWindow):
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Warning', message='Unable to check DCSpy version online')
 
     def _download_new_release(self) -> None:
-        """Download the new release if running PyInstaller version or Pip version."""
-        if getattr(sys, 'frozen', False):
-            self._restart_pyinstaller_ver()
+        """Download the new release if running Nuitka version or Pip version."""
+        if globals().get('__compiled__', False):
+            self._restart_nuitka_ver()
         else:
             self._restart_pip_ver()
 
-    def _restart_pyinstaller_ver(self):
-        """Download and restart a new version of DCSpy when using an executable/pyinstaller version."""
-        cli = '' if 'cli' not in Path(sys.executable).name else '_cli'
+    def _restart_nuitka_ver(self):
+        """Download and restart a new version of DCSpy when using an executable/nuitka version."""
+        LOG.debug(f'Nuitka unpacked: {globals().get("__builtins__", {}).get("__nuitka_binary_exe", "")}')
+        exe_parent_dir = Path(globals()['__compiled__'].containing_dir)
+        nuitka_packed_exec = globals()['__compiled__'].original_argv0
+        cli = '' if 'cli' not in Path(nuitka_packed_exec).name else '_cli'
         ext = f'{cli}.exe'
         # this is run only when get_version_string() not return failed in _dcspy_check_clicked()
         rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME)
-        exe_parent_dir = Path(sys.executable).parent
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
-                                       message=f'Download new version {rel_info.version} to:\n\n{exe_parent_dir}\n\nand restart DCSpy?',
+                                       message=f'Download new version {rel_info.version} to: \n\n{exe_parent_dir}\n\nand restart DCSpy?',
                                        defaultButton=QMessageBox.StandardButton.Yes)
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
                 destination = exe_parent_dir / rel_info.download_url(extension=ext).split('/')[-1]
                 old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
                 new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
-                os.rename(src=Path(sys.executable), dst=old_ver_dst)
-                LOG.debug(f'Rename: {Path(sys.executable)} -> {old_ver_dst}')
+                os.rename(src=Path(nuitka_packed_exec), dst=old_ver_dst)
+                LOG.debug(f'Rename: {Path(nuitka_packed_exec)} -> {old_ver_dst}')
                 download_file(url=rel_info.download_url(extension=ext), save_path=destination)
                 os.rename(src=destination, dst=new_ver_dst)
                 LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
                 LOG.info('Restart to run new version.')
-                os.execv(exe_parent_dir / 'dcspy.exe', sys.argv)
+                os.execv(new_ver_dst, sys.argv)
             except PermissionError as exc:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
 

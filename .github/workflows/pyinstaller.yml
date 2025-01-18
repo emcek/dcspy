@@ -49,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.spec_file }}_pyinstaller
-          path: dist/${{ matrix.spec_file }}.exe
+          path: dist/${{ matrix.spec_file }}_pyinstaller.exe

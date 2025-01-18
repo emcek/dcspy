@@ -4,6 +4,7 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 from datetime import datetime
 from enum import Enum
 from functools import partial
+from pathlib import Path
 from re import search
 from typing import Any, Final, TypedDict, TypeVar, Union
 
@@ -33,6 +34,8 @@ DCSPY_REPO_NAME: Final = 'emcek/dcspy'
 BIOS_REPO_NAME: Final = 'DCS-Skunkworks/dcs-bios'
 DEFAULT_FONT_NAME: Final = 'consola.ttf'
 CTRL_LIST_SEPARATOR: Final = '--'
+CONFIG_YAML: Final = 'config.yaml'
+DEFAULT_YAML_FILE: Final = Path(__file__).parent / 'resources' / CONFIG_YAML
 SUPPORTED_CRAFTS = {
     'FA18Chornet': {'name': 'F/A-18C Hornet', 'bios': 'FA-18C_hornet'},
     'Ka50': {'name': 'Ka-50 Black Shark II', 'bios': 'Ka-50'},
