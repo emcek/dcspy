@@ -1,4 +1,3 @@
-import logging
 import signal
 import sys
 import time
@@ -32,7 +31,7 @@ def _update_progress(progbar: QProgressBar, splash: QSplashScreen, app: DcsPyQtG
         progbar.setValue(i)
         time.sleep(0.01)
     splash.finish(app)
-    logging.debug('Splash screen loading finished.')
+    LOG.debug('Splash screen loading finished.')
 
 
 def run(cli_args: Namespace = Namespace()) -> None:
