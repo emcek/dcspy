@@ -19,18 +19,15 @@ LOG = getLogger(__name__)
 __version__ = '3.6.2'
 
 
-def _update_progress(progbar: QProgressBar, splash: QSplashScreen, app: DcsPyQtGui) -> None:
+def _update_progress(progbar: QProgressBar) -> None:
     """
     Update the progress bar, when loading application.
 
     :type progbar: progress bar object
-    :type splash: splash screen object
-    :type app: GUI instance
     """
-    for i in range(101):
+    for i in range(1, 101):
         progbar.setValue(i)
-        time.sleep(0.01)
-    splash.finish(app)
+        time.sleep(0.002)
     LOG.debug('Splash screen loading finished.')
 
 
@@ -51,7 +48,8 @@ def run(cli_args: Namespace = Namespace()) -> None:
 
     try:
         window = DcsPyQtGui(cli_args)
-        QTimer.singleShot(5, partial(_update_progress, progress_bar, splash_screen, window))
+        QTimer.singleShot(5, partial(_update_progress, progress_bar))
+        splash_screen.finish(window)
         if get_config_yaml_item('show_gui', True):
             window.show()
         app.aboutToQuit.connect(window.event_set)
