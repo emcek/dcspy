@@ -113,6 +113,7 @@ dcspy = [
     'resources/*.*',
     'img/dcspy_white.ico',
     'img/dcspy_black.ico',
+    'img/splash.png',
     'sdk/*.h',
     'py.typed',
 ]
