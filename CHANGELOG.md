@@ -1,3 +1,6 @@
+## 3.6.3
+* Fix Windows toolbar icon
+
 ## 3.6.2
 * Initial support colors for G19 - @emcek
 * Internal:
