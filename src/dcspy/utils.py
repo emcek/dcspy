@@ -135,19 +135,29 @@ def get_version_string(repo: str, current_ver: str | version.Version, check: boo
     return ver_string
 
 
-def download_file(url: str, save_path: Path) -> bool:
+def download_file(url: str, save_path: Path, progress_fn: Callable[[int], None] | None = None) -> bool:
     """
     Download a file from URL and save to save_path.
 
     :param url: URL address
     :param save_path: full path to save
+    :param progress_fn: callable object to report download progress
     """
     response = get(url=url, stream=True, timeout=5)
     if response.ok:
+        file_size = int(response.headers.get('Content-Length', 0))
+        LOG.debug(f'File size: {file_size / (1024 * 1024):.2f} MB' if file_size else 'File size: Unknown')
         LOG.debug(f'Download file from: {url}')
         with open(save_path, 'wb+') as dl_file:
-            for chunk in response.iter_content(chunk_size=128):
+            downloaded = 0
+            progress = 0
+            for chunk in response.iter_content(chunk_size=1024):
                 dl_file.write(chunk)
+                downloaded += len(chunk)
+                new_progress = int((downloaded / file_size) * 100)
+                if progress_fn and new_progress == progress + 1:
+                    progress = new_progress
+                    progress_fn(progress)
             LOG.debug(f'Saved as: {save_path}')
             return True
     else:
