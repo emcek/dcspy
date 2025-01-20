@@ -946,12 +946,13 @@ class DcsPyQtGui(QMainWindow):
                                        defaultButton=QMessageBox.StandardButton.Yes)
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
-                destination = exe_parent_dir / rel_info.download_url(extension=ext).split('/')[-1]
+                file_url = rel_info.download_url(extension=ext)
+                destination = exe_parent_dir / file_url.split('/')[-1]
                 old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
                 new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
                 os.rename(src=Path(nuitka_packed_exec), dst=old_ver_dst)
                 LOG.debug(f'Rename: {Path(nuitka_packed_exec)} -> {old_ver_dst}')
-                download_file(url=rel_info.download_url(extension=ext), save_path=destination)
+                download_file(url=file_url, save_path=destination, progress_fn=self._progress_by_abs_value)
                 os.rename(src=destination, dst=new_ver_dst)
                 LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
                 LOG.info('Restart to run new version.')
@@ -1153,7 +1154,7 @@ class DcsPyQtGui(QMainWindow):
         tmp_dir = Path(gettempdir())
         download_url = rel_info.download_url(extension='.zip', file_name='BIOS')
         local_zip = tmp_dir / download_url.split('/')[-1]
-        download_file(url=download_url, save_path=local_zip)
+        download_file(url=download_url, save_path=local_zip, progress_fn=self._progress_by_abs_value)
         LOG.debug(f'Remove DCS-BIOS from: {tmp_dir} ')
         rmtree(path=tmp_dir / 'DCS-BIOS', ignore_errors=True)
         LOG.debug(f'Unpack file: {local_zip} ')
@@ -1174,6 +1175,7 @@ class DcsPyQtGui(QMainWindow):
             install_result = f'{install_result}\n\nUsing stable release version.'
             self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {local_bios}', message=install_result)
+        self.progressbar.setValue(0)
 
     def _handling_export_lua(self, temp_dir: Path) -> str:
         """
