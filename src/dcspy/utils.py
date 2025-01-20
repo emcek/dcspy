@@ -146,7 +146,7 @@ def download_file(url: str, save_path: Path, progress_fn: Callable[[int], None] 
     response = get(url=url, stream=True, timeout=5)
     if response.ok:
         file_size = int(response.headers.get('Content-Length', 0))
-        LOG.debug(f'File size: {file_size / (1024 * 1024):.2f} MB' if file_size else "File size: Unknown")
+        LOG.debug(f'File size: {file_size / (1024 * 1024):.2f} MB' if file_size else 'File size: Unknown')
         LOG.debug(f'Download file from: {url}')
         with open(save_path, 'wb+') as dl_file:
             downloaded = 0
