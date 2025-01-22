@@ -226,5 +226,6 @@ class LcdSdkManager:
         """
         self.logi_lcd_color_set_background([(0,) * 4] * LcdSize.COLOR_WIDTH.value * LcdSize.COLOR_HEIGHT.value)
         if true_clear:
+            self.logi_lcd_color_set_title('')
             for i in range(8):
                 self.logi_lcd_color_set_text(i, '')

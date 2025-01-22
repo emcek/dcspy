@@ -150,10 +150,9 @@ def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type,
         assert isinstance(keyboard.plane, BasicAircraft)
         assert isinstance(keyboard.model.lcd_info, LcdInfo)
         assert keyboard.model.lcd_info.type == lcd_type
-        assert isinstance(keyboard.text, list)
-        keyboard.text = [('1', Color.red), ('2', Color.green)]
-        assert len(keyboard.text) == 2
-        keyboard.display()
+        assert isinstance(keyboard.display, list)
+        keyboard.display = [('1', Color.red), ('2', Color.green)]
+        assert len(keyboard.display) == 2
         upd_display.assert_called_once()
 
     img = keyboard._prepare_image()
@@ -171,7 +170,7 @@ def test_check_keyboard_text(keyboard, protocol_parser, sock, request):
     keyboard = request.getfixturevalue(keyboard)
     txt_list = [('0', Color.white), ('1', Color.green), ('2', Color.white), ('3', Color.green), ('4', Color.white), ('5', Color.green)]
     with patch.object(LcdSdkManager, 'update_text') as upd_txt:
-        keyboard.text = txt_list
+        keyboard.text(txt_list)
         upd_txt.assert_called_once_with(txt_list)
 
 

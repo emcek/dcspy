@@ -45,16 +45,6 @@ class LogitechDevice:
         LOG.debug(f'G-Key is connected: {success}')
         self.plane = BasicAircraft(self.model.lcd_info)
 
-    @property
-    def text(self) -> list[tuple[str, Color]]:
-        """
-        Get the latest text from LCD.
-
-        :return: List of strings with data, row by row
-        """
-        return self._text
-
-    @text.setter
     def text(self, message: list[tuple[str, Color]]) -> None:
         """
         Display text message at LCD.
@@ -77,13 +67,24 @@ class LogitechDevice:
         """
         return [pair[0] for pair in self._text][1:]
 
-    def display(self) -> None:
+    @property
+    def display(self) -> list[tuple[str, Color]]:
+        """
+        Get the latest text from LCD.
+
+        :return: List of strings with data, row by row
+        """
+        return self._text
+
+    @display.setter
+    def display(self, message: list[tuple[str, Color]]) -> None:
         """
         Display a message as an image at LCD.
 
         For G13/G15/G510 takes the first four (4) or fewer elements of a list and display as four (4) rows.
         For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
         """
+        self._text = message
         if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
 
@@ -99,16 +100,23 @@ class LogitechDevice:
             planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
-                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (SUPPORTED_CRAFTS[self.plane_name]['name'], Color.green)]
+                self.display = [('     DCSpy       ', Color.orange),
+                                ('Detected aircraft:', Color.white),
+                                (SUPPORTED_CRAFTS[self.plane_name]['name'], Color.green)]
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
                 self.bios_name = value
-                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (value, Color.green)]
+                self.display = [('     DCSpy       ', Color.orange),
+                                ('Detected aircraft:', Color.white),
+                                (value, Color.green)]
                 self.plane_detected = True
             elif value not in planes_list:
                 LOG.warning(f'Not supported aircraft: {value}')
-                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (value, Color.green), ('Not supported yet!', Color.red)]
+                self.display = [('     DCSpy       ', Color.orange),
+                                ('Detected aircraft:', Color.white),
+                                (value, Color.green),
+                                ('Not supported yet!', Color.red)]
 
     def unload_old_plane(self) -> None:
         """Unloads the previous plane by remove all callbacks and keep only one."""
@@ -211,7 +219,7 @@ class LogitechDevice:
         :param true_clear:
         """
         if self.model.lcd_info.type != LcdType.NONE:
-            LOG.debug(f'Clear LCD type: {self.model.lcd_info.type}')
+            LOG.debug(f'Clear LCD type: {self.model.lcd_info.type} with: {true_clear=}')
             self.lcd_sdk.clear_display(true_clear)
 
     def _prepare_image(self) -> Image.Image:
@@ -226,8 +234,9 @@ class LogitechDevice:
                         size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
         draw = ImageDraw.Draw(img)
         for line_no, txt_and_color in enumerate(self._text[1:]):
+            fill = self.model.lcd_info.foreground if self.model.lcd_info.type == LcdType.MONO else rgba(txt_and_color[1], mode=self.model.lcd_info.mode)
             draw.text(xy=(0, self.model.lcd_info.line_spacing * line_no), text=txt_and_color[0],
-                      fill=rgba(txt_and_color[1], mode=self.model.lcd_info.mode), font=self.model.lcd_info.font_s)  # type: ignore[arg-type]
+                      fill=fill, font=self.model.lcd_info.font_s)  # type: ignore[arg-type]
         return img
 
     def __str__(self) -> str:

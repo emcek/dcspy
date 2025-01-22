@@ -84,11 +84,11 @@ def _sock_err_handler(logi_device: LogitechDevice, start_time: float, ver_string
         LOG.debug(f'Main loop socket error: {exp}')
         LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
-    logi_device.text = [('     DCSpy       ', Color.orange),
-                        ('Logitech LCD OK', Color.lightgreen),
-                        (f'No data from DCS:      {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}', Color.red),
-                        (f'{next(support_iter)}', Color.yellow),
-                        (ver_string, Color.white)]
+    logi_device.display = [('     DCSpy       ', Color.orange),
+                           ('Logitech LCD OK', Color.lightgreen),
+                           (f'No data from DCS:    {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}', Color.red),
+                           (f'{next(support_iter)}', Color.yellow),
+                           (ver_string, Color.white)]
 
 
 def _prepare_socket() -> socket.socket:
@@ -121,8 +121,8 @@ def dcspy_run(model: LogitechDeviceModel, event: Event) -> None:
         dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
         _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event)
     LOG.info('DCSpy stopped.')
-    logi_dev.text = [('     DCSpy       ', Color.orange),
-                     ('DCSpy stopped', Color.red),
-                     ('', Color.black),
-                     (f'DCSpy:      {dcspy_ver}', Color.white),
-                     (f'DCS-BIOS:   {check_bios_ver(bios_path=get_config_yaml_item("dcsbios"))}', Color.white)]
+    logi_dev.display = [('     DCSpy       ', Color.orange),
+                        ('DCSpy stopped', Color.red),
+                        ('', Color.black),
+                        (f'DCSpy:    {dcspy_ver}', Color.white),
+                        (f'DCS-BIOS:  {check_bios_ver(bios_path=get_config_yaml_item("dcsbios"))}', Color.white)]
