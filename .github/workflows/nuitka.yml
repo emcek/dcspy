@@ -49,7 +49,7 @@ jobs:
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_sha }}
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
-          copyright: (c) 2024 Michal Plichta. All rights reserved.
+          copyright: (c) 2025 Michal Plichta. All rights reserved.
 
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, '_cli') }}
@@ -70,7 +70,7 @@ jobs:
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_sha }}
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
-          copyright: (c) 2024 Michal Plichta. All rights reserved.
+          copyright: (c) 2025 Michal Plichta. All rights reserved.
 
       - name: "Upload dcspy binaries"
         uses: actions/upload-artifact@v4
