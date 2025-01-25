@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from pytest import fixture
 
 from dcspy import aircraft, logitech, models, utils
+from dcspy.starter import DCSpyStarter
 
 
 @fixture()
@@ -257,6 +258,35 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
     with patch.object(lcd_sdk, 'logi_lcd_init', return_value=True), \
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
         return Color(parser=protocol_parser, socket=sock, model=G19)
+
+@fixture()
+def g13_starter() -> DCSpyStarter:
+    """
+    Dummy DCSpyStarter for G13.
+
+    :return: DCSpyStarter
+    """
+    from threading import Event
+
+    from dcspy.models import DEFAULT_FONT_NAME, G13, FontsConfig
+
+    G13.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+    return DCSpyStarter(model=G13, event=Event())
+
+
+@fixture()
+def g19_starter() -> DCSpyStarter:
+    """
+    Dummy DCSpyStarter for G19.
+
+    :return: DCSpyStarter
+    """
+    from threading import Event
+
+    from dcspy.models import DEFAULT_FONT_NAME, G19, FontsConfig
+
+    G19.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+    return DCSpyStarter(model=G19, event=Event())
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
