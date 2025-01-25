@@ -32,7 +32,7 @@ from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
                           FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
                           RequestType, SystemData)
-from dcspy.starter import dcspy_run
+from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
                          get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
@@ -1275,7 +1275,7 @@ class DcsPyQtGui(QMainWindow):
             self.device.lcd_info.set_fonts(fonts_cfg)
         self.event = Event()
         app_params = {'model': self.device, 'event': self.event}
-        app_thread = Thread(target=dcspy_run, kwargs=app_params)
+        app_thread = Thread(target=DCSpyStarter(**app_params))
         app_thread.name = 'dcspy-app'
         LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.pb_start.setEnabled(False)
