@@ -48,7 +48,7 @@ class DCSpyStarter:
             try:
                 dcs_bios_resp = sock.recv(2048)
                 if self.CLEAN_BEFORE_LOAD_PLANE:
-                    LOG.debug(f'Before: {self.CLEAN_WHILE_WAIT_FOR_DATA=} {self.CLEAN_BEFORE_LOAD_PLANE=}')
+                    LOG.debug(f'Before: {self.CLEAN_WHILE_WAIT_FOR_DATA=} {self.CLEAN_BEFORE_LOAD_PLANE=}')  # todo: remove
                     logi_device.clear(true_clear=True)
                     self.CLEAN_BEFORE_LOAD_PLANE = False
                     self.CLEAN_WHILE_WAIT_FOR_DATA = True
@@ -96,7 +96,7 @@ class DCSpyStarter:
         """
         if self.CLEAN_WHILE_WAIT_FOR_DATA:
             LOG.debug(f'Main loop socket error: {exp}')
-            LOG.debug(f'After clean: {self.CLEAN_WHILE_WAIT_FOR_DATA=} {self.CLEAN_BEFORE_LOAD_PLANE=}')
+            LOG.debug(f'After clean: {self.CLEAN_WHILE_WAIT_FOR_DATA=} {self.CLEAN_BEFORE_LOAD_PLANE=}')  # todo: remove
             logi_device.clear(true_clear=True)
             self.CLEAN_BEFORE_LOAD_PLANE = True
             self.CLEAN_WHILE_WAIT_FOR_DATA = False
