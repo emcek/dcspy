@@ -10,11 +10,10 @@ from shutil import SameFileError, copy
 
 from packaging import version
 
-from dcspy.models import ConfigValue, DcspyConfigYaml
+from dcspy.models import ConfigValue, DcspyConfigYaml, __version__
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
-__version__ = '3.6.3'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:

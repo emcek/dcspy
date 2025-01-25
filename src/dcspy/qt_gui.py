@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
                           FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
-                          RequestType, SystemData)
+                          RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
@@ -39,7 +39,6 @@ from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, ch
                          load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
-__version__ = '3.6.3'
 LOG = getLogger(__name__)
 NO_MSG_BOX = int(os.environ.get('DCSPY_NO_MSG_BOXES', 0))
 LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0, 'rb_g510': 0,

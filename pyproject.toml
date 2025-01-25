@@ -101,7 +101,7 @@ docs = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = 'dcspy.run.__version__'}
+version = {attr = 'dcspy.models.__version__'}
 
 [tool.setuptools.packages.find]
 where = ['src/']

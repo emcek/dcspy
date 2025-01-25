@@ -26,7 +26,7 @@ from psutil import process_iter
 from requests import get
 
 from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
-                          DcspyConfigYaml, LcdMode, Release, RequestModel, get_key_instance)
+                          DcspyConfigYaml, LcdMode, Release, RequestModel, __version__, get_key_instance)
 
 try:
     import git
@@ -34,7 +34,6 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.6.3'
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)

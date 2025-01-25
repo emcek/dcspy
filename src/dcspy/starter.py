@@ -9,12 +9,11 @@ from time import gmtime, time
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechDevice
-from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, Color, LogitechDeviceModel
+from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, Color, LogitechDeviceModel, __version__
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nick Thain', 'BrotherBloat']
-__version__ = '3.6.3'
 
 
 class DCSpyStarter:
