@@ -190,7 +190,7 @@ class LogitechDevice:
         if self.model.lcd_info.type != LcdType.NONE:
             button = self.check_buttons()
             if button.value:
-                self._send_request(button, key_down=KEY_DOWN)
+                self._send_request(button=button, key_down=KEY_DOWN)
 
     def _send_request(self, button: AnyButton, key_down: int) -> None:
         """
