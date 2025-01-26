@@ -22,7 +22,7 @@ def _update_progress(progbar: QProgressBar) -> None:
     """
     Update the progress bar, when loading application.
 
-    :type progbar: progress bar object
+    :type progbar: Progress bar object
     """
     for i in range(1, 101):
         progbar.setValue(i)

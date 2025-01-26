@@ -269,8 +269,8 @@ def test_collect_debug_data(switch_dcs_bios_path_in_config, resources):
     assert zip_file.suffix == '.zip'
     assert zip_file.is_file()
     assert zip_file.exists()
-    with ZipFile(file=zip_file, mode='r') as zipf:
-        zip_list = zipf.namelist()
+    with ZipFile(file=zip_file, mode='r') as archive:
+        zip_list = archive.namelist()
     assert 'system_data.txt' in zip_list
     assert sum('.yaml' in s for s in zip_list) == 4
     assert 'dcspy.log' in zip_list

@@ -326,7 +326,7 @@ def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
 @fixture()
 def migration_file(resources):
     """
-    Recover content of test file for migration.
+    A recover content of a test file for migration.
 
     :param resources: Path to tests/resources directory.
     """

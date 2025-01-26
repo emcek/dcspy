@@ -10,7 +10,7 @@ def test_keyboard_base_basic_check(keyboard_base):
 
     assert str(keyboard_base) == 'LogitechDevice: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'socket', '_text',
+    data = ('bios_name', 'plane_name', 'plane_detected', 'lcd_button_pressed', 'cfg', 'socket', '_text',
             'parser', 'ProtocolParser',
             'plane', 'BasicAircraft',
             'model', 'LogitechDeviceModel', 'LcdInfo', 'LcdMode', 'FreeTypeFont',
@@ -49,11 +49,11 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     logi_keyboard: LogitechDevice = request.getfixturevalue(keyboard)
-    logi_keyboard.lcdbutton_pressed = pressed1
+    logi_keyboard.lcd_button_pressed = pressed1
     with patch.object(LcdSdkManager, 'logi_lcd_is_button_pressed', side_effect=effect) as lcd_btn_pressed:
         assert logi_keyboard.check_buttons() == chk_btn
     lcd_btn_pressed.assert_has_calls(calls)
-    assert logi_keyboard.lcdbutton_pressed is pressed2
+    assert logi_keyboard.lcd_button_pressed is pressed2
 
 
 @mark.benchmark

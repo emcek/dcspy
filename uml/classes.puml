@@ -44,7 +44,7 @@ package logitech {
         + bios_name = '' : str
         + socket: socket
         + plane_detected = False : bool
-        + lcdbutton_pressed = False : bool
+        + lcd_button_pressed = False : bool
         + model: LogitechDeviceModel
         + __init__(ProtocolParser, socket, FontsConfig)
         + display()
