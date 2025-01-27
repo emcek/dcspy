@@ -116,7 +116,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'git_bios': True,
         'toolbar_area': 4,
         'toolbar_style': 0,
-        'git_bios_ref': 'master',
+        'git_bios_ref': 'main',
         'gkeys_area': 2,
         'gkeys_float': False,
     }
