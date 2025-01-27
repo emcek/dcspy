@@ -8,11 +8,10 @@ from sys import executable, platform
 
 from dcspy.log import config_logger
 from dcspy.migration import migrate
-from dcspy.models import DCSPY_REPO_NAME, LOCAL_APPDATA, ConfigValue
+from dcspy.models import DCSPY_REPO_NAME, LOCAL_APPDATA, ConfigValue, __version__
 from dcspy.utils import check_dcs_ver, get_default_yaml, load_yaml, save_yaml
 
 LOG = getLogger(__name__)
-__version__ = '3.6.3'
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 _start_cfg = load_yaml(full_path=default_yaml)

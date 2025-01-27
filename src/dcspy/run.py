@@ -16,14 +16,13 @@ from dcspy import get_config_yaml_item
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
-__version__ = '3.6.3'
 
 
 def _update_progress(progbar: QProgressBar) -> None:
     """
     Update the progress bar, when loading application.
 
-    :type progbar: progress bar object
+    :type progbar: Progress bar object
     """
     for i in range(1, 101):
         progbar.setValue(i)

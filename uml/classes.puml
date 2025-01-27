@@ -44,10 +44,10 @@ package logitech {
         + bios_name = '' : str
         + socket: socket
         + plane_detected = False : bool
-        + lcdbutton_pressed = False : bool
+        + lcd_button_pressed = False : bool
         + model: LogitechDeviceModel
-        + display(message: List[Tuple[str, Color]]) -> List[Tuple[str, Color]]
         + __init__(ProtocolParser, socket, FontsConfig)
+        + display()
         + detecting_plane()
         + load_new_plane(str)
         + check_buttons() -> LcdButton
@@ -56,7 +56,7 @@ package logitech {
         + lcd_sdk: LcdSdkManager
         + gkey_callback_handler(int, int, int, int)
         + clear()
-        + text(message: List[Tuple[str, Color]])
+        + text(message: List[Tuple[str, Color]]) -> List[Tuple[str, Color]]
         + messages() -> List[str]
         # _prepare_image() -> Image
         # _send_request(button: Union[LcdButton, Gkey, MouseButton], Optional[int])

@@ -26,7 +26,7 @@ from psutil import process_iter
 from requests import get
 
 from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
-                          DcspyConfigYaml, LcdMode, Release, RequestModel, get_key_instance)
+                          DcspyConfigYaml, LcdMode, Release, RequestModel, __version__, get_key_instance)
 
 try:
     import git
@@ -34,7 +34,6 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.6.3'
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
@@ -141,7 +140,7 @@ def download_file(url: str, save_path: Path, progress_fn: Callable[[int], None] 
 
     :param url: URL address
     :param save_path: full path to save
-    :param progress_fn: callable object to report download progress
+    :param progress_fn: a callable object to report download progress
     """
     response = get(url=url, stream=True, timeout=5)
     if response.ok:
@@ -449,15 +448,15 @@ def collect_debug_data() -> Path:
     dcs_log = _get_dcs_log(conf_dict)
 
     zip_file = Path(gettempdir()) / f'dcspy_debug_{str(datetime.now()).replace(" ", "_").replace(":", "")}.zip'
-    with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as zipf:
-        zipf.write(sys_data, arcname=sys_data.name)
-        zipf.write(dcs_log, arcname=dcs_log.name)
+    with zipfile.ZipFile(file=zip_file, mode='w', compresslevel=9, compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.write(sys_data, arcname=sys_data.name)
+        archive.write(dcs_log, arcname=dcs_log.name)
         for log_file in _get_log_files():
-            zipf.write(log_file, arcname=log_file.name)
+            archive.write(log_file, arcname=log_file.name)
         for yaml_file in _get_yaml_files(config_file):
-            zipf.write(yaml_file, arcname=yaml_file.name)
+            archive.write(yaml_file, arcname=yaml_file.name)
         for png in _get_png_files():
-            zipf.write(png, arcname=png.name)
+            archive.write(png, arcname=png.name)
 
     return zip_file
 

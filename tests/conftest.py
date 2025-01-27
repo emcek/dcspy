@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch
 from pytest import fixture
 
 from dcspy import aircraft, logitech, models, utils
+from dcspy.starter import DCSpyStarter
 
 
 @fixture()
@@ -258,6 +259,35 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
         return Color(parser=protocol_parser, socket=sock, model=G19)
 
+@fixture()
+def g13_starter() -> DCSpyStarter:
+    """
+    Dummy DCSpyStarter for G13.
+
+    :return: DCSpyStarter
+    """
+    from threading import Event
+
+    from dcspy.models import DEFAULT_FONT_NAME, G13, FontsConfig
+
+    G13.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+    return DCSpyStarter(model=G13, event=Event())
+
+
+@fixture()
+def g19_starter() -> DCSpyStarter:
+    """
+    Dummy DCSpyStarter for G19.
+
+    :return: DCSpyStarter
+    """
+    from threading import Event
+
+    from dcspy.models import DEFAULT_FONT_NAME, G19, FontsConfig
+
+    G19.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+    return DCSpyStarter(model=G19, event=Event())
+
 
 # <=><=><=><=><=> others <=><=><=><=><=>
 @fixture()
@@ -296,7 +326,7 @@ def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
 @fixture()
 def migration_file(resources):
     """
-    Recover content of test file for migration.
+    A recover content of a test file for migration.
 
     :param resources: Path to tests/resources directory.
     """

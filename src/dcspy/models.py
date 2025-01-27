@@ -12,6 +12,8 @@ from packaging import version
 from PIL import Image, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
+__version__ = '3.6.3'
+
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
 UDP_PORT: Final = 5010

@@ -36,7 +36,7 @@ class LogitechDevice:
         self.plane_name = ''
         self.bios_name = ''
         self.plane_detected = False
-        self.lcdbutton_pressed = False
+        self.lcd_button_pressed = False
         self._text: list[tuple[str, Color]] = []
         self.model = model
         self.lcd_sdk = lcd_sdk.LcdSdkManager(name='DCS World', lcd_type=self.model.lcd_info.type)
@@ -45,11 +45,21 @@ class LogitechDevice:
         LOG.debug(f'G-Key is connected: {success}')
         self.plane = BasicAircraft(self.model.lcd_info)
 
+    @property
+    def text(self) -> list[tuple[str, Color]]:
+        """
+        Get the latest text from LCD.
+
+        :return: List of strings with data, row by row
+        """
+        return self._text
+
+    @text.setter
     def text(self, message: list[tuple[str, Color]]) -> None:
         """
         Display text message at LCD.
 
-        First element is title - used only for G19
+        A first element is title - used only for G19
         For G13/G15/G510 takes elements two (2) to four (4).
         For G19 takes the elements two (2) to eight (8).
         :param message: List of tuples with strings and color to display, row by row.
@@ -61,30 +71,19 @@ class LogitechDevice:
     @property
     def messages(self) -> list[str]:
         """
-        Get the text massages without tittle from LCD.
+        Get the text massages without the tittle from LCD.
 
         :return: List of strings with data, row by row
         """
         return [pair[0] for pair in self._text][1:]
 
-    @property
-    def display(self) -> list[tuple[str, Color]]:
-        """
-        Get the latest text from LCD.
-
-        :return: List of strings with data, row by row
-        """
-        return self._text
-
-    @display.setter
-    def display(self, message: list[tuple[str, Color]]) -> None:
+    def display(self) -> None:
         """
         Display a message as an image at LCD.
 
         For G13/G15/G510 takes the first four (4) or fewer elements of a list and display as four (4) rows.
         For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
         """
-        self._text = message
         if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
 
@@ -100,23 +99,16 @@ class LogitechDevice:
             planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
-                self.display = [('     DCSpy       ', Color.orange),
-                                ('Detected aircraft:', Color.white),
-                                (SUPPORTED_CRAFTS[self.plane_name]['name'], Color.green)]
+                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (SUPPORTED_CRAFTS[self.plane_name]['name'], Color.green)]
                 self.plane_detected = True
             elif self.plane_name not in SUPPORTED_CRAFTS and value in planes_list:
                 LOG.info(f'Basic supported aircraft: {value}')
                 self.bios_name = value
-                self.display = [('     DCSpy       ', Color.orange),
-                                ('Detected aircraft:', Color.white),
-                                (value, Color.green)]
+                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (value, Color.green)]
                 self.plane_detected = True
             elif value not in planes_list:
                 LOG.warning(f'Not supported aircraft: {value}')
-                self.display = [('     DCSpy       ', Color.orange),
-                                ('Detected aircraft:', Color.white),
-                                (value, Color.green),
-                                ('Not supported yet!', Color.red)]
+                self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (value, Color.green), ('Not supported yet!', Color.red)]
 
     def unload_old_plane(self) -> None:
         """Unloads the previous plane by remove all callbacks and keep only one."""
@@ -136,6 +128,7 @@ class LogitechDevice:
         """
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
+            self.clear(true_clear=True)
             lcd_update_func = self.lcd_sdk.update_display if self.model.lcd_info.type != LcdType.NONE else None
             self.plane = getattr(import_module('dcspy.aircraft'), self.plane_name)(self.model.lcd_info, update_display=lcd_update_func)
             LOG.debug(f'Dynamic load of: {self.plane_name} as AdvancedAircraft | BIOS: {self.plane.bios_name}')
@@ -180,11 +173,11 @@ class LogitechDevice:
         """
         for lcd_btn in self.model.lcd_keys:
             if self.lcd_sdk.logi_lcd_is_button_pressed(lcd_btn):
-                if not self.lcdbutton_pressed:
-                    self.lcdbutton_pressed = True
+                if not self.lcd_button_pressed:
+                    self.lcd_button_pressed = True
                     return LcdButton(lcd_btn)
                 return LcdButton.NONE
-        self.lcdbutton_pressed = False
+        self.lcd_button_pressed = False
         return LcdButton.NONE
 
     def button_handle(self) -> None:
@@ -197,7 +190,7 @@ class LogitechDevice:
         if self.model.lcd_info.type != LcdType.NONE:
             button = self.check_buttons()
             if button.value:
-                self._send_request(button, key_down=KEY_DOWN)
+                self._send_request(button=button, key_down=KEY_DOWN)
 
     def _send_request(self, button: AnyButton, key_down: int) -> None:
         """
@@ -234,9 +227,9 @@ class LogitechDevice:
                         size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
         draw = ImageDraw.Draw(img)
         for line_no, txt_and_color in enumerate(self._text[1:]):
-            fill = self.model.lcd_info.foreground if self.model.lcd_info.type == LcdType.MONO else rgba(txt_and_color[1], mode=self.model.lcd_info.mode)
+            # fill = self.model.lcd_info.foreground if self.model.lcd_info.type == LcdType.MONO else rgba(txt_and_color[1], mode=self.model.lcd_info.mode)
             draw.text(xy=(0, self.model.lcd_info.line_spacing * line_no), text=txt_and_color[0],
-                      fill=fill, font=self.model.lcd_info.font_s)  # type: ignore[arg-type]
+                      fill=rgba(txt_and_color[1], mode=self.model.lcd_info.mode), font=self.model.lcd_info.font_s)  # type: ignore[arg-type]
         return img
 
     def __str__(self) -> str:
