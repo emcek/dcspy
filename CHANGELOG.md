@@ -1,6 +1,9 @@
+## 3.7.0
+* Use LCD text mode for welcome screen - @emcek
+
 ## 3.6.3
-* Fix Windows toolbar icon (@emcek)
-* Show progress when downloading DCS-BIOS or new DCSpy release (@emcek)
+* Fix Windows toolbar icon @emcek
+* Show progress when downloading DCS-BIOS or new DCSpy release @emcek
 * Fix when LCD is not cleared - #442 (@emcek)
 
 ## 3.6.2
