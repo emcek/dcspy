@@ -1037,7 +1037,7 @@ class DcsPyQtGui(QMainWindow):
         """
         exc_type, exc_val, exc_tb = exc_tuple
         LOG.debug(exc_tb)
-        self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=str(exc_type), detail_txt=str(exc_val),
+        self._show_custom_msg_box(kind_of=QMessageBox.Icon.Critical, title='Error', text=exc_type.__name__, detail_txt=str(exc_val),
                                   info_txt=f'Try remove directory:\n{self.bios_repo_path}\nand restart DCSpy.')
         LOG.debug(f'Can not update BIOS: {exc_type}')
 
