@@ -340,7 +340,6 @@ def test_get_empty_ctrl(test_dcs_bios):
     assert c is None
 
 
-
 @mark.benchmark
 def test_get_inputs_for_plane(test_dcs_bios):
     from dcspy.utils import get_full_bios_for_plane

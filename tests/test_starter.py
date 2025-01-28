@@ -10,6 +10,7 @@ def test_load_new_plane_if_detected(g13_starter):
         g13_starter._load_new_plane_if_detected(lcd)
         lcd.load_new_plane.assert_called_once_with()
 
+
 @mark.parametrize('keyboard, dcspy_starter', [
     ('keyboard_mono', 'g13_starter'), ('keyboard_color', 'g19_starter')
 ], ids=['mono', 'color'])

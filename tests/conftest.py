@@ -259,10 +259,11 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
             patch.object(GkeySdkManager, 'logi_gkey_init', return_value=True):
         return Color(parser=protocol_parser, socket=sock, model=G19)
 
+
 @fixture()
 def g13_starter() -> DCSpyStarter:
     """
-    Dummy DCSpyStarter for G13.
+    DCSpyStarter instance for G13.
 
     :return: DCSpyStarter
     """
@@ -277,7 +278,7 @@ def g13_starter() -> DCSpyStarter:
 @fixture()
 def g19_starter() -> DCSpyStarter:
     """
-    Dummy DCSpyStarter for G19.
+    DCSpyStarter instance for G19.
 
     :return: DCSpyStarter
     """
@@ -326,7 +327,7 @@ def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
 @fixture()
 def migration_file(resources):
     """
-    A recover content of a test file for migration.
+    Recover content of a test file for migration.
 
     :param resources: Path to tests/resources directory.
     """

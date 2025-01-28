@@ -22,6 +22,7 @@ def test_check_ver_exception():
         with raises(ValueError):
             utils.check_ver_at_github(repo='fake3/package3')
 
+
 @mark.parametrize('current_ver, extension, file_name, result', [
     ('3.6.1', 'tar.gz', 'dcspy', {'latest': True, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy-3.6.1.tar.gz'}),
     ('3.5.0', 'exe', 'dcspy_cli', {'latest': False, 'dl_url': 'https://github.com/emcek/dcspy/releases/download/v3.6.1/dcspy_cli.exe'}),
