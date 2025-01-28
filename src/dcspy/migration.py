@@ -203,7 +203,7 @@ def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str
     value = cfg.get(key, '')
     if value == old_value or old_value == '':
         cfg[key] = new_value
-        LOG.debug(f'Value for {key} change: {old_value} -> {new_value} with: {value}')
+        LOG.debug(f'Value for {key} change: {value} -> {new_value}')
 
 
 def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
