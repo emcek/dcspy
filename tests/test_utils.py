@@ -206,6 +206,7 @@ def test_is_git_object(tmpdir):
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='wrong') is False
     assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='') is False
 
 
 @mark.slow
