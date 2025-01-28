@@ -116,7 +116,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'git_bios': True,
         'toolbar_area': 4,
         'toolbar_style': 0,
-        'git_bios_ref': 'master',
+        'git_bios_ref': 'main',
         'gkeys_area': 2,
         'gkeys_float': False,
     }
@@ -206,6 +206,7 @@ def test_is_git_object(tmpdir):
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='wrong') is False
     assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='') is False
 
 
 @mark.slow

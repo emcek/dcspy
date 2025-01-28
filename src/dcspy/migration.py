@@ -56,6 +56,15 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
 
 
+def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.7.0.
+
+    :param cfg: Configuration dictionary
+    """
+    _change_value(cfg, 'git_bios_ref', 'main', 'master')
+
+
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
     """
     Migrate to version 3.5.1.
@@ -180,6 +189,21 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
         pass
     cfg[new_name] = value
     LOG.debug(f'Rename key {old_name} -> {new_name} with: {value}')
+
+
+def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str = '') -> None:
+    """
+    Change value for the key to `new_value` if current value is equal `old_value`.
+
+    :param cfg: Configuration dictionary
+    :param key: Key name
+    :param new_value: Replace with this value
+    :param old_value: Check if a current value is equal old_value
+    """
+    value = cfg.get(key, '')
+    if value == old_value or old_value == '':
+        cfg[key] = new_value
+        LOG.debug(f'Value for {key} change: {value} -> {new_value}')
 
 
 def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:

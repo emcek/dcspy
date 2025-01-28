@@ -38,7 +38,7 @@ def test_generate_config():
         'font_mono_s': 9,
         'font_name': 'consola.ttf',
         'git_bios': True,
-        'git_bios_ref': 'master',
+        'git_bios_ref': 'main',
         'gkeys_area': 2,
         'gkeys_float': False,
         'device': 'G13',
