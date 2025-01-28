@@ -22,9 +22,9 @@
   * Use type annotation from future
 
 ## 3.6.0
-* Use symbolic link to DCS-BIOS live repository #347 (@emcek)
+* Use a symbolic link to DCS-BIOS live repository #347 (@emcek)
 * Compile DCS-BIOS using LuaJIT from lupa library #373 (@emcek)
-* Make switching between regular and live version of DCS-BIOS more reliable #390 (@emcek)
+* Make switching between a regular and live version of DCS-BIOS more reliable #390 (@emcek)
 * Internal:
   * Update PySide6 framework to 6.8.0.2
   * Add support for Python 3.13
@@ -40,7 +40,7 @@
   * Introduction of UV tool
   * use src-layout for python package
   * introduce Nuitka based executable generation
-  * clean-up release pipeline
+  * cleanup release pipeline
 
 ## 3.5.1
 * Add missing `F-4E-45MC.yaml` - #316 (@emcek)
@@ -54,7 +54,7 @@
   * optimize unit tests
 
 ## 3.4.2
-* Fix update process when downloaded new release can not be saved in filesystem
+* Fix an update process when downloaded new release cannot be saved in filesystem
 
 ## 3.4.1
 * Fix issue when selecting any of a new device is preventing DCSpy from starting
@@ -76,7 +76,7 @@
 * Add new State action to set a particular value for any controller (@emcek)
 * Unload the previous plane when loading the next one - remove old BIOS callbacks (@emcek)
 * When a new version is downloaded, DCSpy will restart itself (@emcek)
-* Now all executable files do not contain a version, so LGS will not complains about profile name (@emcek)
+* Now all executable files do not contain a version, so LGS will not complain about profile name (@emcek)
 * Internal:
   * Make LCD SDK more flexible and allow to start DCSpy without working LCD
   * add E2E test to run locally full flow of DCS-BIOS
@@ -84,7 +84,7 @@
 
 ## 3.2.0
 * Add new the Push button option to support push button controls with only two states (@sleighzy, @emcek)
-* Add search bar to search BIOS data (controls name, description etc.) for current aircraft (@emcek)
+* Add search bar to search BIOS data (controls name, description, etc.) for current aircraft (@emcek)
 * Internal:
   * G-Key SDK callback support (@sleighzy)
   * Update Qt6/PySide6 to 6.6.2
@@ -93,7 +93,7 @@
 
 ## 3.1.4
 * Refresh G-Keys tab, after installation of DCS-BIOS
-* Some custom requests from config file are set as a different type
+* Some custom requests from a config file are set as a different type
 * Keep more LCD screenshots to make troubleshooting easier
 * Make sure the last character in CUSTOM request is always pipe
 * Internal:
@@ -101,7 +101,7 @@
 
 ## 3.1.3
 * Fix loading empty YAML file when Loading Logitech Keyboard instance
-* Show saved collection debug file in the status bar
+* Show a saved collection debug file in the status bar
 * Internal:
   * Start loging form very beginning
   * Fixing one of migration functions, old configuration could be not cleared
@@ -126,8 +126,8 @@
 * Fix radios for **A-10C** and **A-10C II** - - [!227](https://github.com/emcek/dcspy/pull/227)
 * Internal:
   * Update Pyside6, pydantic and psutil libraries
-  * Add caching when paring DCS-BIOS yaml files for airplanes
-  * Support old and new location of version file for DCS-BIOS
+  * Add caching when paring DCS-BIOS YAML files for airplanes
+  * Support old and new location of a version file for DCS-BIOS
   * Fix parsing `Export.lua` file
   * Fix donate button
   * Add more unit test of QtGUI
@@ -245,7 +245,7 @@
   * Three colort theme (`Green`, `Blue` and `Dark Blue`)
   * All settings are configured from GUI vie widgets
   * One window for all configuration and buttons
-  * Check version from GUI
+  * Check a version from GUI
   * Add the configuration flag to check for a new version during start
 
 ## 1.7.5
@@ -291,7 +291,7 @@
   * replace `*` with inverse white circle character at DED
   * Fix unhandled buttons for G19 (menu, ok and cancel)
 * G19 and **F/A-18C Hornet**
-  * Push **Menu** and **Cancel** toggle cockpit button down, push it again toggles button up (Integrated Fuel/Engine Indicator)
+  * Push **Menu** and **Cancel** toggle cockpit button down, push it again toggles button-up (Integrated Fuel/Engine Indicator)
   * Add handling **Ok** as Attitude Selector Switch, INS/AUTO/STBY
 * Internal:
   * use Pythonic way using temporary directory
@@ -304,7 +304,7 @@
   * `IDM` - Squeeze and shows radios frequencies (from Radio Area), IDM and RTS rocker are used to scroll down
   * `WCA` - Enter button display warnings, cautions and advisories. WCA rocker is used to scroll down
   * `PRE` - Preset button displays the preset menu for the selected radio, WCA rocker is used to scroll down
-* **F-16C Viper** DED clean-up extra characters
+* **F-16C Viper** DED cleanup extra characters
 
 ## 1.6.1
 * Update **F-16C Viper** for latest DSC-BIOS (0.7.45)
@@ -312,7 +312,7 @@
 * Drop support for Python 3.6
 
 ## 1.6.0
-* use fonts in a dynamic way. You can customize fonts in `config.yaml` file (see [Configuration](https://github.com/emcek/dcspy#configuration))
+* use fonts dynamically. You can customize fonts in `config.yaml` file (see [Configuration](https://github.com/emcek/dcspy#configuration))
 * usage for LCD SDK built-in LGS - no need additional package for usage
 * support for Python 3.10 (use `dataclasses` internally)
 * ability to stop DCSpy from GUI
@@ -375,7 +375,7 @@
 
 ## 1.1.0
 * DCSpy uses UDP multicast connection do DCS-BIOS, since each TCP connection slightly increases the amount of work that is performed inside DCS (blocking the rest of the simulation).
-* support for integer data to be fetch from DCS-BIOS - using IntegerBuffer()
+* support for integer data to be fetched from DCS-BIOS - using IntegerBuffer()
 * `bios_data` in Airplanes instances allow both StringBuffer() and IntegerBuffer()
 * reformat waiting time before DCS connected
 * fix Data Entry Display for F-16C Viper - DCS-BIOS [v0.7.34](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.7.34) is required
@@ -401,8 +401,8 @@
   * update and clear methods move from G13 handler to LCD SDK
 
 ## 0.9.1
-* G13 handler have display property to send text to LCD
-* rename starting script to dcspy.exe
+* G13 handler has display property to send text to LCD
+* rename the starting script to dcspy.exe
 * starting script shows now waiting time for DCS connection
 * minor code optimization and refactoring
 
