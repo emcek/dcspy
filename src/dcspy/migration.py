@@ -201,7 +201,7 @@ def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str
     :param old_value: Check if a current value is equal old_value
     """
     value = cfg.get(key, '')
-    if value == old_value or old_value == '':
+    if old_value in (value, ''):
         cfg[key] = new_value
         LOG.debug(f'Value for {key} change: {value} -> {new_value}')
 
