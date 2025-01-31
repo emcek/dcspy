@@ -1,6 +1,6 @@
 # DCSpy
 ## Single file download (basic/recommended way)
-Just download latest file from [Releases](https://github.com/emcek/dcspy/releases/latest)
+Download latest file from [Releases](https://github.com/emcek/dcspy/releases/latest)
 
 ## via uv (advanced way)
 To upgrade DCSpy to the latest version, open Command Prompt and type:
@@ -23,5 +23,5 @@ If you have enable `Auto check DCS-BIOS` you do not need any manual steps. Every
 1. Stop DCS World or at least exit mission.
 2. Make sure setting **DCS-BIOS folder** is correct
 3. Click **Check for updates** button in DCS-BIOS group, Note, new version in footer.
-5. Click OK.
+4. Click OK.
 ![image](https://github.com/emcek/dcspy/assets/475312/187f9d91-5464-4560-9308-405e37816562)

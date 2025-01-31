@@ -5,8 +5,8 @@ You are welcome [dcspy discord](https://discord.gg/SP5Yjx3) server.
 # Change Log
 [Version changes](https://github.com/emcek/dcspy/blob/master/CHANGELOG.md)
 
-# Secuirity
-[Secuirity information](https://github.com/emcek/dcspy/blob/master/SECURITY.md)
+# Security
+[Security information](https://github.com/emcek/dcspy/blob/master/SECURITY.md)
 
 # License
 [MIT License](https://github.com/emcek/dcspy/blob/master/LICENSE.md)

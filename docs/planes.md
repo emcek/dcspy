@@ -23,7 +23,7 @@ Apache EUFD is to big to fit small, so is spited into 3 Modes.
 ![AH64DBLKII_49](https://user-images.githubusercontent.com/475312/174405106-68364682-e1e2-4977-b92e-e558cf97d133.png)
 * To enter this mode press **Button4** / **Up**
 * In this mode display warnings, cautions, and advisories,
-* **Button1** / **Left** is used to cycle thru pages of warnings
+* **Button1** / **Left** is used to cycle through pages of warnings
 * Press **Button4** / **Up** again to back to IDM Mode
 
 ### Button Map of EUFD Modes:
@@ -78,10 +78,10 @@ Note: Push **Menu** and **Cancel** toggle cockpit button down, push it again tog
 ![Mi24P_21](https://user-images.githubusercontent.com/475312/215358829-2c3713a5-ecd3-4cae-a59c-c9fdc89c1863.png)
 
 ## F-16C Viper
-* Button1 - IFF MASTER Knob - cycle thru OFF/STBY/LOW/NORM/EMER
-* Button2 - IFF ENABLE Switch - cycle thru M1/M3 /OFF/ M3/MS
-* Button3 - IFF M-4 CODE Switch - cycle thru HOLD/ A/B /ZERO
-* Button4 - IFF MODE 4 REPLY Switch - cycle thru OUT/A/B
+* Button1 - IFF MASTER Knob - cycle through OFF/STBY/LOW/NORM/EMER
+* Button2 - IFF ENABLE Switch - cycle through M1/M3 /OFF/ M3/MS
+* Button3 - IFF M-4 CODE Switch - cycle through HOLD/ A/B /ZERO
+* Button4 - IFF MODE 4 REPLY Switch - cycle through OUT/A/B
 
 ## F-14A and B Tomcat
 * Button1 - RIO CAP Clear
