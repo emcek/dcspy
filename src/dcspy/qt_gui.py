@@ -21,7 +21,8 @@ from webbrowser import open_new_tab
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot, qVersion
+from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
+from PySide6.QtCore import __version__ as qt6_ver
 from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
@@ -1757,7 +1758,7 @@ class AboutDialog(QDialog):
         text += f'<br><b>Python</b>: {python_implementation()}-{python_version()}'
         text += f'<br><b>Config</b>: <a href="file:///{default_yaml.parent}">{default_yaml.name}</a>'
         text += f'<br><b>Git</b>: {d.git_ver}'
-        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qVersion()}'
+        text += f'<br><b>PySide6</b>: {pyside6_ver} / <b>Qt</b>: {qt6_ver}'
         text += f'<br><b>DCSpy</b>: {d.dcspy_ver}'
         text += f'<br><b>DCS-BIOS</b>: <a href="https://github.com/DCS-Skunkworks/dcs-bios/releases">{d.bios_ver}</a> '
         if d.sha != 'N/A':
