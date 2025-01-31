@@ -9,8 +9,8 @@ def config_logger(logger: Logger, verbose: bool = False) -> None:
     """
     Configure global logger add handlers and set formatters.
 
-    :param logger:
-    :param verbose: turn on/off verbose mode
+    :param logger: Logger instance
+    :param verbose: Turn on/off verbose mode
     """
     logger.setLevel(DEBUG)
     file_hand = RotatingFileHandler(filename=Path(gettempdir()) / 'dcspy.log', mode='a', encoding='utf-8', maxBytes=5 * 1024 * 1024, backupCount=1)
