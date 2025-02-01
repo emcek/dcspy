@@ -65,7 +65,6 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.cli_args = cli_args
         self.event = Event()
-        self._done_event = Event()
         self.device = LogitechDeviceModel(klass='', lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
