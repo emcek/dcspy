@@ -1742,7 +1742,7 @@ class AboutDialog(QDialog):
         UiLoader().loadUi(':/ui/ui/about.ui', self)
         self.l_info: object | QLabel = self.findChild(QLabel, 'l_info')
 
-    def showEvent(self, event: QShowEvent):
+    def showEvent(self, event: QShowEvent) -> None:
         """Prepare text information about DCSpy application."""
         d = self.parent.fetch_system_data(silence=False)
         super().showEvent(event)
@@ -1791,7 +1791,7 @@ class WorkerSignals(QObject):
 class WorkerSignalsMixIn:
     """Worker signals Mixin."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Signal handler for WorkerSignals."""
         self.signals = WorkerSignals()
 
@@ -1855,7 +1855,7 @@ class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
         self.silence = silence
 
     @Slot()
-    def run(self):
+    def run(self) -> None:
         """Clone repository and report progress using special object CloneProgress."""
         try:
             sha = check_github_repo(git_ref=self.git_ref, update=True, repo=self.repo, repo_dir=self.to_path,
