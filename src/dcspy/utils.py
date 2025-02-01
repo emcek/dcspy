@@ -419,7 +419,7 @@ class CloneProgress(git.RemoteProgress):
         op_code_masked = op_code & self.OP_MASK
         return self.OP_CODE_MAP.get(op_code_masked, '?').title()
 
-    def update(self, op_code: int, cur_count, max_count=None, message: str = ''):
+    def update(self, op_code: int, cur_count, max_count=None, message: str = '') -> None:
         """
         Call whenever the progress changes.
 
@@ -609,7 +609,7 @@ def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
         return -1
 
 
-def load_json(full_path: Path) -> Any:
+def load_json(full_path: Path) -> dict[Any, Any]:
     """
     Load JSON from a file into dictionary.
 
