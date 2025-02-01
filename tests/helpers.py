@@ -77,7 +77,7 @@ def send_bios_data(data_file: Path) -> None:
     :param data_file: The file path of the JSON file containing the BIOS data.
     """
     json_payload = load_json(full_path=data_file)
-    messages = [(item['timing'], bytes.fromhex(item['data'])) for item in json_payload]
+    messages = ((item['timing'], bytes.fromhex(item['data'])) for item in json_payload)
 
     with socket(AF_INET, SOCK_DGRAM) as sock:
         for elapsed_time, data in messages:
