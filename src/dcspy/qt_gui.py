@@ -235,7 +235,7 @@ class DcsPyQtGui(QMainWindow):
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
 
-    def _trigger_refresh_data(self):
+    def _trigger_refresh_data(self) -> None:
         """Refresh widgets states and regenerates data."""
         try:
             self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
@@ -505,7 +505,7 @@ class DcsPyQtGui(QMainWindow):
             return self._rebuild_or_not_rebuild_planes_aliases(plane_aliases, plane_name)
         return False
 
-    def _get_plane_aliases(self, plane_name: str) -> dict:
+    def _get_plane_aliases(self, plane_name: str) -> dict[str, list[str]]:
         """
         Try getting plane aliases.
 
@@ -526,7 +526,7 @@ class DcsPyQtGui(QMainWindow):
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
             return dict()
 
-    def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: dict, plane_name: str) -> bool:
+    def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: dict[str, list[str]], plane_name: str) -> bool:
         """
         Check if rebuild is possible and return False or not possible and return True.
 
@@ -592,7 +592,7 @@ class DcsPyQtGui(QMainWindow):
         except IndexError:
             LOG.debug(f'Can not split: {text=}.')
 
-    def _rebuild_not_needed(self, plane_aliases, plane_name: str, exc: ValidationError) -> bool:
+    def _rebuild_not_needed(self, plane_aliases: dict[str, list[str]], plane_name: str, exc: ValidationError) -> bool:
         """
         Rebuild is not required.
 
@@ -713,7 +713,7 @@ class DcsPyQtGui(QMainWindow):
             self.hs_set_state.setPageStep(ctrl_key.suggested_step)
             self.hs_set_state.setTickInterval(ctrl_key.suggested_step)
 
-    def _handle_variable_step_and_set_state(self, ctrl_key: ControlKeyData):
+    def _handle_variable_step_and_set_state(self, ctrl_key: ControlKeyData) -> None:
         """Handle the case where the control key has a VariableStep and SetState."""
         if ctrl_key.input_len == 2 and ctrl_key.has_variable_step and ctrl_key.has_set_state:
             self.rb_variable_step_plus.setChecked(True)
@@ -931,7 +931,7 @@ class DcsPyQtGui(QMainWindow):
         else:
             self._restart_pip_ver()
 
-    def _restart_nuitka_ver(self):
+    def _restart_nuitka_ver(self) -> None:
         """Download and restart a new version of DCSpy when using an executable/nuitka version."""
         LOG.debug(f'Nuitka unpacked: {globals().get("__builtins__", {}).get("__nuitka_binary_exe", "")}')
         exe_parent_dir = Path(globals()['__compiled__'].containing_dir)
@@ -959,7 +959,7 @@ class DcsPyQtGui(QMainWindow):
             except PermissionError as exc:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
 
-    def _restart_pip_ver(self):
+    def _restart_pip_ver(self) -> None:
         """Download and restart a new version of DCSpy when using a Pip version."""
         rc, err, out = run_pip_command('install --upgrade dcspy')
         if not rc:
