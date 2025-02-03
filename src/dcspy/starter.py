@@ -19,7 +19,7 @@ SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nic
 class DCSpyStarter:
     """Wrapper object to handle starting and showing welcome screen."""
 
-    def __init__(self, model: LogitechDeviceModel, event: Event):
+    def __init__(self, model: LogitechDeviceModel, event: Event) -> None:
         """
         Initialize an object with global state.
 
@@ -119,7 +119,7 @@ class DCSpyStarter:
         sock.settimeout(0.5)
         return sock
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> None:
         """Real starting point of DCSpy."""
         with DCSpyStarter._prepare_socket() as dcs_sock:
             logi_dev = LogitechDevice(parser=self.parser, sock=dcs_sock, model=self.model)
