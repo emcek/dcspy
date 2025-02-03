@@ -26,7 +26,7 @@ LOG = getLogger(__name__)
 
 class MetaAircraft(type):
     """Metaclass for all BasicAircraft."""
-    def __new__(cls, name: str, bases: tuple[type, ...], namespace: dict):
+    def __new__(cls, name: str, bases: tuple[type, ...], namespace: dict) -> type:
         """
         Create a new instance of any plane as BasicAircraft.
 
@@ -39,7 +39,7 @@ class MetaAircraft(type):
         """
         return super().__new__(cls, name, bases, namespace)
 
-    def __call__(cls, *args, **kwargs):
+    def __call__(cls, *args, **kwargs) -> BasicAircraft:
         """
         Create a new instance of any BasicAircraft.
 
