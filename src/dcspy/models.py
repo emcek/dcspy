@@ -1204,7 +1204,7 @@ class Release(BaseModel):
         published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
         return str(published)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
 
 
