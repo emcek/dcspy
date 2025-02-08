@@ -31,14 +31,14 @@ repos:
         exclude: 'helpers.py'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.14.1
+    rev: v1.15.0
     hooks:
       - id: mypy
         exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/|generate_ver_file\.py$'
         additional_dependencies: [types-cffi, types-Pillow, types-psutil, types-pyinstaller, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.4
+    rev: v0.9.5
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
@@ -65,7 +65,7 @@ repos:
         args: [--omit-covered-files, --fail-under=90]
 
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.3
+    rev: v2.8.0
     hooks:
       -   id: pip-audit
           args: [--local]
