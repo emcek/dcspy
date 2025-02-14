@@ -2,7 +2,8 @@
 * Use LCD text mode for welcome screen - @emcek
 * DCS-BIOS change default branch to `main` - @emcek
 * Internal:
-  * Update PySide6 framework to 6.8.2
+  * Update PySide6 framework to 6.8.2.1
+  * Refactor `starter` module 
 
 ## 3.6.3
 * Fix Windows toolbar icon @emcek
