@@ -51,6 +51,11 @@ jobs:
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
+      - name: "Install mkdocs-gen-files"
+        shell: bash
+        run: |
+          python -m pip install -U mkdocs-gen-files
+
       - name: "Check mypy"
         run: |
           mypy .
