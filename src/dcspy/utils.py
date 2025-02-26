@@ -765,7 +765,7 @@ class KeyRequest:
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
         """
-        return self.buttons.get(button, RequestModel.empty(key=button))
+        return self.buttons.get(button, RequestModel.make_empty(key=button))
 
     def set_request(self, button: AnyButton, req: str) -> None:
         """
