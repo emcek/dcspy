@@ -449,12 +449,25 @@ class Control(BaseModel):
                                 args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
                                 value='')
 
+    @classmethod
+    def make_empty(cls) -> Control:
+        """
+        Make empty Control object with default values assigned to its attributes.
+
+        :return: Control object with empty values.
+        """
+        return cls(api_variant='', category='', control_type='', description='', identifier='', inputs=[], outputs=[])
+
+    def __bool__(self) -> bool:
+        """Return True if all of the attributes: are truthy, False otherwise."""
+        return all([self.api_variant, self.category, self.control_type, self.description, self.identifier, len(self.inputs), len(self.outputs)])
+
 
 class DcsBiosPlaneData(RootModel):
     """DcsBios plane data model."""
     root: dict[str, dict[str, Control]]
 
-    def get_ctrl(self, ctrl_name: str) -> Control | None:
+    def get_ctrl(self, ctrl_name: str) -> Control:
         """
         Get Control from DCS-BIOS with name.
 
@@ -465,7 +478,7 @@ class DcsBiosPlaneData(RootModel):
             for ctrl, data in controllers.items():
                 if ctrl == ctrl_name:
                     return Control.model_validate(data)
-        return None
+        return Control.make_empty()
 
     def get_inputs(self) -> dict[str, dict[str, ControlKeyData]]:
         """
