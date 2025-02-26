@@ -56,7 +56,7 @@ def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pres
     assert logi_keyboard.lcd_button_pressed is pressed2
 
 
-@mark.benchmark
+@mark.slow
 @mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
 def test_keyboard_button_handle_lcdbutton(keyboard, request):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
