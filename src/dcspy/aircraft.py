@@ -884,8 +884,8 @@ class A10C(AdvancedAircraft):
         uhf_1 = self.get_bios('UHF_1MHZ_SEL')
         uhf_01 = self.get_bios('UHF_POINT1MHZ_SEL')
         uhf_preset = self.get_bios('UHF_PRESET')
-        uhf_100 = int(self.get_bios('UHF_100MHZ_SEL', 0)) + 2
-        uhf_100 = 'A' if uhf_100 == 4 else uhf_100  # type: ignore
+        _uhf_100 = int(self.get_bios('UHF_100MHZ_SEL', 0)) + 2
+        uhf_100 = 'A' if _uhf_100 == 4 else _uhf_100
         uhf_25 = int(self.get_bios('UHF_POINT25_SEL', 0)) * 25
         return f'{uhf_100}{uhf_10}{uhf_1}.{uhf_01}{uhf_25:02} ({uhf_preset})'
 
