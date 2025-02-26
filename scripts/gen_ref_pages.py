@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import mkdocs_gen_files  # type: ignore
+import mkdocs_gen_files
 
 nav = mkdocs_gen_files.Nav()
 mod_symbol = '<code class="doc-symbol doc-symbol-nav doc-symbol-module"></code>'
