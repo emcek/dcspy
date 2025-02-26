@@ -1268,7 +1268,7 @@ class RequestModel(BaseModel):
         return RequestModel(ctrl_name=ctrl_name, raw_request=request, get_bios_fn=get_bios_fn, cycle=cycle_button, key=key)
 
     @classmethod
-    def empty(cls, key: AnyButton) -> RequestModel:
+    def make_empty(cls, key: AnyButton) -> RequestModel:
         """
         Create an empty instance of RequestModel with default values for its attributes.
 

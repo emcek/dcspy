@@ -560,5 +560,5 @@ def test_request_model_properties(str_req, key, key_down, result):
 def test_empty_request_model_(key, key_down, result):
     from dcspy.models import RequestModel, get_key_instance
 
-    empty_req = RequestModel.empty(key=get_key_instance(key))
+    empty_req = RequestModel.make_empty(key=get_key_instance(key))
     assert empty_req.bytes_requests(key_down=key_down) == result
