@@ -273,6 +273,7 @@ class ControlKeyData:
         return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}'
 
     def __bool__(self) -> bool:
+        """Return True if both `max_value` and `suggested_step`: are truthy, False otherwise."""
         if not all([self.max_value, self.suggested_step]):
             return False
         return True
@@ -287,7 +288,7 @@ class ControlKeyData:
         """
         try:
             max_value = cls._get_max_value(ctrl.inputs)
-            suggested_step: int = max(d.get('suggested_step', 1) for d in ctrl.inputs)  # type: ignore
+            suggested_step: int = max(d.get('suggested_step', 1) for d in ctrl.inputs)  # type: ignore[type-var, assignment]
         except ValueError:
             max_value = 0
             suggested_step = 0
