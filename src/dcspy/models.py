@@ -1289,7 +1289,7 @@ class RequestModel(BaseModel):
         :param key: Represents the key parameter, which will be used as a button object type for the RequestModel instance.
         :return: A new instance of RequestModel initialized with default attribute values and the provided key parameter.
         """
-        return RequestModel(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
+        return cls(ctrl_name='EMPTY', raw_request='', get_bios_fn=int, cycle=CycleButton(ctrl_name='', step=0, max_value=0), key=key)
 
     def _get_next_value_for_button(self) -> int:
         """
