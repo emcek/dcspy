@@ -77,6 +77,42 @@ def test_control_no_output(get_ctrl_for_plane):
     assert get_ctrl_for_plane.input.has_fixed_step
 
 
+@mark.benchmark
+def test_control_empty():
+    from dcspy.models import Control
+
+    ctrl = Control.make_empty()
+    assert ctrl.api_variant == ''
+    assert ctrl.category == ''
+    assert ctrl.control_type == ''
+    assert ctrl.description == ''
+    assert ctrl.identifier == ''
+    assert len(ctrl.outputs) == 0
+    assert len(ctrl.inputs) == 0
+    assert bool(ctrl) is False
+
+
+@mark.benchmark
+@mark.parametrize('kwargs', [
+    {'category': 'a', 'control_type': '', 'description': '', 'identifier': '', 'inputs': [], 'outputs': []},
+    {'category': '', 'control_type': 'a', 'description': '', 'identifier': '', 'inputs': [], 'outputs': []},
+    {'category': '', 'control_type': '', 'description': 'a', 'identifier': '', 'inputs': [], 'outputs': []},
+    {'category': '', 'control_type': '', 'description': '', 'identifier': 'a', 'inputs': [], 'outputs': []},
+    {'category': '', 'control_type': '', 'description': '', 'identifier': '', 'inputs': None, 'outputs': []},
+    {'category': '', 'control_type': '', 'description': '', 'identifier': '', 'inputs': [], 'outputs': None},
+])
+def test_bool_test_of_control(kwargs):
+    from dcspy.models import Control
+
+    if kwargs['inputs'] is None:
+        from dcspy.models import FixedStep
+        kwargs['inputs'] = [FixedStep(description='switch to previous or next state')]
+    if kwargs['outputs'] is None:
+        from dcspy.models import OutputStr
+        kwargs['outputs'] = [OutputStr(address=4992, description='possible values: \"00\" \"25\" \"50\" \"75\"', max_length=2, suffix='_STR', type='string')]
+    ctrl = Control(**kwargs)
+    assert bool(ctrl) is False
+
 # <=><=><=><=><=> Gkey <=><=><=><=><=>
 @mark.benchmark
 def test_gkey_from_yaml_success():
@@ -337,7 +373,7 @@ def test_get_empty_ctrl(test_dcs_bios):
 
     json_data = get_full_bios_for_plane(plane='A-10C', bios_dir=test_dcs_bios)
     c = json_data.get_ctrl(ctrl_name='WRONG_CTRL')
-    assert c is None
+    assert bool(c) is False
 
 
 @mark.benchmark
