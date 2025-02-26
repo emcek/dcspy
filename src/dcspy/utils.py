@@ -173,8 +173,8 @@ def proc_is_running(name: str) -> int:
     :return: PID as int
     """
     for proc in process_iter(['pid', 'name']):
-        if name in proc.info['name']:  # type: ignore[attr-defined]
-            return proc.info['pid']  # type: ignore[attr-defined]
+        if name in proc.info['name']:
+            return proc.info['pid']
     return 0
 
 
@@ -300,7 +300,7 @@ def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', prog
         bios_repo.git.checkout(checkout_ref)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)  # type: ignore
+        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)  # type: ignore[arg-type]
     return bios_repo
 
 
@@ -787,10 +787,10 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     :param local_compile: Relative path to LocalCompile.lua file.
     """
     try:
-        import lupa.luajit21 as lupa  # type: ignore[import-untyped]
+        import lupa.luajit21 as lupa
     except ImportError:
         try:
-            import lupa.lua51 as lupa  # type: ignore[import-untyped]
+            import lupa.lua51 as lupa  # type: ignore[no-redef]
         except ImportError:
             return
 
