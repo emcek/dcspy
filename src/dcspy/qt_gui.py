@@ -64,7 +64,7 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.cli_args = cli_args
-        self.event = Event()
+        self.event: Event = Event()
         self.device = LogitechDeviceModel(klass='', lcd_info=LcdMono)
         self.mono_font = {'large': 0, 'medium': 0, 'small': 0}
         self.color_font = {'large': 0, 'medium': 0, 'small': 0}
@@ -850,7 +850,7 @@ class DcsPyQtGui(QMainWindow):
         return custom_value
 
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
-    def _is_git_object_exists(self, text: str) -> bool:
+    def _is_git_object_exists(self, text: str) -> bool | None:
         """
         Check if an entered git object exists.
 
@@ -866,6 +866,7 @@ class DcsPyQtGui(QMainWindow):
                 return True
             self.le_bios_live.setStyleSheet('color: red;')
             return False
+        return None
 
     def _get_bios_full_version(self, silence=True) -> str:
         """
@@ -1272,7 +1273,7 @@ class DcsPyQtGui(QMainWindow):
         if self.device.lcd_info.type != LcdType.NONE:
             fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
             self.device.lcd_info.set_fonts(fonts_cfg)
-        self.event = Event()
+        self.event: Event = Event()
         app_params = {'model': self.device, 'event': self.event}
         app_thread = Thread(target=DCSpyStarter(**app_params))
         app_thread.name = 'dcspy-app'
@@ -1440,7 +1441,7 @@ class DcsPyQtGui(QMainWindow):
         self.threadpool.start(worker)
 
     @staticmethod
-    def _fake_progress(progress_callback: SignalInstance, total_time: int, steps: int = 100,
+    def _fake_progress(progress_callback: SignalInstance, total_time: float, steps: int = 100,
                        clean_after: bool = True, **kwargs) -> None:
         """
         Make fake progress for progressbar.
@@ -1566,6 +1567,7 @@ class DcsPyQtGui(QMainWindow):
             if buttons:
                 msg.setStandardButtons(buttons)
             return msg.exec()
+        return None
 
     def event_set(self) -> None:
         """Set event to close running thread."""
@@ -1738,7 +1740,7 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().loadUi(':/ui/ui/about.ui', self)
-        self.l_info: object | QLabel = self.findChild(QLabel, 'l_info')
+        self.l_info: QLabel = self.findChild(QLabel, 'l_info')
 
     def showEvent(self, event: QShowEvent) -> None:
         """Prepare text information about DCSpy application."""
