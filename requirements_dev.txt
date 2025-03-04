@@ -5,3 +5,4 @@ detect-test-pollution
 nuitka
 pre-commit
 pyinstaller
+git+https://github.com/python-qt-tools/PySide6-stubs
