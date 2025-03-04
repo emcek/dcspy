@@ -1544,7 +1544,7 @@ class DcsPyQtGui(QMainWindow):
         return result
 
     def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str | None = None,
-                             buttons: QMessageBox.StandardButton | None = None) -> int:
+                             buttons: QMessageBox.StandardButton | None = None) -> int | None:
         """
         Show custom message box with hidden text.
 
