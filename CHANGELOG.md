@@ -1,6 +1,7 @@
 ## 3.7.0
 * Use LCD text mode for welcome screen - @emcek
 * DCS-BIOS change default branch to `main` - @emcek
+* Add debug tab to main window - @emcek
 * Internal:
   * Update PySide6 framework to 6.8.2.1
   * Refactor `starter` module
