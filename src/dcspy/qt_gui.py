@@ -7,7 +7,7 @@ from argparse import Namespace
 from collections.abc import Callable
 from functools import partial
 from importlib import import_module
-from logging import Handler, LogRecord, getLogger
+from logging import DEBUG, INFO, Formatter, Handler, LogRecord, getLogger
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
+                          FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
                           RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
@@ -61,6 +61,10 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
+        self.config = cfg_dict
+        if not cfg_dict:
+            self.config = load_yaml(full_path=default_yaml)
+        self._init_gui_logger()
         self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.cli_args = cli_args
@@ -82,9 +86,6 @@ class DcsPyQtGui(QMainWindow):
         self.r_bios = version.Version('0.0.0')
         self.systray = QSystemTrayIcon()
         self.traymenu = QMenu()
-        self.config = cfg_dict
-        if not cfg_dict:
-            self.config = load_yaml(full_path=default_yaml)
         self.dw_gkeys.hide()
         self.dw_device.hide()
         self.dw_device.setFloating(True)
@@ -110,6 +111,16 @@ class DcsPyQtGui(QMainWindow):
         if self.config.get('autostart', False):
             self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
+
+    def _init_gui_logger(self) -> None:
+        """Initialize GUI log handler."""
+        self.gui_log = QTextEditLogHandler(text_widget=self.te_debug)
+        formatter = Formatter(fmt='%(asctime)s | %(levelname)-7s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d', datefmt='%H:%M:%S')
+        self.gui_log.setFormatter(formatter)
+        self.gui_log.setLevel(INFO)
+        if self.config.get('verbose', False):
+            self.gui_log.setLevel(DEBUG)
+        LOG.parent.addHandler(self.gui_log)
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
@@ -182,6 +193,7 @@ class DcsPyQtGui(QMainWindow):
         for rb_dev_widget in ['rb_g19', 'rb_g13', 'rb_g15v1', 'rb_g15v2', 'rb_g510', 'rb_g910', 'rb_g710', 'rb_g110', 'rb_g103', 'rb_g105', 'rb_g11', 'rb_g633',
                               'rb_g35', 'rb_g930', 'rb_g933', 'rb_g600', 'rb_g300', 'rb_g400', 'rb_g700', 'rb_g9', 'rb_mx518', 'rb_g402', 'rb_g502', 'rb_g602']:
             self.bg_rb_device.addButton(getattr(self, rb_dev_widget))
+        self.cb_debug_enable.toggled.connect(self._toggle_gui_logging)
 
     def _init_devices(self) -> None:
         """Initialize of a Logitech device."""
@@ -225,7 +237,7 @@ class DcsPyQtGui(QMainWindow):
             'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
             'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
             'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
-            'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled',
+            'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'cb_debug_enable': 'toggled',
             'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled',
             'rb_g910': 'toggled', 'rb_g710': 'toggled', 'rb_g110': 'toggled', 'rb_g103': 'toggled', 'rb_g105': 'toggled',
             'rb_g11': 'toggled', 'rb_g35': 'toggled', 'rb_g633': 'toggled', 'rb_g930': 'toggled', 'rb_g933': 'toggled',
@@ -849,6 +861,19 @@ class DcsPyQtGui(QMainWindow):
             custom_value = str(self.hs_set_state.value())
         return custom_value
 
+    def _toggle_gui_logging(self, state: bool) -> None:
+        """
+        Toggle GUI logging on and off.
+
+        :param state: State to switch to.
+        """
+        if state:
+            LOG.parent.addHandler(self.gui_log)
+        else:
+            LOG.parent.removeHandler(self.gui_log)
+        self.tw_main.setTabEnabled(GuiTab.debug, state)
+        self.gui_log.toggle_logging(state=state)
+
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool | None:
         """
@@ -1320,6 +1345,8 @@ class DcsPyQtGui(QMainWindow):
             self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
             self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
             getattr(self, icon_map.get(cfg['toolbar_style'], 'a_icons_only')).setChecked(True)
+            self.tw_main.setTabEnabled(GuiTab.debug, cfg['gui_debug'])
+            self.cb_debug_enable.setChecked(cfg['gui_debug'])
         except (TypeError, AttributeError, ValueError) as exc:
             LOG.warning(exc, exc_info=True)
             self._reset_defaults_cfg()
@@ -1353,6 +1380,7 @@ class DcsPyQtGui(QMainWindow):
             'gkeys_float': self.dw_gkeys.isFloating(),
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
+            'gui_debug': self.cb_debug_enable.isChecked(),
         }
         if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1630,6 +1658,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')  # type: ignore[assignment]
         self.gb_fonts: QGroupBox = self.findChild(QGroupBox, 'gb_fonts')  # type: ignore[assignment]
         self.toolBox: QToolBox = self.findChild(QToolBox, 'toolBox')  # type: ignore[assignment]
+        self.te_debug: QTextEdit = self.findChild(QTextEdit, 'te_debug')  # type: ignore[assignment]
 
         self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')  # type: ignore[assignment]
         self.combo_search: QComboBox = self.findChild(QComboBox, 'combo_search')  # type: ignore[assignment]
@@ -1686,6 +1715,7 @@ class DcsPyQtGui(QMainWindow):
         self.cb_verbose: QCheckBox = self.findChild(QCheckBox, 'cb_verbose')  # type: ignore[assignment]
         self.cb_autoupdate_bios: QCheckBox = self.findChild(QCheckBox, 'cb_autoupdate_bios')  # type: ignore[assignment]
         self.cb_bios_live: QCheckBox = self.findChild(QCheckBox, 'cb_bios_live')  # type: ignore[assignment]
+        self.cb_debug_enable: QCheckBox = self.findChild(QCheckBox, 'cb_debug_enable')  # type: ignore[assignment]
 
         self.le_dcsdir: QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')  # type: ignore[assignment]
         self.le_biosdir: QLineEdit = self.findChild(QLineEdit, 'le_biosdir')  # type: ignore[assignment]
@@ -1951,7 +1981,6 @@ class QTextEditLogHandler(Handler):
         cursor.movePosition(cursor.MoveOperation.End)
         cursor.insertText(f'{self.format(record)}\n', text_format)
         self.text_widget.setTextCursor(cursor)
-        self.text_widget.ensureCursorVisible()
 
     def toggle_logging(self, state: bool) -> None:
         """
@@ -1959,4 +1988,4 @@ class QTextEditLogHandler(Handler):
 
         :param state: State of logging
         """
-        self.paused = state
+        self.paused = not state

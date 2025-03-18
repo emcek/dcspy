@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from datetime import datetime
-from enum import Enum
+from enum import Enum, IntEnum
 from functools import partial
 from pathlib import Path
 from re import search
@@ -1611,3 +1611,11 @@ class Color(Enum):
     whitesmoke = 0xf5f5f5
     yellow = 0xffff00
     yellowgreen = 0x9acd32
+
+
+class GuiTab(IntEnum):
+    """Describe GUI mani window tabs."""
+    devices = 0
+    settings = 1
+    g_keys = 2
+    debug = 3
