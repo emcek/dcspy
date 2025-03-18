@@ -7,7 +7,7 @@ from argparse import Namespace
 from collections.abc import Callable
 from functools import partial
 from importlib import import_module
-from logging import getLogger
+from logging import Handler, LogRecord, getLogger
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
@@ -15,7 +15,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Any
+from typing import Any, ClassVar
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -23,11 +23,11 @@ from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
 from PySide6.QtCore import __version__ as qt6_ver
-from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel
+from PySide6.QtGui import QAction, QActionGroup, QColor, QColorConstants, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel, QTextCharFormat
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
-                               QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
+                               QSystemTrayIcon, QTableWidget, QTabWidget, QTextEdit, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
@@ -1915,3 +1915,48 @@ class UiLoader(QUiLoader):
             return widget
         finally:
             ui_file.close()
+
+
+class QTextEditLogHandler(Handler):
+    """GUI log handler."""
+    colors: ClassVar[dict[str, QColor]] = {
+        'DEBUG': QColorConstants.Svg.black,
+        'INFO': QColorConstants.Svg.green,
+        'WARNING': QColorConstants.Svg.darkorange,
+        'ERROR': QColorConstants.Svg.red,
+        'CRITICAL': QColorConstants.Svg.blue
+    }
+
+    def __init__(self, text_widget: QTextEdit) -> None:
+        """
+        Log handler for GUI application.
+
+        :param text_widget: widget to emit logs to.
+        """
+        super().__init__()
+        self.text_widget = text_widget
+        self.paused = False
+
+    def emit(self, record: LogRecord) -> None:
+        """
+        Emit a log record.
+
+        :param record: LogRecord instance.
+        """
+        if self.paused:
+            return
+        cursor = self.text_widget.textCursor()
+        text_format = QTextCharFormat()
+        text_format.setForeground(self.colors.get(record.levelname, QColorConstants.Svg.black))
+        cursor.movePosition(cursor.MoveOperation.End)
+        cursor.insertText(f'{self.format(record)}\n', text_format)
+        self.text_widget.setTextCursor(cursor)
+        self.text_widget.ensureCursorVisible()
+
+    def toggle_logging(self, state: bool) -> None:
+        """
+        Toggle logging state on and off.
+
+        :param state: State of logging
+        """
+        self.paused = state
