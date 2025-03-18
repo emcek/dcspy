@@ -53,7 +53,7 @@
                <x>0</x>
                <y>0</y>
                <width>657</width>
-               <height>396</height>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -216,8 +216,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>146</width>
-               <height>105</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -409,8 +409,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>146</width>
-               <height>74</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -544,8 +544,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>227</width>
-               <height>105</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -924,22 +924,8 @@
             <property name="title">
              <string>Debug</string>
             </property>
-            <layout class="QGridLayout" name="gridLayout_8">
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="cb_verbose">
-               <property name="toolTip">
-                <string>Logging more data (good for troubleshooting)</string>
-               </property>
-               <property name="text">
-                <string>Collect more logs</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/cpu.svg</normaloff>:/icons/img/cpu.svg</iconset>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
               <widget class="QCheckBox" name="cb_lcd_screenshot">
                <property name="toolTip">
                 <string>Make LCD screenshot everytime when updated (good for troubleshooting)</string>
@@ -953,7 +939,35 @@
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
+             <item>
+              <widget class="QCheckBox" name="cb_verbose">
+               <property name="toolTip">
+                <string>Logging more data (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Collect more logs</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/cpu.svg</normaloff>:/icons/img/cpu.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="cb_verbose_2">
+               <property name="toolTip">
+                <string>Logging more data (good for troubleshooting)</string>
+               </property>
+               <property name="text">
+                <string>Enable Debug tab</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/view-list-details.svg</normaloff>:/icons/img/view-list-details.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="pb_collect_data">
                <property name="text">
                 <string>Collect debug data</string>
@@ -1345,6 +1359,35 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="tab_debug">
+         <attribute name="icon">
+          <iconset>
+           <normalon>:/icons/img/view-list-details.svg</normalon>
+          </iconset>
+         </attribute>
+         <attribute name="title">
+          <string>Debug</string>
+         </attribute>
+         <widget class="QTextEdit" name="te_debug">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>661</width>
+            <height>511</height>
+           </rect>
+          </property>
+          <property name="font">
+           <font>
+            <family>Courier</family>
+            <pointsize>16</pointsize>
+           </font>
+          </property>
+          <property name="lineWrapMode">
+           <enum>QTextEdit::LineWrapMode::NoWrap</enum>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </item>
       <item>
@@ -1416,7 +1459,7 @@
      <x>0</x>
      <y>0</y>
      <width>970</width>
-     <height>22</height>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
