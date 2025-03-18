@@ -63,6 +63,7 @@ def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
     :param cfg: Configuration dictionary
     """
     _change_value(cfg, 'git_bios_ref', 'main', 'master')
+    _add_key(cfg, 'gui_debug', False)
 
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:

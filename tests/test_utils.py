@@ -120,6 +120,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'git_bios_ref': 'main',
         'gkeys_area': 2,
         'gkeys_float': False,
+        'gui_debug': False
     }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')
