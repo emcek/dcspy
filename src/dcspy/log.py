@@ -5,7 +5,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from typing import ClassVar
 
-from PySide6.QtGui import QColorConstants, QTextCharFormat
+from PySide6.QtGui import QColor, QColorConstants, QTextCharFormat
 from PySide6.QtWidgets import QTextEdit
 
 
@@ -35,7 +35,7 @@ def config_logger(logger: Logger, verbose: bool = False) -> None:
 
 class QTextEditLogHandler(Handler):
     """GUI log handler."""
-    colors: ClassVar[dict[str, QColorConstants.Svg]] = {
+    colors: ClassVar[dict[str, QColor]] = {
         'DEBUG': QColorConstants.Svg.black,
         'INFO': QColorConstants.Svg.green,
         'WARNING': QColorConstants.Svg.darkorange,
