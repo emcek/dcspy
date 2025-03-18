@@ -954,7 +954,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="cb_verbose_2">
+              <widget class="QCheckBox" name="cb_debug_enable">
                <property name="toolTip">
                 <string>Logging more data (good for troubleshooting)</string>
                </property>
