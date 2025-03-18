@@ -1368,25 +1368,25 @@
          <attribute name="title">
           <string>Debug</string>
          </attribute>
-         <widget class="QTextEdit" name="te_debug">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>661</width>
-            <height>511</height>
-           </rect>
-          </property>
-          <property name="font">
-           <font>
-            <family>Courier</family>
-            <pointsize>16</pointsize>
-           </font>
-          </property>
-          <property name="lineWrapMode">
-           <enum>QTextEdit::LineWrapMode::NoWrap</enum>
-          </property>
-         </widget>
+         <layout class="QGridLayout" name="gridLayout_1">
+          <item row="1" column="0">
+           <widget class="QTextEdit" name="te_debug">
+            <property name="font">
+             <font>
+              <family>Courier</family>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="lineWrapMode">
+             <enum>QTextEdit::LineWrapMode::NoWrap</enum>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextInteractionFlag::LinksAccessibleByKeyboard|Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextBrowserInteraction|Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </widget>
       </item>
