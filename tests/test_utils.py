@@ -121,7 +121,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'gkeys_area': 2,
         'gkeys_float': False,
         'gui_debug': False,
-        'debug_font_size': 11,
+        'debug_font_size': 10,
     }
     with open(test_tmp_yaml, 'w+') as f:
         f.write('')

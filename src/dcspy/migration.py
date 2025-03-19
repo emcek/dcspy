@@ -64,7 +64,7 @@ def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
     """
     _change_value(cfg, 'git_bios_ref', 'main', 'master')
     _add_key(cfg, 'gui_debug', False)
-    _add_key(cfg, 'debug_font_size', 11)
+    _add_key(cfg, 'debug_font_size', 10)
 
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
