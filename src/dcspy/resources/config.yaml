@@ -6,6 +6,7 @@ completer_items: 20
 current_plane: A-10C
 dcs: C:/Program Files/Eagle Dynamics/DCS World
 dcsbios: C:/Users/UNKNOWN/Saved Games/DCS/Scripts/DCS-BIOS
+debug_font_size: 12
 f16_ded_font: true
 font_color_l: 32
 font_color_m: 22
