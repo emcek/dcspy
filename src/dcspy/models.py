@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from datetime import datetime
-from enum import Enum
+from enum import Enum, IntEnum
 from functools import partial
 from pathlib import Path
 from re import search
@@ -459,7 +459,7 @@ class Control(BaseModel):
         return cls(api_variant='', category='', control_type='', description='', identifier='', inputs=[], outputs=[])
 
     def __bool__(self) -> bool:
-        """Return True if all of the attributes: are truthy, False otherwise."""
+        """Return True if all attributes: are truthy, False otherwise."""
         return all([self.api_variant, self.category, self.control_type, self.description, self.identifier, len(self.inputs), len(self.outputs)])
 
 
@@ -1611,3 +1611,11 @@ class Color(Enum):
     whitesmoke = 0xf5f5f5
     yellow = 0xffff00
     yellowgreen = 0x9acd32
+
+
+class GuiTab(IntEnum):
+    """Describe GUI mani window tabs."""
+    devices = 0
+    settings = 1
+    g_keys = 2
+    debug = 3

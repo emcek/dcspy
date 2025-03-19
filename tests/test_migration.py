@@ -41,6 +41,8 @@ def test_generate_config():
         'git_bios_ref': 'main',
         'gkeys_area': 2,
         'gkeys_float': False,
+        'gui_debug': False,
+        'debug_font_size': 10,
         'device': 'G13',
         'save_lcd': False,
         'show_gui': True,

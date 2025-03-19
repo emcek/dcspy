@@ -63,6 +63,8 @@ def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
     :param cfg: Configuration dictionary
     """
     _change_value(cfg, 'git_bios_ref', 'main', 'master')
+    _add_key(cfg, 'gui_debug', False)
+    _add_key(cfg, 'debug_font_size', 10)
 
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
@@ -193,7 +195,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
 
 def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str = '') -> None:
     """
-    Change value for the key to `new_value` if current value is equal `old_value`.
+    Change value for the key to `new_value` if the current value is equal `old_value`.
 
     :param cfg: Configuration dictionary
     :param key: Key name

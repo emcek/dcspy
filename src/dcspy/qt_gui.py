@@ -7,7 +7,7 @@ from argparse import Namespace
 from collections.abc import Callable
 from functools import partial
 from importlib import import_module
-from logging import getLogger
+from logging import DEBUG, INFO, Formatter, Handler, LogRecord, getLogger
 from pathlib import Path
 from platform import architecture, python_implementation, python_version, uname
 from pprint import pformat
@@ -15,7 +15,7 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event, Thread
 from time import sleep
-from typing import Any
+from typing import Any, ClassVar
 from webbrowser import open_new_tab
 
 from packaging import version
@@ -23,15 +23,15 @@ from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
 from PySide6.QtCore import __version__ as qt6_ver
-from PySide6.QtGui import QAction, QActionGroup, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel
+from PySide6.QtGui import QAction, QActionGroup, QColor, QColorConstants, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel, QTextCharFormat
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
-                               QSystemTrayIcon, QTableWidget, QTabWidget, QToolBar, QToolBox, QWidget)
+                               QSystemTrayIcon, QTableWidget, QTabWidget, QTextEdit, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
+                          FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
                           RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
@@ -61,6 +61,10 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
         self._find_children()
+        self.config = cfg_dict
+        if not cfg_dict:
+            self.config = load_yaml(full_path=default_yaml)
+        self._init_gui_logger()
         self.threadpool = QThreadPool.globalInstance()
         LOG.debug(f'QThreadPool with {self.threadpool.maxThreadCount()} thread(s)')
         self.cli_args = cli_args
@@ -82,9 +86,6 @@ class DcsPyQtGui(QMainWindow):
         self.r_bios = version.Version('0.0.0')
         self.systray = QSystemTrayIcon()
         self.traymenu = QMenu()
-        self.config = cfg_dict
-        if not cfg_dict:
-            self.config = load_yaml(full_path=default_yaml)
         self.dw_gkeys.hide()
         self.dw_device.hide()
         self.dw_device.setFloating(True)
@@ -110,6 +111,17 @@ class DcsPyQtGui(QMainWindow):
         if self.config.get('autostart', False):
             self._start_clicked()
         self.statusbar.showMessage(f'ver. {__version__}')
+
+    def _init_gui_logger(self) -> None:
+        """Initialize GUI log handler."""
+        self.gui_log = QTextEditLogHandler(text_widget=self.te_debug)
+        formatter = Formatter(fmt='%(asctime)s | %(levelname)-7s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d', datefmt='%H:%M:%S')
+        self.gui_log.setFormatter(formatter)
+        self.gui_log.setLevel(INFO)
+        if self.config.get('verbose', False):
+            self.gui_log.setLevel(DEBUG)
+        LOG.parent.addHandler(self.gui_log)
+        self.hs_debug_font_size.valueChanged.connect(self._hs_debug_font_size_changed)
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
@@ -182,6 +194,7 @@ class DcsPyQtGui(QMainWindow):
         for rb_dev_widget in ['rb_g19', 'rb_g13', 'rb_g15v1', 'rb_g15v2', 'rb_g510', 'rb_g910', 'rb_g710', 'rb_g110', 'rb_g103', 'rb_g105', 'rb_g11', 'rb_g633',
                               'rb_g35', 'rb_g930', 'rb_g933', 'rb_g600', 'rb_g300', 'rb_g400', 'rb_g700', 'rb_g9', 'rb_mx518', 'rb_g402', 'rb_g502', 'rb_g602']:
             self.bg_rb_device.addButton(getattr(self, rb_dev_widget))
+        self.cb_debug_enable.toggled.connect(self._toggle_gui_logging)
 
     def _init_devices(self) -> None:
         """Initialize of a Logitech device."""
@@ -221,11 +234,11 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of autosave."""
         widget_dict = {
             'le_dcsdir': 'textChanged', 'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited',
-            'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged',
-            'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
+            'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'hs_debug_font_size': 'valueChanged',
+            'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
             'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
             'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
-            'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled',
+            'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'cb_debug_enable': 'toggled',
             'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled',
             'rb_g910': 'toggled', 'rb_g710': 'toggled', 'rb_g110': 'toggled', 'rb_g103': 'toggled', 'rb_g105': 'toggled',
             'rb_g11': 'toggled', 'rb_g35': 'toggled', 'rb_g633': 'toggled', 'rb_g930': 'toggled', 'rb_g933': 'toggled',
@@ -849,6 +862,25 @@ class DcsPyQtGui(QMainWindow):
             custom_value = str(self.hs_set_state.value())
         return custom_value
 
+    def _toggle_gui_logging(self, state: bool) -> None:
+        """
+        Toggle GUI logging on and off.
+
+        :param state: State to switch to.
+        """
+        if state:
+            LOG.parent.addHandler(self.gui_log)
+        else:
+            LOG.parent.removeHandler(self.gui_log)
+        self.tw_main.setTabEnabled(GuiTab.debug, state)
+        self.gui_log.toggle_logging(state=state)
+
+    def _hs_debug_font_size_changed(self) -> None:
+        """Change font size for debug log text edit."""
+        current_font = self.te_debug.font()
+        current_font.setPointSize(self.hs_debug_font_size.value())
+        self.te_debug.setFont(current_font)
+
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool | None:
         """
@@ -1320,6 +1352,9 @@ class DcsPyQtGui(QMainWindow):
             self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
             self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
             getattr(self, icon_map.get(cfg['toolbar_style'], 'a_icons_only')).setChecked(True)
+            self.tw_main.setTabEnabled(GuiTab.debug, cfg['gui_debug'])
+            self.cb_debug_enable.setChecked(cfg['gui_debug'])
+            self.hs_debug_font_size.setValue(cfg['debug_font_size'])
         except (TypeError, AttributeError, ValueError) as exc:
             LOG.warning(exc, exc_info=True)
             self._reset_defaults_cfg()
@@ -1353,6 +1388,8 @@ class DcsPyQtGui(QMainWindow):
             'gkeys_float': self.dw_gkeys.isFloating(),
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
+            'gui_debug': self.cb_debug_enable.isChecked(),
+            'debug_font_size': self.hs_debug_font_size.value(),
         }
         if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1630,6 +1667,7 @@ class DcsPyQtGui(QMainWindow):
         self.tw_main: QTabWidget = self.findChild(QTabWidget, 'tw_main')  # type: ignore[assignment]
         self.gb_fonts: QGroupBox = self.findChild(QGroupBox, 'gb_fonts')  # type: ignore[assignment]
         self.toolBox: QToolBox = self.findChild(QToolBox, 'toolBox')  # type: ignore[assignment]
+        self.te_debug: QTextEdit = self.findChild(QTextEdit, 'te_debug')  # type: ignore[assignment]
 
         self.combo_planes: QComboBox = self.findChild(QComboBox, 'combo_planes')  # type: ignore[assignment]
         self.combo_search: QComboBox = self.findChild(QComboBox, 'combo_search')  # type: ignore[assignment]
@@ -1686,6 +1724,7 @@ class DcsPyQtGui(QMainWindow):
         self.cb_verbose: QCheckBox = self.findChild(QCheckBox, 'cb_verbose')  # type: ignore[assignment]
         self.cb_autoupdate_bios: QCheckBox = self.findChild(QCheckBox, 'cb_autoupdate_bios')  # type: ignore[assignment]
         self.cb_bios_live: QCheckBox = self.findChild(QCheckBox, 'cb_bios_live')  # type: ignore[assignment]
+        self.cb_debug_enable: QCheckBox = self.findChild(QCheckBox, 'cb_debug_enable')  # type: ignore[assignment]
 
         self.le_dcsdir: QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')  # type: ignore[assignment]
         self.le_biosdir: QLineEdit = self.findChild(QLineEdit, 'le_biosdir')  # type: ignore[assignment]
@@ -1731,6 +1770,7 @@ class DcsPyQtGui(QMainWindow):
         self.hs_medium_font: QSlider = self.findChild(QSlider, 'hs_medium_font')  # type: ignore[assignment]
         self.hs_small_font: QSlider = self.findChild(QSlider, 'hs_small_font')  # type: ignore[assignment]
         self.hs_set_state: QSlider = self.findChild(QSlider, 'hs_set_state')  # type: ignore[assignment]
+        self.hs_debug_font_size: QSlider = self.findChild(QSlider, 'hs_debug_font_size')  # type: ignore[assignment]
 
 
 class AboutDialog(QDialog):
@@ -1915,3 +1955,47 @@ class UiLoader(QUiLoader):
             return widget
         finally:
             ui_file.close()
+
+
+class QTextEditLogHandler(Handler):
+    """GUI log handler."""
+    colors: ClassVar[dict[str, QColor]] = {
+        'DEBUG': QColorConstants.Svg.black,
+        'INFO': QColorConstants.Svg.green,
+        'WARNING': QColorConstants.Svg.darkorange,
+        'ERROR': QColorConstants.Svg.red,
+        'CRITICAL': QColorConstants.Svg.blue
+    }
+
+    def __init__(self, text_widget: QTextEdit) -> None:
+        """
+        Log handler for GUI application.
+
+        :param text_widget: widget to emit logs to.
+        """
+        super().__init__()
+        self.text_widget = text_widget
+        self.paused = False
+
+    def emit(self, record: LogRecord) -> None:
+        """
+        Emit a log record.
+
+        :param record: LogRecord instance.
+        """
+        if self.paused:
+            return
+        cursor = self.text_widget.textCursor()
+        text_format = QTextCharFormat()
+        text_format.setForeground(self.colors.get(record.levelname, QColorConstants.Svg.black))
+        cursor.movePosition(cursor.MoveOperation.End)
+        cursor.insertText(f'{self.format(record)}\n', text_format)
+        self.text_widget.setTextCursor(cursor)
+
+    def toggle_logging(self, state: bool) -> None:
+        """
+        Toggle logging state on and off.
+
+        :param state: State of logging
+        """
+        self.paused = not state
