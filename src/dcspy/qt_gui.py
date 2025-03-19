@@ -121,6 +121,7 @@ class DcsPyQtGui(QMainWindow):
         if self.config.get('verbose', False):
             self.gui_log.setLevel(DEBUG)
         LOG.parent.addHandler(self.gui_log)
+        self.hs_debug_font_size.valueChanged.connect(self._hs_debug_font_size_changed)
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
@@ -233,7 +234,7 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of autosave."""
         widget_dict = {
             'le_dcsdir': 'textChanged', 'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited',
-            'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged',
+            'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'sp_completer': 'valueChanged', 'hs_debug_font_size': 'valueChanged',
             'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
             'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
             'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
@@ -874,6 +875,12 @@ class DcsPyQtGui(QMainWindow):
         self.tw_main.setTabEnabled(GuiTab.debug, state)
         self.gui_log.toggle_logging(state=state)
 
+    def _hs_debug_font_size_changed(self) -> None:
+        """Change font size for debug log text edit."""
+        current_font = self.te_debug.font()
+        current_font.setPointSize(self.hs_debug_font_size.value())
+        self.te_debug.setFont(current_font)
+
     # <=><=><=><=><=><=><=><=><=><=><=> dcs-bios tab <=><=><=><=><=><=><=><=><=><=><=>
     def _is_git_object_exists(self, text: str) -> bool | None:
         """
@@ -1347,6 +1354,7 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, icon_map.get(cfg['toolbar_style'], 'a_icons_only')).setChecked(True)
             self.tw_main.setTabEnabled(GuiTab.debug, cfg['gui_debug'])
             self.cb_debug_enable.setChecked(cfg['gui_debug'])
+            self.hs_debug_font_size.setValue(cfg['debug_font_size'])
         except (TypeError, AttributeError, ValueError) as exc:
             LOG.warning(exc, exc_info=True)
             self._reset_defaults_cfg()
@@ -1381,6 +1389,7 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_area': self.toolBarArea(self.toolbar).value,
             'toolbar_style': self.toolbar.toolButtonStyle().value,
             'gui_debug': self.cb_debug_enable.isChecked(),
+            'debug_font_size': self.hs_debug_font_size.value(),
         }
         if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1761,6 +1770,7 @@ class DcsPyQtGui(QMainWindow):
         self.hs_medium_font: QSlider = self.findChild(QSlider, 'hs_medium_font')  # type: ignore[assignment]
         self.hs_small_font: QSlider = self.findChild(QSlider, 'hs_small_font')  # type: ignore[assignment]
         self.hs_set_state: QSlider = self.findChild(QSlider, 'hs_set_state')  # type: ignore[assignment]
+        self.hs_debug_font_size: QSlider = self.findChild(QSlider, 'hs_debug_font_size')  # type: ignore[assignment]
 
 
 class AboutDialog(QDialog):
