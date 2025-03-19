@@ -195,7 +195,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
 
 def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str = '') -> None:
     """
-    Change value for the key to `new_value` if current value is equal `old_value`.
+    Change value for the key to `new_value` if the current value is equal `old_value`.
 
     :param cfg: Configuration dictionary
     :param key: Key name

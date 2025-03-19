@@ -459,7 +459,7 @@ class Control(BaseModel):
         return cls(api_variant='', category='', control_type='', description='', identifier='', inputs=[], outputs=[])
 
     def __bool__(self) -> bool:
-        """Return True if all of the attributes: are truthy, False otherwise."""
+        """Return True if all attributes: are truthy, False otherwise."""
         return all([self.api_variant, self.category, self.control_type, self.description, self.identifier, len(self.inputs), len(self.outputs)])
 
 
