@@ -7,6 +7,7 @@ current_plane: A-10C
 dcs: C:/Program Files/Eagle Dynamics/DCS World
 dcsbios: C:/Users/UNKNOWN/Saved Games/DCS/Scripts/DCS-BIOS
 debug_font_size: 10
+device: G13
 f16_ded_font: true
 font_color_l: 32
 font_color_m: 22
@@ -20,7 +21,6 @@ git_bios_ref: main
 gkeys_area: 2
 gkeys_float: false
 gui_debug: false
-device: G13
 save_lcd: false
 show_gui: true
 toolbar_area: 4
