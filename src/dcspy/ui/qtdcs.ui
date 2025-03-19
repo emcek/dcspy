@@ -216,8 +216,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>385</height>
+               <width>152</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -409,8 +409,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>385</height>
+               <width>152</width>
+               <height>74</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -544,8 +544,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>385</height>
+               <width>236</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -1369,7 +1369,36 @@
           <string>Debug</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_1">
-          <item row="1" column="0">
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Font size:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSlider" name="hs_debug_font_size">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>50</number>
+            </property>
+            <property name="value">
+             <number>11</number>
+            </property>
+            <property name="sliderPosition">
+             <number>11</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="tickPosition">
+             <enum>QSlider::TickPosition::TicksAbove</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
            <widget class="QTextEdit" name="te_debug">
             <property name="font">
              <font>
@@ -1383,6 +1412,13 @@
             </property>
             <property name="textInteractionFlags">
              <set>Qt::TextInteractionFlag::LinksAccessibleByKeyboard|Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextBrowserInteraction|Qt::TextInteractionFlag::TextSelectableByKeyboard|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>12</string>
             </property>
            </widget>
           </item>
@@ -2157,12 +2193,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>237</y>
+     <x>173</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2173,12 +2209,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>448</x>
-     <y>353</y>
+     <x>459</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>229</x>
-     <y>354</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2189,12 +2225,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>469</y>
+     <x>173</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
-     <x>229</x>
-     <y>354</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2205,12 +2241,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>448</x>
-     <y>469</y>
+     <x>459</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
-     <x>428</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2221,12 +2257,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>353</y>
+     <x>173</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2237,12 +2273,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>297</y>
+     <x>315</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2253,12 +2289,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>301</y>
+     <x>173</x>
+     <y>274</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2269,12 +2305,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>532</x>
-     <y>297</y>
+     <x>543</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2285,12 +2321,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>90</x>
-     <y>529</y>
+     <x>101</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2301,12 +2337,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>529</y>
+     <x>315</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2317,12 +2353,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>90</x>
-     <y>297</y>
+     <x>101</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2333,12 +2369,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>532</x>
-     <y>529</y>
+     <x>543</x>
+     <y>460</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2349,12 +2385,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>448</x>
-     <y>301</y>
+     <x>459</x>
+     <y>274</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2365,12 +2401,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>90</x>
-     <y>413</y>
+     <x>101</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2381,12 +2417,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>448</x>
-     <y>237</y>
+     <x>459</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2397,12 +2433,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>413</y>
+     <x>315</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2413,12 +2449,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>162</x>
-     <y>457</y>
+     <x>173</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2429,12 +2465,12 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>448</x>
-     <y>457</y>
+     <x>459</x>
+     <y>427</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>
@@ -2445,12 +2481,28 @@ Avaliable for two-state switches and knobs.</string>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>532</x>
-     <y>413</y>
+     <x>543</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>438</x>
-     <y>347</y>
+     <x>239</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>hs_debug_font_size</sender>
+   <signal>sliderMoved(int)</signal>
+   <receiver>label_9</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>238</x>
+     <y>608</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>675</x>
+     <y>609</y>
     </hint>
    </hints>
   </connection>
