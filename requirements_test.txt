@@ -9,7 +9,7 @@ pytest-codspeed==3.2.0
 pytest-cov==6.0.0
 pytest-qt==4.4.0; sys_platform == "win32"
 pytest-randomly==3.16.0
-ruff==0.11.0
+ruff==0.11.2
 types-cffi==1.17.0.20250319
 types-lupa==2.4.0.20250112
 types-Pillow==10.2.0.20240822
