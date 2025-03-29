@@ -47,7 +47,7 @@ dependencies = [
     'pillow==11.1.0',
     'psutil==7.0.0',
     'pydantic==2.10.6',
-    'pyside6==6.8.2.1',
+    'pyside6==6.8.3',
     'pyyaml==6.0.2',
     'requests==2.32.3',
     'typing-extensions==4.12.2 ; python_full_version < "3.12"',
@@ -78,13 +78,13 @@ test = [
     'pytest-qt==4.4.0 ; sys_platform == "win32"',
     'pytest-randomly==3.16.0',
     'ruff==0.11.2',
-    'types-cffi==1.17.0.20250319',
+    'types-cffi==1.17.0.20250326',
     'types-lupa==2.4.0.20250112',
     'types-pillow==10.2.0.20240822',
     'types-psutil==7.0.0.20250218',
     'types-pyinstaller==6.12.0.20250308',
-    'types-pyyaml==6.0.12.20241230',
-    'types-requests==2.32.0.20250306',
+    'types-pyyaml==6.0.12.20250326',
+    'types-requests==2.32.0.20250328',
 ]
 docs = [
     'black==25.1.0',
@@ -95,7 +95,7 @@ docs = [
     'mkdocs-plantuml==0.1.1',
     'mkdocs-section-index==0.3.9',
     'mkdocstrings==0.29.0',
-    'mkdocstrings-python==1.16.7',
+    'mkdocstrings-python==1.16.8',
     'plantuml==0.3.0',
 ]
 
