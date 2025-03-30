@@ -32,6 +32,7 @@ jobs:
           fail: 'StrongCopyleft,Other,Error'
           totals: true
           headers: true
+          exclude: 'typing_extensions'
 
       - name: "Print report"
         if: ${{ always() }}
