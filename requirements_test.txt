@@ -1,15 +1,15 @@
 -r requirements.txt
 interrogate==1.7.0
 isort==6.0.1
-lxml==5.3.1
+lxml==5.3.2
 mypy==1.15.0
 pip-audit==2.8.0
 pytest==8.3.5
 pytest-codspeed==3.2.0
-pytest-cov==6.1.0
+pytest-cov==6.1.1
 pytest-qt==4.4.0; sys_platform == "win32"
 pytest-randomly==3.16.0
-ruff==0.11.3
+ruff==0.11.4
 types-cffi==1.17.0.20250326
 types-lupa==2.4.0.20250112
 types-Pillow==10.2.0.20240822
