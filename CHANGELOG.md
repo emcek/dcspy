@@ -3,7 +3,7 @@
 * DCS-BIOS change default branch to `main` - @emcek
 * Add debug tab to main window #463 @emcek
 * Internal:
-  * Update PySide6 framework to 6.8.3
+  * Update PySide6 framework to 6.9.0
   * Refactor `starter` module
 
 ## 3.6.3
