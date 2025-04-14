@@ -32,7 +32,7 @@ jobs:
           fail: 'StrongCopyleft,Other'
           totals: true
           headers: true
-#          exclude: '(?i)^(pyside6|shiboken6|typing_extensions[-_]*).*'
+          exclude: '(?i)^(pyside6|shiboken6).*'
 
       - name: "Print report"
         if: ${{ always() }}
