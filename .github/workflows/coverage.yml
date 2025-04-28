@@ -42,7 +42,8 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_SERVICE_NAME: github
         run: |
-          pip install coveralls
+          pip install -U coveralls
+          pip list
           coveralls
 
       - name: "Run codacy-coverage"
