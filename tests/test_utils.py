@@ -483,3 +483,8 @@ def test_generate_bios_jsons_with_lupa(test_saved_games):
 ])
 def test_color(color, mode, result):
     assert utils.rgba(color, mode=mode) == result
+
+
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+def test_detect_system_color_mode():
+    assert utils.detect_system_color_mode() == 'light'
