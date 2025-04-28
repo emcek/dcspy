@@ -859,5 +859,5 @@ def detect_system_color_mode() -> str:
         key = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize')
         subkey = QueryValueEx(key, 'AppsUseLightTheme')[0]
     except (OSError, IndexError):
-        return 'light'
-    return {0: 'dark', 1: 'light'}[subkey]
+        return 'Light'
+    return {0: 'Dark', 1: 'Light'}[subkey]
