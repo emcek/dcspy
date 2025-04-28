@@ -23,7 +23,8 @@ from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
 from PySide6.QtCore import __version__ as qt6_ver
-from PySide6.QtGui import QAction, QActionGroup, QColor, QColorConstants, QFont, QIcon, QPixmap, QShowEvent, QStandardItemModel, QTextCharFormat
+from PySide6.QtGui import (QAction, QActionGroup, QColor, QColorConstants, QFont, QGuiApplication, QIcon, QPixmap, QShowEvent, QStandardItemModel, QStyleHints,
+                           QTextCharFormat)
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
@@ -224,11 +225,15 @@ class DcsPyQtGui(QMainWindow):
         toolbar_style.addAction(self.a_text_only)
         toolbar_style.addAction(self.a_text_beside)
         toolbar_style.addAction(self.a_text_under)
-
         self.a_icons_only.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly))
         self.a_text_only.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly))
         self.a_text_beside.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon))
         self.a_text_under.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon))
+
+        color_mode = QActionGroup(self)
+        color_mode.addAction(self.a_light)
+        color_mode.addAction(self.a_dark)
+        color_mode.triggered.connect(self._switch_color_mode)
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -237,6 +242,7 @@ class DcsPyQtGui(QMainWindow):
             'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'hs_debug_font_size': 'valueChanged',
             'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
             'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
+            'a_light': 'triggered', 'a_dark': 'triggered',
             'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
             'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'cb_debug_enable': 'toggled',
             'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled',
@@ -1352,6 +1358,9 @@ class DcsPyQtGui(QMainWindow):
             self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
             self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
             getattr(self, icon_map.get(cfg['toolbar_style'], 'a_icons_only')).setChecked(True)
+            color_mode: QAction = getattr(self, f'a_{cfg["color_mode"]}')
+            color_mode.setChecked(True)
+            self._switch_color_mode(color_mode)
             self.tw_main.setTabEnabled(GuiTab.debug, cfg['gui_debug'])
             self.cb_debug_enable.setChecked(cfg['gui_debug'])
             self.hs_debug_font_size.setValue(cfg['debug_font_size'])
@@ -1390,6 +1399,7 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_style': self.toolbar.toolButtonStyle().value,
             'gui_debug': self.cb_debug_enable.isChecked(),
             'debug_font_size': self.hs_debug_font_size.value(),
+            'color_mode': 'dark' if self.a_dark.isChecked() else 'light',
         }
         if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1657,6 +1667,16 @@ class DcsPyQtGui(QMainWindow):
         else:
             action.setChecked(True)
 
+    @staticmethod
+    def _switch_color_mode(action: QAction) -> None:
+        """
+        Switch between light and dark color mode.
+
+        :param action: action from manu
+        """
+        style_hints: QStyleHints = QGuiApplication.styleHints()
+        style_hints.setColorScheme(getattr(Qt.ColorScheme, action.text()))
+
     def _find_children(self) -> None:
         """Find all widgets of main window."""
         self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')  # type: ignore[assignment]
@@ -1703,6 +1723,8 @@ class DcsPyQtGui(QMainWindow):
         self.a_text_only: QAction = self.findChild(QAction, 'a_text_only')  # type: ignore[assignment]
         self.a_text_beside: QAction = self.findChild(QAction, 'a_text_beside')  # type: ignore[assignment]
         self.a_text_under: QAction = self.findChild(QAction, 'a_text_under')  # type: ignore[assignment]
+        self.a_light: QAction = self.findChild(QAction, 'a_light')  # type: ignore[assignment]
+        self.a_dark: QAction = self.findChild(QAction, 'a_dark')  # type: ignore[assignment]
 
         self.pb_start: QPushButton = self.findChild(QPushButton, 'pb_start')  # type: ignore[assignment]
         self.pb_stop: QPushButton = self.findChild(QPushButton, 'pb_stop')  # type: ignore[assignment]
