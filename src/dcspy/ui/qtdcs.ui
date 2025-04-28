@@ -216,8 +216,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>385</height>
+               <width>152</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -409,8 +409,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>385</height>
+               <width>152</width>
+               <height>74</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -544,8 +544,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>657</width>
-               <height>385</height>
+               <width>236</width>
+               <height>105</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -1544,9 +1544,9 @@
      <property name="title">
       <string>Mode</string>
      </property>
-     <addaction name="a_mode_light"/>
-     <addaction name="a_mode_dark"/>
      <addaction name="a_mode_system"/>
+     <addaction name="a_mode_dark"/>
+     <addaction name="a_mode_light"/>
     </widget>
     <addaction name="a_show_toolbar"/>
     <addaction name="menuToolbar_icons"/>
