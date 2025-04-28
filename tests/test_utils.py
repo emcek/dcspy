@@ -99,7 +99,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'save_lcd': False,
         'show_gui': True,
         'autostart': False,
-        'color_mode': 'light',
+        'color_mode': 'system',
         'completer_items': 20,
         'current_plane': 'A-10C',
         'dcsbios': f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS',
@@ -487,4 +487,4 @@ def test_color(color, mode, result):
 
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_detect_system_color_mode():
-    assert utils.detect_system_color_mode() == 'light'
+    assert utils.detect_system_color_mode() == 'Light'

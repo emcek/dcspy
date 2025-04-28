@@ -2,7 +2,7 @@ api_ver: 3.6.3
 autostart: false
 check_bios: true
 check_ver: true
-color_mode: light
+color_mode: system
 completer_items: 20
 current_plane: A-10C
 dcs: C:/Program Files/Eagle Dynamics/DCS World
