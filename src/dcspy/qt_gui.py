@@ -36,9 +36,9 @@ from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_RE
                           RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                         count_files, defaults_cfg, download_file, generate_bios_jsons_with_lupa, get_all_git_refs, get_depiction_of_ctrls,
-                         get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string, is_git_exec_present, is_git_object,
-                         load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
+                        count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
+                         get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
+                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 LOG = getLogger(__name__)
@@ -231,8 +231,9 @@ class DcsPyQtGui(QMainWindow):
         self.a_text_under.toggled.connect(lambda _: self.toolbar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon))
 
         color_mode = QActionGroup(self)
-        color_mode.addAction(self.a_light)
-        color_mode.addAction(self.a_dark)
+        color_mode.addAction(self.a_mode_light)
+        color_mode.addAction(self.a_mode_dark)
+        color_mode.addAction(self.a_mode_system)
         color_mode.triggered.connect(self._switch_color_mode)
 
     def _init_autosave(self) -> None:
@@ -242,7 +243,7 @@ class DcsPyQtGui(QMainWindow):
             'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'hs_debug_font_size': 'valueChanged',
             'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
             'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
-            'a_light': 'triggered', 'a_dark': 'triggered',
+            'a_mode_light': 'triggered', 'a_mode_dark': 'triggered', 'a_mode_system': 'triggered',
             'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
             'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'cb_debug_enable': 'toggled',
             'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled',
@@ -1358,7 +1359,7 @@ class DcsPyQtGui(QMainWindow):
             self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
             self.addToolBar(Qt.ToolBarArea(int(cfg['toolbar_area'])), self.toolbar)
             getattr(self, icon_map.get(cfg['toolbar_style'], 'a_icons_only')).setChecked(True)
-            color_mode: QAction = getattr(self, f'a_{cfg["color_mode"]}')
+            color_mode: QAction = getattr(self, f'a_mode_{cfg["color_mode"]}')
             color_mode.setChecked(True)
             self._switch_color_mode(color_mode)
             self.tw_main.setTabEnabled(GuiTab.debug, cfg['gui_debug'])
@@ -1399,7 +1400,6 @@ class DcsPyQtGui(QMainWindow):
             'toolbar_style': self.toolbar.toolButtonStyle().value,
             'gui_debug': self.cb_debug_enable.isChecked(),
             'debug_font_size': self.hs_debug_font_size.value(),
-            'color_mode': 'dark' if self.a_dark.isChecked() else 'light',
         }
         if self.device.lcd_info.type == LcdType.COLOR:
             font_cfg = {'font_color_l': self.hs_large_font.value(),
@@ -1409,7 +1409,16 @@ class DcsPyQtGui(QMainWindow):
             font_cfg = {'font_mono_l': self.hs_large_font.value(),
                         'font_mono_m': self.hs_medium_font.value(),
                         'font_mono_s': self.hs_small_font.value()}
+
+        for mode_menu in [self.a_mode_system, self.a_mode_dark, self.a_mode_light]:
+            if mode_menu.isChecked():
+                color_mode = mode_menu.text().lower()
+                break
+        else:
+            color_mode = 'system'
+
         cfg.update(font_cfg)
+        cfg.update({'color_mode': color_mode})
         save_yaml(data=cfg, full_path=default_yaml)
 
     def _reset_defaults_cfg(self) -> None:
@@ -1672,10 +1681,13 @@ class DcsPyQtGui(QMainWindow):
         """
         Switch between light and dark color mode.
 
-        :param action: action from manu
+        :param action: action from menu
         """
+        mode = action.text()
         style_hints: QStyleHints = QGuiApplication.styleHints()
-        style_hints.setColorScheme(getattr(Qt.ColorScheme, action.text()))
+        if mode == 'System':
+            mode = detect_system_color_mode()
+        style_hints.setColorScheme(getattr(Qt.ColorScheme, mode))
 
     def _find_children(self) -> None:
         """Find all widgets of main window."""
@@ -1723,8 +1735,9 @@ class DcsPyQtGui(QMainWindow):
         self.a_text_only: QAction = self.findChild(QAction, 'a_text_only')  # type: ignore[assignment]
         self.a_text_beside: QAction = self.findChild(QAction, 'a_text_beside')  # type: ignore[assignment]
         self.a_text_under: QAction = self.findChild(QAction, 'a_text_under')  # type: ignore[assignment]
-        self.a_light: QAction = self.findChild(QAction, 'a_light')  # type: ignore[assignment]
-        self.a_dark: QAction = self.findChild(QAction, 'a_dark')  # type: ignore[assignment]
+        self.a_mode_light: QAction = self.findChild(QAction, 'a_mode_light')  # type: ignore[assignment]
+        self.a_mode_dark: QAction = self.findChild(QAction, 'a_mode_dark')  # type: ignore[assignment]
+        self.a_mode_system: QAction = self.findChild(QAction, 'a_mode_system')  # type: ignore[assignment]
 
         self.pb_start: QPushButton = self.findChild(QPushButton, 'pb_start')  # type: ignore[assignment]
         self.pb_stop: QPushButton = self.findChild(QPushButton, 'pb_stop')  # type: ignore[assignment]
