@@ -36,7 +36,7 @@ from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_RE
                           RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
-                        count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
+                         count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
                          get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
                          is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
 
