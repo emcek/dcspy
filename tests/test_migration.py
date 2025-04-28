@@ -25,6 +25,7 @@ def test_generate_config():
         'autostart': False,
         'check_bios': True,
         'check_ver': True,
+        'color_mode': 'light',
         'completer_items': 20,
         'current_plane': 'A-10C',
         'dcs': 'C:/Program Files/Eagle Dynamics/DCS World',
