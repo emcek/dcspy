@@ -1544,8 +1544,9 @@
      <property name="title">
       <string>Mode</string>
      </property>
-     <addaction name="a_light"/>
-     <addaction name="a_dark"/>
+     <addaction name="a_mode_light"/>
+     <addaction name="a_mode_dark"/>
+     <addaction name="a_mode_system"/>
     </widget>
     <addaction name="a_show_toolbar"/>
     <addaction name="menuToolbar_icons"/>
@@ -2145,7 +2146,7 @@ Avaliable for two-state switches and knobs.</string>
     <string>Text under</string>
    </property>
   </action>
-  <action name="a_light">
+  <action name="a_mode_light">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -2160,7 +2161,7 @@ Avaliable for two-state switches and knobs.</string>
     <string>Light Mode</string>
    </property>
   </action>
-  <action name="a_dark">
+  <action name="a_mode_dark">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -2173,6 +2174,21 @@ Avaliable for two-state switches and knobs.</string>
    </property>
    <property name="toolTip">
     <string>Dark Mode</string>
+   </property>
+  </action>
+  <action name="a_mode_system">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/edit-select-invert.svg</normaloff>:/icons/img/edit-select-invert.svg</iconset>
+   </property>
+   <property name="text">
+    <string>System</string>
+   </property>
+   <property name="toolTip">
+    <string>System Mode</string>
    </property>
   </action>
  </widget>
