@@ -2026,6 +2026,9 @@ Avaliable for two-state switches and knobs.</string>
    <property name="text">
     <string>Show G-Keys</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+G</string>
+   </property>
   </action>
   <action name="a_show_device">
    <property name="checkable">
@@ -2040,6 +2043,9 @@ Avaliable for two-state switches and knobs.</string>
    </property>
    <property name="toolTip">
     <string>Show Device</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+D</string>
    </property>
   </action>
   <action name="a_save_plane">
