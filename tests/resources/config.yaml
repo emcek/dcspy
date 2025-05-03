@@ -1,6 +1,7 @@
 autostart: false
 check_bios: false
 check_ver: false
+color_mode: system
 completer_items: 20
 current_plane: A-10C
 dcs: C:/Program Files/Eagle Dynamics/DCS World OpenBeta

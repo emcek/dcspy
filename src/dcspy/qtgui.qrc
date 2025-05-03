@@ -1,6 +1,8 @@
 <RCC>
   <qresource prefix="icons">
     <file>img/G13.png</file>
+    <file>img/contrast.svg</file>
+    <file>img/system-suspend.svg</file>
     <file>img/deepin-repair.svg</file>
     <file>img/G9.png</file>
     <file>img/G11.png</file>
@@ -9,6 +11,7 @@
     <file>img/G105.png</file>
     <file>img/G110.png</file>
     <file>img/G300.png</file>
+    <file>img/edit-select-invert.svg</file>
     <file>img/G400.png</file>
     <file>img/G402.png</file>
     <file>img/G502.png</file>
