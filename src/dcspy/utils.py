@@ -842,3 +842,22 @@ def rgb(c: Color, /) -> tuple[int, int, int]:
     green = (c.value >> 8) & 0xff
     blue = c.value & 0xff
     return red, green, blue
+
+
+def detect_system_color_mode() -> str:
+    """
+    Detect the color mode of the system.
+
+    Registry will return 0 if Windows is in Dark Mode and 1 if Windows is in Light Mode.
+    In case of error, it will return 'light' as default.
+
+    :return: dark or light as string
+    """
+    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # type: ignore[attr-defined]
+
+    try:
+        key = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize')
+        subkey = QueryValueEx(key, 'AppsUseLightTheme')[0]
+    except (OSError, IndexError):
+        return 'Light'
+    return {0: 'Dark', 1: 'Light'}[subkey]

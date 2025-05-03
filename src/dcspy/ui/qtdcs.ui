@@ -1540,8 +1540,18 @@
      <addaction name="a_text_beside"/>
      <addaction name="a_text_under"/>
     </widget>
+    <widget class="QMenu" name="menuMode">
+     <property name="title">
+      <string>Mode</string>
+     </property>
+     <addaction name="a_mode_system"/>
+     <addaction name="a_mode_dark"/>
+     <addaction name="a_mode_light"/>
+    </widget>
     <addaction name="a_show_toolbar"/>
     <addaction name="menuToolbar_icons"/>
+    <addaction name="separator"/>
+    <addaction name="menuMode"/>
     <addaction name="separator"/>
     <addaction name="a_show_gkeys"/>
     <addaction name="a_show_device"/>
@@ -2016,6 +2026,9 @@ Avaliable for two-state switches and knobs.</string>
    <property name="text">
     <string>Show G-Keys</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+G</string>
+   </property>
   </action>
   <action name="a_show_device">
    <property name="checkable">
@@ -2030,6 +2043,9 @@ Avaliable for two-state switches and knobs.</string>
    </property>
    <property name="toolTip">
     <string>Show Device</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+D</string>
    </property>
   </action>
   <action name="a_save_plane">
@@ -2134,6 +2150,51 @@ Avaliable for two-state switches and knobs.</string>
    </property>
    <property name="text">
     <string>Text under</string>
+   </property>
+  </action>
+  <action name="a_mode_light">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/contrast.svg</normaloff>:/icons/img/contrast.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Light</string>
+   </property>
+   <property name="toolTip">
+    <string>Light Mode</string>
+   </property>
+  </action>
+  <action name="a_mode_dark">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/system-suspend.svg</normaloff>:/icons/img/system-suspend.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Dark</string>
+   </property>
+   <property name="toolTip">
+    <string>Dark Mode</string>
+   </property>
+  </action>
+  <action name="a_mode_system">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../qtgui.qrc">
+     <normaloff>:/icons/img/edit-select-invert.svg</normaloff>:/icons/img/edit-select-invert.svg</iconset>
+   </property>
+   <property name="text">
+    <string>System</string>
+   </property>
+   <property name="toolTip">
+    <string>System Mode</string>
    </property>
   </action>
  </widget>
