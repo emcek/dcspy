@@ -58,7 +58,7 @@ class LcdSdkManager:
         Check if the button specified by the parameter is being pressed.
 
         :param button: Defines the button to check on
-        :return: True if button is being pressed, False otherwise
+        :return: True if a button is being pressed, False otherwise
         """
         try:
             return self.lcd_dll.LogiLcdIsButtonPressed(button.value)  # type: ignore[attr-defined]
@@ -102,7 +102,7 @@ class LcdSdkManager:
         Set the specified text in the requested line on the monochrome lcd device connected.
 
         :param line_no: The monochrome LCD has four (4) lines, so this parameter can be any number from zero (0) to three (3)
-        :param text: defines the text you want to display
+        :param text: The text to display
         :return: A result of execution
         """
         try:
@@ -112,7 +112,7 @@ class LcdSdkManager:
 
     def logi_lcd_color_set_background(self, pixels: list[tuple[int, int, int, int]]) -> bool:
         """
-        Set array of pixels as a rectangular area, 320 bytes wide and 240 bytes high.
+        Set an array of pixels as a rectangular area, 320 bytes wide and 240 bytes high.
 
         Since the color lcd can display the full RGB gamma, 32 bits per pixel (4-bytes) are used.
         The size of the colorBitmap array has to be 320x240x4 = 307,200 therefore.
@@ -133,8 +133,8 @@ class LcdSdkManager:
         The font size that will be displayed is bigger than the one used in the other lines,
         so you can use this function to set the title of your applet/page.
         If you don't specify any color, your title will be white.
-        :param text: The text display as title
-        :param rgb: tuple with integer values between 0 and 255 as red, green, blue
+        :param text: The text to display as a title
+        :param rgb: a tuple with integer values between 0 and 255 as red, green, blue
         :return: A result of execution
         """
         try:
@@ -159,7 +159,7 @@ class LcdSdkManager:
 
     def update_text(self, txt: list[tuple[str, Color]]) -> None:
         """
-        Update display LCD with a list of text.
+        Update display LCD with a list of a text.
 
         For mono, LCD it takes four (4) elements of the list and displays as four (4) rows.
         For color, LCD takes eight (8) elements of the list and displays as eight (8) rows.
