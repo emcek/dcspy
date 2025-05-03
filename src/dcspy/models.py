@@ -1043,7 +1043,7 @@ ConfigValue = TypeVar('ConfigValue', str, int, float, bool)
 DcspyConfigYaml = dict[str, ConfigValue]
 
 
-class Direction(Enum):
+class Direction(IntEnum):
     """Direction of iteration."""
     FORWARD = 1
     BACKWARD = -1
@@ -1086,7 +1086,7 @@ class ZigZagIterator:
             self._direction = Direction.BACKWARD
         elif self.current <= 0:
             self._direction = Direction.FORWARD
-        self.current += self.step * self._direction.value
+        self.current += self.step * self._direction
         if self._direction == Direction.FORWARD:
             self.current = min(self.current, self.max_val)
         else:
