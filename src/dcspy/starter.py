@@ -21,7 +21,7 @@ class DCSpyStarter:
 
     def __init__(self, model: LogitechDeviceModel, event: Event) -> None:
         """
-        Initialize an object with global state.
+        Initialize an object with a global state.
 
         :param model: Logitech device model
         :param event: stop event for the main loop

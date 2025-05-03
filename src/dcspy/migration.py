@@ -23,7 +23,7 @@ def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
     If the api_ver key does not exist, it is set to 2.3.3.
 
     :param cfg: Configuration dictionary
-    :return: Full migrated dictionary
+    :return: Full-migrated dictionary
     """
     LOG.debug(f'Starting configuration:\n{pformat(cfg)}')
     src_ver = cfg.get('api_ver', '2.3.3')  # do not touch this api_ver!
@@ -151,7 +151,7 @@ def _api_ver_3_0_0(cfg: DcspyConfigYaml) -> None:
 
 def _add_key(cfg: DcspyConfigYaml, key: str, default_value: ConfigValue) -> None:
     """
-    Add key to a dictionary if not exists.
+    Add a key to a dictionary if not exists.
 
     :param cfg: Configuration dictionary
     :param key: key name
@@ -183,7 +183,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
     :param cfg: Configuration dictionary
     :param old_name: Old key name
     :param new_name: New key name
-    :param default_value: default value if an old key, do not exist
+    :param default_value: Use if a value for an old key does not exist
     """
     value = cfg.get(old_name, default_value)
     try:
@@ -196,7 +196,7 @@ def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, d
 
 def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str = '') -> None:
     """
-    Change value for the key to `new_value` if the current value is equal `old_value`.
+    Change the value for the key to `new_value` if the current value is equal `old_value`.
 
     :param cfg: Configuration dictionary
     :param key: Key name
@@ -211,7 +211,7 @@ def _change_value(cfg: DcspyConfigYaml, key: str, new_value: str, old_value: str
 
 def _copy_file(filename: str, to_path: Path, force: bool = False) -> None:
     """
-    Copy a file from one location to another, only when the file doesn't exist.
+    Copy a file from one location to another only when the file doesn't exist.
 
     :param filename: The name of the file to be copied.
     :param to_path: The full path where the file should be copied to.

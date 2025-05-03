@@ -121,7 +121,7 @@ class AdvancedAircraft(BasicAircraft):
 
     def set_bios(self, selector: str, value: BiosValue) -> None:
         """
-        Set value for DCS-BIOS selector and update LCD with image.
+        Set a value for DCS-BIOS selector and update LCD with an image.
 
         :param selector:
         :param value:
@@ -132,9 +132,9 @@ class AdvancedAircraft(BasicAircraft):
 
     def prepare_image(self) -> Image.Image:
         """
-        Prepare image to be sent to a correct type of LCD.
+        Prepare an image to be sent to a correct type of LCD.
 
-        :return: Image instance ready display on LCD
+        :return: Image instance ready to display on LCD
         """
         img = Image.new(mode=self.lcd.mode.value, size=(self.lcd.width.value, self.lcd.height.value), color=self.lcd.background)
         getattr(self, f'draw_for_lcd_{self.lcd.type.name.lower()}')(img)
@@ -189,7 +189,7 @@ class FA18Chornet(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
-        Draw common part (based on a scale) for Mono and Color LCD.
+        Draw a common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -280,7 +280,7 @@ class F16C50(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
-        Draw common part (based on a scale) for Mono and Color LCD.
+        Draw a common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param separation: between lines in pixels
@@ -470,7 +470,7 @@ class Ka50(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
-        Draw common part (based on a scale) for Mono and Color LCD.
+        Draw a common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -560,7 +560,7 @@ class Mi8MT(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
-        Draw common part (based on a scale) for Mono and Color LCD.
+        Draw a common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -627,7 +627,7 @@ class Mi24P(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
-        Draw common part (based on a scale) for Mono and Color LCD.
+        Draw a common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)
@@ -998,7 +998,7 @@ class AV8BNA(AdvancedAircraft):
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, scale: int) -> ImageDraw.ImageDraw:
         """
-        Draw common part (based on a scale) for Mono and Color LCD.
+        Draw a common part (based on a scale) for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         :param scale: scaling factor (Mono 1, Color 2)

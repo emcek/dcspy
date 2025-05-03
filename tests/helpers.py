@@ -35,7 +35,7 @@ def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[tup
 
 def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
     """
-    Compare generated image with a saved file.
+    Compare a generated image with a saved file.
 
     :param img: Generated image
     :param file_path: path to reference image
@@ -54,7 +54,7 @@ def compare_images(img: Image.Image, file_path: Path, precision: int) -> bool:
 
 def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> tuple[float, int]:
     """
-    Compare bytes and return percentage of differences and differences in size.
+    Compare bytes and return a percentage of differences and differences in size.
 
     :param test_bytes: Bytes to compare
     :param ref_bytes: Referenced bytes
@@ -72,7 +72,7 @@ def send_bios_data(data_file: Path) -> None:
     """
     Read the BIOS data from the given JSON file.
 
-    Converts it into a list of tuples containing the timing and data, and sends the data over UDP socket using elapsed time.
+    Converts it into a list of tuples containing the timing and data and sends the data over UDP socket using elapsed time.
 
     :param data_file: The file path of the JSON file containing the BIOS data.
     """

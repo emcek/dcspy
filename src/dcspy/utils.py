@@ -59,7 +59,7 @@ def get_default_yaml(local_appdata: bool = False) -> Path:
 
 def load_yaml(full_path: Path) -> dict[str, Any]:
     """
-    Load YAML from a file into dictionary.
+    Load YAML from a file into a dictionary.
 
     :param full_path: Full path to YAML file
     :return: Dictionary with data
@@ -115,7 +115,7 @@ def get_version_string(repo: str, current_ver: str | version.Version, check: boo
     :param repo: Format '<organization or user>/<package>'.
     :param current_ver: String or Version object.
     :param check: Version online.
-    :return: Formatted version as string.
+    :return: Formatted version as a string.
     """
     ver_string = f'v{current_ver}'
     if check:
@@ -201,7 +201,7 @@ def check_bios_ver(bios_path: Path | str) -> version.Version:
     """
     Check the DSC-BIOS release version.
 
-    :param bios_path: Path to DCS-BIOS directory in Saved Games folder
+    :param bios_path: Path to DCS-BIOS directory in the SavedGames folder
     :return: Version object
     """
     bios_ver = version.parse('0.0.0')
@@ -268,7 +268,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
 
     Return SHA of the latest commit.
 
-    :param git_ref: Any Git reference as string
+    :param git_ref: Any Git reference as a string
     :param repo_dir: Local directory for a repository
     :param repo: GitHub repository user/name
     :param update: Perform update process
@@ -284,11 +284,11 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
 
 def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.RemoteProgress | None = None) -> git.Repo:
     """
-    Checkout repository at master branch or clone it when not exists in a system.
+    Checkout repository at a master branch or clone it when not exists in a system.
 
     :param repo: Repository name
     :param repo_dir: Local repository directory
-    :param checkout_ref: Checkout a git reference
+    :param checkout_ref: Check out a git reference
     :param progress: Progress callback
     :return: Repo object of the repository
     """
@@ -330,7 +330,7 @@ def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) 
 
 def count_files(directory: Path, extension: str) -> int:
     """
-    Count files with extension in directory.
+    Count files with extension in a directory.
 
     :param directory: As Path object
     :param extension: File extension
@@ -347,7 +347,7 @@ def count_files(directory: Path, extension: str) -> int:
 
 def is_git_exec_present() -> bool:
     """
-    Check if git executable is present in a system.
+    Check if the git executable is present in a system.
 
     :return: True if git.exe is available
     """
@@ -411,7 +411,7 @@ class CloneProgress(git.RemoteProgress):
 
     def get_curr_op(self, op_code: int) -> str:
         """
-        Get stage name from OP code.
+        Get a stage name from OP code.
 
         :param op_code: OP code
         :return: stage name
@@ -462,7 +462,7 @@ def collect_debug_data() -> Path:
 
 def _get_sys_file(conf_dict: dict[str, Any]) -> Path:
     """
-    Save system information to file and return its path.
+    Save system information to a file and return its path.
 
     :param conf_dict: A dictionary containing configuration information.
     :return: A Path object representing the path to the system data file.
@@ -479,7 +479,7 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     Fetch system information.
 
     :param conf_dict: A dictionary containing configuration information.
-    :return: System data as string
+    :return: System data as a string
     """
     name = uname()
     pyver = (python_version(), python_implementation())
@@ -498,7 +498,7 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
 
 def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str]:
     """
-    Fetch Git version and SHA of HEAD commit.
+    Fetch the Git version and SHA of HEAD commit.
 
     :param repo_dir: Local directory for repository
     :return: Tuple of (a version) and SHA of HEAD commit
@@ -515,7 +515,7 @@ def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str]:
 
 def _get_dcs_log(conf_dict: dict[str, Any]) -> Path:
     """
-    Get path to dcs.log path.
+    Get a path to dcs.log path.
 
     :param conf_dict: A dictionary containing configuration information.
     :return: A Path object representing the path to the dcs.log file.
@@ -582,7 +582,7 @@ def run_pip_command(cmd: str) -> tuple[int, str, str]:
     """
     Execute pip command.
 
-    :param cmd: Command as string
+    :param cmd: Command as a string
     :return: Tuple with return code, stderr and stdout
     """
     try:
@@ -611,7 +611,7 @@ def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
 
 def load_json(full_path: Path) -> dict[Any, Any]:
     """
-    Load JSON from a file into dictionary.
+    Load JSON from a file into a dictionary.
 
     :param full_path: Full path
     :return: Python representation of JSON
@@ -729,7 +729,7 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
 
     :param value: The string in which symbols will be replaced.
     :param symbol_replacement: A sequence of sequences containing the original symbols and their replacement strings.
-    :return: The string with symbols replaced.
+    :return: The string with symbols to replace.
     """
     for original, replacement in symbol_replacement:
         value = value.replace(original, replacement)
@@ -744,7 +744,7 @@ class KeyRequest:
         Load YAML with BIOS request for G-Keys and LCD buttons.
 
         :param yaml_path: Path to the airplane YAML file.
-        :param get_bios_fn: Function used to get current BIOS value.
+        :param get_bios_fn: Function used to get a current BIOS value.
         """
         plane_yaml = load_yaml(full_path=yaml_path)
         self.buttons: dict[AnyButton, RequestModel] = {}
@@ -755,7 +755,7 @@ class KeyRequest:
 
     @property
     def cycle_button_ctrl_name(self) -> dict[str, int]:
-        """Return a dictionary with BIOS selectors to track changes of values for cycle button to get current values."""
+        """Return a dictionary with BIOS selectors to track changes of values for a cycle button to get current values."""
         return {req_model.ctrl_name: int() for req_model in self.buttons.values() if req_model.is_cycle}
 
     def get_request(self, button: AnyButton) -> RequestModel:
@@ -781,10 +781,10 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     r"""
     Regenerate DCS-BIOS JSON files.
 
-    Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
+    Using the Lupa library, first it will try to use LuaJIT 2.1 if not it will fall back to Lua 5.1
 
-    :param dcs_save_games: Full path to Saved Games\DCS directory.
-    :param local_compile: Relative path to LocalCompile.lua file.
+    :param dcs_save_games: Full path to the Saved Games\DCS directory.
+    :param local_compile: Relative path to the LocalCompile.lua file.
     """
     try:
         import lupa.luajit21 as lupa
@@ -812,13 +812,13 @@ def rgba(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ..
     """
     Convert a color to a single integer or tuple of integers.
 
-    This depends on given mode/alpha channel:
-    * If mode is an integer, then return a tuple of RGBA channels.
-    * If mode is a LcdMode.TRUE_COLOR, then return a tuple of RGBA channels.
-    * If mode is a LcdMode.BLACK_WHITE, then return a single integer.
+    This depends on a given mode/alpha channel:
+    * If a mode is an integer, then return a tuple of RGBA channels.
+    * If a mode is a LcdMode.TRUE_COLOR, then return a tuple of RGBA channels.
+    * If a mode is a LcdMode.BLACK_WHITE, then return a single integer.
 
     :param c: Color name to convert
-    :param mode: Mode of the LCD or alpha channel as integer
+    :param mode: Mode of the LCD or alpha channel as an integer
     :return: tuple with RGBA channels or single integer
     """
     if isinstance(mode, int):

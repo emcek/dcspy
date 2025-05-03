@@ -20,7 +20,7 @@ LOG = getLogger(__name__)
 
 def _update_progress(progbar: QProgressBar) -> None:
     """
-    Update the progress bar, when loading application.
+    Update progressbar, when loading application.
 
     :type progbar: Progress bar object
     """

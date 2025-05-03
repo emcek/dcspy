@@ -70,7 +70,7 @@ class Input(BaseModel):
 
     def get(self, attribute: str, default=None) -> Any | None:
         """
-        Access attribute and get default when is not available.
+        Access an attribute and get default when is not available.
 
         :param attribute:
         :param default:
@@ -97,7 +97,7 @@ class FixedStep(Input):
 
 
 class VariableStep(Input):
-    """VariableStep input interface of inputs section of Control."""
+    """VariableStep input interface of the inputs section of Control."""
     interface: str = 'variable_step'
     max_value: int
     suggested_step: int
@@ -116,7 +116,7 @@ class VariableStep(Input):
 
 
 class SetState(Input):
-    """SetState input interface of inputs section of Control."""
+    """SetState input interface of the inputs section of Control."""
     interface: str = 'set_state'
     max_value: int
 
@@ -134,7 +134,7 @@ class SetState(Input):
 
 
 class Action(Input):
-    """Action input interface of inputs section of Control."""
+    """Action input interface of the inputs section of Control."""
     argument: str
     interface: str = 'action'
 
@@ -197,7 +197,7 @@ class OutputStr(Output):
 
 
 class OutputInt(Output):
-    """Integer output interface of outputs section of Control."""
+    """Integer output interface of the outputs section of Control."""
     mask: int
     max_value: int
     shift_by: int
@@ -256,11 +256,11 @@ class ControlKeyData:
 
     def __init__(self, name: str, description: str, max_value: int, suggested_step: int = 1) -> None:
         """
-        Define a type of input for cockpit controller.
+        Define a type of input for a cockpit controller.
 
         :param name: Name of the input
         :param description: Short description
-        :param max_value: Max value (zero based)
+        :param max_value: Max value (zero-based)
         :param suggested_step: One (1) by default
         """
         self.name = name
@@ -336,7 +336,7 @@ class ControlKeyData:
         """
         Return the depiction of the control.
 
-        :return: ControlDepiction object representing the control's name amd description.
+        :return: ControlDepiction object representing the control's name and description.
         """
         return ControlDepiction(name=self.name, description=self.description)
 
@@ -352,7 +352,7 @@ class ControlKeyData:
     @property
     def one_input(self) -> bool:
         """
-        Check if input has only one input dict.
+        Check if an input has only one input dict.
 
         :return: True if ControlKeyData has only one input, False otherwise
         """
@@ -408,7 +408,7 @@ class ControlKeyData:
         """
         Check if the controller is a push button type.
 
-        :return: True if controller is a push button type, False otherwise
+        :return: True if a controller is a push button type, False otherwise
         """
         return self.has_fixed_step and self.has_set_state and self.max_value == 1
 
@@ -452,9 +452,9 @@ class Control(BaseModel):
     @classmethod
     def make_empty(cls) -> Control:
         """
-        Make empty Control object with default values assigned to its attributes.
+        Make an empty Control object with default values assigned to its attributes.
 
-        :return: Control object with empty values.
+        :return: Control an object with empty values.
         """
         return cls(api_variant='', category='', control_type='', description='', identifier='', inputs=[], outputs=[])
 
@@ -502,7 +502,7 @@ class DcsBiosPlaneData(RootModel):
 
 
 class CycleButton(BaseModel):
-    """Map BIOS key string with iterator to keep current value."""
+    """Map BIOS key string with iterator to keep a current value."""
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     ctrl_name: str
@@ -518,7 +518,7 @@ class CycleButton(BaseModel):
         The request is expected to follow a predefined structure where its components
         are separated by spaces.
 
-        :param req: A string request expected to contain `control_name`, an underscore, `step`, and `max_value`, separated by spaces.
+        :param req: A string a request expected to contain `control_name`, an underscore, `step`, and `max_value`, separated by spaces.
         :return: Instance of `CycleButton` based on extracted data.
         """
         selector, _, step, max_value = req.split(' ')
@@ -537,7 +537,7 @@ class GuiPlaneInputRequest(BaseModel):
     a graphical interface, such as radio buttons or other control widgets,
     that interact with plane systems.
     It allows for structured generation of requests based on provided parameters or
-    configurations, and provides utility methods to convert data into request objects.
+    configurations and provides utility methods to convert data into request objects.
     """
     identifier: str
     request: str
@@ -802,7 +802,7 @@ class Gkey(BaseModel):
 
         :param key: Number of keys
         :param mode: Number of modes
-        :return: sequence of a Gkey instances
+        :return: sequence of Gkey instances
         """
         return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
 
@@ -843,8 +843,8 @@ class LogitechDeviceModel(BaseModel):
         """
         Get the keys at the specified row and column in the table layout.
 
-        :param row: The row index, zero based.
-        :param col: The column index, zero based.
+        :param row: The row index (zero-based).
+        :param col: The column index (zero-based).
         :return: The key at the specified row and column, if it exists, otherwise None.
         """
         try:
@@ -1366,7 +1366,7 @@ class RequestModel(BaseModel):
         If no conditions match, the raw request is returned appended with a newline.
 
         :param key_down: Integer representing a key state, it can be either a specific value such as `KEY_UP` or
-                         `None` for cases where key down state is not applicable.
+                         `None` for cases where a key down state is not applicable.
         :return: Returns a string representing the generated request based on the active case conditions.
         """
 

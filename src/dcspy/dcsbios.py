@@ -155,7 +155,7 @@ class StringBuffer:
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
-        Set callback function.
+        Set a callback function.
 
         :param address:
         :param data:
@@ -195,7 +195,7 @@ class IntegerBuffer:
 
     def on_dcsbios_write(self, address: int, data: int) -> None:
         """
-        Set callback function.
+        Set a callback function.
 
         :param address:
         :param data:

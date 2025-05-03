@@ -57,11 +57,11 @@ class LogitechDevice:
     @text.setter
     def text(self, message: list[tuple[str, Color]]) -> None:
         """
-        Display text message at LCD.
+        Display a text message at LCD.
 
         A first element is title - used only for G19
         For G13/G15/G510 takes elements two (2) to four (4).
-        For G19 takes the elements two (2) to eight (8).
+        For G19 takes elements two (2) to eight (8).
         :param message: List of tuples with strings and color to display, row by row.
         """
         self._text = message
@@ -71,7 +71,7 @@ class LogitechDevice:
     @property
     def messages(self) -> list[str]:
         """
-        Get the text massages without the tittle from LCD.
+        Get the text messages without the tittle from LCD.
 
         :return: List of strings with data, row by row
         """
@@ -184,7 +184,7 @@ class LogitechDevice:
         """
         Button handler.
 
-        * Detect if button was pressed
+        * Detect if a button was pressed
         * Sent action to DCS-BIOS via network socket
         """
         if self.model.lcd_info.type != LcdType.NONE:
@@ -217,11 +217,11 @@ class LogitechDevice:
 
     def _prepare_image(self) -> Image.Image:
         """
-        Prepare image for a base of the LCD type.
+        Prepare an image for a base of the LCD type.
 
         For G13/G15/G510 takes the first four (4) or fewer elements of the list and display as four (4) rows.
         For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
-        :return: Image instance ready display on LCD
+        :return: Image instance ready to display on LCD
         """
         img = Image.new(mode=self.model.lcd_info.mode.value, color=self.model.lcd_info.background,
                         size=(self.model.lcd_info.width.value, self.model.lcd_info.height.value))
