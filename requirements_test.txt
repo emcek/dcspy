@@ -13,7 +13,7 @@ ruff==0.11.12
 types-cffi==1.17.0.20250523
 types-lupa==2.4.0.20250112
 types-Pillow==10.2.0.20240822
-types-psutil==7.0.0.20250516
+types-psutil==7.0.0.20250601
 types-pyinstaller==6.13.0.20250417
 types-PyYAML==6.0.12.20250516
 types-requests==2.32.0.20250515
