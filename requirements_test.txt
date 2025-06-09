@@ -4,7 +4,7 @@ isort==6.0.1
 lxml==5.4.0
 mypy==1.16.0
 pip-audit==2.9.0
-pytest==8.3.5
+pytest==8.4.0
 pytest-codspeed==3.2.0
 pytest-cov==6.1.1
 pytest-qt==4.4.0; sys_platform == "win32"
