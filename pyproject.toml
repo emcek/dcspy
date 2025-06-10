@@ -49,7 +49,7 @@ dependencies = [
     'pydantic==2.11.5',
     'pyside6==6.9.0',
     'pyyaml==6.0.2',
-    'requests==2.32.3',
+    'requests==2.32.4',
     'typing-extensions==4.13.2',
 ]
 
