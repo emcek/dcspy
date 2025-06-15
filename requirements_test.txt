@@ -4,16 +4,16 @@ isort==6.0.1
 lxml==5.4.0
 mypy==1.16.0
 pip-audit==2.9.0
-pytest==8.3.5
+pytest==8.4.0
 pytest-codspeed==3.2.0
-pytest-cov==6.1.1
+pytest-cov==6.2.1
 pytest-qt==4.4.0; sys_platform == "win32"
 pytest-randomly==3.16.0
-ruff==0.11.12
+ruff==0.11.13
 types-cffi==1.17.0.20250523
 types-lupa==2.4.0.20250112
 types-Pillow==10.2.0.20240822
-types-psutil==7.0.0.20250516
-types-pyinstaller==6.13.0.20250417
+types-psutil==7.0.0.20250601
+types-pyinstaller==6.14.0.20250611
 types-PyYAML==6.0.12.20250516
-types-requests==2.32.0.20250515
+types-requests==2.32.4.20250611
