@@ -57,7 +57,7 @@ def get_default_yaml(local_appdata: bool = False) -> Path:
     return cfg_ful_path
 
 
-def load_yaml(full_path: Path) -> dict[str, Any]:
+def load_yaml(full_path: Path) -> DcspyConfigYaml:
     """
     Load YAML from a file into a dictionary.
 
@@ -77,7 +77,7 @@ def load_yaml(full_path: Path) -> dict[str, Any]:
     return data
 
 
-def save_yaml(data: dict[str, Any], full_path: Path) -> None:
+def save_yaml(data: DcspyConfigYaml, full_path: Path) -> None:
     """
     Save disc as YAML file.
 
