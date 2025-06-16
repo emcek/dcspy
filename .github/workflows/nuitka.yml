@@ -19,7 +19,7 @@ jobs:
         shell: pwsh
         id: nuitka_data
         run: |
-          python -m pip install -U pyinstaller
+          uv pip install -U pyinstaller
           $output = & python scripts/generate_ver_file.py
           $output = $output -replace "[\(\)\s\']", ""
           $values = $output.Split(',')
