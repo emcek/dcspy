@@ -37,18 +37,11 @@ jobs:
             coverage.xml
           retention-days: 4
 
-      - name: "Test Coveralls"
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
-        run: |
-          pip install coveralls
-          coveralls
+      - name: "Run Coveralls coverage"
+        uses: coverallsapp/github-action@v2
 
-      - name: "Run codacy-coverage"
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        run: |
-          pip install codacy-coverage
-          coverage xml -o codacy_coverage.xml
-          python-codacy-coverage -r codacy_coverage.xml
+      - name: "Run Codacy coverage"
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml
