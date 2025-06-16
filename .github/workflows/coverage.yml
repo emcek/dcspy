@@ -42,13 +42,13 @@ jobs:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_SERVICE_NAME: github
         run: |
-          pip install coveralls
+          uv pip install coveralls
           coveralls
 
       - name: "Run codacy-coverage"
         env:
           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         run: |
-          pip install codacy-coverage
+          uv pip install codacy-coverage
           coverage xml -o codacy_coverage.xml
           python-codacy-coverage -r codacy_coverage.xml
