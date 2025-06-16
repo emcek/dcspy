@@ -6,7 +6,7 @@ runs:
       - name: "Install uv and set the Python"
         uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
           enable-cache: true
 
       - name: "Install the project and test dependencies"
