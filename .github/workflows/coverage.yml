@@ -38,12 +38,10 @@ jobs:
           retention-days: 4
 
       - name: "Test Coveralls"
+        uses: coverallsapp/github-action@v2
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_SERVICE_NAME: github
-        run: |
-          uv pip install coveralls
-          coveralls
 
       - name: "Run codacy-coverage"
         env:
