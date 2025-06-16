@@ -14,11 +14,14 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "Set up Python ${{ matrix.os }} ${{ matrix.python-version }}"
-        uses: actions/setup-python@v5
+      - name: "Install uv and set the Python"
+        uses: astral-sh/setup-uv@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
+          enable-cache: true
+
+      - name: "Install the project and test dependencies"
+        run: uv sync
 
       - name: "Install MS Fonts"
         if: ${{ contains( matrix.os, 'ubuntu') }}
@@ -27,11 +30,6 @@ jobs:
           sudo mkdir -p /usr/share/fonts/truetype
           sudo mv consola.ttf /usr/share/fonts/truetype
           fc-cache -f
-
-      - name: "Install dependencies"
-        run: |
-          python -m pip install --upgrade pip setuptools
-          pip install -Ur requirements_test.txt
 
       - name: "Test with pytest"
         env:
