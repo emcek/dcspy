@@ -37,4 +37,4 @@ def get_config_yaml_item(key: str, /, default: ConfigValue | None = None) -> Con
     :param default: Default value if key not found
     :return: Value from configuration
     """
-    return load_yaml(full_path=default_yaml).get(key, default)
+    return load_yaml(full_path=default_yaml).get(key, default) # type: ignore[return-value]
