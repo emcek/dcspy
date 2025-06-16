@@ -16,4 +16,4 @@ runs:
       - name: "Install twine"
         shell: bash
         run: |
-          uv pip unstall twine
+          uv pip install twine
