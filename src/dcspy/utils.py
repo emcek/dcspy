@@ -851,7 +851,7 @@ def detect_system_color_mode() -> str:
     Registry will return 0 if Windows is in Dark Mode and 1 if Windows is in Light Mode.
     In case of error, it will return 'light' as default.
 
-    :return: dark or light as string
+    :return: Dark or light as string
     """
     from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # type: ignore[attr-defined]
 
