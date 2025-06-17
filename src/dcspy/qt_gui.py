@@ -19,7 +19,7 @@ from typing import Any, ClassVar
 from webbrowser import open_new_tab
 
 from packaging import version
-from pydantic_core import ValidationError
+from pydantic import ValidationError
 from PySide6 import __version__ as pyside6_ver
 from PySide6.QtCore import QAbstractItemModel, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot
 from PySide6.QtCore import __version__ as qt6_ver
@@ -548,9 +548,9 @@ class DcsPyQtGui(QMainWindow):
 
     def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: dict[str, list[str]], plane_name: str) -> bool:
         """
-        Check if rebuild is possible and return False or not possible and return True.
+        Check if rebuild is possible and return false or not possible and return true.
 
-        :param plane_aliases: dict with BIOS plane aliases
+        :param plane_aliases: Dict with BIOS plane aliases
         :param plane_name: Plane name which should be validated
         :return: True when rebuild is not required, False otherwise
         """
@@ -821,7 +821,7 @@ class DcsPyQtGui(QMainWindow):
 
         When:
             * New input interface is selected
-            * A text is changed and a user press enter
+            * A text is changed and a user pressed enter
             * The widget lost focus
         """
         current_cell: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
@@ -1026,8 +1026,8 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
-            clone_worker = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path, to_path=self.bios_repo_path,
-                                          repo=BIOS_REPO_NAME, silence=silence)
+            clone_worker: QRunnable | WorkerSignalsMixIn = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path,
+                                                                          to_path=self.bios_repo_path, repo=BIOS_REPO_NAME, silence=silence)
             signal_handlers = {
                 'progress': self._progress_by_abs_value,
                 'stage': self.statusbar.showMessage,
@@ -1482,7 +1482,7 @@ class DcsPyQtGui(QMainWindow):
         :param signal_handlers: Signals as keys: finished, error, result, progress and values as callable
         """
         progress = True if 'progress' in signal_handlers.keys() else False
-        worker = Worker(func=job, with_progress=progress)
+        worker: QRunnable | WorkerSignalsMixIn = Worker(func=job, with_progress=progress)
         worker.setup_signal_handlers(signal_handlers=signal_handlers)
         if isinstance(job, partial):
             job_name = job.func.__name__
@@ -1681,7 +1681,7 @@ class DcsPyQtGui(QMainWindow):
         """
         Switch between light and dark color mode.
 
-        :param action: action from the menu
+        :param action: Action from the menu
         """
         mode = action.text()
         style_hints: QStyleHints = QGuiApplication.styleHints()
@@ -1897,7 +1897,7 @@ class Worker(QRunnable, WorkerSignalsMixIn):
 
     @Slot()
     def run(self) -> None:
-        """Initialise the runner function with passed additional kwargs."""
+        """Run the worker function."""
         try:
             result = self.func()
         except Exception:
