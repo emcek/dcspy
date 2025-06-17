@@ -617,26 +617,26 @@ class GuiPlaneInputRequest(BaseModel):
 
 class LedConstants(Enum):
     """LED constants."""
-    LOGI_LED_DURATION_INFINITE: Final = 0
-    LOGI_DEVICETYPE_MONOCHROME: Final = 1
-    LOGI_DEVICETYPE_RGB: Final = 2
-    LOGI_DEVICETYPE_ALL: Final = 3  # LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
+    LOGI_LED_DURATION_INFINITE = 0
+    LOGI_DEVICETYPE_MONOCHROME = 1
+    LOGI_DEVICETYPE_RGB = 2
+    LOGI_DEVICETYPE_ALL = 3  # LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 
 
 class LcdButton(Enum):
     """LCD Buttons."""
-    NONE: Final = 0x0
-    ONE: Final = 0x1
-    TWO: Final = 0x2
-    THREE: Final = 0x4
-    FOUR: Final = 0x8
-    LEFT: Final = 0x100
-    RIGHT: Final = 0x200
-    OK: Final = 0x400
-    CANCEL: Final = 0x800
-    UP: Final = 0x1000
-    DOWN: Final = 0x2000
-    MENU: Final = 0x4000
+    NONE = 0x0
+    ONE = 0x1
+    TWO = 0x2
+    THREE = 0x4
+    FOUR = 0x8
+    LEFT = 0x100
+    RIGHT = 0x200
+    OK = 0x400
+    CANCEL = 0x800
+    UP = 0x1000
+    DOWN = 0x2000
+    MENU = 0x4000
 
     def __str__(self) -> str:
         return self.name
@@ -699,25 +699,25 @@ class MouseButton(BaseModel):
 
 class LcdType(Enum):
     """LCD Type."""
-    NONE: Final = 0
-    MONO: Final = 1
-    COLOR: Final = 2
+    NONE = 0
+    MONO = 1
+    COLOR = 2
 
 
 class LcdSize(Enum):
     """LCD dimensions."""
-    NONE: Final = 0
-    MONO_WIDTH: Final = 160
-    MONO_HEIGHT: Final = 43
-    COLOR_WIDTH: Final = 320
-    COLOR_HEIGHT: Final = 240
+    NONE = 0
+    MONO_WIDTH = 160
+    MONO_HEIGHT = 43
+    COLOR_WIDTH = 320
+    COLOR_HEIGHT = 240
 
 
 class LcdMode(Enum):
     """LCD Mode."""
-    NONE: Final = '0'
-    BLACK_WHITE: Final = '1'
-    TRUE_COLOR: Final = 'RGBA'
+    NONE = '0'
+    BLACK_WHITE = '1'
+    TRUE_COLOR = 'RGBA'
 
 
 class FontsConfig(BaseModel):
