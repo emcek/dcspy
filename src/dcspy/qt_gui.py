@@ -60,7 +60,7 @@ class DcsPyQtGui(QMainWindow):
         :param cfg_dict: dict with configuration
         """
         super().__init__()
-        UiLoader().loadUi(':/ui/ui/qtdcs.ui', self)
+        UiLoader().load_ui(':/ui/ui/qtdcs.ui', self)
         self._find_children()
         self.config = cfg_dict
         if not cfg_dict:
@@ -1814,7 +1814,7 @@ class AboutDialog(QDialog):
         """Dcspy about dialog window."""
         super().__init__(parent)
         self.parent: DcsPyQtGui | QWidget = parent
-        UiLoader().loadUi(':/ui/ui/about.ui', self)
+        UiLoader().load_ui(':/ui/ui/about.ui', self)
         self.l_info: QLabel = self.findChild(QLabel, 'l_info')
 
     def showEvent(self, event: QShowEvent) -> None:
@@ -1954,7 +1954,7 @@ class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
 
 class UiLoader(QUiLoader):
     """UI file loader."""
-    _baseinstance = None
+    _base_instance = None
 
     def createWidget(self, classname: str, parent: QWidget | None = None, name='') -> QWidget:
         """
@@ -1965,23 +1965,23 @@ class UiLoader(QUiLoader):
         :param name: Name
         :return: QWidget
         """
-        if parent is None and self._baseinstance is not None:
-            widget = self._baseinstance
+        if parent is None and self._base_instance is not None:
+            widget = self._base_instance
         else:
             widget = super().createWidget(classname, parent, name)
-            if self._baseinstance is not None:
-                setattr(self._baseinstance, name, widget)
+            if self._base_instance is not None:
+                setattr(self._base_instance, name, widget)
         return widget
 
-    def loadUi(self, ui_path: str | bytes | Path, baseinstance=None) -> QWidget:
+    def load_ui(self, ui_path: str | bytes | Path, base_instance=None) -> QWidget:
         """
         Load a UI file.
 
         :param ui_path: Path to a UI file
-        :param baseinstance:
+        :param base_instance:
         :return: QWidget
         """
-        self._baseinstance = baseinstance
+        self._base_instance = base_instance
         ui_file = QFile(ui_path)
         ui_file.open(QIODevice.OpenModeFlag.ReadOnly)
         try:
