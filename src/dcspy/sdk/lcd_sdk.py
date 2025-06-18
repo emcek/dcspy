@@ -4,8 +4,8 @@ from _cffi_backend import Lib
 from cffi import FFI, CDefError
 from PIL import Image
 
-from dcspy.models import Color, LcdButton, LcdSize, LcdType
-from dcspy.sdk import LcdDll, load_dll
+from dcspy.models import Color, LcdButton, LcdDll, LcdSize, LcdType
+from dcspy.sdk import load_dll
 from dcspy.utils import rgb
 
 LOG = getLogger(__name__)

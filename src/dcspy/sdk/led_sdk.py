@@ -5,8 +5,8 @@ from time import sleep
 from _cffi_backend import Lib
 from cffi import FFI
 
-from dcspy.models import LedConstants
-from dcspy.sdk import LedDll, load_dll
+from dcspy.models import LedConstants, LedDll
+from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 LED_DLL: Lib = load_dll(LedDll)  # type: ignore[assignment]
