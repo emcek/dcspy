@@ -1619,3 +1619,26 @@ class GuiTab(IntEnum):
     settings = 1
     g_keys = 2
     debug = 3
+
+
+class DllSdk(BaseModel):
+    """DLL SDK."""
+    name: str
+    header_file: str
+    directory: str
+
+    @property
+    def header(self) -> str:
+        """
+        Load the header content of the DLL.
+
+        :return: The header content as a string.
+        """
+        with open(file=Path(__file__) / '..' / 'resources' / f'{self.header_file}') as header_file:
+            header = header_file.read()
+        return header
+
+
+LcdDll = DllSdk(name='LCD', directory='LCD', header_file='LogitechLCDLib.h')
+LedDll = DllSdk(name='LED', directory='LED', header_file='LogitechLEDLib.h')
+KeyDll = DllSdk(name='Gkey', directory='G-key', header_file='LogitechGkeyLib.h')

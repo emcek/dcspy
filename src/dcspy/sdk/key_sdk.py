@@ -5,7 +5,8 @@ from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, c_bool, c_uint, c_void_p
 from logging import getLogger
 from typing import ClassVar
 
-from dcspy.sdk import KeyDll, load_dll
+from dcspy.models import KeyDll
+from dcspy.sdk import load_dll
 
 LOG = getLogger(__name__)
 
