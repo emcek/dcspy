@@ -1,37 +1,17 @@
 from __future__ import annotations
 
 from ctypes import CDLL, c_void_p, sizeof
-from dataclasses import dataclass
 from logging import getLogger
 from os import environ
-from pathlib import Path
 from platform import architecture
 from sys import maxsize
 
 from _cffi_backend import Lib
 from cffi import FFI, CDefError
 
+from dcspy.models import DllSdk
+
 LOG = getLogger(__name__)
-
-
-@dataclass
-class DllSdk:
-    """DLL SDK."""
-    name: str
-    header: str
-    dir: str
-
-
-with open(file=Path(__file__).resolve().with_name('LogitechLCDLib.h')) as lcd_header_file:
-    lcd_header = lcd_header_file.read()
-with open(file=Path(__file__).resolve().with_name('LogitechLEDLib.h')) as led_header_file:
-    led_header = led_header_file.read()
-with open(file=Path(__file__).resolve().with_name('LogitechGkeyLib.h')) as led_header_file:
-    key_header = led_header_file.read()
-
-LcdDll = DllSdk(name='LCD', dir='LCD', header=lcd_header)
-LedDll = DllSdk(name='LED', dir='LED', header=led_header)
-KeyDll = DllSdk(name='Gkey', dir='G-key', header=key_header)
 
 
 def load_dll(lib_type: DllSdk) -> Lib | CDLL | None:
@@ -72,6 +52,6 @@ def _get_ddl_path(lib_type: DllSdk) -> str:
         prog_files = environ['PROGRAMW6432']
     except KeyError:
         prog_files = environ['PROGRAMFILES']
-    dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.dir}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll'
+    dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{lib_type.directory}\\{arch}\\Logitech{lib_type.name.capitalize()}.dll'
     LOG.debug(f'Selected DLL: {dll_path}')
     return dll_path
