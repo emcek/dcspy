@@ -9,7 +9,7 @@ from platform import architecture
 from sys import maxsize
 
 from _cffi_backend import Lib
-from cffi import FFI
+from cffi import FFI, CDefError
 
 LOG = getLogger(__name__)
 
@@ -53,7 +53,7 @@ def load_dll(lib_type: DllSdk) -> Lib | CDLL | None:
 
         LOG.info(f'Loading of {lib_type.name} SDK success')
         return dll
-    except (KeyError, OSError) as err:
+    except (KeyError, OSError, CDefError) as err:
         header = '*' * 44
         LOG.error(f'\n{header}\n*{type(err).__name__:^42}*\n{header}\nLoading of {lib_type.name} SDK failed !', exc_info=True)
         LOG.error(f'{header}')
