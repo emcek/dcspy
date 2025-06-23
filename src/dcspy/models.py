@@ -1,13 +1,18 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Mapping, Sequence
+from ctypes import c_void_p
 from datetime import datetime
 from enum import Enum, IntEnum
 from functools import partial
+from os import environ
 from pathlib import Path
+from platform import architecture
 from re import search
+from sys import maxsize
 from typing import Any, Final, TypedDict, TypeVar, Union
 
+from _ctypes import sizeof
 from packaging import version
 from PIL import Image, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
@@ -1637,6 +1642,20 @@ class DllSdk(BaseModel):
         with open(file=Path(__file__) / '..' / 'resources' / f'{self.header_file}') as header_file:
             header = header_file.read()
         return header
+
+    def get_path(self) -> str:
+        """
+        Return the path of the DLL file based on the provided library type.
+
+        :return: The path of the DLL file as a string.
+        """
+        arch = 'x64' if all([architecture()[0] == '64bit', maxsize > 2 ** 32, sizeof(c_void_p) > 4]) else 'x86'
+        try:
+            prog_files = environ['PROGRAMW6432']
+        except KeyError:
+            prog_files = environ['PROGRAMFILES']
+        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
+        return dll_path
 
 
 LcdDll = DllSdk(name='LCD', directory='LCD', header_file='LogitechLCDLib.h')
