@@ -8,6 +8,7 @@ runs:
         with:
           python-version: "3.13"
           enable-cache: true
+          activate-environment: true
 
       - name: "Install the project and test dependencies"
         shell: bash

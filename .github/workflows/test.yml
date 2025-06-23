@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
+          activate-environment: true
 
       - name: "Install the project and test dependencies"
         run: uv sync
