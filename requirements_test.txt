@@ -2,14 +2,14 @@
 interrogate==1.7.0
 isort==6.0.1
 lxml==5.4.0
-mypy==1.16.0
+mypy==1.16.1
 pip-audit==2.9.0
-pytest==8.4.0
+pytest==8.4.1
 pytest-codspeed==3.2.0
 pytest-cov==6.2.1
 pytest-qt==4.4.0; sys_platform == "win32"
 pytest-randomly==3.16.0
-ruff==0.11.13
+ruff==0.12.0
 types-cffi==1.17.0.20250523
 types-lupa==2.4.0.20250112
 types-Pillow==10.2.0.20240822
