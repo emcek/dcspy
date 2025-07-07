@@ -11,7 +11,7 @@ pytest-qt==4.5.0; sys_platform == "win32"
 pytest-randomly==3.16.0
 ruff==0.12.2
 types-cffi==1.17.0.20250523
-types-lupa==2.4.0.20250112
+types-lupa==2.5.0.20250701
 types-Pillow==10.2.0.20240822
 types-psutil==7.0.0.20250601
 types-pyinstaller==6.14.0.20250611
