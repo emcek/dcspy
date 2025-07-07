@@ -50,7 +50,7 @@ dependencies = [
     'pyside6==6.9.1',
     'pyyaml==6.0.2',
     'requests==2.32.4',
-    'typing-extensions==4.14.0',
+    'typing-extensions==4.14.1',
 ]
 
 [project.urls]
