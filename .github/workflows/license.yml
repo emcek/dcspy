@@ -17,7 +17,7 @@ jobs:
           activate-environment: true
 
       - name: "Install the project and test dependencies"
-        run: uv sync --no-extra test --no-extra docs --no-dev
+        run: uv sync --no-extra test --no-extra docs --no-group dev
 
       - name: "Get explicit and transitive dependencies"
         run: |

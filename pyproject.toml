@@ -174,14 +174,17 @@ follow_imports = 'skip'
 [tool.isort]
 line_length = 160
 
-[tool.uv]
-dev-dependencies = [
-    'dcspy[test]',
-    'dcspy[docs]',
+[tool.uv.sources]
+dcspy = { workspace = true }
+PySide6-stubs = { git = 'https://github.com/python-qt-tools/PySide6-stubs.git' }
+
+[dependency-groups]
+dev = [
     'build',
+    'dcspy[docs,test]',
     'detect-test-pollution',
     'nuitka',
     'pre-commit',
     'pyinstaller',
-    'PySide6-stubs @ https://github.com/python-qt-tools/PySide6-stubs.git',
+    'PySide6-stubs',
 ]
