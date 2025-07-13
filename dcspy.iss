@@ -5,7 +5,7 @@
 #define MyAppVersion "3.6.3"
 #define MyAppPublisher "Michał Plichta"
 #define MyAppURL "https://dcspy.readthedocs.io/en/latest/"
-#define MyAppExeName "dcspy_nuitka.exe"
+#define MyAppExeName "dcspy.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -32,7 +32,6 @@ DisableProgramGroupPage=yes
 LicenseFile=D:\Projects\dcspy\LICENSE.md
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
 OutputDir=D:\Projects\dcspy\inno
 OutputBaseFilename=dcspy_3.6.3_setup
 SetupIconFile=D:\Program Files\Inno Setup 6\SetupClassicIcon.ico
