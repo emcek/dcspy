@@ -41,7 +41,6 @@ jobs:
           enable-plugins: pyside6
           include-package-data: dcspy
           assume-yes-for-downloads: true
-          onefile-windows-splash-screen-image: src/dcspy/img/splash.png
           output-file: ${{ matrix.nuitka_type }}
           output-dir: dist
           windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
