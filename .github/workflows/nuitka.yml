@@ -71,14 +71,14 @@ jobs:
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
           copyright: (c) 2025 Michal Plichta. All rights reserved.
 
-      - name: "Upload dcspy binaries"
+      - name: "Upload dcspy standalone binaries"
         if: ${{ endsWith( matrix.nuitka_type, 'dcspy') }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.nuitka_type }}_standalone
-          path: dist/dcs_py.dist/*
+          path: dist/*
 
-      - name: "Upload dcspy binaries"
+      - name: "Upload dcspy cli binaries"
         if: ${{ endsWith( matrix.nuitka_type, '_cli') }}
         uses: actions/upload-artifact@v4
         with:

@@ -44,7 +44,7 @@ jobs:
       - name: "Compile setup executable file"
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
         with:
-          path: dcspy.iss
+          path: inno/dcspy.iss
           options: /O+
 
       - name: "Release Notes"
@@ -55,8 +55,6 @@ jobs:
           $changelog = Get-Content .\CHANGELOG.md
           $last_change = ($changelog | Select-String -Pattern "^##\s" | Select-Object -Skip 1 -First 1).LineNumber - 3
           ($changelog | Select-Object -First $last_change -Skip 1) -join "`n" | Out-File .\RELEASENOTES.md
-          ls -la
-          ls -la inno
 
       - name: "Create Release"
         uses: softprops/action-gh-release@v2
@@ -69,7 +67,6 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy.exe
             dcspy_cli.exe
             dcspy_pyinstaller.exe
             dcspy_cli_pyinstaller.exe
@@ -95,6 +92,3 @@ jobs:
           mkdir dist
           mv *.whl *.tar.gz dist/
           ls -la dist/
-
-      - name: "Deploy to PyPI"
-        uses: pypa/gh-action-pypi-publish@release/v1
