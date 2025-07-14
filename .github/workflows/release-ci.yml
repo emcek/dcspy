@@ -41,6 +41,12 @@ jobs:
           pattern: |
             dcspy_*
 
+      - name: "Compile setup executable file"
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
+        with:
+          path: inno/dcspy.iss
+          options: /O+
+
       - name: "Release Notes"
         id: version
         run: |
@@ -61,10 +67,10 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy.exe
             dcspy_cli.exe
             dcspy_pyinstaller.exe
             dcspy_cli_pyinstaller.exe
+            inno/dcspy_3.6.3_setup.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
@@ -86,6 +92,3 @@ jobs:
           mkdir dist
           mv *.whl *.tar.gz dist/
           ls -la dist/
-
-      - name: "Deploy to PyPI"
-        uses: pypa/gh-action-pypi-publish@release/v1

@@ -35,13 +35,12 @@ jobs:
         with:
           nuitka-version: 2.7.12
           script-name: src/dcs_py.py
-          mode: onefile
+          mode: standalone
           windows-console-mode: disable
           prefer-source-code: true
           enable-plugins: pyside6
           include-package-data: dcspy
           assume-yes-for-downloads: true
-          onefile-windows-splash-screen-image: src/dcspy/img/splash.png
           output-file: ${{ matrix.nuitka_type }}
           output-dir: dist
           windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
@@ -72,7 +71,15 @@ jobs:
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
           copyright: (c) 2025 Michal Plichta. All rights reserved.
 
-      - name: "Upload dcspy binaries"
+      - name: "Upload dcspy standalone binaries"
+        if: ${{ endsWith( matrix.nuitka_type, 'dcspy') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.nuitka_type }}_standalone
+          path: dist/*
+
+      - name: "Upload dcspy cli binaries"
+        if: ${{ endsWith( matrix.nuitka_type, '_cli') }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.nuitka_type }}_nuitka
