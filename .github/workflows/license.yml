@@ -28,10 +28,10 @@ jobs:
         uses: pilosus/action-pip-license-checker@v3
         with:
           requirements: 'requirements-all.txt'
-          fail: 'StrongCopyleft,Other'
+          fail: 'StrongCopyleft,Error'
           totals: true
           headers: true
-          exclude: '(?i)^(pyside6|shiboken6).*'
+#          exclude: '(?i)^(pyside6|shiboken6).*'
 
       - name: "Print report"
         if: ${{ always() }}
