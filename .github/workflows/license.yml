@@ -31,7 +31,7 @@ jobs:
           fail: 'StrongCopyleft,Error'
           totals: true
           headers: true
-#          exclude: '(?i)^(pyside6|shiboken6).*'
+          exclude: '(?i)^(pyside6|shiboken6).*'
 
       - name: "Print report"
         if: ${{ always() }}
