@@ -25,10 +25,10 @@ jobs:
 
       - name: "Check License"
         id: license_check_report
-        uses: pilosus/action-pip-license-checker@v2
+        uses: pilosus/action-pip-license-checker@v3
         with:
           requirements: 'requirements-all.txt'
-          fail: 'StrongCopyleft,Other'
+          fail: 'StrongCopyleft,Error'
           totals: true
           headers: true
           exclude: '(?i)^(pyside6|shiboken6).*'
