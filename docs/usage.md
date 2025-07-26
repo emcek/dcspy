@@ -1,7 +1,7 @@
 # Starting
 ## Windows setup installer (basic way)
 1. Run Logitech Gaming Software (it allows accessing LCD)
-2. Start DCSpy from Start Menu. 
+2. Start DCSpy from Start Menu.
 3. Click `Start`
 4. LCD should update with dcspy basic info, waiting to connect to DCS
 5. Run DCS and start any mission.
