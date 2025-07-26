@@ -59,7 +59,7 @@ jobs:
           include-package-data: dcspy
           assume-yes-for-downloads: true
           onefile-windows-splash-screen-image: src/dcspy/img/splash.png
-          output-file: dcspy_portable
+          output-file: dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable
           output-dir: dist
           windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
           company-name: Michal Plichta
@@ -84,4 +84,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dcspy_${{ matrix.nuitka_type }}
-          path: dist/dcspy_portable.exe
+          path: dist/dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable.exe

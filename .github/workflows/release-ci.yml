@@ -63,8 +63,8 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy_portable.exe
-            inno/dcspy_3.6.3_setup.exe
+            dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable.exe
+            inno/dcspy_${{ steps.version.outputs.number }}_setup.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
