@@ -1,6 +1,6 @@
 cffi==1.17.1
 eval-type-backport==0.2.2; python_version < '3.10'
-GitPython==3.1.44
+GitPython==3.1.45
 lupa==2.5
 packaging==25.0
 pillow==11.3.0
