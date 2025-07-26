@@ -70,7 +70,3 @@ You want to contribute, perfect see: [contributing](./CONTRIBUTING.md) guide.
 
 ## Credits
 More details [here](https://dcspy.readthedocs.io/en/latest/credits/).
-
-## Sponsored by Jetbrains Open Source Support Program
-[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/PyCharm.svg)](https://jb.gg/OpenSourceSupport)
-[![logo](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://jb.gg/OpenSourceSupport)
