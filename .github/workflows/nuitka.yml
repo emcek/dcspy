@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        nuitka_type: [ setup, standalone ]
+        nuitka_type: [ setup, portable ]
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
           copyright: (c) 2025 Michal Plichta. All rights reserved.
 
       - uses: Nuitka/Nuitka-Action@main
-        if: ${{ endsWith( matrix.nuitka_type, 'standalone') }}
+        if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
         with:
           nuitka-version: 2.7.12
           script-name: src/dcs_py.py
@@ -59,7 +59,7 @@ jobs:
           include-package-data: dcspy
           assume-yes-for-downloads: true
           onefile-windows-splash-screen-image: src/dcspy/img/splash.png
-          output-file: dcspy
+          output-file: dcspy_portable
           output-dir: dist
           windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
           company-name: Michal Plichta
@@ -79,9 +79,9 @@ jobs:
             !dist/dcs_py.build
             !dist/dcspy.exe
 
-      - name: "Upload dcspy standalone binaries"
-        if: ${{ endsWith( matrix.nuitka_type, 'standalone') }}
+      - name: "Upload dcspy portable binaries"
+        if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
         uses: actions/upload-artifact@v4
         with:
           name: dcspy_${{ matrix.nuitka_type }}
-          path: dist/dcspy.exe
+          path: dist/dcspy_portable.exe

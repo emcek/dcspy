@@ -63,7 +63,7 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy.exe
+            dcspy_portable.exe
             inno/dcspy_3.6.3_setup.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
