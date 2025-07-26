@@ -7,14 +7,13 @@ name = 'dcspy'
 authors = [{name = 'Michal Plichta'}]
 maintainers = [{name = 'Michal Plichta'}]
 description = 'Software for integrating DCS Planes with Logitech keyboards (with and without LCD), mice and headphones.'
-license = {text = 'MIT License'}
+license = 'MIT'
+license-files = ['LICENSE.md', 'src/dcspy/resources/license.txt']
 requires-python = '>=3.9'
-readme = 'README.md'
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Environment :: Win32 (MS Windows)',
-    'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
@@ -37,7 +36,7 @@ keywords = [
     'G11', 'G35', 'G633', 'G930', 'G933',
     'G600', 'G300', 'G400', 'G700', 'G9', 'MX518', 'G402', 'G502', 'G602',
 ]
-dynamic = ['version']
+dynamic = ['version', 'readme']
 dependencies = [
     'cffi==1.17.1',
     'eval-type-backport==0.2.0 ; python_version < "3.10"',
@@ -100,6 +99,7 @@ docs = [
 
 [tool.setuptools.dynamic]
 version = {attr = 'dcspy.models.__version__'}
+readme = {file = 'README.md', content-type = 'text/markdown'}
 
 [tool.setuptools.packages.find]
 where = ['src/']
