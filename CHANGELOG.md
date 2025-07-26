@@ -1,13 +1,14 @@
 ## 3.7.0
-* DCS-BIOS change default branch to `main` - @emcek
+* Add Dark Mode #479 @emcek
+* Use setup to install dcspy #500 @emcek
+* DCS-BIOS change default branch to `main` @emcek
 * Add debug tab to main window #463 @emcek
-* Add Dark MOde #479 @emcek
-* Use LCD text mode for welcome screen - @emcek
-* Use setup to install dcspy - @emcek
+* Use LCD text mode for welcome screen @emcek
 * Internal:
   * Update PySide6 framework to 6.9.1
   * Refactor `starter` module and `ddl_load()` function
   * Introduce uv tool for CI process
+  * Remove PyInstaller and use Nuitka for building executable
 
 ## 3.6.3
 * Fix Windows toolbar icon @emcek
