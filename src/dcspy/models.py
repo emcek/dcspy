@@ -1134,20 +1134,19 @@ class Asset(BaseModel):
     size: int
     browser_download_url: str
 
-    def correct_asset(self, extension: str = '', file_name: str = '') -> bool:
+    def get_asset_with_name(self, extension: str = '', file_name: str = '') -> Asset | None:
         """
-        Determine whether the asset's name matches the specified file extension and contains the given file name.
+        Retrieve the asset if its name matches the specified file extension and contains the given file name.
 
         This method checks if the name of the asset ends with the provided file extension and if the given file name is a substring of the asset's name.
 
         :param extension: The file extension to check for.
         :param file_name: The specific file name to look for within the asset's name.
-        :return: True if the asset's name ends with the given extension and contains the specified file name, False otherwise.
+        :return: The Asset instance if the name matches, otherwise None.
         """
-        result = False
         if self.name.endswith(extension) and file_name in self.name:
-            result = True
-        return result
+            return self
+        return None
 
 
 class Release(BaseModel):
@@ -1184,6 +1183,22 @@ class Release(BaseModel):
             current_ver = version.parse(current_ver)
         return self.version <= current_ver
 
+    def get_asset(self, extension: str = '', file_name: str = '') -> Asset | None:
+        """
+        Retrieve the asset if its name matches the specified file extension and contains the given file name.
+
+        This method checks if the name of the asset ends with the provided file extension and if the given file name is a substring of the asset's name.
+
+        :param extension: The file extension to check for.
+        :param file_name: The specific file name to look for within the asset's name.
+        :return: The Asset instance if the name matches, otherwise None.
+        """
+        try:
+            asset = next(asset for asset in self.assets if asset.get_asset_with_name(extension=extension, file_name=file_name) is not None)
+        except StopIteration:
+            asset = None
+        return asset
+
     def download_url(self, extension: str = '', file_name: str = '') -> str:
         """
         Download the URL of a specific asset that matches the given file name and extension.
@@ -1196,11 +1211,10 @@ class Release(BaseModel):
         :param file_name: The file name to search for, defaults to an empty string if not specified.
         :return: The download URL of the asset if a match is found, otherwise an empty string.
         """
-        try:
-            dl_url = next(asset.browser_download_url for asset in self.assets if asset.correct_asset(extension=extension, file_name=file_name))
-        except StopIteration:
-            dl_url = ''
-        return dl_url
+        asset = self.get_asset(extension=extension, file_name=file_name)
+        if asset is not None:
+            return asset.browser_download_url
+        return ''
 
     @property
     def version(self) -> version.Version:
