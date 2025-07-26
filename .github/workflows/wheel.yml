@@ -15,7 +15,7 @@ jobs:
       - name: "Build dcspy wheel package"
         shell: bash
         run: |
-          python -m build
+          uv build
           python -m twine check dist/*
 
       - name: "Upload dcspy wheel"
