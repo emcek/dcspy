@@ -12,10 +12,6 @@ jobs:
     needs: [ style ]
     uses: ./.github/workflows/test.yml
 
-  pyinstaller:
-    needs: [ test ]
-    uses: ./.github/workflows/pyinstaller.yml
-
   nuitka:
     needs: [ test ]
     uses: ./.github/workflows/nuitka.yml
@@ -25,7 +21,7 @@ jobs:
     uses: ./.github/workflows/wheel.yml
 
   github:
-    needs: [ pyinstaller, nuitka, wheel ]
+    needs: [ nuitka, wheel ]
     runs-on: windows-latest
     steps:
       - name: "Checkout"
@@ -67,15 +63,13 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy_cli.exe
-            dcspy_pyinstaller.exe
-            dcspy_cli_pyinstaller.exe
+            dcspy.exe
             inno/dcspy_3.6.3_setup.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
   pypi:
-    needs: [ pyinstaller, nuitka, wheel ]
+    needs: [ nuitka, wheel ]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
@@ -92,3 +86,6 @@ jobs:
           mkdir dist
           mv *.whl *.tar.gz dist/
           ls -la dist/
+
+      - name: "Deploy to PyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1
