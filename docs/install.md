@@ -1,7 +1,7 @@
 # Installation
-There are two ways of install DCSpy: single file download (basic / new way) or via Python package manager (advanced / old way). Both have advantages and  disadvantages. For new users it is recommended to use first one, current users can stick to old way or switch to new way. Both will be supported.
+There are two ways of install DCSpy: windows setup (basic / new way) or via uv tool (advanced / old way). Both have advantages and  disadvantages. For new users it is recommended to use first one, current users can stick to old way or switch to new way. Both will be supported.
 
-## Single file download (basic way)
+## Windows setup installer (basic way)
 * Advantage: Simple download and you are ready to go
 * Disadvantage: Windows Defender can block download/execution
 

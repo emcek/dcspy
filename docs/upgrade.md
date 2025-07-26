@@ -1,5 +1,5 @@
 # DCSpy
-## Single file download (basic/recommended way)
+## Windows setup installer (basic/recommended way)
 Download latest `dcspy_*_setup.exe` file from [Releases](https://github.com/emcek/dcspy/releases/latest)
 
 ## via uv (advanced way)
