@@ -8605,18 +8605,18 @@
                                                                },
                                                "CPG_EUFD_WCA": {
                                                                        "category": "CPG Up-Front Display",
-                                                                   "control_type": "3Pos_2Command_Switch_OpenClose",
+                                                                   "control_type": "selector",
                                                                     "description": "Gunner Up-Front Display WCA Rocker Switch",
                                                                      "identifier": "CPG_EUFD_WCA",
                                                                          "inputs": [ {
-                                                                                       "description": "set the switch position",
+                                                                                       "description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
                                                                                          "interface": "set_state",
                                                                                          "max_value": 2
                                                                                    } ],
                                                                         "outputs": [ {
                                                                                                              "address": 32936,
                                                                                        "address_mask_shift_identifier": "AH_64D_CPG_EUFD_WCA",
-                                                                                                         "description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+                                                                                                         "description": "selector position",
                                                                                                                 "mask": 24576,
                                                                                                            "max_value": 2,
                                                                                                             "shift_by": 13,
@@ -9063,12 +9063,15 @@
                                      },
                     "PLT Altimeter": {
                                          "PLT_ALT_SET_KNB": {
-                                                                 "api_variant": "multiturn",
                                                                     "category": "PLT Altimeter",
-                                                                "control_type": "analog_dial",
+                                                                "control_type": "limited_dial",
                                                                  "description": "Pilot Altimeter Barometric Setting Knob",
                                                                   "identifier": "PLT_ALT_SET_KNB",
                                                                       "inputs": [ {
+                                                                                    "description": "set the position of the dial",
+                                                                                      "interface": "set_state",
+                                                                                      "max_value": 65535
+                                                                                }, {
                                                                                        "description": "turn the dial left or right",
                                                                                          "interface": "variable_step",
                                                                                          "max_value": 65535,
@@ -9078,11 +9081,11 @@
                                                                                                           "address": 32832,
                                                                                                "address_identifier": "AH_64D_PLT_ALT_SET_KNB_A",
                                                                                     "address_mask_shift_identifier": "AH_64D_PLT_ALT_SET_KNB",
-                                                                                                      "description": "the rotation of the knob in the cockpit (not the value that is controlled by this knob!)",
+                                                                                                      "description": "position of the potentiometer",
                                                                                                              "mask": 65535,
                                                                                                         "max_value": 65535,
                                                                                                          "shift_by": 0,
-                                                                                                           "suffix": "_KNOB_POS",
+                                                                                                           "suffix": "",
                                                                                                              "type": "integer"
                                                                                 } ]
                                                             }
@@ -17715,18 +17718,18 @@
                                                                },
                                                "PLT_EUFD_WCA": {
                                                                        "category": "PLT Up-Front Display",
-                                                                   "control_type": "3Pos_2Command_Switch_OpenClose",
+                                                                   "control_type": "selector",
                                                                     "description": "Pilot Up-Front Display WCA Rocker Switch",
                                                                      "identifier": "PLT_EUFD_WCA",
                                                                          "inputs": [ {
-                                                                                       "description": "set the switch position",
+                                                                                       "description": "set the switch position -- 0 = held left/down, 1 = centered, 2 = held right/up",
                                                                                          "interface": "set_state",
                                                                                          "max_value": 2
                                                                                    } ],
                                                                         "outputs": [ {
                                                                                                              "address": 32936,
                                                                                        "address_mask_shift_identifier": "AH_64D_PLT_EUFD_WCA",
-                                                                                                         "description": "switch position -- 0 = Down, 1 = Mid,  2 = Up",
+                                                                                                         "description": "selector position",
                                                                                                                 "mask": 24,
                                                                                                            "max_value": 2,
                                                                                                             "shift_by": 3,

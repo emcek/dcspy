@@ -689,9 +689,9 @@
                                                                                               } ]
                                                                           }
                                                 },
-                                     "ARC-U2 ": {
+                                      "ARC-U2": {
                                                     "PLT_ARCU2_COMPASS": {
-                                                                                 "category": "ARC-U2 ",
+                                                                                 "category": "ARC-U2",
                                                                              "control_type": "selector",
                                                                               "description": "PILOT ARC-U2 switcher COMPASS R-852–RADIOLINK–COMPASS R-828",
                                                                                "identifier": "PLT_ARCU2_COMPASS",
@@ -715,7 +715,7 @@
                                                                                              } ]
                                                                          },
                                                       "PLT_ARCU2_FRAME": {
-                                                                                 "category": "ARC-U2 ",
+                                                                                 "category": "ARC-U2",
                                                                              "control_type": "3Pos_2Command_Switch_OpenClose",
                                                                               "description": "PILOT ARC-U2 switcher L–RAMKA-P",
                                                                                "identifier": "PLT_ARCU2_FRAME",
@@ -736,7 +736,7 @@
                                                                                              } ]
                                                                          },
                                                          "PLT_ARCU2_PW": {
-                                                                                 "category": "ARC-U2 ",
+                                                                                 "category": "ARC-U2",
                                                                              "control_type": "selector",
                                                                               "description": "PILOT ARC-U2 switcher ON/OFF",
                                                                                "identifier": "PLT_ARCU2_PW",
@@ -765,7 +765,7 @@
                                                                                              } ]
                                                                          },
                                                        "PLT_ARCU2_SENS": {
-                                                                                 "category": "ARC-U2 ",
+                                                                                 "category": "ARC-U2",
                                                                              "control_type": "selector",
                                                                               "description": "PILOT ARC-U2 switcher sensitivity B-M",
                                                                                "identifier": "PLT_ARCU2_SENS",

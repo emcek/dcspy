@@ -729,7 +729,7 @@
                                                                              "api_variant": "momentary_last_position",
                                                                                 "category": "APU Fire Warning Extinguisher Light",
                                                                             "control_type": "selector",
-                                                                             "description": "APU Fire Warning/Extinguisher Light",
+                                                                             "description": "APU Fire Warning/Extinguisher Button",
                                                                               "identifier": "APU_FIRE_BTN",
                                                                                   "inputs": [ {
                                                                                                 "description": "switch to previous or next state",
@@ -758,7 +758,7 @@
                                                          "FIRE_APU_LT": {
                                                                                 "category": "APU Fire Warning Extinguisher Light",
                                                                             "control_type": "led",
-                                                                             "description": "FIRE APU (red)",
+                                                                             "description": "FIRE APU Light (red)",
                                                                               "identifier": "FIRE_APU_LT",
                                                                                   "inputs": [  ],
                                                                                  "outputs": [ {

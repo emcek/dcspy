@@ -8066,6 +8066,38 @@
                                                                                                } ]
                                                                            }
                                             },
+                                "Throttle": {
+                                                "THROTTLE_OFF_IDLE": {
+                                                                          "api_variant": "momentary_last_position",
+                                                                             "category": "Throttle",
+                                                                         "control_type": "selector",
+                                                                          "description": "Throttle Off/Idle",
+                                                                           "identifier": "THROTTLE_OFF_IDLE",
+                                                                               "inputs": [ {
+                                                                                             "description": "switch to previous or next state",
+                                                                                               "interface": "fixed_step"
+                                                                                         }, {
+                                                                                             "description": "set position",
+                                                                                               "interface": "set_state",
+                                                                                               "max_value": 1
+                                                                                         }, {
+                                                                                                "argument": "TOGGLE",
+                                                                                             "description": "Toggle switch state",
+                                                                                               "interface": "action"
+                                                                                         } ],
+                                                                              "outputs": [ {
+                                                                                                                   "address": 17792,
+                                                                                                   "address_mask_identifier": "F_16C_50_THROTTLE_OFF_IDLE_AM",
+                                                                                             "address_mask_shift_identifier": "F_16C_50_THROTTLE_OFF_IDLE",
+                                                                                                               "description": "selector position",
+                                                                                                                      "mask": 512,
+                                                                                                                 "max_value": 1,
+                                                                                                                  "shift_by": 9,
+                                                                                                                    "suffix": "",
+                                                                                                                      "type": "integer"
+                                                                                         } ]
+                                                                     }
+                                            },
                          "Trim Indicators": {
                                                 "PITCHTRIMIND": {
                                                                         "category": "Trim Indicators",

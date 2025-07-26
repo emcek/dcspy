@@ -6991,6 +6991,18 @@
                                                                                                                    } ],
                                                                                                         "outputs": [  ]
                                                                                                },
+                                                      "PLT_JESTER_COMMAND_NAV_FINE_ALIGN_INS": {
+                                                                                                       "category": "PLT Jester Commands",
+                                                                                                   "control_type": "action",
+                                                                                                    "description": "Jester Command: Navigation > Fine-Align INS",
+                                                                                                     "identifier": "PLT_JESTER_COMMAND_NAV_FINE_ALIGN_INS",
+                                                                                                         "inputs": [ {
+                                                                                                                          "argument": "TOGGLE",
+                                                                                                                       "description": "Triggers the action",
+                                                                                                                         "interface": "action"
+                                                                                                                   } ],
+                                                                                                        "outputs": [  ]
+                                                                                               },
                                                       "PLT_JESTER_COMMAND_NAV_TACAN_MODE_AAR": {
                                                                                                        "category": "PLT Jester Commands",
                                                                                                    "control_type": "action",
@@ -9674,6 +9686,33 @@
                                                                                                                             "mask": 32768,
                                                                                                                        "max_value": 1,
                                                                                                                         "shift_by": 15,
+                                                                                                                          "suffix": "",
+                                                                                                                            "type": "integer"
+                                                                                               } ]
+                                                                           },
+                                              "PLT_RADAR_HORIZONTAL_LINE": {
+                                                                                   "category": "PLT Radar",
+                                                                               "control_type": "limited_dial",
+                                                                                "description": "Adjust Horizon on Display",
+                                                                                 "identifier": "PLT_RADAR_HORIZONTAL_LINE",
+                                                                                     "inputs": [ {
+                                                                                                   "description": "set the position of the dial",
+                                                                                                     "interface": "set_state",
+                                                                                                     "max_value": 65535
+                                                                                               }, {
+                                                                                                      "description": "turn the dial left or right",
+                                                                                                        "interface": "variable_step",
+                                                                                                        "max_value": 65535,
+                                                                                                   "suggested_step": 3200
+                                                                                               } ],
+                                                                                    "outputs": [ {
+                                                                                                                         "address": 11752,
+                                                                                                              "address_identifier": "F_4E_PLT_RADAR_HORIZONTAL_LINE_A",
+                                                                                                   "address_mask_shift_identifier": "F_4E_PLT_RADAR_HORIZONTAL_LINE",
+                                                                                                                     "description": "position of the potentiometer",
+                                                                                                                            "mask": 65535,
+                                                                                                                       "max_value": 65535,
+                                                                                                                        "shift_by": 0,
                                                                                                                           "suffix": "",
                                                                                                                             "type": "integer"
                                                                                                } ]
@@ -17709,7 +17748,7 @@
                                                      "WSO_IFF_COMBAT_TREE_CHALLENGE_DIM": {
                                                                                                   "category": "WSO IFF Panel",
                                                                                               "control_type": "limited_dial",
-                                                                                               "description": "Combat-Tree Challenge Light (rotate to dim) (not simulated)",
+                                                                                               "description": "Combat-Tree Challenge Light (rotate to dim)",
                                                                                                 "identifier": "WSO_IFF_COMBAT_TREE_CHALLENGE_DIM",
                                                                                                     "inputs": [ {
                                                                                                                   "description": "set the position of the dial",
@@ -17737,7 +17776,7 @@
                                                                                                "api_variant": "momentary_last_position",
                                                                                                   "category": "WSO IFF Panel",
                                                                                               "control_type": "selector",
-                                                                                               "description": "Combat-Tree Challenge Light (push to test) (not simulated)",
+                                                                                               "description": "Combat-Tree Challenge Light (push to test)",
                                                                                                 "identifier": "WSO_IFF_COMBAT_TREE_CHALLENGE_TEST_BUTTON",
                                                                                                     "inputs": [ {
                                                                                                                   "description": "switch to previous or next state",
@@ -22672,6 +22711,24 @@
                                                                }
                                          },
                              "WSO WRCS": {
+                                                          "WSO_WRCS_ALT_LIGHT": {
+                                                                                        "category": "WSO WRCS",
+                                                                                    "control_type": "led",
+                                                                                     "description": "ALT Light (Red)",
+                                                                                      "identifier": "WSO_WRCS_ALT_LIGHT",
+                                                                                          "inputs": [  ],
+                                                                                         "outputs": [ {
+                                                                                                                              "address": 11732,
+                                                                                                              "address_mask_identifier": "F_4E_WSO_WRCS_ALT_LIGHT_AM",
+                                                                                                        "address_mask_shift_identifier": "F_4E_WSO_WRCS_ALT_LIGHT",
+                                                                                                                          "description": "0 if light is off, 1 if light is on",
+                                                                                                                                 "mask": 32768,
+                                                                                                                            "max_value": 1,
+                                                                                                                             "shift_by": 15,
+                                                                                                                               "suffix": "",
+                                                                                                                                 "type": "integer"
+                                                                                                    } ]
+                                                                                },
                                                           "WSO_WRCS_ALT_RANGE": {
                                                                                         "category": "WSO WRCS",
                                                                                     "control_type": "limited_dial",
@@ -22862,6 +22919,24 @@
                                                                                                                 "max_length": 4,
                                                                                                                     "suffix": "",
                                                                                                                       "type": "string"
+                                                                                                    } ]
+                                                                                },
+                                                        "WSO_WRCS_RANGE_LIGHT": {
+                                                                                        "category": "WSO WRCS",
+                                                                                    "control_type": "led",
+                                                                                     "description": "Freeze Light (Red)",
+                                                                                      "identifier": "WSO_WRCS_RANGE_LIGHT",
+                                                                                          "inputs": [  ],
+                                                                                         "outputs": [ {
+                                                                                                                              "address": 11750,
+                                                                                                              "address_mask_identifier": "F_4E_WSO_WRCS_RANGE_LIGHT_AM",
+                                                                                                        "address_mask_shift_identifier": "F_4E_WSO_WRCS_RANGE_LIGHT",
+                                                                                                                          "description": "0 if light is off, 1 if light is on",
+                                                                                                                                 "mask": 256,
+                                                                                                                            "max_value": 1,
+                                                                                                                             "shift_by": 8,
+                                                                                                                               "suffix": "",
+                                                                                                                                 "type": "integer"
                                                                                                     } ]
                                                                                 },
                                                    "WSO_WRCS_RANGE_MULTIPLIER": {

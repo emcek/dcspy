@@ -59,12 +59,20 @@
                                                              },
                                       "PLT_AHRS_HEMISPHERE": {
                                                                      "category": "AHRS",
-                                                                 "control_type": "discrete_dial",
+                                                                 "control_type": "selector",
                                                                   "description": "PILOT Compass N-S Hemisphere",
                                                                    "identifier": "PLT_AHRS_HEMISPHERE",
                                                                        "inputs": [ {
                                                                                      "description": "switch to previous or next state",
                                                                                        "interface": "fixed_step"
+                                                                                 }, {
+                                                                                     "description": "set position",
+                                                                                       "interface": "set_state",
+                                                                                       "max_value": 1
+                                                                                 }, {
+                                                                                        "argument": "TOGGLE",
+                                                                                     "description": "Toggle switch state",
+                                                                                       "interface": "action"
                                                                                  } ],
                                                                       "outputs": [ {
                                                                                                            "address": 4720,
@@ -1335,12 +1343,20 @@
                                                                     },
                                               "PLT_AUTOPLT_ENGAGE": {
                                                                             "category": "Autopilot",
-                                                                        "control_type": "discrete_dial",
+                                                                        "control_type": "selector",
                                                                          "description": "PILOT Autopilot - Engage",
                                                                           "identifier": "PLT_AUTOPLT_ENGAGE",
                                                                               "inputs": [ {
                                                                                             "description": "switch to previous or next state",
                                                                                               "interface": "fixed_step"
+                                                                                        }, {
+                                                                                            "description": "set position",
+                                                                                              "interface": "set_state",
+                                                                                              "max_value": 1
+                                                                                        }, {
+                                                                                               "argument": "TOGGLE",
+                                                                                            "description": "Toggle switch state",
+                                                                                              "interface": "action"
                                                                                         } ],
                                                                              "outputs": [ {
                                                                                                                   "address": 4624,
@@ -2990,6 +3006,18 @@
                                                                                                                "type": "integer"
                                                                                   } ]
                                                               },
+                                             "CANOPY_TOGGLE": {
+                                                                      "category": "Cockpit",
+                                                                  "control_type": "action",
+                                                                   "description": "Canopy Open/Close",
+                                                                    "identifier": "CANOPY_TOGGLE",
+                                                                        "inputs": [ {
+                                                                                         "argument": "TOGGLE",
+                                                                                      "description": "Triggers the action",
+                                                                                        "interface": "action"
+                                                                                  } ],
+                                                                       "outputs": [  ]
+                                                              },
                                        "PLT_EJECT_SEAT_SAVE": {
                                                                       "category": "Cockpit",
                                                                   "control_type": "analog_gauge",
@@ -3467,6 +3495,32 @@
                                                                                                               "type": "integer"
                                                                                  } ]
                                                              }
+                                  },
+                "Communications": {
+                                      "ON_THE_BALL": {
+                                                             "category": "Communications",
+                                                         "control_type": "action",
+                                                          "description": "Tomcat on the Ball",
+                                                           "identifier": "ON_THE_BALL",
+                                                               "inputs": [ {
+                                                                                "argument": "TOGGLE",
+                                                                             "description": "Triggers the action",
+                                                                               "interface": "action"
+                                                                         } ],
+                                                              "outputs": [  ]
+                                                     },
+                                           "SALUTE": {
+                                                             "category": "Communications",
+                                                         "control_type": "action",
+                                                          "description": "Salute",
+                                                           "identifier": "SALUTE",
+                                                               "inputs": [ {
+                                                                                "argument": "TOGGLE",
+                                                                             "description": "Triggers the action",
+                                                                               "interface": "action"
+                                                                         } ],
+                                                              "outputs": [  ]
+                                                     }
                                   },
                            "DDD": {
                                              "RIO_ACM_THERESHOLD": {
@@ -20605,12 +20659,20 @@
                                                                    },
                                               "PLT_TACAN_CHANNEL": {
                                                                            "category": "TACAN PILOT",
-                                                                       "control_type": "discrete_dial",
+                                                                       "control_type": "selector",
                                                                         "description": "PILOT TACAN Channel XY",
                                                                          "identifier": "PLT_TACAN_CHANNEL",
                                                                              "inputs": [ {
                                                                                            "description": "switch to previous or next state",
                                                                                              "interface": "fixed_step"
+                                                                                       }, {
+                                                                                           "description": "set position",
+                                                                                             "interface": "set_state",
+                                                                                             "max_value": 1
+                                                                                       }, {
+                                                                                              "argument": "TOGGLE",
+                                                                                           "description": "Toggle switch state",
+                                                                                             "interface": "action"
                                                                                        } ],
                                                                             "outputs": [ {
                                                                                                                  "address": 4652,
@@ -20698,12 +20760,20 @@
                                                                    },
                                       "PLT_TACAN_MODE_NORMAL_INV": {
                                                                            "category": "TACAN PILOT",
-                                                                       "control_type": "discrete_dial",
+                                                                       "control_type": "selector",
                                                                         "description": "PILOT TACAN Mode Normal/Inverse",
                                                                          "identifier": "PLT_TACAN_MODE_NORMAL_INV",
                                                                              "inputs": [ {
                                                                                            "description": "switch to previous or next state",
                                                                                              "interface": "fixed_step"
+                                                                                       }, {
+                                                                                           "description": "set position",
+                                                                                             "interface": "set_state",
+                                                                                             "max_value": 1
+                                                                                       }, {
+                                                                                              "argument": "TOGGLE",
+                                                                                           "description": "Toggle switch state",
+                                                                                             "interface": "action"
                                                                                        } ],
                                                                             "outputs": [ {
                                                                                                                  "address": 4652,
@@ -22337,6 +22407,21 @@
                                                                                                                  "shift_by": 2,
                                                                                                                    "suffix": "",
                                                                                                                      "type": "integer"
+                                                                                        } ]
+                                                                    },
+                                                   "RIO_VUHF_DISP": {
+                                                                            "category": "VUHF",
+                                                                        "control_type": "display",
+                                                                         "description": "RIO VHF/UHF ARC-182 Radio Display",
+                                                                          "identifier": "RIO_VUHF_DISP",
+                                                                              "inputs": [  ],
+                                                                             "outputs": [ {
+                                                                                                       "address": 5372,
+                                                                                            "address_identifier": "F_14_RIO_VUHF_DISP_A",
+                                                                                                   "description": "RIO VHF/UHF ARC-182 Radio Display",
+                                                                                                    "max_length": 7,
+                                                                                                        "suffix": "",
+                                                                                                          "type": "string"
                                                                                         } ]
                                                                     },
                                                   "RIO_VUHF_FM_AM": {
