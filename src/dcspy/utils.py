@@ -274,7 +274,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     :param update: Perform update process
     :param progress: Progress callback
     """
-    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
+    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref, progress=progress)
     if update:
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
