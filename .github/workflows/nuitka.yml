@@ -32,7 +32,7 @@ jobs:
           nuitka-version: 2.7.12
           script-name: src/dcs_py.py
           mode: standalone
-          windows-console-mode: force
+          windows-console-mode: disable
           prefer-source-code: true
           enable-plugins: pyside6
           include-package-data: dcspy
@@ -53,7 +53,7 @@ jobs:
           nuitka-version: 2.7.12
           script-name: src/dcs_py.py
           mode: onefile
-          windows-console-mode: force
+          windows-console-mode: disable
           prefer-source-code: true
           enable-plugins: pyside6
           include-package-data: dcspy
