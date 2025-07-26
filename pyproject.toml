@@ -112,7 +112,6 @@ dcspy = [
     'img/dcspy_white.ico',
     'img/dcspy_black.ico',
     'img/splash.png',
-    'sdk/*.h',
     'py.typed',
 ]
 
@@ -163,7 +162,6 @@ exclude = [
     '/qt_gui\.py$',
     '/qtgui_rc\.py$',
     'tests/',
-    'generate_ver_file\.py$',
 ]
 
 [[tool.mypy.overrides]]

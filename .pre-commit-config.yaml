@@ -34,8 +34,8 @@ repos:
     rev: v1.16.1
     hooks:
       - id: mypy
-        exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/|generate_ver_file\.py$'
-        additional_dependencies: [types-cffi, types-lupa, types-Pillow, types-psutil, types-pyinstaller, types-PyYAML, types-requests, lxml]
+        exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/$'
+        additional_dependencies: [types-cffi, types-lupa, types-Pillow, types-psutil, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.12.3
