@@ -86,3 +86,6 @@ jobs:
           mkdir dist
           mv *.whl *.tar.gz dist/
           ls -la dist/
+
+      - name: "Deploy to PyPI"
+        uses: pypa/gh-action-pypi-publish@release/v1
