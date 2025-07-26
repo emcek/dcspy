@@ -1,19 +1,23 @@
 # DCSpy
 ## Single file download (basic/recommended way)
-Download latest file from [Releases](https://github.com/emcek/dcspy/releases/latest)
+Download latest `dcspy_*_setup.exe` file from [Releases](https://github.com/emcek/dcspy/releases/latest)
 
 ## via uv (advanced way)
 To upgrade DCSpy to the latest version, open Command Prompt and type:
+
 ```shell script
 uv tool update dcspy
 ```
+
 **Note:** If you upgrade DCSpy from 1.5.1 or older you can remove Logitech LCD SDK from `C:\Program Files\Logitech Gaming Software\LCDSDK_8.57.148`
 
 ## Switch from advanced to basic
 1. Remove dcspy, open Command Prompt and type:
+
 ```shell script
 uv tool uninstall dcspy
 ```
+
 2. Follow installation [procedure](install.md#single-file-download-new-way).
 
 # DCS-BIOS
