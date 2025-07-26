@@ -38,7 +38,7 @@ from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
                          get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
-                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
+                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 LOG = getLogger(__name__)
@@ -969,7 +969,7 @@ class DcsPyQtGui(QMainWindow):
         if globals().get('__compiled__', False):
             self._restart_nuitka_ver()
         else:
-            self._restart_pip_ver()
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='uv/pip Install', message='Use uv in console:\n\nuv tool update dcspy')
 
     def _restart_nuitka_ver(self) -> None:
         """Download and restart a new version of DCSpy when using an executable/nuitka version."""
@@ -991,14 +991,6 @@ class DcsPyQtGui(QMainWindow):
                 sys.exit(0)
             except PermissionError as exc:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
-
-    def _restart_pip_ver(self) -> None:
-        """Download and restart a new version of DCSpy when using a Pip version."""
-        rc, err, out = run_pip_command('install --upgrade dcspy')
-        if not rc:
-            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Pip Install', message=out.split('\r\n')[-2])
-        else:
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Pip Install', message=err)
 
     # <=><=><=><=><=><=><=><=><=><=><=> check bios updates <=><=><=><=><=><=><=><=><=><=><=>
     def _bios_check_clicked(self, silence=False) -> None:

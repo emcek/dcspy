@@ -578,21 +578,6 @@ def get_config_yaml_location() -> Path:
     return user_appdata
 
 
-def run_pip_command(cmd: str) -> tuple[int, str, str]:
-    """
-    Execute pip command.
-
-    :param cmd: Command as a string
-    :return: Tuple with return code, stderr and stdout
-    """
-    try:
-        result = run([sys.executable, '-m', 'pip', *cmd.split(' ')], capture_output=True, check=True)
-        return result.returncode, result.stderr.decode('utf-8'), result.stdout.decode('utf-8')
-    except CalledProcessError as e:
-        LOG.debug(f'Result: {e}')
-        return e.returncode, e.stderr.decode('utf-8'), e.stdout.decode('utf-8')
-
-
 def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
     """
     Run command in shell as a subprocess.
