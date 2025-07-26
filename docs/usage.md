@@ -1,7 +1,7 @@
 # Starting
-## Single file download (basic way)
+## Windows setup installer (basic way)
 1. Run Logitech Gaming Software (it allows accessing LCD)
-2. Double click at the downloaded file.
+2. Start DCSpy from Start Menu.
 3. Click `Start`
 4. LCD should update with dcspy basic info, waiting to connect to DCS
 5. Run DCS and start any mission.
@@ -12,14 +12,14 @@
 3. You can drag and drop `dcspy.exe` or `dcspy_cli.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory i.e. `C:\Users\mplic\AppData\Local\uv\tools\dcspy\Lib\site-packages\dcspy\img`).
    * `dcspy.exe` - with open directly GUI window
    * `dcspy_cli.exe` - additionally start a console window (with logs)
-4. Double-click on dcspy icon or type `dcspy.exe`\`dcspy_cli.exe` from Command Prompt
+4. Double-click on dcspy icon or type `dcspy.exe`\\`dcspy_cli.exe` from Command Prompt
 5. Click `Start`
 6. LCD should update with dcspy basic info, waiting to connect to DCS
 7. Run DCS and start any mission.
 
 **Note:** DCS can already running, before starting LGS and or DCSpy.
 
-**Note:** If you upgrade DCSpy before version 1.7.0 `dcspy.ico` and `config.yaml` were in data directory like `c:\python312\dcspy_data\` but location is deprecated in Python if you still have it, you can safely delete it
+**Note:** If you upgrade DCSpy before version 1.7.0 `dcspy.ico` and `config.yaml` were in data directory like `c:\python313\dcspy_data\` but location is deprecated in Python if you still have it, you can safely delete it
 
 # Mono vs. Color
 DCSpy do not use full potential of G19, which support full RGBA, 8-lines LCD.

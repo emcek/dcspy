@@ -5,12 +5,6 @@ from traceback import format_exc
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QMessageBox
 
-try:
-    import pyi_splash
-    pyi_splash.close()
-except ImportError:
-    pass
-
 __version__ = '3.6.3'
 
 

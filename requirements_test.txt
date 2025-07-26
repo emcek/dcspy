@@ -14,6 +14,5 @@ types-cffi==1.17.0.20250523
 types-lupa==2.5.0.20250701
 types-Pillow==10.2.0.20240822
 types-psutil==7.0.0.20250601
-types-pyinstaller==6.14.0.20250611
 types-PyYAML==6.0.12.20250516
 types-requests==2.32.4.20250611

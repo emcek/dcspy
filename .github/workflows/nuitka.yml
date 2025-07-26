@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        nuitka_type: [ dcspy, dcspy_cli ]
+        nuitka_type: [ setup, portable ]
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -15,23 +15,40 @@ jobs:
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
-      - name: "Generate version info file"
+      - name: "Generate version info"
         shell: pwsh
         id: nuitka_data
         run: |
-          uv pip install -U pyinstaller
-          $output = & python scripts/generate_ver_file.py
-          $output = $output -replace "[\(\)\s\']", ""
-          $values = $output.Split(',')
-          $ref_name = $values[0].Trim()
-          $run_number = $values[1].Trim()
-          $sha = $values[2].Trim()
+          $ref_name = $env:GITHUB_REF_NAME -replace '^v', ''
+          $run_number = $env:GITHUB_RUN_NUMBER
+          $sha = $env:GITHUB_SHA.Substring(0, 5)
           Write-Output "git_ref_name=$ref_name" >> $env:GITHUB_OUTPUT
           Write-Output "git_run_number=$run_number" >> $env:GITHUB_OUTPUT
           Write-Output "git_sha=$sha" >> $env:GITHUB_OUTPUT
 
       - uses: Nuitka/Nuitka-Action@main
-        if: ${{ endsWith( matrix.nuitka_type, 'dcspy') }}
+        if: ${{ endsWith( matrix.nuitka_type, 'setup') }}
+        with:
+          nuitka-version: 2.7.12
+          script-name: src/dcs_py.py
+          mode: standalone
+          windows-console-mode: disable
+          prefer-source-code: true
+          enable-plugins: pyside6
+          include-package-data: dcspy
+          assume-yes-for-downloads: true
+          output-file: dcspy
+          output-dir: dist
+          windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
+          company-name: Michal Plichta
+          product-name: DCSpy
+          file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
+          product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
+          file-description: Integrating DCS Planes with Logitech keyboards with LCD
+          copyright: (c) 2025 Michal Plichta. All rights reserved.
+
+      - uses: Nuitka/Nuitka-Action@main
+        if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
         with:
           nuitka-version: 2.7.12
           script-name: src/dcs_py.py
@@ -42,38 +59,29 @@ jobs:
           include-package-data: dcspy
           assume-yes-for-downloads: true
           onefile-windows-splash-screen-image: src/dcspy/img/splash.png
-          output-file: ${{ matrix.nuitka_type }}
+          output-file: dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable
           output-dir: dist
           windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
+          company-name: Michal Plichta
           product-name: DCSpy
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
-          product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_sha }}
+          product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
           copyright: (c) 2025 Michal Plichta. All rights reserved.
 
-      - uses: Nuitka/Nuitka-Action@main
-        if: ${{ endsWith( matrix.nuitka_type, '_cli') }}
-        with:
-          nuitka-version: 2.7.12
-          script-name: src/dcs_py.py
-          mode: onefile
-          windows-console-mode: force
-          prefer-source-code: true
-          enable-plugins: pyside6
-          include-package-data: dcspy
-          assume-yes-for-downloads: true
-          onefile-windows-splash-screen-image: src/dcspy/img/splash.png
-          output-file: ${{ matrix.nuitka_type }}
-          output-dir: dist
-          windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
-          product-name: DCSpy
-          file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
-          product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_sha }}
-          file-description: Integrating DCS Planes with Logitech keyboards with LCD
-          copyright: (c) 2025 Michal Plichta. All rights reserved.
-
-      - name: "Upload dcspy binaries"
+      - name: "Upload dcspy setup installer"
+        if: ${{ endsWith( matrix.nuitka_type, 'setup') }}
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.nuitka_type }}_nuitka
-          path: dist/${{ matrix.nuitka_type }}.exe
+          name: dcspy_${{ matrix.nuitka_type }}
+          path: |
+            dist/*
+            !dist/dcs_py.build
+            !dist/dcspy.exe
+
+      - name: "Upload dcspy portable binaries"
+        if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: dcspy_${{ matrix.nuitka_type }}
+          path: dist/dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable.exe

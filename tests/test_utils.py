@@ -284,22 +284,6 @@ def test_collect_debug_data(switch_dcs_bios_path_in_config, resources):
 
 
 @mark.slow
-def test_run_pip_command_success():
-    rc, err, out = utils.run_pip_command('list')
-    assert rc == 0
-    assert 'pip' in out, out
-    assert err == '' or len(err) > 1, err
-
-
-@mark.slow
-def test_run_pip_command_failed():
-    rc, err, out = utils.run_pip_command('bullshit')
-    assert rc == 1
-    assert out == '', out
-    assert err != '', err
-
-
-@mark.slow
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 @mark.parametrize('cmd, result', [('Clear-Host', 0), ('bullshit', -1)])
 def test_run_command(cmd, result):

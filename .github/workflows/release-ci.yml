@@ -12,10 +12,6 @@ jobs:
     needs: [ style ]
     uses: ./.github/workflows/test.yml
 
-  pyinstaller:
-    needs: [ test ]
-    uses: ./.github/workflows/pyinstaller.yml
-
   nuitka:
     needs: [ test ]
     uses: ./.github/workflows/nuitka.yml
@@ -25,7 +21,7 @@ jobs:
     uses: ./.github/workflows/wheel.yml
 
   github:
-    needs: [ pyinstaller, nuitka, wheel ]
+    needs: [ nuitka, wheel ]
     runs-on: windows-latest
     steps:
       - name: "Checkout"
@@ -41,6 +37,12 @@ jobs:
           pattern: |
             dcspy_*
 
+      - name: "Compile setup executable file"
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
+        with:
+          path: inno/dcspy.iss
+          options: /O+
+
       - name: "Release Notes"
         id: version
         run: |
@@ -53,7 +55,7 @@ jobs:
       - name: "Create Release"
         uses: softprops/action-gh-release@v2
         env:
-          GITHUB_TOKEN: ${{ secrets.PYI_REL_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REL_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
           name: dcspy ${{ steps.version.outputs.number }}
@@ -61,15 +63,13 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            dcspy.exe
-            dcspy_cli.exe
-            dcspy_pyinstaller.exe
-            dcspy_cli_pyinstaller.exe
+            dcspy_${{ steps.version.outputs.number }}_portable.exe
+            inno/dcspy_${{ steps.version.outputs.number }}_setup.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
   pypi:
-    needs: [ pyinstaller, nuitka, wheel ]
+    needs: [ nuitka, wheel ]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:

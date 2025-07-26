@@ -7,14 +7,13 @@ name = 'dcspy'
 authors = [{name = 'Michal Plichta'}]
 maintainers = [{name = 'Michal Plichta'}]
 description = 'Software for integrating DCS Planes with Logitech keyboards (with and without LCD), mice and headphones.'
-license = {text = 'MIT License'}
+license = 'MIT'
+license-files = ['LICENSE.md', 'src/dcspy/resources/license.txt']
 requires-python = '>=3.9'
-readme = 'README.md'
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Environment :: Win32 (MS Windows)',
-    'License :: OSI Approved :: MIT License',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
@@ -37,7 +36,7 @@ keywords = [
     'G11', 'G35', 'G633', 'G930', 'G933',
     'G600', 'G300', 'G400', 'G700', 'G9', 'MX518', 'G402', 'G502', 'G602',
 ]
-dynamic = ['version']
+dynamic = ['version', 'readme']
 dependencies = [
     'cffi==1.17.1',
     'eval-type-backport==0.2.0 ; python_version < "3.10"',
@@ -82,7 +81,6 @@ test = [
     'types-lupa==2.5.0.20250701',
     'types-pillow==10.2.0.20240822',
     'types-psutil==7.0.0.20250601',
-    'types-pyinstaller==6.14.0.20250611',
     'types-pyyaml==6.0.12.20250516',
     'types-requests==2.32.4.20250611',
 ]
@@ -101,6 +99,7 @@ docs = [
 
 [tool.setuptools.dynamic]
 version = {attr = 'dcspy.models.__version__'}
+readme = {file = 'README.md', content-type = 'text/markdown'}
 
 [tool.setuptools.packages.find]
 where = ['src/']
@@ -113,7 +112,6 @@ dcspy = [
     'img/dcspy_white.ico',
     'img/dcspy_black.ico',
     'img/splash.png',
-    'sdk/*.h',
     'py.typed',
 ]
 
@@ -164,7 +162,6 @@ exclude = [
     '/qt_gui\.py$',
     '/qtgui_rc\.py$',
     'tests/',
-    'generate_ver_file\.py$',
 ]
 
 [[tool.mypy.overrides]]
@@ -180,11 +177,9 @@ PySide6-stubs = { git = 'https://github.com/python-qt-tools/PySide6-stubs.git' }
 
 [dependency-groups]
 dev = [
-    'build',
     'dcspy[docs,test]',
     'detect-test-pollution',
     'nuitka',
     'pre-commit',
-    'pyinstaller',
     'PySide6-stubs',
 ]

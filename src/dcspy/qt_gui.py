@@ -38,7 +38,7 @@ from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
                          get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
-                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, run_pip_command, save_yaml)
+                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 LOG = getLogger(__name__)
@@ -969,43 +969,28 @@ class DcsPyQtGui(QMainWindow):
         if globals().get('__compiled__', False):
             self._restart_nuitka_ver()
         else:
-            self._restart_pip_ver()
+            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='uv/pip Install', message='Use uv in console:\n\nuv tool update dcspy')
 
     def _restart_nuitka_ver(self) -> None:
         """Download and restart a new version of DCSpy when using an executable/nuitka version."""
         LOG.debug(f'Nuitka unpacked: {globals().get("__builtins__", {}).get("__nuitka_binary_exe", "")}')
-        exe_parent_dir = Path(globals()['__compiled__'].containing_dir)
-        nuitka_packed_exec = globals()['__compiled__'].original_argv0
-        cli = '' if 'cli' not in Path(nuitka_packed_exec).name else '_cli'
-        ext = f'{cli}.exe'
-        # this is run only when get_version_string() not return failed in _dcspy_check_clicked()
         rel_info = check_ver_at_github(repo=DCSPY_REPO_NAME)
+        asset_file = rel_info.get_asset(extension='_setup.exe')
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Update DCSpy',
-                                       message=f'Download new version {rel_info.version} to: \n\n{exe_parent_dir}\n\nand restart DCSpy?',
+                                       message=f'Download new version {rel_info.version} ({asset_file.size / 1_048_576:.2f} MB) and shutdown DCSpy?',
                                        defaultButton=QMessageBox.StandardButton.Yes)
         if bool(reply == QMessageBox.StandardButton.Yes):
             try:
-                file_url = rel_info.download_url(extension=ext)
-                destination = exe_parent_dir / file_url.split('/')[-1]
-                old_ver_dst = exe_parent_dir / f'dcspy{cli}_{__version__}.exe'
-                new_ver_dst = exe_parent_dir / f'dcspy{cli}.exe'
-                os.rename(src=Path(nuitka_packed_exec), dst=old_ver_dst)
-                LOG.debug(f'Rename: {Path(nuitka_packed_exec)} -> {old_ver_dst}')
-                download_file(url=file_url, save_path=destination, progress_fn=self._progress_by_abs_value)
-                os.rename(src=destination, dst=new_ver_dst)
-                LOG.debug(f'Rename: {destination} -> {new_ver_dst}')
-                LOG.info('Restart to run new version.')
-                os.execv(new_ver_dst, sys.argv)
+                dst_dir = str(Path(os.environ['USERPROFILE']) / 'Desktop')
+            except KeyError:
+                dst_dir = 'C:\\'
+            directory = self._run_file_dialog(last_dir=lambda: dst_dir, caption='Where save DCSpy release')
+            try:
+                download_file(url=asset_file.browser_download_url, save_path=Path(directory) / asset_file.name, progress_fn=self._progress_by_abs_value)
+                LOG.info(f'Stop DCSpy {__version__}')
+                sys.exit(0)
             except PermissionError as exc:
                 self._show_message_box(kind_of=MsgBoxTypes.WARNING, title=exc.args[1], message=f'Can not save file:\n{exc.filename}')
-
-    def _restart_pip_ver(self) -> None:
-        """Download and restart a new version of DCSpy when using a Pip version."""
-        rc, err, out = run_pip_command('install --upgrade dcspy')
-        if not rc:
-            self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Pip Install', message=out.split('\r\n')[-2])
-        else:
-            self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Pip Install', message=err)
 
     # <=><=><=><=><=><=><=><=><=><=><=> check bios updates <=><=><=><=><=><=><=><=><=><=><=>
     def _bios_check_clicked(self, silence=False) -> None:
@@ -1545,15 +1530,16 @@ class DcsPyQtGui(QMainWindow):
         return SystemData(system=system, release=release, ver=ver, proc=proc, dcs_ver=dcs_ver,
                           dcspy_ver=dcspy_ver, bios_ver=bios_ver, dcs_bios_ver=dcs_bios_ver, git_ver=git_ver)
 
-    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: str | None = None) -> str:
+    def _run_file_dialog(self, last_dir: Callable[..., str], widget_name: str | None = None, caption: str='Open Directory') -> str:
         """
         Open/save dialog to select a file or a folder.
 
         :param last_dir: Function which returns the last selected directory
         :param widget_name: widget name which should be updated
+        :param caption: Tittle for the dialog
         :return: Full path to directory
         """
-        result_path = QFileDialog.getExistingDirectory(self, caption='Open Directory', dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
+        result_path = QFileDialog.getExistingDirectory(self, caption=caption, dir=last_dir(), options=QFileDialog.Option.ShowDirsOnly)
         if widget_name is not None and result_path:
             getattr(self, widget_name).setText(result_path)
         return result_path
