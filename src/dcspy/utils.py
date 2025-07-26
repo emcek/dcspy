@@ -274,7 +274,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     :param update: Perform update process
     :param progress: Progress callback
     """
-    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, checkout_ref=git_ref, progress=progress)
+    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
     if update:
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
@@ -282,13 +282,12 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', progress: git.RemoteProgress | None = None) -> git.Repo:
+def _checkout_repo(repo: str, repo_dir: Path, progress: git.RemoteProgress | None = None) -> git.Repo:
     """
-    Checkout repository at a master branch or clone it when not exists in a system.
+    Checkout repository at a main/master branch or clone it when not exists in a system.
 
     :param repo: Repository name
     :param repo_dir: Local repository directory
-    :param checkout_ref: Check out a git reference
     :param progress: Progress callback
     :return: Repo object of the repository
     """
@@ -297,6 +296,8 @@ def _checkout_repo(repo: str, repo_dir: Path, checkout_ref: str = 'master', prog
     makedirs(name=repo_dir, exist_ok=True)
     if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
+        all_refs = get_all_git_refs(repo_dir=repo_dir)
+        checkout_ref = 'main' if 'main' in all_refs else 'master'
         bios_repo.git.checkout(checkout_ref)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
