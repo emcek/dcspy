@@ -11,21 +11,21 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: 'qtgui_rc.py'
+        exclude: 'qtgui_rc.py|\.isl'
       - id: end-of-file-fixer
-        exclude: 'qtgui_rc.py'
+        exclude: 'qtgui_rc.py|\.isl'
       - id: check-docstring-first
-        exclude: 'qtgui_rc.py'
+        exclude: 'qtgui_rc.py|\.isl'
       - id: debug-statements
-        exclude: 'qtgui_rc.py'
+        exclude: 'qtgui_rc.py|\.isl'
       - id: double-quote-string-fixer
-        exclude: 'qtgui_rc.py'
+        exclude: 'qtgui_rc.py|\.isl'
       - id: check-toml
       - id: check-yaml
       - id: check-json
       - id: requirements-txt-fixer
       - id: fix-byte-order-marker
-        exclude: 'qtgui_rc.py'
+        exclude: 'qtgui_rc.py|\.isl'
       - id: name-tests-test
         args: [--pytest-test-first]
         exclude: 'helpers.py'
