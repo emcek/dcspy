@@ -1,18 +1,18 @@
 -r requirements.txt
-interrogate==1.7.0
-isort==6.0.1
-lxml==6.0.0
-mypy==1.17.0
-pip-audit==2.9.0
-pytest==8.4.1
-pytest-codspeed==4.0.0
-pytest-cov==6.2.1
-pytest-qt==4.5.0; sys_platform == "win32"
-pytest-randomly==3.16.0
-ruff==0.12.5
-types-cffi==1.17.0.20250523
-types-lupa==2.5.0.20250701
-types-Pillow==10.2.0.20240822
-types-psutil==7.0.0.20250601
-types-PyYAML==6.0.12.20250516
-types-requests==2.32.4.20250611
+interrogate
+isort
+lxml
+mypy
+pip-audit
+pytest
+pytest-codspeed
+pytest-cov
+pytest-qt; sys_platform == "win32"
+pytest-randomly
+ruff
+types-cffi
+types-lupa
+types-Pillow
+types-psutil
+types-PyYAML
+types-requests

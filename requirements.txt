@@ -1,12 +1,12 @@
-cffi==1.17.1
-eval-type-backport==0.2.2; python_version < '3.10'
-GitPython==3.1.45
-lupa==2.5
-packaging==25.0
-pillow==11.3.0
-psutil==7.0.0
-pydantic==2.11.7
-PySide6==6.9.1
-PyYAML==6.0.2
-requests==2.32.4
-typing_extensions==4.14.1
+cffi
+eval-type-backport; python_version < '3.10'
+GitPython
+lupa
+packaging
+pillow
+psutil
+pydantic
+PySide6
+PyYAML
+requests
+typing_extensions
