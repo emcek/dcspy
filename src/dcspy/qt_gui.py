@@ -372,7 +372,8 @@ class DcsPyQtGui(QMainWindow):
         try:
             if any([True for d in forbidden_dirs if d in str(destination).split('\\')]):
                 raise PermissionError(13, 'Permission denied', f'You can not save file to: {destination.parent}')
-            copy(zip_file, destination)
+            else:
+                copy(zip_file, destination)
             self.statusbar.showMessage(f'Save: {destination}')
             LOG.debug(f'Save debug file: {destination}')
         except PermissionError as err:
