@@ -544,7 +544,7 @@ class DcsPyQtGui(QMainWindow):
         except FileNotFoundError as err:
             message = f'Folder not exists:\n{self.bios_path}\n\nCheck DCS-BIOS path.\n\n{err}'  # generate json/bios
             self._show_message_box(kind_of=MsgBoxTypes.WARNING, title='Get Plane Aliases', message=message)
-            return dict()
+            return {}
 
     def _rebuild_or_not_rebuild_planes_aliases(self, plane_aliases: dict[str, list[str]], plane_name: str) -> bool:
         """
@@ -1475,8 +1475,8 @@ class DcsPyQtGui(QMainWindow):
             kwargs = job.keywords
         else:
             job_name = job.__name__
-            args = tuple()
-            kwargs = dict()
+            args = ()
+            kwargs = {}
         signals = {signal: handler.__name__ for signal, handler in signal_handlers.items()}
         LOG.debug(f'bg job for: {job_name} args: {args} kwargs: {kwargs} signals {signals}')
         self.threadpool.start(worker)
