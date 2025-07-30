@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterator, Mapping, Sequence, Generator
 from ctypes import c_void_p
 from datetime import datetime
 from enum import Enum, IntEnum
@@ -699,7 +699,7 @@ class MouseButton(BaseModel):
         :param button_range: A tuple of two integers, representing the start and end of the range (inclusive) for generating MouseButton objects.
         :return: A tuple containing instantiated MouseButton objects for each value in the specified range.
         """
-        return tuple([MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1)])
+        return tuple(MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1))
 
 
 class LcdType(Enum):
@@ -809,7 +809,7 @@ class Gkey(BaseModel):
         :param mode: Number of modes
         :return: sequence of Gkey instances
         """
-        return tuple([Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1)])
+        return tuple(Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1))
 
 
 AnyButton = Union[LcdButton, Gkey, MouseButton]
@@ -841,7 +841,7 @@ class LogitechDeviceModel(BaseModel):
     no_g_modes: int = 0
     no_g_keys: int = 0
     btn_m_range: tuple[int, int] = (0, 0)
-    lcd_keys: Sequence[LcdButton] = tuple()
+    lcd_keys: Sequence[LcdButton] = ()
     lcd_info: LcdInfo = NoneLcd
 
     def get_key_at(self, row: int, col: int) -> AnyButton | None:
