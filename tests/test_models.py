@@ -152,30 +152,6 @@ def test_gkey_name():
 
 
 @mark.benchmark
-@mark.parametrize('key_name, klass', [
-    ('G12_M3', 'Gkey'),
-    ('G1_M2', 'Gkey'),
-    ('TWO', 'LcdButton'),
-    ('MENU', 'LcdButton'),
-    ('M_2', 'MouseButton'),
-    ('M_12', 'MouseButton'),
-])
-def test_get_key_instance(key_name, klass):
-    from dcspy.models import get_key_instance
-
-    assert get_key_instance(key_name).__class__.__name__ == klass
-
-
-@mark.benchmark
-@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '', 'M_a3', 'm_2', 'M3'])
-def test_get_key_instance_error(key_name):
-    from dcspy.models import get_key_instance
-
-    with raises(AttributeError):
-        get_key_instance(key_name)
-
-
-@mark.benchmark
 @mark.parametrize('key, mode, result', [(0, 0, False), (1, 0, False), (0, 2, False), (2, 3, True)])
 def test_get_gkey_bool_test(key, mode, result):
     from dcspy.models import Gkey
@@ -575,7 +551,8 @@ def test_release_model(resources):
     'Lcd REGULAR',
 ])
 def test_request_model_properties(str_req, key, key_down, result):
-    from dcspy.models import RequestModel, get_key_instance
+    from dcspy.models import RequestModel
+    from dcspy.utils import get_key_instance
 
     def get_bios_fn(val: str) -> int:
         return 2
@@ -597,7 +574,8 @@ def test_request_model_properties(str_req, key, key_down, result):
     ('M_1', KEY_UP, [b'']),
 ])
 def test_empty_request_model_(key, key_down, result):
-    from dcspy.models import RequestModel, get_key_instance
+    from dcspy.models import RequestModel
+    from dcspy.utils import get_key_instance
 
     empty_req = RequestModel.make_empty(key=get_key_instance(key))
     assert empty_req.bytes_requests(key_down=key_down) == result

@@ -7,7 +7,7 @@ from packaging import version
 from pytest import mark, raises
 
 from dcspy import utils
-from dcspy.models import DEFAULT_FONT_NAME, Color, LcdMode, get_key_instance
+from dcspy.models import DEFAULT_FONT_NAME, Color, LcdMode
 
 
 def test_check_ver_can_not_check():
@@ -428,12 +428,12 @@ def test_key_request_create(test_config_yaml):
         return 1
 
     key_req = utils.KeyRequest(yaml_path=test_config_yaml.parent / 'F-16C_50.yaml', get_bios_fn=get_bios_fn)
-    assert key_req.buttons[get_key_instance('ONE')].is_cycle is True
-    assert key_req.buttons[get_key_instance('G1_M1')].is_push_button is True
-    assert key_req.buttons[get_key_instance('G2_M1')].is_custom is True
-    assert key_req.buttons[get_key_instance('M_4')].is_push_button is True
+    assert key_req.buttons[utils.get_key_instance('ONE')].is_cycle is True
+    assert key_req.buttons[utils.get_key_instance('G1_M1')].is_push_button is True
+    assert key_req.buttons[utils.get_key_instance('G2_M1')].is_custom is True
+    assert key_req.buttons[utils.get_key_instance('M_4')].is_push_button is True
 
-    req_model = key_req.get_request(get_key_instance('G3_M1'))
+    req_model = key_req.get_request(utils.get_key_instance('G3_M1'))
     assert req_model.is_cycle is False
     assert req_model.is_push_button is False
     assert req_model.is_custom is False
@@ -444,7 +444,7 @@ def test_key_request_update_bios_data_and_set_req(test_config_yaml):
         return 1
 
     key_req = utils.KeyRequest(yaml_path=test_config_yaml.parent / 'F-16C_50.yaml', get_bios_fn=get_bios_fn)
-    key = get_key_instance('G3_M1')
+    key = utils.get_key_instance('G3_M1')
     req = 'MASTER_ARM_SW 1'
     assert key_req.cycle_button_ctrl_name == {'IFF_MASTER_KNB': 0}
     key_req.set_request(key, req)
@@ -472,3 +472,23 @@ def test_color(color, mode, result):
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_detect_system_color_mode():
     assert utils.detect_system_color_mode() == 'Light'
+
+
+@mark.benchmark
+@mark.parametrize('key_name, klass', [
+    ('G12_M3', 'Gkey'),
+    ('G1_M2', 'Gkey'),
+    ('TWO', 'LcdButton'),
+    ('MENU', 'LcdButton'),
+    ('M_2', 'MouseButton'),
+    ('M_12', 'MouseButton'),
+])
+def test_get_key_instance(key_name, klass):
+    assert utils.get_key_instance(key_name).__class__.__name__ == klass
+
+
+@mark.benchmark
+@mark.parametrize('key_name', ['g12_M3', 'G1_m2', 'G1/M2', 'Two', 'ok', '', 'M_a3', 'm_2', 'M3'])
+def test_get_key_instance_error(key_name):
+    with raises(AttributeError):
+        utils.get_key_instance(key_name)
