@@ -972,46 +972,6 @@ MOUSES_DEV = [G600, G300, G400, G700, G9, MX518, G402, G502, G602]
 ALL_DEV = LCD_KEYBOARDS_DEV + KEYBOARDS_DEV + HEADPHONES_DEV + MOUSES_DEV
 
 
-def _try_key_instance(klass: type[Gkey] | type[LcdButton] | type[MouseButton], method: str, key_str: str) -> AnyButton | None:
-    """
-    Attempt to invoke a method on a class with a given key string.
-
-    The method will first attempt to call the provided method with the `key_str` as a parameter.
-    If there is a TypeError (indicating the method does not support a parameter), it attempts to call
-    the method without arguments.
-    If the method is missing or the call fails due to a ValueError or AttributeError, the function returns None.
-
-    :param klass: The class type on which the method is to be invoked.
-    :param method: The name of the method to call on the class.
-    :param key_str: A string key to be passed as a parameter to the method, if supported.
-    :return: An instance of `AnyButton` from the invoked method, if successful, otherwise None.
-    """
-    try:
-        return getattr(klass, method)(key_str)
-    except TypeError:
-        return getattr(klass, method)
-    except (ValueError, AttributeError):
-        return None
-
-
-def get_key_instance(key_str: str) -> AnyButton:
-    """
-    Resolve the provided key string into an instance of a valid key class based on a predefined set of classes and their respective resolution methods.
-
-    If the key string matches a class method's criteria, it returns the resolved key instance.
-    If no match is found, an exception is raised.
-
-    :param key_str: A string representing the name or identifier of the key to be resolved into a key instance (e.g., Gkey, LcdButton, or MouseButton).
-    :return: An instance of a class (AnyButton) that corresponds to the provided key string, if successfully resolved.
-    :raises AttributeError: If the provided key string cannot be resolved into a valid key instance using the predefined classes and methods.
-    """
-    for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
-        key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
-        if key_instance:
-            return key_instance
-    raise AttributeError(f'Could not resolve "{key_str}" to a Gkey/LcdButton/MouseButton instance')
-
-
 class MsgBoxTypes(Enum):
     """Message box types."""
     INFO = 'information'
