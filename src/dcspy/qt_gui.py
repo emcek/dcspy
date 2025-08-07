@@ -28,7 +28,7 @@ from PySide6.QtGui import (QAction, QActionGroup, QColor, QColorConstants, QFont
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
                                QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
-                               QSystemTrayIcon, QTableWidget, QTabWidget, QTextEdit, QToolBar, QToolBox, QWidget)
+                               QSystemTrayIcon, QTableWidget, QTabWidget, QTextBrowser, QTextEdit, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
@@ -1802,11 +1802,17 @@ class AboutDialog(QDialog):
         self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().load_ui(':/ui/ui/about.ui', self)
         self.l_info: QLabel = self.findChild(QLabel, 'l_info')
+        self.tb_licenses: QTextBrowser = self.findChild(QTextBrowser, 'tb_licenses')
 
     def showEvent(self, event: QShowEvent) -> None:
-        """Prepare text information about DCSpy application."""
-        d = self.parent.fetch_system_data(silence=False)
+        """Prepare all information about DCSpy application."""
         super().showEvent(event)
+        self._prepare_about()
+        self._prepare_licenses()
+
+    def _prepare_about(self) -> None:
+        """Prepare text information about DCSpy."""
+        d = self.parent.fetch_system_data(silence=False)
         text = '<html><head/><body><p>'
         text += '<b>Author</b>: <a href="https://github.com/emcek">Michal Plichta</a>'
         text += f'<br><b>Project</b>: <a href="https://github.com/{DCSPY_REPO_NAME}/">{DCSPY_REPO_NAME}</a>'
@@ -1829,6 +1835,31 @@ class AboutDialog(QDialog):
         text += '</p></body></html>'
         self.l_info.setText(text)
 
+    def _prepare_licenses(self) -> None:
+        """Prepare licenses text."""
+        packages = {
+            'cffi': {'webpage': 'https://github.com/python-cffi/cffi', 'license': 'MIT'},
+            'eval-type-backport': {'webpage': 'https://github.com/alexmojaki/eval_type_backport', 'license': 'MIT'},
+            'GitPython': {'webpage': 'https://github.com/gitpython-developers/GitPython', 'license': 'BSD-3-Clause'},
+            'Lupa': {'webpage': 'https://github.com/scoder/lupa', 'license': 'MIT style'},
+            'packaging': {'webpage': 'https://github.com/pypa/packaging', 'license': 'Apache-2.0 OR BSD-2-Clause'},
+            'Pillow': {'webpage': 'https://github.com/python-pillow/Pillow', 'license': 'MIT-CMU'},
+            'psutil': {'webpage': 'https://github.com/giampaolo/psutil', 'license': 'BSD 3-Clause'},
+            'Pydantic': {'webpage': 'https://github.com/pydantic/pydantic', 'license': 'MIT'},
+            'PySide6': {'webpage': 'https://wiki.qt.io/Qt_for_Python', 'license': 'LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only'},
+            'PyYAML': {'webpage': 'https://github.com/yaml/pyyaml', 'license': 'MIT'},
+            'Requests': {'webpage': 'https://github.com/psf/requests', 'license': 'Apache-2.0'},
+            'Typing Extensions': {'webpage': 'https://github.com/python/typing_extensions', 'license': 'PSF-2.0'},
+            'FalconDED by "uri_ba"': {'webpage': 'https://fontstruct.com/fontstructions/show/1014500', 'license': 'CC BY-NC-SA 3.0'},
+        }
+        text = '<html><head/><body>'
+        text += '<p>DCSpy heavily relies on other open source software listed below.</p>'
+        for package in packages:
+            text += f'<p><b>{package}</b>'
+            text += f'<br>Web page: <a href="{packages[package]["webpage"]}">{packages[package]["webpage"]}</a>'
+            text += f'<br>License: {packages[package]["license"]}</p>'
+        text += '</body></html>'
+        self.tb_licenses.setText(text)
 
 class WorkerSignals(QObject):
     """
