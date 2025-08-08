@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import OrderedDict, Sequence
+from collections.abc import Sequence
 from enum import Enum
 from itertools import cycle
 from logging import getLogger
@@ -11,15 +11,21 @@ from tempfile import gettempdir
 from threading import Timer
 from typing import ClassVar
 
+from dcspy.sdk import led_sdk
+
 try:
+    from collections import OrderedDict
     from typing import Unpack
 except ImportError:
     from typing_extensions import Unpack
 
+    from collections import OrderedDict
+
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, CycleButton, Gkey, LcdButton, LcdInfo, LcdType,
+                          RequestModel, RequestType)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 RED_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
@@ -66,11 +72,11 @@ class BasicAircraft:
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: dict[str, BiosValue] = {}
-        self.bios_data: Dict[str, Union[str, int]] = {}
-        self.cycle_buttons: Dict[Union[LcdButton, Gkey], CycleButton] = {}
-        self.button_actions: Dict[Union[LcdButton, Gkey], str] = {}
-        self.led_stack: Dict[str, led_sdk.EffectInfo] = OrderedDict()
-        self.led_effect = load_cfg()['led_effect']
+        self.bios_data: dict[str, str | int] = {}
+        self.cycle_buttons: dict[LcdButton | Gkey, CycleButton] = {}
+        self.button_actions: dict[LcdButton | Gkey, str] = {}
+        self.led_stack: dict[str, led_sdk.EffectInfo] = OrderedDict()
+        # self.led_effect = load_cfg()['led_effect']
         self.led_counter = 16
         self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
         if self.bios_name:
@@ -128,7 +134,7 @@ class BasicAircraft:
                 LOG.debug(f'Th: {self.led_shutdown}')
                 self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
                 self.led_shutdown.start()
-                led_sdk.start_led_effect(effect=effect)
+                led_sdk.start_led_pulse(effect=effect)
                 self.led_stack[selector] = effect
             else:
                 LOG.debug(f'LED off {selector}')
