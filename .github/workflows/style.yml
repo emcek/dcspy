@@ -3,37 +3,11 @@ name: Style
 on: workflow_call
 
 jobs:
-  pycodestyle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check PyCodeStyle"
-        run: |
-          pycodestyle --statistics --count dcspy
-
-  pydocstyle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check PyDocStyle"
-        run: |
-          pydocstyle --count dcspy
-
   interrogate:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
@@ -46,46 +20,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
       - name: "Check Ruff"
         run: |
-          ruff check dcspy
+          ruff check src
 
   mypy:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
+
+      - name: "Install mkdocs-gen-files"
+        shell: bash
+        run: |
+          uv pip install -U mkdocs-gen-files
 
       - name: "Check mypy"
         run: |
           mypy .
 
       - name: "Upload mypy results"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: mypy_3_12
+          name: mypy_3_13
           path: |
             mypyhtml/*
           retention-days: 4
-
-  flake8:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v3
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check flake8"
-        run: |
-          flake8 .

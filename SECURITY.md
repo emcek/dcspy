@@ -6,10 +6,10 @@ Versions of DCSpy are currently being supported with security updates.
 
 | Version | Supported          |
 |---------|--------------------|
-| 3.0.x   | :white_check_mark: |
-| 2.3.3   | :white_check_mark: |
-| <2.2.x  | :x:                |
+| 3.7.x   | :white_check_mark: |
+| 3.6.x   | :white_check_mark: |
+| <3.5.x  | :x:                |
 
 ## Reporting a Vulnerability
 
-Use internal issues.
+Use GitHub issues and additional information [here](https://dcspy.readthedocs.io/en/latest/issue/)

@@ -1,0 +1,51 @@
+name: SonarCloud analysis
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+
+jobs:
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: "Install uv and set the Python"
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.13"
+          enable-cache: true
+          activate-environment: true
+
+      - name: "Install the project and test dependencies"
+        run: uv sync
+
+      - name: "Install MS Fonts"
+        run: |
+          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
+          sudo mkdir -p /usr/share/fonts/truetype
+          sudo mv consola.ttf /usr/share/fonts/truetype
+          fc-cache -f
+
+      - name: "Test with pytest"
+        env:
+          PYSIDE_DESIGNER_PLUGINS: .
+          PYTEST_QT_API: PySide6
+          DCSPY_NO_MSG_BOXES: 1
+        run: |
+          python -m pytest -v -m 'not e2e' --img_precision 0 --cov=dcspy --cov-report=xml --cov-branch
+
+      - name: "SonarCloud Scan"
+        uses: sonarsource/sonarcloud-github-action@v5.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

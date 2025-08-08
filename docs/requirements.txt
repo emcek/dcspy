@@ -1,0 +1,10 @@
+black
+mkdocs
+mkdocs-gen-files
+mkdocs-literate-nav
+mkdocs-material
+mkdocs-plantuml
+mkdocs-section-index
+mkdocstrings
+mkdocstrings-python
+plantuml

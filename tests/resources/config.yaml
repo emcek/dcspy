@@ -1,10 +1,13 @@
 autostart: false
 check_bios: false
 check_ver: false
+color_mode: system
 completer_items: 20
 current_plane: A-10C
 dcs: C:/Program Files/Eagle Dynamics/DCS World OpenBeta
 dcsbios: C:/Users/UNKNOWN/Saved Games/DCS.openbeta/Scripts/DCS-BIOS
+debug_font_size: 10
+device: G15v2
 f16_ded_font: true
 font_color_l: 32
 font_color_m: 22
@@ -14,10 +17,10 @@ font_mono_m: 11
 font_mono_s: 9
 font_name: consola.ttf
 git_bios: true
-git_bios_ref: master
+git_bios_ref: main
 gkeys_area: 2
 gkeys_float: false
-keyboard: G15 v2
+gui_debug: false
 save_lcd: false
 show_gui: true
 theme_color: dark-blue

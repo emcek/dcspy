@@ -10,11 +10,11 @@ on:
 
 jobs:
   coverage:
-    name: windows-latest py3.12
+    name: windows-latest py3.13
     runs-on: windows-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
@@ -23,30 +23,25 @@ jobs:
         env:
           PYSIDE_DESIGNER_PLUGINS: .
           PYTEST_QT_API: PySide6
+          DCSPY_NO_MSG_BOXES: 1
         run: |
-          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
+          python -m pytest -v -m 'not e2e' --img_precision 0 --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: "Upload pytest results"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage_3_12
+          name: coverage_3_13
           path: |
             covhtml/*
             coverage.xml
           retention-days: 4
 
-      - name: "Test Coveralls"
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
-        run: |
-          pip install coveralls
-          coveralls
+      - name: "Run Coveralls coverage"
+        uses: coverallsapp/github-action@v2
 
-      - name: "Run codacy-coverage"
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        run: |
-          pip install codacy-coverage
-          python-codacy-coverage -r coverage.xml
+      - name: "Run Codacy coverage"
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml

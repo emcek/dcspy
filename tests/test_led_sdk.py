@@ -2,11 +2,13 @@ from unittest.mock import patch
 
 from pytest import mark
 
+from dcspy.models import LedConstants
+
 
 @mark.parametrize('function, args, result', [
     ('logi_led_init', (), False),
     ('logi_led_init_with_name', ('name',), False),
-    ('logi_led_set_target_device', (1,), False),
+    ('logi_led_set_target_device', (LedConstants.LOGI_DEVICETYPE_MONOCHROME,), False),
     ('logi_led_save_current_lighting', (), False),
     ('logi_led_restore_lighting', (), False),
     ('logi_led_set_lighting', ((1, 2, 3),), False),
@@ -51,7 +53,7 @@ def test_start_led_pulse():
                 patch.object(led_sdk, 'logi_led_shutdown', return_value=True) as logi_led_shutdown:
             led_sdk.start_led_pulse(_rgb, _duration, _interval, _event)
             logi_led_init.assert_called_once()
-            logi_led_set_target_device.assert_called_once_with(3)
+            logi_led_set_target_device.assert_called_once_with(LedConstants.LOGI_DEVICETYPE_ALL)
             logi_led_pulse_lighting.assert_called_once_with(_rgb, _duration, _interval)
             logi_led_shutdown.assert_called_once()
         return True
