@@ -24,11 +24,12 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo, LcdType, RequestModel,
+                          RequestType)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
-RED_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
-YELLOW_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
+RED_PULSE = EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
+YELLOW_PULSE = EffectInfo(name='pulse', rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
 
 
@@ -71,7 +72,7 @@ class BasicAircraft:
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: dict[str, BiosValue] = {}
-        self.led_stack: dict[str, led_sdk.EffectInfo] = OrderedDict()
+        self.led_stack: dict[str, EffectInfo] = OrderedDict()
         self.led_effect = True
         self.led_counter = 16
         self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
@@ -113,7 +114,7 @@ class BasicAircraft:
         except (KeyError, ValueError):
             return default
 
-    def led_handler(self, selector: str, value: int, effect: led_sdk.EffectInfo) -> None:
+    def led_handler(self, selector: str, value: int, effect: EffectInfo) -> None:
         """
         Switch on and off LED effect for DCS-BIOS selector.
 

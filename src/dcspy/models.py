@@ -628,6 +628,13 @@ class LedConstants(Enum):
     LOGI_DEVICETYPE_ALL = 3  # LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
 
 
+class EffectInfo(BaseModel):
+    name: str
+    rgb: tuple[int, int, int]
+    duration: int
+    interval: int
+
+
 class LcdButton(Enum):
     """LCD Buttons."""
     NONE = 0x0
