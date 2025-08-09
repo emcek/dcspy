@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Sequence
 from enum import Enum
 from itertools import cycle
@@ -14,12 +15,9 @@ from typing import ClassVar
 from dcspy.sdk import led_sdk
 
 try:
-    from collections import OrderedDict
     from typing import Unpack
 except ImportError:
     from typing_extensions import Unpack
-
-    from collections import OrderedDict
 
 from PIL import Image, ImageDraw, ImageFont
 
