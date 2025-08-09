@@ -1587,7 +1587,7 @@ class DcsPyQtGui(QMainWindow):
         return result
 
     def _show_custom_msg_box(self, kind_of: QMessageBox.Icon, title: str, text: str, info_txt: str, detail_txt: str | None = None,
-                             buttons: QMessageBox.StandardButton | None = None) -> int | None:
+                             buttons: QMessageBox.StandardButton = QMessageBox.StandardButton.NoButton) -> int | None:
         """
         Show a custom message box with hidden text.
 
@@ -1595,7 +1595,7 @@ class DcsPyQtGui(QMainWindow):
         :param text: First section
         :param info_txt: Second section
         :param detail_txt: Hidden text
-        :param buttons: Tuple of buttons
+        :param buttons: Collection of standard buttons in the message box
         :return: Integer value of pushed buttons
         """
         if not NO_MSG_BOX:
