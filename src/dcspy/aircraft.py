@@ -8,7 +8,7 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from threading import Timer
+from threading import Event, Timer
 from typing import ClassVar
 
 from dcspy.sdk import led_sdk
@@ -24,8 +24,7 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, Gkey, LcdButton, LcdInfo, LcdType, RequestModel,
-                          RequestType)
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 RED_PULSE = led_sdk.EffectInfo(name='pulse', rgb=(100, 0, 0), duration=0, interval=10)
@@ -72,7 +71,6 @@ class BasicAircraft:
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: dict[str, BiosValue] = {}
-        self.button_actions: dict[LcdButton | Gkey, str] = {}
         self.led_stack: dict[str, led_sdk.EffectInfo] = OrderedDict()
         self.led_effect = True
         self.led_counter = 16
@@ -123,7 +121,7 @@ class BasicAircraft:
         :param value:
         :param effect:
         """
-        self.bios_data[selector]['value'] = value
+        self.bios_data[selector] = value
         if self.led_effect and not self.led_counter:
             if value:
                 LOG.debug(f'LED on {selector} val: {value} with {effect}')
@@ -132,7 +130,7 @@ class BasicAircraft:
                 LOG.debug(f'Th: {self.led_shutdown}')
                 self.led_shutdown = Timer(3.2, led_sdk.logi_led_shutdown)
                 self.led_shutdown.start()
-                led_sdk.start_led_pulse(effect=effect)
+                led_sdk.start_led_pulse(rgb=effect.rgb, duration=effect.duration, interval=effect.interval, event=Event())
                 self.led_stack[selector] = effect
             else:
                 LOG.debug(f'LED off {selector}')
@@ -146,7 +144,7 @@ class BasicAircraft:
         if self.led_stack:
             selector, effect = self.led_stack.popitem()
             LOG.debug(f'Replay effect for {selector}')
-            value = int(self.bios_data[selector]['value'])
+            value = int(self.bios_data[selector])
             self.led_handler(selector, value, effect)
         else:
             led_sdk.logi_led_shutdown()
