@@ -1854,10 +1854,10 @@ class AboutDialog(QDialog):
         }
         text = '<html><head/><body>'
         text += '<p>DCSpy heavily relies on other open source software listed below.</p>'
-        for package in packages:
+        for package, data in packages.items():
             text += f'<p><b>{package}</b>'
-            text += f'<br>Web page: <a href="{packages[package]["webpage"]}">{packages[package]["webpage"]}</a>'
-            text += f'<br>License: {packages[package]["license"]}</p>'
+            text += f'<br>Web page: <a href="{data["webpage"]}">{data["webpage"]}</a>'
+            text += f'<br>License: {data["license"]}</p>'
         text += '</body></html>'
         self.tb_licenses.setText(text)
 
