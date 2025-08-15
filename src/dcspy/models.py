@@ -640,10 +640,10 @@ class LedEffectType(Enum):
     def __str__(self) -> str:
         return self.value
 
-
+# todo: rename it
 class EffectInfo(BaseModel):
     type: LedEffectType
-    rgb: tuple[int, int, int]
+    rgb: tuple[int, int, int]  # todo: think of conversion 0-255 -> 0-100% where to do it?
     duration: int
     interval: int
 
@@ -919,8 +919,8 @@ class LogitechDeviceModel(BaseModel):
             f"LCD Buttons: {', '.join(map(str, self.lcd_keys))}" if self.lcd_keys else None,
             f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes" if self.no_g_modes and self.no_g_keys else None,
             f"Mouse Buttons: {self.btn_m_range[0]} to {self.btn_m_range[1]}" if all(self.btn_m_range) else None,
-            f"LED support: {self.led_type}" if self.led_type.value else None,
-            f"Comments: {self.comments}" if self.comments else None,
+            f"LED support: {self.led_type}" if self.led_type.value else None,  # todo: test this
+            f"Comments: {self.comments}" if self.comments else None,  # todo: test this
         ]
         return '\n'.join(filter(None, details))
 
@@ -962,7 +962,7 @@ G15v1 = LogitechDeviceModel(klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=
                             lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
                             led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,
                             comments='Highest RGB given is <33%, the color will be off, if >33% and <66%, the '
-                                     'brightness will be low, and when >66%, the brightness will be high')
+                                     'brightness will be low, and when >66%, the brightness will be high')  # todo: make nicer descriptions
 G15v2 = LogitechDeviceModel(klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
                             lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
                             led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,

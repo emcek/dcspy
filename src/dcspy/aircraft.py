@@ -26,6 +26,7 @@ from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwar
                           LedEffectType, LedSupport, RequestModel, RequestType)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
+# todo: to be removed
 RED_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
 YELLOW_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
@@ -70,7 +71,7 @@ class BasicAircraft:
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: dict[str, BiosValue] = {}
-        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)
+        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: do we need copy it here?
         self.led_stack: dict[str, EffectInfo] = OrderedDict()
         self.led_effect = True
         self.led_counter = 16

@@ -62,7 +62,7 @@ class DcsPyQtGui(QMainWindow):
         """
         super().__init__()
         UiLoader().load_ui(':/ui/ui/qtdcs.ui', self)
-        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)
+        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: where to keep it for simulation purpose
         self._find_children()
         self.config = cfg_dict
         if not cfg_dict:
@@ -257,14 +257,14 @@ class DcsPyQtGui(QMainWindow):
 
     def _set_led_effect(self) -> None:
         """Set LED effect."""
+        # todo: how to save it in a config file
         self.led_effect = EffectInfo(type=getattr(LedEffectType, self.combo_effect_type.currentText()),
                                      rgb=(int(self.sp_r.value()), int(self.sp_g.value()), int(self.sp_b.value())),
                                      duration=self.sp_duration.value(), interval=self.sp_interval.value())
-        # self.led.logi_led_set_lighting(rgb=(0, 100, 0))
 
     def _start_led(self):
         self.led.logi_led_init()
-        self.led.logi_led_set_target_device(LedSupport.LOGI_DEVICETYPE_RGB)
+        self.led.logi_led_set_target_device(LedSupport.LOGI_DEVICETYPE_RGB)  # todo: take from device
         LOG.debug(f'Start LED effect: {self.led_effect}')
         self.led.start_led_effect(effect=self.led_effect)
 
@@ -1775,6 +1775,7 @@ class DcsPyQtGui(QMainWindow):
         self.pb_bios_check: QPushButton = self.findChild(QPushButton, 'pb_bios_check')  # type: ignore[assignment]
         self.pb_bios_repair: QPushButton = self.findChild(QPushButton, 'pb_bios_repair')  # type: ignore[assignment]
 
+        # todo: move to correct places, change widgets types
         self.pb_stop_sim: QPushButton = self.findChild(QPushButton, 'pb_stop_sim')  # type: ignore[assignment]
         self.pb_start_sim: QPushButton = self.findChild(QPushButton, 'pb_start_sim')  # type: ignore[assignment]
         self.combo_ctrl: QComboBox = self.findChild(QComboBox, 'combo_ctrl')  # type: ignore[assignment]
