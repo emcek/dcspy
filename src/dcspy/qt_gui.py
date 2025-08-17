@@ -205,7 +205,7 @@ class DcsPyQtGui(QMainWindow):
         """Initialize of a Logitech device."""
         for logitech_dev in ALL_DEV:
             rb_device: QRadioButton = getattr(self, f'rb_{logitech_dev.klass.lower()}')
-            rb_device.toggled.connect(partial(self._select_logi_dev, logitech_dev))
+            rb_device.clicked.connect(partial(self._select_logi_dev, logitech_dev))
             rb_device.setToolTip(str(logitech_dev))
 
     def _init_menu_bar(self) -> None:
@@ -304,7 +304,7 @@ class DcsPyQtGui(QMainWindow):
                 logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
                 dev = getattr(self, logi_dev_rb_name)
                 if dev.isChecked():
-                    self._select_logi_dev(logi_dev=logitech_dev, state=True)  # generate json/bios
+                    self._select_logi_dev(logi_dev=logitech_dev)  # generate json/bios
                     self.toolBox.setCurrentIndex(LOGI_DEV_RADIO_BUTTON.get(logi_dev_rb_name, 0))
                     break
         except KeyError as err:
@@ -328,7 +328,7 @@ class DcsPyQtGui(QMainWindow):
         LOG.debug(f'Set number of results: {value}')
         self._load_table_gkeys()
 
-    def _select_logi_dev(self, logi_dev: LogitechDeviceModel, state: bool) -> None:
+    def _select_logi_dev(self, logi_dev: LogitechDeviceModel) -> None:
         """
         Triggered when a new device is selected.
 
@@ -339,25 +339,23 @@ class DcsPyQtGui(QMainWindow):
             * update dock with an image of a device
 
         :param logi_dev: Logitech device model object
-        :param state: of radio button
         """
-        if state:
-            for mode_col in range(self.device.cols):
-                self.tw_gkeys.removeColumn(mode_col)
-            for gkey_row in range(self.device.rows.total):
-                self.tw_gkeys.removeRow(gkey_row)
-            self.device = getattr(import_module('dcspy.models'), logi_dev.klass)
-            LOG.debug(f'Select: {repr(self.device)}')
-            if self.device.lcd_info.type != LcdType.NONE:
-                self._set_ded_font_and_font_sliders()
-            self._update_dock()
-            self.current_row = -1
-            self.current_col = -1
-            self._load_table_gkeys()  # generate json/bios
-            self.current_row = 0
-            self.current_col = 0
-            cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
-            self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row, col=self.current_col)
+        for mode_col in range(self.device.cols):
+            self.tw_gkeys.removeColumn(mode_col)
+        for gkey_row in range(self.device.rows.total):
+            self.tw_gkeys.removeRow(gkey_row)
+        self.device = getattr(import_module('dcspy.models'), logi_dev.klass)
+        LOG.debug(f'Select: {repr(self.device)}')
+        if self.device.lcd_info.type != LcdType.NONE:
+            self._set_ded_font_and_font_sliders()
+        self._update_dock()
+        self.current_row = -1
+        self.current_col = -1
+        self._load_table_gkeys()  # generate json/bios
+        self.current_row = 0
+        self.current_col = 0
+        cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
+        self._cell_ctrl_content_changed(text=cell_combo.currentText(), widget=cell_combo, row=self.current_row, col=self.current_col)
 
     def _set_ded_font_and_font_sliders(self) -> None:
         """Enable the DED font checkbox and updates font sliders."""
