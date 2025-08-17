@@ -62,7 +62,7 @@ class DcsPyQtGui(QMainWindow):
         """
         super().__init__()
         UiLoader().load_ui(':/ui/ui/qtdcs.ui', self)
-        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: where to keep it for simulation purpose
+        self.led = LedSdkManager(name='DCSpy', target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: where to keep it for simulation purpose
         self._find_children()
         self.config = cfg_dict
         if not cfg_dict:
