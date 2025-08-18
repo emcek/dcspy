@@ -10,7 +10,7 @@ jobs:
         nuitka_type: [ setup, portable ]
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
