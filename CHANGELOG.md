@@ -1,3 +1,8 @@
+## 3.7.1
+* Update About dialog
+* Internal:
+  * Use Windows 2025 Server as CI host
+
 ## 3.7.0
 * Add Dark Mode #479 @emcek
 * Use setup to install dcspy #500 @emcek
