@@ -22,16 +22,16 @@ jobs:
 
   github:
     needs: [ nuitka, wheel ]
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
       - name: "Download dcspy binaries"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           merge-multiple: true
           pattern: |
@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: "Download dcspy binaries"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: dcspy_wheel
 

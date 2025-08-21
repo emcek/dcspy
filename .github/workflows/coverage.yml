@@ -10,11 +10,11 @@ on:
 
 jobs:
   coverage:
-    name: windows-latest py3.13
-    runs-on: windows-latest
+    name: windows-2025 py3.13
+    runs-on: windows-2025
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
