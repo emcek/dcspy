@@ -12,6 +12,8 @@ from tempfile import gettempdir
 from threading import Timer
 from typing import ClassVar
 
+from PIL import Image, ImageDraw, ImageFont
+
 from dcspy import default_yaml, load_yaml, models, utils
 from dcspy.sdk.led_sdk import LedSdkManager
 
@@ -20,7 +22,6 @@ try:
 except ImportError:
     from typing_extensions import Unpack
 
-from PIL import Image, ImageDraw, ImageFont
 
 # todo: to be removed
 RED_PULSE = models.EffectInfo(type=models.LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
