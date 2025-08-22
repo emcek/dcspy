@@ -12,6 +12,7 @@ from tempfile import gettempdir
 from threading import Timer
 from typing import ClassVar
 
+from dcspy import default_yaml, load_yaml, models, utils
 from dcspy.sdk.led_sdk import LedSdkManager
 
 try:
@@ -21,14 +22,9 @@ except ImportError:
 
 from PIL import Image, ImageDraw, ImageFont
 
-from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo, LcdType,
-                          LedEffectType, LedSupport, RequestModel, RequestType)
-from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
-
 # todo: to be removed
-RED_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
-YELLOW_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 100, 0), duration=0, interval=10)
+RED_PULSE = models.EffectInfo(type=models.LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
+YELLOW_PULSE = models.EffectInfo(type=models.LedEffectType.PULSE, rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
 
 
@@ -62,7 +58,7 @@ class BasicAircraft:
     """Basic Aircraft."""
     bios_name: str = ''
 
-    def __init__(self, lcd_type: LcdInfo) -> None:
+    def __init__(self, lcd_type: models.LcdInfo) -> None:
         """
         Create basic aircraft.
 
@@ -70,17 +66,17 @@ class BasicAircraft:
         """
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
-        self.bios_data: dict[str, BiosValue] = {}
-        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: do we need copy it here?
-        self.led_stack: dict[str, EffectInfo] = OrderedDict()
+        self.bios_data: dict[str, models.BiosValue] = {}
+        self.led = LedSdkManager(target_dev=models.LedSupport.LOGI_DEVICETYPE_RGB)  # todo: do we need copy it here?
+        self.led_stack: dict[str, models.EffectInfo] = OrderedDict()
         self.led_effect = True
         self.led_counter = 16
         self.led_shutdown = Timer(3.2, self.led.logi_led_shutdown)
         if self.bios_name:
-            self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
+            self.key_req = utils.KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
             self.bios_data.update(self.key_req.cycle_button_ctrl_name)
 
-    def button_request(self, button: AnyButton) -> RequestModel:
+    def button_request(self, button: models.AnyButton) -> models.RequestModel:
         """
         Prepare DCS-BIOS request for pressed button for specific aircraft.
 
@@ -92,7 +88,7 @@ class BasicAircraft:
         LOG.debug(f'Request: {request}')
         return request
 
-    def set_bios(self, selector: str, value: BiosValue) -> None:
+    def set_bios(self, selector: str, value: models.BiosValue) -> None:
         """
         Set value for DCS-BIOS selector.
 
@@ -102,7 +98,7 @@ class BasicAircraft:
         self.bios_data[selector] = value
         LOG.debug(f'{type(self).__name__} {selector} value: "{value}" ({type(value).__name__})')
 
-    def get_bios(self, selector: str, default: BiosValue = '') -> BiosValue:
+    def get_bios(self, selector: str, default: models.BiosValue = '') -> models.BiosValue:
         """
         Get value for DCS-BIOS selector.
 
@@ -114,7 +110,7 @@ class BasicAircraft:
         except (KeyError, ValueError):
             return default
 
-    def led_handler(self, selector: str, value: int, effect: EffectInfo) -> None:
+    def led_handler(self, selector: str, value: int, effect: models.EffectInfo) -> None:
         """
         Switch on and off LED effect for DCS-BIOS selector.
 
@@ -156,7 +152,7 @@ class BasicAircraft:
 
 class AdvancedAircraft(BasicAircraft):
     """Advanced Aircraft."""
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create advanced aircraft.
 
@@ -166,9 +162,9 @@ class AdvancedAircraft(BasicAircraft):
         self.update_display = kwargs.get('update_display', None)
         if self.update_display:
             self.bios_data.update(kwargs.get('bios_data', {}))
-        self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
+        self._debug_img = cycle([f'{x:03}' for x in range(models.NO_OF_LCD_SCREENSHOTS)])
 
-    def set_bios(self, selector: str, value: BiosValue) -> None:
+    def set_bios(self, selector: str, value: models.BiosValue) -> None:
         """
         Set a value for DCS-BIOS selector and update LCD with an image.
 
@@ -206,7 +202,7 @@ class FA18Chornet(AdvancedAircraft):
     """F/A-18C Hornet."""
     bios_name: str = 'FA-18C_hornet'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create F/A-18C Hornet.
 
@@ -275,7 +271,7 @@ class FA18Chornet(AdvancedAircraft):
         draw = self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
         draw.text(xy=(72, 100), text=str(self.get_bios('IFEI_FUEL_DOWN')), fill=self.lcd.foreground, font=self.lcd.font_l)
 
-    def set_bios(self, selector: str, value: BiosValue) -> None:
+    def set_bios(self, selector: str, value: models.BiosValue) -> None:
         """
         Set new data.
 
@@ -314,7 +310,7 @@ class F16C50(AdvancedAircraft):
         (r'(\s[\s|×])CKPT BLNK([×|\s]\s+)', r'\1ckpt blnk\2')
     )
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create F-16C Viper.
 
@@ -324,7 +320,7 @@ class F16C50(AdvancedAircraft):
         super().__init__(lcd_type=lcd_type, **kwargs)
         self.font = self.lcd.font_s
         self.ded_font = self.cfg.get('f16_ded_font', True)
-        if self.ded_font and self.lcd.type == LcdType.COLOR:
+        if self.ded_font and self.lcd.type == models.LcdType.COLOR:
             self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
@@ -346,7 +342,7 @@ class F16C50(AdvancedAircraft):
         """Prepare image for F-16C Viper for Color LCD."""
         self._draw_common_data(draw=ImageDraw.Draw(img), separation=24)
 
-    def set_bios(self, selector: str, value: BiosValue) -> None:
+    def set_bios(self, selector: str, value: models.BiosValue) -> None:
         """
         Catch BIOS changes and remove garbage characters and replace with correct ones.
 
@@ -366,12 +362,12 @@ class F16C50(AdvancedAircraft):
         :param value: The string value to be cleaned and replaced.
         :return: The cleaned and replaced string value.
         """
-        value = replace_symbols(value, self.COMMON_SYMBOLS_TO_REPLACE)
+        value = utils.replace_symbols(value, self.COMMON_SYMBOLS_TO_REPLACE)
         if value and value[-1] == '@':
             value = value.replace('@', '')  # List - 6
-        if self.lcd.type == LcdType.MONO:
+        if self.lcd.type == models.LcdType.MONO:
             value = self._replace_symbols_for_mono_lcd(value)
-        elif self.ded_font and self.lcd.type == LcdType.COLOR:
+        elif self.ded_font and self.lcd.type == models.LcdType.COLOR:
             value = self._replace_symbols_for_color_lcd(value)
         return value
 
@@ -382,7 +378,7 @@ class F16C50(AdvancedAircraft):
         :param value: The input string that needs to be modified.
         :return: The modified string after replacing symbols based on the MONO_SYMBOLS_TO_REPLACE dictionary.
         """
-        return replace_symbols(value, self.MONO_SYMBOLS_TO_REPLACE)
+        return utils.replace_symbols(value, self.MONO_SYMBOLS_TO_REPLACE)
 
     def _replace_symbols_for_color_lcd(self, value: str) -> str:
         """
@@ -391,8 +387,8 @@ class F16C50(AdvancedAircraft):
         :param value: The input string value.
         :return: The modified string with replaced symbols.
         """
-        value = replace_symbols(value, self.COLOR_SYMBOLS_TO_REPLACE)
-        value = substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
+        value = utils.replace_symbols(value, self.COLOR_SYMBOLS_TO_REPLACE)
+        value = utils.substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
         return value
 
 
@@ -408,7 +404,7 @@ class F4E45MC(AdvancedAircraft):
         5: 'Guard ADF',
     }
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create F-4E Phantom II.
 
@@ -457,7 +453,7 @@ class F15ESE(AdvancedAircraft):
     """F-15ESE Eagle."""
     bios_name: str = 'F-15ESE'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create F-15ESE Egle.
 
@@ -485,14 +481,14 @@ class F15ESE(AdvancedAircraft):
             draw.text(xy=(0, offset),
                       text=str(self.get_bios(f'F_UFC_LINE{i}_DISPLAY')),
                       fill=self.lcd.foreground,
-                      font=ImageFont.truetype(DEFAULT_FONT_NAME, 29))
+                      font=ImageFont.truetype(models.DEFAULT_FONT_NAME, 29))
 
 
 class Ka50(AdvancedAircraft):
     """Ka-50 Black Shark."""
     bios_name: str = 'Ka-50'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create Ka-50 Black Shark.
 
@@ -589,7 +585,7 @@ class Mi8MT(AdvancedAircraft):
     """Mi-8MTV2 Magnificent Eight."""
     bios_name: str = 'Mi-8MT'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create Mi-8MTV2 Magnificent Eight.
 
@@ -653,7 +649,7 @@ class Mi24P(AdvancedAircraft):
     """Mi-24P Hind."""
     bios_name: str = 'Mi-24P'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create Mi-24P Hind.
 
@@ -730,7 +726,7 @@ class AH64DBLKII(AdvancedAircraft):
     """AH-64D Apache."""
     bios_name: str = 'AH-64D_BLK_II'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create AH-64D Apache.
 
@@ -833,7 +829,7 @@ class AH64DBLKII(AdvancedAircraft):
                 draw.text(xy=(x_cord, y_cord), text=f'{mat.group(1):<9}{mat.group(2):>7}',
                           fill=self.lcd.foreground, font=font)
 
-    def set_bios(self, selector: str, value: BiosValue) -> None:
+    def set_bios(self, selector: str, value: models.BiosValue) -> None:
         """
         Set new data.
 
@@ -853,27 +849,27 @@ class AH64DBLKII(AdvancedAircraft):
             value = str(value).replace('!', '\u2192')  # replace ! with ->
         super().set_bios(selector, value)
 
-    def button_request(self, button: AnyButton) -> RequestModel:
+    def button_request(self, button: models.AnyButton) -> models.RequestModel:
         """
         Prepare AH-64D Apache specific DCS-BIOS request for button pressed.
 
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
         """
-        wca_or_idm = f'PLT_EUFD_WCA {RequestType.CUSTOM.value} PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
+        wca_or_idm = f'PLT_EUFD_WCA {models.RequestType.CUSTOM.value} PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
         if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = f'PLT_EUFD_IDM {RequestType.CUSTOM.value} PLT_EUFD_IDM 0|PLT_EUFD_IDM 1|'
+            wca_or_idm = f'PLT_EUFD_IDM {models.RequestType.CUSTOM.value} PLT_EUFD_IDM 0|PLT_EUFD_IDM 1|'
 
-        if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
+        if button in (models.LcdButton.FOUR, models.LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
-        elif button in (LcdButton.FOUR, LcdButton.UP) and self.mode != ApacheEufdMode.IDM:
+        elif button in (models.LcdButton.FOUR, models.LcdButton.UP) and self.mode != ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.IDM
 
-        if button in (LcdButton.ONE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
+        if button in (models.LcdButton.ONE, models.LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
 
-        self.key_req.set_request(LcdButton.ONE, wca_or_idm)
-        self.key_req.set_request(LcdButton.LEFT, wca_or_idm)
+        self.key_req.set_request(models.LcdButton.ONE, wca_or_idm)
+        self.key_req.set_request(models.LcdButton.LEFT, wca_or_idm)
         return super().button_request(button)
 
 
@@ -881,7 +877,7 @@ class A10C(AdvancedAircraft):
     """A-10C Warthog."""
     bios_name: str = 'A-10C'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create A-10C Warthog or A-10C II Tank Killer.
 
@@ -1022,7 +1018,7 @@ class AV8BNA(AdvancedAircraft):
     """AV-8B Night Attack."""
     bios_name: str = 'AV8BNA'
 
-    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+    def __init__(self, lcd_type: models.LcdInfo, **kwargs: Unpack[models.AircraftKwargs]) -> None:
         """
         Create AV-8B Night Attack.
 
@@ -1077,7 +1073,7 @@ class AV8BNA(AdvancedAircraft):
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
 
 
-def draw_autopilot_channels(lcd: LcdInfo,
+def draw_autopilot_channels(lcd: models.LcdInfo,
                             ap_channel: str,
                             c_rect: tuple[float, float, float, float],
                             c_text: tuple[float, float],
