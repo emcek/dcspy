@@ -2,13 +2,13 @@ from unittest.mock import patch
 
 from pytest import mark
 
-from dcspy.models import LedConstants
+from dcspy.models import EffectInfo, LedEffectType, LedSupport
 
 
 @mark.parametrize('function, args, result', [
     ('logi_led_init', (), False),
     ('logi_led_init_with_name', ('name',), False),
-    ('logi_led_set_target_device', (LedConstants.LOGI_DEVICETYPE_MONOCHROME,), False),
+    ('logi_led_set_target_device', (LedSupport.LOGI_DEVICETYPE_MONOCHROME,), False),
     ('logi_led_save_current_lighting', (), False),
     ('logi_led_restore_lighting', (), False),
     ('logi_led_set_lighting', ((1, 2, 3),), False),
@@ -28,38 +28,28 @@ from dcspy.models import LedConstants
     'stop effects',
     'shutdown'])
 def test_all_failure_cases(function, args, result):
-    from dcspy.sdk import led_sdk
-    led_sdk.LED_DLL = None
+    from dcspy.sdk.led_sdk import LedSdkManager
+
+    led_sdk = LedSdkManager('test')
+    led_sdk.led_dll = None
     assert getattr(led_sdk, function)(*args) is result
 
 
-@mark.slow
-def test_start_led_pulse():
-    from concurrent.futures import ThreadPoolExecutor
-    from threading import Event
-    from time import sleep
+def test_start_led_effect_pulse():
+    from dcspy.sdk.led_sdk import LedSdkManager
 
-    from dcspy.sdk import led_sdk
+    led_sdk = LedSdkManager('test')
+    effect, rgb, duration, interval = LedEffectType.PULSE, (100, 0, 0), 1, 1
 
-    rgb = (100, 0, 0)
-    duration = 1
-    interval = 1
-    event = Event()
+    with patch.object(led_sdk, 'logi_led_pulse_lighting', return_value=True) as logi_led_pulse_lighting:
+        led_sdk.start_led_effect(effect=EffectInfo(type=effect, rgb=rgb, duration=duration, interval=interval))
+        logi_led_pulse_lighting.assert_called_once_with(rgb=rgb, duration=duration, interval=interval)
 
-    def pulse_led(_rgb, _duration, _interval, _event):
-        with patch.object(led_sdk, 'logi_led_init', return_value=True) as logi_led_init, \
-                patch.object(led_sdk, 'logi_led_set_target_device', return_value=True) as logi_led_set_target_device, \
-                patch.object(led_sdk, 'logi_led_pulse_lighting', return_value=True) as logi_led_pulse_lighting, \
-                patch.object(led_sdk, 'logi_led_shutdown', return_value=True) as logi_led_shutdown:
-            led_sdk.start_led_pulse(_rgb, _duration, _interval, _event)
-            logi_led_init.assert_called_once()
-            logi_led_set_target_device.assert_called_once_with(LedConstants.LOGI_DEVICETYPE_ALL)
-            logi_led_pulse_lighting.assert_called_once_with(_rgb, _duration, _interval)
-            logi_led_shutdown.assert_called_once()
-        return True
+def test_start_led_effect_flash():
+    from dcspy.sdk.led_sdk import LedSdkManager
 
-    with ThreadPoolExecutor() as executor:
-        future = executor.submit(pulse_led, rgb, duration, interval, event)
-        sleep(1.3)
-        event.set()
-        assert future.result()
+    led_sdk = LedSdkManager('test')
+    effect, rgb, duration, interval = LedEffectType.FLASH, (0, 0, 100), 2, 2
+    with patch.object(led_sdk, 'logi_led_flash_lighting', return_value=True) as logi_led_flash_lighting:
+        led_sdk.start_led_effect(effect=EffectInfo(type=effect, rgb=rgb, duration=duration, interval=interval))
+        logi_led_flash_lighting.assert_called_once_with(rgb=rgb, duration=duration, interval=interval)
