@@ -4,7 +4,7 @@ mkdocs-gen-files
 mkdocs-literate-nav
 mkdocs-material
 mkdocs-plantuml
-mkdocs-section-index==0.3.9
+mkdocs-section-index
 mkdocstrings==0.27.0
 mkdocstrings-python==1.13.0
 plantuml
