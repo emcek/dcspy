@@ -75,8 +75,10 @@ plugins:
             - https://docs.python.org/3/objects.inv
           paths: [ src ]
           options:
+            docstring_options:
+              ignore_init_summary: true
             docstring_section_style: table
-            docstring_style: sphinx
+            docstring_style: google
             filters: [ "!^_" ]
             heading_level: 1
             inherited_members: true
