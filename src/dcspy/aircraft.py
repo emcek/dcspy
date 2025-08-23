@@ -18,7 +18,7 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, LcdType, RequestModel, RequestType
+from dcspy.models import DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, LcdButton, LcdInfo, RequestModel, RequestType
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -317,7 +317,7 @@ class F16C50(AdvancedAircraft):
         value = replace_symbols(value, self.COMMON_SYMBOLS_TO_REPLACE)
         if value and value[-1] == '@':
             value = value.replace('@', '')  # List - 6
-        if self.font.font.family == 'FalconDED':
+        if self.font.font.family == 'FalconDED':  # type: ignore[union-attr]
             value = self._replace_symbols_for_color_lcd(value)
         else:
             value = self._replace_symbols_for_mono_lcd(value)
