@@ -18,7 +18,7 @@ uv tool update dcspy
 uv tool uninstall dcspy
 ```
 
-2. Follow installation [procedure](install.md#single-file-download-new-way).
+2. Follow installation [procedure](install.md#windows-setup-installer-basic-way).
 
 # DCS-BIOS
 If you have enable `Auto check DCS-BIOS` you do not need any manual steps. Every time you start DCSpy, DCS-BIOS will be checked and updated for you.

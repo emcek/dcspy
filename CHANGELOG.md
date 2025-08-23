@@ -1,5 +1,6 @@
 ## 3.7.1
 * Update About dialog
+* Fix external documentation
 * Internal:
   * Use Windows 2025 Server as CI host
 
