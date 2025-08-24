@@ -333,9 +333,9 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     img = aircraft_model.prepare_image()
     ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
     # if 'f4e' in model:
-    #     img.save(ref_file_base_path / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    #     img.save(ref_file_base_path / f'{ref_file_base_path}_{model}_{lcd}.png')
     # else:
-    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}.png', precision=img_precision)
 
 
 @mark.benchmark
@@ -345,8 +345,8 @@ def test_prepare_image_for_viper_color_non_ded(resources, img_precision, request
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
-    # img.save(ref_file_base_path / f'{ref_file_base_path}_f16c50_color_non_ded_{type(aircraft_model).__name__}.png')
-    assert compare_images(img=img, file_path=ref_file_base_path / f'f16c50_color_non_ded_{type(aircraft_model).__name__}.png', precision=img_precision)
+    # img.save(ref_file_base_path / f'{ref_file_base_path}_f16c50_color_non_ded.png')
+    assert compare_images(img=img, file_path=ref_file_base_path / f'f16c50_color_non_ded.png', precision=img_precision)
 
 
 @mark.benchmark
