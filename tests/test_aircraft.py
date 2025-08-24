@@ -244,8 +244,7 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     'TREE - Phantom Mono',
     'FOUR - Phantom Mono',
     'MENU - Phantom Color',
-    'OK - Phantom Color',
-])
+    'OK - Phantom Color'])
 def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request):
     plane = request.getfixturevalue(plane)
     generated_out = []
@@ -334,9 +333,20 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     img = aircraft_model.prepare_image()
     ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
     # if 'f4e' in model:
-    #     img.save(ref_file_base_path / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    #     img.save(ref_file_base_path / f'{ref_file_base_path}_{model}_{lcd}.png')
     # else:
-    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}.png', precision=img_precision)
+
+
+@mark.benchmark
+def test_prepare_image_for_viper_color_non_ded(resources, img_precision, request):
+    aircraft_model = request.getfixturevalue('f16c50_color_non_ded')
+    bios_pairs = request.getfixturevalue('f16c50_color_bios')
+    set_bios_during_test(aircraft_model, bios_pairs)
+    img = aircraft_model.prepare_image()
+    ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
+    # img.save(ref_file_base_path / f'{ref_file_base_path}_f16c50_color_non_ded.png')
+    assert compare_images(img=img, file_path=ref_file_base_path / f'f16c50_color_non_ded.png', precision=img_precision)
 
 
 @mark.benchmark

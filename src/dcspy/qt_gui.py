@@ -1293,7 +1293,9 @@ class DcsPyQtGui(QMainWindow):
             if not rb_key.isChecked():
                 rb_key.setEnabled(False)
         if self.device.lcd_info.type != LcdType.NONE:
-            fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
+            ded_font = True if self.cb_ded_font.isChecked() and self.device.lcd_info.type == LcdType.COLOR else False
+            fonts_cfg = FontsConfig(name=self.le_font_name.text(), ded_font=ded_font,
+                                    **getattr(self, f'{self.device.lcd_name}_font'))
             self.device.lcd_info.set_fonts(fonts_cfg)
         self.event: Event = Event()
         app_params = {'model': self.device, 'event': self.event}

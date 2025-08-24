@@ -55,7 +55,7 @@ def test_run_dcs_with_bios_data(resources):
     from tests.helpers import send_bios_data
 
     event = Event()
-    fonts_cfg = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+    fonts_cfg = FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False)
     G13.lcd_info.set_fonts(fonts_cfg)
     app_thread = Thread(target=DCSpyStarter(model=G13, event=event))
     app_thread.name = 'dcspy-test-app'
