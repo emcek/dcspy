@@ -15,8 +15,8 @@ from typing import ClassVar
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo,
-                          LedEffectType, LedSupport, RequestModel, RequestType)
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo, LedEffectType,
+                          LedSupport, RequestModel, RequestType)
 from dcspy.sdk.led_sdk import LedSdkManager
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
