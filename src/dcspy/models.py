@@ -759,6 +759,7 @@ class LcdInfo(BaseModel):
         self.font_xs = ImageFont.truetype(fonts.name, fonts.small)
         self.font_s = ImageFont.truetype(fonts.name, fonts.medium)
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
+        self.font_ded = None
         if fonts.ded_font:
             path_falcon_ded = Path(__file__) / '..' / 'resources' / 'falconded.ttf'
             self.font_ded = ImageFont.truetype(str(path_falcon_ded.resolve()), 25)
