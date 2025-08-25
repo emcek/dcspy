@@ -15,18 +15,10 @@ from dcspy.models import LedConstants
     ('logi_led_flash_lighting', ((1, 2, 3), 1, 1), False),
     ('logi_led_pulse_lighting', ((1, 2, 3), 1, 1), False),
     ('logi_led_stop_effects', (), False),
-    ('logi_led_shutdown', (), None)
-], ids=[
-    'init',
-    'init with name',
-    'set target device',
-    'save current lighting',
-    'restore lighting',
-    'set lighting',
-    'flash lighting',
-    'pulse lighting',
-    'stop effects',
-    'shutdown'])
+    ('logi_led_shutdown', (), None),
+], ids=['init', 'init with name', 'set target device', 'save current lighting', 'restore lighting',
+        'set lighting', 'flash lighting', 'pulse lighting', 'stop effects', 'shutdown',
+])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import led_sdk
     led_sdk.LED_DLL = None

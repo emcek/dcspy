@@ -227,24 +227,11 @@ def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
     ('f4e45mc_mono', 'PLT_ARC_164_AUX_CHANNEL', LcdButton.FOUR, ((1, 20), (18, 0, -1), (0, 2))),
     ('f4e45mc_color', 'PLT_ARC_164_MODE', LcdButton.MENU, ((3, 6), (4, 0, -1), (0, 4))),
     ('f4e45mc_color', 'PLT_ARC_164_FREQ_MODE', LcdButton.OK, ((1, 2), (0, 2))),
-], ids=[
-    'ONE - Viper Mono',
-    'TWO - Viper Mono',
-    'THREE - Viper Mono',
-    'FOUR - Viper Mono',
-    'LEFT - Viper Color',
-    'RIGHT - Viper Color',
-    'DOWN - Viper Color',
-    'UP - Viper Color',
-    'OK - Hornet Color',
-    'MENU - Hornet Color',
-    'CANCEL - Hornet Color',
-    'ONE - Phantom Mono',
-    'TWO - Phantom Mono',
-    'TREE - Phantom Mono',
-    'FOUR - Phantom Mono',
-    'MENU - Phantom Color',
-    'OK - Phantom Color'])
+], ids=['ONE - Viper Mono', 'TWO - Viper Mono', 'THREE - Viper Mono', 'FOUR - Viper Mono', 'LEFT - Viper Color',
+        'RIGHT - Viper Color', 'DOWN - Viper Color', 'UP - Viper Color', 'OK - Hornet Color',
+        'MENU - Hornet Color', 'CANCEL - Hornet Color', 'ONE - Phantom Mono', 'TWO - Phantom Mono',
+        'TREE - Phantom Mono', 'FOUR - Phantom Mono', 'MENU - Phantom Color', 'OK - Phantom Color',
+])
 def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request):
     plane = request.getfixturevalue(plane)
     generated_out = []
@@ -301,7 +288,8 @@ def test_get_next_value_for_cycle_buttons(plane, ctrl_name, btn, ranges, request
         'viper mono 1', 'viper mono 2', 'viper mono 3', 'viper mono 4', 'viper mono 5', 'viper mono 6', 'viper mono 7',
         'viper mono 8', 'viper mono 9', 'viper mono 10', 'viper color 1', 'viper color 2', 'viper color 3',
         'viper color 4', 'viper color 5', 'viper color 6', 'viper color 7', 'viper color 8', 'viper color 9',
-        'apache mono 1', 'apache mono 2', 'apache mono 3', 'apache color 1', 'apache color 2', 'apache color 3'])
+        'apache mono 1', 'apache mono 2', 'apache mono 3', 'apache color 1', 'apache color 2', 'apache color 3',
+])
 def test_set_bios_for_airplane(plane, bios_pairs, result, request):
     plane = request.getfixturevalue(plane)
     set_bios_during_test(plane, bios_pairs)
