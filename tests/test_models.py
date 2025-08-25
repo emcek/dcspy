@@ -384,7 +384,7 @@ def test_get_sha_of_system_data():
     (('A-10C', 'ADI_PITCH_TRIM'), 'rb_cycle', '', 'ADI_PITCH_TRIM CYCLE 3200 65535'),
     (('A-10C', 'AAP_CDUPWR'), 'rb_custom', 'AAP_CDUPWR 1|AAP_CDUPWR 0', 'AAP_CDUPWR CUSTOM AAP_CDUPWR 1|AAP_CDUPWR 0'),
     (('A-10C', 'AAP_CDUPWR'), 'rb_push_button', '', 'AAP_CDUPWR PUSH_BUTTON'),
-], ds=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 1 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +',
+], ids=['AAP_PAGE INC', 'AAP_PAGE DEC', 'AAP_PAGE CYCLE 1 3', 'AAP_CDUPWR TOGGLE', 'ARC210_CHN_KNB +',
        'ARC210_CHN_KNB -', 'ADI_PITCH_TRIM 3200 65535', 'AAP_CDUPWR CUSTOM 1 0', 'AAP_CDUPWR PUSH_BUTTON',
 ], indirect=['get_ctrl_for_plane'])
 def test_plane_input_request_from_control_key(get_ctrl_for_plane, rb_iface, custom_value, req):
