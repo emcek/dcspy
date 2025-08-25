@@ -1,3 +1,4 @@
+from copy import copy
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -66,8 +67,9 @@ for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15
         globals()[name] = generate_plane_fixtures(plane=airplane, lcd_info=lcd, fonts=lcd_font)
 
 
-_viper = getattr(aircraft, 'F16C50')
-globals()['f16c50_color_non_ded'] = generate_plane_fixtures(plane=_viper, lcd_info=models.LcdColor, fonts=models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=False))
+globals()['f16c50_color_non_ded'] = generate_plane_fixtures(plane=getattr(aircraft, 'F16C50'),
+                                                            lcd_info=copy(models.LcdColor),
+                                                            fonts=models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=False))
 
 
 for keyboard_model in models.LCD_KEYBOARDS_DEV:
