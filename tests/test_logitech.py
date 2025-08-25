@@ -37,13 +37,9 @@ def test_keyboard_base_basic_check(keyboard_base):
     ('keyboard_color', False, [False] * 8, LcdButton.NONE,
      [call(LcdButton.LEFT), call(LcdButton.RIGHT), call(LcdButton.OK), call(LcdButton.CANCEL), call(LcdButton.UP), call(LcdButton.DOWN),  call(LcdButton.MENU)],
      False),
-], ids=[
-    'Mono 4 Button',
-    'Color Up Button',
-    'Mono None already_pressed',
-    'Color None already_pressed',
-    'Mono None Button',
-    'Color None Button'])
+], ids=['Mono 4 Button', 'Color Up Button', 'Mono None already_pressed',
+        'Color None already_pressed', 'Mono None Button', 'Color None Button',
+])
 def test_keyboard_check_buttons(keyboard, pressed1, effect, chk_btn, calls, pressed2, request):
     from dcspy.logitech import LogitechDevice
     from dcspy.sdk.lcd_sdk import LcdSdkManager
@@ -104,26 +100,10 @@ def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, cal
     ('A-10A', '', 'A10A', ['Detected aircraft:', 'A-10A', 'Not supported yet!'], False),
     ('F-117_Nighthawk', '', 'F117Nighthawk', ['Detected aircraft:', 'F-117_Nighthawk', 'Not supported yet!'], False),
     ('', '', '', [], False),
-], ids=[
-    'FA-18 Hornet',
-    'F-16C Viper',
-    'F-4E Phantom II',
-    'Ka-50 Black Shark II',
-    'Ka-50 Black Shark III',
-    'Mi-8MT Hip',
-    'Mi-24P Hind',
-    'AH-64D Apache',
-    'A-10C Warthog',
-    'A-10C II Tank Killer',
-    'F-14A',
-    'F-14B',
-    'AV-8B N/A Harrier',
-    'F-15ESE Eagle',
-    'SpitfireLFMkIX',
-    'F-22A',
-    'A-10A',
-    'F-117 Nighthawk',
-    'Empty'])
+], ids=['FA-18 Hornet', 'F-16C Viper', 'F-4E Phantom II', 'Ka-50 Black Shark II', 'Ka-50 Black Shark III',
+        'Mi-8MT Hip', 'Mi-24P Hind', 'AH-64D Apache', 'A-10C Warthog', 'A-10C II Tank Killer', 'F-14A', 'F-14B',
+        'AV-8B N/A Harrier', 'F-15ESE Eagle', 'SpitfireLFMkIX', 'F-22A', 'A-10A', 'F-117 Nighthawk', 'Empty',
+])
 def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, text, detect, keyboard_mono):
     with patch('dcspy.logitech.get_planes_list', return_value=['SpitfireLFMkIX', 'F-22A']):
         keyboard_mono.detecting_plane(plane_str)

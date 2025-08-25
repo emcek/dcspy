@@ -15,7 +15,7 @@ from typing import ClassVar
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo, LcdType,
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo,
                           LedEffectType, LedSupport, RequestModel, RequestType)
 from dcspy.sdk.led_sdk import LedSdkManager
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
@@ -24,6 +24,7 @@ try:
     from typing import Unpack
 except ImportError:
     from typing_extensions import Unpack
+
 
 # todo: to be removed
 RED_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
@@ -321,10 +322,7 @@ class F16C50(AdvancedAircraft):
         """
         kwargs['bios_data'] = {f'DED_LINE_{i}': '' for i in range(1, 6)}
         super().__init__(lcd_type=lcd_type, **kwargs)
-        self.font = self.lcd.font_s
-        self.ded_font = self.cfg.get('f16_ded_font', True)
-        if self.ded_font and self.lcd.type == LcdType.COLOR:
-            self.font = ImageFont.truetype(str((Path(__file__) / '..' / 'resources' / 'falconded.ttf').resolve()), 25)
+        self.font = self.lcd.font_s if not self.lcd.font_ded else self.lcd.font_ded
 
     def _draw_common_data(self, draw: ImageDraw.ImageDraw, separation: int) -> None:
         """
@@ -368,10 +366,10 @@ class F16C50(AdvancedAircraft):
         value = replace_symbols(value, self.COMMON_SYMBOLS_TO_REPLACE)
         if value and value[-1] == '@':
             value = value.replace('@', '')  # List - 6
-        if self.lcd.type == LcdType.MONO:
-            value = self._replace_symbols_for_mono_lcd(value)
-        elif self.ded_font and self.lcd.type == LcdType.COLOR:
+        if self.font.font.family == 'FalconDED':  # type: ignore[union-attr]
             value = self._replace_symbols_for_color_lcd(value)
+        else:
+            value = self._replace_symbols_for_mono_lcd(value)
         return value
 
     def _replace_symbols_for_mono_lcd(self, value: str) -> str:

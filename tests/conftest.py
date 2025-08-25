@@ -1,3 +1,4 @@
+from copy import copy
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -59,17 +60,23 @@ for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
         if lcd.type == models.LcdType.COLOR:
-            lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+            lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=True)
         else:
-            lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+            lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False)
         name = f'{airplane.__name__.lower()}_{lcd.type.name.lower()}'
         globals()[name] = generate_plane_fixtures(plane=airplane, lcd_info=lcd, fonts=lcd_font)
 
+
+globals()['f16c50_color_non_ded'] = generate_plane_fixtures(plane=getattr(aircraft, 'F16C50'),
+                                                            lcd_info=copy(models.LcdColor),
+                                                            fonts=models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=False))
+
+
 for keyboard_model in models.LCD_KEYBOARDS_DEV:
     if keyboard_model.lcd_info.type == models.LcdType.COLOR:
-        lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+        lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=True)
     else:
-        lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+        lcd_font = models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False)
     globals()[keyboard_model.klass] = generate_keyboard_fixtures(model=keyboard_model, fonts=lcd_font)
 
 
@@ -162,13 +169,13 @@ def get_ctrl_for_plane(test_dcs_bios, request):
 @fixture()
 def lcd_font_mono():
     """Return font configuration for mono LCD."""
-    return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16)
+    return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False)
 
 
 @fixture()
 def lcd_font_color(protocol_parser):
     """Return font configuration for color LCD."""
-    return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32)
+    return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=True)
 
 
 @fixture()
@@ -271,7 +278,7 @@ def g13_starter() -> DCSpyStarter:
 
     from dcspy.models import DEFAULT_FONT_NAME, G13, FontsConfig
 
-    G13.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16))
+    G13.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False))
     return DCSpyStarter(model=G13, event=Event())
 
 
@@ -286,7 +293,7 @@ def g19_starter() -> DCSpyStarter:
 
     from dcspy.models import DEFAULT_FONT_NAME, G19, FontsConfig
 
-    G19.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32))
+    G19.lcd_info.set_fonts(FontsConfig(name=DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=True))
     return DCSpyStarter(model=G19, event=Event())
 
 

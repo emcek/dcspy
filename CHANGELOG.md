@@ -1,6 +1,8 @@
 ## 3.7.1
 * Update About dialog
+* Fix external documentation
 * Internal:
+  * Add DED font (G19 only) to FontConfig object
   * Use Windows 2025 Server as CI host
 
 ## 3.7.0

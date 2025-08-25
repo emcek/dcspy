@@ -751,6 +751,7 @@ class FontsConfig(BaseModel):
     small: int
     medium: int
     large: int
+    ded_font: bool = False
 
 
 class LcdInfo(BaseModel):
@@ -767,6 +768,7 @@ class LcdInfo(BaseModel):
     font_xs: ImageFont.FreeTypeFont | None = None
     font_s: ImageFont.FreeTypeFont | None = None
     font_l: ImageFont.FreeTypeFont | None = None
+    font_ded: ImageFont.FreeTypeFont | None = None
 
     def set_fonts(self, fonts: FontsConfig) -> None:
         """
@@ -777,6 +779,10 @@ class LcdInfo(BaseModel):
         self.font_xs = ImageFont.truetype(fonts.name, fonts.small)
         self.font_s = ImageFont.truetype(fonts.name, fonts.medium)
         self.font_l = ImageFont.truetype(fonts.name, fonts.large)
+        self.font_ded = None
+        if fonts.ded_font:
+            path_falcon_ded = Path(__file__) / '..' / 'resources' / 'falconded.ttf'
+            self.font_ded = ImageFont.truetype(str(path_falcon_ded.resolve()), 25)
 
     def __str__(self) -> str:
         return f'{self.type.name.capitalize()} LCD: {self.width.value}x{self.height.value} px'

@@ -17,17 +17,9 @@ from dcspy.utils import rgb
     ('logi_lcd_color_set_background', LcdType.COLOR, ([(1, 2, 3)],), False),
     ('logi_lcd_color_set_title', LcdType.COLOR, ('', (1, 2, 3)), False),
     ('logi_lcd_color_set_text', LcdType.COLOR, (1, '', (1, 2, 3)), False)
-], ids=[
-    'init',
-    'is connected',
-    'is button pressed',
-    'update',
-    'shutdown',
-    'mono set background',
-    'mono set text',
-    'color set background',
-    'color_set title',
-    'color set text'])
+], ids=['init', 'is connected', 'is button pressed', 'update', 'shutdown', 'mono set background',
+        'mono set text', 'color set background', 'color_set title', 'color set text',
+])
 def test_all_failure_cases(function, lcd, args, result):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
