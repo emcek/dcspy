@@ -64,23 +64,6 @@ package logitech {
 }
 
 package aircraft {
-    BasicAircraft <|-- AdvancedAircraft
-    AdvancedAircraft <|-- FA18Chornet
-    AdvancedAircraft <|-- F16C50
-    AdvancedAircraft <|-- F15ESE
-    AdvancedAircraft <|-- Ka50
-    Ka50 <|-- Ka503
-    AdvancedAircraft <|-- Mi8MT
-    AdvancedAircraft <|-- Mi24P
-    AdvancedAircraft <|-- AH64D
-    AdvancedAircraft <|-- A10C
-    A10C <|-- A10C2
-    AdvancedAircraft <|-- F14B
-    F14B <|-- F14A135GR
-    AdvancedAircraft <|-- AV8BNA
-    AH64D *-- ApacheEufdMode
-    AdvancedAircraft <|-- F4E45MC
-
     class MetaAircraft <<(M,plum)>> {
         + __new__(name, bases, namespace)
         + __call__()
@@ -108,6 +91,23 @@ package aircraft {
         + WCA = 2
         + PRE = 4
     }
+
+    BasicAircraft <|-- AdvancedAircraft
+    AdvancedAircraft <|-- FA18Chornet
+    AdvancedAircraft <|-- F16C50
+    AdvancedAircraft <|-- F15ESE
+    AdvancedAircraft <|-- Ka50
+    Ka50 <|-- Ka503
+    AdvancedAircraft <|-- Mi8MT
+    AdvancedAircraft <|-- Mi24P
+    AdvancedAircraft <|-- AH64D
+    AdvancedAircraft <|-- A10C
+    A10C <|-- A10C2
+    AdvancedAircraft <|-- F14B
+    F14B <|-- F14A135GR
+    AdvancedAircraft <|-- AV8BNA
+    AH64D *-- ApacheEufdMode
+    AdvancedAircraft <|-- F4E45MC
 }
 
 package utils {
@@ -267,36 +267,48 @@ package models {
         + mouse_key: int = 0
         + total() -> int
     }
-
     class Color <<(E,yellow)>> {
         + beige = 0xf5f5dc
         + bisque = 0xffe4c4
         + black = 0x000000
     }
+    class LedEffectType {
+        FLASH = 'flash'
+        PULSE = 'pulse'
+        NONE = 'none'
+     }
+    class EffectInfo <<(M,orange)>> {
+        type: LedEffectType
+        rgb: Tuple[int, int, int]
+        duration: int
+        interval: int
+    }
 
-BiosValueInt *-- IntBuffArgs
-BiosValueStr *-- StrBuffArgs
+    BiosValueInt *-- IntBuffArgs
+    BiosValueStr *-- StrBuffArgs
 
-LcdType --* LcdInfo
-LcdMode --* LcdInfo
-LcdButton --* LcdInfo
-LogitechDeviceModel --* LcdInfo
-DeviceRowsNumber --* LogitechDeviceModel
-LcdButton -* BasicAircraft
-LcdButton -* LogitechDeviceModel
-LcdButton -* LogitechDevice
-Gkey --* BasicAircraft
-Gkey --* LogitechDevice
-MouseButton --* BasicAircraft
-MouseButton --* LogitechDevice
-Direction --* ZigZagIterator
-ZigZagIterator --* RequestModel
-LogitechDeviceModel -* LogitechDevice
-RequestModel --* KeyRequest
-CycleButton -* RequestModel
+    LcdType --* LcdInfo
+    LcdMode --* LcdInfo
+    LcdButton --* LcdInfo
+    LogitechDeviceModel --* LcdInfo
+    DeviceRowsNumber --* LogitechDeviceModel
+    LcdButton -* BasicAircraft
+    LcdButton -* LogitechDeviceModel
+    LcdButton -* LogitechDevice
+    Gkey --* BasicAircraft
+    Gkey --* LogitechDevice
+    MouseButton --* BasicAircraft
+    MouseButton --* LogitechDevice
+    Direction --* ZigZagIterator
+    ZigZagIterator --* RequestModel
+    LogitechDeviceModel -* LogitechDevice
+    RequestModel --* KeyRequest
+    CycleButton -* RequestModel
+    LedEffectType -* EffectInfo
 }
+
 package sdk{
-    class LcdSdkManager <<(L,lightblue)>> {
+    class LcdSdkManager {
         + lcd_dll: CDLL
         + logi_lcd_init(str, LcdType)
         + logi_lcd_is_connected(LcdType)
@@ -314,7 +326,8 @@ package sdk{
         # _clear_mono(bool)
         # _clear_color(bool)
     }
-    class led_sdk <<(L,lightblue)>> {
+    class LedSdkManager {
+        + led_dll: CDLL
         + logi_led_init()
         + logi_led_init_with_name(str)
         + logi_led_set_target_device(LedConstants)
@@ -325,9 +338,9 @@ package sdk{
         + logi_led_pulse_lighting(Tuple[int, int, int], int, int)
         + logi_led_stop_effects()
         + logi_led_shutdown()
-        + start_led_pulse(Tuple[int, int, int], int, int, Event)
+        + start_led_effect(EffectInfo)
     }
-    class GkeySdkManager <<(L,lightblue)>> {
+    class GkeySdkManager {
         + key_dll: CDLL
         + gkey_context: LogiGkeyCBContext
         + user_callback: Callable[[int, int, int, int], None]
@@ -356,6 +369,7 @@ LcdInfo --* LogitechDevice
 LogitechDevice *-- ProtocolParser
 LogitechDevice *-- LcdSdkManager
 LogitechDevice *-- GkeySdkManager
+EffectInfo *- LedSdkManager
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
