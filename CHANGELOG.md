@@ -1,6 +1,7 @@
 ## 3.7.1
 * Update About dialog
 * Fix external documentation
+* Fix very rare case for G19 when wrong font is applied
 * Internal:
   * Add DED font (G19 only) to FontConfig object
   * Use Windows 2025 Server as CI host
