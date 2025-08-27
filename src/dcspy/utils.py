@@ -914,7 +914,7 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
                 'hash': hash_and_file[0],
                 'filename': hash_and_file[1] if len(hash_and_file) > 1 else ''
             }
-
+    LOG.debug(f'Supported algorithms are: {hashlib.algorithms_guaranteed}')
     with open(file_path, 'rb') as file_digest:
         results = _compute_hash_and_check_file(file_digest=file_digest, hashes=hashes)
 
