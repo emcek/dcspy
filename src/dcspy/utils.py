@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import zipfile
@@ -887,3 +888,38 @@ def detect_system_color_mode() -> str:
     except (OSError, IndexError):
         return 'Light'
     return {0: 'Dark', 1: 'Light'}[subkey]
+
+def check_hash(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool]]:
+    """
+    Check hash of file.
+
+    :param file_path: Path to file
+    :param digest_file: Path to digests file
+    :return: Verdict with detail dict
+    """
+    if not file_path.is_file() or not digest_file.is_file():
+        return False, {}
+
+    with open(digest_file, 'r') as f_digests:
+        all_digests = f_digests.readlines()
+
+    hashes = {}
+    for line in all_digests:
+        if line.startswith("#HASH"):
+            hash_type = line.split()[1]
+        else:
+            hashes[hash_type] = line.split()
+
+    results = {}
+    with open(file_path, 'rb') as f_to_hash:
+        for hash_type, hash_and_filename in hashes.items():
+            try:
+                computed_hash = hashlib.file_digest(f_to_hash, hash_type).hexdigest()
+            except ValueError:
+                computed_hash = ''
+            if hash_and_filename[1] != file_path.name:
+                results[hash_type] = False
+            else:
+                results[hash_type] = (computed_hash == hash_and_filename[0])
+
+    return all(results.values()), results
