@@ -1,9 +1,5 @@
-#HASH sha1
-7577605a673ea082405111d1709a8c6838d5a6ab dcs_bios_data.json
-#HASH md5
-d41d8cd98f00b204e9800998ecf8427e dcs_bios_data.json
 #HASH sha224
-d14a028c2a3a2bc9476102bb288234c415a2b01f828ea62ac5b3e42f dcs_bios_data.json
+0c0d69e2ec2f74f2a5b06740bc5a9130463c3654f1d45b2ce702cf70 dcs_bios_data.json
 #HASH sha256
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 dcs_bios_data.json
 #HASH sha384
