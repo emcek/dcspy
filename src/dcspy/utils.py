@@ -935,8 +935,10 @@ def _compute_hash_and_check_file(file_digest: BufferedReader, hashes: dict[str, 
             result[hash_type] = False
         else:
             try:
+                # todo: file_digest() only for Python 3.11+
                 computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
             except ValueError:
                 computed_hash = ''
+                # todo: why there is diffrent hashes for sha1 and md5 on linux
             result[hash_type] = (computed_hash == value_and_filename['hash'])
     return result
