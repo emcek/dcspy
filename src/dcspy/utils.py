@@ -8,6 +8,7 @@ from collections.abc import Callable, Generator, Sequence
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
+from io import BufferedReader
 from itertools import chain
 from logging import getLogger
 from os import chdir, environ, getcwd, makedirs, walk
@@ -889,9 +890,9 @@ def detect_system_color_mode() -> str:
         return 'Light'
     return {0: 'Dark', 1: 'Light'}[subkey]
 
-def check_hash(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool]]:
+def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool]]:
     """
-    Check hash of file.
+    Check hashes for file.
 
     :param file_path: Path to file
     :param digest_file: Path to digests file
@@ -908,18 +909,33 @@ def check_hash(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool
         if line.startswith("#HASH"):
             hash_type = line.split()[1]
         else:
-            hashes[hash_type] = line.split()
+            hashes[hash_type] = tuple(line.split())
 
     results = {}
     with open(file_path, 'rb') as f_to_hash:
         for hash_type, hash_and_filename in hashes.items():
-            try:
-                computed_hash = hashlib.file_digest(f_to_hash, hash_type).hexdigest()
-            except ValueError:
-                computed_hash = ''
-            if hash_and_filename[1] != file_path.name:
-                results[hash_type] = False
-            else:
-                results[hash_type] = (computed_hash == hash_and_filename[0])
+            results.update(_compute_and_check(f_to_hash, file_path.name, hash_and_filename, hash_type))
 
     return all(results.values()), results
+
+
+def _compute_and_check(f_to_hash: BufferedReader, file_name: str, hash_and_filename: tuple[str, str], hash_type: str) -> dict[str, bool]:
+    """
+    Compute and check hash for file.
+
+    :param f_to_hash: Handle to file to hash
+    :param hash_and_filename: Value of hash and file name
+    :param hash_type: Name of hashing function
+    :return: Dict with verdict
+    """
+    result = {}
+    try:
+        computed_hash = hashlib.file_digest(f_to_hash, hash_type).hexdigest()
+    except ValueError:
+        computed_hash = ''
+
+    if hash_and_filename[1] != file_name:
+        result[hash_type] = False
+    else:
+        result[hash_type] = (computed_hash == hash_and_filename[0])
+    return result

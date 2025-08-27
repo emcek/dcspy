@@ -505,4 +505,4 @@ def test_get_key_instance_error(key_name):
     ('dcs_bios_data.yaml', 'dcs_bios_data.yaml.3.DIGESTS', (False, {})),
 ])
 def test_check_hash(file_path, digest_file, expected, resources):
-    assert utils.check_hash(Path(resources / file_path), Path(resources / digest_file)) == expected
+    assert utils.verify_hashes(Path(resources / file_path), Path(resources / digest_file)) == expected
