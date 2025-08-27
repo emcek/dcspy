@@ -492,3 +492,17 @@ def test_get_key_instance(key_name, klass):
 def test_get_key_instance_error(key_name):
     with raises(AttributeError):
         utils.get_key_instance(key_name)
+
+
+@mark.parametrize('file_path, digest_file, expected', [
+    ('dcs_bios_data.json', 'dcs_bios_data.json.1.DIGESTS', (True, {'md5': True, 'sha256': True, 'sha3_256': True})),
+    ('dcs_bios_data.json', 'dcs_bios_data.json.2.DIGESTS', (False, {'md5': True, 'sha256': False, 'sha3_256': True})),
+    ('dcs_bios_data.json', 'dcs_bios_data.json.3.DIGESTS', (False, {'md5': True, 'sh_25': False, 'sha256': True})),
+    ('dcs_bios_data.json', 'dcs_bios_data.json.4.DIGESTS', (False, {'md5': True, 'sha256': True, 'sha3_256': False})),
+    ('dcs_bios_data.json', 'dcs_bios_data.json.5.DIGESTS', (True, {'md5': True, 'sha1': True, 'sha224': True, 'sha256': True, 'sha384': True, 'sha512': True, 'sha3_224': True, 'sha3_256': True, 'sha3_384': True, 'sha3_512': True})),
+    ('dcs_bios_data.yaml', 'dcs_bios_data.json.3.DIGESTS', (False, {})),
+    ('dcs_bios_data.json', 'dcs_bios_data.yaml.3.DIGESTS', (False, {})),
+    ('dcs_bios_data.yaml', 'dcs_bios_data.yaml.3.DIGESTS', (False, {})),
+])
+def test_check_hash(file_path, digest_file, expected, resources):
+    assert utils.check_hash(Path(resources / file_path), Path(resources / digest_file)) == expected
