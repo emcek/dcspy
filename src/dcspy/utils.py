@@ -908,34 +908,35 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
     for line in all_digests:
         if line.startswith('#HASH'):
             hash_type = line.split()[1]
-        else:
-            hashes[hash_type] = tuple(line.split())
+        elif line != '\n':
+            hash_and_file = line.split()
+            hashes[hash_type] = {
+                'hash': hash_and_file[0],
+                'filename': hash_and_file[1] if len(hash_and_file) > 1 else ''
+            }
 
-    results = {}
-    with open(file_path, 'rb') as f_to_hash:
-        for hash_type, hash_and_filename in hashes.items():
-            results.update(_compute_and_check(f_to_hash, file_path.name, hash_and_filename, hash_type))
+    with open(file_path, 'rb') as file_digest:
+        results = _compute_hash_and_check_file(file_digest=file_digest, hashes=hashes)
 
     return all(results.values()), results
 
 
-def _compute_and_check(f_to_hash: BufferedReader, file_name: str, hash_and_filename: tuple[str, str], hash_type: str) -> dict[str, bool]:
+def _compute_hash_and_check_file(file_digest: BufferedReader, hashes: dict[str, dict[str, str]]) -> dict[str, bool]:
     """
     Compute and check hash for file.
 
-    :param f_to_hash: Handle to file to hash
-    :param hash_and_filename: Value of hash and file name
-    :param hash_type: Name of hashing function
+    :param file_digest: Handle to opend file to hash
+    :param hashes: Dict with hash types, values and filenames
     :return: Dict with verdict
     """
     result = {}
-    try:
-        computed_hash = hashlib.file_digest(f_to_hash, hash_type).hexdigest()
-    except ValueError:
-        computed_hash = ''
-
-    if hash_and_filename[1] != file_name:
-        result[hash_type] = False
-    else:
-        result[hash_type] = (computed_hash == hash_and_filename[0])
+    for hash_type, value_and_filename in hashes.items():
+        if value_and_filename['filename'] != Path(file_digest.name).name:
+            result[hash_type] = False
+        else:
+            try:
+                computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
+            except ValueError:
+                computed_hash = ''
+            result[hash_type] = (computed_hash == value_and_filename['hash'])
     return result
