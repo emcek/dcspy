@@ -892,11 +892,11 @@ def detect_system_color_mode() -> str:
 
 def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool]]:
     """
-    Check hashes for file.
+    Check hashes for a file.
 
-    :param file_path: Path to file
-    :param digest_file: Path to digests file
-    :return: Verdict with detail dict
+    :param file_path: Path to the file
+    :param digest_file: Path to the digests file
+    :return: Overall verdict and detailed results
     """
     if not file_path.is_file() or not digest_file.is_file():
         return False, {}
@@ -908,13 +908,10 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
     for line in all_digests:
         if line.startswith('#HASH'):
             hash_type = line.split()[1]
-        elif line != '\n':
+        elif line.strip():
             hash_and_file = line.split()
             filename = hash_and_file[1] if len(hash_and_file) > 1 else ''
-            if filename not in hashes:
-                hashes[filename] = {hash_type: hash_and_file[0]}
-            else:
-                hashes[filename].update({hash_type: hash_and_file[0]})
+            hashes.setdefault(filename, {})[hash_type] = hash_and_file[0]
     LOG.debug(f'Supported algorithms are: {hashlib.algorithms_guaranteed}')
     with open(file_path, 'rb') as file_digest:
         results = _compute_hash_and_check_file(file_digest=file_digest, hashes=hashes)
