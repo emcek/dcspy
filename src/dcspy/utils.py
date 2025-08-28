@@ -910,10 +910,11 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
             hash_type = line.split()[1]
         elif line != '\n':
             hash_and_file = line.split()
-            hashes[hash_type] = {
-                'hash': hash_and_file[0],
-                'filename': hash_and_file[1] if len(hash_and_file) > 1 else ''
-            }
+            filename = hash_and_file[1] if len(hash_and_file) > 1 else ''
+            if filename not in hashes:
+                hashes[filename] = {hash_type: hash_and_file[0]}
+            else:
+                hashes[filename].update({hash_type: hash_and_file[0]})
     LOG.debug(f'Supported algorithms are: {hashlib.algorithms_guaranteed}')
     with open(file_path, 'rb') as file_digest:
         results = _compute_hash_and_check_file(file_digest=file_digest, hashes=hashes)
@@ -930,19 +931,20 @@ def _compute_hash_and_check_file(file_digest: BufferedReader, hashes: dict[str, 
     :return: Dict with verdict
     """
     result = {}
-    for hash_type, value_and_filename in hashes.items():
-        if value_and_filename['filename'] != Path(file_digest.name).name:
-            result[hash_type] = False
-        else:
-            try:
-                if sys.version_info.minor > 10:
-                    computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
-                else:
-                    h = hashlib.new(hash_type)
-                    h.update(file_digest.read())
-                    computed_hash = h.hexdigest()
-            except ValueError:
-                computed_hash = ''
-                # todo: why there is diffrent hashes for sha1 and md5 on linux
-            result[hash_type] = (computed_hash == value_and_filename['hash'])
+    for filename, type_and_value in hashes.items():
+        for hash_type, hash_value in type_and_value.items():
+            if filename != Path(file_digest.name).name:
+                break
+            else:
+                try:
+                    if sys.version_info.minor > 10:
+                        computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
+                    else:
+                        h = hashlib.new(hash_type)
+                        h.update(file_digest.read())
+                        computed_hash = h.hexdigest()
+                except ValueError:
+                    computed_hash = ''
+                    # todo: why there is diffrent hashes for sha1 and md5 on linux
+                result[hash_type] = (computed_hash == hash_value)
     return result
