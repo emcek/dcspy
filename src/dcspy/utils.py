@@ -904,7 +904,7 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
     with open(digest_file) as f_digests:
         all_digests = f_digests.readlines()
 
-    hashes = {}
+    hashes: dict[str, dict[str, str]] = {}
     for line in all_digests:
         if line.startswith('#HASH'):
             hash_type = line.split()[1]
