@@ -921,27 +921,24 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
 
 def _compute_hash_and_check_file(file_digest: BufferedReader, hashes: dict[str, dict[str, str]]) -> dict[str, bool]:
     """
-    Compute and check hash for file.
+    Compute and verify hashes for a file.
 
-    :param file_digest: Handle to opend file to hash
-    :param hashes: Dict with hash types, values and filenames
-    :return: Dict with verdict
+    :param file_digest: Opened file to hash
+    :param hashes: Dictionary of hash types and values
+    :return: Dictionary of verification results
     """
     result = {}
-    for filename, type_and_value in hashes.items():
-        for hash_type, hash_value in type_and_value.items():
-            if filename != Path(file_digest.name).name:
-                break
+    file_name = Path(file_digest.name).name
+    for hash_type, hash_value in hashes.get(file_name, {}).items():
+        try:
+            if sys.version_info.minor > 10:
+                computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
             else:
-                try:
-                    if sys.version_info.minor > 10:
-                        computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
-                    else:
-                        h = hashlib.new(hash_type)
-                        h.update(file_digest.read())
-                        computed_hash = h.hexdigest()
-                except ValueError:
-                    computed_hash = ''
-                    # todo: why there is diffrent hashes for sha1 and md5 on linux
-                result[hash_type] = (computed_hash == hash_value)
+                h = hashlib.new(hash_type)
+                h.update(file_digest.read())
+                computed_hash = h.hexdigest()
+        except ValueError:
+            computed_hash = ''
+            # todo: why there is diffrent hashes for sha1 and md5 on linux
+        result[hash_type] = (computed_hash == hash_value)
     return result
