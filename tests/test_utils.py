@@ -494,7 +494,7 @@ def test_get_key_instance_error(key_name):
         utils.get_key_instance(key_name)
 
 
-# @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 @mark.parametrize('file_path, digest_file, expected', [
     ('dcs_bios_data.json', 'dcs_bios_data.json.1.DIGESTS', (True, {'md5': True, 'sha256': True, 'sha3_256': True})),
     ('dcs_bios_data.json', 'dcs_bios_data.json.2.DIGESTS', (False, {'md5': True, 'sha256': False, 'sha3_256': True})),
