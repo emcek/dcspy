@@ -8,7 +8,6 @@ from collections.abc import Callable, Generator, Sequence
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
-from io import BufferedReader
 from itertools import chain
 from logging import getLogger
 from os import chdir, environ, getcwd, makedirs, walk
@@ -913,30 +912,29 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
             filename = hash_and_file[1] if len(hash_and_file) > 1 else ''
             hashes.setdefault(filename, {})[hash_type] = hash_and_file[0]
     LOG.debug(f'Supported algorithms are: {hashlib.algorithms_guaranteed}')
-    with open(file_path, 'rb') as file_digest:
-        results = _compute_hash_and_check_file(file_digest=file_digest, hashes=hashes)
+    results = _compute_hash_and_check_file(file_path=file_path, hashes=hashes)
 
     return all(results.values()), results
 
 
-def _compute_hash_and_check_file(file_digest: BufferedReader, hashes: dict[str, dict[str, str]]) -> dict[str, bool]:
+def _compute_hash_and_check_file(file_path: Path, hashes: dict[str, dict[str, str]]) -> dict[str, bool]:
     """
     Compute and verify hashes for a file.
 
-    :param file_digest: Opened file to hash
+    :param file_path: Path for file to chack hashes
     :param hashes: Dictionary of hash types and values
     :return: Dictionary of verification results
     """
     result = {}
-    file_name = Path(file_digest.name).name
-    for hash_type, hash_value in hashes.get(file_name, {}).items():
+    for hash_type, hash_value in hashes.get(file_path.name, {}).items():
         try:
-            if sys.version_info.minor > 10:
-                computed_hash = hashlib.file_digest(file_digest, hash_type).hexdigest()
-            else:
-                h = hashlib.new(hash_type)
-                h.update(file_digest.read())
-                computed_hash = h.hexdigest()
+            with open(file_path, 'rb') as f_path:
+                if sys.version_info.minor > 10:
+                    computed_hash = hashlib.file_digest(f_path, hash_type).hexdigest()
+                else:
+                    h = hashlib.new(hash_type)
+                    h.update(f_path.read())
+                    computed_hash = h.hexdigest()
         except ValueError:
             computed_hash = ''
             # todo: why there is diffrent hashes for sha1 and md5 on linux
