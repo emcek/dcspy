@@ -6,6 +6,11 @@ ALGORITHMS = ['sha3_224', 'sha3_512', 'sha3_384', 'sha1', 'sha512', 'sha384',
 
 
 def generate(files: list[Path]) -> None:
+    """
+    Generate hashes for list of files.
+
+    :param files: List of Path objects
+    """
     with open('./../DIGESTS', 'w+') as f_digests:
         for algo in ALGORITHMS:
             f_digests.write(f'#HASH {algo}\n')
@@ -16,4 +21,4 @@ def generate(files: list[Path]) -> None:
 
 
 if __name__ == '__main__':
-    generate([Path(r'C:\Users\mplichta\Projects\dcspy\tests\resources\dcs_bios_data.json')])
+    generate([Path('./../tests/resources/dcs_bios_data.json')])
