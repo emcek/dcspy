@@ -38,7 +38,7 @@ jobs:
             dcspy_*
 
       - name: "Compile setup executable file"
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
         with:
           path: inno/dcspy.iss
           options: /O+
