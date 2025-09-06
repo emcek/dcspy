@@ -937,6 +937,5 @@ def _compute_hash_and_check_file(file_path: Path, hashes: dict[str, dict[str, st
                     computed_hash = h.hexdigest()
         except ValueError:
             computed_hash = ''
-            # todo: why there is diffrent hashes for sha1 and md5 on linux
         result[hash_type] = (computed_hash == hash_value)
     return result
