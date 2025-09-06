@@ -10,6 +10,7 @@ from pathlib import Path
 from platform import architecture
 from re import search
 from sys import maxsize
+from tempfile import gettempdir
 from typing import Any, Final, TypedDict, TypeVar, Union
 
 from _ctypes import sizeof
@@ -1202,6 +1203,24 @@ class Release(BaseModel):
         """
         published = datetime.strptime(self.published_at, '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
         return str(published)
+
+    def verify(self, local_file: Path,
+               temp_digest = Path(gettempdir()) / f'DIGESTS_{datetime.now().strftime("%Y%m%d_%H%M%S")}') -> tuple[bool, dict[str, bool]]:
+        """
+        Verify the integrity of a local file by comparing its checksums with the expected checksum.
+
+        It returns True if the checksums match, indicating that the file is intact and unaltered; otherwise, it returns False.
+
+        :param local_file: The path to the local file whose integrity is to be verified.
+        :param temp_digest: Temporary file to store the digest in the local file.
+        :return: True if the computed checksum matches the expected checksum, False otherwise.
+        """
+        from dcspy.utils import download_file, verify_hashes
+
+        url = self.download_url(extension='', file_name='DIGESTS')
+        download_file(url=url, save_path=temp_digest)
+        result = verify_hashes(file_path=local_file, digest_file=temp_digest)
+        return result
 
     def __str__(self) -> str:
         return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
