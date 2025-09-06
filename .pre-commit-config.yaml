@@ -13,7 +13,7 @@ repos:
       - id: trailing-whitespace
         exclude: 'qtgui_rc.py|\.isl'
       - id: end-of-file-fixer
-        exclude: 'qtgui_rc.py|\.isl'
+        exclude: 'qtgui_rc.py|\.isl|no_new_line.hash'
       - id: check-docstring-first
         exclude: 'qtgui_rc.py|\.isl'
       - id: debug-statements
