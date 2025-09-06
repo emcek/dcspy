@@ -494,19 +494,18 @@ def test_get_key_instance_error(key_name):
         utils.get_key_instance(key_name)
 
 
-@mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
+@mark.benchmark
 @mark.parametrize('file_path, digest_file, expected', [
-    ('dcs_bios_data.json', 'dcs_bios_data.json.1.DIGESTS', (True, {'md5': True, 'sha256': True, 'sha3_256': True})),
-    ('dcs_bios_data.json', 'dcs_bios_data.json.2.DIGESTS', (False, {'md5': True, 'sha256': False, 'sha3_256': True})),
-    ('dcs_bios_data.json', 'dcs_bios_data.json.3.DIGESTS', (False, {'md5': True, 'sh_25': False, 'sha256': True})),
-    ('dcs_bios_data.json', 'dcs_bios_data.json.4.DIGESTS', (True, {'md5': True, 'sha256': True})),
-    ('dcs_bios_data.json', 'dcs_bios_data.json.5.DIGESTS', (True, {'blake2b': True, 'blake2s': True, 'md5': True, 'sha1': True,
-                                                                   'sha224': True, 'sha256': True, 'sha384': True,
-                                                                   'sha3_224': True, 'sha3_256': True, 'sha3_384': True,
-                                                                   'sha3_512': True, 'sha512': True})),
-    ('dcs_bios_data.yaml', 'dcs_bios_data.json.3.DIGESTS', (False, {})),
-    ('dcs_bios_data.json', 'dcs_bios_data.yaml.3.DIGESTS', (False, {})),
-    ('dcs_bios_data.yaml', 'dcs_bios_data.yaml.3.DIGESTS', (False, {})),
+    ('no_new_line.hash', 'no_new_line.hash.1.DIGESTS', (True, {'blake2b': True, 'blake2s': True, 'md5': True,
+                                                               'sha1': True, 'sha224': True, 'sha256': True,
+                                                               'sha384': True, 'sha3_224': True, 'sha3_256': True,
+                                                               'sha3_384': True, 'sha3_512': True, 'sha512': True})),
+    ('no_new_line.hash', 'no_new_line.hash.2.DIGESTS', (False, {'md5': True, 'sha256': False, 'sha3_256': True})),
+    ('no_new_line.hash', 'no_new_line.hash.3.DIGESTS', (False, {'md5': True, 'sh_25': False, 'sha256': True})),
+    ('no_new_line.hash', 'no_new_line.hash.4.DIGESTS', (True, {'md5': True, 'sha256': True})),
+    ('no_new_line.hash', 'no_new_line.json.3.DIGESTS', (False, {})),
+    ('no_new_line.json', 'no_new_line.hash.3.DIGESTS', (False, {})),
+    ('no_new_line.json', 'no_new_line.json.3.DIGESTS', (False, {})),
 ])
 def test_check_hash(file_path, digest_file, expected, resources):
     assert utils.verify_hashes(Path(resources / file_path), Path(resources / digest_file)) == expected
