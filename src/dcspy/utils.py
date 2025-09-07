@@ -937,5 +937,5 @@ def _compute_hash_and_check_file(file_path: Path, hashes: dict[str, dict[str, st
                     computed_hash = h.hexdigest()
         except ValueError:
             computed_hash = ''
-        result[hash_type] = (computed_hash == hash_value)
+        result[hash_type] = computed_hash == hash_value
     return result
