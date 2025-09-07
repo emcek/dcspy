@@ -94,7 +94,7 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.7.0',
+        'api_ver': '3.7.1',
         'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
@@ -492,3 +492,20 @@ def test_get_key_instance(key_name, klass):
 def test_get_key_instance_error(key_name):
     with raises(AttributeError):
         utils.get_key_instance(key_name)
+
+
+@mark.benchmark
+@mark.parametrize('file_path, digest_file, expected', [
+    ('no_new_line.hash', 'no_new_line.hash.1.DIGESTS', (True, {'blake2b': True, 'blake2s': True, 'md5': True,
+                                                               'sha1': True, 'sha224': True, 'sha256': True,
+                                                               'sha384': True, 'sha3_224': True, 'sha3_256': True,
+                                                               'sha3_384': True, 'sha3_512': True, 'sha512': True})),
+    ('no_new_line.hash', 'no_new_line.hash.2.DIGESTS', (False, {'md5': True, 'sha256': False, 'sha3_256': True})),
+    ('no_new_line.hash', 'no_new_line.hash.3.DIGESTS', (False, {'md5': True, 'sh_25': False, 'sha256': True})),
+    ('no_new_line.hash', 'no_new_line.hash.4.DIGESTS', (True, {'md5': True, 'sha256': True})),
+    ('no_new_line.hash', 'no_new_line.json.3.DIGESTS', (False, {})),
+    ('no_new_line.json', 'no_new_line.hash.3.DIGESTS', (False, {})),
+    ('no_new_line.json', 'no_new_line.json.3.DIGESTS', (False, {})),
+])
+def test_check_hash(file_path, digest_file, expected, resources):
+    assert utils.verify_hashes(Path(resources / file_path), Path(resources / digest_file)) == expected

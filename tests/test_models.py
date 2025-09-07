@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from pytest import mark, raises
 
 from dcspy.models import KEY_DOWN, KEY_UP, LcdButton, LcdColor, LcdMono
@@ -495,6 +497,25 @@ def test_release_model(resources):
     assert release.version == version.parse('3.6.1')
     assert release.published == '05 November 2024'
     assert str(release) == 'v3.6.1 pre:False date:05 November 2024'
+
+
+@mark.benchmark
+def test_release_verify_hash(resources):
+    import json
+
+    from dcspy.models import Release
+
+    with open(resources / 'dcspy_3.6.1.json', encoding='utf-8') as json_file:
+        content = json_file.read()
+    json_data = json.loads(content)
+    release = Release(**json_data)
+    temp_digest = resources / 'no_new_line.hash.1.DIGESTS'
+    with patch('dcspy.utils.download_file') as patched_dl:
+        verification_result = release.verify(local_file=resources / 'no_new_line.hash', temp_digest=temp_digest)
+        patched_dl.assert_called_once_with(url='https://github.com/emcek/dcspy/releases/download/v3.6.1/DIGESTS', save_path=temp_digest)
+    assert verification_result == (True, {'blake2b': True, 'blake2s': True, 'md5': True, 'sha1': True, 'sha224': True,
+                                          'sha256': True, 'sha384': True, 'sha3_224': True, 'sha3_256': True,
+                                          'sha3_384': True, 'sha3_512': True, 'sha512': True})
 
 
 # <=><=><=><=><=> RequestModel <=><=><=><=><=>
