@@ -216,8 +216,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>152</width>
-               <height>105</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -409,8 +409,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>152</width>
-               <height>74</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -544,8 +544,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>236</width>
-               <height>105</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -1358,6 +1358,251 @@
            </layout>
           </item>
          </layout>
+        </widget>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>LED</string>
+         </attribute>
+         <widget class="QComboBox" name="combo_ctrl">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>70</y>
+            <width>261</width>
+            <height>24</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_10">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>40</y>
+            <width>91</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Controller</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_11">
+          <property name="geometry">
+           <rect>
+            <x>400</x>
+            <y>40</y>
+            <width>81</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Interval [ms]</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_12">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>40</y>
+            <width>81</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Duration [ms]</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="sp_interval">
+          <property name="geometry">
+           <rect>
+            <x>380</x>
+            <y>70</y>
+            <width>101</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>99999</number>
+          </property>
+          <property name="value">
+           <number>30</number>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="sp_duration">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>70</y>
+            <width>91</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>99999</number>
+          </property>
+          <property name="value">
+           <number>4000</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_13">
+          <property name="geometry">
+           <rect>
+            <x>600</x>
+            <y>40</y>
+            <width>49</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Sleep [s]</string>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="sp_sleep">
+          <property name="geometry">
+           <rect>
+            <x>590</x>
+            <y>70</y>
+            <width>71</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <double>0.100000000000000</double>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pb_start_sim">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>110</y>
+            <width>75</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Simulate</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="pb_stop_sim">
+          <property name="geometry">
+           <rect>
+            <x>580</x>
+            <y>110</y>
+            <width>75</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Stop</string>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="combo_effect_type">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>70</y>
+            <width>91</width>
+            <height>24</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_14">
+          <property name="geometry">
+           <rect>
+            <x>290</x>
+            <y>40</y>
+            <width>49</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Type</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="sp_r">
+          <property name="geometry">
+           <rect>
+            <x>400</x>
+            <y>190</y>
+            <width>67</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>100</number>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="sp_g">
+          <property name="geometry">
+           <rect>
+            <x>490</x>
+            <y>190</y>
+            <width>67</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="sp_b">
+          <property name="geometry">
+           <rect>
+            <x>570</x>
+            <y>190</y>
+            <width>67</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_15">
+          <property name="geometry">
+           <rect>
+            <x>410</x>
+            <y>160</y>
+            <width>49</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>R</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_16">
+          <property name="geometry">
+           <rect>
+            <x>500</x>
+            <y>160</y>
+            <width>49</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>G</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label_17">
+          <property name="geometry">
+           <rect>
+            <x>580</x>
+            <y>160</y>
+            <width>49</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>B</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="tab_debug">
          <attribute name="icon">
