@@ -1,0 +1,38 @@
+name: Check License
+
+on: workflow_call
+
+jobs:
+  license_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: "Set up Python 3.13"
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: "Install requirements"
+        run: |
+          python -m pip install -U pip
+          python -m pip install -U -r requirements.txt
+
+      - name: "Get explicit and transitive dependencies"
+        run: |
+          pip freeze > requirements-all.txt
+
+      - name: "Check License"
+        id: license_check_report
+        uses: pilosus/action-pip-license-checker@v2
+        with:
+          requirements: 'requirements-all.txt'
+          fail: 'StrongCopyleft,Other,Error'
+          totals: true
+          headers: true
+
+      - name: "Print report"
+        if: ${{ always() }}
+        run: echo "${{ steps.license_check_report.outputs.report }}"

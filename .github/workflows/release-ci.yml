@@ -63,21 +63,19 @@ jobs:
           files: |
             dcspy.exe
             dcspy_cli.exe
-            dcspy_nuitka.exe
-            dcspy_nuitka_cli.exe
+            dcspy_pyinstaller.exe
+            dcspy_cli_pyinstaller.exe
             dcspy-${{ steps.version.outputs.number }}-py3-none-any.whl
             dcspy-${{ steps.version.outputs.number }}.tar.gz
 
   pypi:
     needs: [ pyinstaller, nuitka, wheel ]
     runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+
     steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
       - name: "Download dcspy binaries"
         uses: actions/download-artifact@v4
         with:
@@ -91,8 +89,3 @@ jobs:
 
       - name: "Deploy to PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN }}
-          skip-existing: true
-          verbose: true

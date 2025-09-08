@@ -2,7 +2,7 @@ from unittest.mock import call, patch
 
 from pytest import mark
 
-from dcspy.models import Gkey, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType, MouseButton
+from dcspy.models import Color, Gkey, LcdButton, LcdInfo, LcdMode, LcdSize, LcdType, MouseButton
 
 
 def test_keyboard_base_basic_check(keyboard_base):
@@ -10,7 +10,7 @@ def test_keyboard_base_basic_check(keyboard_base):
 
     assert str(keyboard_base) == 'LogitechDevice: 160x43'
     logitech_repr = repr(keyboard_base)
-    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'socket', '_display',
+    data = ('bios_name', 'plane_name', 'plane_detected', 'lcdbutton_pressed', 'cfg', 'socket', '_text',
             'parser', 'ProtocolParser',
             'plane', 'BasicAircraft',
             'model', 'LogitechDeviceModel', 'LcdInfo', 'LcdMode', 'FreeTypeFont',
@@ -84,7 +84,7 @@ def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, cal
 
 
 @mark.benchmark
-@mark.parametrize('plane_str, bios_name, plane, display, detect', [
+@mark.parametrize('plane_str, bios_name, plane, text, detect', [
     ('FA-18C_hornet', '', 'FA18Chornet', ['Detected aircraft:', 'F/A-18C Hornet'], True),
     ('F-16C_50', '', 'F16C50', ['Detected aircraft:', 'F-16C Viper'], True),
     ('F-4E-45MC', '', 'F4E45MC', ['Detected aircraft:', 'F-4E Phantom II'], True),
@@ -124,12 +124,12 @@ def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, cal
     'A-10A',
     'F-117 Nighthawk',
     'Empty'])
-def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, display, detect, keyboard_mono):
+def test_keyboard_mono_detecting_plane(plane_str, bios_name, plane, text, detect, keyboard_mono):
     with patch('dcspy.logitech.get_planes_list', return_value=['SpitfireLFMkIX', 'F-22A']):
         keyboard_mono.detecting_plane(plane_str)
     assert keyboard_mono.plane_name == plane
     assert keyboard_mono.bios_name == bios_name
-    assert keyboard_mono._display == display
+    assert keyboard_mono.messages == text
     assert keyboard_mono.plane_detected is detect
 
 
@@ -151,7 +151,7 @@ def test_check_keyboard_display_and_prepare_image(mode, width, height, lcd_type,
         assert isinstance(keyboard.model.lcd_info, LcdInfo)
         assert keyboard.model.lcd_info.type == lcd_type
         assert isinstance(keyboard.display, list)
-        keyboard.display = ['1', '2']
+        keyboard.display = [('1', Color.red), ('2', Color.green)]
         assert len(keyboard.display) == 2
         upd_display.assert_called_once()
 
@@ -168,9 +168,10 @@ def test_check_keyboard_text(keyboard, protocol_parser, sock, request):
     from dcspy.sdk.lcd_sdk import LcdSdkManager
 
     keyboard = request.getfixturevalue(keyboard)
+    txt_list = [('0', Color.white), ('1', Color.green), ('2', Color.white), ('3', Color.green), ('4', Color.white), ('5', Color.green)]
     with patch.object(LcdSdkManager, 'update_text') as upd_txt:
-        keyboard.text(['1', '2'])
-        upd_txt.assert_called_once()
+        keyboard.text(txt_list)
+        upd_txt.assert_called_once_with(txt_list)
 
 
 @mark.benchmark

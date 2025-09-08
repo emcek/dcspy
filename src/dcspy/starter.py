@@ -9,13 +9,13 @@ from time import gmtime, time
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
 from dcspy.logitech import LogitechDevice
-from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, LogitechDeviceModel
+from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, Color, LogitechDeviceModel
 from dcspy.utils import SignalHandler, check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
 LOOP_FLAG = True
 SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nick Thain', 'BrotherBloat']
-__version__ = '3.6.1'
+__version__ = '3.6.3'
 
 
 def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock: socket.socket, ver_string: str,
@@ -31,7 +31,7 @@ def _handle_connection(logi_device: LogitechDevice, parser: ProtocolParser, sock
     """
     start_time = time()
     LOG.info('Waiting for DCS connection...')
-    support_banner = _supporters(text=f'Huge thanks to: {", ".join(SUPPORTERS)} and others! For support and help! ', width=26)
+    support_banner = _supporters(text=f'Huge thanks to: {", ".join(SUPPORTERS)} and others! For support and help! ', width=37)
     while not event.is_set():
         try:
             dcs_bios_resp = sock.recv(2048)
@@ -86,10 +86,11 @@ def _sock_err_handler(logi_device: LogitechDevice, start_time: float, ver_string
         LOG.debug(f'Main loop socket error: {exp}')
         LOOP_FLAG = False
     wait_time = gmtime(time() - start_time)
-    logi_device.display = ['Logitech LCD OK',
-                           f'No data from DCS:   {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}',
-                           f'{next(support_iter)}',
-                           ver_string]
+    logi_device.display = [('     DCSpy       ', Color.orange),
+                           ('Logitech LCD OK', Color.lightgreen),
+                           (f'No data from DCS:    {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}', Color.red),
+                           (f'{next(support_iter)}', Color.yellow),
+                           (ver_string, Color.white)]
 
 
 def _prepare_socket() -> socket.socket:
@@ -123,4 +124,8 @@ def dcspy_run(model: LogitechDeviceModel, event: Event, sig_handler: SignalHandl
         dcspy_ver = get_version_string(repo=DCSPY_REPO_NAME, current_ver=__version__, check=bool(get_config_yaml_item('check_ver')))
         _handle_connection(logi_device=logi_dev, parser=parser, sock=dcs_sock, ver_string=dcspy_ver, event=event, sig_handler=sig_handler)
     LOG.info('DCSpy stopped.')
-    logi_dev.display = ['DCSpy stopped', '', f'DCSpy: {dcspy_ver}', f'DCS-BIOS: {check_bios_ver(bios_path=get_config_yaml_item("dcsbios")).ver}']
+    logi_dev.display = [('     DCSpy       ', Color.orange),
+                        ('DCSpy stopped', Color.red),
+                        ('', Color.black),
+                        (f'DCSpy:    {dcspy_ver}', Color.white),
+                        (f'DCS-BIOS:  {check_bios_ver(bios_path=get_config_yaml_item("dcsbios"))}', Color.white)]

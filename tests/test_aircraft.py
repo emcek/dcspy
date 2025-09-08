@@ -1,4 +1,5 @@
 from pathlib import Path
+from platform import uname
 from sys import platform
 from unittest.mock import patch
 
@@ -331,10 +332,11 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     bios_pairs = request.getfixturevalue(f'{model}_{lcd}_bios')
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
+    ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
     # if 'f4e' in model:
-    #     img.save(resources / platform / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
+    #     img.save(ref_file_base_path / f'new_{model}_{lcd}_{type(aircraft_model).__name__}.png')
     # else:
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}_{type(aircraft_model).__name__}.png', precision=img_precision)
 
 
 @mark.benchmark
@@ -359,7 +361,8 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
     apache.cfg['save_lcd'] = True
     img = apache.prepare_image()
     assert (Path(gettempdir()) / f'{type(apache).__name__}_999.png').exists()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode.png', precision=img_precision)
+    ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_wca_mode.png', precision=img_precision)
 
 
 # <=><=><=><=><=> Apache special <=><=><=><=><=>
@@ -382,7 +385,8 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
         apache.prepare_image()
     assert apache.warning_line == 3
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_3.png', precision=img_precision)
+    ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_wca_mode_scroll_3.png', precision=img_precision)
 
     for i in range(1, 3):
         apache.warning_line += 1
@@ -390,7 +394,8 @@ def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precisio
 
     img = apache.prepare_image()
     assert apache.warning_line == 1
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_wca_mode_scroll_1.png', precision=img_precision)
+    ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_wca_mode_scroll_1.png', precision=img_precision)
 
 
 @mark.benchmark
@@ -399,4 +404,5 @@ def test_apache_pre_mode(model, apache_pre_mode_bios_data, resources, img_precis
     apache = request.getfixturevalue(model)
     set_bios_during_test(apache, apache_pre_mode_bios_data)
     img = apache.prepare_image()
-    assert compare_images(img=img, file_path=resources / platform / f'{model}_pre_mode.png', precision=img_precision)
+    ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
+    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_pre_mode.png', precision=img_precision)

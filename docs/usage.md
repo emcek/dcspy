@@ -1,19 +1,15 @@
 # Starting
-## Single file download (new way)
+## Single file download (basic way)
 1. Run Logitech Gaming Software (it allows accessing LCD)
 2. Double click at downloaded file.
 3. Click `Start`
 4. LCD should update with dcspy basic info, waiting to connect to DCS
 5. Run DCS and start any mission.
 
-## via pip (old way)
+## via uv (advanced way)
 1. Run Logitech Gaming Software (it allows accessing LCD)
-2. You can check with `pip uninstall dcspy` (**NOTE!** answer **No** to question) where dcspy was installed. Usually pip should install dcspy into your python directory: i.e.:
-   * `d:\projects\venvs\dcspy\lib\site-packages\dcspy-3.0.0.dist-info\*`
-   * `d:\projects\venvs\dcspy\lib\site-packages\dcspy\*`
-   * `d:\projects\venvs\dcspy\scripts\dcspy.exe`
-   * `d:\projects\venvs\dcspy\scripts\dcspy_cli.exe`
-3. You can drag and drop `dcspy.exe` or `dcspy_cli.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory i.e. `d:\projects\venvs\dcspy\lib\site-packages\dcspy\img\dcspy.ico`).
+2. You can check with `uv` install tool inside user directory like `C:\Users\<username>\AppData\Local\uv\tools\dcspy\Scripts`
+3. You can drag and drop `dcspy.exe` or `dcspy_cli.exe` to desktop and make shortcut (with custom icon, you can find icon in installation directory i.e. `C:\Users\mplic\AppData\Local\uv\tools\dcspy\Lib\site-packages\dcspy\img`).
    * `dcspy.exe` - with open directly GUI window
    * `dcspy_cli.exe` - additionally start console window (with logs)
 4. Double-click on dcspy icon or type `dcspy.exe`\`dcspy_cli.exe` from Command Prompt

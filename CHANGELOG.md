@@ -1,6 +1,18 @@
+## 3.6.3
+* Fix Windows toolbar icon (@emcek)
+* Show progress when downloading DCS-BIOS or new DCSpy release (@emcek)
+* Fix when LCD is not cleared - #442 (@emcek)
+
+## 3.6.2
+* Initial support colors for G19 - @emcek
+* Internal:
+  * Improve checking for new releases (pydantic model) - @emcek
+  * Only one branch stable version of DCS is preferred for new installs - @emcek
+  * Make Nuitka with Python 3.13 default when building executable - @emcek
+
 ## 3.6.1
 * Fix issue font size for G19 can be overwritten #394 - @emcek
-* Dcspy not started with Python 3.9, fix issue with pyadantic and type annotations - @emcek
+* Dcspy not started with Python 3.9, fix issue with pydantic and type annotations - @emcek
 * Internal:
   * Improve test coverage
   * Use type annotation from future

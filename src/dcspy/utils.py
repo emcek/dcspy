@@ -21,12 +21,13 @@ from typing import Any, ClassVar
 
 import yaml
 from packaging import version
+from PIL import ImageColor
 from psutil import process_iter
 from PySide6.QtCore import QObject, Signal
 from requests import get
 
-from dcspy.models import (CTRL_LIST_SEPARATOR, AnyButton, BiosValue, ControlDepiction, ControlKeyData, DcsBiosPlaneData, DcspyConfigYaml, ReleaseInfo,
-                          RequestModel, get_key_instance)
+from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
+                          DcspyConfigYaml, LcdMode, Release, RequestModel, get_key_instance)
 
 try:
     import git
@@ -34,13 +35,11 @@ except ImportError:
     pass
 
 LOG = getLogger(__name__)
-__version__ = '3.6.1'
-CONFIG_YAML = 'config.yaml'
-DEFAULT_YAML_FILE = Path(__file__).parent / 'resources' / CONFIG_YAML
+__version__ = '3.6.3'
 
 with open(DEFAULT_YAML_FILE) as c_file:
     defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
-    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS.openbeta\\Scripts\\DCS-BIOS'
+    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS'
 
 
 def get_default_yaml(local_appdata: bool = False) -> Path:
@@ -91,105 +90,75 @@ def save_yaml(data: dict[str, Any], full_path: Path) -> None:
         yaml.dump(data, yaml_file, Dumper=yaml.SafeDumper)
 
 
-def check_ver_at_github(repo: str, current_ver: str, extension: str, file_name: str = '') -> ReleaseInfo:
+def check_ver_at_github(repo: str) -> Release:
     """
     Check a version of <organization>/<package> at GitHub.
 
-    Return tuple with:
-    - result (bool) - if local version is latest
-    - online version (version.Version) - the latest version
-    - download url (str) - ready to download
-    - published date (str) - format DD MMMM YYYY
-    - release type (str) - Regular or Pre-release
-    - asset file (str) - file name of asset
-
     :param repo: Format '<organization or user>/<package>'
-    :param current_ver: Current local version
-    :param extension: File extension
-    :param file_name: string in file name
-    :return: ReleaseInfo with data
+    :return: Release object with data
     """
-    latest, online_version, asset_url, published, pre_release = False, '0.0.0', '', '', False
     package = repo.split('/')[1]
     try:
         response = get(url=f'https://api.github.com/repos/{repo}/releases/latest', timeout=5)
         if response.ok:
-            dict_json = response.json()
-            online_version = dict_json['tag_name']
-            pre_release = dict_json['prerelease']
-            published = datetime.strptime(dict_json['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y')
-            asset_url = next(asset['browser_download_url'] for asset in dict_json['assets'] if asset['name'].endswith(extension) and file_name in asset['name'])
-            LOG.debug(f'Latest GitHub version:{online_version} pre:{pre_release} date:{published} url:{asset_url}')
-            latest = _compare_versions(package, current_ver, online_version)
+            rel = Release(**response.json())
+            LOG.debug(f'Latest GitHub release: {rel}')
+            return rel
         else:
-            LOG.warning(f'Unable to check {package} version online. Try again later. Status={response.status_code}')
+            raise ValueError(f'Try again later. Status={response.status_code}')
     except Exception as exc:
-        LOG.warning(f'Unable to check {package} version online: {exc}')
-    return ReleaseInfo(
-        latest=latest,
-        ver=version.parse(online_version),
-        dl_url=asset_url,
-        published=published,
-        release_type='Pre-release' if pre_release else 'Regular',
-        asset_file=asset_url.split('/')[-1],
-    )
+        raise ValueError(f'Unable to check {package} version online: {exc}')
 
 
-def _compare_versions(package: str, current_ver: str, remote_ver: str) -> bool:
-    """
-    Compare two versions of packages and return result.
-
-    :param package: Package name
-    :param current_ver: Current/local version
-    :param remote_ver: Remote/online version
-    :return:
-    """
-    latest = False
-    if version.parse(remote_ver) > version.parse(current_ver):
-        LOG.info(f'There is new version of {package}: {remote_ver}')
-    elif version.parse(remote_ver) <= version.parse(current_ver):
-        LOG.info(f'{package} is up-to-date version: {current_ver}')
-        latest = True
-    return latest
-
-
-def get_version_string(repo: str, current_ver: str, check: bool = True) -> str:
+def get_version_string(repo: str, current_ver: str | version.Version, check: bool = True) -> str:
     """
     Generate formatted string with version number.
 
     :param repo: Format '<organization or user>/<package>'.
-    :param current_ver: Current local version.
+    :param current_ver: String or Version object.
     :param check: Version online.
     :return: Formatted version as string.
     """
     ver_string = f'v{current_ver}'
     if check:
-        result = check_ver_at_github(repo=repo, current_ver=current_ver, extension='')
-        details = ''
-        if result.latest:
+        try:
+            details = ''
+            result = check_ver_at_github(repo=repo)
+        except ValueError:
+            return f'v{current_ver} (failed)'
+
+        if result.is_latest(current_ver=current_ver):
             details = ' (latest)'
-        elif str(result.ver) != '0.0.0':
+        elif result.version != version.parse('0.0.0'):
             details = ' (update!)'
-            current_ver = str(result.ver)
-        elif str(result.ver) == '0.0.0':
-            details = ' (failed)'
+            current_ver = result.version
         ver_string = f'v{current_ver}{details}'
     return ver_string
 
 
-def download_file(url: str, save_path: Path) -> bool:
+def download_file(url: str, save_path: Path, progress_fn: Callable[[int], None] | None = None) -> bool:
     """
     Download a file from URL and save to save_path.
 
     :param url: URL address
     :param save_path: full path to save
+    :param progress_fn: callable object to report download progress
     """
     response = get(url=url, stream=True, timeout=5)
     if response.ok:
+        file_size = int(response.headers.get('Content-Length', 0))
+        LOG.debug(f'File size: {file_size / (1024 * 1024):.2f} MB' if file_size else 'File size: Unknown')
         LOG.debug(f'Download file from: {url}')
         with open(save_path, 'wb+') as dl_file:
-            for chunk in response.iter_content(chunk_size=128):
+            downloaded = 0
+            progress = 0
+            for chunk in response.iter_content(chunk_size=1024):
                 dl_file.write(chunk)
+                downloaded += len(chunk)
+                new_progress = int((downloaded / file_size) * 100)
+                if progress_fn and new_progress == progress + 1:
+                    progress = new_progress
+                    progress_fn(progress)
             LOG.debug(f'Saved as: {save_path}')
             return True
     else:
@@ -211,36 +180,33 @@ def proc_is_running(name: str) -> int:
     return 0
 
 
-def check_dcs_ver(dcs_path: Path) -> tuple[str, str]:
+def check_dcs_ver(dcs_path: Path) -> str:
     """
     Check DCS version and release type.
 
     :param dcs_path: Path to DCS installation directory
-    :return: DCS type and version as strings
+    :return: DCS version as strings
     """
-    result_type, result_ver = 'Unknown', 'Unknown'
+    result_ver = 'Unknown'
     try:
         with open(file=dcs_path / 'autoupdate.cfg', encoding='utf-8') as autoupdate_cfg:
             autoupdate_data = autoupdate_cfg.read()
     except (FileNotFoundError, PermissionError) as err:
         LOG.debug(f'{type(err).__name__}: {err.filename}')
     else:
-        result_type = 'stable'
-        if dcs_type := search(r'"branch":\s"([\w.]*)"', autoupdate_data):
-            result_type = str(dcs_type.group(1))
         if dcs_ver := search(r'"version":\s"([\d.]*)"', autoupdate_data):
             result_ver = str(dcs_ver.group(1))
-    return result_type, result_ver
+    return result_ver
 
 
-def check_bios_ver(bios_path: Path | str) -> ReleaseInfo:
+def check_bios_ver(bios_path: Path | str) -> version.Version:
     """
     Check the DSC-BIOS release version.
 
     :param bios_path: Path to DCS-BIOS directory in Saved Games folder
-    :return: ReleaseInfo named tuple
+    :return: Version object
     """
-    result = ReleaseInfo(latest=False, ver=version.parse('0.0.0'), dl_url='', published='', release_type='', asset_file='')
+    bios_ver = version.parse('0.0.0')
     new_location = Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
     old_location = Path(bios_path) / 'lib' / 'CommonData.lua'
 
@@ -255,9 +221,8 @@ def check_bios_ver(bios_path: Path | str) -> ReleaseInfo:
         LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
 
     if bios_re := search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data):
-        bios = version.parse(bios_re.group(1))
-        result = ReleaseInfo(latest=False, ver=bios, dl_url='', published='', release_type='', asset_file='')
-    return result
+        bios_ver = version.parse(bios_re.group(1))
+    return bios_ver
 
 
 def is_git_repo(dir_path: str) -> bool:
@@ -369,9 +334,9 @@ def count_files(directory: Path, extension: str) -> int:
     """
     Count files with extension in directory.
 
-    :param directory: as Path object
-    :param extension: file extension
-    :return: number of files
+    :param directory: As Path object
+    :param extension: File extension
+    :return: Number of files
     """
     try:
         json_files = [f.name for f in directory.iterdir() if f.is_file() and f.suffix == f'.{extension}']
@@ -586,7 +551,7 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     pyver = (python_version(), python_implementation())
     pyexec = sys.executable
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
-    bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios'])).ver
+    bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios']))
     repo_dir = Path(str(conf_dict['dcsbios'])).parents[1] / 'dcs-bios'
     git_ver, head_commit = _fetch_git_data(repo_dir=repo_dir)
     lgs_dir = '\n'.join([
@@ -838,7 +803,7 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
 
 
 class KeyRequest:
-    """Map LCD button ot G-Key with an abstract request model."""
+    """Map LCD button or G-Key with an abstract request model."""
 
     def __init__(self, yaml_path: Path, get_bios_fn: Callable[[str], BiosValue]) -> None:
         """
@@ -861,7 +826,7 @@ class KeyRequest:
 
     def get_request(self, button: AnyButton) -> RequestModel:
         """
-        Get abstract representation for request ti be sent gor requested button.
+        Get abstract representation for request ti be sent for requested button.
 
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
@@ -884,7 +849,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
 
     Using the Lupa library, first it will tries use LuaJIT 2.1 if not it will fall back to Lua 5.1
 
-    :param dcs_save_games: Full path to Saved Games\DCS.openbeta directory.
+    :param dcs_save_games: Full path to Saved Games\DCS directory.
     :param local_compile: Relative path to LocalCompile.lua file.
     """
     try:
@@ -907,3 +872,39 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     finally:
         chdir(previous_dir)
         LOG.debug(f"Change directory back to: {getcwd()}")
+
+
+def rgba(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ...] | int:
+    """
+    Convert a color to a single integer or tuple of integers.
+
+    This depends on given mode/alpha channel:
+    * If mode is an integer, then return a tuple of RGBA channels.
+    * If mode is a LcdMode.TRUE_COLOR, then return a tuple of RGBA channels.
+    * If mode is a LcdMode.BLACK_WHITE, then return a single integer.
+
+    :param c: Color name to convert
+    :param mode: Mode of the LCD or alpha channel as integer
+    :return: tuple with RGBA channels or single integer
+    """
+    if isinstance(mode, int):
+        return *rgb(c), mode
+    else:
+        return ImageColor.getcolor(color=c.name, mode=mode.value)
+
+
+def rgb(c: Color, /) -> tuple[int, int, int]:
+    """
+    Convert a Color instance to its RGB components as a tuple of integers.
+
+    The function extracts the red, green, and blue components from the
+    color's value, which is expected to be a single integer representing
+    a 24-bit RGB color.
+
+    :param c: An instance of Color, whose value is a 24-bit RGB integer.
+    :return: A tuple containing the red, green, and blue components.
+    """
+    red = (c.value >> 16) & 0xff
+    green = (c.value >> 8) & 0xff
+    blue = c.value & 0xff
+    return red, green, blue
