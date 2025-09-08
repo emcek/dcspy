@@ -1328,10 +1328,6 @@ class DcsPyQtGui(QMainWindow):
             fonts_cfg = FontsConfig(name=self.le_font_name.text(), **getattr(self, f'{self.device.lcd_name}_font'))
             self.device.lcd_info.set_fonts(fonts_cfg)
         self.event = Event()
-        app_params = {'model': self.device, 'event': self.event}
-        app_thread = Thread(target=dcspy_run, kwargs=app_params)
-        app_thread.name = 'dcspy-app'
-        LOG.debug(f'Starting thread {app_thread} for: {app_params}')
         self.pb_start.setEnabled(False)
         self.a_start.setEnabled(False)
         self.pb_stop.setEnabled(True)
