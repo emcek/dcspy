@@ -15,13 +15,12 @@ from shutil import copy, copytree, rmtree, unpack_archive
 from tempfile import gettempdir
 from threading import Event
 from time import sleep
-from typing import Any
 from webbrowser import open_new_tab
 
 from packaging import version
 from pydantic_core import ValidationError
 from PySide6 import __version__ as pyside6_ver
-from PySide6.QtCore import QAbstractItemModel, QEvent, QFile, QIODevice, QMetaObject, QObject, QRunnable, Qt, QThreadPool, Signal, SignalInstance, Slot, qVersion
+from PySide6.QtCore import QAbstractItemModel, QEvent, QFile, QIODevice, QMetaObject, QRunnable, Qt, QThreadPool, Signal, Slot, qVersion
 from PySide6.QtGui import QAction, QActionGroup, QBrush, QFont, QIcon, QPainter, QPen, QPixmap, QShowEvent, QStandardItemModel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
