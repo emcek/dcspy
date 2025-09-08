@@ -3,24 +3,11 @@ name: Style
 on: workflow_call
 
 jobs:
-  pycodestyle:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check PyCodeStyle"
-        run: |
-          pycodestyle --statistics --count src
-
   interrogate:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
@@ -33,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
@@ -46,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
@@ -63,16 +50,3 @@ jobs:
           path: |
             mypyhtml/*
           retention-days: 4
-
-  flake8:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Set up Python environment"
-        uses: ./.github/actions/setup-python
-
-      - name: "Check flake8"
-        run: |
-          flake8 src

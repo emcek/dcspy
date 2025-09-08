@@ -44,12 +44,6 @@ repos:
         exclude: '/qtgui_rc.py$|tests/'
         args: [--fix, --exit-non-zero-on-fix]
 
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-        exclude: '/qtgui_rc.py$|tests/'
-
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.19.1
     hooks:
