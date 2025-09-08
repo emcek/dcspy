@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from copy import copy
 from functools import partial
 from importlib import import_module
