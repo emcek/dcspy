@@ -154,7 +154,7 @@ class LogitechDevice:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
             dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)  # type: ignore[union-attr]
             dcsbios_buffer(parser=self.parser, callback=partial(self.plane.set_bios, ctrl_name),
-                           sig_handler=self.sig_handler, **ctrl.output.args.model_dump())
+                           sig_handler=self.sig_handler, **ctrl.output.args.model_dump())  # type: ignore[union-attr]
 
     def gkey_callback_handler(self, key_idx: int, mode: int, key_down: int, mouse: int) -> None:
         """
