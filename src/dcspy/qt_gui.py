@@ -50,13 +50,13 @@ LOGI_DEV_RADIO_BUTTON = {'rb_g19': 0, 'rb_g13': 0, 'rb_g15v1': 0, 'rb_g15v2': 0,
 class CircleLabel(QLabel):
     """Blinking green circle."""
 
-    def __init__(self, color_on: Qt.GlobalColor = Qt.GlobalColor.green, *args, **kwargs) -> None:
+    def __init__(self, color_on: Qt.GlobalColor = Qt.GlobalColor.green, **kwargs) -> None:
         """
         Initialize the object with the given parameters.
 
         :param color_on: The color when the label is in `on` state, default is green.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
         self.state = False
         self.pen = QPen(Qt.GlobalColor.black)
         self.brush_on = QBrush(color_on)
