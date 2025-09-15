@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
-from enum import Enum
 from itertools import cycle
 from logging import getLogger
 from pathlib import Path
@@ -18,8 +17,8 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, BiosValue, LcdButton, LcdInfo,
-                          RequestModel, RequestType)
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, LcdButton,
+                          LcdInfo, RequestModel, RequestType)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -666,13 +665,6 @@ class Mi24P(AdvancedAircraft):
         r828 = f'Ch:{int(self.get_bios("PLT_R828_CHAN")) + 1:>2}'
         yadro = f'{yadro_freq:>7.1f}'
         return r863, r828, yadro
-
-
-class ApacheEufdMode(Enum):
-    """Apache EUFD Mode."""
-    IDM = 'idm'
-    WCA = 'wca'
-    PRE = 'pre'
 
 
 class AH64DBLKII(AdvancedAircraft):

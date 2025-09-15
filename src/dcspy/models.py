@@ -83,6 +83,13 @@ class ApacheAllDrawModesKwargs(ApacheDrawModeKwargs, total=False):
     font: ImageFont.FreeTypeFont | None
 
 
+class ApacheEufdMode(Enum):
+    """Apache EUFD Mode."""
+    IDM = 'idm'
+    WCA = 'wca'
+    PRE = 'pre'
+
+
 class Input(BaseModel):
     """Input base class of inputs section of Control."""
     description: str
