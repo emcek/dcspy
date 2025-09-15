@@ -78,7 +78,6 @@ package aircraft {
     AdvancedAircraft <|-- F14B
     F14B <|-- F14A135GR
     AdvancedAircraft <|-- AV8BNA
-    AH64D *-- ApacheEufdMode
     AdvancedAircraft <|-- F4E45MC
 
     class MetaAircraft <<(M,plum)>> {
@@ -101,12 +100,6 @@ package aircraft {
         + update_display: Callable[Image]
         + {abstract} draw_for_lcd_mono(img: Image)
         + {abstract} draw_for_lcd_color(img: Image)
-    }
-    class ApacheEufdMode <<(E,yellow)>> {
-        + UNK = 0
-        + IDM = 1
-        + WCA = 2
-        + PRE = 4
     }
 }
 
@@ -273,6 +266,20 @@ package models {
         + bisque = 0xffe4c4
         + black = 0x000000
     }
+
+    class ApacheEufdMode <<(E,yellow)>> {
+        + IDM = 'idm'
+        + WCA = 'wca'
+        + PRE = 'pre'
+    }
+
+    class AircraftKwargs <<(T,pink)>> {
+        + update_display: Callable[[Image.Image], None]
+        + bios_data: Mapping[str, BiosValue]
+    }
+
+ApacheEufdMode -* AH64D
+AircraftKwargs -* AdvancedAircraft
 
 BiosValueInt *-- IntBuffArgs
 BiosValueStr *-- StrBuffArgs
