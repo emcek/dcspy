@@ -15,7 +15,7 @@ from typing import Any, Final, TypedDict, TypeVar, Union
 
 from _ctypes import sizeof
 from packaging import version
-from PIL import Image, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 __version__ = '3.7.1'
@@ -68,6 +68,19 @@ class AircraftKwargs(TypedDict):
     """Represent the keyword arguments expected by the Aircraft class."""
     update_display: Callable[[Image.Image], None]
     bios_data: Mapping[str, BiosValue]
+
+
+class ApacheDrawModeKwargs(TypedDict):
+    """Keyword arguments for Apache draw mode."""
+    draw: ImageDraw.ImageDraw
+
+
+class ApacheAllDrawModesKwargs(ApacheDrawModeKwargs, total=False):
+    """Keyword arguments for Apache all draw modes."""
+    scale: int | None
+    x_cords: list[int] | None
+    y_cords: list[int] | None
+    font: ImageFont.FreeTypeFont | None
 
 
 class Input(BaseModel):
