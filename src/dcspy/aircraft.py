@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from collections.abc import Sequence
-from enum import Enum
 from itertools import cycle
 from logging import getLogger
 from pathlib import Path
@@ -12,19 +11,18 @@ from tempfile import gettempdir
 from threading import Timer
 from typing import ClassVar
 
-from PIL import Image, ImageDraw, ImageFont
-
-from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, BiosValue, EffectInfo, LcdButton, LcdInfo, LedEffectType,
-                          LedSupport, RequestModel, RequestType)
-from dcspy.sdk.led_sdk import LedSdkManager
-from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
-
 try:
     from typing import Unpack
 except ImportError:
     from typing_extensions import Unpack
 
+from PIL import Image, ImageDraw, ImageFont
+
+from dcspy import default_yaml, load_yaml
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, EffectInfo,
+                          LcdButton, LedEffectType, LedSupport, LcdInfo, RequestModel, RequestType)
+from dcspy.sdk.led_sdk import LedSdkManager
+from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 # todo: to be removed
 RED_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
@@ -716,13 +714,6 @@ class Mi24P(AdvancedAircraft):
         return r863, r828, yadro
 
 
-class ApacheEufdMode(Enum):
-    """Apache EUFD Mode."""
-    IDM = 1
-    WCA = 2
-    PRE = 4
-
-
 class AH64DBLKII(AdvancedAircraft):
     """AH-64D Apache."""
     bios_name: str = 'AH-64D_BLK_II'
@@ -741,24 +732,24 @@ class AH64DBLKII(AdvancedAircraft):
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
         LOG.debug(f'Mode: {self.mode}')
-        kwargs = {'draw': ImageDraw.Draw(img), 'scale': 1}
-        if (mode := self.mode.name.lower()) == 'pre':
+        kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=1)
+        if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 5 + [80] * 5
             kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
-        getattr(self, f'_draw_for_{mode}')(**kwargs)
+        getattr(self, f'_draw_for_{self.mode.value}')(**kwargs)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
         LOG.debug(f'Mode: {self.mode}')
-        kwargs = {'draw': ImageDraw.Draw(img), 'scale': 2}
-        if (mode := self.mode.name.lower()) == 'pre':
+        kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=2)
+        if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 10
             kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
-        getattr(self, f'_draw_for_{mode}')(**kwargs)
+        getattr(self, f'_draw_for_{self.mode.value}')(**kwargs)
 
     def _draw_for_idm(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """

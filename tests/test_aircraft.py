@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from pytest import mark, raises
 
-from dcspy.models import KEY_DOWN, LcdButton
+from dcspy.models import KEY_DOWN, ApacheEufdMode, LcdButton
 from tests.helpers import all_plane_list, compare_images, set_bios_during_test
 
 
@@ -203,7 +203,6 @@ def test_button_pressed_for_planes(plane, button, result, request):
     (LcdButton.OK, [b'\n']),
 ], ids=['NONE', 'LEFT', 'RIGHT', 'DOWN', 'UP', 'MENU', 'CANCEL', 'OK'])
 def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
-    from dcspy.aircraft import ApacheEufdMode
     ah64dblkii_color.mode = ApacheEufdMode.WCA
     key_req = ah64dblkii_color.button_request(button)
     assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
@@ -343,8 +342,6 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
     from itertools import repeat
     from tempfile import gettempdir
 
-    from dcspy.aircraft import ApacheEufdMode
-
     apache = request.getfixturevalue(model)
     apache._debug_img = repeat(999)
     bios_pairs = [
@@ -367,7 +364,6 @@ def test_prepare_image_for_apache_wca_mode(model, resources, img_precision, requ
 @mark.benchmark
 @mark.parametrize('model', ['ah64dblkii_mono', 'ah64dblkii_color'], ids=['Mono LCD', 'Color LCD'])
 def test_apache_wca_more_then_one_screen_scrolled(model, resources, img_precision, request):
-    from dcspy.aircraft import ApacheEufdMode
     apache = request.getfixturevalue(model)
     bios_pairs = [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |CHARGER           '),

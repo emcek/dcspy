@@ -15,7 +15,7 @@ from typing import Any, Final, TypedDict, TypeVar, Union
 
 from _ctypes import sizeof
 from packaging import version
-from PIL import Image, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
 __version__ = '3.7.1'
@@ -68,6 +68,26 @@ class AircraftKwargs(TypedDict):
     """Represent the keyword arguments expected by the Aircraft class."""
     update_display: Callable[[Image.Image], None]
     bios_data: Mapping[str, BiosValue]
+
+
+class ApacheDrawModeKwargs(TypedDict):
+    """Keyword arguments for Apache draw mode."""
+    draw: ImageDraw.ImageDraw
+
+
+class ApacheAllDrawModesKwargs(ApacheDrawModeKwargs, total=False):
+    """Keyword arguments for Apache all draw modes."""
+    scale: int | None
+    x_cords: list[int] | None
+    y_cords: list[int] | None
+    font: ImageFont.FreeTypeFont | None
+
+
+class ApacheEufdMode(Enum):
+    """Apache EUFD Mode."""
+    IDM = 'idm'
+    WCA = 'wca'
+    PRE = 'pre'
 
 
 class Input(BaseModel):
@@ -558,10 +578,10 @@ class GuiPlaneInputRequest(BaseModel):
         using information from the ControlKeyData object (ctrl_key).
         If a custom value is provided, it incorporates the value into the generated request for certain request types.
 
-        :param ctrl_key: A ControlKeyData object used to specify the control key's attributes, such as its name, suggested step, and maximum value.
+        :param ctrl_key: A ControlKeyData is an object used to specify the control key's attributes, such as its name, suggested step, and maximum value.
         :param rb_iface: A string that represents the requested widget interface type, options include types such as 'rb_action', 'rb_fixed_step_inc', etc.
         :param custom_value: An optional string used to provide a custom value for specific request types ('rb_custom' or 'rb_set_state').
-        :return: A GuiPlaneInputRequest object initialized with the identifier, generated request string, and the specified widget interface type.
+        :return: A GuiPlaneInputRequest object initialized with the identifier, generated request string and the specified widget interface type.
         """
         rb_iface_request = {
             'rb_action': f'{ctrl_key.name} TOGGLE',
@@ -673,7 +693,7 @@ class MouseButton(BaseModel):
     Representation of a mouse button.
 
     Provides functionality for working with mouse buttons, including conversion
-    to string, boolean evaluation, hashing, and constructing instances from YAML
+    to string, boolean evaluation, hashing and constructing instances from YAML
     strings.
     Supports generating sequences of mouse buttons within a specified range.
     """
@@ -1025,7 +1045,7 @@ class MsgBoxTypes(Enum):
 
 
 class SystemData(BaseModel):
-    """Stores system related information."""
+    """Stores system and application-related information."""
     system: str
     release: str
     ver: str
@@ -1126,7 +1146,7 @@ class Asset(BaseModel):
     Representation of an asset with metadata information.
 
     This class is used to encapsulate details about an asset such as its
-    URL, name, label, content type, size, and download location.
+    URL, name, label, content type, size and download location.
     It also provides functionality to validate the asset's properties against specific criteria.
     """
     url: str
@@ -1210,7 +1230,7 @@ class Release(BaseModel):
         If no asset matches the provided criteria, an empty string is returned.
 
         :param extension: The file extension to search for, defaults to an empty string if not specified.
-        :param file_name: The file name to search for, defaults to an empty string if not specified.
+        :param file_name: The file name to search for defaults to an empty string if not specified.
         :return: The download URL of the asset if a match is found, otherwise an empty string.
         """
         asset = self.get_asset(extension=extension, file_name=file_name)
@@ -1272,8 +1292,7 @@ class RequestModel(BaseModel):
     """
     Represent a request model for handling different input button states and their respective BIOS actions.
 
-    This class is designed to manage various types of input requests, including cycle, custom,
-    and push-button requests.
+    This class is designed to manage various types of input requests, including cycle, custom and push-button requests.
     It provides functionality to validate input data, generate requests in byte format, and interpret requests based on specific conditions.
     It also supports creating empty request models and handling interactions with BIOS configuration via designated callable functions.
     """
@@ -1286,7 +1305,7 @@ class RequestModel(BaseModel):
     @field_validator('ctrl_name')
     def validate_interface(cls, value: str) -> str:
         """
-        Validate the provided interface name ensuring it consists only of uppercase letters, digits, or underscores.
+        Validate the provided interface name ensuring it consists only of uppercase letters, digits or underscores.
 
         This validator enforces strict naming conventions for control names, rejecting any value that contains invalid characters or is an empty string.
 
@@ -1306,13 +1325,13 @@ class RequestModel(BaseModel):
         This method processes the provided request string to extract necessary
         information, such as control name and cycle details.
         It initializes a CycleButton instance using the request information if applicable.
-        The function then returns a RequestModel instance populated with the parsed data and additional state information.
+        The function then returns a RequestModel instance contains the parsed data and additional state information.
 
         :param key: The key representing the `AnyButton` instance tied to the request.
         :param request: The raw request string providing all request details.
         :param get_bios_fn: A callable function that retrieves BIOS values, function takes
                             a string input (BIOS key) and returns a corresponding `BiosValue` object.
-        :return: A new instance of `RequestModel` populated with data parsed from the provided request string and supporting parameters.
+        :return: A new instance of `RequestModel` contains data parsed from the provided request string and supporting parameters.
         """
         cycle_button = CycleButton(ctrl_name='', step=0, max_value=0)
         if RequestType.CYCLE.value in request:
@@ -1335,10 +1354,10 @@ class RequestModel(BaseModel):
         Determine the next value for the button using a ZigZagIterator.
 
         If the cycle iterator is not already an instance of ZigZagIterator, it initializes one
-        using the control name and cycle attributes, before returning the next value from the iterator.
+        using the control name and cycle attributes. Then the next value from the iterator is returned.
 
         :raises TypeError: If ``self.cycle.iter`` is not of the expected type and cannot be initialized properly as a ZigZagIterator instance.
-        :returns: The next integer value generated by the ZigZagIterator.
+        :returns: The next value as an integer generated by the ZigZagIterator.
         """
         if not isinstance(self.cycle.iter, ZigZagIterator):
             self.cycle.iter = ZigZagIterator(current=int(self.get_bios_fn(self.ctrl_name)),

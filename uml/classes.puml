@@ -64,6 +64,22 @@ package logitech {
 }
 
 package aircraft {
+    BasicAircraft <|-- AdvancedAircraft
+    AdvancedAircraft <|-- FA18Chornet
+    AdvancedAircraft <|-- F16C50
+    AdvancedAircraft <|-- F15ESE
+    AdvancedAircraft <|-- Ka50
+    Ka50 <|-- Ka503
+    AdvancedAircraft <|-- Mi8MT
+    AdvancedAircraft <|-- Mi24P
+    AdvancedAircraft <|-- AH64D
+    AdvancedAircraft <|-- A10C
+    A10C <|-- A10C2
+    AdvancedAircraft <|-- F14B
+    F14B <|-- F14A135GR
+    AdvancedAircraft <|-- AV8BNA
+    AdvancedAircraft <|-- F4E45MC
+
     class MetaAircraft <<(M,plum)>> {
         + __new__(name, bases, namespace)
         + __call__()
@@ -85,29 +101,6 @@ package aircraft {
         + {abstract} draw_for_lcd_mono(img: Image)
         + {abstract} draw_for_lcd_color(img: Image)
     }
-    class ApacheEufdMode <<(E,yellow)>> {
-        + UNK = 0
-        + IDM = 1
-        + WCA = 2
-        + PRE = 4
-    }
-
-    BasicAircraft <|-- AdvancedAircraft
-    AdvancedAircraft <|-- FA18Chornet
-    AdvancedAircraft <|-- F16C50
-    AdvancedAircraft <|-- F15ESE
-    AdvancedAircraft <|-- Ka50
-    Ka50 <|-- Ka503
-    AdvancedAircraft <|-- Mi8MT
-    AdvancedAircraft <|-- Mi24P
-    AdvancedAircraft <|-- AH64D
-    AdvancedAircraft <|-- A10C
-    A10C <|-- A10C2
-    AdvancedAircraft <|-- F14B
-    F14B <|-- F14A135GR
-    AdvancedAircraft <|-- AV8BNA
-    AH64D *-- ApacheEufdMode
-    AdvancedAircraft <|-- F4E45MC
 }
 
 package utils {
@@ -267,16 +260,19 @@ package models {
         + mouse_key: int = 0
         + total() -> int
     }
+
     class Color <<(E,yellow)>> {
         + beige = 0xf5f5dc
         + bisque = 0xffe4c4
         + black = 0x000000
     }
+
     class LedEffectType {
         FLASH = 'flash'
         PULSE = 'pulse'
         NONE = 'none'
      }
+
     class EffectInfo <<(M,orange)>> {
         type: LedEffectType
         rgb: Tuple[int, int, int]
@@ -284,31 +280,45 @@ package models {
         interval: int
     }
 
-    BiosValueInt *-- IntBuffArgs
-    BiosValueStr *-- StrBuffArgs
+    class ApacheEufdMode <<(E,yellow)>> {
+        + IDM = 'idm'
+        + WCA = 'wca'
+        + PRE = 'pre'
+    }
 
-    LcdType --* LcdInfo
-    LcdMode --* LcdInfo
-    LcdButton --* LcdInfo
-    LogitechDeviceModel --* LcdInfo
-    DeviceRowsNumber --* LogitechDeviceModel
-    LcdButton -* BasicAircraft
-    LcdButton -* LogitechDeviceModel
-    LcdButton -* LogitechDevice
-    Gkey --* BasicAircraft
-    Gkey --* LogitechDevice
-    MouseButton --* BasicAircraft
-    MouseButton --* LogitechDevice
-    Direction --* ZigZagIterator
-    ZigZagIterator --* RequestModel
-    LogitechDeviceModel -* LogitechDevice
-    RequestModel --* KeyRequest
-    CycleButton -* RequestModel
-    LedEffectType -* EffectInfo
+    class AircraftKwargs <<(T,pink)>> {
+        + update_display: Callable[[Image.Image], None]
+        + bios_data: Mapping[str, BiosValue]
+    }
+
+ApacheEufdMode -* AH64D
+AircraftKwargs -* AdvancedAircraft
+
+BiosValueInt *-- IntBuffArgs
+BiosValueStr *-- StrBuffArgs
+
+LcdType --* LcdInfo
+LcdMode --* LcdInfo
+LcdButton --* LcdInfo
+LogitechDeviceModel --* LcdInfo
+DeviceRowsNumber --* LogitechDeviceModel
+LcdButton -* BasicAircraft
+LcdButton -* LogitechDeviceModel
+LcdButton -* LogitechDevice
+Gkey --* BasicAircraft
+Gkey --* LogitechDevice
+MouseButton --* BasicAircraft
+MouseButton --* LogitechDevice
+Direction --* ZigZagIterator
+ZigZagIterator --* RequestModel
+LogitechDeviceModel -* LogitechDevice
+RequestModel --* KeyRequest
+CycleButton -* RequestModel
+LedEffectType -* EffectInfo
 }
 
 package sdk{
-    class LcdSdkManager {
+    class LcdSdkManager <<(L,lightblue)>> {
         + lcd_dll: CDLL
         + logi_lcd_init(str, LcdType)
         + logi_lcd_is_connected(LcdType)
@@ -326,7 +336,7 @@ package sdk{
         # _clear_mono(bool)
         # _clear_color(bool)
     }
-    class LedSdkManager {
+    class led_sdk <<(L,lightblue)>> {
         + led_dll: CDLL
         + logi_led_init()
         + logi_led_init_with_name(str)
@@ -340,7 +350,7 @@ package sdk{
         + logi_led_shutdown()
         + start_led_effect(EffectInfo)
     }
-    class GkeySdkManager {
+    class GkeySdkManager <<(L,lightblue)>> {
         + key_dll: CDLL
         + gkey_context: LogiGkeyCBContext
         + user_callback: Callable[[int, int, int, int], None]
