@@ -19,7 +19,7 @@ jobs:
           python -m twine check dist/*
 
       - name: "Upload dcspy wheel"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dcspy_wheel
           path: |
