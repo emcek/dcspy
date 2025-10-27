@@ -71,7 +71,7 @@ jobs:
 
       - name: "Upload dcspy setup installer"
         if: ${{ endsWith( matrix.nuitka_type, 'setup') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dcspy_${{ matrix.nuitka_type }}
           path: |
@@ -81,7 +81,7 @@ jobs:
 
       - name: "Upload dcspy portable binaries"
         if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dcspy_${{ matrix.nuitka_type }}
           path: dist/dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable.exe
