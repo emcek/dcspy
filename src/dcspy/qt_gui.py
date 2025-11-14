@@ -26,14 +26,15 @@ from PySide6.QtCore import __version__ as qt6_ver
 from PySide6.QtGui import (QAction, QActionGroup, QColor, QColorConstants, QFont, QGuiApplication, QIcon, QPixmap, QShowEvent, QStandardItemModel, QStyleHints,
                            QTextCharFormat)
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QFileDialog, QGroupBox, QLabel, QLineEdit,
-                               QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox, QStatusBar,
-                               QSystemTrayIcon, QTableWidget, QTabWidget, QTextBrowser, QTextEdit, QToolBar, QToolBox, QWidget)
+from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox, QCompleter, QDialog, QDockWidget, QDoubleSpinBox, QFileDialog, QGroupBox,
+                               QLabel, QLineEdit, QListView, QMainWindow, QMenu, QMessageBox, QProgressBar, QPushButton, QRadioButton, QSlider, QSpinBox,
+                               QStatusBar, QSystemTrayIcon, QTableWidget, QTabWidget, QTextBrowser, QTextEdit, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
 from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
-                          RequestType, SystemData, __version__)
+                          EffectInfo, FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LedEffectType, LedSupport,
+                          LogitechDeviceModel, MouseButton, MsgBoxTypes, Release, RequestType, SystemData, __version__)
+from dcspy.sdk.led_sdk import LedSdkManager
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
@@ -61,6 +62,7 @@ class DcsPyQtGui(QMainWindow):
         """
         super().__init__()
         UiLoader().load_ui(':/ui/ui/qtdcs.ui', self)
+        self.led = LedSdkManager(name='DCSpy', target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: where to keep it for simulation purpose
         self._find_children()
         self.config = cfg_dict
         if not cfg_dict:
@@ -92,12 +94,14 @@ class DcsPyQtGui(QMainWindow):
         self.dw_device.setFloating(True)
         self.bg_rb_input_iface = QButtonGroup(self)
         self.bg_rb_device = QButtonGroup(self)
+        self.led_effect = EffectInfo(type=LedEffectType.NONE, rgb=(0,0,0), duration=0, interval=0)
         self._init_tray()
         self._init_combo_plane()
         self._init_menu_bar()
         self.apply_configuration(cfg=self.config)
         self._init_settings()
         self._init_devices()
+        self._init_led()
         self._init_autosave()
         self._trigger_refresh_data()
 
@@ -235,6 +239,39 @@ class DcsPyQtGui(QMainWindow):
         color_mode.addAction(self.a_mode_dark)
         color_mode.addAction(self.a_mode_system)
         color_mode.triggered.connect(self._switch_color_mode)
+
+    def _init_led(self) -> None:
+        """Initialize LED related stuff."""
+        self.combo_effect_type.addItems([LedEffectType.PULSE.name, LedEffectType.FLASH.name])
+
+        self.pb_stop_sim.clicked.connect(self._stop_led)
+        self.pb_start_sim.clicked.connect(self._start_led)
+        self.sp_interval.valueChanged.connect(self._set_led_effect)
+        self.sp_duration.valueChanged.connect(self._set_led_effect)
+        self.sp_sleep.valueChanged.connect(self._set_led_effect)
+        self.sp_r.valueChanged.connect(self._set_led_effect)
+        self.sp_g.valueChanged.connect(self._set_led_effect)
+        self.sp_b.valueChanged.connect(self._set_led_effect)
+        self.combo_effect_type.currentIndexChanged.connect(self._set_led_effect)
+
+
+    def _set_led_effect(self) -> None:
+        """Set LED effect."""
+        # todo: how to save it in a config file
+        self.led_effect = EffectInfo(type=getattr(LedEffectType, self.combo_effect_type.currentText()),
+                                     rgb=(int(self.sp_r.value()), int(self.sp_g.value()), int(self.sp_b.value())),
+                                     duration=self.sp_duration.value(), interval=self.sp_interval.value())
+
+    def _start_led(self):
+        self.led.logi_led_init()
+        self.led.logi_led_set_target_device(LedSupport.LOGI_DEVICETYPE_RGB)  # todo: take from device
+        LOG.debug(f'Start LED effect: {self.led_effect}')
+        self.led.start_led_effect(effect=self.led_effect)
+
+    def _stop_led(self):
+        self.led.logi_led_stop_effects()
+        LOG.debug('Stopped LED effect')
+        self.led.logi_led_shutdown()
 
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
@@ -458,6 +495,7 @@ class DcsPyQtGui(QMainWindow):
     def _generate_table(self) -> None:
         """Generate a table of combo boxes with completer functionality."""
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
+        self.combo_ctrl.addItems(self.ctrl_list)  # todo: move to better place
         for row in range(0, self.device.rows.total):
             for col in range(0, self.device.cols):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
@@ -1743,6 +1781,18 @@ class DcsPyQtGui(QMainWindow):
         self.pb_dcspy_check: QPushButton = self.findChild(QPushButton, 'pb_dcspy_check')  # type: ignore[assignment]
         self.pb_bios_check: QPushButton = self.findChild(QPushButton, 'pb_bios_check')  # type: ignore[assignment]
         self.pb_bios_repair: QPushButton = self.findChild(QPushButton, 'pb_bios_repair')  # type: ignore[assignment]
+
+        # todo: move to correct places, change widgets types
+        self.pb_stop_sim: QPushButton = self.findChild(QPushButton, 'pb_stop_sim')  # type: ignore[assignment]
+        self.pb_start_sim: QPushButton = self.findChild(QPushButton, 'pb_start_sim')  # type: ignore[assignment]
+        self.combo_ctrl: QComboBox = self.findChild(QComboBox, 'combo_ctrl')  # type: ignore[assignment]
+        self.combo_effect_type: QComboBox = self.findChild(QComboBox, 'combo_effect_type')  # type: ignore[assignment]
+        self.sp_interval: QSpinBox = self.findChild(QSpinBox, 'sp_interval')  # type: ignore[assignment]
+        self.sp_duration: QSpinBox = self.findChild(QSpinBox, 'sp_duration')  # type: ignore[assignment]
+        self.sp_sleep: QDoubleSpinBox = self.findChild(QDoubleSpinBox, 'sp_sleep')  # type: ignore[assignment]
+        self.sp_r: QSpinBox = self.findChild(QSpinBox, 'sp_r')  # type: ignore[assignment]
+        self.sp_g: QSpinBox = self.findChild(QSpinBox, 'sp_g')  # type: ignore[assignment]
+        self.sp_b: QSpinBox = self.findChild(QSpinBox, 'sp_b')  # type: ignore[assignment]
 
         self.cb_autostart: QCheckBox = self.findChild(QCheckBox, 'cb_autostart')  # type: ignore[assignment]
         self.cb_show_gui: QCheckBox = self.findChild(QCheckBox, 'cb_show_gui')  # type: ignore[assignment]
