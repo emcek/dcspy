@@ -641,12 +641,32 @@ class GuiPlaneInputRequest(BaseModel):
         return cls(identifier='', request='', widget_iface='')
 
 
-class LedConstants(Enum):
-    """LED constants."""
-    LOGI_LED_DURATION_INFINITE = 0
+class LedSupport(Enum):
+    """LED supported types."""
+    LOGI_DEVICETYPE_NONE = 0
     LOGI_DEVICETYPE_MONOCHROME = 1
     LOGI_DEVICETYPE_RGB = 2
     LOGI_DEVICETYPE_ALL = 3  # LOGI_DEVICETYPE_MONOCHROME | LOGI_DEVICETYPE_RGB
+
+    def __str__(self) -> str:
+        return self.name.split('_')[-1]
+
+
+class LedEffectType(Enum):
+    """LED effect type."""
+    FLASH = 'flash'
+    PULSE = 'pulse'
+    NONE = 'none'
+
+    def __str__(self) -> str:
+        return self.value
+
+# todo: rename it
+class EffectInfo(BaseModel):
+    type: LedEffectType
+    rgb: tuple[int, int, int]  # todo: think of conversion 0-255 -> 0-100% where to do it?
+    duration: int
+    interval: int
 
 
 class LcdButton(Enum):
@@ -870,6 +890,8 @@ class LogitechDeviceModel(BaseModel):
     btn_m_range: tuple[int, int] = (0, 0)
     lcd_keys: Sequence[LcdButton] = ()
     lcd_info: LcdInfo = NoneLcd
+    led_type: LedSupport = LedSupport.LOGI_DEVICETYPE_NONE
+    comments: str = ''
 
     def get_key_at(self, row: int, col: int) -> AnyButton | None:
         """
@@ -919,17 +941,15 @@ class LogitechDeviceModel(BaseModel):
         return max([self.no_g_modes, mouse_btn_exist, lcd_btn_exists])
 
     def __str__(self) -> str:
-        result = []
-        if self.lcd_info.type.value:
-            result.append(f'{self.lcd_info}')
-        if self.lcd_keys:
-            lcd_buttons = ', '.join([str(lcd_btn) for lcd_btn in self.lcd_keys])
-            result.append(f'LCD Buttons: {lcd_buttons}')
-        if self.no_g_modes and self.no_g_keys:
-            result.append(f'G-Keys: {self.no_g_keys} in {self.no_g_modes} modes')
-        if self.btn_m_range[0] and self.btn_m_range[1]:
-            result.append(f'Mouse Buttons: {self.btn_m_range[0]} to {self.btn_m_range[1]}')
-        return '\n'.join(result)
+        details = [
+            str(self.lcd_info) if self.lcd_info.type.value else None,
+            f"LCD Buttons: {', '.join(map(str, self.lcd_keys))}" if self.lcd_keys else None,
+            f"G-Keys: {self.no_g_keys} in {self.no_g_modes} modes" if self.no_g_modes and self.no_g_keys else None,
+            f"Mouse Buttons: {self.btn_m_range[0]} to {self.btn_m_range[1]}" if all(self.btn_m_range) else None,
+            f"LED support: {self.led_type}" if self.led_type.value else None,  # todo: test this
+            f"Comments: {self.comments}" if self.comments else None,  # todo: test this
+        ]
+        return '\n'.join(filter(None, details))
 
     @property
     def g_keys(self) -> Sequence[Gkey]:
@@ -960,23 +980,37 @@ class LogitechDeviceModel(BaseModel):
 
 
 G19 = LogitechDeviceModel(klass='G19', no_g_modes=3, no_g_keys=12, lcd_info=LcdColor,
-                          lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU))
+                          lcd_keys=(LcdButton.LEFT, LcdButton.RIGHT, LcdButton.OK, LcdButton.CANCEL, LcdButton.UP, LcdButton.DOWN, LcdButton.MENU),
+                          led_type=LedSupport.LOGI_DEVICETYPE_RGB)
 G13 = LogitechDeviceModel(klass='G13', no_g_modes=3, no_g_keys=29, lcd_info=LcdMono,
-                          lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                          lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
+                          led_type=LedSupport.LOGI_DEVICETYPE_RGB)
 G15v1 = LogitechDeviceModel(klass='G15v1', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
-                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
+                            led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,
+                            comments='Highest RGB given is <33%, the color will be off, if >33% and <66%, the '
+                                     'brightness will be low, and when >66%, the brightness will be high')  # todo: make nicer descriptions
 G15v2 = LogitechDeviceModel(klass='G15v2', no_g_modes=3, no_g_keys=6, lcd_info=LcdMono,
-                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                            lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
+                            led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,
+                            comments='Highest RGB given is <33%, the color will be off, if >33% and <66%, the '
+                                     'brightness will be low, and when >66%, the brightness will be high')
 G510 = LogitechDeviceModel(klass='G510', no_g_modes=3, no_g_keys=18, lcd_info=LcdMono,
-                           lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR))
+                           lcd_keys=(LcdButton.ONE, LcdButton.TWO, LcdButton.THREE, LcdButton.FOUR),
+                           led_type=LedSupport.LOGI_DEVICETYPE_RGB)
 LCD_KEYBOARDS_DEV = [G19, G510, G15v1, G15v2, G13]
 
-G910 = LogitechDeviceModel(klass='G910', no_g_modes=3, no_g_keys=9)
-G710 = LogitechDeviceModel(klass='G710', no_g_modes=3, no_g_keys=6)
-G110 = LogitechDeviceModel(klass='G110', no_g_modes=3, no_g_keys=12)
+G910 = LogitechDeviceModel(klass='G910', no_g_modes=3, no_g_keys=9, led_type=LedSupport.LOGI_DEVICETYPE_RGB)
+G710 = LogitechDeviceModel(klass='G710', no_g_modes=3, no_g_keys=6, led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,
+                           comments='Highest value for R, G or B defines brightness')
+G110 = LogitechDeviceModel(klass='G110', no_g_modes=3, no_g_keys=12, led_type=LedSupport.LOGI_DEVICETYPE_RGB,
+                           comments='green it will be ignored')
 G103 = LogitechDeviceModel(klass='G103', no_g_modes=3, no_g_keys=6)
-G105 = LogitechDeviceModel(klass='G105', no_g_modes=3, no_g_keys=6)
-G11 = LogitechDeviceModel(klass='G11', no_g_modes=3, no_g_keys=18)
+G105 = LogitechDeviceModel(klass='G105', no_g_modes=3, no_g_keys=6, led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,
+                           comments='Highest value for R, G or B defines brightness')
+G11 = LogitechDeviceModel(klass='G11', no_g_modes=3, no_g_keys=18, led_type=LedSupport.LOGI_DEVICETYPE_MONOCHROME,
+                          comments='Highest RGB given is <33%, the color will be off, if >33% and <66%, the brightness '
+                                   'will be low, and when >66%, the brightness will be high')
 KEYBOARDS_DEV = [G910, G710, G110, G103, G105, G11]
 
 G35 = LogitechDeviceModel(klass='G35', no_g_modes=1, no_g_keys=3)
@@ -985,8 +1019,9 @@ G930 = LogitechDeviceModel(klass='G930', no_g_modes=1, no_g_keys=3)
 G933 = LogitechDeviceModel(klass='G933', no_g_modes=1, no_g_keys=3)
 HEADPHONES_DEV = [G35, G633, G930, G933]
 
-G600 = LogitechDeviceModel(klass='G600', btn_m_range=(6, 20))
-G300 = LogitechDeviceModel(klass='G300', btn_m_range=(6, 9))
+G600 = LogitechDeviceModel(klass='G600', btn_m_range=(6, 20), led_type=LedSupport.LOGI_DEVICETYPE_RGB)
+G300 = LogitechDeviceModel(klass='G300', btn_m_range=(6, 9), led_type=LedSupport.LOGI_DEVICETYPE_RGB,
+                           comments='When calling the LED, if <50%, the color will be off, and when >50%, the color will be on')
 G400 = LogitechDeviceModel(klass='G400', btn_m_range=(6, 8))
 G700 = LogitechDeviceModel(klass='G700', btn_m_range=(1, 13))
 G9 = LogitechDeviceModel(klass='G9', btn_m_range=(4, 8))

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from collections.abc import Sequence
 from itertools import cycle
 from logging import getLogger
@@ -7,6 +8,7 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
+from threading import Timer
 from typing import ClassVar
 
 try:
@@ -17,10 +19,14 @@ except ImportError:
 from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
-from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, LcdButton,
-                          LcdInfo, RequestModel, RequestType)
+from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, EffectInfo,
+                          LcdButton, LcdInfo, LedEffectType, LedSupport, RequestModel, RequestType)
+from dcspy.sdk.led_sdk import LedSdkManager
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
+# todo: to be removed
+RED_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 0, 0), duration=0, interval=10)
+YELLOW_PULSE = EffectInfo(type=LedEffectType.PULSE, rgb=(100, 100, 0), duration=0, interval=10)
 LOG = getLogger(__name__)
 
 
@@ -63,6 +69,11 @@ class BasicAircraft:
         self.lcd = lcd_type
         self.cfg = load_yaml(full_path=default_yaml)
         self.bios_data: dict[str, BiosValue] = {}
+        self.led = LedSdkManager(target_dev=LedSupport.LOGI_DEVICETYPE_RGB)  # todo: do we need copy it here?
+        self.led_stack: dict[str, EffectInfo] = OrderedDict()
+        self.led_effect = True
+        self.led_counter = 16
+        self.led_shutdown = Timer(3.2, self.led.logi_led_shutdown)
         if self.bios_name:
             self.key_req = KeyRequest(yaml_path=default_yaml.parent / f'{self.bios_name}.yaml', get_bios_fn=self.get_bios)
             self.bios_data.update(self.key_req.cycle_button_ctrl_name)
@@ -100,6 +111,42 @@ class BasicAircraft:
             return type(default)(self.bios_data[selector])
         except (KeyError, ValueError):
             return default
+
+    def led_handler(self, selector: str, value: int, effect: EffectInfo) -> None:
+        """
+        Switch on and off LED effect for DCS-BIOS selector.
+
+        :param selector:
+        :param value:
+        :param effect:
+        """
+        self.bios_data[selector] = value
+        if self.led_effect and not self.led_counter:
+            if value:
+                LOG.debug(f'LED on {selector} val: {value} with {effect}')
+                self.led.logi_led_shutdown()
+                self.led_counter = 16
+                LOG.debug(f'Th: {self.led_shutdown}')
+                self.led_shutdown = Timer(3.2, self.led.logi_led_shutdown)
+                self.led_shutdown.start()
+                self.led.start_led_effect(effect=effect)
+                self.led_stack[selector] = effect
+            else:
+                LOG.debug(f'LED off {selector}')
+                self._popitem_and_reply_last_effect(selector)
+        else:
+            self.led_counter -= 1
+        LOG.debug(f'Couter: {value} {self.led_counter}')
+
+    def _popitem_and_reply_last_effect(self, selector: str) -> None:
+        del self.led_stack[selector]
+        if self.led_stack:
+            selector, effect = self.led_stack.popitem()
+            LOG.debug(f'Replay effect for {selector}')
+            value = int(self.bios_data[selector])
+            self.led_handler(selector, value, effect)
+        else:
+            self.led.logi_led_shutdown()
 
     def __repr__(self) -> str:
         return f'{super().__repr__()} with: {pformat(self.__dict__)}'

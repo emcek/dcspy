@@ -267,6 +267,19 @@ package models {
         + black = 0x000000
     }
 
+    class LedEffectType {
+        FLASH = 'flash'
+        PULSE = 'pulse'
+        NONE = 'none'
+     }
+
+    class EffectInfo <<(M,orange)>> {
+        type: LedEffectType
+        rgb: Tuple[int, int, int]
+        duration: int
+        interval: int
+    }
+
     class ApacheEufdMode <<(E,yellow)>> {
         + IDM = 'idm'
         + WCA = 'wca'
@@ -301,7 +314,9 @@ ZigZagIterator --* RequestModel
 LogitechDeviceModel -* LogitechDevice
 RequestModel --* KeyRequest
 CycleButton -* RequestModel
+LedEffectType -* EffectInfo
 }
+
 package sdk{
     class LcdSdkManager <<(L,lightblue)>> {
         + lcd_dll: CDLL
@@ -322,6 +337,7 @@ package sdk{
         # _clear_color(bool)
     }
     class led_sdk <<(L,lightblue)>> {
+        + led_dll: CDLL
         + logi_led_init()
         + logi_led_init_with_name(str)
         + logi_led_set_target_device(LedConstants)
@@ -332,7 +348,7 @@ package sdk{
         + logi_led_pulse_lighting(Tuple[int, int, int], int, int)
         + logi_led_stop_effects()
         + logi_led_shutdown()
-        + start_led_pulse(Tuple[int, int, int], int, int, Event)
+        + start_led_effect(EffectInfo)
     }
     class GkeySdkManager <<(L,lightblue)>> {
         + key_dll: CDLL
@@ -363,6 +379,7 @@ LcdInfo --* LogitechDevice
 LogitechDevice *-- ProtocolParser
 LogitechDevice *-- LcdSdkManager
 LogitechDevice *-- GkeySdkManager
+EffectInfo *- LedSdkManager
 
 LcdInfo --* BasicAircraft
 BasicAircraft *-- StringBuffer
