@@ -6,7 +6,7 @@ packaging
 pillow
 psutil
 pydantic
-PySide6
+PySide6==6.10.0
 PyYAML
 requests
 typing_extensions

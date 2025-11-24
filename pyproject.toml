@@ -46,7 +46,7 @@ dependencies = [
     'pillow',
     'psutil',
     'pydantic',
-    'pyside6',
+    'pyside6==6.10.0',
     'pyyaml',
     'requests',
     'typing-extensions',
