@@ -7,7 +7,7 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from typing import ClassVar
+from typing import Callable, ClassVar
 
 try:
     from typing import Unpack
@@ -114,8 +114,8 @@ class AdvancedAircraft(BasicAircraft):
         :param lcd_type: LCD type
         """
         super().__init__(lcd_type=lcd_type)
-        self.update_display = kwargs.get('update_display', None)
-        if self.update_display:
+        self.update_display: Callable[[Image.Image], None] | None = kwargs.get('update_display', None)
+        if callable(self.update_display):
             self.bios_data.update(kwargs.get('bios_data', {}))
         self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
 
@@ -127,7 +127,7 @@ class AdvancedAircraft(BasicAircraft):
         :param value:
         """
         super().set_bios(selector=selector, value=value)
-        if self.update_display:
+        if callable(self.update_display):
             self.update_display(self.prepare_image())
 
     def prepare_image(self) -> Image.Image:
