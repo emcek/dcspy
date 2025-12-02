@@ -229,7 +229,7 @@ def is_git_repo(dir_path: str) -> bool:
     Check if dir_path ios Git repository.
 
     :param dir_path: Path as string
-    :return: True if dir is git repo
+    :return: True if dir is a git repo
     """
     import git
     try:
@@ -285,7 +285,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
 
 def _checkout_repo(repo: str, repo_dir: Path, progress: git.RemoteProgress | None = None) -> git.Repo:
     """
-    Checkout repository at a main/master branch or clone it when not exists in a system.
+    Check out a repository at a main/master branch or clone it when not exists in a system.
 
     :param repo: Repository name
     :param repo_dir: Local repository directory
@@ -703,7 +703,7 @@ def substitute_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) 
 
     :param value: The input string to be processed
     :param symbol_replacement: A list of symbol patterns and their corresponding replacements.
-    :return: The processed string with symbols replaced according to the provided symbol_replacement list.
+    :return: The processed string with symbols is replaced according to the provided symbol_replacement list.
     """
     for pattern, replacement in symbol_replacement:
         value = sub(pattern, replacement, value)
@@ -808,7 +808,7 @@ def generate_bios_jsons_with_lupa(dcs_save_games: Path, local_compile='./Scripts
     r"""
     Regenerate DCS-BIOS JSON files.
 
-    Using the Lupa library, first it will try to use LuaJIT 2.1 if not it will fall back to Lua 5.1
+    Using the Lupa library, first it will try to use LuaJIT 2.1 if not, it will fall back to Lua 5.1
 
     :param dcs_save_games: Full path to the Saved Games\DCS directory.
     :param local_compile: Relative path to the LocalCompile.lua file.
@@ -921,7 +921,7 @@ def _compute_hash_and_check_file(file_path: Path, hashes: dict[str, dict[str, st
     """
     Compute and verify hashes for a file.
 
-    :param file_path: Path for file to chack hashes
+    :param file_path: Path for a file to check hashes
     :param hashes: Dictionary of hash types and values
     :return: Dictionary of verification results
     """

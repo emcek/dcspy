@@ -167,7 +167,7 @@ def start_led_pulse(rgb: tuple[int, int, int], duration: int, interval: int, eve
 
     :param rgb: Tuple with integer values range 0 to 100 as an amount of red, green, blue.
     :param duration: Parameter can be set (in millisecond) to 0 (zero) to make the effect run until an event is set.
-    :param interval: Flashing an interval in millisecond.
+    :param interval: Flashing interval in a millisecond.
     :param event: Stop event for infinite loop.
     """
     LOG.debug('Start LED thread')

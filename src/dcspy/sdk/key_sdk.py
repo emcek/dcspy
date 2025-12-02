@@ -115,7 +115,7 @@ class GkeySdkManager:
         """
         Indicate whether a mouse button is currently being pressed.
 
-        :param button_number: Number of the button to check, example between 6 and 20 for G600
+        :param button_number: Number of the buttons to check, example between 6 and 20 for G600
         :return: True if the specified button is currently being pressed, False otherwise
         """
         try:

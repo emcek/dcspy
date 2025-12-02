@@ -938,7 +938,7 @@ class DcsPyQtGui(QMainWindow):
         self._bios_check_clicked(silence=False)
 
     def _set_completer_for_git_ref(self) -> None:
-        """Setups completer for Git references of the DCS-BIOS git repository."""
+        """Set-ups completer for Git references of the DCS-BIOS git repository."""
         if not self._git_refs_count:
             git_refs = get_all_git_refs(repo_dir=self.bios_repo_path)
             self._git_refs_count = len(git_refs)
@@ -1235,7 +1235,7 @@ class DcsPyQtGui(QMainWindow):
         Repair DCS-BIOS installation.
 
         Procedure:
-        * Show a message box with warning
+        * Show a message box with a warning
         * Show if DCS is running
         * Remove Git repo from a temporary directory (optionally)
         * Remove DCS-BIOS from the Saved Games directory
@@ -1683,7 +1683,7 @@ class DcsPyQtGui(QMainWindow):
         style_hints.setColorScheme(getattr(Qt.ColorScheme, mode))
 
     def _find_children(self) -> None:
-        """Find all widgets for the main window."""
+        """Find all widgets in the main window."""
         self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')  # type: ignore[assignment]
         self.progressbar: QProgressBar = self.findChild(QProgressBar, 'progressbar')  # type: ignore[assignment]
         self.toolbar: QToolBar = self.findChild(QToolBar, 'toolbar')  # type: ignore[assignment]
@@ -1876,7 +1876,7 @@ class WorkerSignals(QObject):
     * finished - no data
     * error - tuple with exctype, value, traceback.format_exc()
     * result - object/any type - data returned from processing
-    * progress - float between zero (0) and one (1) as indication of progress
+    * progress - float between zero (0) and one (1) as an indication of progress
     * stage - string with current stage
     """
 

@@ -753,8 +753,8 @@ class AH64DBLKII(AdvancedAircraft):
         Draw image for PRE mode.
 
         :param draw: ImageDraw instance
-        :param x_cords: list of X coordinates
-        :param y_cords: list of Y coordinates
+        :param x_cords: a list of X coordinates
+        :param y_cords: a list of Y coordinates
         :param font: font instance
         """
         match_dict = {

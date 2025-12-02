@@ -124,7 +124,7 @@ class LogitechDevice:
         """
         Dynamic load of new detected aircraft.
 
-        Setup callbacks for detected plane inside DCS-BIOS parser.
+        Set up callbacks for detected plane inside DCS-BIOS parser.
         """
         self.plane_detected = False
         if self.plane_name in SUPPORTED_CRAFTS:
@@ -140,7 +140,7 @@ class LogitechDevice:
         LOG.debug(f'{repr(self)}')
 
     def _setup_plane_callback(self) -> None:
-        """Setups DCS-BIOS parser callbacks for detected plane."""
+        """Set ups DCS-BIOS parser callbacks for detected plane."""
         plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(get_config_yaml_item('dcsbios')))
         for ctrl_name in self.plane.bios_data:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
