@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/actions/setup-python
 
       - name: "Download dcspy binaries"
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           merge-multiple: true
           pattern: |
@@ -82,7 +82,7 @@ jobs:
 
     steps:
       - name: "Download dcspy binaries"
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: dcspy_wheel
 
