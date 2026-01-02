@@ -1,18 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from itertools import cycle
 from logging import getLogger
 from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from typing import Callable, ClassVar
-
-try:
-    from typing import Unpack
-except ImportError:
-    from typing_extensions import Unpack
+from typing import ClassVar, Unpack
 
 from PIL import Image, ImageDraw, ImageFont
 
