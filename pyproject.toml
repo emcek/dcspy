@@ -48,7 +48,7 @@ dependencies = [
     'pyside6==6.10.0',
     'pyyaml',
     'requests',
-    'typing-extensions',
+    'typing-extensions; python_version < "3.11"',
 ]
 
 [project.urls]
