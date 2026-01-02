@@ -7,7 +7,12 @@ from pathlib import Path
 from pprint import pformat
 from re import search
 from tempfile import gettempdir
-from typing import ClassVar, Unpack
+from typing import ClassVar
+
+try:
+    from typing import Unpack
+except ImportError:
+    from typing_extensions import Unpack
 
 from PIL import Image, ImageDraw, ImageFont
 
