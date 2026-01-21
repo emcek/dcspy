@@ -38,7 +38,7 @@ from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
                          get_depiction_of_ctrls, get_inputs_for_plane, get_list_of_ctrls, get_plane_aliases, get_planes_list, get_version_string,
-                         is_git_exec_present, is_git_object, load_yaml, proc_is_running, run_command, save_yaml)
+                         is_git_exec_present, is_git_object, load_yaml, run_command, save_yaml)
 
 _ = qtgui_rc  # prevent to remove import statement accidentally
 LOG = getLogger(__name__)
@@ -1101,36 +1101,30 @@ class DcsPyQtGui(QMainWindow):
         self.statusbar.showMessage(f'Local BIOS: {self.l_bios} | Remote BIOS: {self.r_bios}')
         correct_local_bios_ver = all([isinstance(self.l_bios, version.Version), any([self.l_bios.major, self.l_bios.minor, self.l_bios.micro])])
         correct_remote_bios_ver = all([isinstance(self.r_bios, version.Version), download_url, download_url.split('/')[-1]])
-        dcs_runs = proc_is_running(name='DCS.exe')
 
         if silence and correct_remote_bios_ver and not remote_bios_info.is_latest(current_ver=self.l_bios):
             self._update_release_bios(rel_info=remote_bios_info)
         elif not silence and correct_remote_bios_ver:
             self._ask_to_update(rel_info=remote_bios_info)
         elif not all([silence, correct_remote_bios_ver]):
-            msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver, bool(dcs_runs))
+            msg = self._get_problem_desc(correct_local_bios_ver, correct_remote_bios_ver)
             msg = f'{msg}\n\nUsing stable release version.'
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title='Update', message=msg)
 
-    def _get_problem_desc(self, local_bios: bool, remote_bios: bool, dcs: bool) -> str:
+    def _get_problem_desc(self, local_bios: bool, remote_bios: bool) -> str:
         """
         Describe issues with DCS-BIOS update.
 
         :param local_bios: Local BIOS version
         :param remote_bios: Remote BIOS version
-        :param dcs: DCS is running
         :return: Description as string
         """
-        dcs_chk = '\u2716 DCS' if dcs else '\u2714 DCS'
-        dcs_sta = 'running' if dcs else 'not running'
-        dcs_note = '\n     Be sure stay on Main menu.' if dcs else ''
         lbios_chk = '\u2714 Local' if local_bios else '\u2716 Local'
         lbios_note = '' if local_bios else '\n     Check "dcsbios" path in config'
         rbios_chk = '\u2714 Remote' if remote_bios else '\u2716 Remote'
         rbios_note = '' if remote_bios else '\n     Check internet connection.'
 
-        return f'{dcs_chk}: {dcs_sta}{dcs_note}\n' \
-               f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
+        return f'{lbios_chk} Bios ver: {self.l_bios}{lbios_note}\n' \
                f'{rbios_chk} Bios ver: {self.r_bios}{rbios_note}'
 
     def _check_local_bios(self) -> version.Version:
@@ -1236,15 +1230,11 @@ class DcsPyQtGui(QMainWindow):
 
         Procedure:
         * Show a message box with a warning
-        * Show if DCS is running
         * Remove Git repo from a temporary directory (optionally)
         * Remove DCS-BIOS from the Saved Games directory
         * Install DCS-BIOS
         """
-        dcs_runs = proc_is_running(name='DCS.exe')
         message = f'Are you sure to remove content of:\n\n{self.bios_path}'
-        if dcs_runs:
-            message += '\n\nNote: DCS is running, quit or be sure to stay on Main menu.'
         reply = self._show_message_box(kind_of=MsgBoxTypes.QUESTION, title='Repair DCS-BIOS',
                                        message=message, defaultButton=QMessageBox.StandardButton.No)
         if bool(reply == QMessageBox.StandardButton.Yes):
@@ -1851,7 +1841,6 @@ class AboutDialog(QDialog):
             'Lupa': {'webpage': 'https://github.com/scoder/lupa', 'license': 'MIT style'},
             'packaging': {'webpage': 'https://github.com/pypa/packaging', 'license': 'Apache-2.0 OR BSD-2-Clause'},
             'Pillow': {'webpage': 'https://github.com/python-pillow/Pillow', 'license': 'MIT-CMU'},
-            'psutil': {'webpage': 'https://github.com/giampaolo/psutil', 'license': 'BSD 3-Clause'},
             'Pydantic': {'webpage': 'https://github.com/pydantic/pydantic', 'license': 'MIT'},
             'PySide6': {'webpage': 'https://wiki.qt.io/Qt_for_Python', 'license': 'LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only'},
             'PyYAML': {'webpage': 'https://github.com/yaml/pyyaml', 'license': 'MIT'},

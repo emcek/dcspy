@@ -22,7 +22,6 @@ from typing import Any, ClassVar
 import yaml
 from packaging import version
 from PIL import ImageColor
-from psutil import process_iter
 from requests import get
 
 from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
@@ -162,20 +161,6 @@ def download_file(url: str, save_path: Path, progress_fn: Callable[[int], None] 
     else:
         LOG.warning(f'Can not download from: {url}')
         return False
-
-
-def proc_is_running(name: str) -> int:
-    """
-    Check if the process is running and return its PID.
-
-    If the process name is not found, 0 (zero) is returned.
-    :param name: Process name
-    :return: PID as int
-    """
-    for proc in process_iter(['pid', 'name']):
-        if name in proc.info['name']:
-            return proc.info['pid']
-    return 0
 
 
 def check_dcs_ver(dcs_path: Path) -> str:
