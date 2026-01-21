@@ -13,6 +13,5 @@ ruff
 types-cffi
 types-lupa
 types-Pillow
-types-psutil
 types-PyYAML
 types-requests

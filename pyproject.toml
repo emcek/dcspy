@@ -43,7 +43,6 @@ dependencies = [
     'lupa',
     'packaging',
     'pillow',
-    'psutil',
     'pydantic',
     'pyside6==6.10.0',
     'pyyaml',
@@ -79,7 +78,6 @@ test = [
     'types-cffi',
     'types-lupa',
     'types-pillow',
-    'types-psutil',
     'types-pyyaml',
     'types-requests',
 ]
