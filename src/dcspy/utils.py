@@ -8,7 +8,6 @@ from collections.abc import Callable, Generator, Sequence
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
-from itertools import chain
 from logging import getLogger
 from os import chdir, environ, getcwd, makedirs, walk
 from pathlib import Path
