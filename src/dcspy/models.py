@@ -723,6 +723,51 @@ class MouseButton(BaseModel):
         return tuple(MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1))
 
 
+class Gkey(BaseModel):
+    """Logitech G-Key."""
+    key: int
+    mode: int
+
+    def __str__(self) -> str:
+        """Return with format G<i>/M<j>."""
+        return f'G{self.key}_M{self.mode}'
+
+    def __bool__(self) -> bool:
+        """Return False when any of value is zero."""
+        return all([self.key, self.mode])
+
+    def __hash__(self) -> int:
+        """Hash will be the same for any two Gkey instances with the same key and mode values."""
+        return hash((self.key, self.mode))
+
+    @classmethod
+    def from_yaml(cls, /, yaml_str: str) -> Gkey:
+        """
+        Construct Gkey from YAML string.
+
+        :param yaml_str: G-Key string, example: G2_M1
+        :return: Gkey instance
+        """
+        match = search(r'G(\d+)_M(\d+)', yaml_str)
+        if match:
+            return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
+        raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
+
+    @staticmethod
+    def generate(key: int, mode: int) -> Sequence[Gkey]:
+        """
+        Generate a sequence of G-Keys.
+
+        :param key: Number of keys
+        :param mode: Number of modes
+        :return: sequence of Gkey instances
+        """
+        return tuple(Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1))
+
+
+AnyButton = Union[LcdButton, Gkey, MouseButton]
+
+
 class LcdType(Enum):
     """LCD Type."""
     NONE = 0
@@ -795,51 +840,6 @@ LcdMono = LcdInfo(width=LcdSize.MONO_WIDTH, height=LcdSize.MONO_HEIGHT, type=Lcd
                   foreground=255, background=0, mode=LcdMode.BLACK_WHITE)
 LcdColor = LcdInfo(width=LcdSize.COLOR_WIDTH, height=LcdSize.COLOR_HEIGHT, type=LcdType.COLOR, line_spacing=40,
                    foreground=(0, 255, 0, 255), background=(0, 0, 0, 0), mode=LcdMode.TRUE_COLOR)
-
-
-class Gkey(BaseModel):
-    """Logitech G-Key."""
-    key: int
-    mode: int
-
-    def __str__(self) -> str:
-        """Return with format G<i>/M<j>."""
-        return f'G{self.key}_M{self.mode}'
-
-    def __bool__(self) -> bool:
-        """Return False when any of value is zero."""
-        return all([self.key, self.mode])
-
-    def __hash__(self) -> int:
-        """Hash will be the same for any two Gkey instances with the same key and mode values."""
-        return hash((self.key, self.mode))
-
-    @classmethod
-    def from_yaml(cls, /, yaml_str: str) -> Gkey:
-        """
-        Construct Gkey from YAML string.
-
-        :param yaml_str: G-Key string, example: G2_M1
-        :return: Gkey instance
-        """
-        match = search(r'G(\d+)_M(\d+)', yaml_str)
-        if match:
-            return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
-        raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
-
-    @staticmethod
-    def generate(key: int, mode: int) -> Sequence[Gkey]:
-        """
-        Generate a sequence of G-Keys.
-
-        :param key: Number of keys
-        :param mode: Number of modes
-        :return: sequence of Gkey instances
-        """
-        return tuple(Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1))
-
-
-AnyButton = Union[LcdButton, Gkey, MouseButton]
 
 
 class DeviceRowsNumber(BaseModel):
