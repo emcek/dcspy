@@ -275,20 +275,22 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     :param update: Perform update process
     :param progress: Progress callback
     """
-    bios_repo = _checkout_repo(repo=repo, repo_dir=repo_dir, progress=progress)
+    bios_repo = _checkout_repo(git_ref=git_ref, repo_dir=repo_dir, repo=repo, progress=progress)
     if update:
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
+    git_ref =  git_ref.split('/')[1] if 'origin/' in git_ref else git_ref
     sha = _get_sha_hex_str(bios_repo, git_ref)
     return sha
 
 
-def _checkout_repo(repo: str, repo_dir: Path, progress: git.RemoteProgress | None = None) -> git.Repo:
+def _checkout_repo(git_ref: str, repo_dir: Path, repo: str, progress: git.RemoteProgress | None = None) -> git.Repo:
     """
     Check out a repository at a main/master branch or clone it when not exists in a system.
 
-    :param repo: Repository name
+    :param git_ref: Any Git reference as a string
     :param repo_dir: Local repository directory
+    :param repo: Repository name
     :param progress: Progress callback
     :return: Repo object of the repository
     """
@@ -298,8 +300,11 @@ def _checkout_repo(repo: str, repo_dir: Path, progress: git.RemoteProgress | Non
     if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
         all_refs = get_all_git_refs(repo_dir=repo_dir)
-        checkout_ref = 'main' if 'main' in all_refs else 'master'
-        bios_repo.git.checkout(checkout_ref)
+        local_branch = git_ref.removeprefix('origin/')
+        if local_branch in all_refs:
+            bios_repo.git.checkout(local_branch, force=True)
+        else:
+            bios_repo.git.checkout(git_ref, b=local_branch, force=True)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
         bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)  # type: ignore[arg-type]
@@ -372,11 +377,13 @@ def is_git_object(repo_dir: Path, git_obj: str) -> bool:
     import gitdb  # type: ignore[import-untyped]
     result = False
     if is_git_repo(str(repo_dir)):
-        bios_repo = git.Repo(repo_dir)
-        try:
-            bios_repo.commit(git_obj)
+        all_refs = get_all_git_refs(repo_dir=repo_dir)
+        if git_obj in all_refs:
             result = True
-        except (gitdb.exc.BadName, TypeError):
+        try:
+            git.Repo(repo_dir).commit(git_obj)
+            result = True
+        except (gitdb.exc.BadName, TypeError, ValueError):
             pass
     return result
 
@@ -390,7 +397,7 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
     """
     refs = []
     if is_git_repo(str(repo_dir)):
-        for ref in chain(git.Repo(repo_dir).heads, git.Repo(repo_dir).tags):
+        for ref in git.Repo(repo_dir).refs:
             refs.append(str(ref))
     return refs
 
