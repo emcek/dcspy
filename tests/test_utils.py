@@ -199,24 +199,35 @@ def test_check_github_repo(tmpdir):
     sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
     match = search(r'(master)\sfrom:\s\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2}\sby:\s.*', sha)
     assert match.group(1) == 'master'
-    sha = utils.check_github_repo(git_ref='branch', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
-    match = search(r'([0-9a-f]{8})\sfrom:\s\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2}\sby:\s.*', sha)
-    assert match.group(1)
+
+
+@mark.slow
+def test_check_github_repo_remote_branch(tmpdir):
+    ref = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert ref == 'master from: 13-Feb-2021 21:48:11 by: Michal Plichta'
+    ref = utils.check_github_repo(git_ref='origin/test', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert ref == 'test from: 13-Feb-2021 21:48:11 by: Michal Plichta'
+    ref = utils.check_github_repo(git_ref='origin/test', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert ref == 'test from: 13-Feb-2021 21:48:11 by: Michal Plichta'
 
 
 @mark.slow
 def test_is_git_object(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='origin/master') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='36f6ecba128e256b4ec0a884b0ec398ea629e3ae') is True
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='908334c2') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='wrong') is False
     assert utils.is_git_object(repo_dir=Path('/'), git_obj='master') is False
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='') is False
+    assert utils.is_git_object(repo_dir=tmpdir, git_obj='ff11111111111111111111111111111111111111') is False
 
 
 @mark.slow
 def test_get_all_git_refs(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
-    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master']
+    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master', 'origin/HEAD', 'origin/master', 'origin/test']
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):

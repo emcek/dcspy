@@ -1129,7 +1129,7 @@
                 <bool>false</bool>
                </property>
                <property name="toolTip">
-                <string>Any valid Git reference: branch, tag, commit</string>
+                <string>Any valid Git reference: branch, tag, commit. Select and press ENTER.</string>
                </property>
               </widget>
              </item>

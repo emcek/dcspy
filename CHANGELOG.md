@@ -1,3 +1,6 @@
+## 3.8.0
+* Allow checkout remote git branches for BIOS - #530 (@emcek)
+
 ## 3.7.1
 * Update About dialog
 * Fix external documentation
