@@ -239,7 +239,7 @@ class DcsPyQtGui(QMainWindow):
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
         widget_dict = {
-            'le_dcsdir': 'textChanged', 'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'textEdited',
+            'le_dcsdir': 'textChanged', 'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'returnPressed',
             'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'hs_debug_font_size': 'valueChanged',
             'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
             'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
