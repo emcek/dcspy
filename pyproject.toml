@@ -42,7 +42,7 @@ dependencies = [
     'gitpython',
     'lupa',
     'packaging',
-    'pillow',
+    'pillow>=12.1.0',
     'pydantic',
     'pyside6==6.10.0',
     'pyyaml',
