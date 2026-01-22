@@ -2,6 +2,7 @@
 * Allow checkout remote git branches for BIOS - #530 (@emcek)
 * Internal:
   * remove `psutil` library - #531 (@emcek)
+  * use new API of `Pillow` Image object get_flattened_data() - #532 (@emcek)
 
 ## 3.7.1
 * Update About dialog
