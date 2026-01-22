@@ -44,7 +44,7 @@ def test_update_display(c_func, effect, lcd, size):
             patch.object(lcd_sdk, 'logi_lcd_update', return_value=True):
         lcd_sdk.update_display(Image.new('1', (size[0], size[1]), 0))
         connected.assert_called_with(lcd)
-        set_background.assert_called_once_with([0] * size[0] * size[1])
+        set_background.assert_called_once_with((0,) * size[0] * size[1])
 
 
 @mark.parametrize('c_func, effect, lcd, list_txt', [

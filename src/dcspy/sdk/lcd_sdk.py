@@ -187,10 +187,10 @@ class LcdSdkManager:
         :param image: Image object from the Pillow library
         """
         if self.logi_lcd_is_connected(LcdType.MONO):
-            self.logi_lcd_mono_set_background(list(image.getdata()))
+            self.logi_lcd_mono_set_background(image.get_flattened_data())  # type: ignore[attr-defined]
             self.logi_lcd_update()
         elif self.logi_lcd_is_connected(LcdType.COLOR):
-            self.logi_lcd_color_set_background(list(image.getdata()))
+            self.logi_lcd_color_set_background(image.get_flattened_data())  # type: ignore[attr-defined]
             self.logi_lcd_update()
         else:
             LOG.warning('LCD is not connected')

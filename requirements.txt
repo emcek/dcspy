@@ -3,7 +3,7 @@ eval-type-backport; python_version < '3.10'
 GitPython
 lupa
 packaging
-pillow
+pillow>=12.1.0
 pydantic
 PySide6==6.10.0
 PyYAML
