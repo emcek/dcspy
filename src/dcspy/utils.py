@@ -871,7 +871,7 @@ def detect_system_color_mode() -> str:
 
     :return: Dark or light as string
     """
-    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx  # type: ignore[attr-defined]
+    from winreg import HKEY_CURRENT_USER, OpenKey, QueryValueEx
 
     try:
         key = OpenKey(HKEY_CURRENT_USER, 'Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize')
