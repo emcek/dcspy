@@ -225,6 +225,21 @@ def test_get_all_git_refs(tmpdir):
     assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master', 'origin/HEAD', 'origin/master', 'origin/test']
 
 
+@mark.slow
+@mark.parametrize('ref, result', [
+    ('1a8ea4faa11e65aec62281bd9428df59b6b48869', True),
+    ('1a8ea4f', True),
+    ('v0.1.0', True),
+    ('3a8ea4f', False),
+    ('v1.0.0', False)
+], ids=['long sha', 'short sha', 'good tag', 'wrong sha', 'wrong tag'])
+def test_is_git_sha(tmpdir, ref, result):
+    from git import Repo
+    utils.check_github_repo(git_ref='master', update=False, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
+    repo = Repo(tmpdir)
+    assert utils.is_git_sha(repo=repo, ref=ref) is result
+
+
 def test_check_dcs_bios_entry_no_entry(tmpdir):
     install_dir = tmpdir / 'install'
     makedirs(install_dir)
