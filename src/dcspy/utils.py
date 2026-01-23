@@ -480,30 +480,33 @@ def _fetch_system_info(conf_dict: dict[str, Any]) -> str:
     dcs = check_dcs_ver(dcs_path=Path(str(conf_dict['dcs'])))
     bios_ver = check_bios_ver(bios_path=str(conf_dict['dcsbios']))
     repo_dir = Path(str(conf_dict['dcsbios'])).parents[1] / 'dcs-bios'
-    git_ver, head_commit = _fetch_git_data(repo_dir=repo_dir)
+    git_ver, head_commit, remote_url = _fetch_git_data(repo_dir=repo_dir)
     lgs_dir = '\n'.join([
         str(Path(dir_path) / filename)
         for dir_path, _, filenames in walk('C:\\Program Files\\Logitech Gaming Software\\SDK')
         for filename in filenames
     ])
-    return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
+    return f'{__version__=}\n{name=}\n{pyver=}\n{pyexec=}\n{dcs=}\n{bios_ver=}\n{remote_url=}\n{git_ver=}\n{head_commit=}\n{lgs_dir}\ncfg={pformat(conf_dict)}'
 
 
-def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str]:
+def _fetch_git_data(repo_dir: Path) -> tuple[Sequence[int], str, str]:
     """
     Fetch the Git version and SHA of HEAD commit.
 
     :param repo_dir: Local directory for repository
-    :return: Tuple of (a version) and SHA of HEAD commit
+    :return: Tuple of (a version), SHA of HEAD commit and remote URL
     """
     try:
         import git
         git_ver = git.cmd.Git().version_info
-        head_commit = str(git.Repo(repo_dir).head.commit)
+        repo = git.Repo(repo_dir)
+        head_commit = str(repo.head.commit)
+        remote_url = repo.remotes.origin.url
     except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError, ImportError):
         git_ver = (0, 0, 0, 0)
         head_commit = 'N/A'
-    return git_ver, head_commit
+        remote_url = 'N/A'
+    return git_ver, head_commit, remote_url
 
 
 def _get_dcs_log(conf_dict: dict[str, Any]) -> Path:
