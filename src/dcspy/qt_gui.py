@@ -83,6 +83,7 @@ class DcsPyQtGui(QMainWindow):
         self.ctrl_depiction: dict[str, ControlDepiction] = {}
         self.input_reqs: dict[str, dict[str, GuiPlaneInputRequest]] = {}
         self.git_exec = is_git_exec_present()
+        self.bios_git_addr = self.config['git_bios_repo']
         self.l_bios = version.Version('0.0.0')
         self.r_bios = version.Version('0.0.0')
         self.systray = QSystemTrayIcon()
@@ -170,8 +171,9 @@ class DcsPyQtGui(QMainWindow):
         self.pb_dcspy_check.clicked.connect(self._dcspy_check_clicked)
         self.pb_bios_check.clicked.connect(self._bios_check_clicked)
         self.pb_bios_repair.clicked.connect(self._bios_repair_clicked)
-        self.le_bios_live.textEdited.connect(self._is_git_object_exists)
-        self.le_bios_live.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
+        self.le_bios_ref.textEdited.connect(self._is_git_object_exists)
+        self.le_bios_ref.returnPressed.connect(partial(self._bios_check_clicked, silence=False))
+        self.le_bios_repo.textEdited.connect(self._bios_git_repo_chnaged)
         self.cb_bios_live.toggled.connect(self._cb_bios_live_toggled)
         self.sp_completer.valueChanged.connect(self._set_find_value)  # generate json/bios
         self.tw_gkeys.currentCellChanged.connect(self._save_current_cell)
@@ -239,18 +241,18 @@ class DcsPyQtGui(QMainWindow):
     def _init_autosave(self) -> None:
         """Initialize of autosave."""
         widget_dict = {
-            'le_dcsdir': 'textChanged', 'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_live': 'returnPressed',
-            'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged', 'hs_debug_font_size': 'valueChanged',
-            'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged', 'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged',
-            'a_icons_only': 'triggered', 'a_text_only': 'triggered', 'a_text_beside': 'triggered', 'a_text_under': 'triggered',
-            'a_mode_light': 'triggered', 'a_mode_dark': 'triggered', 'a_mode_system': 'triggered',
-            'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled', 'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled',
-            'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled', 'cb_bios_live': 'toggled', 'cb_debug_enable': 'toggled',
-            'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled', 'rb_g15v2': 'toggled', 'rb_g510': 'toggled',
-            'rb_g910': 'toggled', 'rb_g710': 'toggled', 'rb_g110': 'toggled', 'rb_g103': 'toggled', 'rb_g105': 'toggled',
-            'rb_g11': 'toggled', 'rb_g35': 'toggled', 'rb_g633': 'toggled', 'rb_g930': 'toggled', 'rb_g933': 'toggled',
-            'rb_g600': 'toggled', 'rb_g300': 'toggled', 'rb_g400': 'toggled', 'rb_g700': 'toggled', 'rb_g9': 'toggled',
-            'rb_mx518': 'toggled', 'rb_g402': 'toggled', 'rb_g502': 'toggled', 'rb_g602': 'toggled',
+            'le_dcsdir': 'textChanged', 'le_biosdir': 'textChanged', 'le_font_name': 'textEdited', 'le_bios_ref': 'returnPressed',
+            'le_bios_repo': 'returnPressed', 'hs_large_font': 'valueChanged', 'hs_medium_font': 'valueChanged', 'hs_small_font': 'valueChanged',
+            'hs_debug_font_size': 'valueChanged', 'sp_completer': 'valueChanged', 'combo_planes': 'currentIndexChanged',
+            'toolbar': 'visibilityChanged', 'dw_gkeys': 'visibilityChanged', 'a_icons_only': 'triggered', 'a_text_only': 'triggered',
+            'a_text_beside': 'triggered', 'a_text_under': 'triggered', 'a_mode_light': 'triggered', 'a_mode_dark': 'triggered',
+            'a_mode_system': 'triggered', 'cb_autostart': 'toggled', 'cb_show_gui': 'toggled', 'cb_check_ver': 'toggled',
+            'cb_ded_font': 'toggled', 'cb_lcd_screenshot': 'toggled', 'cb_verbose': 'toggled', 'cb_autoupdate_bios': 'toggled',
+            'cb_bios_live': 'toggled', 'cb_debug_enable': 'toggled', 'rb_g19': 'toggled', 'rb_g13': 'toggled', 'rb_g15v1': 'toggled',
+            'rb_g15v2': 'toggled', 'rb_g510': 'toggled', 'rb_g910': 'toggled', 'rb_g710': 'toggled', 'rb_g110': 'toggled', 'rb_g103': 'toggled',
+            'rb_g105': 'toggled', 'rb_g11': 'toggled', 'rb_g35': 'toggled', 'rb_g633': 'toggled', 'rb_g930': 'toggled', 'rb_g933': 'toggled',
+            'rb_g600': 'toggled', 'rb_g300': 'toggled', 'rb_g400': 'toggled', 'rb_g700': 'toggled', 'rb_g9': 'toggled', 'rb_mx518': 'toggled',
+            'rb_g402': 'toggled', 'rb_g502': 'toggled', 'rb_g602': 'toggled',
         }
         for widget_name, trigger_method in widget_dict.items():
             getattr(getattr(self, widget_name), trigger_method).connect(self.save_configuration)
@@ -261,8 +263,9 @@ class DcsPyQtGui(QMainWindow):
             self._is_dir_exists(text=self.le_dcsdir.text(), widget_name='le_dcsdir')
             self._is_dir_dcs_bios(text=self.bios_path, widget_name='le_biosdir')
             if self.cb_bios_live.isChecked():
-                self.le_bios_live.setEnabled(True)
-                self._is_git_object_exists(text=self.le_bios_live.text())
+                self.le_bios_ref.setEnabled(True)
+                self.le_bios_repo.setEnabled(True)
+                self._is_git_object_exists(text=self.le_bios_ref.text())
             for logitech_dev in ALL_DEV:
                 logi_dev_rb_name = f'rb_{logitech_dev.klass.lower()}'
                 dev = getattr(self, logi_dev_rb_name)
@@ -895,13 +898,13 @@ class DcsPyQtGui(QMainWindow):
         :return: True if a git object exists, False otherwise.
         """
         if self.cb_bios_live.isChecked():
+            self._set_completer_for_git_ref()
             git_ref = is_git_object(repo_dir=self.bios_repo_path, git_obj=text)
             LOG.debug(f'Git reference: {text} in {self.bios_repo_path} exists: {git_ref}')
             if git_ref:
-                self.le_bios_live.setStyleSheet('')
-                self._set_completer_for_git_ref()
+                self.le_bios_ref.setStyleSheet('')
                 return True
-            self.le_bios_live.setStyleSheet('color: red;')
+            self.le_bios_ref.setStyleSheet('color: red;')
             return False
         return None
 
@@ -915,7 +918,7 @@ class DcsPyQtGui(QMainWindow):
         sha_commit = 'N/A'
         if self.git_exec and self.cb_bios_live.isChecked():
             try:
-                sha_commit = check_github_repo(git_ref=self.le_bios_live.text(), repo_dir=self.bios_repo_path, repo=BIOS_REPO_NAME, update=False)
+                sha_commit = check_github_repo(git_ref=self.le_bios_ref.text(), repo_dir=self.bios_repo_path, repo=self.le_bios_repo.text(), update=False)
             except Exception as exc:
                 LOG.debug(f'{exc}')
                 if not silence:
@@ -929,25 +932,42 @@ class DcsPyQtGui(QMainWindow):
         :param state: True if checked, False if unchecked.
         """
         if state:
-            self.le_bios_live.setEnabled(True)
-            self._is_git_object_exists(text=self.le_bios_live.text())
+            self.le_bios_ref.setEnabled(True)
+            self.le_bios_repo.setEnabled(True)
+            self.l_bios_ref.setEnabled(True)
+            self.l_bios_repo.setEnabled(True)
+            self._is_git_object_exists(text=self.le_bios_ref.text())
         else:
-            self.le_bios_live.setEnabled(False)
-            self.le_bios_live.setStyleSheet('')
+            self.le_bios_ref.setEnabled(False)
+            self.le_bios_repo.setEnabled(False)
+            self.l_bios_ref.setEnabled(False)
+            self.l_bios_repo.setEnabled(False)
+            self.le_bios_ref.setStyleSheet('')
         self._clean_bios_files()
         self._bios_check_clicked(silence=False)
 
     def _set_completer_for_git_ref(self) -> None:
         """Set-ups completer for Git references of the DCS-BIOS git repository."""
-        if not self._git_refs_count:
-            git_refs = get_all_git_refs(repo_dir=self.bios_repo_path)
+        git_refs = get_all_git_refs(repo_dir=self.bios_repo_path)
+        if self._git_refs_count != len(git_refs):
             self._git_refs_count = len(git_refs)
             completer = QCompleter(git_refs)
             completer.setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
             completer.setCompletionMode(QCompleter.CompletionMode.PopupCompletion)
             completer.setFilterMode(Qt.MatchFlag.MatchContains)
             completer.setModelSorting(QCompleter.ModelSorting.CaseInsensitivelySortedModel)
-            self.le_bios_live.setCompleter(completer)
+            self.le_bios_ref.setCompleter(completer)
+
+    def _bios_git_repo_chnaged(self, text: str) -> None:
+        """
+        Show info at statusbar when BIOS Git repostory changed.
+
+        :param text: Git repository sddress
+        """
+        self.le_bios_repo.setStyleSheet('')
+        if self.bios_git_addr != text:
+            self.statusbar.showMessage('BIOS git address changes, please click Repair')
+            self.le_bios_repo.setStyleSheet('color: red;')
 
     # <=><=><=><=><=><=><=><=><=><=><=> check dcspy updates <=><=><=><=><=><=><=><=><=><=><=>
     def _dcspy_check_clicked(self) -> None:
@@ -1016,8 +1036,8 @@ class DcsPyQtGui(QMainWindow):
         :param silence: Perform action with silence
         """
         if self.cb_bios_live.isChecked():
-            clone_worker: QRunnable | WorkerSignalsMixIn = GitCloneWorker(git_ref=self.le_bios_live.text(), bios_path=self.bios_path,
-                                                                          to_path=self.bios_repo_path, repo=BIOS_REPO_NAME, silence=silence)
+            clone_worker: QRunnable | WorkerSignalsMixIn = GitCloneWorker(git_ref=self.le_bios_ref.text(), bios_path=self.bios_path,
+                                                                          to_path=self.bios_repo_path, repo=self.le_bios_repo.text(), silence=silence)
             signal_handlers = {
                 'progress': self._progress_by_abs_value,
                 'stage': self.statusbar.showMessage,
@@ -1083,7 +1103,7 @@ class DcsPyQtGui(QMainWindow):
         install_result = self._handling_export_lua(temp_dir=self.bios_repo_path / 'Scripts')
         install_result = f'{install_result}\n\nUsing Git/Live version.'
         self.statusbar.showMessage(sha)
-        self._is_git_object_exists(text=self.le_bios_live.text())
+        self._is_git_object_exists(text=self.le_bios_ref.text())
         self._reload_table_gkeys()
         if not silence:
             self._show_message_box(kind_of=MsgBoxTypes.INFO, title=f'Updated {self.l_bios}', message=install_result)
@@ -1241,6 +1261,7 @@ class DcsPyQtGui(QMainWindow):
             self._clean_bios_files()
             self._remove_dcs_bios_repo_dir()
             self._start_bios_update(silence=False)
+            self.le_bios_repo.setStyleSheet('')
 
     def _clean_bios_files(self) -> None:
         """Clean all DCS-BIOS directories and files."""
@@ -1335,7 +1356,8 @@ class DcsPyQtGui(QMainWindow):
             getattr(self, f'rb_{cfg["device"].lower()}').toggle()
             self.le_dcsdir.setText(cfg['dcs'])
             self.le_biosdir.setText(cfg['dcsbios'])
-            self.le_bios_live.setText(cfg['git_bios_ref'])
+            self.le_bios_ref.setText(cfg['git_bios_ref'])
+            self.le_bios_repo.setText(cfg['git_bios_repo'])
             self.cb_bios_live.setChecked(cfg['git_bios'])
             self.addDockWidget(Qt.DockWidgetArea(int(cfg['gkeys_area'])), self.dw_gkeys)
             self.dw_gkeys.setFloating(bool(cfg['gkeys_float']))
@@ -1367,7 +1389,8 @@ class DcsPyQtGui(QMainWindow):
             'dcsbios': self.le_biosdir.text(),
             'font_name': self.le_font_name.text(),
             'git_bios': self.cb_bios_live.isChecked(),
-            'git_bios_ref': self.le_bios_live.text(),
+            'git_bios_ref': self.le_bios_ref.text(),
+            'git_bios_repo': self.le_bios_repo.text(),
             'font_mono_l': self.mono_font['large'],
             'font_mono_m': self.mono_font['medium'],
             'font_mono_s': self.mono_font['small'],
@@ -1698,6 +1721,8 @@ class DcsPyQtGui(QMainWindow):
         self.l_description: QLabel = self.findChild(QLabel, 'l_description')
         self.l_identifier: QLabel = self.findChild(QLabel, 'l_identifier')
         self.l_range: QLabel = self.findChild(QLabel, 'l_range')
+        self.l_bios_ref: QLabel = self.findChild(QLabel, 'l_bios_ref')
+        self.l_bios_repo: QLabel = self.findChild(QLabel, 'l_bios_repo')
 
         self.a_start: QAction = self.findChild(QAction, 'a_start')
         self.a_stop: QAction = self.findChild(QAction, 'a_stop')
@@ -1747,7 +1772,8 @@ class DcsPyQtGui(QMainWindow):
         self.le_dcsdir: QLineEdit = self.findChild(QLineEdit, 'le_dcsdir')
         self.le_biosdir: QLineEdit = self.findChild(QLineEdit, 'le_biosdir')
         self.le_font_name: QLineEdit = self.findChild(QLineEdit, 'le_font_name')
-        self.le_bios_live: QLineEdit = self.findChild(QLineEdit, 'le_bios_live')
+        self.le_bios_ref: QLineEdit = self.findChild(QLineEdit, 'le_bios_ref')
+        self.le_bios_repo: QLineEdit = self.findChild(QLineEdit, 'le_bios_repo')
         self.le_custom: QLineEdit = self.findChild(QLineEdit, 'le_custom')
 
         self.rb_g19: QRadioButton = self.findChild(QRadioButton, 'rb_g19')
@@ -1930,7 +1956,7 @@ class GitCloneWorker(QRunnable, WorkerSignalsMixIn):
         Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
 
         :param git_ref: Git reference
-        :param repo: Valid git repository user/name
+        :param repo: Valid git repository address
         :param bios_path: Path to DCS-BIOS
         :param to_path: Path to which the repository should be cloned to
         :param silence: Perform action with silence
