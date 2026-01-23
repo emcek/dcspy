@@ -40,6 +40,7 @@ def test_generate_config():
         'font_name': 'consola.ttf',
         'git_bios': True,
         'git_bios_ref': 'main',
+        'git_bios_repo': 'https://github.com/DCS-Skunkworks/dcs-bios.git',
         'gkeys_area': 2,
         'gkeys_float': False,
         'gui_debug': False,
