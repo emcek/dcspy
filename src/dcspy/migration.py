@@ -67,7 +67,7 @@ def _api_ver_3_8_0(cfg: DcspyConfigYaml) -> None:
 
 def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
     """
-    Migrate to version 3.7.1.
+    Migrate to version 3.7.0.
 
     :param cfg: Configuration dictionary
     """
@@ -79,7 +79,7 @@ def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
     """
-    Migrate to version 3.5.1.
+    Migrate to version 3.5.0.
 
     :param cfg: Configuration dictionary
     """
