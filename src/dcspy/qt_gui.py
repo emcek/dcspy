@@ -31,7 +31,7 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QTextBrowser, QTextEdit, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, OFFICIAL_BIOS_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
+from dcspy.models import (ALL_DEV, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, BIOS_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
                           FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
                           RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
@@ -1163,7 +1163,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: Release description info
         """
-        release_info = check_ver_at_github(repo=OFFICIAL_BIOS_REPO_NAME)
+        release_info = check_ver_at_github(repo=BIOS_REPO_NAME)
         self.r_bios = release_info.version
         return release_info
 
