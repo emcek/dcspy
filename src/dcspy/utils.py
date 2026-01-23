@@ -255,7 +255,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
 
     :param git_ref: Any Git reference as a string
     :param repo_dir: Local directory for a repository
-    :param repo: GitHub repository user/name
+    :param repo: GitHub repository address
     :param update: Perform update process
     :param progress: Progress callback
     """
@@ -274,7 +274,7 @@ def _checkout_repo(git_ref: str, repo_dir: Path, repo: str, progress: git.Remote
 
     :param git_ref: Any Git reference as a string
     :param repo_dir: Local repository directory
-    :param repo: Repository name
+    :param repo: Repository address
     :param progress: Progress callback
     :return: Repo object of the repository
     """
@@ -291,7 +291,7 @@ def _checkout_repo(git_ref: str, repo_dir: Path, repo: str, progress: git.Remote
             bios_repo.git.checkout(git_ref, b=local_branch, force=True)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
-        bios_repo = git.Repo.clone_from(url=f'https://github.com/{repo}.git', to_path=repo_dir, progress=progress)  # type: ignore[arg-type]
+        bios_repo = git.Repo.clone_from(url=repo, to_path=repo_dir, progress=progress)  # type: ignore[arg-type]
     return bios_repo
 
 
