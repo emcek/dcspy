@@ -222,7 +222,7 @@ def test_is_git_object(tmpdir):
 @mark.slow
 def test_get_all_git_refs(tmpdir):
     utils.check_github_repo(git_ref='master', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
-    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master', 'origin/HEAD', 'origin/master', 'origin/test']
+    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master', 'origin/HEAD', 'origin/master', 'origin/test', 'v0.1.0']
 
 
 @mark.slow
