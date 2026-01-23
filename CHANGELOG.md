@@ -1,4 +1,5 @@
 ## 3.8.0
+* Add configurable DCS-BIOS git repository - #533 (@emcek)
 * Allow checkout remote git branches for BIOS - #530 (@emcek)
 * Internal:
   * remove `psutil` library - #531 (@emcek)

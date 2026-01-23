@@ -10,7 +10,7 @@ from shutil import SameFileError, copy
 
 from packaging import version
 
-from dcspy.models import ConfigValue, DcspyConfigYaml, __version__
+from dcspy.models import BIOS_REPO_ADDR, ConfigValue, DcspyConfigYaml, __version__
 from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
@@ -56,9 +56,18 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
             yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
 
 
+def _api_ver_3_8_0(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.8.0.
+
+    :param cfg: Configuration dictionary
+    """
+    _add_key(cfg, 'git_bios_repo', BIOS_REPO_ADDR)
+
+
 def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
     """
-    Migrate to version 3.7.1.
+    Migrate to version 3.7.0.
 
     :param cfg: Configuration dictionary
     """
@@ -70,7 +79,7 @@ def _api_ver_3_7_0(cfg: DcspyConfigYaml) -> None:
 
 def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
     """
-    Migrate to version 3.5.1.
+    Migrate to version 3.5.0.
 
     :param cfg: Configuration dictionary
     """

@@ -88,7 +88,7 @@ def test_dummy_save_load_migrate(tmpdir):
     assert d_cfg == {'font_mono_s': 9}
     d_cfg = migrate(cfg=d_cfg)
     assert d_cfg == {
-        'api_ver': '3.7.1',
+        'api_ver': '3.8.0',
         'device': 'G13',
         'save_lcd': False,
         'show_gui': True,
@@ -113,6 +113,7 @@ def test_dummy_save_load_migrate(tmpdir):
         'toolbar_area': 4,
         'toolbar_style': 0,
         'git_bios_ref': 'main',
+        'git_bios_repo': 'https://github.com/DCS-Skunkworks/dcs-bios.git',
         'gkeys_area': 2,
         'gkeys_float': False,
         'gui_debug': False,
@@ -190,24 +191,24 @@ def test_is_git_exec_present():
 @mark.slow
 def test_check_github_repo(tmpdir):
     from re import search
-    sha = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    sha = utils.check_github_repo(git_ref='master', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
     match = search(r'(master)\sfrom:\s\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2}\sby:\s.*', sha)
     assert match.group(1) == 'master'
 
 
 @mark.slow
 def test_check_github_repo_remote_branch(tmpdir):
-    ref = utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    ref = utils.check_github_repo(git_ref='master', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
     assert ref == 'master from: 13-Feb-2021 21:48:11 by: Michal Plichta'
-    ref = utils.check_github_repo(git_ref='origin/test', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    ref = utils.check_github_repo(git_ref='origin/test', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
     assert ref == 'test from: 13-Feb-2021 21:48:11 by: Michal Plichta'
-    ref = utils.check_github_repo(git_ref='origin/test', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    ref = utils.check_github_repo(git_ref='origin/test', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
     assert ref == 'test from: 13-Feb-2021 21:48:11 by: Michal Plichta'
 
 
 @mark.slow
 def test_is_git_object(tmpdir):
-    utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
+    utils.check_github_repo(git_ref='master', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='origin/master') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='master') is True
     assert utils.is_git_object(repo_dir=tmpdir, git_obj='36f6ecba128e256b4ec0a884b0ec398ea629e3ae') is True
@@ -220,8 +221,23 @@ def test_is_git_object(tmpdir):
 
 @mark.slow
 def test_get_all_git_refs(tmpdir):
-    utils.check_github_repo(git_ref='master', update=True, repo='emcek/common_sense', repo_dir=tmpdir)
-    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master', 'origin/HEAD', 'origin/master', 'origin/test']
+    utils.check_github_repo(git_ref='master', update=True, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
+    assert utils.get_all_git_refs(repo_dir=tmpdir) == ['master', 'origin/HEAD', 'origin/master', 'origin/test', 'v0.1.0']
+
+
+@mark.slow
+@mark.parametrize('ref, result', [
+    ('1a8ea4faa11e65aec62281bd9428df59b6b48869', True),
+    ('1a8ea4f', True),
+    ('v0.1.0', True),
+    ('3a8ea4f', False),
+    ('v1.0.0', False)
+], ids=['long sha', 'short sha', 'good tag', 'wrong sha', 'wrong tag'])
+def test_is_git_sha(tmpdir, ref, result):
+    from git import Repo
+    utils.check_github_repo(git_ref='master', update=False, repo='https://github.com/emcek/common_sense.git', repo_dir=tmpdir)
+    repo = Repo(tmpdir)
+    assert utils.is_git_sha(repo=repo, ref=ref) is result
 
 
 def test_check_dcs_bios_entry_no_entry(tmpdir):

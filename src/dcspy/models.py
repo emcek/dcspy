@@ -18,7 +18,7 @@ from packaging import version
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
-__version__ = '3.7.1'
+__version__ = '3.8.0'
 
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
@@ -40,6 +40,7 @@ TIME_BETWEEN_REQUESTS: Final = 0.2
 LOCAL_APPDATA: Final = True
 DCSPY_REPO_NAME: Final = 'emcek/dcspy'
 BIOS_REPO_NAME: Final = 'DCS-Skunkworks/dcs-bios'
+BIOS_REPO_ADDR: Final = f'https://github.com/{BIOS_REPO_NAME}.git'
 DEFAULT_FONT_NAME: Final = 'consola.ttf'
 CTRL_LIST_SEPARATOR: Final = '--'
 CONFIG_YAML: Final = 'config.yaml'

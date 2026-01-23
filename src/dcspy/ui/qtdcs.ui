@@ -216,8 +216,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>152</width>
-               <height>105</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -409,8 +409,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>152</width>
-               <height>74</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -544,8 +544,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>236</width>
-               <height>105</height>
+               <width>657</width>
+               <height>385</height>
               </rect>
              </property>
              <attribute name="icon">
@@ -1102,20 +1102,6 @@
              <string>DCS-BIOS</string>
             </property>
             <layout class="QGridLayout" name="gridLayout_7">
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="cb_bios_live">
-               <property name="toolTip">
-                <string>Regular release or live version (need git installed)</string>
-               </property>
-               <property name="text">
-                <string>Use live DCS-BIOS version:</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/git.svg</normaloff>:/icons/img/git.svg</iconset>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="0" colspan="2">
               <widget class="QLineEdit" name="le_biosdir">
                <property name="toolTip">
@@ -1123,27 +1109,37 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="le_bios_live">
+             <item row="2" column="2">
+              <widget class="QPushButton" name="pb_bios_repair">
+               <property name="text">
+                <string>Repair</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/deepin-repair.svg</normaloff>:/icons/img/deepin-repair.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="l_bios_ref">
+               <property name="text">
+                <string>Git object reference:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>le_bios_ref</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="QLineEdit" name="le_bios_ref">
                <property name="enabled">
                 <bool>false</bool>
                </property>
                <property name="toolTip">
                 <string>Any valid Git reference: branch, tag, commit. Select and press ENTER.</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QCheckBox" name="cb_autoupdate_bios">
-               <property name="toolTip">
-                <string>Auto check DCS-BIOS version during startup</string>
-               </property>
-               <property name="text">
-                <string>Auto check DCS-BIOS</string>
-               </property>
-               <property name="icon">
-                <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/xfsm-reboot.svg</normaloff>:/icons/img/xfsm-reboot.svg</iconset>
                </property>
               </widget>
              </item>
@@ -1175,14 +1171,54 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="2">
-              <widget class="QPushButton" name="pb_bios_repair">
+             <item row="1" column="0">
+              <widget class="QCheckBox" name="cb_autoupdate_bios">
+               <property name="toolTip">
+                <string>Auto check DCS-BIOS version during startup</string>
+               </property>
                <property name="text">
-                <string>Repair</string>
+                <string>Auto check DCS-BIOS</string>
                </property>
                <property name="icon">
                 <iconset resource="../qtgui.qrc">
-                 <normaloff>:/icons/img/deepin-repair.svg</normaloff>:/icons/img/deepin-repair.svg</iconset>
+                 <normaloff>:/icons/img/xfsm-reboot.svg</normaloff>:/icons/img/xfsm-reboot.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QCheckBox" name="cb_bios_live">
+               <property name="toolTip">
+                <string>Regular release or live version (need git installed)</string>
+               </property>
+               <property name="text">
+                <string>Use live DCS-BIOS version</string>
+               </property>
+               <property name="icon">
+                <iconset resource="../qtgui.qrc">
+                 <normaloff>:/icons/img/git.svg</normaloff>:/icons/img/git.svg</iconset>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="l_bios_repo">
+               <property name="text">
+                <string>Git repository address:</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+               <property name="buddy">
+                <cstring>le_bios_repo</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QLineEdit" name="le_bios_repo">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="toolTip">
+                <string>Git repository with DCS-BIOS. Edit and press ENTER.</string>
                </property>
               </widget>
              </item>
