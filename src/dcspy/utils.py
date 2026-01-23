@@ -260,7 +260,9 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
     :param progress: Progress callback
     """
     bios_repo = _checkout_repo(git_ref=git_ref, repo_dir=repo_dir, repo=repo, progress=progress)
-    if update:
+    is_detached = bios_repo.head.is_detached
+    LOG.debug(f'Repo at: {git_ref} with HEAD detached: {is_detached}')
+    if update and not is_detached:
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
     git_ref =  git_ref.split('/')[1] if 'origin/' in git_ref else git_ref
@@ -284,15 +286,34 @@ def _checkout_repo(git_ref: str, repo_dir: Path, repo: str, progress: git.Remote
     if is_git_repo(str(repo_dir)):
         bios_repo = git.Repo(repo_dir)
         all_refs = get_all_git_refs(repo_dir=repo_dir)
-        local_branch = git_ref.removeprefix('origin/')
-        if local_branch in all_refs:
-            bios_repo.git.checkout(local_branch, force=True)
+        named_git_obj = git_ref.removeprefix('origin/')
+        if named_git_obj in all_refs:
+            bios_repo.git.checkout(named_git_obj, force=True)
+        elif is_git_sha(repo=bios_repo, ref=named_git_obj):
+            bios_repo.git.checkout('--detach', named_git_obj, force=True)
         else:
-            bios_repo.git.checkout(git_ref, b=local_branch, force=True)
+            bios_repo.git.checkout(git_ref, b=named_git_obj, force=True)
     else:
         rmtree(path=repo_dir, ignore_errors=True)
         bios_repo = git.Repo.clone_from(url=repo, to_path=repo_dir, progress=progress)  # type: ignore[arg-type]
     return bios_repo
+
+
+def is_git_sha(repo: git.Repo, ref: str) -> bool:
+    """
+    Check if a ref is a git commit SHA.
+
+    :param repo: Git Repository object
+    :param ref: Git commit SHA as string
+    :return: True if ref is SHA of git commit, False otherwise
+    """
+    import gitdb  # type: ignore[import-untyped]
+
+    try:
+        _  = repo.commit(ref).hexsha
+        return True
+    except gitdb.exc.BadName:
+        return False
 
 
 def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
