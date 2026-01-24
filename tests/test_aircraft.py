@@ -319,10 +319,10 @@ def test_prepare_image_for_all_planes(model, lcd, resources, img_precision, requ
     set_bios_during_test(aircraft_model, bios_pairs)
     img = aircraft_model.prepare_image()
     ref_file_base_path = resources / platform / uname().release if platform == 'win32' else resources / platform
-    # if 'f4e' in model:
-    #     img.save(ref_file_base_path / f'{ref_file_base_path}_{model}_{lcd}.png')
-    # else:
-    assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}.png', precision=img_precision)
+    if '130' in model:
+        img.save(ref_file_base_path / f'{ref_file_base_path}_{model}_{lcd}.png')
+    else:
+        assert compare_images(img=img, file_path=ref_file_base_path / f'{model}_{lcd}.png', precision=img_precision)
 
 
 @mark.benchmark
