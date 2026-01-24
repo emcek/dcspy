@@ -56,7 +56,7 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
 
 
 for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503',
-                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA', 'C130J30']:
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
         if lcd.type == models.LcdType.COLOR:
@@ -308,7 +308,7 @@ def default_config():
         'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': models.DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
         'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': True, 'git_bios_ref': 'main', 'toolbar_style': 0,
         'toolbar_area': 4, 'gkeys_area': 2, 'gkeys_float': False, 'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20,
-        'current_plane': 'A-10C', 'api_ver': '3.8.0'
+        'current_plane': 'A-10C', 'api_ver': '3.8.0', 'git_bios_repo': 'https://github.com/DCS-Skunkworks/dcs-bios.git'
     }
 
 
@@ -682,3 +682,20 @@ def f14b_mono_bios(f14a135gr_mono_bios):
 def f14b_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
+
+
+@fixture()
+def c130j30_mono_bios():
+    """Bios values for C-130J 30 Hercules for Logitech mono LCD."""
+    return [
+        ('PLT_ICS_INTERPHONE_MODE', 0),
+        ('PLT_ICS_TRANSMISSION_SELECTOR', 3),
+        ('CPLT_ICS_INTERPHONE_MODE', 3),
+        ('CPLT_ICS_TRANSMISSION_SELECTOR', 5),
+    ]
+
+
+@fixture()
+def c130j30_color_bios(c130j30_mono_bios):
+    """Bios values for C-130J 30 Hercules for Logitech color LCD."""
+    return c130j30_mono_bios

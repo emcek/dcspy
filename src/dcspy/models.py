@@ -60,6 +60,7 @@ SUPPORTED_CRAFTS = {
     'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14B'},
     'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
     'F4E45MC': {'name': 'F-4E Phantom II', 'bios': 'F-4E-45MC'},
+    'C130J30': {'name': 'C-130J 30 Hercules', 'bios': 'C-130J-30'},
 }
 
 BiosValue = Union[str, int, float]
