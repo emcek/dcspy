@@ -11,7 +11,7 @@ from dcspy.models import MULTICAST_IP, UDP_PORT, BiosValue
 from dcspy.sdk.lcd_sdk import LcdSdkManager
 from dcspy.utils import load_json
 
-all_plane_list = ['fa18chornet', 'f16c50', 'f4e45mc', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna']
+all_plane_list = ['fa18chornet', 'f16c50', 'f4e45mc', 'f15ese', 'ka50', 'ka503', 'mi8mt', 'mi24p', 'ah64dblkii', 'a10c', 'a10c2', 'f14a135gr', 'f14b', 'av8bna', 'c130j30']
 
 
 def set_bios_during_test(aircraft_model: BasicAircraft, bios_pairs: Sequence[tuple[str, BiosValue]]) -> None:
