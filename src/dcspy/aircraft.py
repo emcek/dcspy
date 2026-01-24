@@ -1043,10 +1043,10 @@ class C130J30(AdvancedAircraft):
         """
         mode = {0: 'CALL', 1: 'INT', 2: 'VOX', 3: 'HOT MIC'}
         trans = {0: 'PA', 1: 'INT', 2: 'U-1', 3: 'U-2', 4: 'V-1', 5: 'V-2', 6: 'H-1', 7: 'H-2', 8: 'SAT', 9: 'PVT'}
-        plt_mode = mode.get(self.get_bios("PLT_ICS_INTERPHONE_MODE", 0))
-        plt_trans = trans.get(self.get_bios("PLT_ICS_TRANSMISSION_SELECTOR", 0))
-        cplt_mode = mode.get(self.get_bios("CPLT_ICS_INTERPHONE_MODE", 0))
-        cplt_trans = trans.get(self.get_bios("CPLT_ICS_TRANSMISSION_SELECTOR", 0))
+        plt_mode = mode.get(self.get_bios('PLT_ICS_INTERPHONE_MODE', 0))
+        plt_trans = trans.get(self.get_bios('PLT_ICS_TRANSMISSION_SELECTOR', 0))
+        cplt_mode = mode.get(self.get_bios('CPLT_ICS_INTERPHONE_MODE', 0))
+        cplt_trans = trans.get(self.get_bios('CPLT_ICS_TRANSMISSION_SELECTOR', 0))
         draw.text(xy=(1, 1), text=f' PLT: {plt_mode :>7} ({plt_trans :>3})', fill=self.lcd.foreground, font=self.lcd.font_s)
         draw.text(xy=(1, 20), text=f'CPLT: {cplt_mode :>7} ({cplt_trans :>3})', fill=self.lcd.foreground, font=self.lcd.font_s)
 
