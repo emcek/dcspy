@@ -1018,6 +1018,47 @@ class AV8BNA(AdvancedAircraft):
         self._draw_common_data(draw=ImageDraw.Draw(img), scale=2)
 
 
+class C130J30(AdvancedAircraft):
+    """C-130J 30 Hercules."""
+    bios_name: str = 'C-130J-30'
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+        """
+        Create C-130J 30 Hercules.
+
+        :param lcd_type: LCD type
+        """
+        kwargs['bios_data'] = {
+            'PLT_ICS_INTERPHONE_MODE': 0,
+            'PLT_ICS_TRANSMISSION_SELECTOR': 0,
+            'CPLT_ICS_INTERPHONE_MODE': 0,
+            'CPLT_ICS_TRANSMISSION_SELECTOR': 0,
+        }
+        super().__init__(lcd_type=lcd_type, **kwargs)
+
+    def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
+        """
+        Draw common part for Mono and Color LCD.
+
+        :param draw: ImageDraw instance
+        """
+        mode = {0: 'CALL', 1: 'INT', 2: 'VOX', 3: 'HOT MIC'}
+        trans = {0: 'PA', 1: 'INT', 2: 'U-1', 3: 'U-2', 4: 'V-1', 5: 'V-2', 6: 'H-1', 7: 'H-2', 8: 'SAT', 9: 'PVT'}
+        plt_mode = mode.get(self.get_bios("PLT_ICS_INTERPHONE_MODE", 0))
+        plt_trans = trans.get(self.get_bios("PLT_ICS_TRANSMISSION_SELECTOR", 0))
+        cplt_mode = mode.get(self.get_bios("CPLT_ICS_INTERPHONE_MODE", 0))
+        cplt_trans = trans.get(self.get_bios("CPLT_ICS_TRANSMISSION_SELECTOR", 0))
+        draw.text(xy=(1, 1), text=f' PLT: {plt_mode :>7} ({plt_trans :>3})', fill=self.lcd.foreground, font=self.lcd.font_s)
+        draw.text(xy=(1, 20), text=f'CPLT: {cplt_mode :>7} ({cplt_trans :>3})', fill=self.lcd.foreground, font=self.lcd.font_s)
+
+    def draw_for_lcd_mono(self, img: Image.Image) -> None:
+        """Prepare image for C-130J-30 for Mono LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img))
+
+    def draw_for_lcd_color(self, img: Image.Image) -> None:
+        """Prepare image for C-130J-30 for Color LCD."""
+        self._draw_common_data(draw=ImageDraw.Draw(img))
+
+
 def draw_autopilot_channels(lcd: LcdInfo,
                             ap_channel: str,
                             c_rect: tuple[float, float, float, float],
