@@ -92,7 +92,7 @@ def pytest_addoption(parser) -> None:
 @fixture(scope='session')
 def img_precision(pytestconfig):
     """
-    Get a value of img_precision parameter form command line.
+    Get a value of img_precision parameter from command line.
 
     :param pytestconfig: Pytest configuration
     :return: Value from command line
