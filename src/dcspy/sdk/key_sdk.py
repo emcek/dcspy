@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from contextlib import suppress
 from ctypes import CDLL, CFUNCTYPE, POINTER, Structure, c_bool, c_uint, c_void_p, c_wchar_p, pointer
 from logging import getLogger
 from typing import ClassVar
@@ -70,20 +71,17 @@ class GkeySdkManager:
         It must be called before your application can see G-key/button events.
         :return: If the function succeeds, it returns True. Otherwise, False.
         """
-        try:
+        with suppress(AttributeError):
             self.key_dll.LogiGkeyInit.restype = c_bool
             self.key_dll.LogiGkeyInit.argtypes = [POINTER(LogiGkeyCBContext)]
 
             return self.key_dll.LogiGkeyInit(self.gkey_context_ptr)
-        except AttributeError:
-            return False
+        return False
 
     def logi_gkey_shutdown(self) -> None:
         """Unload the corresponding DLL and frees up any allocated resources."""
-        try:
+        with suppress(AttributeError):
             self.key_dll.LogiGkeyShutdown()
-        except AttributeError:
-            pass
 
     def logi_gkey_is_keyboard_gkey_pressed(self, g_key: int, mode: int) -> bool:
         """
@@ -93,10 +91,9 @@ class GkeySdkManager:
         :param mode: Number of the mode currently selected, example 1, 2 or 3
         :return: True if the specified G-key for the specified Mode is currently being pressed, False otherwise
         """
-        try:
+        with suppress(AttributeError):
             return self.key_dll.LogiGkeyIsKeyboardGkeyPressed(g_key, mode)
-        except AttributeError:
-            return False
+        return False
 
     def logi_gkey_is_keyboard_gkey_string(self, g_key: int, mode: int) -> str:
         """
@@ -106,10 +103,9 @@ class GkeySdkManager:
         :param mode: Number of the mode currently selected (1, 2 or 3)
         :return: Friendly string for specified G-key and Mode number, example 'G5/M1'
         """
-        try:
+        with suppress(AttributeError):
             return self.key_dll.LogiGkeyGetKeyboardGkeyString(g_key, mode)
-        except AttributeError:
-            return ''
+        return ''
 
     def logi_gkey_is_mouse_pressed(self, button_number: int) -> bool:
         """
@@ -118,10 +114,9 @@ class GkeySdkManager:
         :param button_number: Number of the buttons to check, example between 6 and 20 for G600
         :return: True if the specified button is currently being pressed, False otherwise
         """
-        try:
+        with suppress(AttributeError):
             return self.key_dll.LogiGkeyIsMousePressed(button_number)
-        except AttributeError:
-            return False
+        return False
 
     def logi_gkey_is_mouse_string(self, button_number: int) -> str:
         """
@@ -130,7 +125,6 @@ class GkeySdkManager:
         :param button_number: Number of the button to check, example between 6 and 20 for G600
         :return: Friendly string for specified button number, example 'Mouse Btn 8'
         """
-        try:
+        with suppress(AttributeError):
             return self.key_dll.LogiGkeyGetMouseString(button_number)
-        except AttributeError:
-            return ''
+        return ''
