@@ -49,6 +49,7 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
 * AH-64D Apache - Enhanced Up Front Display (EUFD)
 * F-15E Eagle - Upfront Control Panel
 * F-4 Phantom II - UHF (ARC 164) Radio
+* C-130J 30 Hercules - not yet decided (not ready in BIOS)
 * more to come...
 
 ## Requirements
