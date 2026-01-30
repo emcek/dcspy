@@ -11,7 +11,7 @@ DCSpy basically copy latest changes from DCS-BIOS repository into your `Save Gam
 
 Another option you can specify is `DCS-BIOS Git reference`, where `master` (recommended default value) means latest commit. But you can use any branch or commit ID.
 
-You can even use own DCS-BIOS fork, just enter URL adress of repostory. It is requre to click **Repair** button to remove old repo and clone new one.
+You can even use own DCS-BIOS fork, just enter URL address of repository. It is requre to click **Repair** button to remove old repo and clone new one.
 
 Example:
 
