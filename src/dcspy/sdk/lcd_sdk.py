@@ -1,3 +1,4 @@
+from contextlib import suppress
 from logging import getLogger
 
 from _cffi_backend import Lib
@@ -36,10 +37,9 @@ class LcdSdkManager:
         :param lcd_type: LCD type
         :return: A result of execution
         """
-        try:
+        with suppress(AttributeError):
             return self.lcd_dll.LogiLcdInit(FFI().new('wchar_t[]', name), lcd_type.value)  # type: ignore[attr-defined]
-        except AttributeError:
-            return False
+        return False
 
     def logi_lcd_is_connected(self, lcd_type: LcdType) -> bool:
         """
@@ -48,10 +48,9 @@ class LcdSdkManager:
         :param lcd_type: LCD type
         :return: A result of execution
         """
-        try:
+        with suppress(AttributeError):
             return self.lcd_dll.LogiLcdIsConnected(lcd_type.value)  # type: ignore[attr-defined]
-        except AttributeError:
-            return False
+        return False
 
     def logi_lcd_is_button_pressed(self, button: LcdButton) -> bool:
         """
@@ -60,24 +59,19 @@ class LcdSdkManager:
         :param button: Defines the button to check on
         :return: True if a button is being pressed, False otherwise
         """
-        try:
+        with suppress(AttributeError):
             return self.lcd_dll.LogiLcdIsButtonPressed(button.value)  # type: ignore[attr-defined]
-        except AttributeError:
-            return False
+        return False
 
     def logi_lcd_update(self) -> None:
         """Update the LCD."""
-        try:
+        with suppress(AttributeError):
             self.lcd_dll.LogiLcdUpdate()  # type: ignore[attr-defined]
-        except AttributeError:
-            pass
 
     def logi_lcd_shutdown(self) -> None:
         """Kill the applet and frees memory used by the SDK."""
-        try:
+        with suppress(AttributeError):
             self.lcd_dll.LogiLcdShutdown()  # type: ignore[attr-defined]
-        except AttributeError:
-            pass
 
     def logi_lcd_mono_set_background(self, pixels: list[int]) -> bool:
         """
@@ -92,10 +86,9 @@ class LcdSdkManager:
         :param pixels: List of 6880 (160x43) pixels as integer
         :return: A result of execution
         """
-        try:
+        with suppress(AttributeError, CDefError):  # we need catch error since BYTE[] is a Windows specific
             return self.lcd_dll.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))  # type: ignore[attr-defined]
-        except (AttributeError, CDefError):  # we need catch error since BYTE[] is a Windows specific
-            return False
+        return False
 
     def logi_lcd_mono_set_text(self, line_no: int, text: str) -> bool:
         """
@@ -105,10 +98,9 @@ class LcdSdkManager:
         :param text: The text to display
         :return: A result of execution
         """
-        try:
+        with suppress(AttributeError):
             return self.lcd_dll.LogiLcdMonoSetText(line_no, FFI().new('wchar_t[]', text))  # type: ignore[attr-defined]
-        except AttributeError:
-            return False
+        return False
 
     def logi_lcd_color_set_background(self, pixels: list[tuple[int, int, int, int]]) -> bool:
         """
@@ -121,10 +113,9 @@ class LcdSdkManager:
         :return: A result of execution
         """
         img_bytes = [byte for pixel in pixels for byte in pixel]
-        try:
+        with suppress(AttributeError, CDefError):  # we need catch error since BYTE[] is a Windows specific
             return self.lcd_dll.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))  # type: ignore[attr-defined]
-        except (AttributeError, CDefError):  # we need catch error since BYTE[] is Windows specific
-            return False
+        return False
 
     def logi_lcd_color_set_title(self, text: str, rgb: tuple[int, int, int] = (255, 255, 255)) -> bool:
         """
@@ -137,10 +128,9 @@ class LcdSdkManager:
         :param rgb: a tuple with integer values between 0 and 255 as red, green, blue
         :return: A result of execution
         """
-        try:
+        with suppress(AttributeError):
             return self.lcd_dll.LogiLcdColorSetTitle(FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
-        except AttributeError:
-            return False
+        return False
 
     def logi_lcd_color_set_text(self, line_no: int, text: str, rgb: tuple[int, int, int] = (255, 255, 255)) -> bool:
         """
@@ -152,10 +142,9 @@ class LcdSdkManager:
         :param rgb: tuple with integer values between 0 and 255 (interpreted as red, green or blue)
         :return: A result of execution
         """
-        try:
+        with suppress(AttributeError):
             return self.lcd_dll.LogiLcdColorSetText(line_no, FFI().new('wchar_t[]', text), *rgb)  # type: ignore[attr-defined]
-        except AttributeError:
-            return False
+        return False
 
     def update_text(self, txt: list[tuple[str, Color]]) -> None:
         """

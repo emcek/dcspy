@@ -5,6 +5,7 @@ import sys
 import traceback
 from argparse import Namespace
 from collections.abc import Callable
+from contextlib import suppress
 from functools import partial
 from importlib import import_module
 from logging import DEBUG, INFO, Formatter, Handler, LogRecord, getLogger
@@ -336,10 +337,8 @@ class DcsPyQtGui(QMainWindow):
 
         for name in ['large', 'medium', 'small']:
             hs: QSlider = getattr(self, f'hs_{name}_font')
-            try:
+            with suppress(RuntimeError):
                 hs.valueChanged.disconnect()
-            except RuntimeError:
-                pass
             hs.setMinimum(minimum)
             hs.setMaximum(maximum)
             hs.valueChanged.connect(partial(self._set_label_and_hs_value, name=name))
@@ -763,7 +762,7 @@ class DcsPyQtGui(QMainWindow):
 
         :param key_name: G-Key, LCD or Mouse button as string
         """
-        try:
+        with suppress(KeyError, AttributeError):
             widget_iface = self.input_reqs[self.current_plane][key_name].widget_iface
             if widget_iface == 'rb_custom':
                 self.le_custom.setText(self.input_reqs[self.current_plane][key_name].request.split(f'{RequestType.CUSTOM.value} ')[1])
@@ -773,8 +772,6 @@ class DcsPyQtGui(QMainWindow):
                 self.le_custom.setText('')
                 self.hs_set_state.setValue(0)
             getattr(self, widget_iface).setChecked(True)
-        except (KeyError, AttributeError):
-            pass
 
     def _hs_set_state_moved(self, value: int) -> None:
         """

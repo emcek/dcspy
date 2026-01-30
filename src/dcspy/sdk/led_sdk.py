@@ -1,3 +1,4 @@
+from contextlib import suppress
 from logging import getLogger
 from threading import Event
 from time import sleep
@@ -20,10 +21,9 @@ def logi_led_init() -> bool:
     currently going on the connected devices.
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedInit()  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_init_with_name(name: str) -> bool:
@@ -37,10 +37,9 @@ def logi_led_init_with_name(name: str) -> bool:
     :param name: The referred name for this integration to show u as
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedInitWithName(FFI().new('wchar_t[]', name))  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_set_target_device(target_device: LedConstants) -> bool:
@@ -53,10 +52,9 @@ def logi_led_set_target_device(target_device: LedConstants) -> bool:
                           LOGI_DEVICETYPE_MONOCHROME, LOGI_DEVICETYPE_RGB, LOGI_DEVICETYPE_ALL
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedSetTargetDevice(target_device.value)  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_save_current_lighting() -> bool:
@@ -67,10 +65,9 @@ def logi_led_save_current_lighting() -> bool:
     function just before starting the warning effect.
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedSaveCurrentLighting()  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_restore_lighting() -> bool:
@@ -82,10 +79,9 @@ def logi_led_restore_lighting() -> bool:
     after the warning effect is finished.
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedRestoreLighting()  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_set_lighting(rgb: tuple[int, int, int]) -> bool:
@@ -100,10 +96,9 @@ def logi_led_set_lighting(rgb: tuple[int, int, int]) -> bool:
     :param rgb: Tuple with integer range 0 to 100 as an amount of red, green, blue
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedSetLighting(*rgb)  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_flash_lighting(rgb: tuple[int, int, int], duration: int, interval: int) -> bool:
@@ -117,10 +112,9 @@ def logi_led_flash_lighting(rgb: tuple[int, int, int], duration: int, interval: 
     :param interval: Duration of the flashing interval in millisecond
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedFlashLighting(*rgb, duration, interval)  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_pulse_lighting(rgb: tuple[int, int, int], duration: int, interval: int) -> bool:
@@ -134,10 +128,9 @@ def logi_led_pulse_lighting(rgb: tuple[int, int, int], duration: int, interval: 
     :param interval: Duration of the flashing interval in millisecond.
     :return: A result of execution.
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedPulseLighting(*rgb, duration, interval)  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_stop_effects() -> bool:
@@ -147,18 +140,15 @@ def logi_led_stop_effects() -> bool:
     Started from logi_led_flash_lighting() or logi_led_pulse_lighting().
     :return: A result of execution
     """
-    try:
+    with suppress(AttributeError):
         return LED_DLL.LogiLedStopEffects()  # type: ignore[attr-defined]
-    except AttributeError:
-        return False
+    return False
 
 
 def logi_led_shutdown() -> None:
     """Restore the last saved lighting and frees memory used by the SDK."""
-    try:
+    with suppress(AttributeError):
         LED_DLL.LogiLedShutdown()  # type: ignore[attr-defined]
-    except AttributeError:
-        pass
 
 
 def start_led_pulse(rgb: tuple[int, int, int], duration: int, interval: int, event: Event) -> None:

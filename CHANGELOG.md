@@ -4,6 +4,7 @@
 * Internal:
   * remove `psutil` library - #531 (@emcek)
   * use new API of `Pillow` Image object get_flattened_data() - #532 (@emcek)
+  * Use suppress from contextlib - #535 (@emcek)
 
 ## 3.7.1
 * Update About dialog

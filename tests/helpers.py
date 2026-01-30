@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from contextlib import suppress
 from pathlib import Path
 from socket import AF_INET, SOCK_DGRAM, socket
 from time import sleep
@@ -61,10 +62,8 @@ def assert_bytes(test_bytes: bytes, ref_bytes: bytes) -> tuple[float, int]:
     :return: Tuple with float of percentage and difference in size
     """
     percents = []
-    try:
+    with suppress(IndexError):
         percents = [1 for i, b in enumerate(ref_bytes) if b != test_bytes[i]]
-    except IndexError:
-        pass
     return float(f'{sum(percents) / len(ref_bytes) * 100:.2f}'), len(ref_bytes) - len(test_bytes)
 
 
