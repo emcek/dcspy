@@ -5,6 +5,7 @@ import json
 import sys
 import zipfile
 from collections.abc import Callable, Generator, Sequence
+from contextlib import suppress
 from datetime import datetime
 from functools import lru_cache
 from glob import glob
@@ -27,10 +28,8 @@ from requests import get
 from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
                           DcspyConfigYaml, Gkey, LcdButton, LcdMode, MouseButton, Release, RequestModel, __version__)
 
-try:
+with suppress(ImportError):
     import git
-except ImportError:
-    pass
 
 LOG = getLogger(__name__)
 
@@ -309,11 +308,10 @@ def is_git_sha(repo: git.Repo, ref: str) -> bool:
     """
     import gitdb  # type: ignore[import-untyped]
 
-    try:
+    with suppress(gitdb.exc.BadName):
         _  = repo.commit(ref).hexsha
         return True
-    except gitdb.exc.BadName:
-        return False
+    return False
 
 
 def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
@@ -385,11 +383,9 @@ def is_git_object(repo_dir: Path, git_obj: str) -> bool:
         all_refs = get_all_git_refs(repo_dir=repo_dir)
         if git_obj in all_refs:
             result = True
-        try:
+        with suppress(gitdb.exc.BadName, TypeError, ValueError):
             git.Repo(repo_dir).commit(git_obj)
             result = True
-        except (gitdb.exc.BadName, TypeError, ValueError):
-            pass
     return result
 
 
