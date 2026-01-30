@@ -45,7 +45,7 @@ jobs:
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
-          copyright: (c) 2025 Michal Plichta. All rights reserved.
+          copyright: (c) 2026 Michal Plichta. All rights reserved.
 
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
@@ -67,7 +67,7 @@ jobs:
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           product-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
-          copyright: (c) 2025 Michal Plichta. All rights reserved.
+          copyright: (c) 2026 Michal Plichta. All rights reserved.
 
       - name: "Upload dcspy setup installer"
         if: ${{ endsWith( matrix.nuitka_type, 'setup') }}
