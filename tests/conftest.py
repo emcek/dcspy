@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from copy import copy
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -56,7 +57,7 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
 
 
 for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503',
-                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA']:
+                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA', 'C130J30']:
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
         if lcd.type == models.LcdType.COLOR:
@@ -92,7 +93,7 @@ def pytest_addoption(parser) -> None:
 @fixture(scope='session')
 def img_precision(pytestconfig):
     """
-    Get a value of img_precision parameter form command line.
+    Get a value of img_precision parameter from command line.
 
     :param pytestconfig: Pytest configuration
     :return: Value from command line
@@ -101,7 +102,7 @@ def img_precision(pytestconfig):
 
 
 @fixture()
-def resources():
+def resources() -> Path:
     """
     Path to tests/resources directory.
 
@@ -111,7 +112,7 @@ def resources():
 
 
 @fixture()
-def test_config_yaml(resources):
+def test_config_yaml(resources) -> Path:
     """
     Path to YAML tests a config file.
 
@@ -121,7 +122,7 @@ def test_config_yaml(resources):
 
 
 @fixture()
-def test_dcs_bios(resources):
+def test_dcs_bios(resources) -> Path:
     """
     Path to DCS-BIOS for test purposes.
 
@@ -131,7 +132,7 @@ def test_dcs_bios(resources):
 
 
 @fixture()
-def test_saved_games(resources):
+def test_saved_games(resources) -> Path:
     """
     Path to DCS-BIOS for Lua compile test.
 
@@ -149,7 +150,7 @@ def protocol_parser():
 
 
 @fixture
-def get_ctrl_for_plane(test_dcs_bios, request):
+def get_ctrl_for_plane(test_dcs_bios, request) -> models.Control:
     """
     Get the Control object from DCS-BIOS for plane.
 
@@ -167,19 +168,19 @@ def get_ctrl_for_plane(test_dcs_bios, request):
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
 @fixture()
-def lcd_font_mono():
+def lcd_font_mono() -> models.FontsConfig:
     """Return font configuration for mono LCD."""
     return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False)
 
 
 @fixture()
-def lcd_font_color(protocol_parser):
+def lcd_font_color(protocol_parser) -> models.FontsConfig:
     """Return font configuration for color LCD."""
     return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=True)
 
 
 @fixture()
-def keyboard_base(protocol_parser, sock):
+def keyboard_base(protocol_parser, sock) -> logitech.LogitechDevice:
     """
     Return instance of LcdKeyboard.
 
@@ -200,7 +201,7 @@ def keyboard_base(protocol_parser, sock):
 
 
 @fixture()
-def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
+def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources) -> logitech.LogitechDevice:
     """
     Return instance of Keyboard with LcdMono.
 
@@ -234,7 +235,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources):
 
 
 @fixture()
-def keyboard_color(protocol_parser, sock, lcd_font_color, resources):
+def keyboard_color(protocol_parser, sock, lcd_font_color, resources) -> logitech.LogitechDevice:
     """
     Return instance of Keyboard with LcdColor.
 
@@ -299,7 +300,7 @@ def g19_starter() -> DCSpyStarter:
 
 # <=><=><=><=><=> others <=><=><=><=><=>
 @fixture()
-def default_config():
+def default_config() -> dict:
     """Get default configuration dict."""
     from os import environ
     return {
@@ -308,12 +309,12 @@ def default_config():
         'verbose': False, 'check_bios': True, 'check_ver': True, 'font_name': models.DEFAULT_FONT_NAME, 'font_mono_m': 11, 'font_mono_s': 9, 'font_mono_l': 16,
         'font_color_m': 22, 'font_color_s': 18, 'font_color_l': 32, 'f16_ded_font': True, 'git_bios': True, 'git_bios_ref': 'main', 'toolbar_style': 0,
         'toolbar_area': 4, 'gkeys_area': 2, 'gkeys_float': False, 'theme_mode': 'system', 'theme_color': 'dark-blue', 'completer_items': 20,
-        'current_plane': 'A-10C', 'api_ver': '3.8.0'
+        'current_plane': 'A-10C', 'api_ver': '3.8.0', 'git_bios_repo': 'https://github.com/DCS-Skunkworks/dcs-bios.git'
     }
 
 
 @fixture()
-def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
+def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml) -> Iterator[None]:
     """
     Switch a path to config YAML file during testing.
 
@@ -332,7 +333,7 @@ def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml):
 
 
 @fixture()
-def migration_file(resources):
+def migration_file(resources) -> Iterator[None]:
     """
     Recover content of a test file for migration.
 
@@ -346,7 +347,7 @@ def migration_file(resources):
 
 # <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
 @fixture()
-def autoupdate1_cfg():
+def autoupdate1_cfg() -> str:
     """Mock for correct autoupdate_cfg."""
     return """{
  "WARNING": "DO NOT EDIT this file. You may break your install!",
@@ -365,7 +366,7 @@ def autoupdate1_cfg():
 
 
 @fixture()
-def autoupdate2_cfg():
+def autoupdate2_cfg() -> str:
     """Mock for wrong autoupdate_cfg."""
     return """{
  "WARNING": "DO NOT EDIT this file. You may break your install!",
@@ -386,7 +387,7 @@ def autoupdate2_cfg():
 
 # <=><=><=><=><=> airplane bios data <=><=><=><=><=>
 @fixture()
-def apache_pre_mode_bios_data():
+def apache_pre_mode_bios_data() -> list[tuple[str, str]]:
     """Bios values for AH-64D Apache PRE mode."""
     return [
         ('PLT_EUFD_LINE1', 'LOW ROTOR RPM     |RECTIFIER 2 FAIL  |PRESET TUNE VHF  |'),
@@ -404,7 +405,7 @@ def apache_pre_mode_bios_data():
 
 
 @fixture()
-def fa18chornet_mono_bios():
+def fa18chornet_mono_bios() -> list[tuple[str, str]]:
     """Bios values for F/A-18C Hornet for Logitech mono LCD."""
     return [
         ('UFC_SCRATCHPAD_STRING_1_DISPLAY', '11'),
@@ -428,13 +429,13 @@ def fa18chornet_mono_bios():
 
 
 @fixture()
-def fa18chornet_color_bios(fa18chornet_mono_bios):
+def fa18chornet_color_bios(fa18chornet_mono_bios) -> list[tuple[str, str]]:
     """Bios values for F/A-18C Hornet for Logitech color LCD."""
     return fa18chornet_mono_bios
 
 
 @fixture()
-def f16c50_mono_bios():
+def f16c50_mono_bios() -> list[tuple[str, str]]:
     """Bios values for F16C Viper for Logitech mono LCD."""
     return [
         ('DED_LINE_1', '  INS  08.0/ 6        1a '),
@@ -682,3 +683,20 @@ def f14b_mono_bios(f14a135gr_mono_bios):
 def f14b_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
+
+
+@fixture()
+def c130j30_mono_bios():
+    """Bios values for C-130J 30 Hercules for Logitech mono LCD."""
+    return [
+        ('PLT_ICS_INTERPHONE_MODE', 0),
+        ('PLT_ICS_TRANSMISSION_SELECTOR', 3),
+        ('CPLT_ICS_INTERPHONE_MODE', 3),
+        ('CPLT_ICS_TRANSMISSION_SELECTOR', 5),
+    ]
+
+
+@fixture()
+def c130j30_color_bios(c130j30_mono_bios):
+    """Bios values for C-130J 30 Hercules for Logitech color LCD."""
+    return c130j30_mono_bios
