@@ -3,7 +3,7 @@ name: Tests
 on: workflow_call
 
 jobs:
-  test:
+  unit_test:
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
