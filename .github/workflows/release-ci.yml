@@ -13,15 +13,15 @@ jobs:
     uses: ./.github/workflows/test.yml
 
   nuitka:
-    needs: [ test ]
+    needs: [ style ]
     uses: ./.github/workflows/nuitka.yml
 
   wheel:
-    needs: [ test ]
+    needs: [ style ]
     uses: ./.github/workflows/wheel.yml
 
   github:
-    needs: [ nuitka, wheel ]
+    needs: [ test, nuitka, wheel ]
     runs-on: windows-2025
     steps:
       - name: "Checkout"
@@ -74,7 +74,7 @@ jobs:
             DIGESTS
 
   pypi:
-    needs: [ nuitka, wheel ]
+    needs: [ test, nuitka, wheel ]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
