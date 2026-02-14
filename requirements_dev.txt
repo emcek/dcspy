@@ -4,3 +4,4 @@ detect-test-pollution
 git+https://github.com/python-qt-tools/PySide6-stubs
 nuitka
 pre-commit
+ty>=0.0.17
