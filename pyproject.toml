@@ -44,7 +44,7 @@ dependencies = [
     'packaging',
     'pillow>=12.1.0',
     'pydantic',
-    'pyside6==6.10.0',
+    'pyside6==6.10.2',
     'pyyaml',
     'requests',
     'typing-extensions; python_version < "3.11"',
