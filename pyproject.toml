@@ -59,6 +59,9 @@ Changelog = 'https://github.com/emcek/dcspy/blob/master/CHANGELOG.md'
 [project.scripts]
 dcspy_cli = 'dcspy.run:run'
 
+[[tool.uv.index]]
+url = "https://pypi.org/simple"
+
 [project.gui-scripts]
 dcspy = 'dcspy.run:run'
 
@@ -179,4 +182,5 @@ dev = [
     'nuitka',
     'pre-commit',
     'PySide6-stubs',
+    "ty>=0.0.17",
 ]
