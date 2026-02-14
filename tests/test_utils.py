@@ -433,7 +433,7 @@ def test_clone_progress():
 
 @mark.skipif(condition=platform != 'win32', reason='Run only on Windows')
 def test_get_config_yaml_location():
-    assert utils.get_config_yaml_location() == Path(environ.get('LOCALAPPDATA', None)) / 'dcspy'
+    assert utils.get_config_yaml_location() == Path(environ.get('LOCALAPPDATA', '')) / 'dcspy'
 
 
 def test_replace_symbols():
