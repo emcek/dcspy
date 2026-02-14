@@ -61,7 +61,7 @@ repos:
     rev: v2.10.0
     hooks:
       -   id: pip-audit
-          args: [--local, --ignore-vuln, GHSA-4xh5-x5gv-qwph]
+          args: [--local]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.25
