@@ -93,7 +93,7 @@ class ApacheEufdMode(Enum):
 
 
 class Input(BaseModel):
-    """Input base class of inputs section of Control."""
+    """Input base class of the inputs section of Control."""
     description: str
 
     def get(self, attribute: str, default=None) -> Any | None:
@@ -108,7 +108,7 @@ class Input(BaseModel):
 
 
 class FixedStep(Input):
-    """FixedStep input interface of inputs a section of Control."""
+    """FixedStep input interface of the inputs section of Control."""
     interface: str = 'fixed_step'
 
     @field_validator('interface')
@@ -180,7 +180,7 @@ class Action(Input):
 
 
 class SetString(Input):
-    """SetString input interface of inputs a section of Control."""
+    """SetString input interface of the inputs section of Control."""
     interface: str = 'set_string'
 
     @field_validator('interface')
@@ -200,14 +200,14 @@ Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
 
 
 class Output(BaseModel):
-    """Output base class of outputs section of Control."""
+    """Output base class of the outputs section of Control."""
     address: int
     description: str
     suffix: str
 
 
 class OutputStr(Output):
-    """String output interface of outputs a section of Control."""
+    """String output interface of the outputs a section of Control."""
     max_length: int
     type: str
 
@@ -398,7 +398,7 @@ class ControlKeyData:
     @property
     def has_variable_step(self) -> bool:
         """
-        Check if input has variable step input.
+        Check if an input has a variable step input.
 
         :return: True if ControlKeyData has variable step input, False otherwise
         """
@@ -416,7 +416,7 @@ class ControlKeyData:
     @property
     def has_action(self) -> bool:
         """
-        Check if input has action input.
+        Check if an input has an action input.
 
         :return: True if ControlKeyData has action input, False otherwise
         """
@@ -1292,7 +1292,7 @@ class RequestModel(BaseModel):
         This method processes the provided request string to extract necessary
         information, such as control name and cycle details.
         It initializes a CycleButton instance using the request information if applicable.
-        The function then returns a RequestModel instance contains the parsed data and additional state information.
+        The function then returns a RequestModel instance, contains the parsed data and additional state information.
 
         :param key: The key representing the `AnyButton` instance tied to the request.
         :param request: The raw request string providing all request details.
