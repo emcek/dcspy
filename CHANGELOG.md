@@ -1,4 +1,9 @@
 ## 3.8.0
+* Internal:
+  * Update PySide to 6.0.2
+  * Build using Nuitka 4.0.1
+
+## 3.8.0
 * Add initial support for **C-130J 30 Hercules** - #534 (@emcek)
 * Add configurable DCS-BIOS git repository - #533 (@emcek)
 * Allow checkout remote git branches for BIOS - #530 (@emcek)
