@@ -419,7 +419,7 @@ class DcsPyQtGui(QMainWindow):
 
         :return: True if a generation is successful, False otherwise.
         """
-        lua_exec = self.dcs_path / 'bin' / 'luae.exe'
+        lua_exec = str(self.dcs_path / 'bin' / 'luae.exe')
         LOG.info('Regenerating DCS-BIOS JSONs files...')
         return_code = -1
         try:
@@ -1992,11 +1992,11 @@ class UiLoader(QUiLoader):
     """UI file loader."""
     _base_instance = None
 
-    def createWidget(self, classname: str, parent: QWidget | None = None, name='') -> QWidget:
+    def createWidget(self, className: str, parent: QWidget | None = None, name='') -> QWidget:
         """
         Create a widget.
 
-        :param classname: Class name
+        :param className: Class name
         :param parent: Parent
         :param name: Name
         :return: QWidget
@@ -2004,7 +2004,7 @@ class UiLoader(QUiLoader):
         if parent is None and self._base_instance is not None:
             widget = self._base_instance
         else:
-            widget = super().createWidget(classname, parent, name)
+            widget = super().createWidget(className, parent, name)
             if self._base_instance is not None:
                 setattr(self._base_instance, name, widget)
         return widget
