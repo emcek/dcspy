@@ -3,12 +3,18 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    assignees:
+      - "emcek"
+  - package-ecosystem: "uv"
+    directory: "/"
+    schedule:
+      interval: "monthly"
     assignees:
       - "emcek"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     assignees:
       - "emcek"
