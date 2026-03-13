@@ -1824,9 +1824,9 @@ class AboutDialog(QDialog):
         self.l_info: QLabel = self.findChild(QLabel, 'l_info')
         self.tb_licenses: QTextBrowser = self.findChild(QTextBrowser, 'tb_licenses')
 
-    def showEvent(self, event: QShowEvent) -> None:
+    def showEvent(self, arg__1: QShowEvent) -> None:
         """Prepare all information about DCSpy application."""
-        super().showEvent(event)
+        super().showEvent(arg__1)
         self._prepare_about()
         self._prepare_licenses()
 
