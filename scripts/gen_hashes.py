@@ -14,6 +14,8 @@ def generate(files: list[Path], output: Path, algorithms:list[str]) -> None:
     :param output: Path to output file
     :param algorithms: List of hash algorithms to use
     """
+    print(output)
+    print(output.resolve())
     with open(output, 'w+') as f_digests:
         for algo in algorithms:
             f_digests.write(f'#HASH {algo}\n')
