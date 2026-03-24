@@ -1,7 +1,7 @@
 ## 3.8.1
 * Fix debugger tab in dark mode - #551 (@emcek)
 * Internal:
-  * Update PySide to 6.0.2
+  * Update PySide to 6.10.2
   * Build using Nuitka 4.0.1
 
 ## 3.8.0
