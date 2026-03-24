@@ -40,10 +40,6 @@ jobs:
         run: |
           python -m pytest -v -m 'not e2e' -m 'not qt6' --img_precision 0
 
-      - name: "Make digests file with hashes"
-        run: |
-          python scripts/gen_hashes.py ./scripts/gen_hashes.py -o ./DIGESTS
-
       - name: "Upload test results"
         uses: actions/upload-artifact@v7
         if: always()
