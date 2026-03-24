@@ -2032,7 +2032,7 @@ class UiLoader(QUiLoader):
 class QTextEditLogHandler(Handler):
     """GUI log handler."""
     colors: ClassVar[dict[str, QColor]] = {
-        'DEBUG': QColorConstants.Svg.black,
+        'DEBUG': QColorConstants.Svg.grey,
         'INFO': QColorConstants.Svg.green,
         'WARNING': QColorConstants.Svg.darkorange,
         'ERROR': QColorConstants.Svg.red,
