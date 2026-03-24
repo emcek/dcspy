@@ -35,6 +35,9 @@ KEY_DOWN: Final = 1
 KEY_UP: Final = 0
 
 # Others
+LOG_GUI_FMT: Final[str] = '%(asctime)s | %(levelname)-8s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d'
+LOG_FULL_FMT: Final[str] = '%(asctime)s | %(name)-17s | %(levelname)-8s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d'
+LOG_SHORT_FMT: Final[str] = '%(levelname)-8s | %(message)s'
 NO_OF_LCD_SCREENSHOTS: Final = 301
 TIME_BETWEEN_REQUESTS: Final = 0.2
 LOCAL_APPDATA: Final = True
