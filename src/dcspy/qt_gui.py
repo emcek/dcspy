@@ -32,9 +32,9 @@ from PySide6.QtWidgets import (QApplication, QButtonGroup, QCheckBox, QComboBox,
                                QSystemTrayIcon, QTableWidget, QTabWidget, QTextBrowser, QTextEdit, QToolBar, QToolBox, QWidget)
 
 from dcspy import default_yaml, qtgui_rc
-from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, AnyButton, ControlDepiction, ControlKeyData, DcspyConfigYaml,
-                          FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton, MsgBoxTypes, Release,
-                          RequestType, SystemData, __version__)
+from dcspy.models import (ALL_DEV, BIOS_REPO_NAME, CTRL_LIST_SEPARATOR, DCSPY_REPO_NAME, LOG_GUI_FMT, AnyButton, ControlDepiction, ControlKeyData,
+                          DcspyConfigYaml, FontsConfig, Gkey, GuiPlaneInputRequest, GuiTab, LcdButton, LcdMono, LcdType, LogitechDeviceModel, MouseButton,
+                          MsgBoxTypes, Release, RequestType, SystemData, __version__)
 from dcspy.starter import DCSpyStarter
 from dcspy.utils import (CloneProgress, check_bios_ver, check_dcs_bios_entry, check_dcs_ver, check_github_repo, check_ver_at_github, collect_debug_data,
                          count_files, defaults_cfg, detect_system_color_mode, download_file, generate_bios_jsons_with_lupa, get_all_git_refs,
@@ -118,8 +118,7 @@ class DcsPyQtGui(QMainWindow):
     def _init_gui_logger(self) -> None:
         """Initialize GUI log handler."""
         self.gui_log = QTextEditLogHandler(text_widget=self.te_debug)
-        formatter = Formatter(fmt='%(asctime)s | %(levelname)-8s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d', datefmt='%H:%M:%S')
-        self.gui_log.setFormatter(formatter)
+        self.gui_log.setFormatter(Formatter(fmt=LOG_GUI_FMT, datefmt='%H:%M:%S'))
         self.gui_log.setLevel(INFO)
         if self.config.get('verbose', False):
             self.gui_log.setLevel(DEBUG)
@@ -1829,6 +1828,11 @@ class AboutDialog(QDialog):
         super().showEvent(arg__1)
         self._prepare_about()
         self._prepare_licenses()
+        LOG.debug('svsdvdsdsv')
+        LOG.info('svsdvdsdsv')
+        LOG.warning('svsdvdsdsv')
+        LOG.error('svsdvdsdsv')
+        LOG.critical('svsdvdsdsv')
 
     def _prepare_about(self) -> None:
         """Prepare text information about DCSpy."""
