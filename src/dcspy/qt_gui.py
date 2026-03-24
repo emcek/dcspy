@@ -118,7 +118,7 @@ class DcsPyQtGui(QMainWindow):
     def _init_gui_logger(self) -> None:
         """Initialize GUI log handler."""
         self.gui_log = QTextEditLogHandler(text_widget=self.te_debug)
-        formatter = Formatter(fmt='%(asctime)s | %(levelname)-7s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d', datefmt='%H:%M:%S')
+        formatter = Formatter(fmt='%(asctime)s | %(levelname)-8s | %(threadName)-10s | %(message)s / %(funcName)s:%(lineno)d', datefmt='%H:%M:%S')
         self.gui_log.setFormatter(formatter)
         self.gui_log.setLevel(INFO)
         if self.config.get('verbose', False):
