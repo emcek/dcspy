@@ -1880,6 +1880,7 @@ class AboutDialog(QDialog):
         text += '</body></html>'
         self.tb_licenses.setText(text)
 
+
 class WorkerSignals(QObject):
     """
     Defines the signals available from a running worker thread.
