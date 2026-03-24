@@ -19,11 +19,6 @@ jobs:
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
-      - name: "Make digests file with hashes"
-        run: |
-          python scripts/gen_hashes.py scripts/gen_hashes.py -o DIGESTS
-          dir
-
       - name: "Test with pytest"
         env:
           PYSIDE_DESIGNER_PLUGINS: .
