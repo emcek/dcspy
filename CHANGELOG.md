@@ -2,7 +2,7 @@
 * Fix debugger tab in dark mode - #551 (@emcek)
 * Internal:
   * Update PySide to 6.10.2
-  * Build using Nuitka 4.0.1
+  * Build using Nuitka 4.0.6
 
 ## 3.8.0
 * Add initial support for **C-130J 30 Hercules** - #534 (@emcek)
