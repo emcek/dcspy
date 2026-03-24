@@ -14,10 +14,9 @@ def generate(files: list[Path], output_file: str, algorithms:list[str]) -> None:
     :param output_file: output file
     :param algorithms: List of hash algorithms to use
     """
-    wd = Path(__file__).resolve().parent.parent
-    fd = Path(output_file).resolve().parent
-    if wd != fd:
-        raise ValueError(f'Output file {output_file} must be in the same directory as the script')
+    parent = Path(__file__).resolve().parents[1]
+    if not str(Path(output_file).resolve()).startswith(str(parent)):
+        raise ValueError(f'Output file "{output_file}" must be in the same directory as the script')
     with open(output_file, 'w+') as f_digests:
         for algo in algorithms:
             f_digests.write(f'#HASH {algo}\n')
