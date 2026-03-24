@@ -54,7 +54,7 @@ jobs:
 
       - name: "Make digests file with hashes"
         run: |
-          python scripts/gen_hashes.py ./dcspy_${{ steps.version.outputs.number }}_portable.exe ./inno/dcspy_${{ steps.version.outputs.number }}_setup.exe -o ./DIGESTS
+          python scripts/gen_hashes.py ./dcspy_${{ steps.version.outputs.number }}_portable.exe ./inno/dcspy_${{ steps.version.outputs.number }}_setup.exe -o DIGESTS
 
       - name: "Create Release"
         uses: softprops/action-gh-release@v2
