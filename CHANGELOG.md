@@ -3,6 +3,7 @@
 * Internal:
   * Add support for Python 3.14 - #552 (@emcek)
   * Update PySide to 6.11.0 - #553 (@emcek)
+  * Update `requests` to fix CVE-2026-25645 vulnerability 
   * Build using Nuitka 4.0.7
 
 ## 3.8.0
