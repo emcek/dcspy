@@ -6,7 +6,7 @@ runs:
       - name: "Install uv and set the Python"
         uses: astral-sh/setup-uv@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           enable-cache: true
           activate-environment: true
 
