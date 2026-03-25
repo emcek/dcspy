@@ -51,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: mypy_3_13
+          name: mypy_3_14
           path: |
             mypyhtml/*
           retention-days: 4

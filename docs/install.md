@@ -29,7 +29,7 @@ Due to how Python application can be pack into executable file (using Nuitka), s
 4. Package is available on [PyPI](https://pypi.org/project/dcspy/), open Windows Command Prompt (cmd.exe) and type:
 
 ```shell script
-uv tool install -p 3.13 dcspy
+uv tool install -p 3.14 dcspy
 ```
 
 
