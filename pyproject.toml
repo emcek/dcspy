@@ -45,7 +45,7 @@ dependencies = [
     'packaging==26.0',
     'pillow==12.1.1',
     'pydantic==2.12.5',
-    'pyside6==6.10.2',
+    'pyside6==6.11.0',
     'pyyaml==6.0.3',
     'requests==2.32.5',
     'typing-extensions==4.15.0; python_version < "3.11"',
@@ -83,7 +83,7 @@ test = [
     'types-lupa==2.6.0.20251026',
     'types-pillow==10.2.0.20240822',
     'types-pyyaml==6.0.12.20250915',
-    'types-requests==2.32.4.20260107',
+    'types-requests==2.32.4.20260324',
 ]
 docs = [
     'black==26.3.1',
