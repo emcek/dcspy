@@ -1,6 +1,7 @@
 ## 3.8.1
 * Fix debugger tab in dark mode - #551 (@emcek)
 * Internal:
+  * Add support for Python 3.14
   * Update PySide to 6.10.2
   * Build using Nuitka 4.0.7
 
