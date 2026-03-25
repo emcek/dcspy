@@ -83,7 +83,7 @@ test = [
     'types-lupa==2.6.0.20251026',
     'types-pillow==10.2.0.20240822',
     'types-pyyaml==6.0.12.20250915',
-    'types-requests==2.32.4.20260107',
+    'types-requests==2.32.4.20260324',
 ]
 docs = [
     'black==26.3.1',
