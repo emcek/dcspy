@@ -1828,11 +1828,6 @@ class AboutDialog(QDialog):
         super().showEvent(arg__1)
         self._prepare_about()
         self._prepare_licenses()
-        LOG.debug('svsdvdsdsv')
-        LOG.info('svsdvdsdsv')
-        LOG.warning('svsdvdsdsv')
-        LOG.error('svsdvdsdsv')
-        LOG.critical('svsdvdsdsv')
 
     def _prepare_about(self) -> None:
         """Prepare text information about DCSpy."""
