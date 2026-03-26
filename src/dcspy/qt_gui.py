@@ -63,6 +63,7 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().load_ui(':/ui/ui/qtdcs.ui', self)
         self._find_children()
+        QApplication.styleHints().colorSchemeChanged.connect(self._color_scheme_switched)
         self.config = cfg_dict
         if not cfg_dict:
             self.config = load_yaml(full_path=default_yaml)
@@ -1691,6 +1692,13 @@ class DcsPyQtGui(QMainWindow):
             mode = detect_system_color_mode()
         style_hints.setColorScheme(getattr(Qt.ColorScheme, mode))
 
+    def _color_scheme_switched(self):
+        """Handle the event when the application's color scheme switches."""
+        mode = QApplication.styleHints().colorScheme().name.lower()
+        pixmap = QPixmap(f':/icons/img/dcspy_{mode}.svg')
+        self.setWindowIcon(pixmap)
+        self.a_about_dcspy.setIcon(pixmap)
+
     def _find_children(self) -> None:
         """Find all widgets in the main window."""
         self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')
@@ -1823,11 +1831,10 @@ class AboutDialog(QDialog):
         self.tb_info: QTextBrowser = self.findChild(QTextBrowser, 'tb_info')
         self.l_logo: QLabel = self.findChild(QLabel, 'l_logo')
         self.tb_licenses: QTextBrowser = self.findChild(QTextBrowser, 'tb_licenses')
-        app = QApplication.instance()
-        app.styleHints().colorSchemeChanged.connect(self._color_scheme_switched)
+        QApplication.styleHints().colorSchemeChanged.connect(self._color_scheme_switched)
 
     def _color_scheme_switched(self) -> None:
-        """Update images based on current color scheme."""
+        """Handle the event when the application's color scheme switches."""
         mode = QApplication.styleHints().colorScheme().name.lower()
         pixmap = QPixmap(f':/icons/img/dcspy_{mode}.svg')
         self.l_logo.setPixmap(pixmap)
