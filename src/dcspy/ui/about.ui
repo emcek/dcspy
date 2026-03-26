@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>543</width>
-    <height>486</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="l_logo">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -87,7 +87,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_5">
         <attribute name="title">

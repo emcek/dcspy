@@ -1821,7 +1821,7 @@ class AboutDialog(QDialog):
         self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().load_ui(':/ui/ui/about.ui', self)
         self.l_info: QLabel = self.findChild(QLabel, 'l_info')
-        self.label_2: QLabel = self.findChild(QLabel, 'label_2')
+        self.l_logo: QLabel = self.findChild(QLabel, 'l_logo')
         self.tb_licenses: QTextBrowser = self.findChild(QTextBrowser, 'tb_licenses')
         app = QApplication.instance()
         app.styleHints().colorSchemeChanged.connect(self._color_scheme_switched)
@@ -1831,7 +1831,7 @@ class AboutDialog(QDialog):
         pixmap = QPixmap(':/icons/img/dcspy_white.svg')
         if QApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
             pixmap = QPixmap(':/icons/img/dcspy_black.svg')
-        self.label_2.setPixmap(pixmap)
+        self.l_logo.setPixmap(pixmap)
 
     def showEvent(self, arg__1: QShowEvent) -> None:
         """Prepare all information about DCSpy application."""
