@@ -183,5 +183,5 @@ dev = [
     'nuitka',
     'pre-commit',
     'PySide6-stubs',
-    "ty>=0.0.22",
+    "ty>=0.0.25",
 ]
