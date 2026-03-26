@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>543</width>
-    <height>486</height>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,7 +29,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
+         <widget class="QLabel" name="l_logo">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -52,7 +52,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../qtgui.qrc">:/icons/img/dcspy_white.svg</pixmap>
+           <pixmap resource="../qtgui.qrc">:/icons/img/dcspy_light.svg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -95,13 +95,7 @@
         </attribute>
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="0" column="0">
-          <widget class="QLabel" name="l_info">
-           <property name="frameShape">
-            <enum>QFrame::Shape::StyledPanel</enum>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
+          <widget class="QTextBrowser" name="tb_info">
            <property name="openExternalLinks">
             <bool>true</bool>
            </property>

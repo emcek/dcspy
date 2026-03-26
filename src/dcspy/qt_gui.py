@@ -63,6 +63,7 @@ class DcsPyQtGui(QMainWindow):
         super().__init__()
         UiLoader().load_ui(':/ui/ui/qtdcs.ui', self)
         self._find_children()
+        QApplication.styleHints().colorSchemeChanged.connect(self._color_scheme_switched)
         self.config = cfg_dict
         if not cfg_dict:
             self.config = load_yaml(full_path=default_yaml)
@@ -127,7 +128,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
-        self.systray.setIcon(QIcon(':/icons/img/dcspy_white.svg'))
+        self.systray.setIcon(QIcon(':/icons/img/dcspy_light.svg'))
         self.systray.setVisible(True)
         self.systray.setToolTip(f'DCSpy {__version__}')
         self.traymenu.addAction(self.a_dcspy_updates)
@@ -1691,6 +1692,13 @@ class DcsPyQtGui(QMainWindow):
             mode = detect_system_color_mode()
         style_hints.setColorScheme(getattr(Qt.ColorScheme, mode))
 
+    def _color_scheme_switched(self):
+        """Handle the event when the application's color scheme switches."""
+        mode = QApplication.styleHints().colorScheme().name.lower()
+        pixmap = QPixmap(f':/icons/img/dcspy_{mode}.svg')
+        self.setWindowIcon(pixmap)
+        self.a_about_dcspy.setIcon(pixmap)
+
     def _find_children(self) -> None:
         """Find all widgets in the main window."""
         self.statusbar: QStatusBar = self.findChild(QStatusBar, 'statusbar')
@@ -1820,8 +1828,16 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().load_ui(':/ui/ui/about.ui', self)
-        self.l_info: QLabel = self.findChild(QLabel, 'l_info')
+        self.tb_info: QTextBrowser = self.findChild(QTextBrowser, 'tb_info')
+        self.l_logo: QLabel = self.findChild(QLabel, 'l_logo')
         self.tb_licenses: QTextBrowser = self.findChild(QTextBrowser, 'tb_licenses')
+        QApplication.styleHints().colorSchemeChanged.connect(self._color_scheme_switched)
+
+    def _color_scheme_switched(self) -> None:
+        """Handle the event when the application's color scheme switches."""
+        mode = QApplication.styleHints().colorScheme().name.lower()
+        pixmap = QPixmap(f':/icons/img/dcspy_{mode}.svg')
+        self.l_logo.setPixmap(pixmap)
 
     def showEvent(self, arg__1: QShowEvent) -> None:
         """Prepare all information about DCSpy application."""
@@ -1852,7 +1868,7 @@ class AboutDialog(QDialog):
             text += f'<b>SHA:</b> {d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/stable/{d.dcs_ver}/">{d.dcs_ver}</a>'
         text += '</p></body></html>'
-        self.l_info.setText(text)
+        self.tb_info.setText(text)
 
     def _prepare_licenses(self) -> None:
         """Prepare licenses text."""
