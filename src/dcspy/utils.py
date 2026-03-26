@@ -242,7 +242,7 @@ def _get_sha_hex_str(bios_repo: git.Repo, git_ref: str) -> str:
     except (git.exc.GitCommandError, TypeError):
         head_commit = bios_repo.head.commit
         sha = f'{head_commit.hexsha[0:8]} from: {head_commit.committed_datetime.strftime("%d-%b-%Y %H:%M:%S")} by: {head_commit.author}'
-    LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message}')  # type: ignore
+    LOG.debug(f'Checkout: {head_commit.hexsha} from: {head_commit.committed_datetime} | by: {head_commit.author}\n{head_commit.message!r}')
     return sha
 
 
