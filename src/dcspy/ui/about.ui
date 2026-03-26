@@ -52,7 +52,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap resource="../qtgui.qrc">:/icons/img/dcspy_white.svg</pixmap>
+           <pixmap resource="../qtgui.qrc">:/icons/img/dcspy_light.svg</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>

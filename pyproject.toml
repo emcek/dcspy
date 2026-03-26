@@ -110,8 +110,8 @@ exclude = ['dcspy.tests*']
 [tool.setuptools.package-data]
 dcspy = [
     'resources/*.*',
-    'img/dcspy_white.ico',
-    'img/dcspy_black.ico',
+    'img/dcspy_light.ico',
+    'img/dcspy_dark.ico',
     'img/splash.png',
     'py.typed',
 ]

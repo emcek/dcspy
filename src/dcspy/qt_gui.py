@@ -127,7 +127,7 @@ class DcsPyQtGui(QMainWindow):
 
     def _init_tray(self) -> None:
         """Initialize of system tray icon."""
-        self.systray.setIcon(QIcon(':/icons/img/dcspy_white.svg'))
+        self.systray.setIcon(QIcon(':/icons/img/dcspy_light.svg'))
         self.systray.setVisible(True)
         self.systray.setToolTip(f'DCSpy {__version__}')
         self.traymenu.addAction(self.a_dcspy_updates)
@@ -1828,9 +1828,8 @@ class AboutDialog(QDialog):
 
     def _color_scheme_switched(self) -> None:
         """Update images based on current color scheme."""
-        pixmap = QPixmap(':/icons/img/dcspy_white.svg')
-        if QApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
-            pixmap = QPixmap(':/icons/img/dcspy_black.svg')
+        mode = QApplication.styleHints().colorScheme().name.lower()
+        pixmap = QPixmap(f':/icons/img/dcspy_{mode}.svg')
         self.l_logo.setPixmap(pixmap)
 
     def showEvent(self, arg__1: QShowEvent) -> None:

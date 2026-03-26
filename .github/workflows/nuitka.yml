@@ -39,7 +39,7 @@ jobs:
           assume-yes-for-downloads: true
           output-file: dcspy
           output-dir: dist
-          windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
+          windows-icon-from-ico: src/dcspy/img/dcspy_light.ico
           company-name: Michal Plichta
           product-name: DCSpy
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}
@@ -61,7 +61,7 @@ jobs:
           onefile-windows-splash-screen-image: src/dcspy/img/splash.png
           output-file: dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable
           output-dir: dist
-          windows-icon-from-ico: src/dcspy/img/dcspy_white.ico
+          windows-icon-from-ico: src/dcspy/img/dcspy_light.ico
           company-name: Michal Plichta
           product-name: DCSpy
           file-version: ${{ steps.nuitka_data.outputs.git_ref_name }}.${{ steps.nuitka_data.outputs.git_run_number }}

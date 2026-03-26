@@ -22,7 +22,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../qtgui.qrc">
-    <normaloff>:/icons/img/dcspy_white.svg</normaloff>:/icons/img/dcspy_white.svg</iconset>
+    <normaloff>:/icons/img/dcspy_light.svg</normaloff>:/icons/img/dcspy_light.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -214,8 +214,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>418</width>
-             <height>252</height>
+             <width>659</width>
+             <height>384</height>
             </rect>
            </property>
            <attribute name="icon">
@@ -407,8 +407,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>418</width>
-             <height>184</height>
+             <width>659</width>
+             <height>384</height>
             </rect>
            </property>
            <attribute name="icon">
@@ -542,8 +542,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>632</width>
-             <height>252</height>
+             <width>659</width>
+             <height>384</height>
             </rect>
            </property>
            <attribute name="icon">
@@ -1966,7 +1966,7 @@ Avaliable for two-state switches and knobs.</string>
   <action name="a_about_dcspy">
    <property name="icon">
     <iconset resource="../qtgui.qrc">
-     <normaloff>:/icons/img/dcspy_white.svg</normaloff>:/icons/img/dcspy_white.svg</iconset>
+     <normaloff>:/icons/img/dcspy_light.svg</normaloff>:/icons/img/dcspy_light.svg</iconset>
    </property>
    <property name="text">
     <string>About DCSpy</string>
