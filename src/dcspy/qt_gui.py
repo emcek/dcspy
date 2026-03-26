@@ -1820,7 +1820,7 @@ class AboutDialog(QDialog):
         super().__init__(parent)
         self.parent: DcsPyQtGui | QWidget = parent
         UiLoader().load_ui(':/ui/ui/about.ui', self)
-        self.l_info: QLabel = self.findChild(QLabel, 'l_info')
+        self.tb_info: QTextBrowser = self.findChild(QTextBrowser, 'tb_info')
         self.l_logo: QLabel = self.findChild(QLabel, 'l_logo')
         self.tb_licenses: QTextBrowser = self.findChild(QTextBrowser, 'tb_licenses')
         app = QApplication.instance()
@@ -1862,7 +1862,7 @@ class AboutDialog(QDialog):
             text += f'<b>SHA:</b> {d.dcs_bios_ver}</a>'
         text += f'<br><b>DCS World</b>: <a href="https://www.digitalcombatsimulator.com/en/news/changelog/stable/{d.dcs_ver}/">{d.dcs_ver}</a>'
         text += '</p></body></html>'
-        self.l_info.setText(text)
+        self.tb_info.setText(text)
 
     def _prepare_licenses(self) -> None:
         """Prepare licenses text."""
