@@ -170,6 +170,18 @@ extend-exclude = [
 [tool.ruff.lint.mccabe]
 max-complexity = 5
 
+[tool.ty.src]
+include = ['src', 'tests']
+exclude = ['src/dcspy/qt_gui.py', 'src/dcspy/qtgui_rc.py']
+
+[tool.ty.rules]
+unresolved-import = 'ignore'
+unresolved-attribute = 'ignore'
+invalid-argument-type = 'ignore'
+possibly-missing-submodule = 'ignore'
+missing-argument = 'ignore'
+invalid-assignment = 'ignore'
+
 [tool.mypy]
 #ignore_missing_imports = true
 #no_warn_no_return = true
