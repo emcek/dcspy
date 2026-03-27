@@ -72,7 +72,6 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\certifi\*"; DestDir: "{app}\certifi"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\a\dcspy\dcspy\dcs_py.dist\charset_normalizer\*"; DestDir: "{app}\charset_normalizer"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\dcspy\*"; DestDir: "{app}\dcspy"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\librt\*"; DestDir: "{app}\librt"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\lupa\*"; DestDir: "{app}\lupa"; Flags: ignoreversion recursesubdirs createallsubdirs
