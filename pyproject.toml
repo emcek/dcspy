@@ -208,8 +208,8 @@ PySide6-stubs = { git = 'https://github.com/python-qt-tools/PySide6-stubs.git' }
 dev = [
     'dcspy[docs,test]',
     'detect-test-pollution',
-    'nuitka',
-    'pre-commit',
+    'nuitka>=4.0.0',
+    'pre-commit>=4.5.0',
     'PySide6-stubs',
-    "ty>=0.0.25",
+    "ty>=0.0.26",
 ]
