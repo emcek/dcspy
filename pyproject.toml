@@ -47,7 +47,7 @@ dependencies = [
     'pydantic==2.12.5',
     'pyside6==6.11.0',
     'pyyaml==6.0.3',
-    'requests==2.33.0',
+    'requests==2.33.1',
     'typing-extensions==4.15.0; python_version < "3.11"',
 ]
 
