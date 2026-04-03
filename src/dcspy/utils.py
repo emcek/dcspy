@@ -25,8 +25,8 @@ from packaging import version
 from PIL import ImageColor
 from requests import get
 
-from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, Color, ControlDepiction, ControlKeyData, DcsBiosPlaneData,
-                          DcspyConfigYaml, Gkey, LcdButton, LcdMode, MouseButton, Release, RequestModel, __version__)
+from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, AnyButton, BiosValue, ButtonTypes, Color, ControlDepiction, ControlKeyData,
+                          DcsBiosPlaneData, DcspyConfigYaml, Gkey, LcdButton, LcdMode, MouseButton, Release, RequestModel, __version__)
 
 with suppress(ImportError):
     import git
@@ -734,7 +734,7 @@ def replace_symbols(value: str, symbol_replacement: Sequence[Sequence[str]]) -> 
     return value
 
 
-def _try_key_instance(klass: type[Gkey] | type[LcdButton] | type[MouseButton], method: str, key_str: str) -> AnyButton | None:
+def _try_key_instance(klass: ButtonTypes, method: str, key_str: str) -> AnyButton | None:
     """
     Attempt to invoke a method on a class with a given key string.
 
@@ -767,7 +767,8 @@ def get_key_instance(key_str: str) -> AnyButton:
     :return: An instance of a class (AnyButton) that corresponds to the provided key string, if successfully resolved.
     :raises AttributeError: If the provided key string cannot be resolved into a valid key instance using the predefined classes and methods.
     """
-    for klass, method in [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]:
+    key_types_and_methods: list[tuple[ButtonTypes, str]] = [(Gkey, 'from_yaml'), (MouseButton, 'from_yaml'), (LcdButton, key_str)]
+    for klass, method in key_types_and_methods:
         key_instance = _try_key_instance(klass=klass, method=method, key_str=key_str)
         if key_instance:
             return key_instance

@@ -771,6 +771,7 @@ class Gkey(BaseModel):
 
 
 AnyButton = Union[LcdButton, Gkey, MouseButton]
+ButtonTypes = type[Gkey] | type[LcdButton] | type[MouseButton]
 
 
 class LcdType(Enum):
