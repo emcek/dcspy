@@ -71,7 +71,7 @@ test = [
     'interrogate==1.7.0',
     'isort==8.0.1',
     'lxml==6.0.2',
-    'mypy==1.19.1',
+    'mypy==1.20.0',
     'pip-audit==2.10.0',
     'pytest==9.0.2',
     'pytest-codspeed==4.3.0',
