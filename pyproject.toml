@@ -70,7 +70,7 @@ dcspy = 'dcspy.run:run'
 test = [
     'interrogate==1.7.0',
     'isort==8.0.1',
-    'lxml==6.0.2',
+    'lxml==6.0.3',
     'mypy==1.20.0',
     'pip-audit==2.10.0',
     'pytest==9.0.3',
@@ -78,12 +78,12 @@ test = [
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==4.0.1',
-    'ruff==0.15.9',
-    'types-cffi==2.0.0.20260402',
-    'types-lupa==2.6.0.20251026',
+    'ruff==0.15.10',
+    'types-cffi==2.0.0.20260408',
+    'types-lupa==2.6.0.20260408',
     'types-pillow==10.2.0.20240822',
-    'types-pyyaml==6.0.12.20250915',
-    'types-requests==2.33.0.20260402',
+    'types-pyyaml==6.0.12.20260408',
+    'types-requests==2.33.0.20260408',
 ]
 docs = [
     'black==26.3.1',
@@ -211,5 +211,5 @@ dev = [
     'nuitka>=4.0.0',
     'pre-commit>=4.5.0',
     'PySide6-stubs',
-    "ty>=0.0.26",
+    "ty>=0.0.29",
 ]
