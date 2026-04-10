@@ -38,7 +38,7 @@ def run(cli_args: Namespace = Namespace()) -> None:
     app.setStyle('fusion')
 
     splash_pixmap = QPixmap((Path(__file__) / '..' / 'img' / 'splash.png').resolve())
-    splash_screen = QSplashScreen(splash_pixmap, Qt.WindowType.WindowStaysOnTopHint)
+    splash_screen = QSplashScreen(splash_pixmap, Qt.WindowType.SplashScreen)
     splash_screen.showMessage('Loading... Please wait.', Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.black)
     progress_bar = QProgressBar(splash_screen)
     progress_bar.setGeometry(50, splash_pixmap.height() - 40, splash_pixmap.width() - 100, 20)
