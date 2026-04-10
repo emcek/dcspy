@@ -93,7 +93,7 @@ docs = [
     'mkdocs-material==9.7.6',
     'mkdocs-plantuml==0.1.1',
     'mkdocs-section-index==0.3.11',
-    'mkdocstrings<1.0.0',
+    'mkdocstrings==1.0.3',
     'mkdocstrings-python>1.0.0,<2.0.0',
     'plantuml==0.3.0',
 ]
