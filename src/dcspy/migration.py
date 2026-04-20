@@ -11,8 +11,8 @@ from shutil import SameFileError, copy
 
 from packaging import version
 
-from dcspy.models import BIOS_REPO_ADDR, ConfigValue, DcspyConfigYaml, __version__
-from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
+from dcspy.models import BIOS_REPO_ADDR, DEFAULT_YAML_FILE, ConfigValue, DcspyConfigYaml, __version__
+from dcspy.utils import defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
 
