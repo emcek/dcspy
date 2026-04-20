@@ -77,7 +77,7 @@ def load_yaml(full_path: Path) -> DcspyConfigYaml:
 
 def save_yaml(data: DcspyConfigYaml, full_path: Path) -> None:
     """
-    Save disc as YAML file.
+    Save data as the YAML file.
 
     :param data: Dictionary with data
     :param full_path: Full a path to YAML file
@@ -108,7 +108,7 @@ def check_ver_at_github(repo: str) -> Release:
 
 def get_version_string(repo: str, current_ver: str | version.Version, check: bool = True) -> str:
     """
-    Generate formatted string with version number.
+    Generate a formatted string with a version number.
 
     :param repo: Format '<organization or user>/<package>'.
     :param current_ver: String or Version object.
@@ -316,7 +316,7 @@ def is_git_sha(repo: git.Repo, ref: str) -> bool:
 
 def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
     """
-    Check DCS-BIOS entry in Export.lua file.
+    Check the DCS-BIOS entry in the Export.lua file.
 
     :param lua_dst_data: Content of Export.lua
     :param lua_dst_path: Export.lua path
@@ -365,7 +365,7 @@ def is_git_exec_present() -> bool:
         import git
         return bool(git.GIT_OK)
     except ImportError as err:
-        LOG.debug(type(err).__name__, exc_info=True)
+        LOG.warning(type(err).__name__, exc_info=True)
         return False
 
 
@@ -622,7 +622,7 @@ def load_json(full_path: Path) -> dict[Any, Any]:
 @lru_cache
 def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     """
-    Collect full BIOS for plane with name.
+    Collect full BIOS for the plane with a name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS directory
@@ -681,7 +681,7 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 @lru_cache
 def get_plane_aliases(bios_dir: Path, plane: str | None = None) -> dict[str, list[str]]:
     """
-    Get a list of all YAML files for plane with name.
+    Get a list of all YAML files for the plane with a name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
@@ -801,7 +801,7 @@ class KeyRequest:
         """
         Get abstract representation for request ti be sent for requested button.
 
-        :param button: LcdButton, Gkey or MouseButton
+        :param button: LcdButton, Gkey, or MouseButton
         :return: RequestModel object
         """
         return self.buttons.get(button, RequestModel.make_empty(key=button))
@@ -810,7 +810,7 @@ class KeyRequest:
         """
         Update the internal string request for the specified button.
 
-        :param button: LcdButton, Gkey or MouseButton
+        :param button: LcdButton, Gkey, or MouseButton
         :param req: The raw request to set.
         """
         self.buttons[button].raw_request = req
@@ -906,7 +906,7 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
     Check hashes for a file.
 
     :param file_path: Path to the file
-    :param digest_file: Path to the digests file
+    :param digest_file: Path to the file with digests
     :return: Overall verdict and detailed results
     """
     if not file_path.is_file() or not digest_file.is_file():
