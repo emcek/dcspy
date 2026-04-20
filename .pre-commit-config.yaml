@@ -30,14 +30,14 @@ repos:
         exclude: 'helpers.py'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.0
+    rev: v1.20.1
     hooks:
       - id: mypy
         exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/$'
         additional_dependencies: [types-cffi, types-lupa, types-Pillow, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.10
+    rev: v0.15.11
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
