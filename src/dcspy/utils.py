@@ -31,6 +31,49 @@ from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, A
 with suppress(ImportError):
     import git
 
+    class CloneProgress(git.RemoteProgress):
+        """Handler providing an interface to parse progress information emitted by git."""
+
+        OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
+        OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
+
+        def __init__(self, progress, stage) -> None:
+            """
+            Initialize the progress handler.
+
+            :param progress: Progress Qt6 signal
+            :param stage: Report stage Qt6 signal
+            """
+            super().__init__()
+            self.progress_signal = progress
+            self.stage_signal = stage
+
+        def get_curr_op(self, op_code: int) -> str:
+            """
+            Get a stage name from OP code.
+
+            :param op_code: OP code
+            :return: stage name
+            """
+            op_code_masked = op_code & self.OP_MASK
+            return self.OP_CODE_MAP.get(op_code_masked, '?').title()
+
+        def update(self, op_code: int, cur_count: float, max_count: float | None = None, message: str = '') -> None:
+            """
+            Call whenever the progress changes.
+
+            :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
+            :param cur_count: A count of current absolute items
+            :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
+            :param message: It contains the number of bytes transferred. It may be used for other purposes as well.
+            """
+            if op_code & git.RemoteProgress.BEGIN:
+                self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
+
+            percentage = int(cur_count / max_count * 100) if max_count else 0
+            self.progress_signal.emit(percentage)
+
+
 LOG = getLogger(__name__)
 
 with open(DEFAULT_YAML_FILE) as c_file:
@@ -401,48 +444,6 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
         for ref in git.Repo(repo_dir).refs:
             refs.append(str(ref))
     return refs
-
-
-class CloneProgress(git.RemoteProgress):
-    """Handler providing an interface to parse progress information emitted by git."""
-    OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
-    OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
-
-    def __init__(self, progress, stage) -> None:
-        """
-        Initialize the progress handler.
-
-        :param progress: Progress Qt6 signal
-        :param stage: Report stage Qt6 signal
-        """
-        super().__init__()
-        self.progress_signal = progress
-        self.stage_signal = stage
-
-    def get_curr_op(self, op_code: int) -> str:
-        """
-        Get a stage name from OP code.
-
-        :param op_code: OP code
-        :return: stage name
-        """
-        op_code_masked = op_code & self.OP_MASK
-        return self.OP_CODE_MAP.get(op_code_masked, '?').title()
-
-    def update(self, op_code: int, cur_count, max_count=None, message: str = '') -> None:
-        """
-        Call whenever the progress changes.
-
-        :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
-        :param cur_count: A count of current absolute items
-        :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
-        :param message: It contains the number of bytes transferred. It may be used for other purposes as well.
-        """
-        if op_code & git.RemoteProgress.BEGIN:
-            self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
-
-        percentage = int(cur_count / max_count * 100) if max_count else 0
-        self.progress_signal.emit(percentage)
 
 
 def collect_debug_data() -> Path:
