@@ -6,6 +6,7 @@ branch = True
 [report]
 omit = tests/*
        src/dcspy/qt_gui.py
+       src/dcspy/qt_tools.py
        src/dcspy/qtgui_rc.py
        src/dcspy/run.py
 
