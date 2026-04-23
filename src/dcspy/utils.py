@@ -58,7 +58,7 @@ with suppress(ImportError):
             op_code_masked = op_code & self.OP_MASK
             return self.OP_CODE_MAP.get(op_code_masked, '?').title()
 
-        def update(self, op_code: int, cur_count: float, max_count: float | None = None, message: str = '') -> None:
+        def update(self, op_code: int, cur_count: str | float, max_count: str | float | None = None, message: str = '') -> None:
             """
             Call whenever the progress changes.
 
@@ -70,8 +70,8 @@ with suppress(ImportError):
             if op_code & git.RemoteProgress.BEGIN:
                 self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
 
-            percentage = int(cur_count / max_count * 100) if max_count else 0
-            self.progress_signal.emit(percentage)
+            percentage = float(cur_count) / float(max_count) * 100 if max_count else 0
+            self.progress_signal.emit(int(percentage))
 
 
 LOG = getLogger(__name__)
