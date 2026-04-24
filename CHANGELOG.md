@@ -1,7 +1,7 @@
 ## 3.8.2
 * Improve first run experience for new user - #564 (@emcek)
 * Internal:
-  * Update `lupa` to 2.7 (CVE-2026-34444) - #563 (@emcek)
+  * Update `lupa` to 2.8 (CVE-2026-34444) - #563 (@emcek)
 
 ## 3.8.1
 * Fix debugger tab in dark mode - #551 (@emcek)
