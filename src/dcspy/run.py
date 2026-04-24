@@ -67,8 +67,8 @@ def run(cli_args: Namespace = Namespace()) -> None:
             window.show()
         app.aboutToQuit.connect(window.event_set)
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
-    except (KeyError, FileNotFoundError):
-        pass
+    except (KeyError, FileNotFoundError) as exp:
+        LOG.warning(f'Details: {exp}', exc_info=True)
     except Exception as exp:
         LOG.exception(f'Critical error: {exp}', exc_info=True)
     finally:
