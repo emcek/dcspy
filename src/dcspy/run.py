@@ -10,9 +10,10 @@ from tempfile import gettempdir
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QApplication, QProgressBar, QSplashScreen
+from PySide6.QtWidgets import QApplication, QProgressBar, QSplashScreen, QWizard
 
 from dcspy import get_config_yaml_item
+from dcspy.qt_first import FirstRun
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
@@ -30,12 +31,25 @@ def _update_progress(progbar: QProgressBar) -> None:
     LOG.debug('Splash screen loading finished.')
 
 
+def first_run_wizard():
+    """Handle first run wizard dialog box."""
+    wizard = FirstRun()
+    if wizard.exec() == QWizard.DialogCode.Accepted:
+        config = wizard.type
+        LOG.debug(config)
+    else:
+        sys.exit(0)
+
+
 def run(cli_args: Namespace = Namespace()) -> None:
     """Run DCSpy Qt6 GUI."""
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     app = QApplication(sys.argv)
     app.setStyle('fusion')
+
+    if get_config_yaml_item('first_run',False):
+        first_run_wizard()
 
     splash_pixmap = QPixmap((Path(__file__) / '..' / 'img' / 'splash.png').resolve())
     splash_screen = QSplashScreen(splash_pixmap, Qt.WindowType.SplashScreen)
