@@ -86,12 +86,23 @@ This means you’ll be using a stable, tested official version, but new features
          <property name="text">
           <string>Live (require git)</string>
          </property>
+         <property name="icon">
+          <iconset resource="../qtgui.qrc">
+           <normaloff>:/icons/img/git.svg</normaloff>:/icons/img/git.svg</iconset>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
        <item row="2" column="1">
         <widget class="QRadioButton" name="rb_standard">
          <property name="text">
           <string>Standard Release</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../qtgui.qrc">
+           <normaloff>:/icons/img/view-refresh.svg</normaloff>:/icons/img/view-refresh.svg</iconset>
          </property>
         </widget>
        </item>
@@ -112,6 +123,70 @@ This means you’ll be using a stable, tested official version, but new features
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QWizardPage" name="wizardPage3">
+   <widget class="QPushButton" name="pb_install_bios">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>140</y>
+      <width>231</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Installand confgure DCS-BIOS</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progress_bios">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>270</y>
+      <width>420</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="textVisible">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="le_biosdir">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>60</y>
+      <width>421</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Location of DCS-BIOS in Saved Games</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pb_biosdir">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>60</y>
+      <width>132</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Location of DCS-BIOS in Saved Games</string>
+    </property>
+    <property name="text">
+     <string>DCS-BIOS folder</string>
+    </property>
+    <property name="icon">
+     <iconset resource="../qtgui.qrc">
+      <normaloff>:/icons/img/folder-violet.svg</normaloff>:/icons/img/folder-violet.svg</iconset>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources>
