@@ -1,4 +1,5 @@
 ## 3.8.2
+* Improve first run experience for new user - #564 (@emcek)
 * Internal:
   * Update `lupa` to 2.7 (CVE-2026-34444) - #563 (@emcek)
 
