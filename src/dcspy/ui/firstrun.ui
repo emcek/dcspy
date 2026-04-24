@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>wizard</class>
+ <widget class="QWizard" name="wizard">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>686</width>
+    <height>454</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>DCSpy First Run</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../qtgui.qrc">
+    <normaloff>:/icons/img/dcspy_light.svg</normaloff>:/icons/img/dcspy_light.svg</iconset>
+  </property>
+  <widget class="QWizardPage" name="wizardPage1">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap resource="../qtgui.qrc">:/img/img/dcspy.png</pixmap>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="wizardPage2">
+   <property name="title">
+    <string/>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>DCS-BIOS type</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>DCS-BIOS in this mode uses the official Git repository on GitHub, which allows it to stay constantly up to date. Even the smallest updates and fixes will be immediately available. However, it requires **Git** to be installed on your system. If you know what you’re doing, you can select a specific branch or commit from the repository.
+
+**Note**: The DCS-BIOS developers recommend using DCS-BIOS in this way.</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::TextFormat::MarkdownText</enum>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="buddy">
+          <cstring>rb_live</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>In this mode, you use DCS-BIOS in a more old-fashioned, traditional way. DCSpy will install the latest available release of DCS-BIOS from the GitHub releases page of the project.
+
+This means you’ll be using a stable, tested official version, but new features and fixes will not be available until the DCS-BIOS developers release a new version.</string>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::TextFormat::MarkdownText</enum>
+         </property>
+         <property name="wordWrap">
+          <bool>true</bool>
+         </property>
+         <property name="buddy">
+          <cstring>rb_standard</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QRadioButton" name="rb_live">
+         <property name="layoutDirection">
+          <enum>Qt::LayoutDirection::LeftToRight</enum>
+         </property>
+         <property name="text">
+          <string>Live (require git)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QRadioButton" name="rb_standard">
+         <property name="text">
+          <string>Standard Release</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="l_git_info">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::TextFormat::MarkdownText</enum>
+      </property>
+      <property name="openExternalLinks">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources>
+  <include location="../qtgui.qrc"/>
+ </resources>
+ <connections/>
+</ui>
