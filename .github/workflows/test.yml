@@ -51,4 +51,4 @@ jobs:
 
       - name: "Check pip-audit"
         run: |
-          pip-audit -lv --progress-spinner off --ignore-vuln PYSEC-2022-42969 --ignore-vuln CVE-2026-4539
+          pip-audit -lv --progress-spinner off --ignore-vuln PYSEC-2022-42969
