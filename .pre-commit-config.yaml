@@ -37,7 +37,7 @@ repos:
         additional_dependencies: [types-cffi, types-lupa, types-Pillow, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.11
+    rev: v0.15.12
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
@@ -69,7 +69,7 @@ repos:
       - id: validate-pyproject
 
   - repo: https://github.com/pycqa/isort
-    rev: 8.0.1
+    rev: 9.0.0a3
     hooks:
       - id: isort
         exclude: '/qtgui_rc.py$'

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from _ctypes import sizeof
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from ctypes import c_void_p
 from datetime import datetime
@@ -13,7 +14,6 @@ from sys import maxsize
 from tempfile import gettempdir
 from typing import Any, Final, TypedDict, TypeVar, Union
 
-from _ctypes import sizeof
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
