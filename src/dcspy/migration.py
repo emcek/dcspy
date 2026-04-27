@@ -11,8 +11,8 @@ from shutil import SameFileError, copy
 
 from packaging import version
 
-from dcspy.models import BIOS_REPO_ADDR, ConfigValue, DcspyConfigYaml, __version__
-from dcspy.utils import DEFAULT_YAML_FILE, defaults_cfg, get_config_yaml_location
+from dcspy.models import BIOS_REPO_ADDR, DEFAULT_YAML_FILE, ConfigValue, DcspyConfigYaml, __version__
+from dcspy.utils import defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
 
@@ -174,7 +174,7 @@ def _add_key(cfg: DcspyConfigYaml, key: str, default_value: ConfigValue) -> None
 
 def _remove_key(cfg: DcspyConfigYaml, key: str) -> None:
     """
-    Remove key from dictionary.
+    Remove a key from a dictionary.
 
     :param cfg: Configuration dictionary
     :param key: key name
@@ -186,7 +186,7 @@ def _remove_key(cfg: DcspyConfigYaml, key: str) -> None:
 
 def _rename_key_keep_value(cfg: DcspyConfigYaml, old_name: str, new_name: str, default_value: ConfigValue) -> None:
     """
-    Rename key in dictionary and keep value.
+    Rename a key in a dictionary and keep value.
 
     :param cfg: Configuration dictionary
     :param old_name: Old key name

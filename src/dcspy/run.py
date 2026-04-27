@@ -10,9 +10,10 @@ from tempfile import gettempdir
 
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QPixmap, Qt
-from PySide6.QtWidgets import QApplication, QProgressBar, QSplashScreen
+from PySide6.QtWidgets import QApplication, QProgressBar, QSplashScreen, QWizard
 
 from dcspy import get_config_yaml_item
+from dcspy.qt_first import FirstRun
 from dcspy.qt_gui import DcsPyQtGui
 
 LOG = getLogger(__name__)
@@ -30,6 +31,16 @@ def _update_progress(progbar: QProgressBar) -> None:
     LOG.debug('Splash screen loading finished.')
 
 
+def first_run_wizard():
+    """Handle first run wizard dialog box."""
+    wizard = FirstRun()
+    if wizard.exec() == QWizard.DialogCode.Accepted:
+        config = wizard.type
+        LOG.debug(config)
+    else:
+        sys.exit(0)
+
+
 def run(cli_args: Namespace = Namespace()) -> None:
     """Run DCSpy Qt6 GUI."""
     signal.signal(signal.SIGTERM, signal.SIG_DFL)
@@ -37,8 +48,11 @@ def run(cli_args: Namespace = Namespace()) -> None:
     app = QApplication(sys.argv)
     app.setStyle('fusion')
 
+    if get_config_yaml_item('first_run',False):
+        first_run_wizard()
+
     splash_pixmap = QPixmap((Path(__file__) / '..' / 'img' / 'splash.png').resolve())
-    splash_screen = QSplashScreen(splash_pixmap, Qt.WindowType.WindowStaysOnTopHint)
+    splash_screen = QSplashScreen(splash_pixmap, Qt.WindowType.SplashScreen)
     splash_screen.showMessage('Loading... Please wait.', Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.black)
     progress_bar = QProgressBar(splash_screen)
     progress_bar.setGeometry(50, splash_pixmap.height() - 40, splash_pixmap.width() - 100, 20)
@@ -53,8 +67,8 @@ def run(cli_args: Namespace = Namespace()) -> None:
             window.show()
         app.aboutToQuit.connect(window.event_set)
         unlink(Path(gettempdir()) / f'onefile_{environ["NUITKA_ONEFILE_PARENT"]}_splash_feedback.tmp')
-    except (KeyError, FileNotFoundError):
-        pass
+    except (KeyError, FileNotFoundError) as exp:
+        LOG.warning(f'Details: {exp}', exc_info=True)
     except Exception as exp:
         LOG.exception(f'Critical error: {exp}', exc_info=True)
     finally:
