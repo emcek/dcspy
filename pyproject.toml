@@ -79,7 +79,7 @@ test = [
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==4.1.0',
     'ruff==0.15.12',
-    'types-cffi==2.0.0.20260408',
+    'types-cffi==2.0.0.20260429',
     'types-lupa==2.6.0.20260408',
     'types-pillow==10.2.0.20240822',
     'types-pyyaml==6.0.12.20260408',
