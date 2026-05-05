@@ -40,7 +40,7 @@ dynamic = ['version', 'readme']
 dependencies = [
     'cffi==2.0.0',
     'eval-type-backport==0.3.1 ; python_version < "3.10"',
-    'gitpython==3.1.47',
+    'gitpython==3.1.49',
     'lupa==2.8',
     'packaging==26.2',
     'pillow==12.2.0',
@@ -74,16 +74,16 @@ test = [
     'mypy==1.20.2',
     'pip-audit==2.10.0',
     'pytest==9.0.3',
-    'pytest-codspeed==4.4.0',
+    'pytest-codspeed==4.5.0',
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==4.1.0',
     'ruff==0.15.12',
-    'types-cffi==2.0.0.20260408',
+    'types-cffi==2.0.0.20260504',
     'types-lupa==2.6.0.20260408',
     'types-pillow==10.2.0.20240822',
     'types-pyyaml==6.0.12.20260408',
-    'types-requests==2.33.0.20260408',
+    'types-requests==2.33.0.20260503',
 ]
 docs = [
     'black==26.3.1',
