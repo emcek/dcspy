@@ -31,6 +31,49 @@ from dcspy.models import (CONFIG_YAML, CTRL_LIST_SEPARATOR, DEFAULT_YAML_FILE, A
 with suppress(ImportError):
     import git
 
+    class CloneProgress(git.RemoteProgress):
+        """Handler providing an interface to parse progress information emitted by git."""
+
+        OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
+        OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
+
+        def __init__(self, progress, stage) -> None:
+            """
+            Initialize the progress handler.
+
+            :param progress: Progress Qt6 signal
+            :param stage: Report stage Qt6 signal
+            """
+            super().__init__()
+            self.progress_signal = progress
+            self.stage_signal = stage
+
+        def get_curr_op(self, op_code: int) -> str:
+            """
+            Get a stage name from OP code.
+
+            :param op_code: OP code
+            :return: stage name
+            """
+            op_code_masked = op_code & self.OP_MASK
+            return self.OP_CODE_MAP.get(op_code_masked, '?').title()
+
+        def update(self, op_code: int, cur_count: str | float, max_count: str | float | None = None, message: str = '') -> None:
+            """
+            Call whenever the progress changes.
+
+            :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
+            :param cur_count: A count of current absolute items
+            :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
+            :param message: It contains the number of bytes transferred. It may be used for other purposes as well.
+            """
+            if op_code & git.RemoteProgress.BEGIN:
+                self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
+
+            percentage = float(cur_count) / float(max_count) * 100 if max_count else 0
+            self.progress_signal.emit(int(percentage))
+
+
 LOG = getLogger(__name__)
 
 with open(DEFAULT_YAML_FILE) as c_file:
@@ -77,7 +120,7 @@ def load_yaml(full_path: Path) -> DcspyConfigYaml:
 
 def save_yaml(data: DcspyConfigYaml, full_path: Path) -> None:
     """
-    Save disc as YAML file.
+    Save data as the YAML file.
 
     :param data: Dictionary with data
     :param full_path: Full a path to YAML file
@@ -108,7 +151,7 @@ def check_ver_at_github(repo: str) -> Release:
 
 def get_version_string(repo: str, current_ver: str | version.Version, check: bool = True) -> str:
     """
-    Generate formatted string with version number.
+    Generate a formatted string with a version number.
 
     :param repo: Format '<organization or user>/<package>'.
     :param current_ver: String or Version object.
@@ -316,7 +359,7 @@ def is_git_sha(repo: git.Repo, ref: str) -> bool:
 
 def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
     """
-    Check DCS-BIOS entry in Export.lua file.
+    Check the DCS-BIOS entry in the Export.lua file.
 
     :param lua_dst_data: Content of Export.lua
     :param lua_dst_path: Export.lua path
@@ -365,7 +408,7 @@ def is_git_exec_present() -> bool:
         import git
         return bool(git.GIT_OK)
     except ImportError as err:
-        LOG.debug(type(err).__name__, exc_info=True)
+        LOG.warning(type(err).__name__, exc_info=True)
         return False
 
 
@@ -401,48 +444,6 @@ def get_all_git_refs(repo_dir: Path) -> list[str]:
         for ref in git.Repo(repo_dir).refs:
             refs.append(str(ref))
     return refs
-
-
-class CloneProgress(git.RemoteProgress):
-    """Handler providing an interface to parse progress information emitted by git."""
-    OP_CODES: ClassVar[list[str]] = ['BEGIN', 'CHECKING_OUT', 'COMPRESSING', 'COUNTING', 'END', 'FINDING_SOURCES', 'RECEIVING', 'RESOLVING', 'WRITING']
-    OP_CODE_MAP: ClassVar[dict[int, str]] = {getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES}
-
-    def __init__(self, progress, stage) -> None:
-        """
-        Initialize the progress handler.
-
-        :param progress: Progress Qt6 signal
-        :param stage: Report stage Qt6 signal
-        """
-        super().__init__()
-        self.progress_signal = progress
-        self.stage_signal = stage
-
-    def get_curr_op(self, op_code: int) -> str:
-        """
-        Get a stage name from OP code.
-
-        :param op_code: OP code
-        :return: stage name
-        """
-        op_code_masked = op_code & self.OP_MASK
-        return self.OP_CODE_MAP.get(op_code_masked, '?').title()
-
-    def update(self, op_code: int, cur_count, max_count=None, message: str = '') -> None:
-        """
-        Call whenever the progress changes.
-
-        :param op_code: Integer allowing to be compared against Operation IDs and stage IDs.
-        :param cur_count: A count of current absolute items
-        :param max_count: The maximum count of items we expect. It may be None in case there is no maximum number of items or if it is (yet) unknown.
-        :param message: It contains the number of bytes transferred. It may be used for other purposes as well.
-        """
-        if op_code & git.RemoteProgress.BEGIN:
-            self.stage_signal.emit(f'Git clone: {self.get_curr_op(op_code)}')
-
-        percentage = int(cur_count / max_count * 100) if max_count else 0
-        self.progress_signal.emit(percentage)
 
 
 def collect_debug_data() -> Path:
@@ -622,7 +623,7 @@ def load_json(full_path: Path) -> dict[Any, Any]:
 @lru_cache
 def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     """
-    Collect full BIOS for plane with name.
+    Collect full BIOS for the plane with a name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS directory
@@ -681,7 +682,7 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 @lru_cache
 def get_plane_aliases(bios_dir: Path, plane: str | None = None) -> dict[str, list[str]]:
     """
-    Get a list of all YAML files for plane with name.
+    Get a list of all YAML files for the plane with a name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
@@ -801,7 +802,7 @@ class KeyRequest:
         """
         Get abstract representation for request ti be sent for requested button.
 
-        :param button: LcdButton, Gkey or MouseButton
+        :param button: LcdButton, Gkey, or MouseButton
         :return: RequestModel object
         """
         return self.buttons.get(button, RequestModel.make_empty(key=button))
@@ -810,7 +811,7 @@ class KeyRequest:
         """
         Update the internal string request for the specified button.
 
-        :param button: LcdButton, Gkey or MouseButton
+        :param button: LcdButton, Gkey, or MouseButton
         :param req: The raw request to set.
         """
         self.buttons[button].raw_request = req
@@ -906,7 +907,7 @@ def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, b
     Check hashes for a file.
 
     :param file_path: Path to the file
-    :param digest_file: Path to the digests file
+    :param digest_file: Path to the file with digests
     :return: Overall verdict and detailed results
     """
     if not file_path.is_file() or not digest_file.is_file():

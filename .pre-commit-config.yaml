@@ -37,7 +37,7 @@ repos:
         additional_dependencies: [types-cffi, types-lupa, types-Pillow, types-PyYAML, types-requests, lxml]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.15
+    rev: v0.15.20
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
@@ -58,10 +58,10 @@ repos:
         args: [--omit-covered-files, --fail-under=90]
 
   - repo: https://github.com/pypa/pip-audit
-    rev: v2.10.0
+    rev: v2.10.1
     hooks:
       -   id: pip-audit
-          args: [--local, --ignore-vuln, CVE-2026-4539]
+          args: [--local, --ignore-vuln, CVE-2026-3219]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.25

@@ -43,12 +43,12 @@ dependencies = [
     'gitpython==3.1.50',
     'lupa==2.8',
     'packaging==26.2',
-    'pillow==12.2.0',
+    'pillow==12.3.0',
     'pydantic==2.13.4',
     'pyside6==6.11.1',
     'pyyaml==6.0.3',
     'requests==2.34.2',
-    'typing-extensions==4.15.0; python_version < "3.11"',
+    'typing-extensions==4.16.0; python_version < "3.11"',
 ]
 
 [project.urls]
