@@ -25,7 +25,7 @@ jobs:
     runs-on: windows-2025
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
@@ -38,7 +38,7 @@ jobs:
             dcspy_*
 
       - name: "Compile setup executable file"
-        uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
         with:
           path: inno/dcspy.iss
           options: /O+
