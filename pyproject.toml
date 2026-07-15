@@ -4,8 +4,8 @@ build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'dcspy'
-authors = [{name = 'Michal Plichta'}]
-maintainers = [{name = 'Michal Plichta'}]
+authors = [{ name = 'Michal Plichta' }]
+maintainers = [{ name = 'Michal Plichta' }]
 description = 'Software for integrating DCS Planes with Logitech keyboards (with and without LCD), mice and headphones.'
 license = 'MIT'
 license-files = ['LICENSE.md', 'src/dcspy/resources/license.txt']
@@ -99,8 +99,8 @@ docs = [
 ]
 
 [tool.setuptools.dynamic]
-version = {attr = 'dcspy.models.__version__'}
-readme = {file = 'README.md', content-type = 'text/markdown'}
+version = { attr = 'dcspy.models.__version__' }
+readme = { file = 'README.md', content-type = 'text/markdown' }
 
 [tool.setuptools.packages.find]
 where = ['src/']
