@@ -1,6 +1,7 @@
 ## 3.8.2
 * Internal:
-  * Update `lupa` to 2.7 (CVE-2026-34444) - #563 (@emcek)
+  * Update `lupa` to 2.8 (CVE-2026-34444) - #563 (@emcek)
+  * Update all others dependencies to latest versions
 
 ## 3.8.1
 * Fix debugger tab in dark mode - #551 (@emcek)
