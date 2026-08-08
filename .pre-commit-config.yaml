@@ -1,7 +1,7 @@
 ---
 ci:
   autoupdate_schedule: monthly
-  skip: [pip-audit]
+  skip: [ pip-audit ]
 
 default_language_version:
   python: python3.14
@@ -26,42 +26,44 @@ repos:
       - id: fix-byte-order-marker
         exclude: 'qtgui_rc.py|\.isl'
       - id: name-tests-test
-        args: [--pytest-test-first]
+        args: [ --pytest-test-first ]
         exclude: 'helpers.py'
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v2.1.0
+    rev: v2.3.0
     hooks:
       - id: mypy
         exclude: '/qt_gui\.py$|/qtgui_rc\.py$|tests/$'
-        additional_dependencies: [types-cffi, types-lupa, types-Pillow, types-PyYAML, types-requests, lxml]
+        additional_dependencies: [ types-cffi, types-lupa, types-Pillow, types-PyYAML, types-requests, lxml,
+                                   types-Markdown, types-PySocks, types-PyYAML, types-Pygments, types-cffi,
+                                   types-defusedxml, types-lupa, types-pytz, types-simplejson ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.20
+    rev: v0.16.1
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
-        args: [--fix, --exit-non-zero-on-fix]
+        args: [ --fix, --exit-non-zero-on-fix ]
 
   - repo: https://github.com/asottile/pyupgrade
     rev: v3.21.2
     hooks:
       - id: pyupgrade
         exclude: '/qtgui_rc.py$'
-        args: [--py310-plus]
+        args: [ --py310-plus ]
 
   - repo: https://github.com/econchick/interrogate
     rev: 1.7.0
     hooks:
       - id: interrogate
         exclude: '/qtgui_rc.py$|tests/'
-        args: [--omit-covered-files, --fail-under=90]
+        args: [ --omit-covered-files, --fail-under=90 ]
 
   - repo: https://github.com/pypa/pip-audit
     rev: v2.10.1
     hooks:
-      -   id: pip-audit
-          args: [--local, --ignore-vuln, CVE-2026-3219]
+      - id: pip-audit
+        args: [ --local ]
 
   - repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.25
@@ -69,7 +71,7 @@ repos:
       - id: validate-pyproject
 
   - repo: https://github.com/pycqa/isort
-    rev: 9.0.0a3
+    rev: 9.0.0b1
     hooks:
       - id: isort
         exclude: '/qtgui_rc.py$'
