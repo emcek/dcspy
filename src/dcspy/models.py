@@ -18,7 +18,7 @@ from packaging import version
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
-__version__ = '3.8.1'
+__version__ = '3.8.2'
 
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
