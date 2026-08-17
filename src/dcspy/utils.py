@@ -791,7 +791,7 @@ class KeyRequest:
         for key_str, request in plane_yaml.items():
             if request:
                 key = get_key_instance(key_str)
-                self.buttons[key] = RequestModel.from_request(key=key, request=request, get_bios_fn=get_bios_fn)
+                self.buttons[key] = RequestModel.from_request(key=key, request=str(request), get_bios_fn=get_bios_fn)
 
     @property
     def cycle_button_ctrl_name(self) -> dict[str, int]:
