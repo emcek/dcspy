@@ -69,7 +69,7 @@ dcspy = 'dcspy.run:run'
 [project.optional-dependencies]
 test = [
     'interrogate==1.7.0',
-    'isort==8.0.1',
+    'isort==9.0.1',
     'lxml==6.1.1',
     'mypy==2.3.0',
     'pip-audit==2.10.1',
