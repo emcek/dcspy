@@ -80,7 +80,7 @@ test = [
     'pytest-randomly==4.1.0',
     'ruff==0.16.5',
     'types-cffi==2.1.0.20260827',
-    'types-lupa==2.6.0.20260509',
+    'types-lupa==2.8.0.20260827',
     'types-pillow==10.2.0.20240822',
     'types-pyyaml==6.0.12.20260815',
     'types-requests==2.33.0.20260712',
