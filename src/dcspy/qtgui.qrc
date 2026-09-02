@@ -73,6 +73,7 @@
     <file>img/G510.png</file>
   </qresource>
   <qresource prefix="img">
+    <file>img/dcspy.png</file>
     <file>img/G13device.png</file>
     <file>img/MX518device.png</file>
     <file>img/G9device.png</file>
@@ -100,6 +101,7 @@
   </qresource>
   <qresource prefix="ui">
     <file>ui/qtdcs.ui</file>
+    <file>ui/firstrun.ui</file>
     <file>ui/about.ui</file>
   </qresource>
 </RCC>

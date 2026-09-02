@@ -132,4 +132,4 @@ class DCSpyStarter:
                          ('DCSpy stopped', Color.red),
                          ('', Color.black),
                          (f'DCSpy:    {dcspy_ver}', Color.white),
-                         (f'DCS-BIOS:  {check_bios_ver(bios_path=get_config_yaml_item("dcsbios"))}', Color.white)]
+                         (f'DCS-BIOS:  {check_bios_ver(bios_path=str(get_config_yaml_item("dcsbios")))}', Color.white)]
