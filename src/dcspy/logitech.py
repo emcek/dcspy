@@ -52,7 +52,7 @@ class LogitechDevice:
 
         :return: List of strings with data, row by row
         """
-        return self._text
+        return copy(self._text)
 
     @text.setter
     def text(self, message: list[tuple[str, Color]]) -> None:
@@ -64,9 +64,9 @@ class LogitechDevice:
         For G19 takes elements two (2) to eight (8).
         :param message: List of tuples with strings and color to display, row by row.
         """
-        self._text = message
+        self._text = copy(message)
         if self.model.lcd_info.type != LcdType.NONE:
-            self.lcd_sdk.update_text(copy(message))
+            self.lcd_sdk.update_text(copy(self._text))
 
     @property
     def messages(self) -> list[str]:
@@ -159,9 +159,7 @@ class LogitechDevice:
         :param mouse: Indicate if the Event comes from a mouse, one (1) is yes, zro (0) is no
 
         """
-        key = Gkey(key=key_idx, mode=mode)
-        if mouse:
-            key = MouseButton(button=key_idx)  # type: ignore[assignment]
+        key: AnyButton = MouseButton(button=key_idx) if mouse else Gkey(key=key_idx, mode=mode)
         LOG.debug(f'Button {key} is pressed, key down: {key_down}')
         self._send_request(button=key, key_down=key_down)
 
