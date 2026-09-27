@@ -4,7 +4,7 @@ from collections import deque
 from collections.abc import Iterator
 from logging import getLogger
 from threading import Event
-from time import gmtime, time
+from time import time
 
 from dcspy import get_config_yaml_item
 from dcspy.dcsbios import ProtocolParser
@@ -13,7 +13,7 @@ from dcspy.models import DCSPY_REPO_NAME, MULTICAST_IP, RECV_ADDR, Color, Logite
 from dcspy.utils import check_bios_ver, get_version_string
 
 LOG = getLogger(__name__)
-SUPPORTERS = ['Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nick Thain', 'BrotherBloat']
+SUPPORTERS = ('Jon Wardell', 'Simon Leigh', 'Alexander Leschanz', 'Sireyn', 'Nick Thain', 'BrotherBloat')
 
 
 class DCSpyStarter:
@@ -29,8 +29,8 @@ class DCSpyStarter:
         self.model = model
         self.event = event
         self.parser = ProtocolParser()
-        self.CLEAN_BEFORE_LOAD_PLANE = False
-        self.CLEAN_WHILE_WAIT_FOR_DATA = False
+        self._clean_before_load_plane = False
+        self._clean_while_wait_for_data = False
 
     def _handle_connection(self, logi_device: LogitechDevice, sock: socket.socket, ver_string: str) -> None:
         """
@@ -46,10 +46,10 @@ class DCSpyStarter:
         while not self.event.is_set():
             try:
                 dcs_bios_resp = sock.recv(2048)
-                if self.CLEAN_BEFORE_LOAD_PLANE:
+                if self._clean_before_load_plane:
                     logi_device.clear(true_clear=True)
-                    self.CLEAN_BEFORE_LOAD_PLANE = False
-                    self.CLEAN_WHILE_WAIT_FOR_DATA = True
+                    self._clean_before_load_plane = False
+                    self._clean_while_wait_for_data = True
                 for int_byte in dcs_bios_resp:
                     self.parser.process_byte(int_byte)
                 start_time = time()
@@ -67,7 +67,7 @@ class DCSpyStarter:
         if logi_device.plane_detected:
             logi_device.unload_old_plane()
             logi_device.load_new_plane()
-            self.CLEAN_WHILE_WAIT_FOR_DATA = True
+            self._clean_while_wait_for_data = True
 
     @staticmethod
     def _supporters(text: str, width: int) -> Iterator[str]:
@@ -92,16 +92,17 @@ class DCSpyStarter:
         :param support_iter: Iterator for banner supporters
         :param exp: Caught exception instance
         """
-        if self.CLEAN_WHILE_WAIT_FOR_DATA:
+        if self._clean_while_wait_for_data:
             LOG.debug(f'Main loop socket error: {exp}')
             logi_device.clear(true_clear=True)
-            self.CLEAN_BEFORE_LOAD_PLANE = True
-            self.CLEAN_WHILE_WAIT_FOR_DATA = False
-        wait_time = gmtime(time() - start_time)
+            self._CLEAN_BEFORE_LOAD_PLANE = True
+            self._CLEAN_WHILE_WAIT_FOR_DATA = False
+        elapsed_seconds = max(0, int(time() - start_time))
+        wait_minutes, wait_seconds = divmod(elapsed_seconds, 60)
         logi_device.text = [('     DCSpy       ', Color.orange),
                             ('Logitech LCD OK', Color.lightgreen),
-                            (f'No data from DCS:      {wait_time.tm_min:02d}:{wait_time.tm_sec:02d}', Color.red),
-                            (f'{next(support_iter)}', Color.yellow),
+                            (f'No data from DCS:      {wait_minutes:02d}:{wait_seconds:02d}', Color.red),
+                            (next(support_iter), Color.yellow),
                             (ver_string, Color.white)]
 
     @staticmethod
