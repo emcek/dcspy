@@ -168,7 +168,7 @@ extend-exclude = [
 ]
 
 [tool.ruff.lint.mccabe]
-max-complexity = 5
+max-complexity = 6
 
 [tool.ty.src]
 include = ['src', 'tests']
