@@ -39,9 +39,9 @@ class GkeySdkManager:
     """G-key SDK manager."""
     def __init__(self, callback: Callable[[int, int, int, int], None]) -> None:
         """
-        Create G-key SDK manager.
+        Create a G-key SDK manager.
 
-        :param callback: callback handler
+        :param callback: Callback handler
         """
         self.key_dll: CDLL = load_dll(KeyDll)  # type: ignore[assignment]
         self.gkey_context = LogiGkeyCBContext()

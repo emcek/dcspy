@@ -8,7 +8,7 @@ ALGORITHMS = ['sha3_224', 'sha3_512', 'sha3_384', 'sha1', 'sha512', 'sha384',
 
 def generate(files: list[Path], output_file: str, algorithms:list[str]) -> None:
     """
-    Generate hashes for list of files.
+    Generate hashes for a list of files.
 
     :param files: List of Path objects
     :param output_file: output file

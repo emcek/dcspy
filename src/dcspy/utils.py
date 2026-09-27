@@ -86,7 +86,7 @@ def load_yaml(full_path: Path) -> DcspyConfigYaml:
 
 def save_yaml(data: DcspyConfigYaml, full_path: Path) -> None:
     """
-    Save disc as YAML file.
+    Save a dict as an YAML file.
 
     :param data: Dictionary with data
     :param full_path: Full a path to YAML file
@@ -117,7 +117,7 @@ def check_ver_at_github(repo: str) -> Release:
 
 def get_version_string(repo: str, current_ver: str | version.Version, check: bool = True) -> str:
     """
-    Generate formatted string with version number.
+    Generate a formatted string with a version number.
 
     :param repo: Format '<organization or user>/<package>'.
     :param current_ver: String or Version object.
@@ -325,7 +325,7 @@ def is_git_sha(repo: git.Repo, ref: str) -> bool:
 
 def check_dcs_bios_entry(lua_dst_data: str, lua_dst_path: Path, temp_dir: Path) -> str:
     """
-    Check DCS-BIOS entry in Export.lua file.
+    Check a DCS-BIOS entry in the Export.lua file.
 
     :param lua_dst_data: Content of Export.lua
     :param lua_dst_path: Export.lua path
@@ -631,7 +631,7 @@ def load_json(full_path: Path) -> dict[Any, Any]:
 @lru_cache
 def get_full_bios_for_plane(plane: str, bios_dir: Path) -> DcsBiosPlaneData:
     """
-    Collect full BIOS for plane with name.
+    Collect full BIOS for a plane with a name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS directory
@@ -690,7 +690,7 @@ def get_planes_list(bios_dir: Path) -> list[str]:
 @lru_cache
 def get_plane_aliases(bios_dir: Path, plane: str | None = None) -> dict[str, list[str]]:
     """
-    Get a list of all YAML files for plane with name.
+    Get a list of all YAML files for a plane with a name.
 
     :param plane: BIOS plane name
     :param bios_dir: path to DCS-BIOS
@@ -808,7 +808,7 @@ class KeyRequest:
 
     def get_request(self, button: AnyButton) -> RequestModel:
         """
-        Get abstract representation for request ti be sent for requested button.
+        Get abstract representation for a request to be sent for a requested button.
 
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object

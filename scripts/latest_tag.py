@@ -7,7 +7,7 @@ from packaging import version
 
 def latest_version(repo_path: str, as_tag: int = 1) -> str:
     """
-    Get the latest version number form repository.
+    Get the latest version number from a repository.
 
     :param repo_path: Path to repository
     :param as_tag: if True return full tag name

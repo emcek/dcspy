@@ -30,7 +30,7 @@ class MetaAircraft(type):
         """
         Create a new instance of any plane as BasicAircraft.
 
-        You can crate instance of any plane:
+        You can create an instance of any plane:
         `f22a = MetaAircraft('F-22A', (BasicAircraft,), {})(lcd_type: LcdInfo)`
 
         :param name:
@@ -893,7 +893,7 @@ class A10C(AdvancedAircraft):
         return f'{self.get_bios("ARC210_FREQUENCY")} ({str(self.get_bios("ARC210_PREV_MANUAL_FREQ")).strip():>7})'
 
     def _draw_radio_lines(self, draw: ImageDraw.ImageDraw, lines: Sequence[str]) -> None:
-        """Draw standard A-10 radio list for both mono and color screens."""
+        """Draw the standard A-10 radio list for both mono and color screens."""
         step = 10 if self.lcd.type == LcdType.MONO else 20
         self._draw_text_lines(draw, lines, step)
 

@@ -86,7 +86,7 @@ class LcdSdkManager:
         :param pixels: List of 6880 (160x43) pixels as integer
         :return: A result of execution
         """
-        with suppress(AttributeError, CDefError):  # we need catch error since BYTE[] is a Windows specific
+        with suppress(AttributeError, CDefError):  # we needto catch an error since BYTE[] is a Windows specific
             return self.lcd_dll.LogiLcdMonoSetBackground(FFI().new('BYTE[]', pixels))  # type: ignore[attr-defined]
         return False
 
@@ -113,7 +113,7 @@ class LcdSdkManager:
         :return: A result of execution
         """
         img_bytes = [byte for pixel in pixels for byte in pixel]
-        with suppress(AttributeError, CDefError):  # we need catch error since BYTE[] is a Windows specific
+        with suppress(AttributeError, CDefError):  # we need to catch an error since BYTE[] is a Windows specific
             return self.lcd_dll.LogiLcdColorSetBackground(FFI().new('BYTE[]', img_bytes))  # type: ignore[attr-defined]
         return False
 
@@ -150,8 +150,9 @@ class LcdSdkManager:
         """
         Update display LCD with a list of a text.
 
-        For mono, LCD it takes four (4) elements of the list and displays as four (4) rows.
-        For color, LCD takes eight (8) elements of the list and displays as eight (8) rows.
+        For G13/G15/G510 takes the first four (4) or fewer elements of a list and a display as four (4) rows.
+        For G19 takes the first eight (8) or fewer elements of the list and a display as eight (8) rows.
+
         :param txt: List of strings to display, row by row
         """
         title = txt.pop(0)

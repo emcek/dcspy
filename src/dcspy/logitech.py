@@ -81,15 +81,15 @@ class LogitechDevice:
         """
         Display a message as an image at LCD.
 
-        For G13/G15/G510 takes the first four (4) or fewer elements of a list and display as four (4) rows.
-        For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
+        For G13/G15/G510 takes the first four (4) or fewer elements of a list and a display as four (4) rows.
+        For G19 takes the first eight (8) or fewer elements of the list and a display as eight (8) rows.
         """
         if self.model.lcd_info.type != LcdType.NONE:
             self.lcd_sdk.update_display(self._prepare_image())
 
     def detecting_plane(self, value: str) -> None:
         """
-        Try to detect airplane base on value received from DCS-BIOS.
+        Try to detect an airplane base on value received from DCS-BIOS.
 
         :param value: Data from DCS-BIOS
         """
@@ -217,8 +217,8 @@ class LogitechDevice:
         """
         Prepare an image for a base of the LCD type.
 
-        For G13/G15/G510 takes the first four (4) or fewer elements of the list and display as four (4) rows.
-        For G19 takes the first eight (8) or fewer elements of the list and display as eight (8) rows.
+        For G13/G15/G510 takes the first four (4) or fewer elements of the list and a display as four (4) rows.
+        For G19 takes the first eight (8) or fewer elements of the list and a display as eight (8) rows.
         :return: Image instance ready to display on LCD
         """
         img = Image.new(mode=self.model.lcd_info.mode.value, color=self.model.lcd_info.background,
