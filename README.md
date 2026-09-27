@@ -48,16 +48,16 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
 * AH-64D Apache - Enhanced Up Front Display (EUFD)
 * F-15E Eagle - Upfront Control Panel
 * F-4 Phantom II - UHF (ARC 164) Radio
-* C-130J 30 Hercules - not yet decided (not ready in BIOS)
+* C-130J 30 Hercules - not yet decided
 * more to come...
 
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * DCS-Skunkworks DCS-BIOS:
-  * [DCS-BIOS 0.11.3](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.11.3) or newer (can be [installed](https://dcspy.readthedocs.io/en/latest/upgrade/#manual-procedure) directly from DCSpy)
+  * [DCS-BIOS 0.11.7](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.11.7) or newer (can be [installed](https://dcspy.readthedocs.io/en/latest/upgrade/#manual-procedure) directly from DCSpy)
   * However, it is recommended to use [Live DCS-BIOS](https://dcspy.readthedocs.io/en/latest/bios_live/) latest git version
   * [Git](https://git-scm.com/download/win) it is necessary to use the live version of DCS-BIOS
-* DCS World: [2.9.27.25340.1](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.27.25340.1/), but any version from 2.9.* branch should be fine.
+* DCS World: [2.9.29.27468](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.29.27468/), but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.14](https://www.python.org/downloads/) but 3.10+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
 

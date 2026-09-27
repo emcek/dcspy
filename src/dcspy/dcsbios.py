@@ -27,7 +27,7 @@ class ProtocolParser:
         self.count = 0
         self.data = 0
         self.write_callbacks: set[Callable[[int, int], None]] = set()
-        self.frame_sync_callbacks: set[Callable] = set()
+        self.frame_sync_callbacks: set[Callable[[], None]] = set()
 
     def process_byte(self, int_byte: int) -> None:
         """
@@ -36,18 +36,27 @@ class ProtocolParser:
         Allowed states are: ParserState
         :param int_byte:
         """
-        state_handling = getattr(self, f'_{self.state.name.lower()}')
+        state_handler = getattr(self, f'_{self.state.name.lower()}')
         if self.state == ParserState.WAIT_FOR_SYNC:
-            state_handling()
+            state_handler()
         else:
-            state_handling(int_byte)
+            state_handler(int_byte)
 
+        self._track_sync_bytes(int_byte)
+        self._wait_for_sync()
+
+    def _track_sync_bytes(self, int_byte: int) -> None:
+        """Track consecutive 0x55 bytes used to detect frame sync."""
         if int_byte == 0x55:
             self.sync_byte_count += 1
         else:
             self.sync_byte_count = 0
 
-        self._wait_for_sync()
+    @staticmethod
+    def _notify_callbacks(callbacks: set[Callable], *args: object) -> None:
+        """Call all registered callbacks with the provided arguments."""
+        for callback in callbacks:
+            callback(*args)
 
     def _address_low(self, int_byte: int) -> None:
         """
@@ -65,10 +74,7 @@ class ProtocolParser:
         :param int_byte: Data to process
         """
         self.address += int_byte * 256
-        if self.address != 0x5555:
-            self.state = ParserState.COUNT_LOW
-        else:
-            self.state = ParserState.WAIT_FOR_SYNC
+        self.state = ParserState.WAIT_FOR_SYNC if self.address == 0x5555 else ParserState.COUNT_LOW
 
     def _count_low(self, int_byte: int) -> None:
         """
@@ -106,21 +112,16 @@ class ProtocolParser:
         """
         self.data += 256 * int_byte
         self.count -= 1
-        for callback in self.write_callbacks:
-            callback(self.address, self.data)
+        self._notify_callbacks(self.write_callbacks, self.address, self.data)
         self.address += 2
-        if self.count == 0:
-            self.state = ParserState.ADDRESS_LOW
-        else:
-            self.state = ParserState.DATA_LOW
+        self.state = ParserState.ADDRESS_LOW if self.count == 0 else ParserState.DATA_LOW
 
     def _wait_for_sync(self) -> None:
         """Handle WAIT_FOR_SYNC state."""
         if self.sync_byte_count == 4:
             self.state = ParserState.ADDRESS_LOW
             self.sync_byte_count = 0
-            for callback in self.frame_sync_callbacks:
-                callback()
+            self._notify_callbacks(self.frame_sync_callbacks)
 
 
 class StringBuffer:
@@ -163,14 +164,18 @@ class StringBuffer:
         if self.__address <= address < self.__address + self.__length:
             data_bytes = pack('<H', data)
             self.set_char(address - self.__address, data_bytes[0])
-            if self.__address + self.__length > (address + 1):
+            if address + 1 < self.__address + self.__length:
                 self.set_char(address - self.__address + 1, data_bytes[1])
 
         if address == 0xfffe and self.__dirty:
             self.__dirty = False
             str_buff = self.buffer.split(sep=b'\x00', maxsplit=1)[0].decode('latin-1')
-            for callback in self.callbacks:
-                callback(str_buff)
+            self._notify_callbacks(str_buff)
+
+    def _notify_callbacks(self, str_buff: str) -> None:
+        """Emit decoded string updates to registered listeners."""
+        for callback in self.callbacks:
+            callback(str_buff)
 
 
 class IntegerBuffer:
@@ -204,5 +209,9 @@ class IntegerBuffer:
             value = (data & self.__mask) >> self.__shift_by
             if self.__value != value:
                 self.__value = value
-                for callback in self.callbacks:
-                    callback(value)
+                self._notify_callbacks(value)
+
+    def _notify_callbacks(self, value: int) -> None:
+        """Emit decoded integer updates to registered listeners."""
+        for callback in self.callbacks:
+            callback(value)

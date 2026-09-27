@@ -15,6 +15,8 @@ from dcspy.models import BIOS_REPO_ADDR, DEFAULT_YAML_FILE, ConfigValue, DcspyCo
 from dcspy.utils import defaults_cfg, get_config_yaml_location
 
 LOG = getLogger(__name__)
+LEGACY_API_VERSION = '2.3.3'
+MIGRATION_PREFIX = '_api_ver_'
 
 
 def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
@@ -27,9 +29,9 @@ def migrate(cfg: DcspyConfigYaml) -> DcspyConfigYaml:
     :return: Full-migrated dictionary
     """
     LOG.debug(f'Starting configuration:\n{pformat(cfg)}')
-    src_ver = cfg.get('api_ver', '2.3.3')  # do not touch this api_ver!
+    src_ver = str(cfg.get('api_ver', LEGACY_API_VERSION))
     LOG.debug(f'Current API version: {src_ver}')
-    for migration_func in _filter_api_ver_func(str(src_ver)):
+    for migration_func in _filter_api_ver_func(src_ver):
         migration_func(cfg)
         LOG.debug(f'Migration done: {migration_func.__name__}')
     cfg['api_ver'] = __version__
@@ -48,13 +50,20 @@ def _filter_api_ver_func(cfg_ver: str) -> Iterator[Callable[[DcspyConfigYaml], N
     :param cfg_ver: A current version of a configuration
     :return: Yields a migration function from a list
     """
-    api_ver_list = sorted([func_name.strip('_api_ver_').replace('_', '.')
+    api_ver_list = sorted([func_name.strip(MIGRATION_PREFIX).replace('_', '.')
                            for func_name in globals()
-                           if func_name.startswith('_api_ver_')],
+                           if func_name.startswith(MIGRATION_PREFIX)],
                           key=version.Version)
     for api_ver in api_ver_list:
         if version.Version(api_ver) > version.Version(cfg_ver) <= version.Version(__version__):
-            yield globals()['_api_ver_{}'.format(api_ver.replace('.', '_'))]
+            yield globals()['{}{}'.format(MIGRATION_PREFIX, api_ver.replace('.', '_'))]
+
+
+def _ensure_user_appdata_dir() -> Path:
+    """Create the user config directory and return its path."""
+    user_appdata = get_config_yaml_location()
+    makedirs(name=user_appdata, exist_ok=True)
+    return user_appdata
 
 
 def _api_ver_3_8_0(cfg: DcspyConfigYaml) -> None:
@@ -84,9 +93,7 @@ def _api_ver_3_5_0(cfg: DcspyConfigYaml) -> None:
 
     :param cfg: Configuration dictionary
     """
-    user_appdata = get_config_yaml_location()
-    makedirs(name=user_appdata, exist_ok=True)
-    _copy_file(filename='F-4E-45MC.yaml', to_path=user_appdata, force=True)
+    _copy_file(filename='F-4E-45MC.yaml', to_path=_ensure_user_appdata_dir(), force=True)
 
 
 def _api_ver_3_4_0(cfg: DcspyConfigYaml) -> None:
@@ -95,8 +102,7 @@ def _api_ver_3_4_0(cfg: DcspyConfigYaml) -> None:
 
     :param cfg: Configuration dictionary
     """
-    user_appdata = get_config_yaml_location()
-    makedirs(name=user_appdata, exist_ok=True)
+    _ensure_user_appdata_dir()
     _rename_key_keep_value(cfg, 'keyboard', 'device', 'G13')
     cfg['device'] = str(cfg['device']).replace(' ', '')
 
@@ -107,8 +113,7 @@ def _api_ver_3_1_3(cfg: DcspyConfigYaml) -> None:
 
     :param cfg: Configuration dictionary
     """
-    user_appdata = get_config_yaml_location()
-    makedirs(name=user_appdata, exist_ok=True)
+    _ensure_user_appdata_dir()
     _remove_key(cfg, 'font_mono_xs')
     _remove_key(cfg, 'font_color_xs')
 
@@ -119,8 +124,7 @@ def _api_ver_3_1_1(cfg: DcspyConfigYaml) -> None:
 
     :param cfg: Configuration dictionary
     """
-    user_appdata = get_config_yaml_location()
-    makedirs(name=user_appdata, exist_ok=True)
+    user_appdata = _ensure_user_appdata_dir()
     _copy_file(filename='AH-64D_BLK_II.yaml', to_path=user_appdata, force=True)
 
 
@@ -130,8 +134,7 @@ def _api_ver_3_1_0(cfg: DcspyConfigYaml) -> None:
 
     :param cfg: Configuration dictionary
     """
-    user_appdata = get_config_yaml_location()
-    makedirs(name=user_appdata, exist_ok=True)
+    user_appdata = _ensure_user_appdata_dir()
     for filename in ('AH-64D_BLK_II.yaml', 'AV8BNA.yaml', 'F-14A-135-GR.yaml', 'F-14B.yaml', 'F-15ESE.yaml',
                      'F-16C_50.yaml', 'FA-18C_hornet.yaml', 'Ka-50.yaml', 'Ka-50_3.yaml'):
         _copy_file(filename=filename, to_path=user_appdata)
