@@ -597,12 +597,12 @@ class GuiPlaneInputRequest(BaseModel):
         }
 
         for gkey, data in plane_gkeys.items():
-            try:
-                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
-            except StopIteration:
+            identifier = data.split(' ', 1)[0] if data else ''
+            iface = next((rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data), '')
+            if not iface:
+                identifier = ''
                 data = ''
-                iface = ''
-            input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
+            input_reqs[gkey] = GuiPlaneInputRequest(identifier=identifier, request=data, widget_iface=iface)
         return input_reqs
 
     @classmethod
