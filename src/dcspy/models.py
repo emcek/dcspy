@@ -694,7 +694,8 @@ class MouseButton(BaseModel):
         :param button_range: A tuple of two integers, representing the start and end of the range (inclusive) for generating MouseButton objects.
         :return: A tuple containing instantiated MouseButton objects for each value in the specified range.
         """
-        return tuple(MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1))
+        start, end = button_range
+        return tuple(MouseButton(button=m) for m in range(start, end + 1))
 
 
 class Gkey(BaseModel):
