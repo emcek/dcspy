@@ -901,6 +901,7 @@ def detect_system_color_mode() -> str:
         return 'Light'
     return {0: 'Dark', 1: 'Light'}[subkey]
 
+
 def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool]]:
     """
     Check hashes for a file.
