@@ -12,7 +12,7 @@ from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypedDict, TypeVar, Union
+from typing import Any, Final, TypeAlias, TypedDict, TypeVar, Union
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
@@ -109,6 +109,13 @@ class Input(BaseModel):
         """
         return self.model_dump().get(attribute, default)
 
+    @staticmethod
+    def _validate_interface(value: str, expected: str) -> str:
+        """Validate the interface value."""
+        if value != expected:
+            raise ValueError(f"Invalid value for 'interface'. Only '{expected}' is allowed.")
+        return value
+
 
 class FixedStep(Input):
     """FixedStep input interface of the inputs section of Control."""
@@ -116,15 +123,8 @@ class FixedStep(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'fixed_step':
-            raise ValueError("Invalid value for 'interface'. Only 'fixed_step' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'fixed_step')
 
 
 class VariableStep(Input):
@@ -135,15 +135,8 @@ class VariableStep(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'variable_step':
-            raise ValueError("Invalid value for 'interface'. Only 'variable_step' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'variable_step')
 
 
 class SetState(Input):
@@ -153,15 +146,8 @@ class SetState(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'set_state':
-            raise ValueError("Invalid value for 'interface'. Only 'set_state' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'set_state')
 
 
 class Action(Input):
@@ -171,15 +157,8 @@ class Action(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'action':
-            raise ValueError("Invalid value for 'interface'. Only 'action' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'action')
 
 
 class SetString(Input):
@@ -188,15 +167,8 @@ class SetString(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'set_string':
-            raise ValueError("Invalid value for 'interface'. Only 'set_string' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'set_string')
 
 
 Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
@@ -301,13 +273,11 @@ class ControlKeyData:
         self.list_dict: list[Inputs] = []
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
 
     def __bool__(self) -> bool:
         """Return True if both `max_value` and `suggested_step`: are truthy, False otherwise."""
-        if not all([self.max_value, self.suggested_step]):
-            return False
-        return True
+        return bool(self.max_value) and bool(self.suggested_step)
 
     @classmethod
     def from_control(cls, /, ctrl: Control) -> ControlKeyData:
@@ -614,7 +584,7 @@ class GuiPlaneInputRequest(BaseModel):
                             a space-separated string of configuration data that includes a request type.
         :return: A dictionary mapping each plane identifier (string) to a `GuiPlaneInputRequest` instance.
         """
-        input_reqs = {}
+        input_reqs: dict[str, GuiPlaneInputRequest] = {}
         req_keyword_rb_iface = {
             RequestType.CUSTOM.value: 'rb_custom',
             RequestType.PUSH_BUTTON.value: 'rb_push_button',
@@ -738,8 +708,8 @@ class Gkey(BaseModel):
         return f'G{self.key}_M{self.mode}'
 
     def __bool__(self) -> bool:
-        """Return False when any of value is zero."""
-        return all([self.key, self.mode])
+        """Return False when any of the values is zero."""
+        return bool(self.key) and bool(self.mode)
 
     def __hash__(self) -> int:
         """Hash will be the same for any two Gkey instances with the same key and mode values."""
@@ -755,7 +725,7 @@ class Gkey(BaseModel):
         """
         match = search(r'G(\d+)_M(\d+)', yaml_str)
         if match:
-            return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
+            return cls(**{field: int(value) for field, value in zip(('key', 'mode'), match.groups())})
         raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
     @staticmethod
@@ -770,8 +740,8 @@ class Gkey(BaseModel):
         return tuple(Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1))
 
 
-AnyButton = Union[LcdButton, Gkey, MouseButton]
-ButtonTypes = type[Gkey] | type[LcdButton] | type[MouseButton]
+AnyButton: TypeAlias = LcdButton | Gkey | MouseButton
+ButtonTypes: TypeAlias = type[Gkey] | type[LcdButton] | type[MouseButton]
 
 
 class LcdType(Enum):
@@ -1483,8 +1453,7 @@ class RequestModel(BaseModel):
         :return: A formatted request string with replaced delimiters.
         """
         request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
-        request = request.replace('|', '\n|')
-        return request.strip('|')
+        return request.replace('|', '\n|').strip('|')
 
     def __str__(self) -> str:
         return f'{self.ctrl_name}: {self.raw_request}'
