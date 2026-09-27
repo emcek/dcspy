@@ -286,50 +286,50 @@ class ControlKeyData:
         :param ctrl: Control BIOS model
         :return: ControlKeyData instance
         """
-        try:
-            max_value = cls._get_max_value(ctrl.inputs)
-            suggested_step: int = max(d.get('suggested_step', 1) for d in ctrl.inputs)  # type: ignore[type-var, assignment]
-        except ValueError:
-            max_value = 0
-            suggested_step = 0
+        max_value, suggested_step = cls._extract_limits(seq_of_inputs=ctrl.inputs)
         instance = cls(name=ctrl.identifier, description=ctrl.description, max_value=max_value, suggested_step=suggested_step)
         instance.list_dict = ctrl.inputs
         return instance
 
     @staticmethod
-    def _get_max_value(list_of_dicts: list[Inputs]) -> int:
+    def _extract_limits(seq_of_inputs: Sequence[Inputs]) -> tuple[int, int]:
         """
-        Get a maximum value from a list of dictionaries.
+        Extract maximum value and suggested step from a sequence of Inputs.
 
-        :param list_of_dicts: List of inputs
-        :return: Maximum value of all inputs
+        :param seq_of_inputs: Sequence of Inputs (containing objects of types FixedStep, VariableStep, SetState, Action, SetString).
+        :return: Tuple containing maximum value and suggested step
         """
-        max_value, real_zero = ControlKeyData.__get_max(list_of_dicts)
-        if all([not real_zero, not max_value]):
+        if not seq_of_inputs:
+            return 0, 0
+
+        max_value, has_real_zero = ControlKeyData._get_max_value(seq_of_inputs)
+        suggested_step = max((getattr(item, 'suggested_step', 1) for item in seq_of_inputs), default=1)
+
+        if not max_value and not has_real_zero:
             max_value = 1
-        return max_value
+        return max_value, suggested_step
 
     @staticmethod
-    def __get_max(list_of_dicts: list[Inputs]) -> tuple[int, bool]:
+    def _get_max_value(seq_of_inputs: Sequence[Inputs]) -> tuple[int, bool]:
         """
-        Maximum value found in the 'max_value' attribute of the objects in the list.
+        Return the maximum input value and whether any input had a real zero value.
 
-        Check if any of the objects had a 'max_value' of 0.
-
-        :param list_of_dicts: List of dictionaries containing objects of types FixedStep, VariableStep, SetState, Action, SetString.
-        :return: A tuple containing the maximum value and a boolean value indicating if any of the objects had a 'max_value' of 0.
+        :param seq_of_inputs: Sequence of Inputs (containing objects of types FixedStep, VariableStep, SetState, Action, SetString).
+        :return: A tuple containing the maximum value and whether any input had a real zero value.
         """
-        __real_zero = False
-        __max_values = []
-        for d in list_of_dicts:
+        max_values = []
+        has_real_zero = False
+
+        for item in seq_of_inputs:
             try:
-                __max_values.append(d.max_value)  # type: ignore[union-attr]
-                if d.max_value == 0:  # type: ignore[union-attr]
-                    __real_zero = True
+                value = item.max_value
+                max_values.append(value)
+                if value == 0:
+                    has_real_zero = True
                     break
             except AttributeError:
-                __max_values.append(0)
-        return max(__max_values), __real_zero
+                max_values.append(0)
+        return max(max_values, default=0), has_real_zero
 
     @property
     def depiction(self) -> ControlDepiction:
