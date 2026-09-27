@@ -11,13 +11,13 @@ from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypeAlias, TypedDict, TypeVar, Union
+from typing import Any, Final, TypeAlias, TypedDict, Union
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
-__version__ = '3.8.1'
+__version__ = '3.8.2'
 
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
@@ -218,7 +218,6 @@ class OutputInt(Output):
         return value
 
 
-# ---------------- DCS-BIOS ----------------
 class IntBuffArgs(BaseModel):
     """Arguments of BIOS Integer Buffer."""
     address: int
@@ -1007,7 +1006,7 @@ class SystemData(BaseModel):
         return self.dcs_bios_ver.split(' ')[0]
 
 
-ConfigValue = TypeVar('ConfigValue', str, int, float, bool)
+ConfigValue: TypeAlias = str | int | float | bool
 DcspyConfigYaml = dict[str, ConfigValue]
 
 
