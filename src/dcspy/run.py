@@ -24,8 +24,8 @@ def _update_progress(progbar: QProgressBar) -> None:
 
     :type progbar: Progress bar object
     """
-    for i in range(1, 101):
-        progbar.setValue(i)
+    for value in range(1, 101):
+        progbar.setValue(value)
         time.sleep(0.002)
     LOG.debug('Splash screen loading finished.')
 
@@ -37,7 +37,7 @@ def run(cli_args: Namespace = Namespace()) -> None:
     app = QApplication(sys.argv)
     app.setStyle('fusion')
 
-    splash_pixmap = QPixmap((Path(__file__) / '..' / 'img' / 'splash.png').resolve())
+    splash_pixmap = QPixmap(Path(__file__).resolve().parent / 'img' / 'splash.png')
     splash_screen = QSplashScreen(splash_pixmap, Qt.WindowType.WindowStaysOnTopHint)
     splash_screen.showMessage('Loading... Please wait.', Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.black)
     progress_bar = QProgressBar(splash_screen)
