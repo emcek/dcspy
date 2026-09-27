@@ -5,7 +5,6 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 from ctypes import c_void_p
 from datetime import datetime
 from enum import Enum, IntEnum
-from functools import partial
 from os import environ
 from pathlib import Path
 from platform import architecture
@@ -1357,40 +1356,22 @@ class RequestModel(BaseModel):
 
     def _generate_request_based_on_case(self, key_down: int | None = None) -> str:
         """
-        Generate a formatted request string based on various conditions and cases.
-
-        This method evaluates different scenarios using the `request_mapper` dictionary,
-        which maps integer case keys to specific conditions and methods.
-        If the condition for a given case is met, the corresponding method is called to generate the request.
-        If no conditions match, the raw request is returned appended with a newline.
+        Return the command payload for the current input state.
 
         :param key_down: Integer representing a key state, it can be either a specific value such as `KEY_UP` or
                          `None` for cases where a key down state is not applicable.
         :return: Returns a string representing the generated request based on the active case conditions.
         """
-
-        class CaseDict(TypedDict):
-            condition: bool
-            method: partial
-
-        request_mapper: dict[int, CaseDict] = {
-            1: {'condition': self.is_push_button and isinstance(self.key, Gkey),
-                'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
-            2: {'condition': self.is_push_button and isinstance(self.key, MouseButton),
-                'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
-            3: {'condition': self.is_push_button and isinstance(self.key, LcdButton),
-                'method': partial(self.__generate_push_btn_req_for_lcd_button)},
-            4: {'condition': key_down is None or key_down == KEY_UP,
-                'method': partial(RequestModel.__generate_empty)},
-            5: {'condition': self.is_cycle,
-                'method': partial(self.__generate_cycle_request)},
-            6: {'condition': self.is_custom,
-                'method': partial(self.__generate_custom_request)},
-        }
-
-        for case in request_mapper.values():
-            if case['condition']:
-                return case['method']()
+        if self.is_push_button and isinstance(self.key, (Gkey, MouseButton)):
+            return self.__generate_push_btn_req_for_gkey_and_mouse(key_down)
+        if self.is_push_button and isinstance(self.key, LcdButton):
+            return self.__generate_push_btn_req_for_lcd_button()
+        if key_down is None or key_down == KEY_UP:
+            return RequestModel.__generate_empty()
+        if self.is_cycle:
+            return self.__generate_cycle_request()
+        if self.is_custom:
+            return self.__generate_custom_request()
         return f'{self.raw_request}\n'
 
     def __generate_push_btn_req_for_gkey_and_mouse(self, key_down: int | None) -> str:
