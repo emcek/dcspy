@@ -19,7 +19,6 @@ class ParserState(Enum):
 
 class ProtocolParser:
     """DCS_BIOS protocol parser."""
-
     def __init__(self) -> None:
         """Initialize instance."""
         self.state = ParserState.WAIT_FOR_SYNC
@@ -127,7 +126,6 @@ class ProtocolParser:
 
 class StringBuffer:
     """String buffer for DCS-BIOS protocol."""
-
     def __init__(self, parser: ProtocolParser, address: int, max_length: int, callback: Callable) -> None:
         """
         Initialize instance.
@@ -182,7 +180,6 @@ class StringBuffer:
 
 class IntegerBuffer:
     """Integer buffer for DCS-BIOS protocol."""
-
     def __init__(self, parser: ProtocolParser, address: int, mask: int, shift_by: int, callback: Callable) -> None:
         """
         Initialize instance.
