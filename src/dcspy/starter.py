@@ -95,8 +95,8 @@ class DCSpyStarter:
         if self._clean_while_wait_for_data:
             LOG.debug(f'Main loop socket error: {exp}')
             logi_device.clear(true_clear=True)
-            self._CLEAN_BEFORE_LOAD_PLANE = True
-            self._CLEAN_WHILE_WAIT_FOR_DATA = False
+            self._clean_before_load_plane = True
+            self._clean_while_wait_for_data = False
         elapsed_seconds = max(0, int(time() - start_time))
         wait_minutes, wait_seconds = divmod(elapsed_seconds, 60)
         logi_device.text = [('     DCSpy       ', Color.orange),
