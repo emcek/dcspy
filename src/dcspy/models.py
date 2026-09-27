@@ -322,7 +322,7 @@ class ControlKeyData:
 
         for item in seq_of_inputs:
             try:
-                value = item.max_value
+                value = item.max_value  # type: ignore[union-attr]
                 max_values.append(value)
                 if value == 0:
                     has_real_zero = True
