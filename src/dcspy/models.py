@@ -5,14 +5,13 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 from ctypes import c_void_p
 from datetime import datetime
 from enum import Enum, IntEnum
-from functools import partial
 from os import environ
 from pathlib import Path
 from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypedDict, TypeVar, Union
+from typing import Any, Final, TypeAlias, TypedDict, TypeVar, Union
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
@@ -109,6 +108,13 @@ class Input(BaseModel):
         """
         return self.model_dump().get(attribute, default)
 
+    @staticmethod
+    def _validate_interface(value: str, expected: str) -> str:
+        """Validate the interface value."""
+        if value != expected:
+            raise ValueError(f"Invalid value for 'interface'. Only '{expected}' is allowed.")
+        return value
+
 
 class FixedStep(Input):
     """FixedStep input interface of the inputs section of Control."""
@@ -116,15 +122,8 @@ class FixedStep(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'fixed_step':
-            raise ValueError("Invalid value for 'interface'. Only 'fixed_step' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'fixed_step')
 
 
 class VariableStep(Input):
@@ -135,15 +134,8 @@ class VariableStep(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'variable_step':
-            raise ValueError("Invalid value for 'interface'. Only 'variable_step' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'variable_step')
 
 
 class SetState(Input):
@@ -153,15 +145,8 @@ class SetState(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'set_state':
-            raise ValueError("Invalid value for 'interface'. Only 'set_state' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'set_state')
 
 
 class Action(Input):
@@ -171,15 +156,8 @@ class Action(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'action':
-            raise ValueError("Invalid value for 'interface'. Only 'action' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'action')
 
 
 class SetString(Input):
@@ -188,15 +166,8 @@ class SetString(Input):
 
     @field_validator('interface')
     def validate_interface(cls, value: str) -> str:
-        """
-        Validate.
-
-        :param value:
-        :return:
-        """
-        if value != 'set_string':
-            raise ValueError("Invalid value for 'interface'. Only 'set_string' is allowed.")
-        return value
+        """Validate the interface value."""
+        return cls._validate_interface(value, 'set_string')
 
 
 Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
@@ -301,13 +272,11 @@ class ControlKeyData:
         self.list_dict: list[Inputs] = []
 
     def __repr__(self) -> str:
-        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step}'
+        return f'KeyControl({self.name}: {self.description} - max_value={self.max_value}, suggested_step={self.suggested_step})'
 
     def __bool__(self) -> bool:
         """Return True if both `max_value` and `suggested_step`: are truthy, False otherwise."""
-        if not all([self.max_value, self.suggested_step]):
-            return False
-        return True
+        return bool(self.max_value) and bool(self.suggested_step)
 
     @classmethod
     def from_control(cls, /, ctrl: Control) -> ControlKeyData:
@@ -317,50 +286,50 @@ class ControlKeyData:
         :param ctrl: Control BIOS model
         :return: ControlKeyData instance
         """
-        try:
-            max_value = cls._get_max_value(ctrl.inputs)
-            suggested_step: int = max(d.get('suggested_step', 1) for d in ctrl.inputs)  # type: ignore[type-var, assignment]
-        except ValueError:
-            max_value = 0
-            suggested_step = 0
+        max_value, suggested_step = cls._extract_limits(seq_of_inputs=ctrl.inputs)
         instance = cls(name=ctrl.identifier, description=ctrl.description, max_value=max_value, suggested_step=suggested_step)
         instance.list_dict = ctrl.inputs
         return instance
 
     @staticmethod
-    def _get_max_value(list_of_dicts: list[Inputs]) -> int:
+    def _extract_limits(seq_of_inputs: Sequence[Inputs]) -> tuple[int, int]:
         """
-        Get a maximum value from a list of dictionaries.
+        Extract maximum value and suggested step from a sequence of Inputs.
 
-        :param list_of_dicts: List of inputs
-        :return: Maximum value of all inputs
+        :param seq_of_inputs: Sequence of Inputs (containing objects of types FixedStep, VariableStep, SetState, Action, SetString).
+        :return: Tuple containing maximum value and suggested step
         """
-        max_value, real_zero = ControlKeyData.__get_max(list_of_dicts)
-        if all([not real_zero, not max_value]):
+        if not seq_of_inputs:
+            return 0, 0
+
+        max_value, has_real_zero = ControlKeyData._get_max_value(seq_of_inputs)
+        suggested_step = max((getattr(item, 'suggested_step', 1) for item in seq_of_inputs), default=1)
+
+        if not max_value and not has_real_zero:
             max_value = 1
-        return max_value
+        return max_value, suggested_step
 
     @staticmethod
-    def __get_max(list_of_dicts: list[Inputs]) -> tuple[int, bool]:
+    def _get_max_value(seq_of_inputs: Sequence[Inputs]) -> tuple[int, bool]:
         """
-        Maximum value found in the 'max_value' attribute of the objects in the list.
+        Return the maximum input value and whether any input had a real zero value.
 
-        Check if any of the objects had a 'max_value' of 0.
-
-        :param list_of_dicts: List of dictionaries containing objects of types FixedStep, VariableStep, SetState, Action, SetString.
-        :return: A tuple containing the maximum value and a boolean value indicating if any of the objects had a 'max_value' of 0.
+        :param seq_of_inputs: Sequence of Inputs (containing objects of types FixedStep, VariableStep, SetState, Action, SetString).
+        :return: A tuple containing the maximum value and whether any input had a real zero value.
         """
-        __real_zero = False
-        __max_values = []
-        for d in list_of_dicts:
+        max_values = []
+        has_real_zero = False
+
+        for item in seq_of_inputs:
             try:
-                __max_values.append(d.max_value)  # type: ignore[union-attr]
-                if d.max_value == 0:  # type: ignore[union-attr]
-                    __real_zero = True
+                value = item.max_value  # type: ignore[union-attr]
+                max_values.append(value)
+                if value == 0:
+                    has_real_zero = True
                     break
             except AttributeError:
-                __max_values.append(0)
-        return max(__max_values), __real_zero
+                max_values.append(0)
+        return max(max_values, default=0), has_real_zero
 
     @property
     def depiction(self) -> ControlDepiction:
@@ -614,7 +583,7 @@ class GuiPlaneInputRequest(BaseModel):
                             a space-separated string of configuration data that includes a request type.
         :return: A dictionary mapping each plane identifier (string) to a `GuiPlaneInputRequest` instance.
         """
-        input_reqs = {}
+        input_reqs: dict[str, GuiPlaneInputRequest] = {}
         req_keyword_rb_iface = {
             RequestType.CUSTOM.value: 'rb_custom',
             RequestType.PUSH_BUTTON.value: 'rb_push_button',
@@ -628,12 +597,12 @@ class GuiPlaneInputRequest(BaseModel):
         }
 
         for gkey, data in plane_gkeys.items():
-            try:
-                iface = next(rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data)
-            except StopIteration:
+            identifier = data.split(' ', 1)[0] if data else ''
+            iface = next((rb_iface for req_suffix, rb_iface in req_keyword_rb_iface.items() if req_suffix in data), '')
+            if not iface:
+                identifier = ''
                 data = ''
-                iface = ''
-            input_reqs[gkey] = GuiPlaneInputRequest(identifier=data.split(' ')[0], request=data, widget_iface=iface)
+            input_reqs[gkey] = GuiPlaneInputRequest(identifier=identifier, request=data, widget_iface=iface)
         return input_reqs
 
     @classmethod
@@ -725,7 +694,8 @@ class MouseButton(BaseModel):
         :param button_range: A tuple of two integers, representing the start and end of the range (inclusive) for generating MouseButton objects.
         :return: A tuple containing instantiated MouseButton objects for each value in the specified range.
         """
-        return tuple(MouseButton(button=m) for m in range(button_range[0], button_range[1] + 1))
+        start, end = button_range
+        return tuple(MouseButton(button=m) for m in range(start, end + 1))
 
 
 class Gkey(BaseModel):
@@ -738,8 +708,8 @@ class Gkey(BaseModel):
         return f'G{self.key}_M{self.mode}'
 
     def __bool__(self) -> bool:
-        """Return False when any of value is zero."""
-        return all([self.key, self.mode])
+        """Return False when any of the values is zero."""
+        return bool(self.key) and bool(self.mode)
 
     def __hash__(self) -> int:
         """Hash will be the same for any two Gkey instances with the same key and mode values."""
@@ -755,7 +725,7 @@ class Gkey(BaseModel):
         """
         match = search(r'G(\d+)_M(\d+)', yaml_str)
         if match:
-            return cls(**{k: int(i) for k, i in zip(('key', 'mode'), match.groups())})
+            return cls(**{field: int(value) for field, value in zip(('key', 'mode'), match.groups())})
         raise ValueError(f'Invalid Gkey format: {yaml_str}. Expected: G<i>_M<j>')
 
     @staticmethod
@@ -770,8 +740,8 @@ class Gkey(BaseModel):
         return tuple(Gkey(key=k, mode=m) for k in range(1, key + 1) for m in range(1, mode + 1))
 
 
-AnyButton = Union[LcdButton, Gkey, MouseButton]
-ButtonTypes = type[Gkey] | type[LcdButton] | type[MouseButton]
+AnyButton: TypeAlias = LcdButton | Gkey | MouseButton
+ButtonTypes: TypeAlias = type[Gkey] | type[LcdButton] | type[MouseButton]
 
 
 class LcdType(Enum):
@@ -1387,40 +1357,22 @@ class RequestModel(BaseModel):
 
     def _generate_request_based_on_case(self, key_down: int | None = None) -> str:
         """
-        Generate a formatted request string based on various conditions and cases.
-
-        This method evaluates different scenarios using the `request_mapper` dictionary,
-        which maps integer case keys to specific conditions and methods.
-        If the condition for a given case is met, the corresponding method is called to generate the request.
-        If no conditions match, the raw request is returned appended with a newline.
+        Return the command payload for the current input state.
 
         :param key_down: Integer representing a key state, it can be either a specific value such as `KEY_UP` or
                          `None` for cases where a key down state is not applicable.
         :return: Returns a string representing the generated request based on the active case conditions.
         """
-
-        class CaseDict(TypedDict):
-            condition: bool
-            method: partial
-
-        request_mapper: dict[int, CaseDict] = {
-            1: {'condition': self.is_push_button and isinstance(self.key, Gkey),
-                'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
-            2: {'condition': self.is_push_button and isinstance(self.key, MouseButton),
-                'method': partial(self.__generate_push_btn_req_for_gkey_and_mouse, key_down)},
-            3: {'condition': self.is_push_button and isinstance(self.key, LcdButton),
-                'method': partial(self.__generate_push_btn_req_for_lcd_button)},
-            4: {'condition': key_down is None or key_down == KEY_UP,
-                'method': partial(RequestModel.__generate_empty)},
-            5: {'condition': self.is_cycle,
-                'method': partial(self.__generate_cycle_request)},
-            6: {'condition': self.is_custom,
-                'method': partial(self.__generate_custom_request)},
-        }
-
-        for case in request_mapper.values():
-            if case['condition']:
-                return case['method']()
+        if self.is_push_button and isinstance(self.key, (Gkey, MouseButton)):
+            return self.__generate_push_btn_req_for_gkey_and_mouse(key_down)
+        if self.is_push_button and isinstance(self.key, LcdButton):
+            return self.__generate_push_btn_req_for_lcd_button()
+        if key_down is None or key_down == KEY_UP:
+            return RequestModel.__generate_empty()
+        if self.is_cycle:
+            return self.__generate_cycle_request()
+        if self.is_custom:
+            return self.__generate_custom_request()
         return f'{self.raw_request}\n'
 
     def __generate_push_btn_req_for_gkey_and_mouse(self, key_down: int | None) -> str:
@@ -1483,8 +1435,7 @@ class RequestModel(BaseModel):
         :return: A formatted request string with replaced delimiters.
         """
         request = self.raw_request.split(f'{RequestType.CUSTOM.value} ')[1]
-        request = request.replace('|', '\n|')
-        return request.strip('|')
+        return request.replace('|', '\n|').strip('|')
 
     def __str__(self) -> str:
         return f'{self.ctrl_name}: {self.raw_request}'

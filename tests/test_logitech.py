@@ -1,3 +1,4 @@
+from functools import partial
 from unittest.mock import call, patch
 
 from pytest import mark
@@ -153,6 +154,24 @@ def test_check_keyboard_text(keyboard, protocol_parser, sock, request):
     with patch.object(LcdSdkManager, 'update_text') as upd_txt:
         keyboard.text = txt_list
         upd_txt.assert_called_once_with(txt_list)
+
+
+@mark.parametrize('keyboard', ['keyboard_mono', 'keyboard_color'], ids=['Mono Keyboard', 'Color Keyboard'])
+def test_keyboard_text_returns_a_copy(keyboard, request):
+    from dcspy.logitech import LogitechDevice
+    from dcspy.sdk.lcd_sdk import LcdSdkManager
+
+    logi_keyboard: LogitechDevice = request.getfixturevalue(keyboard)
+
+    message = [('title', Color.white), ('line', Color.green)]
+    with patch.object(LcdSdkManager, 'update_text'):
+        logi_keyboard.text = message
+
+    message.append(('external mutation', Color.red))
+    returned_text = logi_keyboard.text
+    returned_text.append(('returned mutation', Color.red))
+
+    assert logi_keyboard.text == [('title', Color.white), ('line', Color.green)]
 
 
 @mark.benchmark

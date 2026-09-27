@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
 from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, LcdButton,
-                          LcdInfo, RequestModel, RequestType)
+                          LcdInfo, LcdType, RequestModel, RequestType)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -118,6 +118,11 @@ class AdvancedAircraft(BasicAircraft):
         if callable(self.update_display):
             self.bios_data.update(kwargs.get('bios_data', {}))
         self._debug_img = cycle([f'{x:03}' for x in range(NO_OF_LCD_SCREENSHOTS)])
+
+    def _draw_text_lines(self, draw: ImageDraw.ImageDraw, lines: Sequence[str], step: int) -> None:
+        """Draw a vertical stack of text lines with a fixed step size."""
+        for idx, line in enumerate(lines):
+            draw.text(xy=(0, idx * step), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def set_bios(self, selector: str, value: BiosValue) -> None:
         """
@@ -887,25 +892,20 @@ class A10C(AdvancedAircraft):
         """
         return f'{self.get_bios("ARC210_FREQUENCY")} ({str(self.get_bios("ARC210_PREV_MANUAL_FREQ")).strip():>7})'
 
+    def _draw_radio_lines(self, draw: ImageDraw.ImageDraw, lines: Sequence[str]) -> None:
+        """Draw standard A-10 radio list for both mono and color screens."""
+        step = 10 if self.lcd.type == LcdType.MONO else 20
+        self._draw_text_lines(draw, lines, step)
+
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        uhf = self._generate_uhf()
-        vhf_am = self._generate_vhf('AM')
-        vhf_fm = self._generate_vhf('FM')
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhf_am}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
-            offset = i * 10
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+        lines = ('      *** RADIOS ***', f' AM: {self._generate_vhf("AM")}', f'UHF: {self._generate_uhf()}', f' FM: {self._generate_vhf("FM")}')
+        self._draw_radio_lines(ImageDraw.Draw(img), lines)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C Warthog for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        uhf = self._generate_uhf()
-        vhf_am = self._generate_vhf('AM')
-        vhf_fm = self._generate_vhf('FM')
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {vhf_am}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
-            offset = i * 20
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+        lines = ('      *** RADIOS ***', f' AM: {self._generate_vhf("AM")}', f'UHF: {self._generate_uhf()}', f' FM: {self._generate_vhf("FM")}')
+        self._draw_radio_lines(ImageDraw.Draw(img), lines)
 
 
 class A10C2(A10C):
@@ -914,23 +914,13 @@ class A10C2(A10C):
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Mono LCD."""
-        draw = ImageDraw.Draw(img)
-        uhf = self._generate_uhf()
-        vhf_fm = self._generate_vhf('FM')
-        arc = self._generate_arc()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
-            offset = i * 10
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+        lines = ('      *** RADIOS ***', f' AM: {self._generate_arc()}', f'UHF: {self._generate_uhf()}', f' FM: {self._generate_vhf("FM")}')
+        self._draw_radio_lines(ImageDraw.Draw(img), lines)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for A-10C II Tank Killer for Color LCD."""
-        draw = ImageDraw.Draw(img)
-        uhf = self._generate_uhf()
-        vhf_fm = self._generate_vhf('FM')
-        arc = self._generate_arc()
-        for i, line in enumerate(['      *** RADIOS ***', f' AM: {arc}', f'UHF: {uhf}', f' FM: {vhf_fm}']):
-            offset = i * 20
-            draw.text(xy=(0, offset), text=line, fill=self.lcd.foreground, font=self.lcd.font_s)
+        lines = ('      *** RADIOS ***', f' AM: {self._generate_arc()}', f'UHF: {self._generate_uhf()}', f' FM: {self._generate_vhf("FM")}')
+        self._draw_radio_lines(ImageDraw.Draw(img), lines)
 
 
 class F14B(AdvancedAircraft):

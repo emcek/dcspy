@@ -33,9 +33,18 @@ with suppress(ImportError):
 
 LOG = getLogger(__name__)
 
-with open(DEFAULT_YAML_FILE) as c_file:
-    defaults_cfg: DcspyConfigYaml = yaml.load(c_file, Loader=yaml.SafeLoader)
-    defaults_cfg['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS'
+
+def _load_default_yaml() -> DcspyConfigYaml:
+    """Load the packaged default configuration with the current user-specific DCS BIOS path."""
+    with open(DEFAULT_YAML_FILE, encoding='utf-8') as c_file:
+        default_config = yaml.load(c_file, Loader=yaml.SafeLoader) or {}
+    if not isinstance(default_config, dict):
+        default_config = {}
+    default_config['dcsbios'] = f'C:\\Users\\{environ.get("USERNAME", "UNKNOWN")}\\Saved Games\\DCS\\Scripts\\DCS-BIOS'
+    return default_config
+
+
+defaults_cfg: DcspyConfigYaml = _load_default_yaml()
 
 
 def get_default_yaml(local_appdata: bool = False) -> Path:
@@ -900,6 +909,7 @@ def detect_system_color_mode() -> str:
     except (OSError, IndexError):
         return 'Light'
     return {0: 'Dark', 1: 'Light'}[subkey]
+
 
 def verify_hashes(file_path: Path, digest_file: Path) -> tuple[bool, dict[str, bool]]:
     """
