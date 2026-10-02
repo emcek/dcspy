@@ -40,7 +40,7 @@ dynamic = ['version', 'readme']
 dependencies = [
     'cffi==2.1.1',
     'eval-type-backport==0.3.1 ; python_version < "3.10"',
-    'gitpython==3.1.62',
+    'gitpython==3.2.0',
     'lupa==2.8',
     'packaging==26.3',
     'pillow==12.3.0',
@@ -69,16 +69,16 @@ dcspy = 'dcspy.run:run'
 [project.optional-dependencies]
 test = [
     'interrogate==1.7.0',
-    'isort==9.0.1',
+    'isort==9.0.2',
     'lxml==6.1.3',
-    'mypy==2.3.1',
+    'mypy==2.4.0',
     'pip-audit==2.10.1',
     'pytest==9.1.1',
     'pytest-codspeed==5.0.3',
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==5.0.0',
-    'ruff==0.16.9',
+    'ruff==0.16.10',
     'types-cffi==2.1.0.20260827',
     'types-defusedxml==0.7.0.20260504',
     'types-lupa==2.8.0.20260827',

@@ -39,7 +39,7 @@ repos:
                                    types-simplejson ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.9
+    rev: v0.16.10
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
@@ -71,7 +71,7 @@ repos:
       - id: validate-pyproject
 
   - repo: https://github.com/pycqa/isort
-    rev: 9.0.1
+    rev: 9.0.2
     hooks:
       - id: isort
         exclude: '/qtgui_rc.py$'
