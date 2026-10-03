@@ -194,6 +194,20 @@ def test_button_pressed_for_planes(plane, button, result, request):
 @mark.benchmark
 @mark.parametrize('button, result', [
     (LcdButton.NONE, [b'\n']),
+    (LcdButton.ONE, [b'PLT_EUFD_IDM 0\n', b'PLT_EUFD_IDM 1\n']),
+    (LcdButton.TWO, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
+    (LcdButton.THREE, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
+    (LcdButton.FOUR, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
+], ids=['NONE', 'ONE', 'TWO', 'THREE', 'FOUR'])
+def test_button_pressed_for_apache_mono(button, result, ah64dblkii_mono):
+    ah64dblkii_mono.mode = ApacheEufdMode.IDM
+    key_req = ah64dblkii_mono.button_request(button)
+    assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
+
+
+@mark.benchmark
+@mark.parametrize('button, result', [
+    (LcdButton.NONE, [b'\n']),
     (LcdButton.LEFT, [b'PLT_EUFD_WCA 0\n', b'PLT_EUFD_WCA 1\n']),
     (LcdButton.RIGHT, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
     (LcdButton.DOWN, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
