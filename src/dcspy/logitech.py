@@ -30,7 +30,7 @@ class LogitechDevice:
         :param sock: multicast UDP socket
         :param model: device model
         """
-        dcsbios.StringBuffer(parser=parser, address=0x0, max_length=0x10, callback=partial(self.detecting_plane))
+        dcsbios.StringBuffer(parser=parser, address=0x0, max_length=0x18, callback=partial(self.detecting_plane))
         self.parser = parser
         self.socket = sock
         self.plane_name = ''
