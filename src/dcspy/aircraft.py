@@ -949,6 +949,21 @@ class F14A135GR(F14B):
     bios_name: str = 'F-14A-135-GR'
 
 
+class F14A135GREARLY(F14B):
+    """F-14A-135-GR-Early Tomcat."""
+    bios_name: str = 'F-14A-135-GR-Early'
+
+
+class F14BU(F14B):
+    """F-14B(U) Tomcat."""
+    bios_name: str = 'F-14BU'
+
+
+class F14A95GR(F14B):
+    """F-14A-95-GR Export Tomcat."""
+    bios_name: str = 'F-14A-95-GR'
+
+
 class AV8BNA(AdvancedAircraft):
     """AV-8B Night Attack."""
     bios_name: str = 'AV8BNA'
