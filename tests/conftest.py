@@ -57,7 +57,8 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
 
 
 for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503',
-                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'AV8BNA', 'C130J30']:
+                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'F14A135GREARLY', 'F14BU',
+                    'AV8BNA', 'C130J30']:
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
         if lcd.type == models.LcdType.COLOR:
@@ -674,6 +675,18 @@ def f14a135gr_color_bios(f14a135gr_mono_bios):
 
 
 @fixture()
+def f14a135grearly_mono_bios(f14a135gr_mono_bios):
+    """Bios values for F-14A-135-GR Early Tomcat for Logitech mono LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
+def f14a135grearly_color_bios(f14a135gr_mono_bios):
+    """Bios values for F-14A-135-GR Early Tomcat for Logitech color LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
 def f14b_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech mono LCD."""
     return f14a135gr_mono_bios
@@ -682,6 +695,18 @@ def f14b_mono_bios(f14a135gr_mono_bios):
 @fixture()
 def f14b_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech color LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
+def f14bu_mono_bios(f14a135gr_mono_bios):
+    """Bios values for F-14B(U) Tomcat for Logitech mono LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
+def f14bu_color_bios(f14a135gr_mono_bios):
+    """Bios values for F-14B(U) Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
 
 
