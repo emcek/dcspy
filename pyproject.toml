@@ -92,7 +92,7 @@ test = [
     'types-simplejson==4.1.0.20260724',
 ]
 docs = [
-    'black==26.5.1',
+    'black==26.10.0',
     'mkdocs==1.6.1',
     'mkdocs-gen-files==0.6.1',
     'mkdocs-literate-nav==0.6.3',
