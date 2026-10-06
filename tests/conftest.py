@@ -675,6 +675,18 @@ def f14a135gr_color_bios(f14a135gr_mono_bios):
 
 
 @fixture()
+def f14a95gr_mono_bios(f14a135gr_mono_bios):
+    """Bios values for F-14A-95-GR Tomcat for Logitech mono LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
+def f14a95gr_color_bios(f14a135gr_mono_bios):
+    """Bios values for F-14A-95-GR Tomcat for Logitech color LCD."""
+    return f14a135gr_mono_bios
+
+
+@fixture()
 def f14a135grearly_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-135-GR Early Tomcat for Logitech mono LCD."""
     return f14a135gr_mono_bios

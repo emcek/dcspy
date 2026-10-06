@@ -60,7 +60,7 @@ SUPPORTED_CRAFTS = {
     'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C_2'},
     'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F-14A-135-GR'},
     'F14A135GREARLY': {'name': 'F-14A Tomcat Early', 'bios': 'F-14A-135-GR-Early'},
-    # 'F14A95GR': {'name': 'F-14A Tomcat Export', 'bios': 'F-14A-95-GR'},
+    'F14A95GR': {'name': 'F-14A Tomcat Export', 'bios': 'F-14A-95-GR'},
     'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14B'},
     'F14BU': {'name': 'F-14B(U) Tomcat', 'bios': 'F-14BU'},
     'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},

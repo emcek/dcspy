@@ -76,6 +76,7 @@ package aircraft {
     AdvancedAircraft <|-- A10C
     A10C <|-- A10C2
     AdvancedAircraft <|-- F14B
+    F14B <|-- F14A95GR
     F14B <|-- F14A135GR
     F14B <|-- F14A135GREarly
     F14B <|-- F14BU
