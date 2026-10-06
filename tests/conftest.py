@@ -56,8 +56,8 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
     return _fixture
 
 
-for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503',
-                    'Mi8MT', 'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A135GR', 'F14A135GREARLY', 'F14BU',
+for plane_model in ['AdvancedAircraft', 'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT',
+                    'Mi24P', 'AH64DBLKII', 'A10C', 'A10C2', 'F14B', 'F14A95GR',  'F14A135GR', 'F14A135GREARLY', 'F14BU',
                     'AV8BNA', 'C130J30']:
     for lcd in [models.LcdMono, models.LcdColor]:
         airplane = getattr(aircraft, plane_model)
