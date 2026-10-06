@@ -9,7 +9,7 @@ from dcspy import aircraft, logitech, models, utils
 from dcspy.starter import DCSpyStarter
 
 
-@fixture()
+@fixture
 def sock():
     """Socket mock instance."""
     return MagicMock()
@@ -23,7 +23,7 @@ def generate_plane_fixtures(plane, lcd_info: models.LcdInfo, fonts: models.Fonts
     :param lcd_info: LcdInfo without font config
     :param fonts: Fonts configuration
     """
-    @fixture()
+    @fixture
     def _fixture():
         """Fixture."""
         lcd_info.set_fonts(fonts=fonts)
@@ -40,7 +40,7 @@ def generate_keyboard_fixtures(model: models.LogitechDeviceModel, fonts: models.
     :param model: Logitech device
     :param fonts: fonts configuration
     """
-    @fixture()
+    @fixture
     def _fixture(sock):
         """Fixture."""
         from dcspy.dcsbios import ProtocolParser
@@ -102,7 +102,7 @@ def img_precision(pytestconfig):
     return pytestconfig.getoption('img_precision')
 
 
-@fixture()
+@fixture
 def resources() -> Path:
     """
     Path to tests/resources directory.
@@ -112,7 +112,7 @@ def resources() -> Path:
     return Path(__file__).resolve().with_name('resources')
 
 
-@fixture()
+@fixture
 def test_config_yaml(resources) -> Path:
     """
     Path to YAML tests a config file.
@@ -122,7 +122,7 @@ def test_config_yaml(resources) -> Path:
     return resources / 'config.yaml'
 
 
-@fixture()
+@fixture
 def test_dcs_bios(resources) -> Path:
     """
     Path to DCS-BIOS for test purposes.
@@ -132,7 +132,7 @@ def test_dcs_bios(resources) -> Path:
     return resources / 'DCS' / 'Scripts' / 'DCS-BIOS'
 
 
-@fixture()
+@fixture
 def test_saved_games(resources) -> Path:
     """
     Path to DCS-BIOS for Lua compile test.
@@ -168,19 +168,19 @@ def get_ctrl_for_plane(test_dcs_bios, request) -> models.Control:
 
 
 # <=><=><=><=><=> logitech <=><=><=><=><=>
-@fixture()
+@fixture
 def lcd_font_mono() -> models.FontsConfig:
     """Return font configuration for mono LCD."""
     return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=9, medium=11, large=16, ded_font=False)
 
 
-@fixture()
+@fixture
 def lcd_font_color(protocol_parser) -> models.FontsConfig:
     """Return font configuration for color LCD."""
     return models.FontsConfig(name=models.DEFAULT_FONT_NAME, small=18, medium=22, large=32, ded_font=True)
 
 
-@fixture()
+@fixture
 def keyboard_base(protocol_parser, sock) -> logitech.LogitechDevice:
     """
     Return instance of LcdKeyboard.
@@ -201,7 +201,7 @@ def keyboard_base(protocol_parser, sock) -> logitech.LogitechDevice:
         return logitech.LogitechDevice(protocol_parser, sock=sock, model=model)
 
 
-@fixture()
+@fixture
 def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources) -> logitech.LogitechDevice:
     """
     Return instance of Keyboard with LcdMono.
@@ -235,7 +235,7 @@ def keyboard_mono(protocol_parser, sock, lcd_font_mono, resources) -> logitech.L
         return Mono(parser=protocol_parser, socket=sock, model=G510)
 
 
-@fixture()
+@fixture
 def keyboard_color(protocol_parser, sock, lcd_font_color, resources) -> logitech.LogitechDevice:
     """
     Return instance of Keyboard with LcdColor.
@@ -269,7 +269,7 @@ def keyboard_color(protocol_parser, sock, lcd_font_color, resources) -> logitech
         return Color(parser=protocol_parser, socket=sock, model=G19)
 
 
-@fixture()
+@fixture
 def g13_starter() -> DCSpyStarter:
     """
     DCSpyStarter instance for G13.
@@ -284,7 +284,7 @@ def g13_starter() -> DCSpyStarter:
     return DCSpyStarter(model=G13, event=Event())
 
 
-@fixture()
+@fixture
 def g19_starter() -> DCSpyStarter:
     """
     DCSpyStarter instance for G19.
@@ -300,7 +300,7 @@ def g19_starter() -> DCSpyStarter:
 
 
 # <=><=><=><=><=> others <=><=><=><=><=>
-@fixture()
+@fixture
 def default_config() -> dict:
     """Get default configuration dict."""
     from os import environ
@@ -314,7 +314,7 @@ def default_config() -> dict:
     }
 
 
-@fixture()
+@fixture
 def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml) -> Iterator[None]:
     """
     Switch a path to config YAML file during testing.
@@ -333,7 +333,7 @@ def switch_dcs_bios_path_in_config(test_dcs_bios, test_config_yaml) -> Iterator[
     utils.save_yaml(data=org, full_path=test_config_yaml)
 
 
-@fixture()
+@fixture
 def migration_file(resources) -> Iterator[None]:
     """
     Recover content of a test file for migration.
@@ -347,7 +347,7 @@ def migration_file(resources) -> Iterator[None]:
 
 
 # <=><=><=><=><=> DCS World autoupdate_cfg <=><=><=><=><=>
-@fixture()
+@fixture
 def autoupdate1_cfg() -> str:
     """Mock for correct autoupdate_cfg."""
     return """{
@@ -366,7 +366,7 @@ def autoupdate1_cfg() -> str:
 """
 
 
-@fixture()
+@fixture
 def autoupdate2_cfg() -> str:
     """Mock for wrong autoupdate_cfg."""
     return """{
@@ -387,7 +387,7 @@ def autoupdate2_cfg() -> str:
 
 
 # <=><=><=><=><=> airplane bios data <=><=><=><=><=>
-@fixture()
+@fixture
 def apache_pre_mode_bios_data() -> list[tuple[str, str]]:
     """Bios values for AH-64D Apache PRE mode."""
     return [
@@ -405,7 +405,7 @@ def apache_pre_mode_bios_data() -> list[tuple[str, str]]:
     ]
 
 
-@fixture()
+@fixture
 def fa18chornet_mono_bios() -> list[tuple[str, str]]:
     """Bios values for F/A-18C Hornet for Logitech mono LCD."""
     return [
@@ -429,13 +429,13 @@ def fa18chornet_mono_bios() -> list[tuple[str, str]]:
     ]
 
 
-@fixture()
+@fixture
 def fa18chornet_color_bios(fa18chornet_mono_bios) -> list[tuple[str, str]]:
     """Bios values for F/A-18C Hornet for Logitech color LCD."""
     return fa18chornet_mono_bios
 
 
-@fixture()
+@fixture
 def f16c50_mono_bios() -> list[tuple[str, str]]:
     """Bios values for F16C Viper for Logitech mono LCD."""
     return [
@@ -447,13 +447,13 @@ def f16c50_mono_bios() -> list[tuple[str, str]]:
     ]
 
 
-@fixture()
+@fixture
 def f16c50_color_bios(f16c50_mono_bios):
     """Bios values for F16C Viper for Logitech color LCD."""
     return f16c50_mono_bios
 
 
-@fixture()
+@fixture
 def f15ese_mono_bios():
     """Bios values for F-15ESE Eagle for Logitech mono LCD."""
     return [
@@ -466,7 +466,7 @@ def f15ese_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def f4e45mc_mono_bios():
     """Bios values for F-4E Phantom II for Logitech mono LCD."""
     return [
@@ -478,19 +478,19 @@ def f4e45mc_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def f4e45mc_color_bios(f4e45mc_mono_bios):
     """Bios values for F-4E Phantom II for Logitech color LCD."""
     return f4e45mc_mono_bios
 
 
-@fixture()
+@fixture
 def f15ese_color_bios(f15ese_mono_bios):
     """Bios values for F-15ESE Eagle for Logitech color LCD."""
     return f15ese_mono_bios
 
 
-@fixture()
+@fixture
 def ka50_mono_bios():
     """Bios values for Ka-50 Black Shark II for Logitech mono LCD."""
     return [
@@ -512,25 +512,25 @@ def ka50_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def ka50_color_bios(ka50_mono_bios):
     """Bios values for Ka-50 Black Shark II for Logitech color LCD."""
     return ka50_mono_bios
 
 
-@fixture()
+@fixture
 def ka503_mono_bios(ka50_mono_bios):
     """Bios values for Ka-50 Black Shark III for Logitech mono LCD."""
     return ka50_mono_bios
 
 
-@fixture()
+@fixture
 def ka503_color_bios(ka50_mono_bios):
     """Bios values for Ka-50 Black Shark III for Logitech color LCD."""
     return ka50_mono_bios
 
 
-@fixture()
+@fixture
 def mi8mt_mono_bios():
     """Bios values for Mi-8MTV2 Magnificent Eight for Logitech mono LCD."""
     return [
@@ -545,13 +545,13 @@ def mi8mt_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def mi8mt_color_bios(mi8mt_mono_bios):
     """Bios values for Mi-8MTV2 Magnificent Eight for Logitech color LCD."""
     return mi8mt_mono_bios
 
 
-@fixture()
+@fixture
 def mi24p_mono_bios():
     """Bios values for Mi-24P Hind for Logitech mono LCD."""
     return [
@@ -569,13 +569,13 @@ def mi24p_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def mi24p_color_bios(mi24p_mono_bios):
     """Bios values for Mi-24P Hind for Logitech color LCD."""
     return mi24p_mono_bios
 
 
-@fixture()
+@fixture
 def ah64dblkii_mono_bios():
     """Bios values for AH-64D Apache for Logitech mono LCD."""
     return [
@@ -587,13 +587,13 @@ def ah64dblkii_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def ah64dblkii_color_bios(ah64dblkii_mono_bios):
     """Bios values for AH-64D Apache for Logitech color LCD."""
     return ah64dblkii_mono_bios
 
 
-@fixture()
+@fixture
 def a10c_mono_bios():
     """Bios values for A-10C Warthog for Logitech mono LCD."""
     return [
@@ -618,25 +618,25 @@ def a10c_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def a10c_color_bios(a10c_mono_bios):
     """Bios values for A-10C Warthog for Logitech color LCD."""
     return a10c_mono_bios
 
 
-@fixture()
+@fixture
 def a10c2_mono_bios(a10c_mono_bios):
     """Bios values for A-10C II Tank Killer for Logitech mono LCD."""
     return a10c_mono_bios
 
 
-@fixture()
+@fixture
 def a10c2_color_bios(a10c_mono_bios):
     """DCS-BIOS values for A-10C II Tank Killer for Logitech color LCD."""
     return a10c_mono_bios
 
 
-@fixture()
+@fixture
 def av8bna_mono_bios():
     """Bios values for AV-8B N/A Harrier for Logitech mono LCD."""
     return [
@@ -656,73 +656,73 @@ def av8bna_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def av8bna_color_bios(av8bna_mono_bios):
     """Bios values for AV-8B N/A Harrier for Logitech color LCD."""
     return av8bna_mono_bios
 
 
-@fixture()
+@fixture
 def f14a135gr_mono_bios():
     """Bios values for F-14A-135-GR Tomcat for Logitech mono LCD."""
     return []
 
 
-@fixture()
+@fixture
 def f14a135gr_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-135-GR Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14a95gr_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-95-GR Tomcat for Logitech mono LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14a95gr_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-95-GR Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14a135grearly_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-135-GR Early Tomcat for Logitech mono LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14a135grearly_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14A-135-GR Early Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14b_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech mono LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14b_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14bu_mono_bios(f14a135gr_mono_bios):
     """Bios values for F-14B(U) Tomcat for Logitech mono LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def f14bu_color_bios(f14a135gr_mono_bios):
     """Bios values for F-14B(U) Tomcat for Logitech color LCD."""
     return f14a135gr_mono_bios
 
 
-@fixture()
+@fixture
 def c130j30_mono_bios():
     """Bios values for C-130J 30 Hercules for Logitech mono LCD."""
     return [
@@ -733,7 +733,7 @@ def c130j30_mono_bios():
     ]
 
 
-@fixture()
+@fixture
 def c130j30_color_bios(c130j30_mono_bios):
     """Bios values for C-130J 30 Hercules for Logitech color LCD."""
     return c130j30_mono_bios
