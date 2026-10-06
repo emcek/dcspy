@@ -10,45 +10,38 @@ on:
 
 jobs:
   coverage:
-    name: ubuntu-latest py3.11
-    runs-on: ubuntu-latest
+    name: windows-2025 py3.14
+    runs-on: windows-2025
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
 
       - name: "Set up Python environment"
         uses: ./.github/actions/setup-python
 
-      - name: "Install MS Fonts"
-        run: |
-          curl -O https://lexics.github.io/assets/downloads/fonts/clearTypeFonts/consola.ttf
-          sudo mkdir -p /usr/share/fonts/truetype
-          sudo mv consola.ttf /usr/share/fonts/truetype
-          fc-cache -f
-
       - name: "Test with pytest"
+        env:
+          PYSIDE_DESIGNER_PLUGINS: .
+          PYTEST_QT_API: PySide6
+          DCSPY_NO_MSG_BOXES: 1
         run: |
-          python -m pytest -q --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing -m "not dcsbios"
+          python -m pytest -v -m 'not e2e' -m 'not qt6' --img_precision 0 --disable-warnings --cov=dcspy --cov-report=xml --cov-report=html --cov-report=term-missing
 
       - name: "Upload pytest results"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         if: always()
         with:
-          name: coverage_3_11
+          name: coverage_3_14
           path: |
             covhtml/*
             coverage.xml
           retention-days: 4
 
-      - name: "Test Coveralls"
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-          COVERALLS_SERVICE_NAME: github
-        run: |
-           coveralls
+      - name: "Run Coveralls coverage"
+        uses: coverallsapp/github-action@v2
 
-      - name: "Run codacy-coverage"
-        env:
-          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        run: |
-          python-codacy-coverage -r coverage.xml
+      - name: "Run Codacy coverage"
+        uses: codacy/codacy-coverage-reporter-action@v1.3.0
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage.xml

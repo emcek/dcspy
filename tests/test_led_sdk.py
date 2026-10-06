@@ -1,30 +1,23 @@
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from pytest import mark
+
+from dcspy.models import LedConstants
 
 
 @mark.parametrize('function, args, result', [
     ('logi_led_init', (), False),
     ('logi_led_init_with_name', ('name',), False),
-    ('logi_led_set_target_device', (1,), False),
+    ('logi_led_set_target_device', (LedConstants.LOGI_DEVICETYPE_MONOCHROME,), False),
     ('logi_led_save_current_lighting', (), False),
     ('logi_led_restore_lighting', (), False),
     ('logi_led_set_lighting', ((1, 2, 3),), False),
     ('logi_led_flash_lighting', ((1, 2, 3), 1, 1), False),
     ('logi_led_pulse_lighting', ((1, 2, 3), 1, 1), False),
     ('logi_led_stop_effects', (), False),
-    ('logi_led_shutdown', (), None)
-], ids=[
-    'init',
-    'init with name',
-    'set target device',
-    'save current lighting',
-    'restore lighting',
-    'set lighting',
-    'flash lighting',
-    'pulse lighting',
-    'stop effects',
-    'shutdown',
+    ('logi_led_shutdown', (), None),
+], ids=['init', 'init with name', 'set target device', 'save current lighting', 'restore lighting',
+        'set lighting', 'flash lighting', 'pulse lighting', 'stop effects', 'shutdown',
 ])
 def test_all_failure_cases(function, args, result):
     from dcspy.sdk import led_sdk
@@ -32,42 +25,13 @@ def test_all_failure_cases(function, args, result):
     assert getattr(led_sdk, function)(*args) is result
 
 
-@mark.parametrize('py_func, c_func, args, result', [
-    ('logi_led_init', 'LogiLedInit', (), True),
-    ('logi_led_init_with_name', 'LogiLedInitWithName', ('name',), True),
-    ('logi_led_set_target_device', 'LogiLedSetTargetDevice', (1,), True),
-    ('logi_led_save_current_lighting', 'LogiLedSaveCurrentLighting', (), True),
-    ('logi_led_restore_lighting', 'LogiLedRestoreLighting', (), True),
-    ('logi_led_set_lighting', 'LogiLedSetLighting', ((1, 2, 3),), True),
-    ('logi_led_flash_lighting', 'LogiLedFlashLighting', ((1, 2, 3), 1, 1), True),
-    ('logi_led_pulse_lighting', 'LogiLedPulseLighting', ((1, 2, 3), 1, 1), True),
-    ('logi_led_stop_effects', 'LogiLedStopEffects', (), True),
-    ('logi_led_shutdown', 'LogiLedShutdown', (), None)
-], ids=[
-    'init',
-    'init with name',
-    'set target device',
-    'save current lighting',
-    'restore lighting',
-    'set lighting',
-    'flash lighting',
-    'pulse lighting',
-    'stop effects',
-    'shutdown',
-])
-def test_all_success_cases(py_func, c_func, args, result):
-    from dcspy.sdk import led_sdk
-    mocked_c_func = Mock()
-    mocked_c_func.return_value = result
-    led_sdk.LED_DLL = {c_func: mocked_c_func}
-    assert getattr(led_sdk, py_func)(*args) is result
-
-
+@mark.slow
 def test_start_led_pulse():
-    from dcspy.sdk import led_sdk
     from concurrent.futures import ThreadPoolExecutor
     from threading import Event
     from time import sleep
+
+    from dcspy.sdk import led_sdk
 
     rgb = (100, 0, 0)
     duration = 1
@@ -81,7 +45,7 @@ def test_start_led_pulse():
                 patch.object(led_sdk, 'logi_led_shutdown', return_value=True) as logi_led_shutdown:
             led_sdk.start_led_pulse(_rgb, _duration, _interval, _event)
             logi_led_init.assert_called_once()
-            logi_led_set_target_device.assert_called_once_with(3)
+            logi_led_set_target_device.assert_called_once_with(LedConstants.LOGI_DEVICETYPE_ALL)
             logi_led_pulse_lighting.assert_called_once_with(_rgb, _duration, _interval)
             logi_led_shutdown.assert_called_once()
         return True

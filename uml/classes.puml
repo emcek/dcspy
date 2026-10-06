@@ -12,7 +12,6 @@ package dcsbios {
         + frame_sync_callbacks : Set[Callable]
         + process_byte(byte: int)
     }
-
     class StringBuffer {
         + buffer : bytearray
         + callbacks: Set[Callable]
@@ -20,7 +19,6 @@ package dcsbios {
         + set_char(index, char)
         + on_dcsbios_write(address, data)
     }
-
     class IntegerBuffer {
         + callbacks: Set[Callable]
         + __init__(parser, address, mask, shift_by, callback)
@@ -35,178 +33,339 @@ package dcsbios {
         DATA_HIGH = 6
         WAIT_FOR_SYNC = 7
     }
+    ProtocolParser *- ParserState
 }
 
 package logitech {
-    LogitechKeyboard <|-- KeyboardMono
-    LogitechKeyboard <|-- KeyboardColor
-
-    class LogitechKeyboard {
+    class LogitechDevice {
         + parser : ProtocolParser
-        + plane : Aircraft
+        + plane : BasicAircraft
         + plane_name = '' : str
+        + bios_name = '' : str
+        + socket: socket
         + plane_detected = False : bool
-        + already_pressed = False : bool
-        + lcd : LcdInfo
-        + vert_space = 0 : int
-        + dislay(message : List[str]) -> List[str]
-        # {abstract} _prepare_image() -> Image
+        + lcd_button_pressed = False : bool
+        + model: LogitechDeviceModel
+        + __init__(ProtocolParser, socket, FontsConfig)
+        + display()
         + detecting_plane()
-        + load_new_plane(value : str)
-        + check_buttons() -> int
-        + button_handle(sock : socket)
+        + load_new_plane(str)
+        + check_buttons() -> LcdButton
+        + button_handle()
+        + key_sdk: GkeySdkManager
+        + lcd_sdk: LcdSdkManager
+        + gkey_callback_handler(int, int, int, int)
         + clear()
-        + text(List[str])
-    }
-
-    class KeyboardMono {
-        + vert_space = 10 : int
-    }
-
-    class KeyboardColor {
-        + vert_space = 40 : int
+        + text(message: List[Tuple[str, Color]]) -> List[Tuple[str, Color]]
+        + messages() -> List[str]
+        # _prepare_image() -> Image
+        # _send_request(button: Union[LcdButton, Gkey, MouseButton], Optional[int])
     }
 }
 
 package aircraft {
-    Aircraft <|-- FA18Chornet
-    Aircraft <|-- F16C50
-    Aircraft <|-- Ka50
+    BasicAircraft <|-- AdvancedAircraft
+    AdvancedAircraft <|-- FA18Chornet
+    AdvancedAircraft <|-- F16C50
+    AdvancedAircraft <|-- F15ESE
+    AdvancedAircraft <|-- Ka50
     Ka50 <|-- Ka503
-    Aircraft <|-- Mi8MT
-    Aircraft <|-- Mi24P
-    Aircraft <|-- AH64D
-    Aircraft <|-- A10C
+    AdvancedAircraft <|-- Mi8MT
+    AdvancedAircraft <|-- Mi24P
+    AdvancedAircraft <|-- AH64D
+    AdvancedAircraft <|-- A10C
     A10C <|-- A10C2
-    Aircraft <|-- F14B
+    AdvancedAircraft <|-- F14B
     F14B <|-- F14A135GR
-    Aircraft <|-- AV8BNA
-    AH64D *-- ApacheEufdMode
-    class Aircraft {
-        + bios_data : Dict[str, BiosValue]
-        + cycle_buttons : Dict[str, Iterator[int]]
-        + lcd : LcdInfo
-        # _debug_img : Iterator[int]
+    AdvancedAircraft <|-- AV8BNA
+    AdvancedAircraft <|-- F4E45MC
+    AdvancedAircraft <|-- C130J30
+
+    class MetaAircraft <<(M,plum)>> {
+        + __new__(name, bases, namespace)
+        + __call__()
+    }
+    class BasicAircraft {
+        + bios_data: Dict[str, BiosValue]
+        + key_req: KeyRequest
+        + lcd: LcdInfo
+        + cfg: Dict[str, Union[str, int]]
         + __init__(lcd_type: LcdInfo)
-        + button_request(button: int, request: str) -> str
-        + prepare_image() -> Image
+        + button_request(button: Union[LcdButton, Gkey, MouseButton]) -> RequestModel
         + set_bios(selector: str, value: Union[str, int])
         + get_bios(selector: str) -> Union[str, int]
-        + get_next_value_for_button(btn_name: str) -> int
+    }
+    class AdvancedAircraft {
+        # _debug_img: Iterator[int]
+        + prepare_image() -> Image
+        + update_display: Callable[Image]
         + {abstract} draw_for_lcd_mono(img: Image)
         + {abstract} draw_for_lcd_color(img: Image)
     }
+}
+
+package utils {
+    class KeyRequest {
+        + buttons: Dict[Union[LcdButton, Gkey, MouseButton], RequestModel] = {}
+        + cycle_button_ctrl_name() -> Dict[str, int]
+        + get_request(Union[LcdButton, Gkey, MouseButton]]) -> RequestModel
+        + set_request(Union[LcdButton, Gkey, MouseButton]], str)
+    }
+    KeyRequest -* BasicAircraft
+}
+
+package models {
+    class Direction <<(E,yellow)>> {
+        + FORWARD = 1
+        + BACKWARD = -1
+    }
+    class ZigZagIterator {
+        + current: int
+        + max_value: int
+        + step: int = 1
+    }
+    class CycleButton <<(M,orange)>> {
+        + ctrl_name: str
+        + max_value: int = 1
+        + iter: Iterator[int]
+        + from_request(req: str) -> CycleButton
+    }
+    class LcdInfo <<(M,orange)>> {
+        + width : int
+        + height : int
+        + type : LcdType
+        + foreground : Union[int, Tuple[int, int, int, int]]
+        + background : Union[int, Tuple[int, int, int, int]]
+        + mode: LcdMode
+        + line_spacing: int
+        + font_xs: Optional[ImageFont.FreeTypeFont]
+        + font_s: Optional[ImageFont.FreeTypeFont]
+        + font_l: Optional[ImageFont.FreeTypeFont]
+        + set_font(FontsConfig)
+    }
+    class LcdMode <<(E,yellow)>> {
+        + NONE = '0'
+        + BLACK_WHITE = '1'
+        + TRUE_COLOR = 'RGBA'
+    }
+    class LcdType <<(E,yellow)>> {
+        + NONE = 0
+        + MONO = 1
+        + COLOR = 2
+    }
+    class Gkey <<(M,orange)>> {
+        + key: int
+        + mode: int
+        + from_yaml(str) -> Gkey
+        + generate(int, int) -> Tuple[Gkey]
+    }
+    class MouseButton <<(M,orange)>> {
+        + button: int
+        + from_yaml(str) -> MouseButton
+        + generate(Tuple[int, int]) -> Tuple[MouseButton]
+    }
+    class LcdButton <<(E,yellow)>> {
+        + none = 0x0
+        + one = 0x1
+        + two = 0x2
+        + three = 0x4
+        + four = 0x8
+        + left = 0x0100
+        + right = 0x0200
+        + ok = 0x0400
+        + cancel = 0x0800
+        + up = 0x1000
+        + down = 0x2000
+        + menu = 0x4000
+    }
+    class IntBuffArgs <<(M,orange)>> {
+        + address: int
+        + mask: int
+        + shift_by: int
+    }
+    class StrBuffArgs <<(M,orange)>> {
+        + address: int
+        + max_length: int
+    }
+    class BiosValueInt <<(M,orange)>> {
+        + klass : str
+        + args: IntBuffArgs]
+        + value: Union[int, str]
+        + max_value: int
+    }
+    class BiosValueStr <<(M,orange)>> {
+        + klass : str
+        + args: StrBuffArgs
+        + value: Union[int, str]
+    }
+    class LogitechDeviceModel <<(M,orange)>> {
+        + klass: str
+        + no_g_modes: int
+        + no_g_keys: int
+        + btn_m_range: Tuple[int, int]
+        + lcd_keys: Sequence[LcdButton]
+        + lcd_info: LcdInfo
+        + g_keys() -> Sequence[Gkey]
+        + mouse_keys() -> Sequence[MouseButton]
+        + lcd_name() -> str
+    }
+    class RequestModel{
+        + ctrl_name: str
+        + raw_request: str
+        + get_bios_fn: Callable[[str], Union[str, int, float]]
+        + cycle: CycleButton = CycleButton(ctrl_name='', step=0, max_value=0)
+        + from_request(str, Callable[[str], Union[str, int, float]]) -> RequestModel
+        + empty(Union[LcdButton, Gkey, MouseButton]]) -> RequestModel
+        + is_cycle -> bool
+        + is_custom -> bool
+        + is_push_button -> bool
+        # _get_next_value_for_button(button: LcdButton) -> int
+        + bytes_requests(Optional[int]) -> List[bytes]:
+    }
+    class ControlDepiction {
+        + name: str
+        + description: str
+    }
+    class ControlKeyData {
+        + name: str
+        + description: str
+        + max_value: int
+        + suggested_step: int
+        + list_dict: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
+        + from_control(Control) -> ControlKeyData
+        # _get_max_value(List[Union[FixedStep, VariableStep, SetState, Action, SetString]]) -> int
+        + depiction() -> ControlDepiction
+        + input_len() -> int
+        + one_input() -> bool
+        + has_fixed_step() -> bool
+        + has_variable_step() -> bool
+        + has_set_state() -> bool
+        + has_action() -> bool
+        + has_set_string() -> bool
+        + is_push_button() -> bool
+    }
+    class Control {
+        + api_variant: Optional[str]
+        + category: str
+        + control_type: str
+        + description: str
+        + identifier: str
+        + inputs: List[Union[FixedStep, VariableStep, SetState, Action, SetString]]
+        + outputs: List[Union[OutputStr, OutputInt]]
+        + input() -> ControlKeyData
+        + output() -> Union[BiosValueInt, BiosValueStr]
+    }
+    class DeviceRowsNumber <<(M,orange)>> {
+        + g_key: int = 0
+        + lcd_key: int = 0
+        + mouse_key: int = 0
+        + total() -> int
+    }
+
+    class Color <<(E,yellow)>> {
+        + beige = 0xf5f5dc
+        + bisque = 0xffe4c4
+        + black = 0x000000
+    }
 
     class ApacheEufdMode <<(E,yellow)>> {
-        + UNK = 0
-        + IDM = 1
-        + WCA = 2
-        + PRE = 4
+        + IDM = 'idm'
+        + WCA = 'wca'
+        + PRE = 'pre'
     }
-}
 
-class LcdInfo <<(D,orchid)>> {
-    + height : int
-    + width : int
-    + type : LcdType
-    + buttons: Sequence[LcdButton]
-    + foreground : Union[int, Sequence[int]]
-    + background : Union[int, Sequence[int]]
-    + mode: str
-    + font_xs: ImageFont.FreeTypeFont
-    + font_s: ImageFont.FreeTypeFont
-    + font_l: ImageFont.FreeTypeFont
-}
+    class AircraftKwargs <<(T,pink)>> {
+        + update_display: Callable[[Image.Image], None]
+        + bios_data: Mapping[str, BiosValue]
+    }
 
-class LcdType <<(E,yellow)>> {
-    + mono = 0
-    + color = 1
-}
+ApacheEufdMode -* AH64D
+AircraftKwargs -* AdvancedAircraft
 
-class LcdButton <<(E,yellow)>> {
-    + none = 0x0
-    + one = 0x1
-    + two = 0x2
-    + three = 0x4
-    + four = 0x8
-    + left = 0x0100
-    + right = 0x0200
-    + ok = 0x0400
-    + cancel = 0x0800
-    + up = 0x1000
-    + down = 0x2000
-    + menu = 0x4000
-}
+BiosValueInt *-- IntBuffArgs
+BiosValueStr *-- StrBuffArgs
 
+LcdType --* LcdInfo
+LcdMode --* LcdInfo
+LcdButton --* LcdInfo
+LogitechDeviceModel --* LcdInfo
+DeviceRowsNumber --* LogitechDeviceModel
+LcdButton -* BasicAircraft
+LcdButton -* LogitechDeviceModel
+LcdButton -* LogitechDevice
+Gkey --* BasicAircraft
+Gkey --* LogitechDevice
+MouseButton --* BasicAircraft
+MouseButton --* LogitechDevice
+Direction --* ZigZagIterator
+ZigZagIterator --* RequestModel
+LogitechDeviceModel -* LogitechDevice
+RequestModel --* KeyRequest
+CycleButton -* RequestModel
+}
 package sdk{
-    class lcd_sdk <<(L,lightblue)>> {
-        + logi_lcd_init()
-        + logi_lcd_is_connected()
-        + logi_lcd_is_button_pressed()
+    class LcdSdkManager <<(L,lightblue)>> {
+        + lcd_dll: CDLL
+        + logi_lcd_init(str, LcdType)
+        + logi_lcd_is_connected(LcdType)
+        + logi_lcd_is_button_pressed(LcdButton)
         + logi_lcd_update()
         + logi_lcd_shutdown()
-        + logi_lcd_mono_set_background()
-        + logi_lcd_mono_set_text()
-        + logi_lcd_color_set_background()
-        + logi_lcd_color_set_title()
-        + logi_lcd_color_set_text()
-        + update_text()
-        + update_display()
-        + clear_display()
-        # _clear_mono()
-        # _clear_color()
+        + logi_lcd_mono_set_background(List[int])
+        + logi_lcd_mono_set_text(int, str)
+        + logi_lcd_color_set_background(List[Tuple[int, int, int, int]])
+        + logi_lcd_color_set_title(str, Tuple[int, int, int])
+        + logi_lcd_color_set_text(int, str, Tuple[int, int, int])
+        + update_text(List[Tuple[str, Color]])
+        + update_display(Image)
+        + clear_display(bool)
+        # _clear_mono(bool)
+        # _clear_color(bool)
     }
     class led_sdk <<(L,lightblue)>> {
         + logi_led_init()
-        + logi_led_init_with_name()
-        + logi_led_set_target_device()
+        + logi_led_init_with_name(str)
+        + logi_led_set_target_device(LedConstants)
         + logi_led_save_current_lighting()
         + logi_led_restore_lighting()
-        + logi_led_set_lighting()
-        + logi_led_flash_lighting()
-        + logi_led_pulse_lighting()
+        + logi_led_set_lighting(Tuple[int, int, int])
+        + logi_led_flash_lighting(Tuple[int, int, int], int, int)
+        + logi_led_pulse_lighting(Tuple[int, int, int], int, int)
         + logi_led_stop_effects()
         + logi_led_shutdown()
-        + start_led_pulse()
+        + start_led_pulse(Tuple[int, int, int], int, int, Event)
+    }
+    class GkeySdkManager <<(L,lightblue)>> {
+        + key_dll: CDLL
+        + gkey_context: LogiGkeyCBContext
+        + user_callback: Callable[[int, int, int, int], None]
+        + gkey_context_ptr: pointer[gkey_contex]
+        + logi_gkey_init()
+        + logi_gkey_is_keyboard_gkey_pressed(int, int)
+        + logi_gkey_is_keyboard_gkey_string(int, int)
+        + logi_gkey_shutdown()
+    }
+    class GkeyCode <<(S,pink)>> {
+        + keyIdx: c_uint
+        + keyDown: c_uint
+        + mState: c_uint
+        + mouse: c_uint
+        + reserved1: c_uint
+        + reserved2: c_uint
+    }
+    class LogiGkeyCBContext <<(S,pink)>> {
+        + gkeyCallBack: GKEY_CALLBACK
+        + gkeyContext: c_void_p
     }
 }
 
-class IntBuffArgs <<(T,orange)>> {
-    + address: int
-    + mask: int
-    + shift_by: int
-}
+LogitechDevice *- BasicAircraft
+LcdInfo --* LogitechDevice
+LogitechDevice *-- ProtocolParser
+LogitechDevice *-- LcdSdkManager
+LogitechDevice *-- GkeySdkManager
 
-class StrBuffArgs <<(T,orange)>> {
-    + address: int
-    + max_length: int
-}
-
-class BiosValue <<(T,orange)>> {
-    + klass : str
-    + args: Union[IntBuffArgs, StrBuffArgs]
-    + value: Union[int, str]
-    + max_value: int
-}
-
-TypedDict <- IntBuffArgs
-TypedDict <- StrBuffArgs
-TypedDict <-- BiosValue
-
-BiosValue *-- IntBuffArgs
-BiosValue *-- StrBuffArgs
-
-LcdType --* LcdInfo
-LcdButton --* LcdInfo
-LcdButton -* Aircraft
-
-LogitechKeyboard *- Aircraft
-LcdInfo -* LogitechKeyboard
-LogitechKeyboard *--- ProtocolParser
-LogitechKeyboard *-- lcd_sdk
-
-LcdInfo --* Aircraft
-Aircraft *-- StringBuffer
-Aircraft *--- IntegerBuffer
-Aircraft *-- lcd_sdk
+LcdInfo --* BasicAircraft
+BasicAircraft *-- StringBuffer
+BasicAircraft *--- IntegerBuffer
 @enduml

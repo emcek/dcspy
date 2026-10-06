@@ -104,8 +104,10 @@ def test_process_byte_wait_for_sync_callback(protocol_parser):
     protocol_parser.process_byte(bytes([0x55]))
 
 
-@mark.parametrize('class_name, params', [('StringBuffer', {'address': 0x192a, 'max_length': 6}),
-                                         ('IntegerBuffer', {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf})])
+@mark.parametrize('class_name, params', [
+    ('StringBuffer', {'address': 0x192a, 'max_length': 6}),
+    ('IntegerBuffer', {'address': 0x1936, 'mask': 0x8000, 'shift_by': 0xf}),
+])
 def test_simple_instance_of_buffers(class_name, params, protocol_parser):
     from dcspy import dcsbios
 
@@ -115,6 +117,7 @@ def test_simple_instance_of_buffers(class_name, params, protocol_parser):
 
 def test_integer_buffer_callback(protocol_parser):
     from functools import partial
+
     from dcspy.dcsbios import IntegerBuffer
 
     def _callback(*args, **kwargs):
@@ -131,6 +134,7 @@ def test_integer_buffer_callback(protocol_parser):
 
 def test_string_buffer_callback(protocol_parser):
     from functools import partial
+
     from dcspy.dcsbios import StringBuffer
 
     def _callback(*args, **kwargs):
