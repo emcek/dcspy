@@ -93,9 +93,9 @@ def test_keyboard_mono_gkey_callback_handler(key_idx, mode, key_down, mouse, cal
     ('A-10C', '', 'A10C', ['Detected aircraft:', 'A-10C Warthog'], True),
     ('A-10C_2', '', 'A10C2', ['Detected aircraft:', 'A-10C II Tank Killer'], True),
     ('F14A95GR', '', 'F14A95GR', ['Detected aircraft:', 'F-14A Tomcat Export'], True),
-    ('F14A135GR', '', 'F14A135GR', ['Detected aircraft:', 'F-14A Tomcat'], True),
+    ('F14A135GR', '', 'F14A135GR', ['Detected aircraft:', 'F-14A Tomcat Late'], True),
     ('F-14B', '', 'F14B', ['Detected aircraft:', 'F-14B Tomcat'], True),
-    ('F14A135GREARLY', '', 'F14A135GREARLY', ['Detected aircraft:', 'F-14A Tomcat Early'], True),
+    ('F14A135GREarly', '', 'F14A135GREarly', ['Detected aircraft:', 'F-14A Tomcat Early'], True),
     ('F-14BU', '', 'F14BU', ['Detected aircraft:', 'F-14B(U) Tomcat'], True),
     ('AV8BNA', '', 'AV8BNA', ['Detected aircraft:', 'AV-8B N/A Harrier'], True),
     ('F-15ESE', '', 'F15ESE', ['Detected aircraft:', 'F-15ESE Eagle'], True),
@@ -180,7 +180,7 @@ def test_keyboard_text_returns_a_copy(keyboard, request):
 @mark.benchmark
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII',
-    'A10C', 'A10C2', 'F14A95GR','F14A135GR', 'F14B', 'F14A135GREARLY', 'F14BU', 'AV8BNA',
+    'A10C', 'A10C2', 'F14A95GR','F14A135GR', 'F14B', 'F14A135GREarly', 'F14BU', 'AV8BNA',
 ])
 def test_keyboard_mono_load_advanced_plane(model, keyboard_mono, test_config_yaml):
     from dcspy.aircraft import AdvancedAircraft
@@ -208,7 +208,7 @@ def test_test_keyboard_mono_load_basic_plane(keyboard_mono):
 @mark.benchmark
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII',
-    'A10C', 'A10C2', 'F14A95GR', 'F14A135GR', 'F14B', 'F14A135GREARLY', 'F14BU', 'AV8BNA',
+    'A10C', 'A10C2', 'F14A95GR', 'F14A135GR', 'F14B', 'F14A135GREarly', 'F14BU', 'AV8BNA',
 ])
 def test_keyboard_color_load_advanced_plane(model, keyboard_color, test_config_yaml):
     from dcspy.aircraft import AdvancedAircraft
@@ -236,7 +236,7 @@ def test_test_keyboard_color_load_basic_plane(keyboard_color):
 @mark.benchmark
 @mark.parametrize('model', [
     'FA18Chornet', 'F16C50', 'F4E45MC', 'F15ESE', 'Ka50', 'Ka503', 'Mi8MT', 'Mi24P', 'AH64DBLKII',
-    'A10C', 'A10C2', 'F14A95GR', 'F14A135GR', 'F14B', 'F14A135GREARLY', 'F14BU', 'AV8BNA',
+    'A10C', 'A10C2', 'F14A95GR', 'F14A135GR', 'F14B', 'F14A135GREarly', 'F14BU', 'AV8BNA',
 ])
 @mark.parametrize('keyboard', [
     'G13', 'G510', 'G15v1', 'G15v2', 'G19'

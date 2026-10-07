@@ -949,7 +949,7 @@ class F14A135GR(F14B):
     bios_name: str = 'F-14A-135-GR'
 
 
-class F14A135GREARLY(F14B):
+class F14A135GREarly(F14B):
     """F-14A-135-GR-Early Tomcat."""
     bios_name: str = 'F-14A-135-GR-Early'
 
