@@ -665,25 +665,49 @@ def av8bna_color_bios(av8bna_mono_bios):
 @fixture
 def f14a135gr_mono_bios():
     """Bios values for F-14A-135-GR Tomcat for Logitech mono LCD."""
-    return []
+    return [
+        ('PLT_UHF_REMOTE_DISP', '225.000'),
+        ('PLT_VUHF_REMOTE_DISP', '225.000'),
+        ('UHF_FREQ', '225.000'),
+        ('VUHF_FREQ', '225.000'),
+        ('RIO_VUHF_FM_AM', 0),
+    ]
 
 
 @fixture
-def f14a135gr_color_bios(f14a135gr_mono_bios):
+def f14a135gr_color_bios():
     """Bios values for F-14A-135-GR Tomcat for Logitech color LCD."""
-    return f14a135gr_mono_bios
+    return [
+        ('PLT_UHF_REMOTE_DISP', '     1 '),
+        ('PLT_VUHF_REMOTE_DISP', '     1 '),
+        ('UHF_FREQ', '225.000'),
+        ('VUHF_FREQ', '225.000'),
+        ('RIO_VUHF_FM_AM', 1),
+    ]
 
 
 @fixture
-def f14a95gr_mono_bios(f14a135gr_mono_bios):
+def f14a95gr_mono_bios():
     """Bios values for F-14A-95-GR Tomcat for Logitech mono LCD."""
-    return f14a135gr_mono_bios
+    return [
+        ('PLT_UHF_REMOTE_DISP', '    20 '),
+        ('PLT_VUHF_REMOTE_DISP', '267.000'),
+        ('UHF_FREQ', '269.000'),
+        ('VUHF_FREQ', '267.000'),
+        ('RIO_VUHF_FM_AM', 1),
+    ]
 
 
 @fixture
-def f14a95gr_color_bios(f14a135gr_mono_bios):
+def f14a95gr_color_bios():
     """Bios values for F-14A-95-GR Tomcat for Logitech color LCD."""
-    return f14a135gr_mono_bios
+    return [
+        ('PLT_UHF_REMOTE_DISP', '225.000'),
+        ('PLT_VUHF_REMOTE_DISP', '    11 '),
+        ('UHF_FREQ', '225.000'),
+        ('VUHF_FREQ', '267.000'),
+        ('RIO_VUHF_FM_AM', 0),
+    ]
 
 
 @fixture
@@ -693,33 +717,33 @@ def f14a135grearly_mono_bios(f14a135gr_mono_bios):
 
 
 @fixture
-def f14a135grearly_color_bios(f14a135gr_mono_bios):
+def f14a135grearly_color_bios(f14a135gr_color_bios):
     """Bios values for F-14A-135-GR Early Tomcat for Logitech color LCD."""
-    return f14a135gr_mono_bios
+    return f14a135gr_color_bios
 
 
 @fixture
-def f14b_mono_bios(f14a135gr_mono_bios):
+def f14b_mono_bios(f14a95gr_color_bios):
     """Bios values for F-14B Tomcat for Logitech mono LCD."""
-    return f14a135gr_mono_bios
+    return f14a95gr_color_bios
 
 
 @fixture
-def f14b_color_bios(f14a135gr_mono_bios):
+def f14b_color_bios(f14a95gr_mono_bios):
     """Bios values for F-14B Tomcat for Logitech color LCD."""
-    return f14a135gr_mono_bios
+    return f14a95gr_mono_bios
 
 
 @fixture
-def f14bu_mono_bios(f14a135gr_mono_bios):
+def f14bu_mono_bios(f14a95gr_mono_bios):
     """Bios values for F-14B(U) Tomcat for Logitech mono LCD."""
-    return f14a135gr_mono_bios
+    return f14a95gr_mono_bios
 
 
 @fixture
-def f14bu_color_bios(f14a135gr_mono_bios):
+def f14bu_color_bios(f14a95gr_color_bios):
     """Bios values for F-14B(U) Tomcat for Logitech color LCD."""
-    return f14a135gr_mono_bios
+    return f14a95gr_color_bios
 
 
 @fixture

@@ -948,16 +948,16 @@ class F14B(AdvancedAircraft):
 
         :param draw: ImageDraw instance
         """
-        uhf_disp = str(self.get_bios("PLT_UHF_REMOTE_DISP")).rstrip().strip()
+        uhf_disp = str(self.get_bios('PLT_UHF_REMOTE_DISP')).rstrip().strip()
         uhf_channel = uhf_disp if len(uhf_disp) < 3 else ''
         draw.text(xy=(0, 0), text=f'  UHF: {self.get_bios("UHF_FREQ"):>7} Ch:{uhf_channel:>2}', fill=self.lcd.foreground, font=self.lcd.font_s)
         try:
-            am_fm = int(self.get_bios("RIO_VUHF_FM_AM"))
+            am_fm = int(self.get_bios('RIO_VUHF_FM_AM'))
         except ValueError:
             am_fm = 1
         mode = 'AM' if am_fm else 'FM'
-        vuhf_disp = str(self.get_bios("PLT_VUHF_REMOTE_DISP")).rstrip().strip()
-        vuhf_channel = vuhf_disp if len(vuhf_disp) < 3 else ""
+        vuhf_disp = str(self.get_bios('PLT_VUHF_REMOTE_DISP')).rstrip().strip()
+        vuhf_channel = vuhf_disp if len(vuhf_disp) < 3 else ''
         draw.text(xy=(0, 20), text=f'V/UHF: {self.get_bios("VUHF_FREQ"):>7} Ch:{vuhf_channel:>2} {mode}', fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
