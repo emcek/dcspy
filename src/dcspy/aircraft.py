@@ -689,25 +689,25 @@ class AH64DBLKII(AdvancedAircraft):
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
-        LOG.debug(f'Mode: {self.mode}')
+        LOG.debug(f'Mode: {self.mode.name}')
         kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=1)
         if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 5 + [80] * 5
             kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
-        getattr(self, f'_draw_for_{self.mode.value}')(**kwargs)
+        getattr(self, f'_draw_for_{self.mode}')(**kwargs)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
-        LOG.debug(f'Mode: {self.mode}')
+        LOG.debug(f'Mode: {self.mode.name}')
         kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=2)
         if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 10
             kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
-        getattr(self, f'_draw_for_{self.mode.value}')(**kwargs)
+        getattr(self, f'_draw_for_{self.mode}')(**kwargs)
 
     def _draw_for_idm(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
