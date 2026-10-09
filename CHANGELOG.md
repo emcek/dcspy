@@ -348,7 +348,7 @@
 * **F-16C Viper** DED cleanup extra characters
 
 ## 1.6.1
-* Update **F-16C Viper** for latest DSC-BIOS (0.7.45)
+* Update **F-16C Viper** for latest DCS-BIOS (0.7.45)
 * Fresh installation of DCS-BIOS is painless
 * Drop support for Python 3.6
 
