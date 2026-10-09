@@ -86,13 +86,13 @@ test = [
     'types-pillow==10.2.0.20240822',
     'types-pygments==2.21.0.20260819',
     'types-pysocks==1.7.1.20260518',
-    'types-pytz==2026.4.0.20260926',
+    'types-pytz==2026.5.0.20261006',
     'types-pyyaml==6.0.12.20260906',
-    'types-requests==2.33.0.20260906',
-    'types-simplejson==4.1.0.20260724',
+    'types-requests==2.33.0.20261006',
+    'types-simplejson==4.2.0.20261006',
 ]
 docs = [
-    'black==26.5.1',
+    'black==26.10.0',
     'mkdocs==1.6.1',
     'mkdocs-gen-files==0.6.1',
     'mkdocs-literate-nav==0.6.3',
