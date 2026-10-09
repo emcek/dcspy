@@ -927,13 +927,38 @@ class F14B(AdvancedAircraft):
     """F-14B Tomcat."""
     bios_name: str = 'F-14B'
 
+    def __init__(self, lcd_type: LcdInfo, **kwargs: Unpack[AircraftKwargs]) -> None:
+        """
+        Create F-14B Tomcat.
+
+        :param lcd_type: LCD type
+        """
+        kwargs['bios_data'] = {
+            'UHF_FREQ': '',
+            'PLT_UHF_REMOTE_DISP': '',
+            'VUHF_FREQ': '',
+            'PLT_VUHF_REMOTE_DISP': '',
+            'RIO_VUHF_FM_AM': ''
+        }
+        super().__init__(lcd_type=lcd_type, **kwargs)
+
     def _draw_common_data(self, draw: ImageDraw.ImageDraw) -> None:
         """
         Draw common part for Mono and Color LCD.
 
         :param draw: ImageDraw instance
         """
-        draw.text(xy=(2, 3), text=f'{self.bios_name}', fill=self.lcd.foreground, font=self.lcd.font_l)
+        uhf_disp = str(self.get_bios('PLT_UHF_REMOTE_DISP')).rstrip().strip()
+        uhf_channel = uhf_disp if len(uhf_disp) < 3 else ''
+        draw.text(xy=(0, 0), text=f'  UHF: {self.get_bios("UHF_FREQ"):>7} Ch:{uhf_channel:>2}', fill=self.lcd.foreground, font=self.lcd.font_s)
+        try:
+            am_fm = int(self.get_bios('RIO_VUHF_FM_AM'))
+        except ValueError:
+            am_fm = 1
+        mode = 'AM' if am_fm else 'FM'
+        vuhf_disp = str(self.get_bios('PLT_VUHF_REMOTE_DISP')).rstrip().strip()
+        vuhf_channel = vuhf_disp if len(vuhf_disp) < 3 else ''
+        draw.text(xy=(0, 20), text=f'V/UHF: {self.get_bios("VUHF_FREQ"):>7} Ch:{vuhf_channel:>2} {mode}', fill=self.lcd.foreground, font=self.lcd.font_s)
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for F-14B Tomcat for Mono LCD."""
@@ -947,6 +972,21 @@ class F14B(AdvancedAircraft):
 class F14A135GR(F14B):
     """F-14A-135-GR Tomcat."""
     bios_name: str = 'F-14A-135-GR'
+
+
+class F14A135GREarly(F14B):
+    """F-14A-135-GR-Early Tomcat."""
+    bios_name: str = 'F-14A-135-GR-Early'
+
+
+class F14BU(F14B):
+    """F-14B(U) Tomcat."""
+    bios_name: str = 'F-14BU'
+
+
+class F14A95GR(F14B):
+    """F-14A-95-GR Export Tomcat."""
+    bios_name: str = 'F-14A-95-GR'
 
 
 class AV8BNA(AdvancedAircraft):

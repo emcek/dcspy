@@ -17,7 +17,7 @@ from packaging import version
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
-__version__ = '3.8.1'
+__version__ = '3.9.0'
 
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
@@ -58,8 +58,11 @@ SUPPORTED_CRAFTS = {
     'AH64DBLKII': {'name': 'AH-64D Apache', 'bios': 'AH-64D_BLK_II'},
     'A10C': {'name': 'A-10C Warthog', 'bios': 'A-10C'},
     'A10C2': {'name': 'A-10C II Tank Killer', 'bios': 'A-10C_2'},
-    'F14A135GR': {'name': 'F-14A Tomcat', 'bios': 'F-14A-135-GR'},
+    'F14A135GREarly': {'name': 'F-14A Tomcat Early', 'bios': 'F-14A-135-GR-Early'},
+    'F14A135GR': {'name': 'F-14A Tomcat Late', 'bios': 'F-14A-135-GR'},
+    'F14A95GR': {'name': 'F-14A Tomcat Export', 'bios': 'F-14A-95-GR'},
     'F14B': {'name': 'F-14B Tomcat', 'bios': 'F-14B'},
+    'F14BU': {'name': 'F-14B(U) Tomcat', 'bios': 'F-14BU'},
     'AV8BNA': {'name': 'AV-8B N/A Harrier', 'bios': 'AV8BNA'},
     'F4E45MC': {'name': 'F-4E Phantom II', 'bios': 'F-4E-45MC'},
     'C130J30': {'name': 'C-130J 30 Hercules', 'bios': 'C-130J-30'},
