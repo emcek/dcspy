@@ -4,7 +4,7 @@ from _ctypes import sizeof
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from ctypes import c_void_p
 from datetime import datetime
-from enum import Enum, IntEnum, StrEnum, auto
+from enum import Enum, IntEnum
 from os import environ
 from pathlib import Path
 from platform import architecture
@@ -87,11 +87,14 @@ class ApacheAllDrawModesKwargs(ApacheDrawModeKwargs, total=False):
     font: ImageFont.FreeTypeFont | None
 
 
-class ApacheEufdMode(StrEnum):
+class ApacheEufdMode(Enum):
     """Apache EUFD Mode."""
-    IDM = auto()
-    WCA = auto()
-    PRE = auto()
+    IDM = 'idm'
+    WCA = 'wca'
+    PRE = 'pre'
+
+    def __str__(self) -> str:
+        return self.value
 
 
 class Input(BaseModel):
