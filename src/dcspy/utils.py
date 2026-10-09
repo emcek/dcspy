@@ -192,26 +192,22 @@ def check_dcs_ver(dcs_path: Path) -> str:
 
 def check_bios_ver(bios_path: Path | str) -> version.Version:
     """
-    Check the DSC-BIOS release version.
+    Check the DCS-BIOS release version.
 
     :param bios_path: Path to DCS-BIOS directory in the SavedGames folder
     :return: Version object
     """
     bios_ver = version.parse('0.0.0')
-    new_location = Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
-    old_location = Path(bios_path) / 'lib' / 'CommonData.lua'
+    location = Path(bios_path) / 'BIOSConfig.lua'
 
-    if new_location.is_file():
-        with open(file=new_location, encoding='utf-8') as cd_lua:
-            cd_lua_data = cd_lua.read()
-    elif old_location.is_file():
-        with open(file=old_location, encoding='utf-8') as cd_lua:
-            cd_lua_data = cd_lua.read()
+    if location.is_file():
+        with open(file=location, encoding='utf-8') as bios_config:
+            bios_cfg_data = bios_config.read()
     else:
-        cd_lua_data = ''
-        LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
+        bios_cfg_data = ''
+        LOG.debug(f'Can not check DCS-BIOS version at {location.parent}')
 
-    if bios_re := search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data):
+    if bios_re := search(r'version\s=\s\"([\d.]*)\",', bios_cfg_data):
         bios_ver = version.parse(bios_re.group(1))
     return bios_ver
 
