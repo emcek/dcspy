@@ -93,6 +93,9 @@ class ApacheEufdMode(Enum):
     WCA = 'wca'
     PRE = 'pre'
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class Input(BaseModel):
     """Input base class of the inputs section of Control."""
