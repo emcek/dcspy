@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
 from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, LcdButton,
-                          LcdInfo, LcdType, RequestModel, RequestType)
+                          LcdInfo, LcdType, RequestModel)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
