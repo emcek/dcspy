@@ -11,7 +11,7 @@ from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypeAlias, TypedDict, TypeVar
+from typing import Any, Final, TypeAlias, TypedDict
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
