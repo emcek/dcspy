@@ -1,4 +1,3 @@
-from functools import partial
 from unittest.mock import call, patch
 
 from pytest import mark
