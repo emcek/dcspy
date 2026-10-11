@@ -1,4 +1,5 @@
 ## 3.8.2
+* Fix GKeys weren't working for the Apache - #622 (@emcek)
 * Internal:
   * Update `lupa` to 2.8 (CVE-2026-34444) - #563 (@emcek)
   * Update all others dependencies to latest versions
