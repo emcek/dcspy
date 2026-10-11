@@ -208,7 +208,7 @@ def test_button_pressed_for_apache_mono(button, result, ah64dblkii_mono):
 @mark.benchmark
 @mark.parametrize('button, result', [
     (LcdButton.NONE, [b'\n']),
-    (LcdButton.LEFT, [b'PLT_EUFD_WCA 0\n', b'PLT_EUFD_WCA 1\n']),
+    (LcdButton.LEFT, [b'PLT_EUFD_IDM 0\n', b'PLT_EUFD_IDM 1\n']),
     (LcdButton.RIGHT, [b'PLT_EUFD_RTS 0\n', b'PLT_EUFD_RTS 1\n']),
     (LcdButton.DOWN, [b'PLT_EUFD_PRESET 0\n', b'PLT_EUFD_PRESET 1\n']),
     (LcdButton.UP, [b'PLT_EUFD_ENT 0\n', b'PLT_EUFD_ENT 1\n']),
@@ -217,7 +217,7 @@ def test_button_pressed_for_apache_mono(button, result, ah64dblkii_mono):
     (LcdButton.OK, [b'\n']),
 ], ids=['NONE', 'LEFT', 'RIGHT', 'DOWN', 'UP', 'MENU', 'CANCEL', 'OK'])
 def test_button_pressed_for_apache_color(button, result, ah64dblkii_color):
-    ah64dblkii_color.mode = ApacheEufdMode.WCA
+    ah64dblkii_color.mode = ApacheEufdMode.IDM
     key_req = ah64dblkii_color.button_request(button)
     assert list(key_req.bytes_requests(key_down=KEY_DOWN)) == result
 
