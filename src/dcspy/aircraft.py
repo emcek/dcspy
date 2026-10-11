@@ -806,20 +806,13 @@ class AH64DBLKII(AdvancedAircraft):
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
         """
-        wca_or_idm = f'PLT_EUFD_WCA {RequestType.CUSTOM.value} PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
-        if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = f'PLT_EUFD_IDM {RequestType.CUSTOM.value} PLT_EUFD_IDM 0|PLT_EUFD_IDM 1|'
-
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
         elif button in (LcdButton.FOUR, LcdButton.UP) and self.mode != ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.IDM
 
-        if button in (LcdButton.ONE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
+        if button in (LcdButton.THREE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
-
-        self.key_req.set_request(LcdButton.ONE, wca_or_idm)
-        self.key_req.set_request(LcdButton.LEFT, wca_or_idm)
         return super().button_request(button)
 
 
