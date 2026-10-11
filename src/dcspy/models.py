@@ -444,10 +444,9 @@ class Control(BaseModel):
                                 args=IntBuffArgs(address=self.outputs[0].address, mask=self.outputs[0].mask, shift_by=self.outputs[0].shift_by),
                                 value=int(),
                                 max_value=self.outputs[0].max_value)
-        else:
-            return BiosValueStr(klass='StringBuffer',
-                                args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
-                                value='')
+        return BiosValueStr(klass='StringBuffer',
+                            args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
+                            value='')
 
     @classmethod
     def make_empty(cls) -> Control:
