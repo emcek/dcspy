@@ -528,6 +528,10 @@ class CycleButton(BaseModel):
         """Return True if any of the attributes: `step`, `max_value`, `ctrl_name` is truthy, False otherwise."""
         return not all([not self.step, not self.max_value, not self.ctrl_name])
 
+    def __next__(self) -> int:
+        """Return the next value from the button's iterator."""
+        return next(self.iter)
+
 
 class GuiPlaneInputRequest(BaseModel):
     """
@@ -1304,7 +1308,7 @@ class RequestModel(BaseModel):
             self.cycle.iter = ZigZagIterator(current=int(self.get_bios_fn(self.ctrl_name)),
                                              step=self.cycle.step,
                                              max_val=self.cycle.max_value)
-        return next(self.cycle.iter)
+        return next(self.cycle)
 
     @property
     def is_cycle(self) -> bool:
