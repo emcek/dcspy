@@ -42,7 +42,7 @@ dependencies = [
     'lupa==2.8',
     'packaging==26.3',
     'pillow==12.3.0',
-    'pydantic==2.13.5',
+    'pydantic==2.14.1',
     'pyside6==6.11.2',
     'pyyaml==6.0.3',
     'requests==2.34.2',
