@@ -78,11 +78,11 @@ test = [
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==5.0.0',
-    'ruff==0.16.10',
+    'ruff==0.17.0',
     'types-cffi==2.1.0.20260827',
     'types-defusedxml==0.7.0.20260504',
     'types-lupa==2.8.0.20260827',
-    'types-markdown==3.10.2.20260712',
+    'types-markdown==3.10.2.20261007',
     'types-pillow==10.2.0.20240822',
     'types-pygments==2.21.0.20260819',
     'types-pysocks==1.7.1.20260518',
@@ -92,7 +92,7 @@ test = [
     'types-simplejson==4.2.0.20261006',
 ]
 docs = [
-    'black==26.10.0',
+    'black==26.10.1',
     'mkdocs==1.6.1',
     'mkdocs-gen-files==0.6.1',
     'mkdocs-literate-nav==0.6.3',

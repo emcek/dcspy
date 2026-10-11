@@ -261,7 +261,7 @@ def test_unload_plane(keyboard, models, test_dcs_bios, test_config_yaml, request
             assert isinstance(keyboard.plane, A10C)
             for partial_obj in keyboard.parser.write_callbacks:
                 for callback in partial_obj.func.__self__.callbacks:
-                    args_list.extend([arg for arg in callback.args])
+                    args_list.extend([*callback.args])
             assert set(args_list) == set(keyboard.plane.bios_data.keys())
 
             keyboard.unload_old_plane()
@@ -273,5 +273,5 @@ def test_unload_plane(keyboard, models, test_dcs_bios, test_config_yaml, request
             assert isinstance(keyboard.plane, Ka50)
             for partial_obj in keyboard.parser.write_callbacks:
                 for callback in partial_obj.func.__self__.callbacks:
-                    args_list.extend([arg for arg in callback.args])
+                    args_list.extend([*callback.args])
             assert set(args_list) == set(keyboard.plane.bios_data.keys())
