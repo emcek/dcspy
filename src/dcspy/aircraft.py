@@ -693,7 +693,7 @@ class AH64DBLKII(AdvancedAircraft):
         kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=1)
         if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 5 + [80] * 5
-            kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
+            kwargs['y_cords'] = [j * 8 for j in range(5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
         getattr(self, f'_draw_for_{self.mode}')(**kwargs)
@@ -704,7 +704,7 @@ class AH64DBLKII(AdvancedAircraft):
         kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=2)
         if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 10
-            kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
+            kwargs['y_cords'] = [j * 24 for j in range(10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
         getattr(self, f'_draw_for_{self.mode}')(**kwargs)
