@@ -460,8 +460,8 @@ class DcsPyQtGui(QMainWindow):
     def _generate_table(self) -> None:
         """Generate a table of combo boxes with completer functionality."""
         ctrl_list_without_sep = [item for item in self.ctrl_list if item and CTRL_LIST_SEPARATOR not in item]
-        for row in range(0, self.device.rows.total):
-            for col in range(0, self.device.cols):
+        for row in range(self.device.rows.total):
+            for col in range(self.device.cols):
                 self._make_combo_with_completer_at(row, col, ctrl_list_without_sep)
         if self.current_row != -1 and self.current_col != -1:
             cell_combo: QComboBox | QWidget = self.tw_gkeys.cellWidget(self.current_row, self.current_col)
@@ -789,7 +789,7 @@ class DcsPyQtGui(QMainWindow):
         :param widget: QComboBox instance
         """
         model: QStandardItemModel | QAbstractItemModel = widget.model()
-        for i in range(0, widget.count()):
+        for i in range(widget.count()):
             if text in model.item(i).text():
                 model.item(i).setFlags(Qt.ItemFlag.NoItemFlags)
 

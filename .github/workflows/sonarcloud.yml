@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
       - name: "Install uv and set the Python"
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
         with:
           python-version: "3.14"
           enable-cache: true
@@ -45,7 +45,7 @@ jobs:
           python -m pytest -v -m 'not e2e' --img_precision 0 --cov=dcspy --cov-report=xml --cov-branch
 
       - name: "SonarCloud Scan"
-        uses: sonarsource/sonarqube-scan-action@v8.2.1
+        uses: sonarsource/sonarqube-scan-action@v8.2.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

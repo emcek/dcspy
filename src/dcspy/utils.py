@@ -129,7 +129,7 @@ def load_yaml(full_path: Path) -> DcspyConfigYaml:
 
 def save_yaml(data: DcspyConfigYaml, full_path: Path) -> None:
     """
-    Save data as the YAML file.
+    Save a dict as an YAML file.
 
     :param data: Dictionary with data
     :param full_path: Full a path to YAML file
@@ -152,8 +152,7 @@ def check_ver_at_github(repo: str) -> Release:
             rel = Release(**response.json())
             LOG.debug(f'Latest GitHub release: {rel}')
             return rel
-        else:
-            raise ValueError(f'Try again later. Status={response.status_code}')
+        raise ValueError(f'Try again later. Status={response.status_code}')
     except Exception as exc:
         raise ValueError(f'Unable to check {package} version online: {exc}')
 
@@ -235,26 +234,22 @@ def check_dcs_ver(dcs_path: Path) -> str:
 
 def check_bios_ver(bios_path: Path | str) -> version.Version:
     """
-    Check the DSC-BIOS release version.
+    Check the DCS-BIOS release version.
 
     :param bios_path: Path to DCS-BIOS directory in the SavedGames folder
     :return: Version object
     """
     bios_ver = version.parse('0.0.0')
-    new_location = Path(bios_path) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
-    old_location = Path(bios_path) / 'lib' / 'CommonData.lua'
+    location = Path(bios_path) / 'BIOSConfig.lua'
 
-    if new_location.is_file():
-        with open(file=new_location, encoding='utf-8') as cd_lua:
-            cd_lua_data = cd_lua.read()
-    elif old_location.is_file():
-        with open(file=old_location, encoding='utf-8') as cd_lua:
-            cd_lua_data = cd_lua.read()
+    if location.is_file():
+        with open(file=location, encoding='utf-8') as bios_config:
+            bios_cfg_data = bios_config.read()
     else:
-        cd_lua_data = ''
-        LOG.debug(f'No `CommonData.lua` while checking DCS-BIOS version at {new_location.parent} or {old_location.parent}')
+        bios_cfg_data = ''
+        LOG.debug(f'Can not check DCS-BIOS version at {location.parent}')
 
-    if bios_re := search(r'function getVersion\(\)\s*return\s*\"([\d.]*)\"', cd_lua_data):
+    if bios_re := search(r'version\s=\s\"([\d.]*)\",', bios_cfg_data):
         bios_ver = version.parse(bios_re.group(1))
     return bios_ver
 
@@ -317,8 +312,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
     git_ref =  git_ref.split('/')[1] if 'origin/' in git_ref else git_ref
-    sha = _get_sha_hex_str(bios_repo, git_ref)
-    return sha
+    return _get_sha_hex_str(bios_repo, git_ref)
 
 
 def _checkout_repo(git_ref: str, repo_dir: Path, repo: str, progress: git.RemoteProgress | None = None) -> git.Repo:
@@ -597,8 +591,7 @@ def get_config_yaml_location() -> Path:
     :rtype: Path object to directory
     """
     localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
-    return user_appdata
+    return Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
 
 
 def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
@@ -657,8 +650,7 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> dict[str, dict[str, Cont
     :return: dict.
     """
     plane_bios = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
-    inputs = plane_bios.get_inputs()
-    return inputs
+    return plane_bios.get_inputs()
 
 
 def get_list_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> list[str]:
@@ -809,7 +801,7 @@ class KeyRequest:
 
     def get_request(self, button: AnyButton) -> RequestModel:
         """
-        Get abstract representation for request ti be sent for requested button.
+        Get abstract representation for a request to be sent for a requested button.
 
         :param button: LcdButton, Gkey, or MouseButton
         :return: RequestModel object
@@ -872,8 +864,7 @@ def rgba(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ..
     """
     if isinstance(mode, int):
         return *rgb(c), mode
-    else:
-        return ImageColor.getcolor(color=c.name, mode=mode.value)
+    return ImageColor.getcolor(color=c.name, mode=mode.value)
 
 
 def rgb(c: Color, /) -> tuple[int, int, int]:

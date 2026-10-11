@@ -1,9 +1,14 @@
-## 3.8.2
+## 3.9.0
 * Improve first run experience for new user - #564 (@emcek)
+
+## 3.8.2
+* Fix GKeys weren't working for the Apache - #626 (@emcek)
+* Remove support for Python 3.10 - #627 (@emcek)
 * Internal:
   * Update `lupa` to 2.8 (CVE-2026-34444) - #563 (@emcek)
   * Update all others dependencies to latest versions
   * correctness cleanup, and stricter validation, without major new feature additions - #617 (@emcek)
+  * Update checking DCS-BIOS version
 
 ## 3.8.1
 * Fix debugger tab in dark mode - #551 (@emcek)

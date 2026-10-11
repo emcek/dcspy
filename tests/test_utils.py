@@ -144,34 +144,23 @@ def test_check_dcs_ver_file_not_exists(side_effect):
         assert dcs_ver == 'Unknown'
 
 
-def test_check_bios_ver_new_location(tmpdir):
-    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
-    common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
-    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
-        cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
-    result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == version.parse('1.2.3')
-
-
-def test_check_bios_ver_old_location(tmpdir):
-    makedirs(Path(tmpdir) / 'lib')
-    common_data_lua = Path(tmpdir) / 'lib' / 'CommonData.lua'
-    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
-        cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
+def test_check_bios_ver_location(tmpdir):
+    bios_config = Path(tmpdir) / 'BIOSConfig.lua'
+    with open(file=bios_config, encoding='utf-8', mode='w+') as bios_cfg_lua:
+        bios_cfg_lua.write('	export_rate = 30,\n	version = "3.2.1", -- set automatically, do not edit\n')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == version.parse('3.2.1')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
-    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
-    common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
-    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
-        cd_lua.write('')
+    bios_config = Path(tmpdir) / 'BIOSConfig.lua'
+    with open(file=bios_config, encoding='utf-8', mode='w+') as bios_cfg_lua:
+        bios_cfg_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == version.parse('0.0.0')
 
 
-def test_check_bios_ver_lue_not_exists(tmpdir):
+def test_check_bios_ver_lua_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == version.parse('0.0.0')
 
@@ -313,20 +302,21 @@ def test_run_command(cmd, result):
 
 
 @mark.parametrize('plane_str, roots , values', [
-    ('FA-18C_hornet', 80, 531),
-    ('F-16C_50', 50, 534),
-    ('F-4E-45MC', 116, 1127),
-    ('Ka-50', 77, 599),
-    ('Ka-50_3', 77, 599),
-    ('Mi-8MT', 77, 800),
-    ('Mi-24P', 114, 1001),
-    ('AH-64D_BLK_II', 53, 730),
-    ('A-10C', 64, 777),
-    ('A-10C_2', 64, 777),
-    ('F-14A-135-GR', 77, 1128),
-    ('F-14B', 77, 1128),
-    ('AV8BNA', 48, 515),
-    ('F-15ESE', 98, 890),
+    ('FA-18C_hornet', 80, 534),
+    ('F-16C_50', 51, 551),
+    ('F-4E-45MC', 119, 1150),
+    ('Ka-50', 77, 600),
+    ('Ka-50_3', 77, 600),
+    ('Mi-8MT', 77, 801),
+    ('Mi-24P', 114, 1002),
+    ('AH-64D_BLK_II', 54, 743),
+    ('A-10C', 64, 778),
+    ('A-10C_2', 64, 778),
+    ('F-14A-135-GR', 78, 1142),
+    ('F-14A-135-GR-Early', 78, 1142),
+    ('F-14B', 78, 1142),
+    ('AV8BNA', 48, 519),
+    ('F-15ESE', 99, 913),
 ])
 def test_get_full_bios_for_plane(plane_str, roots, values, test_dcs_bios):
     model = utils.get_full_bios_for_plane(plane=plane_str, bios_dir=test_dcs_bios)
@@ -366,8 +356,10 @@ def test_get_plane_aliases_all(test_dcs_bios):
         'AH-64D_BLK_II': ['CommonData', 'AH-64D'],
         'AV8BNA': ['CommonData', 'AV8BNA', 'NS430'],
         'F-14A-135-GR': ['CommonData', 'F-14', 'NS430'],
+        'F-14A-135-GR-Early': ['CommonData', 'F-14', 'NS430'],
         'F-14B': ['CommonData', 'F-14', 'NS430'],
-        'F-15ESE': ['CommonData', 'F-15E'],
+        'F-14BU': ['CommonData', 'F-14', 'NS430'],
+        'F-15ESE': ['CommonData', 'F-15E', 'NS430'],
         'F-16C_50': ['CommonData', 'F-16C_50'],
         'F-4E-45MC': ['CommonData', 'F-4E'],
         'FA-18C_hornet': ['CommonData', 'FA-18C_hornet'],
@@ -398,7 +390,9 @@ def test_get_planes_list(test_dcs_bios):
         'AH-64D_BLK_II',
         'AV8BNA',
         'F-14A-135-GR',
+        'F-14A-135-GR-Early',
         'F-14B',
+        'F-14BU',
         'F-15ESE',
         'F-16C_50',
         'F-4E-45MC',

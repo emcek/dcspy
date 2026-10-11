@@ -4,14 +4,14 @@ from _ctypes import sizeof
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from ctypes import c_void_p
 from datetime import datetime
-from enum import Enum, IntEnum
+from enum import Enum, IntEnum, StrEnum, auto
 from os import environ
 from pathlib import Path
 from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypeAlias, TypedDict, Union
+from typing import Any, Final, TypeAlias, TypedDict, TypeVar
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
@@ -65,7 +65,7 @@ SUPPORTED_CRAFTS = {
     'C130J30': {'name': 'C-130J 30 Hercules', 'bios': 'C-130J-30'},
 }
 
-BiosValue = Union[str, int, float]
+BiosValue = str | int | float
 
 
 class AircraftKwargs(TypedDict):
@@ -87,11 +87,11 @@ class ApacheAllDrawModesKwargs(ApacheDrawModeKwargs, total=False):
     font: ImageFont.FreeTypeFont | None
 
 
-class ApacheEufdMode(Enum):
+class ApacheEufdMode(StrEnum):
     """Apache EUFD Mode."""
-    IDM = 'idm'
-    WCA = 'wca'
-    PRE = 'pre'
+    IDM = auto()
+    WCA = auto()
+    PRE = auto()
 
 
 class Input(BaseModel):
@@ -170,7 +170,7 @@ class SetString(Input):
         return cls._validate_interface(value, 'set_string')
 
 
-Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
+Inputs = FixedStep | VariableStep | SetState | Action | SetString
 
 
 class Output(BaseModel):
@@ -443,10 +443,9 @@ class Control(BaseModel):
                                 args=IntBuffArgs(address=self.outputs[0].address, mask=self.outputs[0].mask, shift_by=self.outputs[0].shift_by),
                                 value=int(),
                                 max_value=self.outputs[0].max_value)
-        else:
-            return BiosValueStr(klass='StringBuffer',
-                                args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
-                                value='')
+        return BiosValueStr(klass='StringBuffer',
+                            args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
+                            value='')
 
     @classmethod
     def make_empty(cls) -> Control:
@@ -1214,8 +1213,7 @@ class Release(BaseModel):
 
         url = self.download_url(extension='', file_name='DIGESTS')
         download_file(url=url, save_path=temp_digest)
-        result = verify_hashes(file_path=local_file, digest_file=temp_digest)
-        return result
+        return verify_hashes(file_path=local_file, digest_file=temp_digest)
 
     def __str__(self) -> str:
         return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
@@ -1614,8 +1612,7 @@ class DllSdk(BaseModel):
         :return: The header content as a string.
         """
         with open(file=Path(__file__) / '..' / 'resources' / f'{self.header_file}') as header_file:
-            header = header_file.read()
-        return header
+            return header_file.read()
 
     def get_path(self) -> str:
         """
@@ -1628,8 +1625,7 @@ class DllSdk(BaseModel):
             prog_files = environ['PROGRAMW6432']
         except KeyError:
             prog_files = environ['PROGRAMFILES']
-        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
-        return dll_path
+        return f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
 
 
 LcdDll = DllSdk(name='LCD', directory='LCD', header_file='LogitechLCDLib.h')
