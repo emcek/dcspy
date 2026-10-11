@@ -11,7 +11,7 @@ from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypeAlias, TypedDict, TypeVar, Union
+from typing import Any, Final, TypeAlias, TypedDict, TypeVar
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
@@ -65,7 +65,7 @@ SUPPORTED_CRAFTS = {
     'C130J30': {'name': 'C-130J 30 Hercules', 'bios': 'C-130J-30'},
 }
 
-BiosValue = Union[str, int, float]
+BiosValue = str | int | float
 
 
 class AircraftKwargs(TypedDict):
@@ -170,7 +170,7 @@ class SetString(Input):
         return cls._validate_interface(value, 'set_string')
 
 
-Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
+Inputs = FixedStep | VariableStep | SetState | Action | SetString
 
 
 class Output(BaseModel):
