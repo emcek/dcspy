@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from dcspy import default_yaml, load_yaml
 from dcspy.models import (DEFAULT_FONT_NAME, NO_OF_LCD_SCREENSHOTS, AircraftKwargs, AnyButton, ApacheAllDrawModesKwargs, ApacheEufdMode, BiosValue, LcdButton,
-                          LcdInfo, LcdType, RequestModel, RequestType)
+                          LcdInfo, LcdType, RequestModel)
 from dcspy.utils import KeyRequest, replace_symbols, substitute_symbols
 
 LOG = getLogger(__name__)
@@ -345,8 +345,7 @@ class F16C50(AdvancedAircraft):
         :return: The modified string with replaced symbols.
         """
         value = replace_symbols(value, self.COLOR_SYMBOLS_TO_REPLACE)
-        value = substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
-        return value
+        return substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
 
 
 class F4E45MC(AdvancedAircraft):
@@ -689,25 +688,25 @@ class AH64DBLKII(AdvancedAircraft):
 
     def draw_for_lcd_mono(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Mono LCD."""
-        LOG.debug(f'Mode: {self.mode}')
+        LOG.debug(f'Mode: {self.mode.name}')
         kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=1)
         if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 5 + [80] * 5
-            kwargs['y_cords'] = [j * 8 for j in range(0, 5)] * 2
+            kwargs['y_cords'] = [j * 8 for j in range(5)] * 2
             kwargs['font'] = self.lcd.font_xs
             del kwargs['scale']
-        getattr(self, f'_draw_for_{self.mode.value}')(**kwargs)
+        getattr(self, f'_draw_for_{self.mode}')(**kwargs)
 
     def draw_for_lcd_color(self, img: Image.Image) -> None:
         """Prepare image for AH-64D Apache for Color LCD."""
-        LOG.debug(f'Mode: {self.mode}')
+        LOG.debug(f'Mode: {self.mode.name}')
         kwargs: ApacheAllDrawModesKwargs = ApacheAllDrawModesKwargs(draw=ImageDraw.Draw(img), scale=2)
         if self.mode == ApacheEufdMode.PRE:
             kwargs['x_cords'] = [0] * 10
-            kwargs['y_cords'] = [j * 24 for j in range(0, 10)]
+            kwargs['y_cords'] = [j * 24 for j in range(10)]
             kwargs['font'] = self.lcd.font_l
             del kwargs['scale']
-        getattr(self, f'_draw_for_{self.mode.value}')(**kwargs)
+        getattr(self, f'_draw_for_{self.mode}')(**kwargs)
 
     def _draw_for_idm(self, draw: ImageDraw.ImageDraw, scale: int) -> None:
         """
@@ -806,20 +805,13 @@ class AH64DBLKII(AdvancedAircraft):
         :param button: LcdButton, Gkey or MouseButton
         :return: RequestModel object
         """
-        wca_or_idm = f'PLT_EUFD_WCA {RequestType.CUSTOM.value} PLT_EUFD_WCA 0|PLT_EUFD_WCA 1|'
-        if self.mode == ApacheEufdMode.IDM:
-            wca_or_idm = f'PLT_EUFD_IDM {RequestType.CUSTOM.value} PLT_EUFD_IDM 0|PLT_EUFD_IDM 1|'
-
         if button in (LcdButton.FOUR, LcdButton.UP) and self.mode == ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.WCA
         elif button in (LcdButton.FOUR, LcdButton.UP) and self.mode != ApacheEufdMode.IDM:
             self.mode = ApacheEufdMode.IDM
 
-        if button in (LcdButton.ONE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
+        if button in (LcdButton.THREE, LcdButton.LEFT) and self.mode == ApacheEufdMode.WCA:
             self.warning_line += 1
-
-        self.key_req.set_request(LcdButton.ONE, wca_or_idm)
-        self.key_req.set_request(LcdButton.LEFT, wca_or_idm)
         return super().button_request(button)
 
 
@@ -1094,7 +1086,7 @@ def draw_autopilot_channels(lcd: LcdInfo,
                             c_rect: tuple[float, float, float, float],
                             c_text: tuple[float, float],
                             draw_obj: ImageDraw.ImageDraw,
-                            turn_on: str | int | float) -> None:
+                            turn_on: str | float) -> None:
     """
     Draw rectangles with a background for autopilot channels.
 

@@ -144,34 +144,23 @@ def test_check_dcs_ver_file_not_exists(side_effect):
         assert dcs_ver == 'Unknown'
 
 
-def test_check_bios_ver_new_location(tmpdir):
-    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
-    common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
-    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
-        cd_lua.write('local function getVersion()\n\treturn "1.2.3"\nend')
-    result = utils.check_bios_ver(bios_path=tmpdir)
-    assert result == version.parse('1.2.3')
-
-
-def test_check_bios_ver_old_location(tmpdir):
-    makedirs(Path(tmpdir) / 'lib')
-    common_data_lua = Path(tmpdir) / 'lib' / 'CommonData.lua'
-    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
-        cd_lua.write('local function getVersion()\n\treturn "3.2.1"\nend')
+def test_check_bios_ver_location(tmpdir):
+    bios_config = Path(tmpdir) / 'BIOSConfig.lua'
+    with open(file=bios_config, encoding='utf-8', mode='w+') as bios_cfg_lua:
+        bios_cfg_lua.write('	export_rate = 30,\n	version = "3.2.1", -- set automatically, do not edit\n')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == version.parse('3.2.1')
 
 
 def test_check_bios_ver_empty_lua(tmpdir):
-    makedirs(Path(tmpdir) / 'lib' / 'modules' / 'common_modules')
-    common_data_lua = Path(tmpdir) / 'lib' / 'modules' / 'common_modules' / 'CommonData.lua'
-    with open(file=common_data_lua, encoding='utf-8', mode='w+') as cd_lua:
-        cd_lua.write('')
+    bios_config = Path(tmpdir) / 'BIOSConfig.lua'
+    with open(file=bios_config, encoding='utf-8', mode='w+') as bios_cfg_lua:
+        bios_cfg_lua.write('')
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == version.parse('0.0.0')
 
 
-def test_check_bios_ver_lue_not_exists(tmpdir):
+def test_check_bios_ver_lua_not_exists(tmpdir):
     result = utils.check_bios_ver(bios_path=tmpdir)
     assert result == version.parse('0.0.0')
 

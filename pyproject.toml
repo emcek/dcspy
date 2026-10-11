@@ -9,12 +9,11 @@ maintainers = [{ name = 'Michal Plichta' }]
 description = 'Software for integrating DCS Planes with Logitech keyboards (with and without LCD), mice and headphones.'
 license = 'MIT'
 license-files = ['LICENSE.md', 'src/dcspy/resources/license.txt']
-requires-python = '>=3.10, <3.15'
+requires-python = '>=3.11, <3.15'
 classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Environment :: Win32 (MS Windows)',
-    'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
     'Programming Language :: Python :: 3.12',
     'Programming Language :: Python :: 3.13',
@@ -39,12 +38,11 @@ keywords = [
 dynamic = ['version', 'readme']
 dependencies = [
     'cffi==2.1.1',
-    'eval-type-backport==0.3.1 ; python_version < "3.10"',
     'gitpython==3.2.0',
     'lupa==2.8',
     'packaging==26.3',
     'pillow==12.3.0',
-    'pydantic==2.13.5',
+    'pydantic==2.14.1',
     'pyside6==6.11.2',
     'pyyaml==6.0.3',
     'requests==2.34.2',
@@ -78,11 +76,11 @@ test = [
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==5.0.0',
-    'ruff==0.16.10',
+    'ruff==0.17.0',
     'types-cffi==2.1.0.20260827',
     'types-defusedxml==0.7.0.20260504',
     'types-lupa==2.8.0.20260827',
-    'types-markdown==3.10.2.20260712',
+    'types-markdown==3.10.2.20261007',
     'types-pillow==10.2.0.20240822',
     'types-pygments==2.21.0.20260819',
     'types-pysocks==1.7.1.20260518',
@@ -92,14 +90,14 @@ test = [
     'types-simplejson==4.2.0.20261006',
 ]
 docs = [
-    'black==26.10.0',
+    'black==26.10.1',
     'mkdocs==1.6.1',
     'mkdocs-gen-files==0.6.1',
     'mkdocs-literate-nav==0.6.3',
     'mkdocs-material==9.7.7',
     'mkdocs-plantuml==0.1.1',
     'mkdocs-section-index==0.3.12',
-    'mkdocstrings==1.0.6',
+    'mkdocstrings==1.0.7',
     'mkdocstrings-python>1.0.0,<2.0.0',
     'plantuml==0.3.0',
 ]
@@ -156,10 +154,22 @@ lint.select = [
     'C90',
     'D',
     'RUF',
+    "W",
+    "C4",
+    "FURB",
+    "ASYNC",
+    "A",
+    "LOG",
+    "PGH",
+    "PYI",
+    "RET",
+    "RSE",
+    "SLF",
+    "SLOT",
+    "TID",
 ]
 lint.ignore = [
     'D100',
-    'D101',
     'D104',
     'D105',
     'D203',

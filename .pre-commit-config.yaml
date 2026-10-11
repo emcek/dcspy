@@ -39,18 +39,18 @@ repos:
                                    types-simplejson ]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.10
+    rev: v0.17.0
     hooks:
       - id: ruff
         exclude: '/qtgui_rc.py$|tests/'
         args: [ --fix, --exit-non-zero-on-fix ]
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.2
+    rev: v3.22.0
     hooks:
       - id: pyupgrade
         exclude: '/qtgui_rc.py$'
-        args: [ --py310-plus ]
+        args: [ --py311-plus ]
 
   - repo: https://github.com/econchick/interrogate
     rev: 1.7.0
