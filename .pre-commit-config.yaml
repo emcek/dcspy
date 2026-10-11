@@ -50,7 +50,7 @@ repos:
     hooks:
       - id: pyupgrade
         exclude: '/qtgui_rc.py$'
-        args: [ --py310-plus ]
+        args: [ --py311-plus ]
 
   - repo: https://github.com/econchick/interrogate
     rev: 1.7.0
