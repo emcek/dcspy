@@ -109,8 +109,7 @@ def check_ver_at_github(repo: str) -> Release:
             rel = Release(**response.json())
             LOG.debug(f'Latest GitHub release: {rel}')
             return rel
-        else:
-            raise ValueError(f'Try again later. Status={response.status_code}')
+        raise ValueError(f'Try again later. Status={response.status_code}')
     except Exception as exc:
         raise ValueError(f'Unable to check {package} version online: {exc}')
 
@@ -270,8 +269,7 @@ def check_github_repo(git_ref: str, repo_dir: Path, repo: str, update: bool = Tr
         f_info = bios_repo.remotes[0].pull(progress=progress)
         LOG.debug(f'Pulled: {f_info[0].name} as: {f_info[0].commit}')
     git_ref =  git_ref.split('/')[1] if 'origin/' in git_ref else git_ref
-    sha = _get_sha_hex_str(bios_repo, git_ref)
-    return sha
+    return _get_sha_hex_str(bios_repo, git_ref)
 
 
 def _checkout_repo(git_ref: str, repo_dir: Path, repo: str, progress: git.RemoteProgress | None = None) -> git.Repo:
@@ -592,8 +590,7 @@ def get_config_yaml_location() -> Path:
     :rtype: Path object to directory
     """
     localappdata = environ.get('LOCALAPPDATA', None)
-    user_appdata = Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
-    return user_appdata
+    return Path(localappdata) / 'dcspy' if localappdata else DEFAULT_YAML_FILE.parent
 
 
 def run_command(cmd: Sequence[str], cwd: Path | None = None) -> int:
@@ -652,8 +649,7 @@ def get_inputs_for_plane(plane: str, bios_dir: Path) -> dict[str, dict[str, Cont
     :return: dict.
     """
     plane_bios = get_full_bios_for_plane(plane=plane, bios_dir=bios_dir)
-    inputs = plane_bios.get_inputs()
-    return inputs
+    return plane_bios.get_inputs()
 
 
 def get_list_of_ctrls(inputs: dict[str, dict[str, ControlKeyData]]) -> list[str]:
@@ -867,8 +863,7 @@ def rgba(c: Color, /, mode: LcdMode | int = LcdMode.TRUE_COLOR) -> tuple[int, ..
     """
     if isinstance(mode, int):
         return *rgb(c), mode
-    else:
-        return ImageColor.getcolor(color=c.name, mode=mode.value)
+    return ImageColor.getcolor(color=c.name, mode=mode.value)
 
 
 def rgb(c: Color, /) -> tuple[int, int, int]:

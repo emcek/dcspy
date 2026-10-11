@@ -444,10 +444,9 @@ class Control(BaseModel):
                                 args=IntBuffArgs(address=self.outputs[0].address, mask=self.outputs[0].mask, shift_by=self.outputs[0].shift_by),
                                 value=int(),
                                 max_value=self.outputs[0].max_value)
-        else:
-            return BiosValueStr(klass='StringBuffer',
-                                args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
-                                value='')
+        return BiosValueStr(klass='StringBuffer',
+                            args=StrBuffArgs(address=self.outputs[0].address, max_length=self.outputs[0].max_length),
+                            value='')
 
     @classmethod
     def make_empty(cls) -> Control:
@@ -1215,8 +1214,7 @@ class Release(BaseModel):
 
         url = self.download_url(extension='', file_name='DIGESTS')
         download_file(url=url, save_path=temp_digest)
-        result = verify_hashes(file_path=local_file, digest_file=temp_digest)
-        return result
+        return verify_hashes(file_path=local_file, digest_file=temp_digest)
 
     def __str__(self) -> str:
         return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
@@ -1615,8 +1613,7 @@ class DllSdk(BaseModel):
         :return: The header content as a string.
         """
         with open(file=Path(__file__) / '..' / 'resources' / f'{self.header_file}') as header_file:
-            header = header_file.read()
-        return header
+            return header_file.read()
 
     def get_path(self) -> str:
         """
@@ -1629,8 +1626,7 @@ class DllSdk(BaseModel):
             prog_files = environ['PROGRAMW6432']
         except KeyError:
             prog_files = environ['PROGRAMFILES']
-        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
-        return dll_path
+        return f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
 
 
 LcdDll = DllSdk(name='LCD', directory='LCD', header_file='LogitechLCDLib.h')

@@ -345,8 +345,7 @@ class F16C50(AdvancedAircraft):
         :return: The modified string with replaced symbols.
         """
         value = replace_symbols(value, self.COLOR_SYMBOLS_TO_REPLACE)
-        value = substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
-        return value
+        return substitute_symbols(value, self.COLOR_SYMBOLS_TO_SUBSTITUTE)
 
 
 class F4E45MC(AdvancedAircraft):
@@ -1047,7 +1046,7 @@ def draw_autopilot_channels(lcd: LcdInfo,
                             c_rect: tuple[float, float, float, float],
                             c_text: tuple[float, float],
                             draw_obj: ImageDraw.ImageDraw,
-                            turn_on: str | int | float) -> None:
+                            turn_on: str | float) -> None:
     """
     Draw rectangles with a background for autopilot channels.
 
