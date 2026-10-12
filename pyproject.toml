@@ -76,6 +76,7 @@ test = [
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==5.0.0',
+    'pytest-xdist==3.6.1',
     'ruff==0.17.0',
     'types-cffi==2.1.0.20260827',
     'types-defusedxml==0.7.0.20260504',
