@@ -15,7 +15,7 @@ LOG = getLogger(__name__)
 
 default_yaml = get_default_yaml(local_appdata=LOCAL_APPDATA)
 _start_cfg = load_yaml(full_path=default_yaml)
-config_logger(LOG, _start_cfg.get('verbose', False))
+config_logger(LOG, bool(_start_cfg.get('verbose', False)))
 _config = migrate(_start_cfg)
 save_yaml(data=_config, full_path=default_yaml)
 
@@ -29,7 +29,7 @@ dcs_ver = check_dcs_ver(Path(str(_config['dcs'])))
 LOG.info(f'DCS ver: {dcs_ver}')
 
 
-def get_config_yaml_item(key: str, /, default: ConfigValue | None = None) -> ConfigValue:
+def get_config_yaml_item(key: str, /, default: ConfigValue | None = None) -> ConfigValue | None:
     """
     Get item from a configuration YAML file.
 
@@ -37,4 +37,4 @@ def get_config_yaml_item(key: str, /, default: ConfigValue | None = None) -> Con
     :param default: Default value if key not found
     :return: Value from configuration
     """
-    return load_yaml(full_path=default_yaml).get(key, default) # type: ignore[return-value]
+    return load_yaml(full_path=default_yaml).get(key, default)

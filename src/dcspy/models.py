@@ -11,7 +11,7 @@ from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypeAlias, TypedDict, TypeVar
+from typing import Any, Final, TypeAlias, TypedDict
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
@@ -218,7 +218,6 @@ class OutputInt(Output):
         return value
 
 
-# ---------------- DCS-BIOS ----------------
 class IntBuffArgs(BaseModel):
     """Arguments of BIOS Integer Buffer."""
     address: int
@@ -1006,7 +1005,7 @@ class SystemData(BaseModel):
         return self.dcs_bios_ver.split(' ')[0]
 
 
-ConfigValue = TypeVar('ConfigValue', str, int, float, bool)
+ConfigValue: TypeAlias = str | int | float | bool
 DcspyConfigYaml = dict[str, ConfigValue]
 
 
