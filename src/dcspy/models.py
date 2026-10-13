@@ -4,20 +4,20 @@ from _ctypes import sizeof
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from ctypes import c_void_p
 from datetime import datetime
-from enum import Enum, IntEnum, StrEnum, auto
+from enum import Enum, IntEnum
 from os import environ
 from pathlib import Path
 from platform import architecture
 from re import search
 from sys import maxsize
 from tempfile import gettempdir
-from typing import Any, Final, TypeAlias, TypedDict, TypeVar
+from typing import Any, Final, TypeAlias, TypedDict, TypeVar, Union
 
 from packaging import version
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel, ConfigDict, RootModel, field_validator
 
-__version__ = '3.8.2'
+__version__ = '3.9.0'
 
 # Network
 SEND_ADDR: Final = ('127.0.0.1', 7778)
@@ -65,7 +65,7 @@ SUPPORTED_CRAFTS = {
     'C130J30': {'name': 'C-130J 30 Hercules', 'bios': 'C-130J-30'},
 }
 
-BiosValue = str | int | float
+BiosValue = Union[str, int, float]
 
 
 class AircraftKwargs(TypedDict):
@@ -87,11 +87,11 @@ class ApacheAllDrawModesKwargs(ApacheDrawModeKwargs, total=False):
     font: ImageFont.FreeTypeFont | None
 
 
-class ApacheEufdMode(StrEnum):
+class ApacheEufdMode(Enum):
     """Apache EUFD Mode."""
-    IDM = auto()
-    WCA = auto()
-    PRE = auto()
+    IDM = 'idm'
+    WCA = 'wca'
+    PRE = 'pre'
 
 
 class Input(BaseModel):
@@ -170,7 +170,7 @@ class SetString(Input):
         return cls._validate_interface(value, 'set_string')
 
 
-Inputs = FixedStep | VariableStep | SetState | Action | SetString
+Inputs = Union[FixedStep, VariableStep, SetState, Action, SetString]
 
 
 class Output(BaseModel):
@@ -1214,7 +1214,8 @@ class Release(BaseModel):
 
         url = self.download_url(extension='', file_name='DIGESTS')
         download_file(url=url, save_path=temp_digest)
-        return verify_hashes(file_path=local_file, digest_file=temp_digest)
+        result = verify_hashes(file_path=local_file, digest_file=temp_digest)
+        return result
 
     def __str__(self) -> str:
         return f'{self.tag_name} pre:{self.prerelease} date:{self.published}'
@@ -1613,7 +1614,8 @@ class DllSdk(BaseModel):
         :return: The header content as a string.
         """
         with open(file=Path(__file__) / '..' / 'resources' / f'{self.header_file}') as header_file:
-            return header_file.read()
+            header = header_file.read()
+        return header
 
     def get_path(self) -> str:
         """
@@ -1626,7 +1628,8 @@ class DllSdk(BaseModel):
             prog_files = environ['PROGRAMW6432']
         except KeyError:
             prog_files = environ['PROGRAMFILES']
-        return f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
+        dll_path = f'{prog_files}\\Logitech Gaming Software\\SDK\\{self.directory}\\{arch}\\Logitech{self.name.capitalize()}.dll'
+        return dll_path
 
 
 LcdDll = DllSdk(name='LCD', directory='LCD', header_file='LogitechLCDLib.h')
