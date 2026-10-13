@@ -29,6 +29,7 @@ jobs:
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, 'setup') }}
         with:
+          nuitka-version: 4.3
           script-name: src/dcs_py.py
           mode: standalone
           windows-console-mode: disable
@@ -38,6 +39,7 @@ jobs:
           assume-yes-for-downloads: true
           output-file: dcspy
           output-dir: dist
+          include-windows-runtime-dlls: yes
           windows-icon-from-ico: src/dcspy/img/dcspy_light.ico
           company-name: Michal Plichta
           product-name: DCSpy
@@ -49,6 +51,7 @@ jobs:
       - uses: Nuitka/Nuitka-Action@main
         if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
         with:
+          nuitka-version: 4.3
           script-name: src/dcs_py.py
           mode: onefile
           windows-console-mode: disable
@@ -59,6 +62,7 @@ jobs:
           onefile-windows-splash-screen-image: src/dcspy/img/splash.png
           output-file: dcspy_${{ steps.nuitka_data.outputs.git_ref_name }}_portable
           output-dir: dist
+          include-windows-runtime-dlls: yes
           windows-icon-from-ico: src/dcspy/img/dcspy_light.ico
           company-name: Michal Plichta
           product-name: DCSpy
