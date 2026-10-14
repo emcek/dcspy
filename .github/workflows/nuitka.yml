@@ -26,7 +26,7 @@ jobs:
           Write-Output "git_run_number=$run_number" >> $env:GITHUB_OUTPUT
           Write-Output "git_sha=$sha" >> $env:GITHUB_OUTPUT
 
-      - uses: Nuitka/Nuitka-Action@main
+      - uses: Nuitka/Nuitka-Action@v1.5
         if: ${{ endsWith( matrix.nuitka_type, 'setup') }}
         with:
           nuitka-version: 4.3
@@ -48,7 +48,7 @@ jobs:
           file-description: Integrating DCS Planes with Logitech keyboards with LCD
           copyright: (c) 2026 Michal Plichta. All rights reserved.
 
-      - uses: Nuitka/Nuitka-Action@main
+      - uses: Nuitka/Nuitka-Action@v1.5
         if: ${{ endsWith( matrix.nuitka_type, 'portable') }}
         with:
           nuitka-version: 4.3
