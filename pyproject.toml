@@ -38,10 +38,10 @@ keywords = [
 dynamic = ['version', 'readme']
 dependencies = [
     'cffi==2.1.1',
-    'gitpython==3.2.0',
+    'gitpython==3.2.1',
     'lupa==2.8',
     'packaging==26.3',
-    'pillow==12.3.0',
+    'pillow==13.0.0',
     'pydantic==2.14.1',
     'pyside6==6.11.2',
     'pyyaml==6.0.3',
@@ -76,8 +76,8 @@ test = [
     'pytest-cov==7.1.0',
     'pytest-qt==4.5.0 ; sys_platform == "win32"',
     'pytest-randomly==5.0.0',
-    'pytest-xdist==3.6.1',
-    'ruff==0.17.0',
+    'pytest-xdist==3.8.0',
+    'ruff==0.17.1',
     'types-cffi==2.1.0.20260827',
     'types-defusedxml==0.7.0.20260504',
     'types-lupa==2.8.0.20260827',
