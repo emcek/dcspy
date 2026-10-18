@@ -9,6 +9,10 @@
   * Update all others dependencies to latest versions
   * correctness cleanup, and stricter validation, without major new feature additions - #617 (@emcek)
   * Update checking DCS-BIOS version
+  * Display text on LCD is more reliable
+  * Rework configuration migration
+  * Improve RequestModel and ControlKeyData models
+  * Load default config function is more robust and reliable
 
 ## 3.8.1
 * Fix debugger tab in dark mode - #551 (@emcek)

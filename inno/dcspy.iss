@@ -75,7 +75,6 @@ Source: "D:\a\dcspy\dcspy\dcs_py.dist\certifi\*"; DestDir: "{app}\certifi"; Flag
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\dcspy\*"; DestDir: "{app}\dcspy"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\librt\*"; DestDir: "{app}\librt"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\lupa\*"; DestDir: "{app}\lupa"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "D:\a\dcspy\dcspy\dcs_py.dist\mypy\*"; DestDir: "{app}\mypy"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\PIL\*"; DestDir: "{app}\PIL"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\pydantic_core\*"; DestDir: "{app}\pydantic_core"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "D:\a\dcspy\dcspy\dcs_py.dist\PySide6\*"; DestDir: "{app}\PySide6"; Flags: ignoreversion recursesubdirs createallsubdirs
