@@ -1,3 +1,6 @@
+## 3.9.0
+* Improve first run experience for new user - #564 (@emcek)
+
 ## 3.8.2
 * Fix GKeys weren't working for the Apache - #626 (@emcek)
 * Remove support for Python 3.10 - #627 (@emcek)
@@ -355,7 +358,7 @@
 * **F-16C Viper** DED cleanup extra characters
 
 ## 1.6.1
-* Update **F-16C Viper** for latest DCS-BIOS (0.7.45)
+* Update **F-16C Viper** for latest DSC-BIOS (0.7.45)
 * Fresh installation of DCS-BIOS is painless
 * Drop support for Python 3.6
 
