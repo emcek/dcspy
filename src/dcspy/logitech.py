@@ -96,7 +96,7 @@ class LogitechDevice:
         short_name = value.replace('-', '').replace('_', '')
         if self.plane_name != short_name:
             self.plane_name = short_name
-            planes_list = get_planes_list(bios_dir=Path(get_config_yaml_item('dcsbios')))
+            planes_list = get_planes_list(bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
             if self.plane_name in SUPPORTED_CRAFTS:
                 LOG.info(f'Advanced supported aircraft: {value}')
                 self.text = [('     DCSpy       ', Color.orange), ('Detected aircraft:', Color.white), (SUPPORTED_CRAFTS[self.plane_name]['name'], Color.green)]
@@ -141,7 +141,7 @@ class LogitechDevice:
 
     def _setup_plane_callback(self) -> None:
         """Set ups DCS-BIOS parser callbacks for detected plane."""
-        plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(get_config_yaml_item('dcsbios')))
+        plane_bios = get_full_bios_for_plane(plane=SUPPORTED_CRAFTS[self.plane_name]['bios'], bios_dir=Path(str(get_config_yaml_item('dcsbios'))))
         for ctrl_name in self.plane.bios_data:
             ctrl = plane_bios.get_ctrl(ctrl_name=ctrl_name)
             dcsbios_buffer = getattr(dcsbios, ctrl.output.klass)
