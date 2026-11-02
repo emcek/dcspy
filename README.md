@@ -54,10 +54,10 @@ Why a such way? Basically advanced support is for aircraft that I own and theref
 ## Requirements
 * [Logitech Gaming Software 9.04.49](https://support.logitech.com/software/lgs)
 * DCS-Skunkworks DCS-BIOS:
-  * [DCS-BIOS 0.11.7](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.11.7) or newer (can be [installed](https://dcspy.readthedocs.io/en/latest/upgrade/#manual-procedure) directly from DCSpy)
+  * [DCS-BIOS 0.11.8](https://github.com/DCS-Skunkworks/dcs-bios/releases/tag/v0.11.8) or newer (can be [installed](https://dcspy.readthedocs.io/en/latest/upgrade/#manual-procedure) directly from DCSpy)
   * However, it is recommended to use [Live DCS-BIOS](https://dcspy.readthedocs.io/en/latest/bios_live/) latest git version
   * [Git](https://git-scm.com/download/win) it is necessary to use the live version of DCS-BIOS
-* DCS World: [2.9.30.28738](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.30.28738/), but any version from 2.9.* branch should be fine.
+* DCS World: [2.9.31.29434](https://www.digitalcombatsimulator.com/en/news/changelog/stable/2.9.31.29434/), but any version from 2.9.* branch should be fine.
 * optional:
   * [Python 3.14](https://www.python.org/downloads/) but 3.11+ should be fine (see [installation](https://dcspy.readthedocs.io/en/latest/install/))
 
