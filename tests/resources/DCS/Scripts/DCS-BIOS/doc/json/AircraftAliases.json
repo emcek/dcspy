@@ -3,6 +3,7 @@
                "A-10C_2": [ "CommonData", "A-10C" ],
          "AH-64D_BLK_II": [ "CommonData", "AH-64D" ],
                 "AV8BNA": [ "CommonData", "AV8BNA", "NS430" ],
+           "F-14A-95-GR": [ "CommonData", "F-14", "NS430" ],
           "F-14A-135-GR": [ "CommonData", "F-14", "NS430" ],
     "F-14A-135-GR-Early": [ "CommonData", "F-14", "NS430" ],
                  "F-14B": [ "CommonData", "F-14", "NS430" ],
