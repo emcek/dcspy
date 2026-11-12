@@ -66,6 +66,17 @@ def _ensure_user_appdata_dir() -> Path:
     return user_appdata
 
 
+def _api_ver_3_9_0(cfg: DcspyConfigYaml) -> None:
+    """
+    Migrate to version 3.9.0.
+
+    :param cfg: Configuration dictionary
+    """
+    _copy_file(filename='F-14A-95-GR.yaml', to_path=_ensure_user_appdata_dir(), force=True)
+    _copy_file(filename='F-14A-135-GR-Early.yaml', to_path=_ensure_user_appdata_dir(), force=True)
+    _copy_file(filename='F-14BU.yaml', to_path=_ensure_user_appdata_dir(), force=True)
+
+
 def _api_ver_3_8_0(cfg: DcspyConfigYaml) -> None:
     """
     Migrate to version 3.8.0.
